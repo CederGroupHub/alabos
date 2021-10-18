@@ -1,0 +1,3 @@
+class TaskManager:
+    def run(self, *args, **kwargs):
+        ...
