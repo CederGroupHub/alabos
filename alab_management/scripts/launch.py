@@ -1,6 +1,6 @@
 from multiprocessing import Process
 
-from alab_management import TaskManager, Executor
+from .. import TaskManager, Executor
 
 
 def launch_task_manager():
@@ -27,7 +27,3 @@ def main():
         if (not task_manager_process.is_alive()
                 or not executor_process.is_alive()):
             exit(1)
-
-
-if __name__ == '__main__':
-    main()

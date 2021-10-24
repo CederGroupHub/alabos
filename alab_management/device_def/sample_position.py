@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Union, Set
+from typing import List, Optional
 
 
 @dataclass
@@ -7,7 +7,7 @@ class SamplePosition:
     name: str
     description: str = field(compare=False, hash=False)
     num: int = field(compare=False, hash=False)
-    container: Union[List[str], str] = field(default_factory=list)
+    container: Optional[List[str]] = field(default_factory=list)
     alias: List[str] = field(default_factory=list, compare=False, hash=False)
 
     def __post_init__(self):

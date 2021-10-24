@@ -20,7 +20,7 @@ class RobotArm(BaseDevice):
         return [
             SamplePosition(
                 "{name}.sample_holder".format(name=self.name),
-                num=16,
+                num=1,
                 description="The position that can hold the sample"
             ),
         ]

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Tuple
 
 from bson import ObjectId
 
@@ -10,8 +10,8 @@ class BaseOperation(ABC):
     task_id: ObjectId = field(hash=False, compare=False)
     sample_id: ObjectId = field(hash=False, compare=False)
 
-    @abstractmethod
     @property
+    @abstractmethod
     def operation_location(self) -> str:
         raise NotImplementedError()
 
@@ -24,9 +24,13 @@ class BaseOperation(ABC):
         raise NotImplementedError()
 
     @property
-    def dest_location(self) -> str:
-        return self.operation_location
-
-    @property
     def occupied_positions(self) -> List[str]:
         return []
+
+
+@dataclass
+class BaseMovingOperation(BaseOperation, ABC):
+    @property
+    @abstractmethod
+    def possible_src_dest(self) -> List[Tuple[str, str]]:
+        raise NotImplementedError()
