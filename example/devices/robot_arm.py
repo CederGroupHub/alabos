@@ -1,7 +1,8 @@
 from dataclasses import dataclass, field
 from typing import ClassVar
 
-from alab_management.device_def import BaseDevice, SamplePosition
+from alab_management.device_def import BaseDevice
+from alab_management.sample_position import SamplePosition
 
 
 @dataclass
@@ -20,7 +21,6 @@ class RobotArm(BaseDevice):
         return [
             SamplePosition(
                 "{name}.sample_holder".format(name=self.name),
-                num=1,
                 description="The position that can hold the sample"
             ),
         ]

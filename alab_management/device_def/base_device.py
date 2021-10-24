@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import List, ClassVar, Dict
 
-from .sample_position import SamplePosition
+from ..sample_position import SamplePosition
 
 
 @dataclass

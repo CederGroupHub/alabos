@@ -4,6 +4,8 @@ from typing import List, Tuple
 
 from bson import ObjectId
 
+from alab_management.sample_position import SamplePositionPair
+
 
 @dataclass
 class BaseOperation(ABC):
@@ -14,6 +16,10 @@ class BaseOperation(ABC):
     @abstractmethod
     def operation_location(self) -> str:
         raise NotImplementedError()
+
+    @property
+    def dest_location(self) -> str:
+        return self.operation_location
 
     @abstractmethod
     def __call__(self):
@@ -30,7 +36,12 @@ class BaseOperation(ABC):
 
 @dataclass
 class BaseMovingOperation(BaseOperation, ABC):
+    @staticmethod
+    @abstractmethod
+    def get_possible_src_dest_pairs() -> Tuple[SamplePositionPair]:
+        raise NotImplementedError()
+
     @property
     @abstractmethod
-    def possible_src_dest(self) -> List[Tuple[str, str]]:
+    def dest_location(self):
         raise NotImplementedError()

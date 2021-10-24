@@ -3,15 +3,14 @@ from types import MappingProxyType as FrozenDict
 from typing import Any, Dict
 
 import toml
-from monty.design_patterns import singleton
 
 
-def froze_config(config: Dict[str, Any]) -> FrozenDict:
+def froze_config(config_: Dict[str, Any]) -> FrozenDict:
     """
     Convert the config dict to frozen config
 
     Args:
-        config: the dict of config data
+        config_: the dict of config data
 
     Returns:
         frozen_config, which is not allowed to modify
@@ -28,10 +27,9 @@ def froze_config(config: Dict[str, Any]) -> FrozenDict:
         else:
             return collection_or_element
 
-    return _froze_collection(config)
+    return _froze_collection(config_)
 
 
-@singleton
 class AlabConfig:
     """
     Class used for storing all the config data

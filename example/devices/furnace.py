@@ -3,7 +3,8 @@ from typing import ClassVar
 
 from alab_control.furnace_epc_3016 import FurnaceController
 
-from alab_management.device_def import BaseDevice, SamplePosition
+from alab_management.device_def import BaseDevice
+from alab_management.sample_position import SamplePosition
 
 
 @dataclass
@@ -25,12 +26,10 @@ class Furnace(BaseDevice):
         return [
             SamplePosition(
                 "{name}.inside".format(name=self.name),
-                num=4,
                 description="The position inside the furnace, where the samples are heated"
             ),
             SamplePosition(
                 "furnace_table",
-                num=1,
                 description="Temporary position to transfer samples"
             )
         ]

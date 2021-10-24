@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 
-from alab_management.device_def import SamplePosition
 from alab_management.op_def.base_operation import BaseMovingOperation
+from alab_management.sample_position import SamplePosition, SamplePositionPair
 from devices.robot_arm import RobotArm
 
 
@@ -10,6 +10,19 @@ class Moving(BaseMovingOperation):
     src: SamplePosition
     dest: SamplePosition
     robot_arm: RobotArm = field(hash=False, compare=False)
+
+    @staticmethod
+    def get_possible_src_dest_pairs():
+        return (
+            SamplePositionPair("furnace_table", "furnace_1.inside", containers=["crucible"]),
+            SamplePositionPair("furnace_table", "furnace_2.inside", containers=["crucible"]),
+            SamplePositionPair("furnace_table", "furnace_3.inside", containers=["crucible"]),
+            SamplePositionPair("furnace_table", "furnace_4.inside", containers=["crucible"]),
+            SamplePositionPair("furnace_1.inside", "furnace_table"),
+            SamplePositionPair("furnace_2.inside", "furnace_table"),
+            SamplePositionPair("furnace_3.inside", "furnace_table"),
+            SamplePositionPair("furnace_4.inside", "furnace_table"),
+        )
 
     @property
     def operation_location(self):
@@ -22,20 +35,6 @@ class Moving(BaseMovingOperation):
     @property
     def occupied_positions(self):
         return []
-
-    @property
-    def possible_src_dest(self):
-        # in the future, this will be parsed from a file
-        return [
-            ("furnace_table", "furnace_1.inside"),
-            ("furnace_table", "furnace_2.inside"),
-            ("furnace_table", "furnace_3.inside"),
-            ("furnace_table", "furnace_4.inside"),
-            ("furnace_1.inside", "furnace_table"),
-            ("furnace_2.inside", "furnace_table"),
-            ("furnace_3.inside", "furnace_table"),
-            ("furnace_4.inside", "furnace_table"),
-        ]
 
     def __call__(self):
         ...

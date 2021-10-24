@@ -1,47 +1,72 @@
+"""
+Setup the lab,
+
+Generate device, sample position, task definitions from user defined files (task & device)
+and write them to MongoDB
+"""
+
 import inspect
 from dataclasses import asdict, fields, Field
 from typing import Iterable, Type
 
 import pymongo
+from bson import ObjectId
 
+from .cleanup_lab import clean_up_db
 from ..config import config
 from ..db import get_collection
-from ..device_def import SamplePosition
+from ..sample_position import SamplePosition
 from ..device_def.base_device import get_all_devices, BaseDevice
 from ..lab_status.device_view import DeviceStatus
 from ..lab_status.sample_view import SamplePositionStatus
 from ..op_def.base_operation import BaseOperation, BaseMovingOperation
-from ..utils.fakes import FakeDevice
-from ..utils.module_op import import_module_from_path
+from ..utils.fake_device import FakeDevice
+from ..utils.module_ops import import_module_from_path, get_full_cls_name
+from ..utils.typing_ops import is_typing
 
 
 def add_sample_positions_to_db(collection: pymongo.collection.Collection,
                                sample_positions: Iterable[SamplePosition]):
+    """
+    Insert sample positions info to db, which includes position name,
+    number, description and status (default to UNKNOWN)
+
+    If one sample position's name has already appeared in the database, we will just skip it.
+
+    Args:
+        collection: the db collection to store sample position data
+        sample_positions: some sample position instances
+    """
     for sample_pos in sample_positions:
-        pos_num = sample_pos.num
 
         sample_pos_ = collection.find_one({"name": sample_pos.name})
-        if sample_pos_ is not None:
-            if pos_num != sample_pos_["num"]:
-                raise ValueError("Inconsistent sample capacity for same position ({}): {} and "
-                                 "{}".format(sample_pos.name, pos_num, sample_pos_["num"]))
-        else:
+        if sample_pos_ is None:
             collection.insert_one({
                 **asdict(sample_pos),
-                "status": [SamplePositionStatus.UNKNOWN.name] * pos_num,
-                "task_ids": [None] * pos_num,
-                "sample_ids": [None] * pos_num,
+                "status": SamplePositionStatus.UNKNOWN.name,
+                "task_ids": None,
+                "sample_ids": None,
             })
 
 
 def add_devices_to_db(collection: pymongo.collection.Collection,
                       devices: Iterable[BaseDevice]):
+    """
+    Insert device definitions to db, which includes devices' name, descriptions, parameters,
+    type (class name).
+
+    When one device's name has already appeared in the database, a `NameError` will be raised.
+    Device name is a unique identifier for a device
+
+    Args:
+        collection: the db collection to store device data
+        devices: some devices inherited from :obj:`BaseDevice`
+    """
     for device in devices:
         if collection.find_one({"name": device.name}) is not None:
-            raise NameError("Duplicated device name {}, did you cleanup the database?".format(device.name))
+            raise NameError(f"Duplicated device name {device.name}, did you cleanup the database?")
         collection.insert_one({
-            "sample_positions": [{"name": sample_pos.name, "num": sample_pos.num}
-                                 for sample_pos in device.sample_positions],
+            "sample_positions": [sample_pos.name for sample_pos in device.sample_positions],
             "status": DeviceStatus.UNKNOWN.name,
             "type": device.__class__.__name__,
             "description": device.description,
@@ -76,13 +101,13 @@ def init_with_fake_parameters(cls: Type[BaseOperation]):
         name = type_hint.name
         type_ = type_hint.type
 
-        if hasattr(type_, "__origin__"):
+        if is_typing(type_):
             type_ = type_.__origin__
 
         if issubclass(type_, BaseDevice):
             fake_parameters[name] = FakeDevice(name="{" + type_.__name__ + "}")
         elif issubclass(type_, SamplePosition):
-            fake_parameters[name] = SamplePosition(name="{" + name + "}", description="", num=1)
+            fake_parameters[name] = SamplePosition(name="{" + name + "}", description="")
         else:
             fake_parameters[name] = type_()
     return cls(**fake_parameters)
@@ -92,16 +117,22 @@ def add_tasks_to_db(collection: pymongo.collection.Collection,
                     tasks: Iterable[BaseOperation]):
     for task in tasks:
         if collection.find_one({"name": task.__class__.__name__}) is not None:
-            raise NameError("Duplicated task name: {}".format(task.__class__.__name__))
+            raise NameError(f"Duplicated task name: {task.__class__.__name__}")
         task_info = {
             "name": task.__class__.__name__,
             "operation_location": task.operation_location,
             "occupied_positions": task.occupied_positions,
-            "accept_args": ...  # TODO: finish this
+            "dist_location": task.dest_location,
+            "accept_args": [{"name": field.name, "type": get_full_cls_name(field.type)} for field in fields(task)
+                            if is_typing(field.type) or not issubclass(field.type, (BaseDevice, ObjectId))]
         }
         if isinstance(task, BaseMovingOperation):
             task_info.update({
-                "src_dest_pairs": task.possible_src_dest,
+                "src_dest_pairs": [{
+                    "src": sample_position_pair.src,
+                    "dest": sample_position_pair.dest,
+                    "containers": sample_position_pair.containers,
+                } for sample_position_pair in task.get_possible_src_dest_pairs()],
             })
 
         collection.insert_one(task_info)
@@ -119,5 +150,6 @@ def setup_from_task_def():
 
 
 def main():
+    clean_up_db()
     setup_from_device_def()
     setup_from_task_def()
