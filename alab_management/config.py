@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 from types import MappingProxyType as FrozenDict
 from typing import Any, Dict
 
@@ -45,7 +44,7 @@ class AlabConfig:
         config_path = os.getenv("ALAB_CONFIG", None)
 
         if config_path is None:
-            config_path = (Path("__file__").parent / "config.default.toml").as_posix()
+            config_path = "config.toml"
         _config = toml.load(open(config_path, "r", encoding="utf-8"))
         self._config = froze_config(_config)
 

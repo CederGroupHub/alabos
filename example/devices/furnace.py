@@ -1,12 +1,24 @@
+from dataclasses import dataclass
+from typing import ClassVar
+
 from alab_control.furnace_epc_3016 import FurnaceController
 
 from alab_management.device_def import BaseDevice, SamplePosition
 
 
-class Furnace(BaseDevice, alias="bakery_oven"):
-    def __init__(self, name, address, port):
-        super(Furnace, self).__init__(name=name)
-        self.furnace_controller = FurnaceController(address=address, port=port)
+@dataclass
+class Furnace(BaseDevice):
+    name: str
+    address: str
+    port: int = 502
+
+    description: ClassVar[str] = "Simple furnace"
+
+    def __post_init__(self):
+        self.driver = None
+
+    def init(self):
+        self.driver = FurnaceController(address=self.address)
 
     @property
     def sample_positions(self):

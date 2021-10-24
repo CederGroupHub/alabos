@@ -1,8 +1,14 @@
-class SampleNotFound(Exception):
-    ...
+from enum import Enum, auto
 
 
-class SimpleView:
+class SamplePositionStatus(Enum):
+    UNKNOWN = auto()
+    EMPTY = auto()
+    OCCUPIED = auto()
+    LOCKED = auto()
+
+
+class SampleView:
     def update_simple_view(self, sample_id, destination: str):
         ...
 
