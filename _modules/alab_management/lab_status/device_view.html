@@ -229,6 +229,8 @@
 <span class="kn">from</span> <span class="nn">alab_management.config</span> <span class="kn">import</span> <span class="n">config</span>
 <span class="kn">from</span> <span class="nn">alab_management.db</span> <span class="kn">import</span> <span class="n">get_collection</span>
 
+<span class="n">_EMPTY_ID</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span>  <span class="c1"># use lambda as a placeholder for missing id</span>
+
 
 <div class="viewcode-block" id="DeviceStatus"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.device_view.DeviceStatus">[docs]</a><span class="nd">@unique</span>
 <span class="k">class</span> <span class="nc">DeviceStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
@@ -249,8 +251,6 @@
 <span class="sd">    of a device (as well as other basic information</span>
 <span class="sd">    stored in database)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_EMPTY_ID</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span>  <span class="c1"># use lambda as a placeholder for missing id</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;devices&quot;</span><span class="p">][</span><span class="s2">&quot;device_db&quot;</span><span class="p">])</span>
 
@@ -290,9 +290,9 @@
             <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="p">,</span>
         <span class="p">}</span>
 
-        <span class="k">if</span> <span class="n">sample_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_EMPTY_ID</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">sample_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">_EMPTY_ID</span><span class="p">:</span>
             <span class="n">updated_dict</span><span class="p">[</span><span class="s2">&quot;sample_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample_id</span>
-        <span class="k">if</span> <span class="n">task_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_EMPTY_ID</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">task_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">_EMPTY_ID</span><span class="p">:</span>
             <span class="n">updated_dict</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">task_id</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">device_name</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="n">updated_dict</span><span class="p">})</span></div>
