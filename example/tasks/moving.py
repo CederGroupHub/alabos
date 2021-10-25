@@ -36,7 +36,7 @@ class Moving(BaseMovingOperation):
     def occupied_positions(self):
         return []
 
-    def __call__(self):
+    def run(self):
         ...
 
     def is_running(self):

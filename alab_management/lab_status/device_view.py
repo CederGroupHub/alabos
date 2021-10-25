@@ -1,9 +1,5 @@
 from enum import Enum, unique, auto
 
-from bson import ObjectId
-
-from ..db import get_collection
-
 
 @unique
 class DeviceStatus(Enum):
@@ -16,10 +12,11 @@ class DeviceStatus(Enum):
 
 
 class DeviceView:
-    device_collection = get_collection("devices")
-
-    def get_status(self, device_id: ObjectId) -> DeviceStatus:
+    def get_status(self, device_name: str) -> DeviceStatus:
         ...
 
-    def set_status(self, device_id: ObjectId, status: DeviceStatus):
+    def set_status(self, device_name: str, status: DeviceStatus):
+        ...
+
+    def get_device(self, name):
         ...

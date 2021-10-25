@@ -22,7 +22,7 @@ class BaseOperation(ABC):
         return self.operation_location
 
     @abstractmethod
-    def __call__(self):
+    def run(self):
         raise NotImplementedError()
 
     @abstractmethod

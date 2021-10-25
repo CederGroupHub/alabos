@@ -18,7 +18,7 @@ class Heating(BaseOperation):
     def occupied_positions(self):
         return [self.furnace.name]
 
-    def __call__(self):
+    def run(self):
         ...
 
     def is_running(self):

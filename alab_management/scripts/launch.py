@@ -13,7 +13,7 @@ def launch_executor():
     executor.run()
 
 
-def main():
+def launch_lab():
     task_manager_process = Process(target=launch_task_manager)
     executor_process = Process(target=launch_executor)
 
