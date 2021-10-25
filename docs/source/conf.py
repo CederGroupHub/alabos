@@ -46,9 +46,11 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'recommonmark',
+    'sphinx_autodoc_typehints'
 ]
 
 add_module_names = False
+typehints_fully_qualified = False
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
