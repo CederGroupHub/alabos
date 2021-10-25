@@ -42,8 +42,8 @@ def add_sample_positions_to_db(collection: pymongo.collection.Collection,
             collection.insert_one({
                 **asdict(sample_pos),
                 "status": SamplePositionStatus.UNKNOWN.name,
-                "task_ids": None,
-                "sample_ids": None,
+                "task_id": None,
+                "sample_id": None,
             })
 
 
