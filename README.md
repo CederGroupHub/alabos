@@ -5,7 +5,7 @@ Managing the workflows in the **A**utomous **lab**.
 
 ## Documents
 
-It is temporarily hosted on my private website: https://alab.yuxingfei.top
+It is temporarily hosted on my personal domain: [`https://alab.yuxingfei.top`](https://alab.yuxingfei.top)
 
 Username and password are required to access the document.
 
