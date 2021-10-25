@@ -1,0 +1,465 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>alab_management.scripts.setup_lab &#8212; Alab Management</title>
+    
+  <link href="../../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../../../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    
+  <link rel="preload" as="script" href="../../../_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../../../index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="../../../_static/logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">Alab Management</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../../modules.html">
+   API Docs
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../../alab_management.html">
+     alab_management package
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+    <label for="toctree-checkbox-2">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../alab_management.device_def.html">
+       alab_management.device_def package
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../alab_management.executor.html">
+       alab_management.executor package
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../alab_management.lab_status.html">
+       alab_management.lab_status package
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../alab_management.logger.html">
+       alab_management.logger package
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../alab_management.op_def.html">
+       alab_management.op_def package
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../alab_management.scripts.html">
+       alab_management.scripts package
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../alab_management.task_manager.html">
+       alab_management.task_manager package
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../alab_management.utils.html">
+       alab_management.utils package
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/idocx/alab_management"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        
+        
+    </div>
+</div>
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <h1>Source code for alab_management.scripts.setup_lab</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Set up the lab,</span>
+
+<span class="sd">Generate device, sample position, task definitions from user defined files (task &amp; device)</span>
+<span class="sd">and write them to MongoDB</span>
+
+<span class="sd">which will make it easier to query</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">asdict</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">Field</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">import</span> <span class="nn">pymongo</span>
+<span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
+
+<span class="kn">from</span> <span class="nn">.cleanup_lab</span> <span class="kn">import</span> <span class="n">clean_up_db</span>
+<span class="kn">from</span> <span class="nn">..config</span> <span class="kn">import</span> <span class="n">config</span>
+<span class="kn">from</span> <span class="nn">..db</span> <span class="kn">import</span> <span class="n">get_collection</span>
+<span class="kn">from</span> <span class="nn">..device_def.base_device</span> <span class="kn">import</span> <span class="n">get_all_devices</span><span class="p">,</span> <span class="n">BaseDevice</span>
+<span class="kn">from</span> <span class="nn">..lab_status.device_view</span> <span class="kn">import</span> <span class="n">DeviceStatus</span>
+<span class="kn">from</span> <span class="nn">..lab_status.sample_view</span> <span class="kn">import</span> <span class="n">SamplePositionStatus</span>
+<span class="kn">from</span> <span class="nn">..op_def.base_operation</span> <span class="kn">import</span> <span class="n">BaseOperation</span><span class="p">,</span> <span class="n">BaseMovingOperation</span>
+<span class="kn">from</span> <span class="nn">..sample_position</span> <span class="kn">import</span> <span class="n">SamplePosition</span>
+<span class="kn">from</span> <span class="nn">..utils.fake_device</span> <span class="kn">import</span> <span class="n">FakeDevice</span>
+<span class="kn">from</span> <span class="nn">..utils.module_ops</span> <span class="kn">import</span> <span class="n">import_module_from_path</span><span class="p">,</span> <span class="n">get_full_cls_name</span>
+<span class="kn">from</span> <span class="nn">..utils.typing_ops</span> <span class="kn">import</span> <span class="n">is_typing</span>
+
+
+<div class="viewcode-block" id="add_sample_positions_to_db"><a class="viewcode-back" href="../../../alab_management.scripts.html#alab_management.scripts.setup_lab.add_sample_positions_to_db">[docs]</a><span class="k">def</span> <span class="nf">add_sample_positions_to_db</span><span class="p">(</span><span class="n">collection</span><span class="p">:</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">Collection</span><span class="p">,</span>
+                               <span class="n">sample_positions</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">SamplePosition</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Insert sample positions info to db, which includes position name,</span>
+<span class="sd">    number, description and status (default to UNKNOWN)</span>
+
+<span class="sd">    If one sample position&#39;s name has already appeared in the database,</span>
+<span class="sd">    we will just skip it.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        collection: the db collection to store sample position data</span>
+<span class="sd">        sample_positions: some sample position instances</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">sample_pos</span> <span class="ow">in</span> <span class="n">sample_positions</span><span class="p">:</span>
+        <span class="n">sample_pos_</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">sample_pos</span><span class="o">.</span><span class="n">name</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">sample_pos_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span>
+                <span class="o">**</span><span class="n">asdict</span><span class="p">(</span><span class="n">sample_pos</span><span class="p">),</span>
+                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">SamplePositionStatus</span><span class="o">.</span><span class="n">UNKNOWN</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;task_ids&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;sample_ids&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="add_devices_to_db"><a class="viewcode-back" href="../../../alab_management.scripts.html#alab_management.scripts.setup_lab.add_devices_to_db">[docs]</a><span class="k">def</span> <span class="nf">add_devices_to_db</span><span class="p">(</span><span class="n">collection</span><span class="p">:</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">Collection</span><span class="p">,</span>
+                      <span class="n">devices</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Insert device definitions to db, which includes devices&#39; name, descriptions, parameters,</span>
+<span class="sd">    type (class name).</span>
+
+<span class="sd">    When one device&#39;s name has already appeared in the database, a `NameError` will be raised.</span>
+<span class="sd">    Device name is a unique identifier for a device</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        collection: the db collection to store device data</span>
+<span class="sd">        devices: some devices inherited from :obj:`BaseDevice`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">devices</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">})</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Duplicated device name </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, did you cleanup the database?&quot;</span><span class="p">)</span>
+        <span class="n">collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span>
+            <span class="s2">&quot;sample_positions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">sample_pos</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">sample_pos</span> <span class="ow">in</span> <span class="n">device</span><span class="o">.</span><span class="n">sample_positions</span><span class="p">],</span>
+            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">DeviceStatus</span><span class="o">.</span><span class="n">UNKNOWN</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">device</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="n">device</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+            <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;sample_id&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">asdict</span><span class="p">(</span><span class="n">device</span><span class="p">),</span>
+        <span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="setup_from_device_def"><a class="viewcode-back" href="../../../alab_management.scripts.html#alab_management.scripts.setup_lab.setup_from_device_def">[docs]</a><span class="k">def</span> <span class="nf">setup_from_device_def</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set up sample positions, devices from user&#39;s device definition, whose path is</span>
+<span class="sd">    specified by `config[&quot;devices&quot;][&quot;device_dir&quot;]`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">device_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;devices&quot;</span><span class="p">][</span><span class="s2">&quot;device_db&quot;</span><span class="p">])</span>
+    <span class="n">sample_position_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;sample_positions&quot;</span><span class="p">][</span><span class="s2">&quot;sample_db&quot;</span><span class="p">])</span>
+
+    <span class="n">device_collection</span><span class="o">.</span><span class="n">create_index</span><span class="p">([(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">HASHED</span><span class="p">)])</span>
+    <span class="n">sample_position_collection</span><span class="o">.</span><span class="n">create_index</span><span class="p">([(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">HASHED</span><span class="p">)])</span>
+
+    <span class="c1"># import all the devices, which will execute `__init__.py` in the device dir</span>
+    <span class="c1"># and call `add_device` function</span>
+    <span class="n">import_module_from_path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;devices&quot;</span><span class="p">][</span><span class="s2">&quot;device_dir&quot;</span><span class="p">])</span>
+
+    <span class="c1"># obtain all the devices</span>
+    <span class="n">devices</span> <span class="o">=</span> <span class="n">get_all_devices</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+
+    <span class="n">add_devices_to_db</span><span class="p">(</span><span class="n">device_collection</span><span class="p">,</span> <span class="n">devices</span><span class="p">)</span>
+    <span class="n">add_sample_positions_to_db</span><span class="p">(</span><span class="n">sample_position_collection</span><span class="p">,</span> <span class="p">[</span><span class="n">sample_pos</span> <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">devices</span>
+                                                            <span class="k">for</span> <span class="n">sample_pos</span> <span class="ow">in</span> <span class="n">device</span><span class="o">.</span><span class="n">sample_positions</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="init_with_fake_parameters"><a class="viewcode-back" href="../../../alab_management.scripts.html#alab_management.scripts.setup_lab.init_with_fake_parameters">[docs]</a><span class="k">def</span> <span class="nf">init_with_fake_parameters</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseOperation</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">BaseOperation</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    For task class, which need to be initialized to get the occupied positions</span>
+<span class="sd">    and operation locations. We will initialized the task with a set of fake parameters</span>
+<span class="sd">    based on their type annotations.</span>
+
+<span class="sd">    Possible parameters type:</span>
+<span class="sd">        - BaseDevice -&gt; FakeDevice with name = {{{name}}}</span>
+<span class="sd">        - SamplePosition -&gt; SamplePosition with name = {{{name}}}</span>
+<span class="sd">        - (nested) built-in types: int, float, str, list, dict, set</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        Things like `List[BaseDevice]` and `Dict[str, SamplePosition]` are not</span>
+<span class="sd">        supported up to now.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cls: the operation class to be initialized</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">type_hints</span> <span class="o">=</span> <span class="n">fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+
+    <span class="n">fake_parameters</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">type_hint</span> <span class="ow">in</span> <span class="n">type_hints</span><span class="p">:</span>
+        <span class="n">type_hint</span><span class="p">:</span> <span class="n">Field</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">type_hint</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">type_</span> <span class="o">=</span> <span class="n">type_hint</span><span class="o">.</span><span class="n">type</span>
+
+        <span class="k">if</span> <span class="n">is_typing</span><span class="p">(</span><span class="n">type_</span><span class="p">):</span>
+            <span class="n">type_</span> <span class="o">=</span> <span class="n">type_</span><span class="o">.</span><span class="n">__origin__</span>
+
+        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">BaseDevice</span><span class="p">):</span>
+            <span class="n">fake_parameters</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">FakeDevice</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;{&quot;</span> <span class="o">+</span> <span class="n">type_</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">SamplePosition</span><span class="p">):</span>
+            <span class="n">fake_parameters</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">SamplePosition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;{&quot;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fake_parameters</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">type_</span><span class="p">()</span>
+    <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">fake_parameters</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="add_tasks_to_db"><a class="viewcode-back" href="../../../alab_management.scripts.html#alab_management.scripts.setup_lab.add_tasks_to_db">[docs]</a><span class="k">def</span> <span class="nf">add_tasks_to_db</span><span class="p">(</span><span class="n">collection</span><span class="p">:</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">Collection</span><span class="p">,</span>
+                    <span class="n">tasks</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">BaseOperation</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Insert task definitions to db, which includes tasks&#39; name, operation location,</span>
+<span class="sd">    (where the sample should be), occupied positions and accepted_args</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        collection: the collection that stores task definition data</span>
+<span class="sd">        tasks: some tasks inherited from :obj:`BaseOperation`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">task</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">})</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Duplicated task name: </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">task_info</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">task</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+            <span class="s2">&quot;operation_location&quot;</span><span class="p">:</span> <span class="n">task</span><span class="o">.</span><span class="n">operation_location</span><span class="p">,</span>
+            <span class="s2">&quot;occupied_positions&quot;</span><span class="p">:</span> <span class="n">task</span><span class="o">.</span><span class="n">occupied_positions</span><span class="p">,</span>
+            <span class="s2">&quot;dist_location&quot;</span><span class="p">:</span> <span class="n">task</span><span class="o">.</span><span class="n">dest_location</span><span class="p">,</span>
+            <span class="s2">&quot;accepted_args&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">get_full_cls_name</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">type</span><span class="p">)}</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+                              <span class="k">if</span> <span class="n">is_typing</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">type</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="p">(</span><span class="n">BaseDevice</span><span class="p">,</span> <span class="n">ObjectId</span><span class="p">))]</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">BaseMovingOperation</span><span class="p">):</span>
+            <span class="n">task_info</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+                <span class="s2">&quot;src_dest_pairs&quot;</span><span class="p">:</span> <span class="p">[{</span>
+                    <span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="n">sample_position_pair</span><span class="o">.</span><span class="n">src</span><span class="p">,</span>
+                    <span class="s2">&quot;dest&quot;</span><span class="p">:</span> <span class="n">sample_position_pair</span><span class="o">.</span><span class="n">dest</span><span class="p">,</span>
+                    <span class="s2">&quot;containers&quot;</span><span class="p">:</span> <span class="n">sample_position_pair</span><span class="o">.</span><span class="n">containers</span><span class="p">,</span>
+                <span class="p">}</span> <span class="k">for</span> <span class="n">sample_position_pair</span> <span class="ow">in</span> <span class="n">task</span><span class="o">.</span><span class="n">get_possible_src_dest_pairs</span><span class="p">()],</span>
+            <span class="p">})</span>
+
+        <span class="n">collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">task_info</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="make_sample_position_graph"><a class="viewcode-back" href="../../../alab_management.scripts.html#alab_management.scripts.setup_lab.make_sample_position_graph">[docs]</a><span class="k">def</span> <span class="nf">make_sample_position_graph</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    From the moving operation&#39;s source and destination pairs,</span>
+<span class="sd">    we can add edges to sample view, which can tell the system</span>
+<span class="sd">    how to move samples between two places</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">task_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;tasks&quot;</span><span class="p">][</span><span class="s2">&quot;task_db&quot;</span><span class="p">])</span>
+    <span class="n">sample_position_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;sample_positions&quot;</span><span class="p">][</span><span class="s2">&quot;sample_db&quot;</span><span class="p">])</span>
+
+    <span class="n">next_positions_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">task_collection</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;src_dest_pairs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$exists&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}}):</span>
+        <span class="k">for</span> <span class="n">src_dest_pair</span> <span class="ow">in</span> <span class="n">task</span><span class="p">[</span><span class="s2">&quot;src_dest_pairs&quot;</span><span class="p">]:</span>
+            <span class="n">next_positions_dict</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">src_dest_pair</span><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">],</span> <span class="p">[])</span>
+            <span class="n">next_positions_dict</span><span class="p">[</span><span class="n">src_dest_pair</span><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">extend</span><span class="p">([{</span>
+                <span class="s2">&quot;dest&quot;</span><span class="p">:</span> <span class="n">src_dest_pair</span><span class="p">[</span><span class="s2">&quot;dest&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;container&quot;</span><span class="p">:</span> <span class="n">container</span><span class="p">,</span>
+                <span class="s2">&quot;task_name&quot;</span><span class="p">:</span> <span class="n">task</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+            <span class="p">}</span> <span class="k">for</span> <span class="n">container</span> <span class="ow">in</span> <span class="n">src_dest_pair</span><span class="p">[</span><span class="s2">&quot;containers&quot;</span><span class="p">]])</span>
+
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">next_positions</span> <span class="ow">in</span> <span class="n">next_positions_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">sample_position_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">})</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sample position does not exist: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">sample_position_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;next_positions&quot;</span><span class="p">:</span> <span class="n">next_positions</span><span class="p">,</span>
+        <span class="p">}})</span></div>
+
+
+<div class="viewcode-block" id="setup_from_task_def"><a class="viewcode-back" href="../../../alab_management.scripts.html#alab_management.scripts.setup_lab.setup_from_task_def">[docs]</a><span class="k">def</span> <span class="nf">setup_from_task_def</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set up sample positions&#39; edges, task definitions from user&#39;s task definition, whose path is</span>
+<span class="sd">    specified by `config[&quot;tasks&quot;][&quot;task_dir&quot;]`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">task_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;tasks&quot;</span><span class="p">][</span><span class="s2">&quot;task_db&quot;</span><span class="p">])</span>
+
+    <span class="n">task_collection</span><span class="o">.</span><span class="n">create_index</span><span class="p">([(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">HASHED</span><span class="p">)])</span>
+    <span class="n">tasks_cls</span> <span class="o">=</span> <span class="p">[</span><span class="n">var</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">import_module_from_path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;tasks&quot;</span><span class="p">][</span><span class="s2">&quot;task_dir&quot;</span><span class="p">])</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                 <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isclass</span><span class="p">(</span><span class="n">var</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">BaseOperation</span><span class="p">)]</span>
+
+    <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">init_with_fake_parameters</span><span class="p">(</span><span class="n">task_cls</span><span class="p">)</span> <span class="k">for</span> <span class="n">task_cls</span> <span class="ow">in</span> <span class="n">tasks_cls</span><span class="p">]</span>
+    <span class="n">add_tasks_to_db</span><span class="p">(</span><span class="n">task_collection</span><span class="p">,</span> <span class="n">tasks</span><span class="p">)</span>
+    <span class="n">make_sample_position_graph</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="setup_lab"><a class="viewcode-back" href="../../../alab_management.scripts.html#alab_management.scripts.setup_lab.setup_lab">[docs]</a><span class="k">def</span> <span class="nf">setup_lab</span><span class="p">():</span>
+    <span class="n">clean_up_db</span><span class="p">()</span>
+    <span class="n">setup_from_device_def</span><span class="p">()</span>
+    <span class="n">setup_from_task_def</span><span class="p">()</span></div>
+</pre></div>
+
+              </div>
+              
+        
+            
+
+
+
+<div class='prev-next-bottom'>
+    
+
+</div>
+        
+        </div>
+    </div>
+    <footer class="footer">
+    <div class="container">
+      <p>
+        
+          By Alab Project Team<br/>
+        
+            &copy; Copyright 2021, Alab Project Team.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="../../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  
+  </body>
+</html>
