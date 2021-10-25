@@ -222,6 +222,12 @@
                 
   <h1>Source code for alab_management.lab_status.sample_view</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
+
+<span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
+
+<span class="kn">from</span> <span class="nn">alab_management.config</span> <span class="kn">import</span> <span class="n">config</span>
+<span class="kn">from</span> <span class="nn">alab_management.db</span> <span class="kn">import</span> <span class="n">get_collection</span>
 
 
 <div class="viewcode-block" id="SamplePositionStatus"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.sample_view.SamplePositionStatus">[docs]</a><span class="k">class</span> <span class="nc">SamplePositionStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
@@ -232,13 +238,19 @@
 
 
 <div class="viewcode-block" id="SampleView"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.sample_view.SampleView">[docs]</a><span class="k">class</span> <span class="nc">SampleView</span><span class="p">:</span>
-<div class="viewcode-block" id="SampleView.update_simple_view"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.sample_view.SampleView.update_simple_view">[docs]</a>    <span class="k">def</span> <span class="nf">update_simple_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">,</span> <span class="n">destination</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;sample_positions&quot;</span><span class="p">][</span><span class="s2">&quot;sample_db&quot;</span><span class="p">])</span>
+
+<div class="viewcode-block" id="SampleView.update_sample_view"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.sample_view.SampleView.update_sample_view">[docs]</a>    <span class="k">def</span> <span class="nf">update_sample_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="o">...</span></div>
 
-<div class="viewcode-block" id="SampleView.query_simple_id"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.sample_view.SampleView.query_simple_id">[docs]</a>    <span class="k">def</span> <span class="nf">query_simple_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SampleView.query_sample_id"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.sample_view.SampleView.query_sample_id">[docs]</a>    <span class="k">def</span> <span class="nf">query_sample_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="o">...</span></div>
 
-<div class="viewcode-block" id="SampleView.find_possible_path"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.sample_view.SampleView.find_possible_path">[docs]</a>    <span class="k">def</span> <span class="nf">find_possible_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_</span><span class="p">,</span> <span class="n">to</span><span class="p">):</span>
+<div class="viewcode-block" id="SampleView.query_sample_position_info"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.sample_view.SampleView.query_sample_position_info">[docs]</a>    <span class="k">def</span> <span class="nf">query_sample_position_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="o">...</span></div>
+
+<div class="viewcode-block" id="SampleView.find_possible_path"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.sample_view.SampleView.find_possible_path">[docs]</a>    <span class="k">def</span> <span class="nf">find_possible_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">to_</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="SampleView.delete_sample"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.sample_view.SampleView.delete_sample">[docs]</a>    <span class="k">def</span> <span class="nf">delete_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">):</span>
