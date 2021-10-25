@@ -6,6 +6,8 @@ from bson import ObjectId
 from alab_management.config import config
 from alab_management.db import get_collection
 
+_EMPTY_ID = lambda: None  # use lambda as a placeholder for missing id
+
 
 @unique
 class DeviceStatus(Enum):
@@ -26,8 +28,6 @@ class DeviceView:
     of a device (as well as other basic information
     stored in database)
     """
-    _EMPTY_ID = lambda: None  # use lambda as a placeholder for missing id
-
     def __init__(self):
         self._collection = get_collection(config["devices"]["device_db"])
 
@@ -67,9 +67,9 @@ class DeviceView:
             "status": status,
         }
 
-        if sample_id is not self._EMPTY_ID:
+        if sample_id is not _EMPTY_ID:
             updated_dict["sample_id"] = sample_id
-        if task_id is not self._EMPTY_ID:
+        if task_id is not _EMPTY_ID:
             updated_dict["task_id"] = task_id
 
         self._collection.update_one({"name": device_name}, {"$set": updated_dict})
