@@ -271,7 +271,7 @@
 <span id="alab-management-op-def-base-operation-module"></span><h2>alab_management.op_def.base_operation module<a class="headerlink" href="#module-alab_management.op_def.base_operation" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="alab_management.op_def.base_operation.BaseMovingOperation">
-<em class="property">class </em><code class="sig-name descname">BaseMovingOperation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span><span class="p">:</span> <span class="n">bson.objectid.ObjectId</span></em>, <em class="sig-param"><span class="n">sample_id</span><span class="p">:</span> <span class="n">bson.objectid.ObjectId</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/op_def/base_operation.html#BaseMovingOperation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.op_def.base_operation.BaseMovingOperation" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">BaseMovingOperation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em>, <em class="sig-param"><span class="n">sample_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/op_def/base_operation.html#BaseMovingOperation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.op_def.base_operation.BaseMovingOperation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#alab_management.op_def.base_operation.BaseOperation" title="alab_management.op_def.base_operation.BaseOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">alab_management.op_def.base_operation.BaseOperation</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <dl class="py method">
 <dt id="alab_management.op_def.base_operation.BaseMovingOperation.dest_location">
@@ -280,8 +280,13 @@
 
 <dl class="py method">
 <dt id="alab_management.op_def.base_operation.BaseMovingOperation.get_possible_src_dest_pairs">
-<em class="property">abstract static </em><code class="sig-name descname">get_possible_src_dest_pairs</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span><a class="reference internal" href="alab_management.html#alab_management.sample_position.SamplePositionPair" title="alab_management.sample_position.SamplePositionPair">alab_management.sample_position.SamplePositionPair</a><span class="p">]</span><a class="reference internal" href="_modules/alab_management/op_def/base_operation.html#BaseMovingOperation.get_possible_src_dest_pairs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.op_def.base_operation.BaseMovingOperation.get_possible_src_dest_pairs" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property">abstract static </em><code class="sig-name descname">get_possible_src_dest_pairs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/op_def/base_operation.html#BaseMovingOperation.get_possible_src_dest_pairs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.op_def.base_operation.BaseMovingOperation.get_possible_src_dest_pairs" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<a class="reference internal" href="alab_management.html#alab_management.sample_position.SamplePositionPair" title="alab_management.sample_position.SamplePositionPair"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplePositionPair</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt id="alab_management.op_def.base_operation.BaseMovingOperation.sample_id">
@@ -297,27 +302,47 @@
 
 <dl class="py class">
 <dt id="alab_management.op_def.base_operation.BaseOperation">
-<em class="property">class </em><code class="sig-name descname">BaseOperation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span><span class="p">:</span> <span class="n">bson.objectid.ObjectId</span></em>, <em class="sig-param"><span class="n">sample_id</span><span class="p">:</span> <span class="n">bson.objectid.ObjectId</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/op_def/base_operation.html#BaseOperation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.op_def.base_operation.BaseOperation" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">BaseOperation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em>, <em class="sig-param"><span class="n">sample_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/op_def/base_operation.html#BaseOperation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.op_def.base_operation.BaseOperation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <dl class="py method">
 <dt id="alab_management.op_def.base_operation.BaseOperation.dest_location">
 <em class="property">property </em><code class="sig-name descname">dest_location</code><a class="headerlink" href="#alab_management.op_def.base_operation.BaseOperation.dest_location" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="alab_management.op_def.base_operation.BaseOperation.is_running">
-<em class="property">abstract </em><code class="sig-name descname">is_running</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/alab_management/op_def/base_operation.html#BaseOperation.is_running"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.op_def.base_operation.BaseOperation.is_running" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property">abstract </em><code class="sig-name descname">is_running</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/op_def/base_operation.html#BaseOperation.is_running"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.op_def.base_operation.BaseOperation.is_running" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="alab_management.op_def.base_operation.BaseOperation.occupied_positions">
 <em class="property">property </em><code class="sig-name descname">occupied_positions</code><a class="headerlink" href="#alab_management.op_def.base_operation.BaseOperation.occupied_positions" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="alab_management.op_def.base_operation.BaseOperation.operation_location">
 <em class="property">abstract property </em><code class="sig-name descname">operation_location</code><a class="headerlink" href="#alab_management.op_def.base_operation.BaseOperation.operation_location" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="alab_management.op_def.base_operation.BaseOperation.run">
