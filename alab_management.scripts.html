@@ -282,47 +282,46 @@
 <p>To remove all the device, task, sample position definition from database</p>
 <dl class="py function">
 <dt id="alab_management.scripts.cleanup_lab.clean_up_db">
-<code class="sig-prename descclassname">alab_management.scripts.cleanup_lab.</code><code class="sig-name descname">clean_up_db</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/cleanup_lab.html#clean_up_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.cleanup_lab.clean_up_db" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">clean_up_db</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/cleanup_lab.html#clean_up_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.cleanup_lab.clean_up_db" title="Permalink to this definition">¶</a></dt>
 <dd><p>Drop device, task, sample_position collection from MongoDB</p>
 </dd></dl>
 
 </div>
 <div class="section" id="module-alab_management.scripts.launch">
 <span id="alab-management-scripts-launch-module"></span><h2>alab_management.scripts.launch module<a class="headerlink" href="#module-alab_management.scripts.launch" title="Permalink to this headline">¶</a></h2>
+<p>The script to launch task_manager and executor, which are the core of the system.</p>
 <dl class="py function">
 <dt id="alab_management.scripts.launch.launch_executor">
-<code class="sig-prename descclassname">alab_management.scripts.launch.</code><code class="sig-name descname">launch_executor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/launch.html#launch_executor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.launch.launch_executor" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">launch_executor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/launch.html#launch_executor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.launch.launch_executor" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt id="alab_management.scripts.launch.launch_lab">
-<code class="sig-prename descclassname">alab_management.scripts.launch.</code><code class="sig-name descname">launch_lab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/launch.html#launch_lab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.launch.launch_lab" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">launch_lab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/launch.html#launch_lab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.launch.launch_lab" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt id="alab_management.scripts.launch.launch_task_manager">
-<code class="sig-prename descclassname">alab_management.scripts.launch.</code><code class="sig-name descname">launch_task_manager</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/launch.html#launch_task_manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.launch.launch_task_manager" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">launch_task_manager</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/launch.html#launch_task_manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.launch.launch_task_manager" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
 <div class="section" id="module-alab_management.scripts.setup_lab">
 <span id="alab-management-scripts-setup-lab-module"></span><h2>alab_management.scripts.setup_lab module<a class="headerlink" href="#module-alab_management.scripts.setup_lab" title="Permalink to this headline">¶</a></h2>
-<p>Set up the lab,</p>
 <p>Generate device, sample position, task definitions from user defined files (task &amp; device)
-and write them to MongoDB</p>
-<p>which will make it easier to query</p>
+and write them to MongoDB, which will make it easier to query</p>
 <dl class="py function">
 <dt id="alab_management.scripts.setup_lab.add_devices_to_db">
-<code class="sig-prename descclassname">alab_management.scripts.setup_lab.</code><code class="sig-name descname">add_devices_to_db</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">collection</span><span class="p">:</span> <span class="n">pymongo.collection.Collection</span></em>, <em class="sig-param"><span class="n">devices</span><span class="p">:</span> <span class="n">Iterable<span class="p">[</span><a class="reference internal" href="alab_management.device_def.html#alab_management.device_def.base_device.BaseDevice" title="alab_management.device_def.base_device.BaseDevice">alab_management.device_def.base_device.BaseDevice</a><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/setup_lab.html#add_devices_to_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.setup_lab.add_devices_to_db" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_devices_to_db</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">collection</span><span class="p">:</span> <span class="n">pymongo.collection.Collection</span></em>, <em class="sig-param"><span class="n">devices</span><span class="p">:</span> <span class="n">Iterable<span class="p">[</span><a class="reference internal" href="alab_management.device_def.html#alab_management.device_def.base_device.BaseDevice" title="alab_management.device_def.base_device.BaseDevice">alab_management.device_def.base_device.BaseDevice</a><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/setup_lab.html#add_devices_to_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.setup_lab.add_devices_to_db" title="Permalink to this definition">¶</a></dt>
 <dd><p>Insert device definitions to db, which includes devices’ name, descriptions, parameters,
 type (class name).</p>
-<p>When one device’s name has already appeared in the database, a <cite>NameError</cite> will be raised.
+<p>When one device’s name has already appeared in the database, a <code class="docutils literal notranslate"><span class="pre">NameError</span></code> will be raised.
 Device name is a unique identifier for a device</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>collection</strong> – the db collection to store device data</p></li>
-<li><p><strong>devices</strong> – some devices inherited from <code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseDevice</span></code></p></li>
+<li><p><strong>devices</strong> – some devices inherited from <a class="reference internal" href="alab_management.device_def.html#alab_management.device_def.base_device.BaseDevice" title="alab_management.device_def.base_device.BaseDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDevice</span></code></a></p></li>
 </ul>
 </dd>
 </dl>
@@ -330,9 +329,9 @@ Device name is a unique identifier for a device</p>
 
 <dl class="py function">
 <dt id="alab_management.scripts.setup_lab.add_sample_positions_to_db">
-<code class="sig-prename descclassname">alab_management.scripts.setup_lab.</code><code class="sig-name descname">add_sample_positions_to_db</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">collection</span><span class="p">:</span> <span class="n">pymongo.collection.Collection</span></em>, <em class="sig-param"><span class="n">sample_positions</span><span class="p">:</span> <span class="n">Iterable<span class="p">[</span><a class="reference internal" href="alab_management.html#alab_management.sample_position.SamplePosition" title="alab_management.sample_position.SamplePosition">alab_management.sample_position.SamplePosition</a><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/setup_lab.html#add_sample_positions_to_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.setup_lab.add_sample_positions_to_db" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_sample_positions_to_db</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">collection</span><span class="p">:</span> <span class="n">pymongo.collection.Collection</span></em>, <em class="sig-param"><span class="n">sample_positions</span><span class="p">:</span> <span class="n">Iterable<span class="p">[</span><a class="reference internal" href="alab_management.html#alab_management.sample_position.SamplePosition" title="alab_management.sample_position.SamplePosition">alab_management.sample_position.SamplePosition</a><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/setup_lab.html#add_sample_positions_to_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.setup_lab.add_sample_positions_to_db" title="Permalink to this definition">¶</a></dt>
 <dd><p>Insert sample positions info to db, which includes position name,
-number, description and status (default to UNKNOWN)</p>
+number, description and status (default to <code class="docutils literal notranslate"><span class="pre">UNKNOWN</span></code>)</p>
 <p>If one sample position’s name has already appeared in the database,
 we will just skip it.</p>
 <dl class="field-list simple">
@@ -347,14 +346,14 @@ we will just skip it.</p>
 
 <dl class="py function">
 <dt id="alab_management.scripts.setup_lab.add_tasks_to_db">
-<code class="sig-prename descclassname">alab_management.scripts.setup_lab.</code><code class="sig-name descname">add_tasks_to_db</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">collection</span><span class="p">:</span> <span class="n">pymongo.collection.Collection</span></em>, <em class="sig-param"><span class="n">tasks</span><span class="p">:</span> <span class="n">Iterable<span class="p">[</span><a class="reference internal" href="alab_management.op_def.html#alab_management.op_def.base_operation.BaseOperation" title="alab_management.op_def.base_operation.BaseOperation">alab_management.op_def.base_operation.BaseOperation</a><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/setup_lab.html#add_tasks_to_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.setup_lab.add_tasks_to_db" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_tasks_to_db</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">collection</span><span class="p">:</span> <span class="n">pymongo.collection.Collection</span></em>, <em class="sig-param"><span class="n">tasks</span><span class="p">:</span> <span class="n">Iterable<span class="p">[</span><a class="reference internal" href="alab_management.op_def.html#alab_management.op_def.base_operation.BaseOperation" title="alab_management.op_def.base_operation.BaseOperation">alab_management.op_def.base_operation.BaseOperation</a><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/setup_lab.html#add_tasks_to_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.setup_lab.add_tasks_to_db" title="Permalink to this definition">¶</a></dt>
 <dd><p>Insert task definitions to db, which includes tasks’ name, operation location,
 (where the sample should be), occupied positions and accepted_args</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>collection</strong> – the collection that stores task definition data</p></li>
-<li><p><strong>tasks</strong> – some tasks inherited from <code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseOperation</span></code></p></li>
+<li><p><strong>tasks</strong> – some tasks inherited from <a class="reference internal" href="alab_management.device_def.html#alab_management.device_def.base_device.BaseDevice" title="alab_management.device_def.base_device.BaseDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDevice</span></code></a></p></li>
 </ul>
 </dd>
 </dl>
@@ -362,21 +361,23 @@ we will just skip it.</p>
 
 <dl class="py function">
 <dt id="alab_management.scripts.setup_lab.init_with_fake_parameters">
-<code class="sig-prename descclassname">alab_management.scripts.setup_lab.</code><code class="sig-name descname">init_with_fake_parameters</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cls</span><span class="p">:</span> <span class="n">Type<span class="p">[</span><a class="reference internal" href="alab_management.op_def.html#alab_management.op_def.base_operation.BaseOperation" title="alab_management.op_def.base_operation.BaseOperation">alab_management.op_def.base_operation.BaseOperation</a><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="alab_management.op_def.html#alab_management.op_def.base_operation.BaseOperation" title="alab_management.op_def.base_operation.BaseOperation">alab_management.op_def.base_operation.BaseOperation</a><a class="reference internal" href="_modules/alab_management/scripts/setup_lab.html#init_with_fake_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.setup_lab.init_with_fake_parameters" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">init_with_fake_parameters</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cls</span><span class="p">:</span> <span class="n">Type<span class="p">[</span><a class="reference internal" href="alab_management.op_def.html#alab_management.op_def.base_operation.BaseOperation" title="alab_management.op_def.base_operation.BaseOperation">alab_management.op_def.base_operation.BaseOperation</a><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="alab_management.op_def.html#alab_management.op_def.base_operation.BaseOperation" title="alab_management.op_def.base_operation.BaseOperation">alab_management.op_def.base_operation.BaseOperation</a><a class="reference internal" href="_modules/alab_management/scripts/setup_lab.html#init_with_fake_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.setup_lab.init_with_fake_parameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>For task class, which need to be initialized to get the occupied positions
 and operation locations. We will initialized the task with a set of fake parameters
 based on their type annotations.</p>
 <dl class="simple">
-<dt>Possible parameters type:</dt><dd><ul class="simple">
-<li><p>BaseDevice -&gt; FakeDevice with name = {{{name}}}</p></li>
-<li><p>SamplePosition -&gt; SamplePosition with name = {{{name}}}</p></li>
-<li><p>(nested) built-in types: int, float, str, list, dict, set</p></li>
+<dt>We implemented these faking types:</dt><dd><ul class="simple">
+<li><p><a class="reference internal" href="alab_management.device_def.html#alab_management.device_def.base_device.BaseDevice" title="alab_management.device_def.base_device.BaseDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDevice</span></code></a> -&gt; FakeDevice with name = {{name}}</p></li>
+<li><p><a class="reference internal" href="alab_management.html#alab_management.sample_position.SamplePosition" title="alab_management.sample_position.SamplePosition"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplePosition</span></code></a> -&gt; SamplePosition with name = {{name}}</p></li>
+<li><p>built-in types (can be nested) : <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">list</span></code>, <code class="docutils literal notranslate"><span class="pre">dict</span></code>, <code class="docutils literal notranslate"><span class="pre">set</span></code></p></li>
 </ul>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>Things like <cite>List[BaseDevice]</cite> and <cite>Dict[str, SamplePosition]</cite> are not
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Things like <code class="docutils literal notranslate"><span class="pre">List[BaseDevice]</span></code> and <code class="docutils literal notranslate"><span class="pre">Dict[str,</span> <span class="pre">SamplePosition]</span></code> are not
 supported up to now.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>cls</strong> – the operation class to be initialized</p>
@@ -386,7 +387,7 @@ supported up to now.</p>
 
 <dl class="py function">
 <dt id="alab_management.scripts.setup_lab.make_sample_position_graph">
-<code class="sig-prename descclassname">alab_management.scripts.setup_lab.</code><code class="sig-name descname">make_sample_position_graph</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/setup_lab.html#make_sample_position_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.setup_lab.make_sample_position_graph" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">make_sample_position_graph</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/setup_lab.html#make_sample_position_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.setup_lab.make_sample_position_graph" title="Permalink to this definition">¶</a></dt>
 <dd><p>From the moving operation’s source and destination pairs,
 we can add edges to sample view, which can tell the system
 how to move samples between two places</p>
@@ -394,21 +395,21 @@ how to move samples between two places</p>
 
 <dl class="py function">
 <dt id="alab_management.scripts.setup_lab.setup_from_device_def">
-<code class="sig-prename descclassname">alab_management.scripts.setup_lab.</code><code class="sig-name descname">setup_from_device_def</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/setup_lab.html#setup_from_device_def"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.setup_lab.setup_from_device_def" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">setup_from_device_def</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/setup_lab.html#setup_from_device_def"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.setup_lab.setup_from_device_def" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set up sample positions, devices from user’s device definition, whose path is
-specified by <cite>config[“devices”][“device_dir”]</cite></p>
+specified by <code class="docutils literal notranslate"><span class="pre">config[&quot;devices&quot;][&quot;device_dir&quot;]</span></code></p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="alab_management.scripts.setup_lab.setup_from_task_def">
-<code class="sig-prename descclassname">alab_management.scripts.setup_lab.</code><code class="sig-name descname">setup_from_task_def</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/setup_lab.html#setup_from_task_def"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.setup_lab.setup_from_task_def" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">setup_from_task_def</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/setup_lab.html#setup_from_task_def"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.setup_lab.setup_from_task_def" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set up sample positions’ edges, task definitions from user’s task definition, whose path is
-specified by <cite>config[“tasks”][“task_dir”]</cite></p>
+specified by <code class="docutils literal notranslate"><span class="pre">config[&quot;tasks&quot;][&quot;task_dir&quot;]</span></code></p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="alab_management.scripts.setup_lab.setup_lab">
-<code class="sig-prename descclassname">alab_management.scripts.setup_lab.</code><code class="sig-name descname">setup_lab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/setup_lab.html#setup_lab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.setup_lab.setup_lab" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">setup_lab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/setup_lab.html#setup_lab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.setup_lab.setup_lab" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>

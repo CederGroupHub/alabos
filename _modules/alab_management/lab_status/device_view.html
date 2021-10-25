@@ -232,6 +232,9 @@
 
 <div class="viewcode-block" id="DeviceStatus"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.device_view.DeviceStatus">[docs]</a><span class="nd">@unique</span>
 <span class="k">class</span> <span class="nc">DeviceStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The status of devices</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">UNKNOWN</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">IDLE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">RUNNING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
@@ -241,37 +244,81 @@
 
 
 <div class="viewcode-block" id="DeviceView"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.device_view.DeviceView">[docs]</a><span class="k">class</span> <span class="nc">DeviceView</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Device view provide API to get/set the status</span>
+<span class="sd">    of a device (as well as other basic information</span>
+<span class="sd">    stored in database)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_EMPTY_ID</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span>  <span class="c1"># use lambda as a placeholder for missing id</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;devices&quot;</span><span class="p">][</span><span class="s2">&quot;device_db&quot;</span><span class="p">])</span>
 
 <div class="viewcode-block" id="DeviceView.get_status"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.device_view.DeviceView.get_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DeviceStatus</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the status of device providing ``device_name``</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device_name: the name of device, which can be queried by {device.name},</span>
+<span class="sd">                device should be inherited from</span>
+<span class="sd">                :py:class:`BaseDevice &lt;alab_management.device_def.base_device.BaseDevice&gt;`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The enum class :py:class:`DeviceStatus &lt;DeviceStatus&gt;`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">DeviceStatus</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_device_info</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">)[</span><span class="s2">&quot;status&quot;</span><span class="p">]]</span></div>
 
 <div class="viewcode-block" id="DeviceView.set_status"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.device_view.DeviceView.set_status">[docs]</a>    <span class="k">def</span> <span class="nf">set_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                    <span class="n">status</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DeviceStatus</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
                    <span class="o">*</span><span class="p">,</span>
-                   <span class="n">sample_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
-                   <span class="n">task_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">):</span>
+                   <span class="n">sample_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]</span> <span class="o">=</span> <span class="n">_EMPTY_ID</span><span class="p">,</span>
+                   <span class="n">task_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]</span> <span class="o">=</span> <span class="n">_EMPTY_ID</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set ``status`` as well as ``task_id`` and ``sample_id`` given a ``device_name``</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device_name: the name of device</span>
+<span class="sd">            status: the status we want to set, which can be :py:class:`DeviceStatus &lt;DeviceStatus&gt;` or ``str``</span>
+<span class="sd">            sample_id: (optional) current sample&#39;s id in the machine. If set to ``None``, the</span>
+<span class="sd">                last sample_id will be cleared</span>
+<span class="sd">            task_id: (optional) current task&#39;s id running in the machine. If set to ``None``,</span>
+<span class="sd">                last task_id will be cleared.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">DeviceStatus</span><span class="p">):</span>
             <span class="n">status</span> <span class="o">=</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span>
         <span class="n">updated_dict</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="p">,</span>
         <span class="p">}</span>
 
-        <span class="k">if</span> <span class="n">sample_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="o">...</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">sample_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_EMPTY_ID</span><span class="p">:</span>
             <span class="n">updated_dict</span><span class="p">[</span><span class="s2">&quot;sample_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample_id</span>
-        <span class="k">if</span> <span class="n">task_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="o">...</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">task_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_EMPTY_ID</span><span class="p">:</span>
             <span class="n">updated_dict</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">task_id</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">device_name</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="n">updated_dict</span><span class="p">})</span></div>
 
 <div class="viewcode-block" id="DeviceView.set_running"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.device_view.DeviceView.set_running">[docs]</a>    <span class="k">def</span> <span class="nf">set_running</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set a device&#39;s status to ``RUNNING``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">DeviceStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">,</span> <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">sample_id</span><span class="o">=</span><span class="n">sample_id</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DeviceView.set_idle"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.device_view.DeviceView.set_idle">[docs]</a>    <span class="k">def</span> <span class="nf">set_idle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">DeviceStatus</span><span class="o">.</span><span class="n">IDLE</span><span class="p">,</span> <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">sample_id</span><span class="o">=</span><span class="n">sample_id</span><span class="p">)</span></div>
+<div class="viewcode-block" id="DeviceView.set_idle"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.device_view.DeviceView.set_idle">[docs]</a>    <span class="k">def</span> <span class="nf">set_idle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set a device&#39;s status to ``IDLE`` and clear the sample_id and task_id in the device</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">DeviceStatus</span><span class="o">.</span><span class="n">IDLE</span><span class="p">,</span> <span class="n">task_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sample_id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DeviceView.get_device_info"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.device_view.DeviceView.get_device_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_device_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all the information of a device stored in the database, which is generated at setting up stage.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device_name: the name of device</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A dict with all the device&#39;s information</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">device_name</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No device with name: </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>

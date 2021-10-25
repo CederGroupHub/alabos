@@ -281,9 +281,9 @@
 <span id="alab-management-lab-status-device-view-module"></span><h2>alab_management.lab_status.device_view module<a class="headerlink" href="#module-alab_management.lab_status.device_view" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="alab_management.lab_status.device_view.DeviceStatus">
-<em class="property">class </em><code class="sig-prename descclassname">alab_management.lab_status.device_view.</code><code class="sig-name descname">DeviceStatus</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_status/device_view.html#DeviceStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.device_view.DeviceStatus" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">DeviceStatus</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_status/device_view.html#DeviceStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.device_view.DeviceStatus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
-<p>An enumeration.</p>
+<p>The status of devices</p>
 <dl class="py attribute">
 <dt id="alab_management.lab_status.device_view.DeviceStatus.ERROR">
 <code class="sig-name descname">ERROR</code><em class="property"> = 4</em><a class="headerlink" href="#alab_management.lab_status.device_view.DeviceStatus.ERROR" title="Permalink to this definition">¶</a></dt>
@@ -318,32 +318,70 @@
 
 <dl class="py class">
 <dt id="alab_management.lab_status.device_view.DeviceView">
-<em class="property">class </em><code class="sig-prename descclassname">alab_management.lab_status.device_view.</code><code class="sig-name descname">DeviceView</code><a class="reference internal" href="_modules/alab_management/lab_status/device_view.html#DeviceView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.device_view.DeviceView" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">DeviceView</code><a class="reference internal" href="_modules/alab_management/lab_status/device_view.html#DeviceView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.device_view.DeviceView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Device view provide API to get/set the status
+of a device (as well as other basic information
+stored in database)</p>
 <dl class="py method">
 <dt id="alab_management.lab_status.device_view.DeviceView.get_device_info">
 <code class="sig-name descname">get_device_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device_name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>Any<span class="p">]</span><a class="reference internal" href="_modules/alab_management/lab_status/device_view.html#DeviceView.get_device_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.device_view.DeviceView.get_device_info" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get all the information of a device stored in the database, which is generated at setting up stage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>device_name</strong> – the name of device</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dict with all the device’s information</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="alab_management.lab_status.device_view.DeviceView.get_status">
 <code class="sig-name descname">get_status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device_name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#alab_management.lab_status.device_view.DeviceStatus" title="alab_management.lab_status.device_view.DeviceStatus">alab_management.lab_status.device_view.DeviceStatus</a><a class="reference internal" href="_modules/alab_management/lab_status/device_view.html#DeviceView.get_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.device_view.DeviceView.get_status" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the status of device providing <code class="docutils literal notranslate"><span class="pre">device_name</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>device_name</strong> – the name of device, which can be queried by {device.name},
+device should be inherited from
+<a class="reference internal" href="alab_management.device_def.html#alab_management.device_def.base_device.BaseDevice" title="alab_management.device_def.base_device.BaseDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDevice</span></code></a>.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The enum class <a class="reference internal" href="#alab_management.lab_status.device_view.DeviceStatus" title="alab_management.lab_status.device_view.DeviceStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceStatus</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="alab_management.lab_status.device_view.DeviceView.set_idle">
-<code class="sig-name descname">set_idle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device_name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">task_id</span><span class="p">:</span> <span class="n">bson.objectid.ObjectId</span></em>, <em class="sig-param"><span class="n">sample_id</span><span class="p">:</span> <span class="n">bson.objectid.ObjectId</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_status/device_view.html#DeviceView.set_idle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.device_view.DeviceView.set_idle" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">set_idle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device_name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_status/device_view.html#DeviceView.set_idle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.device_view.DeviceView.set_idle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a device’s status to <code class="docutils literal notranslate"><span class="pre">IDLE</span></code> and clear the sample_id and task_id in the device</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="alab_management.lab_status.device_view.DeviceView.set_running">
 <code class="sig-name descname">set_running</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device_name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">task_id</span><span class="p">:</span> <span class="n">bson.objectid.ObjectId</span></em>, <em class="sig-param"><span class="n">sample_id</span><span class="p">:</span> <span class="n">bson.objectid.ObjectId</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_status/device_view.html#DeviceView.set_running"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.device_view.DeviceView.set_running" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set a device’s status to <code class="docutils literal notranslate"><span class="pre">RUNNING</span></code></p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="alab_management.lab_status.device_view.DeviceView.set_status">
-<code class="sig-name descname">set_status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device_name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">status</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference internal" href="#alab_management.lab_status.device_view.DeviceStatus" title="alab_management.lab_status.device_view.DeviceStatus">alab_management.lab_status.device_view.DeviceStatus</a><span class="p">, </span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">sample_id</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bson.objectid.ObjectId<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">Ellipsis</span></em>, <em class="sig-param"><span class="n">task_id</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bson.objectid.ObjectId<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">Ellipsis</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_status/device_view.html#DeviceView.set_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.device_view.DeviceView.set_status" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">set_status</code><span class="sig-paren">(</span><em class="sig-param">device_name: str, status: Union[alab_management.lab_status.device_view.DeviceStatus, str], *, sample_id: Optional[bson.objectid.ObjectId] = &lt;function DeviceView.&lt;lambda&gt;&gt;, task_id: Optional[bson.objectid.ObjectId] = &lt;function DeviceView.&lt;lambda&gt;&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_status/device_view.html#DeviceView.set_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.device_view.DeviceView.set_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set <code class="docutils literal notranslate"><span class="pre">status</span></code> as well as <code class="docutils literal notranslate"><span class="pre">task_id</span></code> and <code class="docutils literal notranslate"><span class="pre">sample_id</span></code> given a <code class="docutils literal notranslate"><span class="pre">device_name</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device_name</strong> – the name of device</p></li>
+<li><p><strong>status</strong> – the status we want to set, which can be <a class="reference internal" href="#alab_management.lab_status.device_view.DeviceStatus" title="alab_management.lab_status.device_view.DeviceStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceStatus</span></code></a> or <code class="docutils literal notranslate"><span class="pre">str</span></code></p></li>
+<li><p><strong>sample_id</strong> – (optional) current sample’s id in the machine. If set to <code class="docutils literal notranslate"><span class="pre">None</span></code>, the
+last sample_id will be cleared</p></li>
+<li><p><strong>task_id</strong> – (optional) current task’s id running in the machine. If set to <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+last task_id will be cleared.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -352,7 +390,7 @@
 <span id="alab-management-lab-status-sample-view-module"></span><h2>alab_management.lab_status.sample_view module<a class="headerlink" href="#module-alab_management.lab_status.sample_view" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="alab_management.lab_status.sample_view.SamplePositionStatus">
-<em class="property">class </em><code class="sig-prename descclassname">alab_management.lab_status.sample_view.</code><code class="sig-name descname">SamplePositionStatus</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_status/sample_view.html#SamplePositionStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.sample_view.SamplePositionStatus" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">SamplePositionStatus</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_status/sample_view.html#SamplePositionStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.sample_view.SamplePositionStatus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
 <p>An enumeration.</p>
 <dl class="py attribute">
@@ -379,7 +417,7 @@
 
 <dl class="py class">
 <dt id="alab_management.lab_status.sample_view.SampleView">
-<em class="property">class </em><code class="sig-prename descclassname">alab_management.lab_status.sample_view.</code><code class="sig-name descname">SampleView</code><a class="reference internal" href="_modules/alab_management/lab_status/sample_view.html#SampleView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.sample_view.SampleView" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">SampleView</code><a class="reference internal" href="_modules/alab_management/lab_status/sample_view.html#SampleView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.sample_view.SampleView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
 <dt id="alab_management.lab_status.sample_view.SampleView.delete_sample">
@@ -408,7 +446,7 @@
 <span id="alab-management-lab-status-task-view-module"></span><h2>alab_management.lab_status.task_view module<a class="headerlink" href="#module-alab_management.lab_status.task_view" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="alab_management.lab_status.task_view.TaskView">
-<em class="property">class </em><code class="sig-prename descclassname">alab_management.lab_status.task_view.</code><code class="sig-name descname">TaskView</code><a class="reference internal" href="_modules/alab_management/lab_status/task_view.html#TaskView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.task_view.TaskView" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">TaskView</code><a class="reference internal" href="_modules/alab_management/lab_status/task_view.html#TaskView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.task_view.TaskView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Task view support operations related to current task queue.</p>
 <dl class="py method">

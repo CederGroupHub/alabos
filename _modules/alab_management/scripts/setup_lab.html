@@ -222,12 +222,8 @@
                 
   <h1>Source code for alab_management.scripts.setup_lab</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Set up the lab,</span>
-
 <span class="sd">Generate device, sample position, task definitions from user defined files (task &amp; device)</span>
-<span class="sd">and write them to MongoDB</span>
-
-<span class="sd">which will make it easier to query</span>
+<span class="sd">and write them to MongoDB, which will make it easier to query</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">inspect</span>
@@ -254,7 +250,7 @@
                                <span class="n">sample_positions</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">SamplePosition</span><span class="p">]):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Insert sample positions info to db, which includes position name,</span>
-<span class="sd">    number, description and status (default to UNKNOWN)</span>
+<span class="sd">    number, description and status (default to ``UNKNOWN``)</span>
 
 <span class="sd">    If one sample position&#39;s name has already appeared in the database,</span>
 <span class="sd">    we will just skip it.</span>
@@ -280,12 +276,12 @@
 <span class="sd">    Insert device definitions to db, which includes devices&#39; name, descriptions, parameters,</span>
 <span class="sd">    type (class name).</span>
 
-<span class="sd">    When one device&#39;s name has already appeared in the database, a `NameError` will be raised.</span>
+<span class="sd">    When one device&#39;s name has already appeared in the database, a ``NameError`` will be raised.</span>
 <span class="sd">    Device name is a unique identifier for a device</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        collection: the db collection to store device data</span>
-<span class="sd">        devices: some devices inherited from :obj:`BaseDevice`</span>
+<span class="sd">        devices: some devices inherited from :py:class:`BaseDevice &lt;alab_management.device_def.base_device.BaseDevice&gt;`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">devices</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">})</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -304,7 +300,7 @@
 <div class="viewcode-block" id="setup_from_device_def"><a class="viewcode-back" href="../../../alab_management.scripts.html#alab_management.scripts.setup_lab.setup_from_device_def">[docs]</a><span class="k">def</span> <span class="nf">setup_from_device_def</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set up sample positions, devices from user&#39;s device definition, whose path is</span>
-<span class="sd">    specified by `config[&quot;devices&quot;][&quot;device_dir&quot;]`</span>
+<span class="sd">    specified by ``config[&quot;devices&quot;][&quot;device_dir&quot;]``</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">device_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;devices&quot;</span><span class="p">][</span><span class="s2">&quot;device_db&quot;</span><span class="p">])</span>
     <span class="n">sample_position_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;sample_positions&quot;</span><span class="p">][</span><span class="s2">&quot;sample_db&quot;</span><span class="p">])</span>
@@ -330,13 +326,13 @@
 <span class="sd">    and operation locations. We will initialized the task with a set of fake parameters</span>
 <span class="sd">    based on their type annotations.</span>
 
-<span class="sd">    Possible parameters type:</span>
-<span class="sd">        - BaseDevice -&gt; FakeDevice with name = {{{name}}}</span>
-<span class="sd">        - SamplePosition -&gt; SamplePosition with name = {{{name}}}</span>
-<span class="sd">        - (nested) built-in types: int, float, str, list, dict, set</span>
+<span class="sd">    We implemented these faking types:</span>
+<span class="sd">        - :py:class:`BaseDevice &lt;alab_management.device_def.base_device.BaseDevice&gt;` -&gt; FakeDevice with name = {{name}}</span>
+<span class="sd">        - :py:class:`SamplePosition &lt;alab_management.sample_position.SamplePosition&gt;` -&gt; SamplePosition with name = {{name}}</span>
+<span class="sd">        - built-in types (can be nested) : ``int``, ``float``, ``str``, ``list``, ``dict``, ``set``</span>
 
-<span class="sd">    Notes:</span>
-<span class="sd">        Things like `List[BaseDevice]` and `Dict[str, SamplePosition]` are not</span>
+<span class="sd">    .. note::</span>
+<span class="sd">        Things like ``List[BaseDevice]`` and ``Dict[str, SamplePosition]`` are not</span>
 <span class="sd">        supported up to now.</span>
 
 <span class="sd">    Args:</span>
@@ -370,7 +366,7 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        collection: the collection that stores task definition data</span>
-<span class="sd">        tasks: some tasks inherited from :obj:`BaseOperation`</span>
+<span class="sd">        tasks: some tasks inherited from :py:class:`BaseDevice &lt;alab_management.device_def.base_device.BaseDevice&gt;`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">task</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">})</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -425,7 +421,7 @@
 <div class="viewcode-block" id="setup_from_task_def"><a class="viewcode-back" href="../../../alab_management.scripts.html#alab_management.scripts.setup_lab.setup_from_task_def">[docs]</a><span class="k">def</span> <span class="nf">setup_from_task_def</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set up sample positions&#39; edges, task definitions from user&#39;s task definition, whose path is</span>
-<span class="sd">    specified by `config[&quot;tasks&quot;][&quot;task_dir&quot;]`</span>
+<span class="sd">    specified by ``config[&quot;tasks&quot;][&quot;task_dir&quot;]``</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">task_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;tasks&quot;</span><span class="p">][</span><span class="s2">&quot;task_db&quot;</span><span class="p">])</span>
 

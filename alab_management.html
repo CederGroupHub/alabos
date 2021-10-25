@@ -347,14 +347,14 @@
 <span id="alab-management-config-module"></span><h2>alab_management.config module<a class="headerlink" href="#module-alab_management.config" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="alab_management.config.AlabConfig">
-<em class="property">class </em><code class="sig-prename descclassname">alab_management.config.</code><code class="sig-name descname">AlabConfig</code><a class="reference internal" href="_modules/alab_management/config.html#AlabConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.config.AlabConfig" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">AlabConfig</code><a class="reference internal" href="_modules/alab_management/config.html#AlabConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.config.AlabConfig" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class used for storing all the config data</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="alab_management.config.froze_config">
-<code class="sig-prename descclassname">alab_management.config.</code><code class="sig-name descname">froze_config</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>Any<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; mappingproxy<a class="reference internal" href="_modules/alab_management/config.html#froze_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.config.froze_config" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">froze_config</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>Any<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; mappingproxy<a class="reference internal" href="_modules/alab_management/config.html#froze_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.config.froze_config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert the config dict to frozen config</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -373,7 +373,7 @@
 in case we need to add authentication procedure</p>
 <dl class="py function">
 <dt id="alab_management.db.get_collection">
-<code class="sig-prename descclassname">alab_management.db.</code><code class="sig-name descname">get_collection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; pymongo.collection.Collection<a class="reference internal" href="_modules/alab_management/db.html#get_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.db.get_collection" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_collection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; pymongo.collection.Collection<a class="reference internal" href="_modules/alab_management/db.html#get_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.db.get_collection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get collection by name</p>
 </dd></dl>
 
@@ -382,7 +382,7 @@ in case we need to add authentication procedure</p>
 <span id="alab-management-sample-position-module"></span><h2>alab_management.sample_position module<a class="headerlink" href="#module-alab_management.sample_position" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="alab_management.sample_position.SamplePosition">
-<em class="property">class </em><code class="sig-prename descclassname">alab_management.sample_position.</code><code class="sig-name descname">SamplePosition</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">description</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_position.html#SamplePosition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_position.SamplePosition" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">SamplePosition</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">description</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_position.html#SamplePosition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_position.SamplePosition" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py attribute">
 <dt id="alab_management.sample_position.SamplePosition.description">
@@ -398,7 +398,7 @@ in case we need to add authentication procedure</p>
 
 <dl class="py class">
 <dt id="alab_management.sample_position.SamplePositionPair">
-<em class="property">class </em><code class="sig-prename descclassname">alab_management.sample_position.</code><code class="sig-name descname">SamplePositionPair</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">src</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">dest</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">containers</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_position.html#SamplePositionPair"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_position.SamplePositionPair" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">SamplePositionPair</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">src</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">dest</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">containers</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_position.html#SamplePositionPair"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_position.SamplePositionPair" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py attribute">
 <dt id="alab_management.sample_position.SamplePositionPair.containers">
