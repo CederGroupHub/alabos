@@ -20,9 +20,14 @@ jobs:
           python-version: '3.8'
       - name: Set up dependencies
         run: pip install -r ./requirements.txt -r ./requirements-dev.txt
+      - name: Clear old rst files
+        working-directory: ./docs/source
+        run: rm alab_management* modules.rst
       - name: Compile sphinx
         working-directory: ./docs
-        run: make html
+        run: |
+          sphinx-apidoc -o ./source ../alab_management
+          make html
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.ref == 'refs/heads/master' }}
