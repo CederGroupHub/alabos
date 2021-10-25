@@ -1,3 +1,7 @@
+"""
+The script to launch task_manager and executor, which are the core of the system.
+"""
+
 from multiprocessing import Process
 
 from .. import TaskManager, Executor

@@ -1,10 +1,6 @@
 """
-Set up the lab,
-
 Generate device, sample position, task definitions from user defined files (task & device)
-and write them to MongoDB
-
-which will make it easier to query
+and write them to MongoDB, which will make it easier to query
 """
 
 import inspect
@@ -31,7 +27,7 @@ def add_sample_positions_to_db(collection: pymongo.collection.Collection,
                                sample_positions: Iterable[SamplePosition]):
     """
     Insert sample positions info to db, which includes position name,
-    number, description and status (default to UNKNOWN)
+    number, description and status (default to ``UNKNOWN``)
 
     If one sample position's name has already appeared in the database,
     we will just skip it.
@@ -57,12 +53,12 @@ def add_devices_to_db(collection: pymongo.collection.Collection,
     Insert device definitions to db, which includes devices' name, descriptions, parameters,
     type (class name).
 
-    When one device's name has already appeared in the database, a `NameError` will be raised.
+    When one device's name has already appeared in the database, a ``NameError`` will be raised.
     Device name is a unique identifier for a device
 
     Args:
         collection: the db collection to store device data
-        devices: some devices inherited from :obj:`BaseDevice`
+        devices: some devices inherited from :py:class:`BaseDevice <alab_management.device_def.base_device.BaseDevice>`
     """
     for device in devices:
         if collection.find_one({"name": device.name}) is not None:
@@ -81,7 +77,7 @@ def add_devices_to_db(collection: pymongo.collection.Collection,
 def setup_from_device_def():
     """
     Set up sample positions, devices from user's device definition, whose path is
-    specified by `config["devices"]["device_dir"]`
+    specified by ``config["devices"]["device_dir"]``
     """
     device_collection = get_collection(config["devices"]["device_db"])
     sample_position_collection = get_collection(config["sample_positions"]["sample_db"])
@@ -107,13 +103,13 @@ def init_with_fake_parameters(cls: Type[BaseOperation]) -> BaseOperation:
     and operation locations. We will initialized the task with a set of fake parameters
     based on their type annotations.
 
-    Possible parameters type:
-        - BaseDevice -> FakeDevice with name = {{{name}}}
-        - SamplePosition -> SamplePosition with name = {{{name}}}
-        - (nested) built-in types: int, float, str, list, dict, set
+    We implemented these faking types:
+        - :py:class:`BaseDevice <alab_management.device_def.base_device.BaseDevice>` -> FakeDevice with name = {{name}}
+        - :py:class:`SamplePosition <alab_management.sample_position.SamplePosition>` -> SamplePosition with name = {{name}}
+        - built-in types (can be nested) : ``int``, ``float``, ``str``, ``list``, ``dict``, ``set``
 
-    Notes:
-        Things like `List[BaseDevice]` and `Dict[str, SamplePosition]` are not
+    .. note::
+        Things like ``List[BaseDevice]`` and ``Dict[str, SamplePosition]`` are not
         supported up to now.
 
     Args:
@@ -147,7 +143,7 @@ def add_tasks_to_db(collection: pymongo.collection.Collection,
 
     Args:
         collection: the collection that stores task definition data
-        tasks: some tasks inherited from :obj:`BaseOperation`
+        tasks: some tasks inherited from :py:class:`BaseDevice <alab_management.device_def.base_device.BaseDevice>`
     """
     for task in tasks:
         if collection.find_one({"name": task.__class__.__name__}) is not None:
@@ -202,7 +198,7 @@ def make_sample_position_graph():
 def setup_from_task_def():
     """
     Set up sample positions' edges, task definitions from user's task definition, whose path is
-    specified by `config["tasks"]["task_dir"]`
+    specified by ``config["tasks"]["task_dir"]``
     """
     task_collection = get_collection(config["tasks"]["task_db"])
 
