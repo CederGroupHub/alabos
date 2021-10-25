@@ -9,6 +9,5 @@ It is temporarily hosted on my personal domain: [`https://alab.yuxingfei.top`](h
 
 Username and password are required to access the document.
 
-username: `alab`
-
-password: `.p/Ct6qySN.7{StT`
+- Username: `alab`
+- Password: `.p/Ct6qySN.7{StT`
