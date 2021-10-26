@@ -22,11 +22,12 @@ jobs:
         run: pip install -r ./requirements.txt -r ./requirements-dev.txt
       - name: Clear old rst files
         working-directory: ./docs/source
-        run: rm alab_management* modules.rst
+        run: rm alab_management* modules.rst || true
       - name: Compile sphinx
         working-directory: ./docs
         run: |
           sphinx-apidoc -o ./source ../alab_management
+          make clean
           make html
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
