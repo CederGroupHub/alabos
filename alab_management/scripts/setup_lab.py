@@ -104,8 +104,10 @@ def init_with_fake_parameters(cls: Type[BaseOperation]) -> BaseOperation:
     based on their type annotations.
 
     We implemented these faking types:
-        - :py:class:`BaseDevice <alab_management.device_def.base_device.BaseDevice>` -> FakeDevice with name = {{name}}
-        - :py:class:`SamplePosition <alab_management.sample_position.SamplePosition>` -> SamplePosition with name = {{name}}
+        - :py:class:`BaseDevice <alab_management.device_def.base_device.BaseDevice>`
+          -> FakeDevice with name = {{name}}
+        - :py:class:`SamplePosition <alab_management.sample_position.SamplePosition>`
+          -> SamplePosition with name = {{name}}
         - built-in types (can be nested) : ``int``, ``float``, ``str``, ``list``, ``dict``, ``set``
 
     .. note::

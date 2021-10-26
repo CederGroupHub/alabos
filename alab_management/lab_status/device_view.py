@@ -28,6 +28,7 @@ class DeviceView:
     of a device (as well as other basic information
     stored in database)
     """
+
     def __init__(self):
         self._collection = get_collection(config["devices"]["device_db"])
 

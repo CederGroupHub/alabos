@@ -12,7 +12,10 @@
 #
 import os
 import sys
+from datetime import date
 from pathlib import Path
+
+from sphinx.builders.html import StandaloneHTMLBuilder
 
 sys.path.insert(0, os.path.abspath('../../'))
 
@@ -22,12 +25,11 @@ os.environ["ALAB_CONFIG"] = (Path(__file__).parent / ".." / ".." /
 # -- Project information -----------------------------------------------------
 
 project = 'Alab Management System'
-copyright = '2021, Alab Project Team'
+copyright = f'{date.today().year}, Alab Project Team'
 author = 'Alab Project Team'
 
 # The full version, including alpha/beta/rc tags
 release = '0.0.1'
-
 
 # -- General configuration ---------------------------------------------------
 
@@ -60,7 +62,6 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
-
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -75,11 +76,18 @@ html_theme_options = {
     "show_navbar_depth": 1,
 }
 
-html_logo = (Path(__file__).parent / ".." / "logo.png").as_posix()
+html_logo = (Path(__file__).parent / "_static" / "logo.png").as_posix()
 html_title = "Alab Management"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
-# html_css_files = ["custom.css"]
+html_css_files = ["custom.css"]
+
+StandaloneHTMLBuilder.supported_image_types = [
+    'image/svg+xml',
+    'image/gif',
+    'image/png',
+    'image/jpeg'
+]
