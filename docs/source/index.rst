@@ -5,11 +5,11 @@
 .. note::
   *Currently, this package is still under construction.*
 
-This Alab Workflow Management is aimed to provide a configurable and sharable platform for autonomous synthesis, just like
+This Alab Workflow Management is aimed at providing a configurable and sharable platform for autonomous synthesis, just like
 what `ROS <https://www.ros.org/>`_ has done for robotics.
 
 With Alab management system, users can implement the *devices* and *tasks* in ``Python`` code format, which provides great flexibility and extensibility.
-Since each alab project is just two python package of *devices* and *tasks*, users may easily share their alab
+Since each Alab project is two python package of *devices* and *tasks*, users may easily share their alab
 configuration throughout Git repository hosting website (e.g. `Github <https://github.com>`_)
 
 Overview
