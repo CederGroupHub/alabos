@@ -71,6 +71,7 @@ via `pymongo <https://pymongo.readthedocs.io/en/stable/>`_ package.
    :hidden:
 
    Installation<installation>
+   Quickstart<quickstart>
    API Docs<modules>
 
 
