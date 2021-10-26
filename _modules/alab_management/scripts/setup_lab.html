@@ -24,6 +24,7 @@
     
     <link rel="stylesheet" href="../../../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
     
   <link rel="preload" as="script" href="../../../_static/js/index.1c5a1a01449ed65a7b51.js">
 
@@ -68,24 +69,12 @@
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item active">
-        <p class="caption">
- <span class="caption-text">
-  Quickstart
- </span>
-</p>
-<ul class="nav bd-sidenav">
+        <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../../../installation.html">
    Installation
   </a>
  </li>
-</ul>
-<p class="caption">
- <span class="caption-text">
-  Docs
- </span>
-</p>
-<ul class="nav bd-sidenav">
  <li class="toctree-l1 has-children">
   <a class="reference internal" href="../../../modules.html">
    API Docs
@@ -327,8 +316,10 @@
 <span class="sd">    based on their type annotations.</span>
 
 <span class="sd">    We implemented these faking types:</span>
-<span class="sd">        - :py:class:`BaseDevice &lt;alab_management.device_def.base_device.BaseDevice&gt;` -&gt; FakeDevice with name = {{name}}</span>
-<span class="sd">        - :py:class:`SamplePosition &lt;alab_management.sample_position.SamplePosition&gt;` -&gt; SamplePosition with name = {{name}}</span>
+<span class="sd">        - :py:class:`BaseDevice &lt;alab_management.device_def.base_device.BaseDevice&gt;`</span>
+<span class="sd">          -&gt; FakeDevice with name = {{name}}</span>
+<span class="sd">        - :py:class:`SamplePosition &lt;alab_management.sample_position.SamplePosition&gt;`</span>
+<span class="sd">          -&gt; SamplePosition with name = {{name}}</span>
 <span class="sd">        - built-in types (can be nested) : ``int``, ``float``, ``str``, ``list``, ``dict``, ``set``</span>
 
 <span class="sd">    .. note::</span>

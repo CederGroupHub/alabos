@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welcome to Alab Management System. &#8212; Alab Management</title>
+    <title>Overview &#8212; Alab Management</title>
     
   <link href="_static/css/theme.css" rel="stylesheet" />
   <link href="_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -24,6 +24,7 @@
     
     <link rel="stylesheet" href="_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
     
   <link rel="preload" as="script" href="_static/js/index.1c5a1a01449ed65a7b51.js">
 
@@ -69,24 +70,12 @@
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item active">
-        <p class="caption">
- <span class="caption-text">
-  Quickstart
- </span>
-</p>
-<ul class="nav bd-sidenav">
+        <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="installation.html">
    Installation
   </a>
  </li>
-</ul>
-<p class="caption">
- <span class="caption-text">
-  Docs
- </span>
-</p>
-<ul class="nav bd-sidenav">
  <li class="toctree-l1 has-children">
   <a class="reference internal" href="modules.html">
    API Docs
@@ -235,7 +224,46 @@
             </div>
             <nav id="bd-toc-nav" aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   Overview
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#modules-scripts">
+     Modules &amp; Scripts
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#definition-reader">
+       Definition reader
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#lab-status">
+       Lab status
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#task-manager-task-compiler">
+       Task manager (+ task compiler)
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#executor-scheduler">
+       Executor (+ scheduler)
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#data-storage">
+       Data Storage
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#indices-and-tables">
    Indices and tables
   </a>
@@ -251,34 +279,71 @@
         
               <div>
                 
-  <div class="section" id="welcome-to-alab-management-system">
-<h1>Welcome to Alab Management System.<a class="headerlink" href="#welcome-to-alab-management-system" title="Permalink to this headline">¶</a></h1>
+  <img alt="_images/logo_with_name.png" class="no-scaled-link" src="_images/logo_with_name.png" style="height: 120px;" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p><em>Currently, this package is still under construction.</em></p>
+</div>
 <p>This Alab Workflow Management is aimed to provide a configurable and sharable platform for autonomous synthesis, just like
 what <a class="reference external" href="https://www.ros.org/">ROS</a> has done for robotics.</p>
-<div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Quickstart</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<p>With Alab management system, users can implement the <em>devices</em> and <em>tasks</em> in <code class="docutils literal notranslate"><span class="pre">Python</span></code> code format, which provides great flexibility and extensibility.
+Since each alab project is just two python package of <em>devices</em> and <em>tasks</em>, users may easily share their alab
+configuration throughout Git repository hosting website (e.g. <a class="reference external" href="https://github.com">Github</a>)</p>
+<div class="section" id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<div class="figure align-default" id="id1">
+<img alt="_images/arch_demo.gif" src="_images/arch_demo.gif" />
+<p class="caption"><span class="caption-text">Architecture of the Alab management package</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="modules-scripts">
+<h2>Modules &amp; Scripts<a class="headerlink" href="#modules-scripts" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="definition-reader">
+<h3>Definition reader<a class="headerlink" href="#definition-reader" title="Permalink to this headline">¶</a></h3>
+<p>This script reads from user definitions to initialize the lab status
+(i.e. task view, sample view and device view)</p>
+</div>
+<div class="section" id="lab-status">
+<h3>Lab status<a class="headerlink" href="#lab-status" title="Permalink to this headline">¶</a></h3>
+<p>Lab status manages all the information required to describe alab. It have three important data view class:</p>
+<ul class="simple">
+<li><p><strong>Task view</strong>: task view holds task data, which is represented by a DAG (directed acyclic graph). Each vertex is an
+operation, which has a status of <code class="docutils literal notranslate"><span class="pre">WAITING</span></code>, <code class="docutils literal notranslate"><span class="pre">READY</span></code>, <code class="docutils literal notranslate"><span class="pre">RUNNING</span></code> and <code class="docutils literal notranslate"><span class="pre">COMPLETED</span></code>.</p></li>
+<li><p><strong>Device view</strong>: device view records the status of devices, which has the value of
+<code class="docutils literal notranslate"><span class="pre">IDLE</span></code>, <code class="docutils literal notranslate"><span class="pre">RUNNING</span></code>, <code class="docutils literal notranslate"><span class="pre">STOPPED</span></code> and <code class="docutils literal notranslate"><span class="pre">HOLD</span></code>.</p></li>
+<li><p><strong>Sample view</strong>: sample view tracks the position of each sample in the lab. User will need to define the
+<code class="docutils literal notranslate"><span class="pre">sample</span> <span class="pre">position</span></code> around the lab, which basically is a position that can place samples.</p></li>
 </ul>
 </div>
+<div class="section" id="task-manager-task-compiler">
+<h3>Task manager (+ task compiler)<a class="headerlink" href="#task-manager-task-compiler" title="Permalink to this headline">¶</a></h3>
+<p>Task manager reads synthesis recipes from database and add some
+extra necessary operations to the recipes (e.g. <code class="docutils literal notranslate"><span class="pre">Moving</span></code> operation). We call compiled synthesis
+recipe - <code class="docutils literal notranslate"><span class="pre">task</span></code>, which is basically a sequence of <code class="docutils literal notranslate"><span class="pre">operations</span></code>.</p>
+<p>It will also manage the task view (update task status, pop completed tasks)</p>
+</div>
+<div class="section" id="executor-scheduler">
+<h3>Executor (+ scheduler)<a class="headerlink" href="#executor-scheduler" title="Permalink to this headline">¶</a></h3>
+<p>The executor is where commands are actually sent to the devices. The scheduler will check if an operation can
+be submitted and executor will send the operation command to corresponding devices and collect returned data when
+a task is finished.</p>
+<p>The executor will also manage the lab status and update the status when a task is launched / stopped / completed.</p>
+</div>
+<div class="section" id="data-storage">
+<h3>Data Storage<a class="headerlink" href="#data-storage" title="Permalink to this headline">¶</a></h3>
+<p>We will use <a class="reference external" href="https://www.mongodb.com/">MongoDB</a> as our database. We communicate with database
+via <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/">pymongo</a> package.</p>
 <div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Docs</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">API Docs</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.html">alab_management package</a></li>
-</ul>
-</li>
-</ul>
+</div>
+</div>
+</div>
 </div>
 <div class="section" id="indices-and-tables">
-<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
-</div>
 </div>
 
 
