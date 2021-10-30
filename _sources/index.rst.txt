@@ -1,5 +1,5 @@
 .. image:: /_static/logo_with_name.png
-  :height: 120
+  :width: 430
   :class: no-scaled-link
 
 .. note::

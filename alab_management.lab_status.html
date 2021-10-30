@@ -389,36 +389,19 @@ last task_id will be cleared.</p></li>
 <div class="section" id="module-alab_management.lab_status.sample_view">
 <span id="alab-management-lab-status-sample-view-module"></span><h2>alab_management.lab_status.sample_view module<a class="headerlink" href="#module-alab_management.lab_status.sample_view" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="alab_management.lab_status.sample_view.SamplePositionStatus">
-<em class="property">class </em><code class="sig-name descname">SamplePositionStatus</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_status/sample_view.html#SamplePositionStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.sample_view.SamplePositionStatus" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
-<p>An enumeration.</p>
-<dl class="py attribute">
-<dt id="alab_management.lab_status.sample_view.SamplePositionStatus.EMPTY">
-<code class="sig-name descname">EMPTY</code><em class="property"> = 2</em><a class="headerlink" href="#alab_management.lab_status.sample_view.SamplePositionStatus.EMPTY" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="alab_management.lab_status.sample_view.SamplePositionStatus.LOCKED">
-<code class="sig-name descname">LOCKED</code><em class="property"> = 4</em><a class="headerlink" href="#alab_management.lab_status.sample_view.SamplePositionStatus.LOCKED" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="alab_management.lab_status.sample_view.SamplePositionStatus.OCCUPIED">
-<code class="sig-name descname">OCCUPIED</code><em class="property"> = 3</em><a class="headerlink" href="#alab_management.lab_status.sample_view.SamplePositionStatus.OCCUPIED" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="alab_management.lab_status.sample_view.SamplePositionStatus.UNKNOWN">
-<code class="sig-name descname">UNKNOWN</code><em class="property"> = 1</em><a class="headerlink" href="#alab_management.lab_status.sample_view.SamplePositionStatus.UNKNOWN" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
 <dt id="alab_management.lab_status.sample_view.SampleView">
 <em class="property">class </em><code class="sig-name descname">SampleView</code><a class="reference internal" href="_modules/alab_management/lab_status/sample_view.html#SampleView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.sample_view.SampleView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="alab_management.lab_status.sample_view.SampleView.create_sample">
+<code class="sig-name descname">create_sample</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_status/sample_view.html#SampleView.create_sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.sample_view.SampleView.create_sample" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt id="alab_management.lab_status.sample_view.SampleView.delete_sample">
 <code class="sig-name descname">delete_sample</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sample_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_status/sample_view.html#SampleView.delete_sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.sample_view.SampleView.delete_sample" title="Permalink to this definition">¶</a></dt>
@@ -426,32 +409,22 @@ last task_id will be cleared.</p></li>
 
 <dl class="py method">
 <dt id="alab_management.lab_status.sample_view.SampleView.find_possible_path">
-<code class="sig-name descname">find_possible_path</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">from_</span></em>, <em class="sig-param"><span class="n">to_</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_status/sample_view.html#SampleView.find_possible_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.sample_view.SampleView.find_possible_path" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">find_possible_path</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">src</span></em>, <em class="sig-param"><span class="n">dest</span></em>, <em class="sig-param"><span class="n">container</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_status/sample_view.html#SampleView.find_possible_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.sample_view.SampleView.find_possible_path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="alab_management.lab_status.sample_view.SampleView.query_sample_id">
-<code class="sig-name descname">query_sample_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sample_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_status/sample_view.html#SampleView.query_sample_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.sample_view.SampleView.query_sample_id" title="Permalink to this definition">¶</a></dt>
+<dt id="alab_management.lab_status.sample_view.SampleView.query_sample">
+<code class="sig-name descname">query_sample</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sample_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_status/sample_view.html#SampleView.query_sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.sample_view.SampleView.query_sample" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="alab_management.lab_status.sample_view.SampleView.query_sample_position_info">
-<code class="sig-name descname">query_sample_position_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sample_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_status/sample_view.html#SampleView.query_sample_position_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.sample_view.SampleView.query_sample_position_info" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="alab_management.lab_status.sample_view.SampleView.update_sample_view">
-<code class="sig-name descname">update_sample_view</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sample_id</span></em>, <em class="sig-param"><span class="n">position</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_status/sample_view.html#SampleView.update_sample_view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.sample_view.SampleView.update_sample_view" title="Permalink to this definition">¶</a></dt>
+<dt id="alab_management.lab_status.sample_view.SampleView.update_sample_position">
+<code class="sig-name descname">update_sample_position</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sample_id</span></em>, <em class="sig-param"><span class="n">new_position</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_status/sample_view.html#SampleView.update_sample_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_status.sample_view.SampleView.update_sample_position" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

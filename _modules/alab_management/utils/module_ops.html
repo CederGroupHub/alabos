@@ -216,24 +216,47 @@
                 
   <h1>Source code for alab_management.utils.module_ops</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Type</span>
 
 <span class="kn">from</span> <span class="nn">.typing_ops</span> <span class="kn">import</span> <span class="n">is_typing</span>
+<span class="kn">from</span> <span class="nn">..config</span> <span class="kn">import</span> <span class="n">config</span>
 
 
-<div class="viewcode-block" id="import_module_from_path"><a class="viewcode-back" href="../../../alab_management.utils.html#alab_management.utils.module_ops.import_module_from_path">[docs]</a><span class="k">def</span> <span class="nf">import_module_from_path</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<div class="viewcode-block" id="import_module_from_path"><a class="viewcode-back" href="../../../alab_management.utils.html#alab_management.utils.module_ops.import_module_from_path">[docs]</a><span class="k">def</span> <span class="nf">import_module_from_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Import a module by its path</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">e</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; Maybe there is some bugs in your definition, please check that.&quot;</span><span class="p">)</span>
         <span class="k">raise</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">module</span></div>
 
 
-<div class="viewcode-block" id="get_full_cls_name"><a class="viewcode-back" href="../../../alab_management.utils.html#alab_management.utils.module_ops.get_full_cls_name">[docs]</a><span class="k">def</span> <span class="nf">get_full_cls_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<div class="viewcode-block" id="load_definition"><a class="viewcode-back" href="../../../alab_management.utils.html#alab_management.utils.module_ops.load_definition">[docs]</a><span class="k">def</span> <span class="nf">load_definition</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load device and task definitions from file (specified in config file)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">import_module_from_path</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;general&quot;</span><span class="p">][</span><span class="s2">&quot;definition_dir&quot;</span><span class="p">]</span>
+                            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;general&quot;</span><span class="p">][</span><span class="s2">&quot;definition_dir&quot;</span><span class="p">])</span>
+                            <span class="k">else</span> <span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;general&quot;</span><span class="p">][</span><span class="s2">&quot;definition_dir&quot;</span><span class="p">]))</span></div>
+
+
+<div class="viewcode-block" id="get_full_cls_name"><a class="viewcode-back" href="../../../alab_management.utils.html#alab_management.utils.module_ops.get_full_cls_name">[docs]</a><span class="k">def</span> <span class="nf">get_full_cls_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the cls&#39;s name as well as the path, e.g. ``a.b.C`` for class ``C``</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        the name of cls</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">module</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__module__</span>
     <span class="k">if</span> <span class="n">module</span> <span class="o">==</span> <span class="s1">&#39;builtins&#39;</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__qualname__</span>  <span class="c1"># avoid outputs like &#39;builtins.str&#39;</span>

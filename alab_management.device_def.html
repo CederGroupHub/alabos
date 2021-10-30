@@ -267,25 +267,51 @@
 <dt id="alab_management.device_def.base_device.BaseDevice">
 <em class="property">class </em><code class="sig-name descname">BaseDevice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_def/base_device.html#BaseDevice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_def.base_device.BaseDevice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>The abstract class of device</p>
+<p>All the defined classes should be inherited from this class</p>
+<dl class="py attribute">
+<dt id="alab_management.device_def.base_device.BaseDevice.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#alab_management.device_def.base_device.BaseDevice.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>the name of device, which is the unique identifier of this device</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt id="alab_management.device_def.base_device.BaseDevice.description">
-<code class="sig-name descname">description</code><em class="property">: ClassVar<span class="p">[</span>str<span class="p">]</span></em><em class="property"> = ''</em><a class="headerlink" href="#alab_management.device_def.base_device.BaseDevice.description" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">description</code><a class="headerlink" href="#alab_management.device_def.base_device.BaseDevice.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>description of this kind of device, which can include the device type, how to set up and so on.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="id0">
+<code class="sig-name descname">description</code><em class="property">: ClassVar<span class="p">[</span>str<span class="p">]</span></em><em class="property"> = ''</em><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="alab_management.device_def.base_device.BaseDevice.init">
 <em class="property">abstract </em><code class="sig-name descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_def/base_device.html#BaseDevice.init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_def.base_device.BaseDevice.init" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><code class="docutils literal notranslate"><span class="pre">init</span></code> method can be used to initialized the device with provided parameters.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You should never try to set up connection with device in <code class="docutils literal notranslate"><span class="pre">__init__</span></code> or <code class="docutils literal notranslate"><span class="pre">__post_init__</span></code>, or the
+program may not be able to initialize successfully!</p>
+</div>
+</dd></dl>
 
 <dl class="py attribute">
-<dt id="alab_management.device_def.base_device.BaseDevice.name">
-<code class="sig-name descname">name</code><em class="property">: str</em><a class="headerlink" href="#alab_management.device_def.base_device.BaseDevice.name" title="Permalink to this definition">¶</a></dt>
+<dt id="id1">
+<code class="sig-name descname">name</code><em class="property">: str</em><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="alab_management.device_def.base_device.BaseDevice.sample_positions">
 <em class="property">abstract property </em><code class="sig-name descname">sample_positions</code><a class="headerlink" href="#alab_management.device_def.base_device.BaseDevice.sample_positions" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>The sample positions describe the position that can hold a sample.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It doesn’t matter in which device class a sample position is defined.
+We use <code class="docutils literal notranslate"><span class="pre">name</span></code> attribute to identify them.</p>
+</div>
+<dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="alab_management.html#alab_management.sample_position.SamplePosition" title="alab_management.sample_position.SamplePosition"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplePosition</span></code></a>]</p>
 </dd>
@@ -297,12 +323,14 @@
 <dl class="py function">
 <dt id="alab_management.device_def.base_device.add_device">
 <code class="sig-name descname">add_device</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_def/base_device.html#add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_def.base_device.add_device" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Register a device instance</p>
+</dd></dl>
 
 <dl class="py function">
 <dt id="alab_management.device_def.base_device.get_all_devices">
 <code class="sig-name descname">get_all_devices</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_def/base_device.html#get_all_devices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_def.base_device.get_all_devices" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Get all the device names in the device registry</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <a class="reference internal" href="#alab_management.device_def.base_device.BaseDevice" title="alab_management.device_def.base_device.BaseDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDevice</span></code></a>]</p>
 </dd>
@@ -312,7 +340,8 @@
 <dl class="py function">
 <dt id="alab_management.device_def.base_device.get_device">
 <code class="sig-name descname">get_device</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_def/base_device.html#get_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_def.base_device.get_device" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get device by name</p>
+</dd></dl>
 
 </div>
 <div class="section" id="module-alab_management.device_def">

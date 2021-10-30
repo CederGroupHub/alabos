@@ -276,10 +276,17 @@
 <dt id="alab_management.utils.fake_device.FakeDevice">
 <em class="property">class </em><code class="sig-name descname">FakeDevice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/utils/fake_device.html#FakeDevice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.utils.fake_device.FakeDevice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="alab_management.device_def.html#alab_management.device_def.base_device.BaseDevice" title="alab_management.device_def.base_device.BaseDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">alab_management.device_def.base_device.BaseDevice</span></code></a></p>
+<p>Fake device for setting up the lab’s db</p>
 <dl class="py method">
 <dt id="alab_management.utils.fake_device.FakeDevice.init">
 <code class="sig-name descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/utils/fake_device.html#FakeDevice.init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.utils.fake_device.FakeDevice.init" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><code class="docutils literal notranslate"><span class="pre">init</span></code> method can be used to initialized the device with provided parameters.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You should never try to set up connection with device in <code class="docutils literal notranslate"><span class="pre">__init__</span></code> or <code class="docutils literal notranslate"><span class="pre">__post_init__</span></code>, or the
+program may not be able to initialize successfully!</p>
+</div>
+</dd></dl>
 
 <dl class="py attribute">
 <dt id="alab_management.utils.fake_device.FakeDevice.name">
@@ -289,7 +296,13 @@
 <dl class="py method">
 <dt id="alab_management.utils.fake_device.FakeDevice.sample_positions">
 <em class="property">property </em><code class="sig-name descname">sample_positions</code><a class="headerlink" href="#alab_management.utils.fake_device.FakeDevice.sample_positions" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>The sample positions describe the position that can hold a sample.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It doesn’t matter in which device class a sample position is defined.
+We use <code class="docutils literal notranslate"><span class="pre">name</span></code> attribute to identify them.</p>
+</div>
+</dd></dl>
 
 </dd></dl>
 
@@ -299,12 +312,28 @@
 <dl class="py function">
 <dt id="alab_management.utils.module_ops.get_full_cls_name">
 <code class="sig-name descname">get_full_cls_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cls</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/utils/module_ops.html#get_full_cls_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.utils.module_ops.get_full_cls_name" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the cls’s name as well as the path, e.g. <code class="docutils literal notranslate"><span class="pre">a.b.C</span></code> for class <code class="docutils literal notranslate"><span class="pre">C</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the name of cls</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="alab_management.utils.module_ops.import_module_from_path">
 <code class="sig-name descname">import_module_from_path</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/utils/module_ops.html#import_module_from_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.utils.module_ops.import_module_from_path" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Import a module by its path</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="alab_management.utils.module_ops.load_definition">
+<code class="sig-name descname">load_definition</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/utils/module_ops.html#load_definition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.utils.module_ops.load_definition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load device and task definitions from file (specified in config file)</p>
+</dd></dl>
 
 </div>
 <div class="section" id="module-alab_management.utils.typing_ops">

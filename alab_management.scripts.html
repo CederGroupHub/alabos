@@ -275,8 +275,8 @@
 <span id="alab-management-scripts-cleanup-lab-module"></span><h2>alab_management.scripts.cleanup_lab module<a class="headerlink" href="#module-alab_management.scripts.cleanup_lab" title="Permalink to this headline">¶</a></h2>
 <p>To remove all the device, task, sample position definition from database</p>
 <dl class="py function">
-<dt id="alab_management.scripts.cleanup_lab.clean_up_db">
-<code class="sig-name descname">clean_up_db</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/cleanup_lab.html#clean_up_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.cleanup_lab.clean_up_db" title="Permalink to this definition">¶</a></dt>
+<dt id="alab_management.scripts.cleanup_lab.cleanup_lab">
+<code class="sig-name descname">cleanup_lab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/cleanup_lab.html#cleanup_lab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.cleanup_lab.cleanup_lab" title="Permalink to this definition">¶</a></dt>
 <dd><p>Drop device, task, sample_position collection from MongoDB</p>
 </dd></dl>
 
@@ -365,7 +365,7 @@ based on their type annotations.</p>
 -&gt; FakeDevice with name = {{name}}</p></li>
 <li><p><a class="reference internal" href="alab_management.html#alab_management.sample_position.SamplePosition" title="alab_management.sample_position.SamplePosition"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplePosition</span></code></a>
 -&gt; SamplePosition with name = {{name}}</p></li>
-<li><p>built-in types (can be nested) : <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">list</span></code>, <code class="docutils literal notranslate"><span class="pre">dict</span></code>, <code class="docutils literal notranslate"><span class="pre">set</span></code></p></li>
+<li><p>built-in types (cannot be nested) : <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">list</span></code>, <code class="docutils literal notranslate"><span class="pre">dict</span></code>, <code class="docutils literal notranslate"><span class="pre">set</span></code></p></li>
 </ul>
 </dd>
 </dl>
@@ -409,7 +409,8 @@ specified by <code class="docutils literal notranslate"><span class="pre">config
 <dl class="py function">
 <dt id="alab_management.scripts.setup_lab.setup_lab">
 <code class="sig-name descname">setup_lab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/setup_lab.html#setup_lab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.setup_lab.setup_lab" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Cleanup the db and then import all the definitions and set up the db</p>
+</dd></dl>
 
 </div>
 <div class="section" id="module-alab_management.scripts">
