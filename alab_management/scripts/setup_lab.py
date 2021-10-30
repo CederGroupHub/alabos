@@ -3,23 +3,21 @@ Generate device, sample position, task definitions from user defined files (task
 and write them to MongoDB, which will make it easier to query
 """
 
-import inspect
 from dataclasses import asdict, fields, Field
 from typing import Iterable, Type, Any, Dict, List
 
 import pymongo
 from bson import ObjectId
 
-from .cleanup_lab import clean_up_db
+from .cleanup_lab import cleanup_lab
 from ..config import config
 from ..db import get_collection
 from ..device_def.base_device import get_all_devices, BaseDevice
 from ..lab_status.device_view import DeviceStatus
-from ..lab_status.sample_view import SamplePositionStatus
-from ..op_def.base_operation import BaseOperation, BaseMovingOperation
+from ..op_def.base_operation import BaseOperation, BaseMovingOperation, get_all_operations
 from ..sample_position import SamplePosition
 from ..utils.fake_device import FakeDevice
-from ..utils.module_ops import import_module_from_path, get_full_cls_name
+from ..utils.module_ops import get_full_cls_name, load_definition
 from ..utils.typing_ops import is_typing
 
 
@@ -39,12 +37,7 @@ def add_sample_positions_to_db(collection: pymongo.collection.Collection,
     for sample_pos in sample_positions:
         sample_pos_ = collection.find_one({"name": sample_pos.name})
         if sample_pos_ is None:
-            collection.insert_one({
-                **asdict(sample_pos),
-                "status": SamplePositionStatus.UNKNOWN.name,
-                "task_id": None,
-                "sample_id": None,
-            })
+            collection.insert_one(asdict(sample_pos))
 
 
 def add_devices_to_db(collection: pymongo.collection.Collection,
@@ -80,14 +73,10 @@ def setup_from_device_def():
     specified by ``config["devices"]["device_dir"]``
     """
     device_collection = get_collection(config["devices"]["device_db"])
-    sample_position_collection = get_collection(config["sample_positions"]["sample_db"])
+    sample_position_collection = get_collection(config["sample_positions"]["sample_position_db"])
 
     device_collection.create_index([("name", pymongo.HASHED)])
     sample_position_collection.create_index([("name", pymongo.HASHED)])
-
-    # import all the devices, which will execute `__init__.py` in the device dir
-    # and call `add_device` function
-    import_module_from_path(config["devices"]["device_dir"])
 
     # obtain all the devices
     devices = get_all_devices().values()
@@ -108,7 +97,7 @@ def init_with_fake_parameters(cls: Type[BaseOperation]) -> BaseOperation:
           -> FakeDevice with name = {{name}}
         - :py:class:`SamplePosition <alab_management.sample_position.SamplePosition>`
           -> SamplePosition with name = {{name}}
-        - built-in types (can be nested) : ``int``, ``float``, ``str``, ``list``, ``dict``, ``set``
+        - built-in types (cannot be nested) : ``int``, ``float``, ``str``, ``list``, ``dict``, ``set``
 
     .. note::
         Things like ``List[BaseDevice]`` and ``Dict[str, SamplePosition]`` are not
@@ -154,7 +143,7 @@ def add_tasks_to_db(collection: pymongo.collection.Collection,
             "name": task.__class__.__name__,
             "operation_location": task.operation_location,
             "occupied_positions": task.occupied_positions,
-            "dist_location": task.dest_location,
+            "dest_location": task.dest_location,
             "accepted_args": [{"name": field.name, "type": get_full_cls_name(field.type)} for field in fields(task)
                               if is_typing(field.type) or not issubclass(field.type, (BaseDevice, ObjectId))]
         }
@@ -176,11 +165,11 @@ def make_sample_position_graph():
     we can add edges to sample view, which can tell the system
     how to move samples between two places
     """
-    task_collection = get_collection(config["tasks"]["task_db"])
-    sample_position_collection = get_collection(config["sample_positions"]["sample_db"])
+    task_definition_collection = get_collection(config["tasks"]["task_definition_db"])
+    sample_position_collection = get_collection(config["sample_positions"]["sample_position_db"])
 
     next_positions_dict: Dict[str, List[Dict[str, Any]]] = {}
-    for task in task_collection.find({"src_dest_pairs": {"$exists": True}}):
+    for task in task_definition_collection.find({"src_dest_pairs": {"$exists": True}}):
         for src_dest_pair in task["src_dest_pairs"]:
             next_positions_dict.setdefault(src_dest_pair["src"], [])
             next_positions_dict[src_dest_pair["src"]].extend([{
@@ -202,18 +191,23 @@ def setup_from_task_def():
     Set up sample positions' edges, task definitions from user's task definition, whose path is
     specified by ``config["tasks"]["task_dir"]``
     """
-    task_collection = get_collection(config["tasks"]["task_db"])
+    task_definition_collection = get_collection(config["tasks"]["task_definition_db"])
 
-    task_collection.create_index([("name", pymongo.HASHED)])
-    tasks_cls = [var for var in import_module_from_path(config["tasks"]["task_dir"]).__dict__.values()
-                 if inspect.isclass(var) and issubclass(var, BaseOperation)]
+    task_definition_collection.create_index([("name", pymongo.HASHED)])
+
+    # get all the tasks definitions
+    tasks_cls = get_all_operations().values()
 
     tasks = [init_with_fake_parameters(task_cls) for task_cls in tasks_cls]
-    add_tasks_to_db(task_collection, tasks)
+    add_tasks_to_db(task_definition_collection, tasks)
     make_sample_position_graph()
 
 
 def setup_lab():
-    clean_up_db()
+    """
+    Cleanup the db and then import all the definitions and set up the db
+    """
+    cleanup_lab()
+    load_definition()
     setup_from_device_def()
     setup_from_task_def()

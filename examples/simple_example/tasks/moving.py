@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 
 from alab_management.op_def.base_operation import BaseMovingOperation
 from alab_management.sample_position import SamplePosition, SamplePositionPair
-from devices.robot_arm import RobotArm
+from simple_example.devices.robot_arm import RobotArm
 
 
 @dataclass
@@ -36,7 +36,7 @@ class Moving(BaseMovingOperation):
     def occupied_positions(self):
         return []
 
-    def run(self):
+    def run(self, logger):
         ...
 
     def is_running(self):

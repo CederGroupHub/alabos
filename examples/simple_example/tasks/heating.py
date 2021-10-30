@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import List, Tuple
 
 from alab_management.op_def.base_operation import BaseOperation
-from devices.furnace import Furnace
+from ..devices.furnace import Furnace
 
 
 @dataclass
@@ -18,7 +18,7 @@ class Heating(BaseOperation):
     def occupied_positions(self):
         return [self.furnace.name]
 
-    def run(self):
+    def run(self, logger):
         ...
 
     def is_running(self):

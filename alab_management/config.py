@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from types import MappingProxyType as FrozenDict
 from typing import Any, Dict
 
@@ -44,6 +45,7 @@ class AlabConfig:
         if config_path is None:
             config_path = "config.toml"
         _config = toml.load(open(config_path, "r", encoding="utf-8"))
+        self._path = Path(config_path).absolute()
         self._config = froze_config(_config)
 
     def __getitem__(self, item):
@@ -56,6 +58,10 @@ class AlabConfig:
 
     def __hash__(self):
         return self._config.__hash__()
+
+    @property
+    def path(self) -> Path:
+        return self._path
 
 
 config = AlabConfig()
