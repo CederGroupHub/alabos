@@ -215,8 +215,8 @@
               <div>
                 
   <h1>Source code for alab_management.lab_status.sample_view</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
 
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 
@@ -225,34 +225,214 @@
 
 
 <div class="viewcode-block" id="SampleView"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.sample_view.SampleView">[docs]</a><span class="k">class</span> <span class="nc">SampleView</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sample view manages all the database operations regarding to samples</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;sample_positions&quot;</span><span class="p">][</span><span class="s2">&quot;sample_db&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sample_position</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;sample_positions&quot;</span><span class="p">][</span><span class="s2">&quot;sample_position_db&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_position_connection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;sample_positions&quot;</span><span class="p">][</span><span class="s2">&quot;position_connection_db&quot;</span><span class="p">])</span>
 
 <div class="viewcode-block" id="SampleView.create_sample"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.sample_view.SampleView.create_sample">[docs]</a>    <span class="k">def</span> <span class="nf">create_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectId</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a single sample in the database an return its object_id</span>
+
+<span class="sd">        By default the initial position of this sample is defined to ``None``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;single_sample&quot;</span><span class="p">,</span>
             <span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
         <span class="p">})</span>
         <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span></div>
 
+<div class="viewcode-block" id="SampleView.creat_sample_batch"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.sample_view.SampleView.creat_sample_batch">[docs]</a>    <span class="k">def</span> <span class="nf">creat_sample_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">sample_ids</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectId</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a sample batch in the database and return its object_id</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            *sample_ids:  the list of sample ids contained in this batch</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;sample_batch&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;samples&quot;</span><span class="p">:</span> <span class="n">sample_ids</span><span class="p">,</span>
+            <span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+        <span class="p">})</span>
+
+        <span class="k">for</span> <span class="n">sample_id</span> <span class="ow">in</span> <span class="n">sample_ids</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span><span class="p">,</span>
+                <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+            <span class="p">}})</span>
+        <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span></div>
+
 <div class="viewcode-block" id="SampleView.update_sample_position"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.sample_view.SampleView.update_sample_position">[docs]</a>    <span class="k">def</span> <span class="nf">update_sample_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">new_position</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">})</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the position of one sample</span>
+
+<span class="sd">        if ``sample_id`` refers to a sample in batched sample, a ``TypeError``</span>
+<span class="sd">        will be raised.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sample_id: identifier of the sample</span>
+<span class="sd">            new_position: updated position</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find sample with id (</span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">],</span> <span class="n">ObjectId</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Current sample is in a batch, you cannot update it position along.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="n">new_position</span><span class="p">,</span>
+            <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
         <span class="p">}})</span></div>
 
 <div class="viewcode-block" id="SampleView.query_sample"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.sample_view.SampleView.query_sample">[docs]</a>    <span class="k">def</span> <span class="nf">query_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Query current position of a sample</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The sample position name of the sample. If the sample&#39;s</span>
+<span class="sd">            position has not been initialized, return ``None``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">})</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sample</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">],</span> <span class="n">ObjectId</span><span class="p">):</span>
+            <span class="n">sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]})</span>
         <span class="k">return</span> <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="SampleView.find_possible_path"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.sample_view.SampleView.find_possible_path">[docs]</a>    <span class="k">def</span> <span class="nf">find_possible_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dest</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">container</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
-        <span class="o">...</span></div>
+<div class="viewcode-block" id="SampleView.find_possible_path"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.sample_view.SampleView.find_possible_path">[docs]</a>    <span class="k">def</span> <span class="nf">find_possible_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dest</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">container</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find a possible path from give sample position (src) to another (dest)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            src: the name of start sample position</span>
+<span class="sd">            dest: the name of end sample position</span>
+<span class="sd">            container: the name of required container, if None,</span>
+<span class="sd">              will put no restriction on container (for test purpose only)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of position connection with {</span>
+<span class="sd">                &quot;src&quot;: &lt;str&gt;,</span>
+<span class="sd">                &quot;dest&quot;: &lt;str&gt;,</span>
+<span class="sd">                &quot;task_name&quot;: &lt;str, possible task name&gt;</span>
+<span class="sd">            }</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_valid_position</span><span class="p">(</span><span class="n">src</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown sample position src (</span><span class="si">{</span><span class="n">src</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_valid_position</span><span class="p">(</span><span class="n">dest</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown sample position dest (</span><span class="si">{</span><span class="n">dest</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">container</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">container_criteria</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$exists&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">container_criteria</span> <span class="o">=</span> <span class="n">container</span>
+
+        <span class="c1"># returned structure:</span>
+        <span class="c1"># [{</span>
+        <span class="c1">#   &quot;positions&quot;: [{&quot;src&quot;: &lt;str&gt;, &quot;dest&quot;: &lt;str&gt;, &quot;container&quot;: &lt;str&gt;}, ...],</span>
+        <span class="c1">#   &quot;stops&quot;: &lt;int&gt;</span>
+        <span class="c1"># }, ...]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_position_connection</span><span class="o">.</span><span class="n">aggregate</span><span class="p">([</span>
+            <span class="p">{</span><span class="s1">&#39;$match&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;src&#39;</span><span class="p">:</span> <span class="n">src</span><span class="p">,</span> <span class="s1">&#39;container&#39;</span><span class="p">:</span> <span class="n">container_criteria</span><span class="p">}},</span>
+            <span class="p">{</span><span class="s1">&#39;$graphLookup&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_position_connection</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s1">&#39;startWith&#39;</span><span class="p">:</span> <span class="s1">&#39;$src&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;connectFromField&#39;</span><span class="p">:</span> <span class="s1">&#39;dest&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;connectToField&#39;</span><span class="p">:</span> <span class="s1">&#39;src&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;as&#39;</span><span class="p">:</span> <span class="s1">&#39;possible_dest&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;depthField&#39;</span><span class="p">:</span> <span class="s1">&#39;stops&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;restrictSearchWithMatch&#39;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s1">&#39;container&#39;</span><span class="p">:</span> <span class="n">container_criteria</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">}},</span>
+            <span class="p">{</span><span class="s1">&#39;$unwind&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;$possible_dest&#39;</span><span class="p">}},</span>
+            <span class="p">{</span><span class="s1">&#39;$project&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;src&#39;</span><span class="p">:</span> <span class="s1">&#39;$possible_dest.src&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;dest&#39;</span><span class="p">:</span> <span class="s1">&#39;$possible_dest.dest&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;task_name&#39;</span><span class="p">:</span> <span class="s1">&#39;$possible_dest.task_name&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;stops&#39;</span><span class="p">:</span> <span class="s1">&#39;$possible_dest.stops&#39;</span>
+            <span class="p">}},</span>
+            <span class="p">{</span><span class="s1">&#39;$group&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="s1">&#39;$stops&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;positions&#39;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s1">&#39;$addToSet&#39;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s1">&#39;src&#39;</span><span class="p">:</span> <span class="s1">&#39;$src&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;dest&#39;</span><span class="p">:</span> <span class="s1">&#39;$dest&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;task_name&#39;</span><span class="p">:</span> <span class="s1">&#39;$task_name&#39;</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">}},</span>
+            <span class="p">{</span><span class="s1">&#39;$project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;positions&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;stops&#39;</span><span class="p">:</span> <span class="s1">&#39;$_id&#39;</span><span class="p">}},</span>
+            <span class="p">{</span><span class="s1">&#39;$sort&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;stops&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}},</span>
+        <span class="p">])</span>
+
+        <span class="k">def</span> <span class="nf">get_stops</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="sd">&quot;&quot;&quot;Find the number of stop from src to dest,</span>
+<span class="sd">              if not found, a ``ValueError`` will be raised.&quot;&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">accessible_positions</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+                <span class="n">positions</span> <span class="o">=</span> <span class="n">accessible_positions</span><span class="p">[</span><span class="s2">&quot;positions&quot;</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">position</span> <span class="ow">in</span> <span class="n">positions</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">position</span><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">dest</span><span class="p">:</span>
+                        <span class="n">stops</span> <span class="o">=</span> <span class="n">accessible_positions</span><span class="p">[</span><span class="s2">&quot;stops&quot;</span><span class="p">]</span>
+                        <span class="k">return</span> <span class="n">stops</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot get from src (</span><span class="si">{</span><span class="n">src</span><span class="si">}</span><span class="s2">) to &quot;</span>
+                             <span class="sa">f</span><span class="s2">&quot;dest (</span><span class="si">{</span><span class="n">dest</span><span class="si">}</span><span class="s2">) with container (</span><span class="si">{</span><span class="n">container</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">find_path_in_graph</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+            <span class="sd">&quot;&quot;&quot;Find a path from src to dest, which will search</span>
+<span class="sd">              the graph (DAG) from leaves (dest) to root (src)&quot;&quot;&quot;</span>
+            <span class="n">stops</span> <span class="o">=</span> <span class="n">get_stops</span><span class="p">()</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">last_dest</span> <span class="o">=</span> <span class="n">dest</span>
+
+            <span class="k">for</span> <span class="n">stop</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">stops</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">position</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="n">stop</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">position</span><span class="p">[</span><span class="s2">&quot;dest&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">last_dest</span><span class="p">:</span>
+                        <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">position</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+                        <span class="n">last_dest</span> <span class="o">=</span> <span class="n">position</span><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">]</span>
+                        <span class="k">break</span>
+
+            <span class="n">path</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">path</span>
+
+        <span class="k">return</span> <span class="n">find_path_in_graph</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SampleView.delete_sample"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.sample_view.SampleView.delete_sample">[docs]</a>    <span class="k">def</span> <span class="nf">delete_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">})</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove a single sample from the database</span>
+
+<span class="sd">        If cannot find this sample_id, a ``KeyError`` will be raised.</span>
+<span class="sd">        If the sample type is not ``single_sample``, a ``TypeError`` will be raised.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find sample with id (</span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">delete_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">})</span></div></div>
+        <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;single_sample&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Requested sample_id (</span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">) is not a single sample.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">delete_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">})</span></div>
+
+<div class="viewcode-block" id="SampleView.delete_sample_batch"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.sample_view.SampleView.delete_sample_batch">[docs]</a>    <span class="k">def</span> <span class="nf">delete_sample_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove a sample batch from the database</span>
+
+<span class="sd">        If cannot find this batch_id, a ``KeyError`` will be raised.</span>
+<span class="sd">        If the sample type is not ``sample_batch``, a ``TypeError`` will be raised.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">batch_id</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find sample batch with id (</span><span class="si">{</span><span class="n">batch_id</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;sample_batch&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Requested batch_id (</span><span class="si">{</span><span class="n">batch_id</span><span class="si">}</span><span class="s2">) is not a sample batch.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">delete_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">batch_id</span><span class="p">})</span>
+
+        <span class="k">for</span> <span class="n">sample_id</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;samples&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_sample_position</span><span class="p">(</span><span class="n">sample_id</span><span class="p">,</span> <span class="n">new_position</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="SampleView.is_valid_position"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.sample_view.SampleView.is_valid_position">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_position</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if a sample position name is a valid sample position</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_position</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">sample_position</span><span class="p">})</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div></div>
 </pre></div>
 
               </div>
