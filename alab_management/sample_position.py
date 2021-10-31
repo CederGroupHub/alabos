@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Any, Dict
 
 from alab_management.config import config
 
@@ -15,6 +15,7 @@ class SamplePositionPair:
     src: str
     dest: str
     containers: List[str] = field(default=None)
+    task_args: Dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
         if self.containers is None:

@@ -16,8 +16,8 @@ class Moving(BaseMovingOperation):
         return (
             SamplePositionPair("furnace_table", "furnace_1.inside", containers=["crucible"]),
             SamplePositionPair("furnace_table", "furnace_2.inside", containers=["crucible"]),
-            SamplePositionPair("furnace_table", "furnace_3.inside", containers=["crucible"]),
-            SamplePositionPair("furnace_table", "furnace_4.inside", containers=["crucible"]),
+            SamplePositionPair("furnace_table", "furnace_3.inside"),
+            SamplePositionPair("furnace_table", "furnace_4.inside"),
             SamplePositionPair("furnace_1.inside", "furnace_table"),
             SamplePositionPair("furnace_2.inside", "furnace_table"),
             SamplePositionPair("furnace_3.inside", "furnace_table"),

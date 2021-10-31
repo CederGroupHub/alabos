@@ -13,7 +13,9 @@ def cleanup_lab():
     device_collection = get_collection(config["devices"]["device_db"])
     task_definition_collection = get_collection(config["tasks"]["task_definition_db"])
     sample_position_collection = get_collection(config["sample_positions"]["sample_position_db"])
+    position_connect_collection = get_collection(config["sample_positions"]["position_connection_db"])
 
     device_collection.drop()
     task_definition_collection.drop()
     sample_position_collection.drop()
+    position_connect_collection.drop()

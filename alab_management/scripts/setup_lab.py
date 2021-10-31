@@ -167,23 +167,32 @@ def make_sample_position_graph():
     """
     task_definition_collection = get_collection(config["tasks"]["task_definition_db"])
     sample_position_collection = get_collection(config["sample_positions"]["sample_position_db"])
+    position_connection_collection = get_collection(config["sample_positions"]["position_connection_db"])
 
-    next_positions_dict: Dict[str, List[Dict[str, Any]]] = {}
+    position_connections: List[Dict[str, Any]] = []
+    sample_position_cache = set()
     for task in task_definition_collection.find({"src_dest_pairs": {"$exists": True}}):
         for src_dest_pair in task["src_dest_pairs"]:
-            next_positions_dict.setdefault(src_dest_pair["src"], [])
-            next_positions_dict[src_dest_pair["src"]].extend([{
+            if src_dest_pair["src"] not in sample_position_cache and \
+                    sample_position_collection.find_one({"name": src_dest_pair["src"]}) is None:
+                raise ValueError(f"Sample position does not exist: {src_dest_pair['src']}")
+
+            if src_dest_pair["dest"] not in sample_position_cache and \
+                    sample_position_collection.find_one({"name": src_dest_pair["dest"]}) is None:
+                raise ValueError(f"Sample position does not exist: {src_dest_pair['dest']}")
+
+            # add to cache so that we do not have to query many times.
+            sample_position_cache.add(src_dest_pair["src"])
+            sample_position_cache.add(src_dest_pair["dest"])
+
+            position_connections.extend([{
+                "src": src_dest_pair["src"],
                 "dest": src_dest_pair["dest"],
                 "container": container,
                 "task_name": task["name"],
             } for container in src_dest_pair["containers"]])
 
-    for name, next_positions in next_positions_dict.items():
-        if sample_position_collection.find_one({"name": name}) is None:
-            raise ValueError(f"Sample position does not exist: {name}")
-        sample_position_collection.update_one({"name": name}, {"$set": {
-            "next_positions": next_positions,
-        }})
+    position_connection_collection.insert_many(position_connections, ordered=False)
 
 
 def setup_from_task_def():
