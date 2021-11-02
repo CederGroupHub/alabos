@@ -142,3 +142,43 @@ class TaskView:
                 "type": operation_type,
             })
         return ready_tasks
+
+    def update_next(self, task_id: ObjectId, next_tasks: ObjectId):
+        """
+        Update the next task_id
+
+        Args:
+            task_id: the id of task to be updated
+            next_tasks: the id of next task
+        """
+        result = self._task_collection.find_one({"_id": task_id})
+        if result is None:
+            raise ValueError(f"Cannot find task with id: {task_id}")
+        try:
+            self._lock.acquire()
+            self._task_collection.update_one({"_id": task_id}, {"$set": {
+                "next_tasks": next_tasks,
+                "last_updated": datetime.now(),
+            }})
+        finally:
+            self._lock.release()
+
+    def update_previous(self, task_id: ObjectId, previous_tasks: ObjectId):
+        """
+        Update the previous task_id
+
+        Args:
+            task_id: the id of task to be updated
+            previous_tasks: the id of next task
+        """
+        result = self._task_collection.find_one({"_id": task_id})
+        if result is None:
+            raise ValueError(f"Cannot find task with id: {task_id}")
+        try:
+            self._lock.acquire()
+            self._task_collection.update_one({"_id": task_id}, {"$set": {
+                "previous_tasks": previous_tasks,
+                "last_updated": datetime.now(),
+            }})
+        finally:
+            self._lock.release()
