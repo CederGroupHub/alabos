@@ -8,7 +8,7 @@ from typing import Dict, Any, Union
 
 from bson import ObjectId
 
-from alab_management.db import get_collection
+from .db import get_collection
 
 
 @unique

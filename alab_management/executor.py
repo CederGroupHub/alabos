@@ -1,16 +1,19 @@
 """
-Executor is the core module of
+Executor is the core module of the system,
+which actually executes the tasks
 """
 
 import threading
 import time
 from typing import Any, Dict
 
-from alab_management.device_view import DeviceView
-from alab_management.logger import DBLogger
-from alab_management.sample_view.sample_view import SampleView
-from alab_management.task_view.task_view import TaskView, TaskStatus
-from alab_management.utils.module_ops import load_definition
+from bson import ObjectId
+
+from .device_view import DeviceView
+from .logger import DBLogger
+from .sample_view.sample_view import SampleView
+from .task_view.task_view import TaskView, TaskStatus
+from .utils.module_ops import load_definition
 
 
 class ParameterError(Exception):
@@ -28,13 +31,9 @@ class Executor:
         self.device_view = DeviceView()
         self.sample_view = SampleView()
         self.task_view = TaskView()
+        self.task_pool: Dict[ObjectId, threading.Thread] = {}
 
     def run(self):
-        """
-        The main function that
-        Returns:
-
-        """
         while True:
             self._loop()
             time.sleep(1)
@@ -45,6 +44,11 @@ class Executor:
             self.submit_task(task_entry)
 
     def submit_task(self, task_entry: Dict[str, Any]):
+        """
+        Submit a task. In this system, each task is run in an
+        independent thread, which will try to acquire device and
+        process samples.
+        """
         task_id = task_entry["task_id"]
         task_type = task_entry.pop("type")
         logger = DBLogger(task_id=task_id)
@@ -70,3 +74,5 @@ class Executor:
 
         task_thread = threading.Thread(target=_run_task)
         task_thread.start()
+
+        self.task_pool[task_id] = task_thread

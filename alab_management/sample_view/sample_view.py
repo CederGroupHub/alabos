@@ -1,4 +1,3 @@
-from collections import Iterable
 from dataclasses import asdict
 from datetime import datetime
 from typing import Optional
@@ -6,8 +5,8 @@ from typing import Optional
 import pymongo
 from bson import ObjectId
 
-from alab_management.db import get_collection
-from alab_management.sample_view.sample import SamplePosition, Sample
+from ..db import get_collection
+from .sample import Sample
 
 
 class SampleView:
@@ -20,7 +19,7 @@ class SampleView:
         self._sample_positions_collection = get_collection("sample_positions")
         self._sample_positions_collection.create_index([("name", pymongo.HASHED)])
 
-    def add_sample_positions_to_db(self, sample_positions: Iterable[SamplePosition]):
+    def add_sample_positions_to_db(self, sample_positions):
         """
         Insert sample positions info to db, which includes position name and description
 

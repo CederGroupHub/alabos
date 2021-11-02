@@ -8,9 +8,8 @@ from typing import Type, List, Optional, Union, Dict
 import pymongo
 from bson import ObjectId
 
-from alab_management import BaseDevice
-from alab_management.db import get_collection
-from alab_management.device_view import get_all_devices
+from .device import BaseDevice, get_all_devices
+from ..db import get_collection
 
 
 @unique
@@ -26,15 +25,15 @@ class DeviceStatus(Enum):
 class DevicesLock:
     """
     The context manager that release the requested devices when the device is no longer needed,
-    which is the returned type by :py:method:<request_devices DeviceView.request_devices>
+    which is the returned type by :py:meth:`request_devices <DeviceView.request_devices>`
 
-    Examples:
-        .. code-block:: python
+    .. code-block:: python
 
         with device_view.request_devices(Furnace, RobotArm) as devices:
             furnace = devices[Furnace]
             robot_arm = device[RobotArm]
             # do something here
+
         # will automatically release the devices when going outside the with block
     """
     def __init__(self, devices: Dict[Type[BaseDevice], BaseDevice], device_view: "DeviceView"):

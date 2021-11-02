@@ -5,20 +5,19 @@ from typing import Any, Dict, List, Type
 
 from bson import ObjectId
 
-from alab_management.db import get_collection
-from alab_management.task_view.task import get_all_tasks, BaseTask
+from ..db import get_collection
+from .task import get_all_tasks, BaseTask
 
 
 class TaskStatus(Enum):
     """
     The status of one task
 
-    Attributes:
-        WAITING: the task cannot start now
-        READY: the task is ready to submit
-        RUNNING: the task is currently running
-        ERROR: the task encountered some errors during execution
-        COMPLETED: the task is completed
+    - ``WAITING``: the task cannot start now
+    - ``READY``: the task is ready to submit
+    - ``RUNNING``: the task is currently running
+    - ``ERROR``: the task encountered some errors during execution
+    - ``COMPLETED``: the task is completed
     """
     WAITING = auto()
     READY = auto()
@@ -129,10 +128,8 @@ class TaskView:
         Return a list of ready tasks
 
         Returns:
-            List of task entry: {
-              "task_id": ``ObjectId``,
-              "type": :py:class:`BaseTask <alab_management.task_view.task.BaseTask>`
-            }
+            List of task entry: {"task_id": ``ObjectId``,
+              "type": :py:class:`BaseTask <alab_management.task_view.task.BaseTask>`}
         """
         result = self._task_collection.find({"status": TaskStatus.READY.name})
 

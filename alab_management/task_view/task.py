@@ -1,5 +1,5 @@
 """
-Define the base class of operation
+Define the base class of task
 """
 
 from abc import ABC, abstractmethod
@@ -8,9 +8,9 @@ from typing import Dict, Type
 
 from bson import ObjectId
 
-from alab_management.device_view import DeviceView
-from alab_management.logger import DBLogger
-from alab_management.sample_view.sample_view import SampleView
+from ..device_view import DeviceView
+from ..logger import DBLogger
+from ..sample_view.sample_view import SampleView
 
 
 @dataclass
@@ -20,9 +20,8 @@ class BaseTask(ABC):
 
     All the tasks should inherit from this class.
 
-    Attributes:
-        task_id: the identifier of task
-        sample_id: the id of sample to do tasks on
+    - ``task_id``: the identifier of task
+    - ``sample_id``: the id of sample to do tasks on
     """
     task_id: ObjectId = field(hash=False, compare=False)
     device_view: DeviceView = field(hash=False, compare=False)
@@ -50,4 +49,7 @@ def add_task(task: Type[BaseTask]):
 
 
 def get_all_tasks() -> Dict[str, Type[BaseTask]]:
+    """
+    Get all the tasks in the registry
+    """
     return _task_registry.copy()
