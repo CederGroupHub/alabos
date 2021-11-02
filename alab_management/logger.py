@@ -2,9 +2,9 @@
 Logger module takes charge of recording information, warnings and errors during executing tasks
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from enum import Enum, auto, unique
-from typing import Dict, Any, Union
+from typing import Dict, Any, Union, Optional, List, Iterable
 
 from bson import ObjectId
 
@@ -16,6 +16,7 @@ class LoggingType(Enum):
     DEVICE_SIGNAL = auto()
     SAMPLE_AMOUNT = auto()
     CHARACTERIZATION_RESULT = auto()
+    SYSTEM_LOG = auto()
     OTHER = auto()
 
 
@@ -30,9 +31,12 @@ class LoggingLevel(Enum):
 
 
 class DBLogger:
-    def __init__(self, task_id: ObjectId):
+    """
+    A custom logger that wrote data to database, where we predefined some log pattern
+    """
+    def __init__(self, task_id: Optional[ObjectId]):
         self.task_id = task_id
-        self.logging_collection = get_collection("logs")
+        self._logging_collection = get_collection("logs")
 
     def log(self,
             level: Union[str, int, LoggingLevel],
@@ -43,7 +47,7 @@ class DBLogger:
         elif isinstance(level, LoggingLevel):
             level = LoggingLevel.value
 
-        self.logging_collection.insert_one({
+        self._logging_collection.insert_one({
             "task_id": self.task_id,
             "type": logging_type,
             "level": level,
@@ -59,3 +63,15 @@ class DBLogger:
 
     def log_device_signal(self, log_data: Dict[str, Any]):
         self.log(level=LoggingLevel.DEBUG, log_data=log_data, logging_type=LoggingType.DEVICE_SIGNAL)
+
+    def system_log(self, log_data: Dict[str, Any]):
+        self.log(level=LoggingLevel.DEBUG, log_data=log_data, logging_type=LoggingType.SYSTEM_LOG)
+
+    def filter_log(self, level: Union[str, int, LoggingLevel], within: timedelta) -> Iterable[Dict[str, Any]]:
+        if isinstance(level, str):
+            level = LoggingLevel[level].value
+        elif isinstance(level, LoggingLevel):
+            level = LoggingLevel.value
+
+        return self._logging_collection.find({"level": {"$gte": level},
+                                              "created_at": {"$gte": datetime.now() - within}})
