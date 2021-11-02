@@ -203,12 +203,18 @@
 <span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
 <span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Lock</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Type</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 
 <span class="kn">from</span> <span class="nn">..db</span> <span class="kn">import</span> <span class="n">get_collection</span>
 <span class="kn">from</span> <span class="nn">.task</span> <span class="kn">import</span> <span class="n">get_all_tasks</span><span class="p">,</span> <span class="n">BaseTask</span>
+
+
+<span class="k">class</span> <span class="nc">_MISSING</span><span class="p">:</span> <span class="k">pass</span>
+
+
+<span class="n">_MISSING</span> <span class="o">=</span> <span class="n">_MISSING</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="TaskStatus"><a class="viewcode-back" href="../../../alab_management.task_view.html#alab_management.task_view.task_view.TaskStatus">[docs]</a><span class="k">class</span> <span class="nc">TaskStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
@@ -240,8 +246,8 @@
 <div class="viewcode-block" id="TaskView.create_task"><a class="viewcode-back" href="../../../alab_management.task_view.html#alab_management.task_view.task_view.TaskView.create_task">[docs]</a>    <span class="k">def</span> <span class="nf">create_task</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">task_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
             <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-            <span class="n">previous_tasks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">],</span>
-            <span class="n">next_tasks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]</span>
+            <span class="n">prev_tasks</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]]</span> <span class="o">=</span> <span class="n">_MISSING</span><span class="p">,</span>
+            <span class="n">next_tasks</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]]</span> <span class="o">=</span> <span class="n">_MISSING</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectId</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Insert a task into the task collection</span>
@@ -250,8 +256,10 @@
 <span class="sd">            task_type: the type of task, which should be a type name of class inherited from</span>
 <span class="sd">              :py:class:`BaseTask &lt;alab_management.task_view.task.BaseTask&gt;`</span>
 <span class="sd">            parameters: the required tasks for this task</span>
-<span class="sd">            previous_tasks: the id of previous tasks</span>
-<span class="sd">            next_tasks: the id of next tasks</span>
+<span class="sd">            prev_tasks: one or a list of ObjectId that refer to prev tasks of this task</span>
+<span class="sd">              (which must be completed before current task)</span>
+<span class="sd">            next_tasks: one or a list of ObjectId that refer to next tasks of this task</span>
+<span class="sd">              (which cannot start until this task finishes)</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            the assigned id for this task</span>
@@ -263,8 +271,8 @@
             <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">task_type</span><span class="p">,</span>
             <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">WAITING</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="s2">&quot;parameters&quot;</span><span class="p">:</span> <span class="n">parameters</span><span class="p">,</span>
-            <span class="s2">&quot;previous_tasks&quot;</span><span class="p">:</span> <span class="n">previous_tasks</span><span class="p">,</span>
-            <span class="s2">&quot;next_tasks&quot;</span><span class="p">:</span> <span class="n">next_tasks</span><span class="p">,</span>
+            <span class="s2">&quot;prev_tasks&quot;</span><span class="p">:</span> <span class="n">prev_tasks</span> <span class="k">if</span> <span class="n">prev_tasks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">_MISSING</span> <span class="k">else</span> <span class="p">[],</span>
+            <span class="s2">&quot;next_tasks&quot;</span><span class="p">:</span> <span class="n">next_tasks</span> <span class="k">if</span> <span class="n">next_tasks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">_MISSING</span> <span class="k">else</span> <span class="p">[],</span>
             <span class="s2">&quot;created_at&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
             <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
         <span class="p">})</span>
@@ -345,45 +353,37 @@
             <span class="p">})</span>
         <span class="k">return</span> <span class="n">ready_tasks</span></div>
 
-<div class="viewcode-block" id="TaskView.update_next"><a class="viewcode-back" href="../../../alab_management.task_view.html#alab_management.task_view.task_view.TaskView.update_next">[docs]</a>    <span class="k">def</span> <span class="nf">update_next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">next_tasks</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
+<div class="viewcode-block" id="TaskView.update_task_dependency"><a class="viewcode-back" href="../../../alab_management.task_view.html#alab_management.task_view.task_view.TaskView.update_task_dependency">[docs]</a>    <span class="k">def</span> <span class="nf">update_task_dependency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span>
+                               <span class="n">prev_tasks</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]]</span> <span class="o">=</span> <span class="n">_MISSING</span><span class="p">,</span>
+                               <span class="n">next_tasks</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]]</span> <span class="o">=</span> <span class="n">_MISSING</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Update the next task_id</span>
+<span class="sd">        Add prev tasks and next tasks to one task entry,</span>
+<span class="sd">        which will not overwrite old pre_task and next_tasks</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            task_id: the id of task to be updated</span>
-<span class="sd">            next_tasks: the id of next task</span>
+<span class="sd">            prev_tasks: one or a list of ids of ``prev_tasks``</span>
+<span class="sd">            next_tasks: one or a list of ids of ``next_tasks``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find task with id: </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_task_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">&quot;next_tasks&quot;</span><span class="p">:</span> <span class="n">next_tasks</span><span class="p">,</span>
-                <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
-            <span class="p">}})</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TaskView.update_previous"><a class="viewcode-back" href="../../../alab_management.task_view.html#alab_management.task_view.task_view.TaskView.update_previous">[docs]</a>    <span class="k">def</span> <span class="nf">update_previous</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">previous_tasks</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Update the previous task_id</span>
+        <span class="k">if</span> <span class="n">prev_tasks</span> <span class="ow">is</span> <span class="n">_MISSING</span><span class="p">:</span>
+            <span class="n">prev_tasks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prev_tasks</span><span class="p">,</span> <span class="n">ObjectId</span><span class="p">):</span>
+            <span class="n">prev_tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">prev_tasks</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">next_tasks</span> <span class="ow">is</span> <span class="n">_MISSING</span><span class="p">:</span>
+            <span class="n">next_tasks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">next_tasks</span><span class="p">,</span> <span class="n">ObjectId</span><span class="p">):</span>
+            <span class="n">next_tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">next_tasks</span><span class="p">]</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            task_id: the id of task to be updated</span>
-<span class="sd">            previous_tasks: the id of next task</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">})</span>
-        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find task with id: </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_task_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">&quot;previous_tasks&quot;</span><span class="p">:</span> <span class="n">previous_tasks</span><span class="p">,</span>
-                <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
-            <span class="p">}})</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_task_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$push&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;next_tasks&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$each&quot;</span><span class="p">:</span> <span class="n">next_tasks</span><span class="p">},</span>
+            <span class="s2">&quot;prev_tasks&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$each&quot;</span><span class="p">:</span> <span class="n">prev_tasks</span><span class="p">},</span>
+        <span class="p">},</span> <span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+        <span class="p">}})</span></div></div>
 </pre></div>
 
               </div>

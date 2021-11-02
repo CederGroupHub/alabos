@@ -358,7 +358,7 @@
 <p>Task view manages the status, parameters of a task</p>
 <dl class="py method">
 <dt id="alab_management.task_view.task_view.TaskView.create_task">
-<code class="sig-name descname">create_task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_type</span></em>, <em class="sig-param"><span class="n">parameters</span></em>, <em class="sig-param"><span class="n">previous_tasks</span></em>, <em class="sig-param"><span class="n">next_tasks</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.create_task"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.create_task" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">create_task</code><span class="sig-paren">(</span><em class="sig-param">task_type</em>, <em class="sig-param">parameters</em>, <em class="sig-param">prev_tasks=&lt;alab_management.task_view.task_view._MISSING object&gt;</em>, <em class="sig-param">next_tasks=&lt;alab_management.task_view.task_view._MISSING object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.create_task"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.create_task" title="Permalink to this definition">¶</a></dt>
 <dd><p>Insert a task into the task collection</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -366,8 +366,10 @@
 <li><p><strong>task_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the type of task, which should be a type name of class inherited from
 <a class="reference internal" href="#alab_management.task_view.task.BaseTask" title="alab_management.task_view.task.BaseTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTask</span></code></a></p></li>
 <li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – the required tasks for this task</p></li>
-<li><p><strong>previous_tasks</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>]) – the id of previous tasks</p></li>
-<li><p><strong>next_tasks</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>]) – the id of next tasks</p></li>
+<li><p><strong>prev_tasks</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>]]) – one or a list of ObjectId that refer to prev tasks of this task
+(which must be completed before current task)</p></li>
+<li><p><strong>next_tasks</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>]]) – one or a list of ObjectId that refer to next tasks of this task
+(which cannot start until this task finishes)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -420,34 +422,6 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="alab_management.task_view.task_view.TaskView.update_next">
-<code class="sig-name descname">update_next</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em>, <em class="sig-param"><span class="n">next_tasks</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.update_next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.update_next" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the next task_id</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>task_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the id of task to be updated</p></li>
-<li><p><strong>next_tasks</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the id of next task</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="alab_management.task_view.task_view.TaskView.update_previous">
-<code class="sig-name descname">update_previous</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em>, <em class="sig-param"><span class="n">previous_tasks</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.update_previous"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.update_previous" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the previous task_id</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>task_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the id of task to be updated</p></li>
-<li><p><strong>previous_tasks</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the id of next task</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt id="alab_management.task_view.task_view.TaskView.update_status">
 <code class="sig-name descname">update_status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em>, <em class="sig-param"><span class="n">status</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.update_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.update_status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update the status of one task</p>
@@ -459,6 +433,22 @@ tasks are completed.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>task_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the id of task to be updated</p></li>
 <li><p><strong>status</strong> (<a class="reference internal" href="#alab_management.task_view.task_view.TaskStatus" title="alab_management.task_view.task_view.TaskStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskStatus</span></code></a>) – the new status of the task</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="alab_management.task_view.task_view.TaskView.update_task_dependency">
+<code class="sig-name descname">update_task_dependency</code><span class="sig-paren">(</span><em class="sig-param">task_id</em>, <em class="sig-param">prev_tasks=&lt;alab_management.task_view.task_view._MISSING object&gt;</em>, <em class="sig-param">next_tasks=&lt;alab_management.task_view.task_view._MISSING object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.update_task_dependency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.update_task_dependency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add prev tasks and next tasks to one task entry,
+which will not overwrite old pre_task and next_tasks</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>task_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the id of task to be updated</p></li>
+<li><p><strong>prev_tasks</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>]]) – one or a list of ids of <code class="docutils literal notranslate"><span class="pre">prev_tasks</span></code></p></li>
+<li><p><strong>next_tasks</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>]]) – one or a list of ids of <code class="docutils literal notranslate"><span class="pre">next_tasks</span></code></p></li>
 </ul>
 </dd>
 </dl>
