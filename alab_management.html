@@ -370,9 +370,20 @@ process samples.</p>
 <dt id="alab_management.logger.DBLogger">
 <em class="property">class </em><code class="sig-name descname">DBLogger</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#DBLogger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.logger.DBLogger" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A custom logger that wrote data to database, where we predefined some log pattern</p>
+<dl class="py method">
+<dt id="alab_management.logger.DBLogger.filter_log">
+<code class="sig-name descname">filter_log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">level</span></em>, <em class="sig-param"><span class="n">within</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#DBLogger.filter_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.logger.DBLogger.filter_log" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt id="alab_management.logger.DBLogger.log">
-<code class="sig-name descname">log</code><span class="sig-paren">(</span><em class="sig-param">level</em>, <em class="sig-param">log_data</em>, <em class="sig-param">logging_type=&lt;LoggingType.OTHER: 4&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#DBLogger.log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.logger.DBLogger.log" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">log</code><span class="sig-paren">(</span><em class="sig-param">level</em>, <em class="sig-param">log_data</em>, <em class="sig-param">logging_type=&lt;LoggingType.OTHER: 5&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#DBLogger.log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.logger.DBLogger.log" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -388,6 +399,11 @@ process samples.</p>
 <dl class="py method">
 <dt id="alab_management.logger.DBLogger.log_device_signal">
 <code class="sig-name descname">log_device_signal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">log_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#DBLogger.log_device_signal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.logger.DBLogger.log_device_signal" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="alab_management.logger.DBLogger.system_log">
+<code class="sig-name descname">system_log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">log_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#DBLogger.system_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.logger.DBLogger.system_log" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -451,12 +467,17 @@ process samples.</p>
 
 <dl class="py attribute">
 <dt id="alab_management.logger.LoggingType.OTHER">
-<code class="sig-name descname">OTHER</code><em class="property"> = 4</em><a class="headerlink" href="#alab_management.logger.LoggingType.OTHER" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">OTHER</code><em class="property"> = 5</em><a class="headerlink" href="#alab_management.logger.LoggingType.OTHER" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="alab_management.logger.LoggingType.SAMPLE_AMOUNT">
 <code class="sig-name descname">SAMPLE_AMOUNT</code><em class="property"> = 2</em><a class="headerlink" href="#alab_management.logger.LoggingType.SAMPLE_AMOUNT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="alab_management.logger.LoggingType.SYSTEM_LOG">
+<code class="sig-name descname">SYSTEM_LOG</code><em class="property"> = 4</em><a class="headerlink" href="#alab_management.logger.LoggingType.SYSTEM_LOG" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
