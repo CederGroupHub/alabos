@@ -4,6 +4,9 @@ import yaml
 from watchdog.events import PatternMatchingEventHandler
 from watchdog.observers import Observer
 
+from alab_management.config import config
+from alab_management.db import get_collection
+from alab_management.sample_view import SampleView
 from alab_management.task_view.task_view import TaskView
 
 
@@ -49,6 +52,8 @@ class TaskManager:
 
     def __init__(self):
         self.task_view = TaskView()
+        self.sample_view = SampleView()
+        self.experiment_collection = get_collection(config["experiment"]["experiment_collection"])
 
     def run(self):
         """
