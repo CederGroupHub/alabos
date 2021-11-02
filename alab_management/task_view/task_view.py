@@ -1,12 +1,18 @@
 from datetime import datetime
 from enum import Enum, auto
 from threading import Lock
-from typing import Any, Dict, List, Type
+from typing import Any, Dict, List, Type, Union
 
 from bson import ObjectId
 
 from ..db import get_collection
 from .task import get_all_tasks, BaseTask
+
+
+class _MISSING: pass
+
+
+_MISSING = _MISSING()
 
 
 class TaskStatus(Enum):
@@ -38,8 +44,8 @@ class TaskView:
     def create_task(
             self, task_type: str,
             parameters: Dict[str, Any],
-            previous_tasks: List[ObjectId],
-            next_tasks: List[ObjectId]
+            prev_tasks: Union[ObjectId, List[ObjectId]] = _MISSING,
+            next_tasks: Union[ObjectId, List[ObjectId]] = _MISSING,
     ) -> ObjectId:
         """
         Insert a task into the task collection
@@ -48,8 +54,10 @@ class TaskView:
             task_type: the type of task, which should be a type name of class inherited from
               :py:class:`BaseTask <alab_management.task_view.task.BaseTask>`
             parameters: the required tasks for this task
-            previous_tasks: the id of previous tasks
-            next_tasks: the id of next tasks
+            prev_tasks: one or a list of ObjectId that refer to prev tasks of this task
+              (which must be completed before current task)
+            next_tasks: one or a list of ObjectId that refer to next tasks of this task
+              (which cannot start until this task finishes)
 
         Returns:
             the assigned id for this task
@@ -61,8 +69,8 @@ class TaskView:
             "type": task_type,
             "status": TaskStatus.WAITING.name,
             "parameters": parameters,
-            "previous_tasks": previous_tasks,
-            "next_tasks": next_tasks,
+            "prev_tasks": prev_tasks if prev_tasks is not _MISSING else [],
+            "next_tasks": next_tasks if next_tasks is not _MISSING else [],
             "created_at": datetime.now(),
             "last_updated": datetime.now(),
         })
@@ -143,42 +151,34 @@ class TaskView:
             })
         return ready_tasks
 
-    def update_next(self, task_id: ObjectId, next_tasks: ObjectId):
+    def update_task_dependency(self, task_id: ObjectId,
+                               prev_tasks: Union[ObjectId, List[ObjectId]] = _MISSING,
+                               next_tasks: Union[ObjectId, List[ObjectId]] = _MISSING):
         """
-        Update the next task_id
+        Add prev tasks and next tasks to one task entry,
+        which will not overwrite old pre_task and next_tasks
 
         Args:
             task_id: the id of task to be updated
-            next_tasks: the id of next task
+            prev_tasks: one or a list of ids of ``prev_tasks``
+            next_tasks: one or a list of ids of ``next_tasks``
         """
         result = self._task_collection.find_one({"_id": task_id})
         if result is None:
             raise ValueError(f"Cannot find task with id: {task_id}")
-        try:
-            self._lock.acquire()
-            self._task_collection.update_one({"_id": task_id}, {"$set": {
-                "next_tasks": next_tasks,
-                "last_updated": datetime.now(),
-            }})
-        finally:
-            self._lock.release()
 
-    def update_previous(self, task_id: ObjectId, previous_tasks: ObjectId):
-        """
-        Update the previous task_id
+        if prev_tasks is _MISSING:
+            prev_tasks = []
+        elif isinstance(prev_tasks, ObjectId):
+            prev_tasks = [prev_tasks]
+        if next_tasks is _MISSING:
+            next_tasks = []
+        elif isinstance(next_tasks, ObjectId):
+            next_tasks = [next_tasks]
 
-        Args:
-            task_id: the id of task to be updated
-            previous_tasks: the id of next task
-        """
-        result = self._task_collection.find_one({"_id": task_id})
-        if result is None:
-            raise ValueError(f"Cannot find task with id: {task_id}")
-        try:
-            self._lock.acquire()
-            self._task_collection.update_one({"_id": task_id}, {"$set": {
-                "previous_tasks": previous_tasks,
-                "last_updated": datetime.now(),
-            }})
-        finally:
-            self._lock.release()
+        self._task_collection.update_one({"_id": task_id}, {"$push": {
+            "next_tasks": {"$each": next_tasks},
+            "prev_tasks": {"$each": prev_tasks},
+        }, "$set": {
+            "last_updated": datetime.now(),
+        }})
