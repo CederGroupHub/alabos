@@ -50,6 +50,13 @@ class BaseDevice(ABC):
         """
         raise NotImplementedError()
 
+    @abstractmethod
+    def emergent_stop(self):
+        """
+        Specify how the device should stop when emergency
+        """
+        raise NotImplementedError()
+
 
 _device_registry: Dict[str, BaseDevice] = {}
 
