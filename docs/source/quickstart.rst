@@ -46,6 +46,6 @@ Here is the code sample. For more, please refer to `example <https://github.com/
 Defining tasks
 ----------------
 
-Similar to define devices, we need to inherit classes from :py:class:`BaseOperation <alab_management.op_def.base_operation.BaseOperation>`.
+Similar to define devices, we need to inherit classes from :py:class:`BaseTask <alab_management.op_def.base_operation.BaseTask>`.
 
 For moving operation, we need it to inherit from :py:class:`BaseMovingOperation <alab_management.op_def.base_operation.BaseMovingOperation>`.

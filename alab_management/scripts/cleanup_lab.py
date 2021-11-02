@@ -2,16 +2,13 @@
 To remove all the device, sample position definition from database
 """
 
-from ..config import config
-from ..db import get_collection
+from ..device_view import DeviceView
+from ..sample_view import SampleView
 
 
 def cleanup_lab():
     """
     Drop device, sample_position collection from MongoDB
     """
-    device_collection = get_collection(config["devices"]["device_db"])
-    sample_position_collection = get_collection(config["sample_positions"]["sample_db"] + "_position")
-
-    device_collection.drop()
-    sample_position_collection.drop()
+    DeviceView().clean_up_device_collection()
+    SampleView().clean_up_sample_position_collection()

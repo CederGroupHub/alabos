@@ -1,21 +1,13 @@
 from collections import Iterable
 from dataclasses import asdict
-from enum import Enum, unique, auto
+from datetime import datetime
 from typing import Optional
 
 import pymongo
 from bson import ObjectId
 
-from alab_management.config import config
 from alab_management.db import get_collection
-from alab_management.sample_manager.sample import SamplePosition, Sample
-
-
-@unique
-class SampleStatus(Enum):
-    UNKNOWN = auto()
-    PENDING = auto()
-    LOCKED = auto()
+from alab_management.sample_view.sample import SamplePosition, Sample
 
 
 class SampleView:
@@ -24,8 +16,8 @@ class SampleView:
     """
 
     def __init__(self):
-        self._sample_collection = get_collection(config["sample_positions"]["sample_db"])
-        self._sample_positions_collection = get_collection(config["sample_positions"]["sample_db"] + "_position")
+        self._sample_collection = get_collection("samples")
+        self._sample_positions_collection = get_collection("sample_positions")
         self._sample_positions_collection.create_index([("name", pymongo.HASHED)])
 
     def add_sample_positions_to_db(self, sample_positions: Iterable[SamplePosition]):
@@ -43,11 +35,26 @@ class SampleView:
             if sample_pos_ is None:
                 self._sample_positions_collection.insert_one(asdict(sample_pos))
 
+    def clean_up_sample_position_collection(self):
+        """
+        Drop the sample position collection
+        """
+        self._sample_positions_collection.drop()
+
     def is_valid_position(self, position: str) -> bool:
         """
         Tell if a sample position is a valid position in the database
         """
         return self._sample_positions_collection.find_one({"name": position}) is not None
+
+    def is_empty_position(self, position: str) -> bool:
+        """
+        Check if there is anything in the position
+        """
+        if not self.is_valid_position(position):
+            raise ValueError(f"Invalid sample position: {position}")
+
+        return self._sample_collection.find_one({"position": position}) is None
 
     def create_sample(self, position: Optional[str] = None) -> ObjectId:
         """
@@ -58,6 +65,8 @@ class SampleView:
 
         result = self._sample_collection.insert_one({
             "position": position,
+            "created_at": datetime.now(),
+            "last_updated": datetime.now(),
         })
 
         return result.inserted_id
@@ -84,4 +93,5 @@ class SampleView:
 
         self._sample_collection.update_one({"_id": sample_id}, {"$set": {
             "position": position,
+            "last_updated": datetime.now(),
         }})

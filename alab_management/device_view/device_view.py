@@ -1,7 +1,7 @@
 import time
 from dataclasses import asdict
 from datetime import datetime
-from enum import Enum, unique, auto
+from enum import unique, Enum, auto
 from threading import Lock
 from typing import Type, List, Optional, Union, Dict
 
@@ -9,9 +9,8 @@ import pymongo
 from bson import ObjectId
 
 from alab_management import BaseDevice
-from alab_management.config import config
 from alab_management.db import get_collection
-from alab_management.device_manager import get_all_devices
+from alab_management.device_view import get_all_devices
 
 
 @unique
@@ -25,25 +24,42 @@ class DeviceStatus(Enum):
 
 
 class DevicesLock:
+    """
+    The context manager that release the requested devices when the device is no longer needed,
+    which is the returned type by :py:method:<request_devices DeviceView.request_devices>
+
+    Examples:
+        .. code-block:: python
+
+        with device_view.request_devices(Furnace, RobotArm) as devices:
+            furnace = devices[Furnace]
+            robot_arm = device[RobotArm]
+            # do something here
+        # will automatically release the devices when going outside the with block
+    """
     def __init__(self, devices: Dict[Type[BaseDevice], BaseDevice], device_view: "DeviceView"):
         self.devices: Dict[Type[BaseDevice], BaseDevice] = devices
-        self.device_view: "DeviceView" = device_view
+        self._device_view: "DeviceView" = device_view
+
+    def release(self):
+        for device in self.devices.values():
+            self._device_view.release_device(device)
 
     def __enter__(self):
-        return self.devices
+        return self.devices.copy()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        for device in self.devices.values():
-            self.device_view.release_device(device)
+        self.release()
 
 
 class DeviceView:
     """
-    Device view provides API to get/set the status of a device
+    Device view provides API to get/set the status
+    of a device as well as request ownership of one device
     """
 
     def __init__(self):
-        self._device_collection = get_collection(config["devices"]["device_db"])
+        self._device_collection = get_collection("devices")
         self._device_collection.create_index([("name", pymongo.HASHED)])
         self.device_list = get_all_devices()
         self._lock = Lock()
@@ -65,17 +81,18 @@ class DeviceView:
                 "type": device.__class__.__name__,
                 "description": device.description,
                 "task_id": None,
+                "created_at": datetime.now(),
                 "last_updated": datetime.now(),
                 **asdict(device),
             })
 
-    def clean_up_device_db(self):
+    def clean_up_device_collection(self):
         """
-        Clean up the device database
+        Clean up the device collection
         """
         self._device_collection.drop()
 
-    def request_devices(self, task_id: ObjectId, *device_type: Type[BaseDevice]):
+    def request_devices(self, task_id: ObjectId, *device_type: Type[BaseDevice]) -> DevicesLock:
         """
         Request a list of device, this function will return until all the requested device is ready.
 
@@ -87,7 +104,7 @@ class DeviceView:
             *device_type: the requested device types
 
         Returns:
-
+            A context manager that you can get value, see also: :py:class:`DeviceLock <DeviceLock>`
         """
         if len(device_type) != len(set(device_type)):
             raise ValueError("Currently we do not allow duplicated devices in one request.")
