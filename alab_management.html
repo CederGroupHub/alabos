@@ -36,7 +36,7 @@
     <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="alab_management.device_manager package" href="alab_management.device_manager.html" />
+    <link rel="next" title="alab_management.device_view package" href="alab_management.device_view.html" />
     <link rel="prev" title="alab_management" href="modules.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -103,18 +103,13 @@
     </label>
     <ul>
      <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.device_manager.html">
-       alab_management.device_manager package
+      <a class="reference internal" href="alab_management.device_view.html">
+       alab_management.device_view package
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.executor.html">
-       alab_management.executor package
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.sample_manager.html">
-       alab_management.sample_manager package
+      <a class="reference internal" href="alab_management.sample_view.html">
+       alab_management.sample_view package
       </a>
      </li>
      <li class="toctree-l3">
@@ -123,8 +118,8 @@
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.task_manager.html">
-       alab_management.task_manager package
+      <a class="reference internal" href="alab_management.task_view.html">
+       alab_management.task_view package
       </a>
      </li>
      <li class="toctree-l3">
@@ -236,13 +231,23 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#alab-management-db-module">
+  <a class="reference internal nav-link" href="#module-alab_management.db">
    alab_management.db module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#alab-management-executor-module">
+   alab_management.executor module
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#alab-management-logger-module">
    alab_management.logger module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#alab-management-task-manager-module">
+   alab_management.task_manager module
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -267,48 +272,37 @@
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="alab_management.device_manager.html">alab_management.device_manager package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.device_manager.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.device_manager.html#module-alab_management.device_manager.base_device">alab_management.device_manager.base_device module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.device_manager.html#alab-management-device-manager-device-view-module">alab_management.device_manager.device_view module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.device_manager.html#module-contents">Module contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="alab_management.device_view.html">alab_management.device_view package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="alab_management.device_view.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="alab_management.device_view.html#module-alab_management.device_view.device">alab_management.device_view.device module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="alab_management.device_view.html#alab-management-device-view-device-view-module">alab_management.device_view.device_view module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="alab_management.device_view.html#module-contents">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="alab_management.executor.html">alab_management.executor package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.executor.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.executor.html#module-alab_management.executor.executor">alab_management.executor.executor module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.executor.html#module-alab_management.executor">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="alab_management.sample_manager.html">alab_management.sample_manager package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.sample_manager.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.sample_manager.html#module-alab_management.sample_manager.sample">alab_management.sample_manager.sample module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.sample_manager.html#alab-management-sample-manager-sample-view-module">alab_management.sample_manager.sample_view module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.sample_manager.html#module-contents">Module contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="alab_management.sample_view.html">alab_management.sample_view package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="alab_management.sample_view.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="alab_management.sample_view.html#module-alab_management.sample_view.sample">alab_management.sample_view.sample module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="alab_management.sample_view.html#alab-management-sample-view-sample-view-module">alab_management.sample_view.sample_view module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="alab_management.sample_view.html#module-contents">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="alab_management.scripts.html">alab_management.scripts package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="alab_management.scripts.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="alab_management.scripts.html#alab-management-scripts-cleanup-lab-module">alab_management.scripts.cleanup_lab module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.scripts.html#alab-management-scripts-launch-module">alab_management.scripts.launch module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.scripts.html#alab-management-scripts-setup-lab-module">alab_management.scripts.setup_lab module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="alab_management.scripts.html#alab-management-scripts-launch-lab-module">alab_management.scripts.launch_lab module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="alab_management.scripts.html#module-contents">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="alab_management.task_manager.html">alab_management.task_manager package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.task_manager.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.task_manager.html#module-alab_management.task_manager.base_operation">alab_management.task_manager.base_operation module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.task_manager.html#module-alab_management.task_manager.compiler">alab_management.task_manager.compiler module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.task_manager.html#module-alab_management.task_manager.task_manager">alab_management.task_manager.task_manager module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.task_manager.html#module-alab_management.task_manager.task_view">alab_management.task_manager.task_view module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.task_manager.html#module-alab_management.task_manager">Module contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="alab_management.task_view.html">alab_management.task_view package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="alab_management.task_view.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="alab_management.task_view.html#alab-management-task-view-task-module">alab_management.task_view.task module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="alab_management.task_view.html#alab-management-task-view-task-view-module">alab_management.task_view.task_view module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="alab_management.task_view.html#module-contents">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="alab_management.utils.html">alab_management.utils package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="alab_management.utils.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.utils.html#alab-management-utils-fake-device-module">alab_management.utils.fake_device module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="alab_management.utils.html#alab-management-utils-module-ops-module">alab_management.utils.module_ops module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.utils.html#alab-management-utils-typing-ops-module">alab_management.utils.typing_ops module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="alab_management.utils.html#module-contents">Module contents</a></li>
 </ul>
 </li>
@@ -321,11 +315,30 @@
 <div class="section" id="alab-management-config-module">
 <h2>alab_management.config module<a class="headerlink" href="#alab-management-config-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="alab-management-db-module">
-<h2>alab_management.db module<a class="headerlink" href="#alab-management-db-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-alab_management.db">
+<span id="alab-management-db-module"></span><h2>alab_management.db module<a class="headerlink" href="#module-alab_management.db" title="Permalink to this headline">¶</a></h2>
+<p>A convenient wrapper for MongoClient
+in case we need to add authentication procedure</p>
+<dl class="py function">
+<dt id="alab_management.db.get_collection">
+<code class="sig-name descname">get_collection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/db.html#get_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.db.get_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get collection by name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="alab-management-executor-module">
+<h2>alab_management.executor module<a class="headerlink" href="#alab-management-executor-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="alab-management-logger-module">
 <h2>alab_management.logger module<a class="headerlink" href="#alab-management-logger-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="alab-management-task-manager-module">
+<h2>alab_management.task_manager module<a class="headerlink" href="#alab-management-task-manager-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-contents">
 <h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
@@ -352,10 +365,10 @@
         </a>
     </div>
      <div id="next">
-        <a class="right-next" href="alab_management.device_manager.html" title="next page">
+        <a class="right-next" href="alab_management.device_view.html" title="next page">
             <div class="prevnext-info">
                 <p class="prevnext-label">next</p>
-                <p class="prevnext-title">alab_management.device_manager package</p>
+                <p class="prevnext-title">alab_management.device_view package</p>
             </div>
             <i class="prevnext-label fas fa-angle-right"></i>
         </a>
