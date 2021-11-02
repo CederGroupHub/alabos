@@ -4,8 +4,8 @@ from alab_management.op_def import add_operation
 from .devices.furnace import Furnace
 from .devices.robot_arm import RobotArm
 
-from .tasks.heating import Heating
-from .tasks.moving import Moving
+from .operations.heating import Heating
+from .operations.moving import Moving
 
 add_device(Furnace("furnace_1", address="127.0.0.1"))
 add_device(Furnace("furnace_2", address="127.0.0.2"))

@@ -28,8 +28,8 @@ def load_definition():
     """
     Load device and task definitions from file (specified in config file)
     """
-    import_module_from_path(config.path.parent / config["general"]["definition_dir"]
-                            if not os.path.isabs(config["general"]["definition_dir"])
+    import_module_from_path(config.path.parent / config["general"]["working_dir"]
+                            if not os.path.isabs(config["general"]["working_dir"])
                             else Path(config["general"]["definition_dir"]))
 
 

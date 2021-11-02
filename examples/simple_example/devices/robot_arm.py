@@ -1,8 +1,7 @@
 from dataclasses import dataclass, field
 from typing import ClassVar
 
-from alab_management.device_def import BaseDevice
-from alab_management.sample_position import SamplePosition
+from alab_management import BaseDevice, SamplePosition
 
 
 @dataclass

@@ -1,10 +1,9 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import ClassVar
 
 from alab_control.furnace_epc_3016 import FurnaceController
 
-from alab_management.device_def import BaseDevice
-from alab_management.sample_position import SamplePosition
+from alab_management import BaseDevice, SamplePosition
 
 
 @dataclass
@@ -12,11 +11,9 @@ class Furnace(BaseDevice):
     name: str
     address: str
     port: int = 502
+    driver: FurnaceController = field(default=None, init=False)
 
     description: ClassVar[str] = "Simple furnace"
-
-    def __post_init__(self):
-        self.driver = None
 
     def init(self):
         self.driver = FurnaceController(address=self.address)
