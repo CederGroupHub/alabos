@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>alab_management.device_view.device &#8212; Alab Management</title>
+    <title>alab_management.scripts.cleanup_lab &#8212; Alab Management</title>
     
   <link href="../../../_static/css/theme.css" rel="stylesheet" />
   <link href="../../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -199,77 +199,21 @@
         
               <div>
                 
-  <h1>Source code for alab_management.device_view.device</h1><div class="highlight"><pre>
+  <h1>Source code for alab_management.scripts.cleanup_lab</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Define the base class of devices</span>
+<span class="sd">To remove all the device, sample position definition from database</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">..device_view</span> <span class="kn">import</span> <span class="n">DeviceView</span>
+<span class="kn">from</span> <span class="nn">..sample_view</span> <span class="kn">import</span> <span class="n">SampleView</span>
 
 
-<div class="viewcode-block" id="SamplePosition"><a class="viewcode-back" href="../../../alab_management.device_view.html#alab_management.device_view.device.SamplePosition">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">SamplePosition</span><span class="p">:</span>
+<div class="viewcode-block" id="cleanup_lab"><a class="viewcode-back" href="../../../alab_management.scripts.html#alab_management.scripts.cleanup_lab.cleanup_lab">[docs]</a><span class="k">def</span> <span class="nf">cleanup_lab</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A sample position in the lab</span>
-
-<span class="sd">    Sample position is a position in the lab that can hold sample,</span>
-<span class="sd">    it is not a geographic coordinate in the lab, but a defined</span>
-<span class="sd">    position in the lab</span>
-
-<span class="sd">    - ``name``: the name of this sample position, which is the unique</span>
-<span class="sd">      identifier of a sample position</span>
-<span class="sd">    - ``description``: a string that describes the sample position briefly</span>
+<span class="sd">    Drop device, sample_position collection from MongoDB</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">hash</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="BaseDevice"><a class="viewcode-back" href="../../../alab_management.device_view.html#alab_management.device_view.device.BaseDevice">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">BaseDevice</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The abstract class of device</span>
-
-<span class="sd">    All the defined classes should be inherited from this class</span>
-
-<span class="sd">    - ``name``: the name of device, which is the unique identifier of this device</span>
-<span class="sd">    - ``description``: description of this kind of device, which can include</span>
-<span class="sd">      the device type, how to set up and so on.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">description</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-
-    <span class="nd">@property</span>
-    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">sample_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SamplePosition</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        The sample positions describe the position that can hold a sample.</span>
-
-<span class="sd">        .. note::</span>
-<span class="sd">          It doesn&#39;t matter in which device class a sample position is defined.</span>
-<span class="sd">          We use ``name`` attribute to identify them.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
-
-
-<span class="n">_device_registry</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BaseDevice</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-
-
-<div class="viewcode-block" id="add_device"><a class="viewcode-back" href="../../../alab_management.device_view.html#alab_management.device_view.device.add_device">[docs]</a><span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">BaseDevice</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Register a device instance</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">_device_registry</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Duplicated device name </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
-    <span class="n">_device_registry</span><span class="p">[</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">device</span></div>
-
-
-<div class="viewcode-block" id="get_all_devices"><a class="viewcode-back" href="../../../alab_management.device_view.html#alab_management.device_view.device.get_all_devices">[docs]</a><span class="k">def</span> <span class="nf">get_all_devices</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BaseDevice</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Get all the device names in the device registry</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_device_registry</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+    <span class="n">DeviceView</span><span class="p">()</span><span class="o">.</span><span class="n">clean_up_device_collection</span><span class="p">()</span>
+    <span class="n">SampleView</span><span class="p">()</span><span class="o">.</span><span class="n">clean_up_sample_position_collection</span><span class="p">()</span></div>
 </pre></div>
 
               </div>
