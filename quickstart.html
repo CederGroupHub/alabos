@@ -103,8 +103,8 @@
     </label>
     <ul>
      <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.device_def.html">
-       alab_management.device_def package
+      <a class="reference internal" href="alab_management.device_manager.html">
+       alab_management.device_manager package
       </a>
      </li>
      <li class="toctree-l3">
@@ -113,18 +113,8 @@
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.lab_status.html">
-       alab_management.lab_status package
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.logger.html">
-       alab_management.logger package
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.op_def.html">
-       alab_management.op_def package
+      <a class="reference internal" href="alab_management.sample_manager.html">
+       alab_management.sample_manager package
       </a>
      </li>
      <li class="toctree-l3">
@@ -259,7 +249,7 @@
 </div>
 <div class="section" id="defining-devices">
 <h2>Defining devices<a class="headerlink" href="#defining-devices" title="Permalink to this headline">¶</a></h2>
-<p>To define a device, you should inherit from <a class="reference internal" href="alab_management.device_def.html#alab_management.device_def.base_device.BaseDevice" title="alab_management.device_def.base_device.BaseDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDevice</span></code></a>.
+<p>To define a device, you should inherit from <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDevice</span></code>.
 Here is the code sample. For more, please refer to <a class="reference external" href="https://github.com/idocx/alab_management/tree/master/example/devices">example</a> in the repo .</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -296,8 +286,8 @@ Here is the code sample. For more, please refer to <a class="reference external"
 </div>
 <div class="section" id="defining-tasks">
 <h2>Defining tasks<a class="headerlink" href="#defining-tasks" title="Permalink to this headline">¶</a></h2>
-<p>Similar to define devices, we need to inherit classes from <a class="reference internal" href="alab_management.op_def.html#alab_management.op_def.base_operation.BaseOperation" title="alab_management.op_def.base_operation.BaseOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOperation</span></code></a>.</p>
-<p>For moving operation, we need it to inherit from <a class="reference internal" href="alab_management.op_def.html#alab_management.op_def.base_operation.BaseMovingOperation" title="alab_management.op_def.base_operation.BaseMovingOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMovingOperation</span></code></a>.</p>
+<p>Similar to define devices, we need to inherit classes from <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOperation</span></code>.</p>
+<p>For moving operation, we need it to inherit from <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMovingOperation</span></code>.</p>
 </div>
 </div>
 

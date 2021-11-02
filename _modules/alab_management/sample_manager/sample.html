@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>alab_management.lab_status.task_view &#8212; Alab Management</title>
+    <title>alab_management.sample_manager.sample &#8212; Alab Management</title>
     
   <link href="../../../_static/css/theme.css" rel="stylesheet" />
   <link href="../../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -101,8 +101,8 @@
     </label>
     <ul>
      <li class="toctree-l3">
-      <a class="reference internal" href="../../../alab_management.device_def.html">
-       alab_management.device_def package
+      <a class="reference internal" href="../../../alab_management.device_manager.html">
+       alab_management.device_manager package
       </a>
      </li>
      <li class="toctree-l3">
@@ -111,18 +111,8 @@
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="../../../alab_management.lab_status.html">
-       alab_management.lab_status package
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../alab_management.logger.html">
-       alab_management.logger package
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../alab_management.op_def.html">
-       alab_management.op_def package
+      <a class="reference internal" href="../../../alab_management.sample_manager.html">
+       alab_management.sample_manager package
       </a>
      </li>
      <li class="toctree-l3">
@@ -214,25 +204,22 @@
         
               <div>
                 
-  <h1>Source code for alab_management.lab_status.task_view</h1><div class="highlight"><pre>
-<div class="viewcode-block" id="TaskView"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.task_view.TaskView">[docs]</a><span></span><span class="k">class</span> <span class="nc">TaskView</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Task view support operations related to current task queue.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="TaskView.query_task"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.task_view.TaskView.query_task">[docs]</a>    <span class="k">def</span> <span class="nf">query_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">):</span>
-        <span class="o">...</span></div>
+  <h1>Source code for alab_management.sample_manager.sample</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 
-<div class="viewcode-block" id="TaskView.delete_task"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.task_view.TaskView.delete_task">[docs]</a>    <span class="k">def</span> <span class="nf">delete_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">):</span>
-        <span class="o">...</span></div>
+<span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 
-<div class="viewcode-block" id="TaskView.update_task"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.task_view.TaskView.update_task">[docs]</a>    <span class="k">def</span> <span class="nf">update_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">,</span> <span class="n">updated</span><span class="p">):</span>
-        <span class="o">...</span></div>
 
-<div class="viewcode-block" id="TaskView.get_next_task"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.task_view.TaskView.get_next_task">[docs]</a>    <span class="k">def</span> <span class="nf">get_next_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">):</span>
-        <span class="o">...</span></div>
+<div class="viewcode-block" id="Sample"><a class="viewcode-back" href="../../../alab_management.sample_manager.html#alab_management.sample_manager.sample.Sample">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Sample</span><span class="p">:</span>
+    <span class="n">_id</span><span class="p">:</span> <span class="n">ObjectId</span>
+    <span class="n">position</span><span class="p">:</span> <span class="nb">str</span></div>
 
-<div class="viewcode-block" id="TaskView.get_prev_task"><a class="viewcode-back" href="../../../alab_management.lab_status.html#alab_management.lab_status.task_view.TaskView.get_prev_task">[docs]</a>    <span class="k">def</span> <span class="nf">get_prev_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">):</span>
-        <span class="o">...</span></div></div>
+
+<div class="viewcode-block" id="SamplePosition"><a class="viewcode-back" href="../../../alab_management.sample_manager.html#alab_management.sample_manager.sample.SamplePosition">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">SamplePosition</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">hash</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 </pre></div>
 
               </div>

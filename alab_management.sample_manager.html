@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>alab_management.logger package &#8212; Alab Management</title>
+    <title>alab_management.sample_manager package &#8212; Alab Management</title>
     
   <link href="_static/css/theme.css" rel="stylesheet" />
   <link href="_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -36,8 +36,8 @@
     <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="alab_management.op_def package" href="alab_management.op_def.html" />
-    <link rel="prev" title="alab_management.lab_status package" href="alab_management.lab_status.html" />
+    <link rel="next" title="alab_management.scripts package" href="alab_management.scripts.html" />
+    <link rel="prev" title="alab_management.executor package" href="alab_management.executor.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
     
@@ -103,8 +103,8 @@
     </label>
     <ul class="current">
      <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.device_def.html">
-       alab_management.device_def package
+      <a class="reference internal" href="alab_management.device_manager.html">
+       alab_management.device_manager package
       </a>
      </li>
      <li class="toctree-l3">
@@ -112,19 +112,9 @@
        alab_management.executor package
       </a>
      </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.lab_status.html">
-       alab_management.lab_status package
-      </a>
-     </li>
      <li class="toctree-l3 current active">
       <a class="current reference internal" href="#">
-       alab_management.logger package
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.op_def.html">
-       alab_management.op_def package
+       alab_management.sample_manager package
       </a>
      </li>
      <li class="toctree-l3">
@@ -187,7 +177,7 @@
         <!-- ipynb file if we had a myst markdown file -->
         
         <!-- Download raw file -->
-        <a class="dropdown-buttons" href="_sources/alab_management.logger.rst.txt"><button type="button"
+        <a class="dropdown-buttons" href="_sources/alab_management.sample_manager.rst.txt"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
                 data-placement="left">.rst</button></a>
         <!-- Download PDF via print -->
@@ -231,7 +221,22 @@
             <nav id="bd-toc-nav" aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-alab_management.logger">
+  <a class="reference internal nav-link" href="#submodules">
+   Submodules
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-alab_management.sample_manager.sample">
+   alab_management.sample_manager.sample module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#alab-management-sample-manager-sample-view-module">
+   alab_management.sample_manager.sample_view module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-contents">
    Module contents
   </a>
  </li>
@@ -246,10 +251,46 @@
         
               <div>
                 
-  <div class="section" id="alab-management-logger-package">
-<h1>alab_management.logger package<a class="headerlink" href="#alab-management-logger-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-alab_management.logger">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-alab_management.logger" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="alab-management-sample-manager-package">
+<h1>alab_management.sample_manager package<a class="headerlink" href="#alab-management-sample-manager-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-alab_management.sample_manager.sample">
+<span id="alab-management-sample-manager-sample-module"></span><h2>alab_management.sample_manager.sample module<a class="headerlink" href="#module-alab_management.sample_manager.sample" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="alab_management.sample_manager.sample.Sample">
+<em class="property">class </em><code class="sig-name descname">Sample</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_id</span></em>, <em class="sig-param"><span class="n">position</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_manager/sample.html#Sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_manager.sample.Sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt id="alab_management.sample_manager.sample.Sample.position">
+<code class="sig-name descname">position</code><em class="property">: str</em><a class="headerlink" href="#alab_management.sample_manager.sample.Sample.position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="alab_management.sample_manager.sample.SamplePosition">
+<em class="property">class </em><code class="sig-name descname">SamplePosition</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">description</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_manager/sample.html#SamplePosition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_manager.sample.SamplePosition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt id="alab_management.sample_manager.sample.SamplePosition.description">
+<code class="sig-name descname">description</code><em class="property">: str</em><a class="headerlink" href="#alab_management.sample_manager.sample.SamplePosition.description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="alab_management.sample_manager.sample.SamplePosition.name">
+<code class="sig-name descname">name</code><em class="property">: str</em><a class="headerlink" href="#alab_management.sample_manager.sample.SamplePosition.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="alab-management-sample-manager-sample-view-module">
+<h2>alab_management.sample_manager.sample_view module<a class="headerlink" href="#alab-management-sample-manager-sample-view-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -264,19 +305,19 @@
 <div class='prev-next-bottom'>
     
     <div id="prev">
-        <a class="left-prev" href="alab_management.lab_status.html" title="previous page">
+        <a class="left-prev" href="alab_management.executor.html" title="previous page">
             <i class="prevnext-label fas fa-angle-left"></i>
             <div class="prevnext-info">
                 <p class="prevnext-label">previous</p>
-                <p class="prevnext-title">alab_management.lab_status package</p>
+                <p class="prevnext-title">alab_management.executor package</p>
             </div>
         </a>
     </div>
      <div id="next">
-        <a class="right-next" href="alab_management.op_def.html" title="next page">
+        <a class="right-next" href="alab_management.scripts.html" title="next page">
             <div class="prevnext-info">
                 <p class="prevnext-label">next</p>
-                <p class="prevnext-title">alab_management.op_def package</p>
+                <p class="prevnext-title">alab_management.scripts package</p>
             </div>
             <i class="prevnext-label fas fa-angle-right"></i>
         </a>
