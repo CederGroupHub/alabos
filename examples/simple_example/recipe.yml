@@ -1,0 +1,71 @@
+# Assume all is done in vials
+- synthesis_operations:
+  - type: add_solid
+    parameters:
+      - precursors:
+        - name: LiOH
+          amount: 1.2
+          unit: g
+        - name: Co2O3
+          amount: 0.5
+          unit: g
+  - type: firing
+    parameters:
+      - set_points:
+        - type: ramp
+          time: 30
+          time_unit: m
+          temperature: 800
+          temp_unit: C
+        - type: dwell
+          time: 8
+          time_unit: h
+          temperature: 800
+          temp_unit: C
+        - type: step
+          time: 0
+          time_unit: h
+          temperature: 0
+          temp_unit: C
+        - type: end
+          time: 0
+          time_unit: h
+          temperature: 0
+          temp_unit: C
+  - type: weigh
+    parameters:
+  - type: add_liquid
+    parameters:
+      - precursors:
+        - name: ethanol
+          amount: 10
+          unit: ml
+  - type: firing
+    parameters:
+      - set_points:
+        - type: ramp
+          time: 30
+          time_unit: m
+          temperature: 800
+          temp_unit: C
+        - type: dwell
+          time: 8
+          time_unit: h
+          temperature: 800
+          temp_unit: C
+        - type: step
+          time: 0
+          time_unit: h
+          temperature: 0
+          temp_unit: C
+        - type: end
+          time: 0
+          time_unit: h
+          temperature: 0
+          temp_unit: C
+  - type: xrd
+    parameters:
+      degree_min: 20
+      degree_high: 80
+      time: 10
+      time_unit: m
