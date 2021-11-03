@@ -106,6 +106,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="../../../alab_management.experiment_view.html">
+       alab_management.experiment_view package
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="../../../alab_management.sample_view.html">
        alab_management.sample_view package
       </a>
@@ -257,7 +262,8 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="n">position</span><span class="p">})</span> <span class="ow">is</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="SampleView.create_sample"><a class="viewcode-back" href="../../../alab_management.sample_view.html#alab_management.sample_view.sample_view.SampleView.create_sample">[docs]</a>    <span class="k">def</span> <span class="nf">create_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectId</span><span class="p">:</span>
+<div class="viewcode-block" id="SampleView.create_sample"><a class="viewcode-back" href="../../../alab_management.sample_view.html#alab_management.sample_view.sample_view.SampleView.create_sample">[docs]</a>    <span class="k">def</span> <span class="nf">create_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                      <span class="n">position</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectId</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a sample and return its uid in the database</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -265,6 +271,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown position name: </span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
             <span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="n">position</span><span class="p">,</span>
             <span class="s2">&quot;created_at&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
             <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>

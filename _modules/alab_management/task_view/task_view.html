@@ -106,6 +106,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="../../../alab_management.experiment_view.html">
+       alab_management.experiment_view package
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="../../../alab_management.sample_view.html">
        alab_management.sample_view package
       </a>
@@ -378,7 +383,7 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">next_tasks</span><span class="p">,</span> <span class="n">ObjectId</span><span class="p">):</span>
             <span class="n">next_tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">next_tasks</span><span class="p">]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_task_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$push&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_task_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$addToSet&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="s2">&quot;next_tasks&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$each&quot;</span><span class="p">:</span> <span class="n">next_tasks</span><span class="p">},</span>
             <span class="s2">&quot;prev_tasks&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$each&quot;</span><span class="p">:</span> <span class="n">prev_tasks</span><span class="p">},</span>
         <span class="p">},</span> <span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>

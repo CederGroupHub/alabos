@@ -108,6 +108,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="alab_management.experiment_view.html">
+       alab_management.experiment_view package
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="alab_management.sample_view.html">
        alab_management.sample_view package
       </a>
@@ -241,13 +246,13 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-alab_management.logger">
-   alab_management.logger module
+  <a class="reference internal nav-link" href="#module-alab_management.experiment_manager">
+   alab_management.experiment_manager module
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#alab-management-task-manager-module">
-   alab_management.task_manager module
+  <a class="reference internal nav-link" href="#module-alab_management.logger">
+   alab_management.logger module
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -279,6 +284,13 @@
 <li class="toctree-l2"><a class="reference internal" href="alab_management.device_view.html#module-alab_management.device_view">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="alab_management.experiment_view.html">alab_management.experiment_view package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="alab_management.experiment_view.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="alab_management.experiment_view.html#module-alab_management.experiment_view.experiment">alab_management.experiment_view.experiment module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="alab_management.experiment_view.html#module-alab_management.experiment_view.experiment_view">alab_management.experiment_view.experiment_view module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="alab_management.experiment_view.html#module-alab_management.experiment_view">Module contents</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="alab_management.sample_view.html">alab_management.sample_view package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="alab_management.sample_view.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="alab_management.sample_view.html#module-alab_management.sample_view.sample">alab_management.sample_view.sample module</a></li>
@@ -303,6 +315,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="alab_management.utils.html">alab_management.utils package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="alab_management.utils.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="alab_management.utils.html#module-alab_management.utils.graph_op">alab_management.utils.graph_op module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="alab_management.utils.html#module-alab_management.utils.module_ops">alab_management.utils.module_ops module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="alab_management.utils.html#module-alab_management.utils">Module contents</a></li>
 </ul>
@@ -361,6 +374,30 @@ process samples.</p>
 <em class="property">exception </em><code class="sig-name descname">ParameterError</code><a class="reference internal" href="_modules/alab_management/executor.html#ParameterError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.executor.ParameterError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 <p>The exception raised when parameters of a task is wrong</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-alab_management.experiment_manager">
+<span id="alab-management-experiment-manager-module"></span><h2>alab_management.experiment_manager module<a class="headerlink" href="#module-alab_management.experiment_manager" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="alab_management.experiment_manager.ExperimentManager">
+<em class="property">class </em><code class="sig-name descname">ExperimentManager</code><a class="reference internal" href="_modules/alab_management/experiment_manager.html#ExperimentManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.experiment_manager.ExperimentManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="alab_management.experiment_manager.ExperimentManager.handle_pending_experiments">
+<code class="sig-name descname">handle_pending_experiments</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/experiment_manager.html#ExperimentManager.handle_pending_experiments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.experiment_manager.ExperimentManager.handle_pending_experiments" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="alab_management.experiment_manager.ExperimentManager.mark_completed_experiments">
+<code class="sig-name descname">mark_completed_experiments</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/experiment_manager.html#ExperimentManager.mark_completed_experiments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.experiment_manager.ExperimentManager.mark_completed_experiments" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="alab_management.experiment_manager.ExperimentManager.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/experiment_manager.html#ExperimentManager.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.experiment_manager.ExperimentManager.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </div>
@@ -483,9 +520,6 @@ process samples.</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="alab-management-task-manager-module">
-<h2>alab_management.task_manager module<a class="headerlink" href="#alab-management-task-manager-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-contents">
 <h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
