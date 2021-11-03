@@ -55,7 +55,8 @@ class SampleView:
 
         return self._sample_collection.find_one({"position": position}) is None
 
-    def create_sample(self, position: Optional[str] = None) -> ObjectId:
+    def create_sample(self, name: str,
+                      position: Optional[str] = None) -> ObjectId:
         """
         Create a sample and return its uid in the database
         """
@@ -63,6 +64,7 @@ class SampleView:
             raise ValueError(f"Unknown position name: {position}")
 
         result = self._sample_collection.insert_one({
+            "name": name,
             "position": position,
             "created_at": datetime.now(),
             "last_updated": datetime.now(),

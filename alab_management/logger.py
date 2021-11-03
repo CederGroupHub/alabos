@@ -4,7 +4,7 @@ Logger module takes charge of recording information, warnings and errors during 
 
 from datetime import datetime, timedelta
 from enum import Enum, auto, unique
-from typing import Dict, Any, Union, Optional, List, Iterable
+from typing import Dict, Any, Union, Optional, Iterable
 
 from bson import ObjectId
 
@@ -34,6 +34,7 @@ class DBLogger:
     """
     A custom logger that wrote data to database, where we predefined some log pattern
     """
+
     def __init__(self, task_id: Optional[ObjectId]):
         self.task_id = task_id
         self._logging_collection = get_collection("logs")

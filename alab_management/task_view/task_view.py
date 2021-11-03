@@ -176,7 +176,7 @@ class TaskView:
         elif isinstance(next_tasks, ObjectId):
             next_tasks = [next_tasks]
 
-        self._task_collection.update_one({"_id": task_id}, {"$push": {
+        self._task_collection.update_one({"_id": task_id}, {"$addToSet": {
             "next_tasks": {"$each": next_tasks},
             "prev_tasks": {"$each": prev_tasks},
         }, "$set": {
