@@ -72,14 +72,14 @@ class SampleView:
 
         return result.inserted_id
 
-    def get_sample(self, sample_id: ObjectId) -> Sample:
+    def get_sample(self, sample_id: ObjectId) -> Optional[Sample]:
         """
         Get a sample by sample_id
         """
         result = self._sample_collection.find_one({"_id": sample_id})
-        if result is None:
-            raise ValueError(f"Cannot find sample with id: {sample_id}")
-        return Sample(**result)
+        if result is not None:
+            return Sample(**result)
+        return None
 
     def update_sample_position(self, sample_id: ObjectId, position: Optional[str]):
         """

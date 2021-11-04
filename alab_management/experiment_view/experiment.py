@@ -1,7 +1,5 @@
-from typing import Optional, List, Any, Dict
+from typing import List, Any, Dict
 
-from bson import ObjectId
-from pydantic import Field
 from pydantic.main import BaseModel
 
 

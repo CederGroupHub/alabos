@@ -1,9 +1,8 @@
 import time
-from dataclasses import asdict
 from datetime import datetime
 from enum import unique, Enum, auto
 from threading import Lock
-from typing import Type, List, Optional, Union, Dict
+from typing import Type, List, Optional, Union, Dict, Any
 
 import pymongo
 from bson import ObjectId
@@ -36,16 +35,21 @@ class DevicesLock:
 
         # will automatically release the devices when going outside the with block
     """
+
     def __init__(self, devices: Dict[Type[BaseDevice], BaseDevice], device_view: "DeviceView"):
-        self.devices: Dict[Type[BaseDevice], BaseDevice] = devices
+        self._devices: Dict[Type[BaseDevice], BaseDevice] = devices
         self._device_view: "DeviceView" = device_view
 
+    @property
+    def device(self):
+        return self._devices
+
     def release(self):
-        for device in self.devices.values():
+        for device in self._devices.values():
             self._device_view.release_device(device)
 
     def __enter__(self):
-        return self.devices.copy()
+        return self._devices.copy()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.release()
@@ -60,7 +64,7 @@ class DeviceView:
     def __init__(self):
         self._device_collection = get_collection("devices")
         self._device_collection.create_index([("name", pymongo.HASHED)])
-        self.device_list = get_all_devices()
+        self._device_list = get_all_devices()
         self._lock = Lock()
 
     def add_devices_to_db(self):
@@ -71,7 +75,7 @@ class DeviceView:
         When one device's name has already appeared in the database, a ``NameError`` will be raised.
         Device name is a unique identifier for a device
         """
-        for device in self.device_list.values():
+        for device in self._device_list.values():
             if self._device_collection.find_one({"name": device.name}) is not None:
                 raise NameError(f"Duplicated device name {device.name}, did you cleanup the database?")
             self._device_collection.insert_one({
@@ -82,7 +86,6 @@ class DeviceView:
                 "task_id": None,
                 "created_at": datetime.now(),
                 "last_updated": datetime.now(),
-                **asdict(device),
             })
 
     def clean_up_device_collection(self):
@@ -113,11 +116,11 @@ class DeviceView:
             try:
                 self._lock.acquire(blocking=True)
                 for device in device_type:
-                    result = self.get_device(device_type=device, task_id=task_id, only_idle=True)
+                    result = self.get_device_by_type(device_type=device, task_id=task_id, only_idle=True)
                     if not result:
                         break
                     # just pick the first device
-                    idle_devices[device] = self.device_list[result[0]]
+                    idle_devices[device] = self._device_list[result[0]]
                 else:
                     for device in idle_devices.values():
                         self.occupy_device(device=device, task_id=task_id)
@@ -127,7 +130,10 @@ class DeviceView:
 
             time.sleep(1)
 
-    def get_device(self, device_type: Type[BaseDevice], task_id: ObjectId, only_idle: bool = True) -> List[str]:
+    def get_device(self, device_name: str) -> Optional[Dict[str, Any]]:
+        return self._device_collection.find_one({"name": device_name})
+
+    def get_device_by_type(self, device_type: Type[BaseDevice], task_id: ObjectId, only_idle: bool = True) -> List[str]:
         """
         Given device type, it will return all the device with this type.
 

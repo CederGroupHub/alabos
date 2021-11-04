@@ -1,5 +1,5 @@
 from enum import Enum, auto
-from typing import List, Any, Dict
+from typing import List, Any, Dict, Optional
 
 from bson import ObjectId
 
@@ -28,7 +28,7 @@ class ExperimentView:
     def __init__(self):
         self._experiment_collection = get_collection(config["experiment"]["experiment_collection"])
 
-    def create_experiment(self, experiment: Experiment):
+    def create_experiment(self, experiment: Experiment) -> ObjectId:
         """
         Create an experiment in the database
         Args:
@@ -44,15 +44,11 @@ class ExperimentView:
         """
         return self._experiment_collection.find({"status": status.name})
 
-    def get_experiment(self, exp_id: ObjectId) -> Dict[str, Any]:
+    def get_experiment(self, exp_id: ObjectId) -> Optional[Dict[str, Any]]:
         """
         Get an experiment by its id
         """
         experiment = self._experiment_collection.find_one({"_id": exp_id})
-
-        if experiment is None:
-            raise ValueError(f"Cannot find experiment with id: {exp_id}")
-
         return experiment
 
     def set_experiment_status(self, exp_id: ObjectId, status: ExperimentStatus):

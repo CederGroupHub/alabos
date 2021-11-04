@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum, auto
 from threading import Lock
-from typing import Any, Dict, List, Type, Union
+from typing import Any, Dict, List, Type, Union, Optional
 
 from bson import ObjectId
 
@@ -21,11 +21,13 @@ class TaskStatus(Enum):
 
     - ``WAITING``: the task cannot start now
     - ``READY``: the task is ready to submit
+    - ``PAUSED``: the task is hold for a while
     - ``RUNNING``: the task is currently running
     - ``ERROR``: the task encountered some errors during execution
     - ``COMPLETED``: the task is completed
     """
     WAITING = auto()
+    PAUSED = auto()
     READY = auto()
     RUNNING = auto()
     ERROR = auto()
@@ -80,13 +82,11 @@ class TaskView:
         })
         return result.inserted_id
 
-    def get_task(self, task_id: ObjectId) -> Dict[str, Any]:
+    def get_task(self, task_id: ObjectId) -> Optional[Dict[str, Any]]:
         """
         Get a task by its task id, which will return all the info stored in the database
         """
         result = self._task_collection.find_one({"_id": task_id})
-        if result is None:
-            raise ValueError(f"Cannot find task with id: {task_id}")
         return result
 
     def get_status(self, task_id: ObjectId) -> TaskStatus:
@@ -94,6 +94,8 @@ class TaskView:
         Get the status of a task
         """
         task = self.get_task(task_id=task_id)
+        if task is None:
+            raise ValueError(f"Non-exist task with id: {task_id}")
         return TaskStatus[task["status"]]
 
     def update_status(self, task_id: ObjectId, status: TaskStatus):
