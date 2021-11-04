@@ -1,19 +1,18 @@
-from dataclasses import dataclass, field
 from typing import ClassVar
+
+from alab_control.robot_arm_ur5e import URRobot
 
 from alab_management import BaseDevice, SamplePosition
 
 
-@dataclass
 class RobotArm(BaseDevice):
-    name: str
-    address: str
-    port: str = field(default=502)
-
     description: ClassVar[str] = "UR5e robot arm"
 
-    def init(self):
-        pass
+    def __init__(self, address: str, port: int, *args, **kwargs):
+        super(RobotArm, self).__init__(*args, **kwargs)
+        self.address = address
+        self.port = port
+        self.driver = URRobot(self.address, port=port)
 
     @property
     def sample_positions(self):
@@ -23,3 +22,6 @@ class RobotArm(BaseDevice):
                 description="The position that can hold the sample"
             ),
         ]
+
+    def emergent_stop(self):
+        self.driver.stop()

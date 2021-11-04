@@ -1,4 +1,3 @@
-from dataclasses import dataclass, field
 from typing import ClassVar
 
 from alab_control.furnace_epc_3016 import FurnaceController
@@ -6,17 +5,14 @@ from alab_control.furnace_epc_3016 import FurnaceController
 from alab_management import BaseDevice, SamplePosition
 
 
-@dataclass
 class Furnace(BaseDevice):
-    name: str
-    address: str
-    port: int = 502
-    driver: FurnaceController = field(default=None, init=False)
-
     description: ClassVar[str] = "Simple furnace"
 
-    def init(self):
-        self.driver = FurnaceController(address=self.address)
+    def __init__(self, address: str, port: int, *args, **kwargs):
+        super(Furnace, self).__init__(*args, **kwargs)
+        self.address = address
+        self.port = port
+        self.driver = FurnaceController(address=address, port=port)
 
     @property
     def sample_positions(self):
@@ -30,3 +26,6 @@ class Furnace(BaseDevice):
                 description="Temporary position to transfer samples"
             )
         ]
+
+    def emergent_stop(self):
+        self.driver.stop()

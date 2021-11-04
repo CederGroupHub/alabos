@@ -3,7 +3,6 @@ Define the base class of task
 """
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
 from typing import Dict, Type
 
 from bson import ObjectId
@@ -13,7 +12,6 @@ from ..logger import DBLogger
 from ..sample_view.sample_view import SampleView
 
 
-@dataclass
 class BaseTask(ABC):
     """
     The abstract class of task.
@@ -23,10 +21,13 @@ class BaseTask(ABC):
     - ``task_id``: the identifier of task
     - ``sample_id``: the id of sample to do tasks on
     """
-    task_id: ObjectId = field(hash=False, compare=False)
-    device_view: DeviceView = field(hash=False, compare=False)
-    sample_view: SampleView = field(hash=False, compare=False)
-    logger: DBLogger = field(hash=False, compare=False)
+
+    def __init__(self, task_id: ObjectId, device_view: DeviceView,
+                 sample_view: SampleView, logger: DBLogger):
+        self.task_id = task_id
+        self.device_view = device_view
+        self.sample_view = sample_view
+        self.logger = logger
 
     @abstractmethod
     def run(self):

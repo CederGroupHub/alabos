@@ -22,38 +22,32 @@ class ExperimentStatus(Enum):
 
 
 class ExperimentView:
+    """
+    Experiment view manages the experiment status, which is a collection of tasks and samples
+    """
     def __init__(self):
         self._experiment_collection = get_collection(config["experiment"]["experiment_collection"])
 
-    def create_experiment(self, name: str, samples: List[str], tasks: List[Dict[str, Any]]):
+    def create_experiment(self, experiment: Experiment):
         """
         Create an experiment in the database
         Args:
-            name: the name of current experiment
-            samples: list of sample names that will be handled in the experiment
-            tasks: the list of tasks that are included in this experiment, which should have
-                strucutre: {"task_id": ``ObjectId``, "parameters": ``Dict[str, Any]``, "samples": ``List[str]``,
-                "type": ``str``}
-
-        Returns:
-
+            experiment: the experiment object
         """
-
-        # first validate the format of Experiment
-        exp = Experiment(**{
-            "name": name,
-            "samples": [{"name": sample_name} for sample_name in samples],
-            "tasks": tasks,
-            "status": ExperimentStatus.PENDING.name,
-        })
-        result = self._experiment_collection.insert_one(exp.dict())
+        result = self._experiment_collection.insert_one(experiment.dict())
 
         return result.inserted_id
 
     def get_experiments_with_status(self, status: ExperimentStatus) -> List[Dict[str, Any]]:
+        """
+        Filter experiments by its status
+        """
         return self._experiment_collection.find({"status": status.name})
 
     def get_experiment(self, exp_id: ObjectId) -> Dict[str, Any]:
+        """
+        Get an experiment by its id
+        """
         experiment = self._experiment_collection.find_one({"_id": exp_id})
 
         if experiment is None:
@@ -62,6 +56,9 @@ class ExperimentView:
         return experiment
 
     def set_experiment_status(self, exp_id: ObjectId, status: ExperimentStatus):
+        """
+        Update the status of a experiment
+        """
         experiment = self._experiment_collection.find_one({"_id": exp_id})
 
         if experiment is None:
@@ -71,8 +68,13 @@ class ExperimentView:
             "status": status.name,
         }})
 
-    def assign_sample_task_id(self, exp_id, sample_ids: List[ObjectId],
+    def update_sample_task_id(self, exp_id, sample_ids: List[ObjectId],
                               task_ids: List[ObjectId]):
+        """
+        At the creation of experiment, the id of samples and tasks has not been assigned
+
+        Later, we will use this method to assign sample & task id
+        """
         experiment = self._experiment_collection.find_one({"_id": exp_id})
 
         if experiment is None:

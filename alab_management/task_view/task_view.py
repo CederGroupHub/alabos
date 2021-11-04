@@ -43,6 +43,7 @@ class TaskView:
 
     def create_task(
             self, task_type: str,
+            samples: Dict[str, ObjectId],
             parameters: Dict[str, Any],
             prev_tasks: Union[ObjectId, List[ObjectId]] = _MISSING,
             next_tasks: Union[ObjectId, List[ObjectId]] = _MISSING,
@@ -53,6 +54,8 @@ class TaskView:
         Args:
             task_type: the type of task, which should be a type name of class inherited from
               :py:class:`BaseTask <alab_management.task_view.task.BaseTask>`
+            samples: the samples that this task will handle, which will be passed to Task object
+              the same as parameters.
             parameters: the required tasks for this task
             prev_tasks: one or a list of ObjectId that refer to prev tasks of this task
               (which must be completed before current task)
@@ -68,6 +71,7 @@ class TaskView:
         result = self._task_collection.insert_one({
             "type": task_type,
             "status": TaskStatus.WAITING.name,
+            "samples": samples,
             "parameters": parameters,
             "prev_tasks": prev_tasks if prev_tasks is not _MISSING else [],
             "next_tasks": next_tasks if next_tasks is not _MISSING else [],

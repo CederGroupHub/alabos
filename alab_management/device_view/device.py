@@ -3,7 +3,7 @@ Define the base class of devices
 """
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import field, dataclass
 from typing import List, ClassVar, Dict
 
 
@@ -24,7 +24,6 @@ class SamplePosition:
     description: str = field(compare=False, hash=False)
 
 
-@dataclass
 class BaseDevice(ABC):
     """
     The abstract class of device
@@ -35,8 +34,11 @@ class BaseDevice(ABC):
     - ``description``: description of this kind of device, which can include
       the device type, how to set up and so on.
     """
-    name: str
+
     description: ClassVar[str] = ""
+
+    def __init__(self, name: str):
+        self.name = name
 
     @property
     @abstractmethod

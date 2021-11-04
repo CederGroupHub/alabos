@@ -7,7 +7,6 @@ from pydantic.main import BaseModel
 
 class _Sample(BaseModel):
     name: str
-    sample_id: Optional[ObjectId] = Field(default=None)
 
 
 class _Task(BaseModel):
@@ -17,6 +16,9 @@ class _Task(BaseModel):
 
 
 class Experiment(BaseModel):
+    """
+    This is the format that user should follow to write to experiment database
+    """
     name: str
     status: str
     samples: List[_Sample]

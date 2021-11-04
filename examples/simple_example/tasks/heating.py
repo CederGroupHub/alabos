@@ -1,12 +1,12 @@
-from dataclasses import dataclass, field
 from typing import List, Tuple
 
 from alab_management import BaseTask
 
 
-@dataclass
 class Heating(BaseTask):
-    set_points: List[Tuple[float, float]] = field(hash=True, compare=True)
+    def __init__(self, setpoints: List[Tuple[float, float]], *args, **kwargs):
+        super(Heating, self).__init__(*args, **kwargs)
+        self.setpoints = setpoints
 
     def run(self):
         ...

@@ -1,7 +1,6 @@
 import time
 from typing import Dict, Any
 
-from .experiment_view.experiment import Experiment
 from .experiment_view.experiment_view import ExperimentStatus, ExperimentView
 from .sample_view import SampleView
 from .task_view import TaskView, TaskStatus
@@ -28,28 +27,49 @@ class ExperimentManager:
         This method will scan the database to find out if there are
         any pending experiments and submit it to task database
         """
-        pending_experiments = self.experiment_view.get_experiments_with_status(ExperimentStatus.PENDING)
+        pending_experiments = self.experiment_view. \
+            get_experiments_with_status(ExperimentStatus.PENDING)
         for experiment in pending_experiments:
             self._handle_pending_experiment(experiment=experiment)
 
     def _handle_pending_experiment(self, experiment: Dict[str, Any]):
-        experiment = Experiment(**experiment).dict()  # first do data validation
         samples = experiment["samples"]
         tasks = experiment["tasks"]
-        sample_ids = [self.sample_view.create_sample(sample["name"]) for sample in samples]
-        task_ids = [self.task_view.create_task(task_type=task["type"], parameters=task["parameters"])
-                    for task in tasks]
 
-        task_graph = Graph(task_ids, {i: next_task for i, next_task in enumerate(tasks["next_tasks"])})
+        # check if there is any cycle in the graph
+        task_graph = Graph(
+            list(range(len(samples))),
+            {i: next_task for i, next_task in enumerate(tasks["next_tasks"])}
+        )
         if task_graph.has_cycle():
-            raise ValueError("Detect cycle in task graph, which is supposed to be a DAG (directed acyclic graph).")
+            raise ValueError("Detect cycle in task graph, which is supposed "
+                             "to be a DAG (directed acyclic graph).")
 
+        # create samples in the sample database
+        sample_ids = {sample["name"]: self.sample_view.create_sample(sample["name"])
+                      for sample in samples}
+
+        # create tasks in the task database
+        task_ids = []
+        for task in tasks:
+            samples = {k: sample_ids[v] for k, v in task["samples"].items()}
+            task_ids.append(self.task_view.create_task(task_type=task["type"],
+                                                       parameters=task["parameters"],
+                                                       samples=samples))
+
+        # change the content of graph's vertices
+        task_graph.vertices = task_ids
+
+        # add dependency to each task
         for task_id in task_ids:
             self.task_view.update_task_dependency(task_id, next_tasks=task_graph.get_children(task_id),
                                                   prev_tasks=task_graph.get_parents(task_id))
 
-        self.experiment_view.assign_sample_task_id(exp_id=experiment["_id"],
-                                                   sample_ids=sample_ids, task_ids=task_ids)
+        # write back the assign task & sample ids
+        self.experiment_view.update_sample_task_id(exp_id=experiment["_id"], sample_ids=list(sample_ids.values()),
+                                                   task_ids=task_ids)
+
+        # update the status of experiment to RUNNING (have handled by experiment manager)
         self.experiment_view.set_experiment_status(exp_id=experiment["_id"],
                                                    status=ExperimentStatus.RUNNING)
 
@@ -60,6 +80,8 @@ class ExperimentManager:
         running_experiments = self.experiment_view.get_experiments_with_status(ExperimentStatus.RUNNING)
         for experiment in running_experiments:
             task_ids = [task["task_id"] for task in experiment["tasks"]]
+
+            # if all the tasks of an experiment have been finished
             if all(self.task_view.get_status(task_id=task_id) is TaskStatus.COMPLETED
                    for task_id in task_ids):
                 self.experiment_view.set_experiment_status(exp_id=experiment["_id"],
