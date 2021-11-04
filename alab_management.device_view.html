@@ -37,7 +37,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="alab_management.experiment_view package" href="alab_management.experiment_view.html" />
-    <link rel="prev" title="alab_management.dashboard package" href="alab_management.dashboard.html" />
+    <link rel="prev" title="alab_management.dashboard.routes package" href="alab_management.dashboard.routes.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
     
@@ -102,10 +102,22 @@
      </i>
     </label>
     <ul class="current">
-     <li class="toctree-l3">
+     <li class="toctree-l3 has-children">
       <a class="reference internal" href="alab_management.dashboard.html">
        alab_management.dashboard package
       </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+      <label for="toctree-checkbox-3">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.dashboard.routes.html">
+         alab_management.dashboard.routes package
+        </a>
+       </li>
+      </ul>
      </li>
      <li class="toctree-l3 current active">
       <a class="current reference internal" href="#">
@@ -394,7 +406,17 @@ Device name is a unique identifier for a device</p>
 
 <dl class="py method">
 <dt id="alab_management.device_view.device_view.DeviceView.get_device">
-<code class="sig-name descname">get_device</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device_type</span></em>, <em class="sig-param"><span class="n">task_id</span></em>, <em class="sig-param"><span class="n">only_idle</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.get_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.get_device" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_device</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.get_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.get_device" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="alab_management.device_view.device_view.DeviceView.get_device_by_type">
+<code class="sig-name descname">get_device_by_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device_type</span></em>, <em class="sig-param"><span class="n">task_id</span></em>, <em class="sig-param"><span class="n">only_idle</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.get_device_by_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.get_device_by_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given device type, it will return all the device with this type.</p>
 <p>If only_idle set to True, only the idle devices will be returned (or ones have the same task id)</p>
 <dl class="field-list simple">
@@ -467,6 +489,11 @@ which is the returned type by <a class="reference internal" href="#alab_manageme
 </pre></div>
 </div>
 <dl class="py method">
+<dt id="alab_management.device_view.device_view.DevicesLock.device">
+<em class="property">property </em><code class="sig-name descname">device</code><a class="headerlink" href="#alab_management.device_view.device_view.DevicesLock.device" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="alab_management.device_view.device_view.DevicesLock.release">
 <code class="sig-name descname">release</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DevicesLock.release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device_view.DevicesLock.release" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -490,11 +517,11 @@ which is the returned type by <a class="reference internal" href="#alab_manageme
 <div class='prev-next-bottom'>
     
     <div id="prev">
-        <a class="left-prev" href="alab_management.dashboard.html" title="previous page">
+        <a class="left-prev" href="alab_management.dashboard.routes.html" title="previous page">
             <i class="prevnext-label fas fa-angle-left"></i>
             <div class="prevnext-info">
                 <p class="prevnext-label">previous</p>
-                <p class="prevnext-title">alab_management.dashboard package</p>
+                <p class="prevnext-title">alab_management.dashboard.routes package</p>
             </div>
         </a>
     </div>

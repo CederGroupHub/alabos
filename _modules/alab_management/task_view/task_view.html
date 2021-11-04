@@ -100,10 +100,22 @@
      </i>
     </label>
     <ul>
-     <li class="toctree-l3">
+     <li class="toctree-l3 has-children">
       <a class="reference internal" href="../../../alab_management.dashboard.html">
        alab_management.dashboard package
       </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+      <label for="toctree-checkbox-3">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../alab_management.dashboard.routes.html">
+         alab_management.dashboard.routes package
+        </a>
+       </li>
+      </ul>
      </li>
      <li class="toctree-l3">
       <a class="reference internal" href="../../../alab_management.device_view.html">
@@ -213,7 +225,7 @@
 <span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
 <span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Lock</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 
@@ -233,11 +245,13 @@
 
 <span class="sd">    - ``WAITING``: the task cannot start now</span>
 <span class="sd">    - ``READY``: the task is ready to submit</span>
+<span class="sd">    - ``PAUSED``: the task is hold for a while</span>
 <span class="sd">    - ``RUNNING``: the task is currently running</span>
 <span class="sd">    - ``ERROR``: the task encountered some errors during execution</span>
 <span class="sd">    - ``COMPLETED``: the task is completed</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">WAITING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">PAUSED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">READY</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">RUNNING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">ERROR</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
@@ -292,13 +306,11 @@
         <span class="p">})</span>
         <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span></div>
 
-<div class="viewcode-block" id="TaskView.get_task"><a class="viewcode-back" href="../../../alab_management.task_view.html#alab_management.task_view.task_view.TaskView.get_task">[docs]</a>    <span class="k">def</span> <span class="nf">get_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<div class="viewcode-block" id="TaskView.get_task"><a class="viewcode-back" href="../../../alab_management.task_view.html#alab_management.task_view.task_view.TaskView.get_task">[docs]</a>    <span class="k">def</span> <span class="nf">get_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a task by its task id, which will return all the info stored in the database</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">})</span>
-        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find task with id: </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="TaskView.get_status"><a class="viewcode-back" href="../../../alab_management.task_view.html#alab_management.task_view.task_view.TaskView.get_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TaskStatus</span><span class="p">:</span>
@@ -306,6 +318,8 @@
 <span class="sd">        Get the status of a task</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_task</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">task</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Non-exist task with id: </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">TaskStatus</span><span class="p">[</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]]</span></div>
 
 <div class="viewcode-block" id="TaskView.update_status"><a class="viewcode-back" href="../../../alab_management.task_view.html#alab_management.task_view.task_view.TaskView.update_status">[docs]</a>    <span class="k">def</span> <span class="nf">update_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">TaskStatus</span><span class="p">):</span>

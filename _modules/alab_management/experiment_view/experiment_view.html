@@ -100,10 +100,22 @@
      </i>
     </label>
     <ul>
-     <li class="toctree-l3">
+     <li class="toctree-l3 has-children">
       <a class="reference internal" href="../../../alab_management.dashboard.html">
        alab_management.dashboard package
       </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+      <label for="toctree-checkbox-3">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../alab_management.dashboard.routes.html">
+         alab_management.dashboard.routes package
+        </a>
+       </li>
+      </ul>
      </li>
      <li class="toctree-l3">
       <a class="reference internal" href="../../../alab_management.device_view.html">
@@ -211,7 +223,7 @@
                 
   <h1>Source code for alab_management.experiment_view.experiment_view</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 
@@ -240,7 +252,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;experiment&quot;</span><span class="p">][</span><span class="s2">&quot;experiment_collection&quot;</span><span class="p">])</span>
 
-<div class="viewcode-block" id="ExperimentView.create_experiment"><a class="viewcode-back" href="../../../alab_management.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.create_experiment">[docs]</a>    <span class="k">def</span> <span class="nf">create_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment</span><span class="p">:</span> <span class="n">Experiment</span><span class="p">):</span>
+<div class="viewcode-block" id="ExperimentView.create_experiment"><a class="viewcode-back" href="../../../alab_management.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.create_experiment">[docs]</a>    <span class="k">def</span> <span class="nf">create_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment</span><span class="p">:</span> <span class="n">Experiment</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectId</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create an experiment in the database</span>
 <span class="sd">        Args:</span>
@@ -256,15 +268,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_collection</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="p">})</span></div>
 
-<div class="viewcode-block" id="ExperimentView.get_experiment"><a class="viewcode-back" href="../../../alab_management.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.get_experiment">[docs]</a>    <span class="k">def</span> <span class="nf">get_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exp_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<div class="viewcode-block" id="ExperimentView.get_experiment"><a class="viewcode-back" href="../../../alab_management.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.get_experiment">[docs]</a>    <span class="k">def</span> <span class="nf">get_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exp_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get an experiment by its id</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">experiment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">exp_id</span><span class="p">})</span>
-
-        <span class="k">if</span> <span class="n">experiment</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find experiment with id: </span><span class="si">{</span><span class="n">exp_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
         <span class="k">return</span> <span class="n">experiment</span></div>
 
 <div class="viewcode-block" id="ExperimentView.set_experiment_status"><a class="viewcode-back" href="../../../alab_management.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.set_experiment_status">[docs]</a>    <span class="k">def</span> <span class="nf">set_experiment_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exp_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">ExperimentStatus</span><span class="p">):</span>
