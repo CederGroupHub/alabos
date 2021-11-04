@@ -101,6 +101,11 @@
     </label>
     <ul>
      <li class="toctree-l3">
+      <a class="reference internal" href="../../../alab_management.dashboard.html">
+       alab_management.dashboard package
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="../../../alab_management.device_view.html">
        alab_management.device_view package
       </a>
@@ -250,6 +255,7 @@
 
 <div class="viewcode-block" id="TaskView.create_task"><a class="viewcode-back" href="../../../alab_management.task_view.html#alab_management.task_view.task_view.TaskView.create_task">[docs]</a>    <span class="k">def</span> <span class="nf">create_task</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">task_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">samples</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ObjectId</span><span class="p">],</span>
             <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
             <span class="n">prev_tasks</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]]</span> <span class="o">=</span> <span class="n">_MISSING</span><span class="p">,</span>
             <span class="n">next_tasks</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]]</span> <span class="o">=</span> <span class="n">_MISSING</span><span class="p">,</span>
@@ -260,6 +266,8 @@
 <span class="sd">        Args:</span>
 <span class="sd">            task_type: the type of task, which should be a type name of class inherited from</span>
 <span class="sd">              :py:class:`BaseTask &lt;alab_management.task_view.task.BaseTask&gt;`</span>
+<span class="sd">            samples: the samples that this task will handle, which will be passed to Task object</span>
+<span class="sd">              the same as parameters.</span>
 <span class="sd">            parameters: the required tasks for this task</span>
 <span class="sd">            prev_tasks: one or a list of ObjectId that refer to prev tasks of this task</span>
 <span class="sd">              (which must be completed before current task)</span>
@@ -275,6 +283,7 @@
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span>
             <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">task_type</span><span class="p">,</span>
             <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">WAITING</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s2">&quot;samples&quot;</span><span class="p">:</span> <span class="n">samples</span><span class="p">,</span>
             <span class="s2">&quot;parameters&quot;</span><span class="p">:</span> <span class="n">parameters</span><span class="p">,</span>
             <span class="s2">&quot;prev_tasks&quot;</span><span class="p">:</span> <span class="n">prev_tasks</span> <span class="k">if</span> <span class="n">prev_tasks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">_MISSING</span> <span class="k">else</span> <span class="p">[],</span>
             <span class="s2">&quot;next_tasks&quot;</span><span class="p">:</span> <span class="n">next_tasks</span> <span class="k">if</span> <span class="n">next_tasks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">_MISSING</span> <span class="k">else</span> <span class="p">[],</span>

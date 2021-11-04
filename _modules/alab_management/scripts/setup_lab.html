@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>alab_management.sample_view.sample &#8212; Alab Management</title>
+    <title>alab_management.scripts.setup_lab &#8212; Alab Management</title>
     
   <link href="../../../_static/css/theme.css" rel="stylesheet" />
   <link href="../../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -209,26 +209,37 @@
         
               <div>
                 
-  <h1>Source code for alab_management.sample_view.sample</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+  <h1>Source code for alab_management.scripts.setup_lab</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Generate device, sample position, task definitions from user defined files (task &amp; device)</span>
+<span class="sd">and write them to MongoDB, which will make it easier to query</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
-<span class="kn">from</span> <span class="nn">pydantic.dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">.cleanup_lab</span> <span class="kn">import</span> <span class="n">cleanup_lab</span>
+<span class="kn">from</span> <span class="nn">..device_view</span> <span class="kn">import</span> <span class="n">get_all_devices</span><span class="p">,</span> <span class="n">DeviceView</span>
+<span class="kn">from</span> <span class="nn">..sample_view</span> <span class="kn">import</span> <span class="n">SampleView</span>
+<span class="kn">from</span> <span class="nn">..utils.module_ops</span> <span class="kn">import</span> <span class="n">load_definition</span>
 
 
-<div class="viewcode-block" id="Sample"><a class="viewcode-back" href="../../../alab_management.sample_view.html#alab_management.sample_view.sample.Sample">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">Sample</span><span class="p">:</span>
+<div class="viewcode-block" id="setup_from_device_def"><a class="viewcode-back" href="../../../alab_management.scripts.html#alab_management.scripts.setup_lab.setup_from_device_def">[docs]</a><span class="k">def</span> <span class="nf">setup_from_device_def</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Basic sample object</span>
-
-<span class="sd">    - ``_id``: the unique id of a sample in the database</span>
-<span class="sd">    - ``name``: the name of this sample</span>
-<span class="sd">    - ``position``: current position of the sample, if None, which means the sample has not been initialized</span>
-<span class="sd">      in the lab</span>
+<span class="sd">    Set up sample positions, devices from user&#39;s device definition, whose path is</span>
+<span class="sd">    specified by ``config[&quot;devices&quot;][&quot;device_dir&quot;]``</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_id</span><span class="p">:</span> <span class="n">ObjectId</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">position</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></div>
+    <span class="n">devices</span> <span class="o">=</span> <span class="n">get_all_devices</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="n">DeviceView</span><span class="p">()</span><span class="o">.</span><span class="n">add_devices_to_db</span><span class="p">()</span>
+    <span class="n">SampleView</span><span class="p">()</span><span class="o">.</span><span class="n">add_sample_positions_to_db</span><span class="p">([</span><span class="n">sample_pos</span>
+                                             <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">devices</span>
+                                             <span class="k">for</span> <span class="n">sample_pos</span> <span class="ow">in</span> <span class="n">device</span><span class="o">.</span><span class="n">sample_positions</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="setup_lab"><a class="viewcode-back" href="../../../alab_management.scripts.html#alab_management.scripts.setup_lab.setup_lab">[docs]</a><span class="k">def</span> <span class="nf">setup_lab</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cleanup the db and then import all the definitions and set up the db</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cleanup_lab</span><span class="p">()</span>
+    <span class="n">load_definition</span><span class="p">()</span>
+    <span class="n">setup_from_device_def</span><span class="p">()</span></div>
 </pre></div>
 
               </div>

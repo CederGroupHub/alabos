@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>alab_management.sample_view.sample &#8212; Alab Management</title>
+    <title>alab_management.scripts.launch_lab &#8212; Alab Management</title>
     
   <link href="../../../_static/css/theme.css" rel="stylesheet" />
   <link href="../../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -209,26 +209,40 @@
         
               <div>
                 
-  <h1>Source code for alab_management.sample_view.sample</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+  <h1>Source code for alab_management.scripts.launch_lab</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The script to launch task_view and executor, which are the core of the system.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
-<span class="kn">from</span> <span class="nn">pydantic.dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Process</span>
+
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">ExperimentManager</span><span class="p">,</span> <span class="n">Executor</span>
 
 
-<div class="viewcode-block" id="Sample"><a class="viewcode-back" href="../../../alab_management.sample_view.html#alab_management.sample_view.sample.Sample">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">Sample</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Basic sample object</span>
+<div class="viewcode-block" id="launch_task_manager"><a class="viewcode-back" href="../../../alab_management.scripts.html#alab_management.scripts.launch_lab.launch_task_manager">[docs]</a><span class="k">def</span> <span class="nf">launch_task_manager</span><span class="p">():</span>
+    <span class="n">task_manager</span> <span class="o">=</span> <span class="n">ExperimentManager</span><span class="p">()</span>
+    <span class="n">task_manager</span><span class="o">.</span><span class="n">run</span><span class="p">()</span></div>
 
-<span class="sd">    - ``_id``: the unique id of a sample in the database</span>
-<span class="sd">    - ``name``: the name of this sample</span>
-<span class="sd">    - ``position``: current position of the sample, if None, which means the sample has not been initialized</span>
-<span class="sd">      in the lab</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_id</span><span class="p">:</span> <span class="n">ObjectId</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">position</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="launch_executor"><a class="viewcode-back" href="../../../alab_management.scripts.html#alab_management.scripts.launch_lab.launch_executor">[docs]</a><span class="k">def</span> <span class="nf">launch_executor</span><span class="p">():</span>
+    <span class="n">executor</span> <span class="o">=</span> <span class="n">Executor</span><span class="p">()</span>
+    <span class="n">executor</span><span class="o">.</span><span class="n">run</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="launch_lab"><a class="viewcode-back" href="../../../alab_management.scripts.html#alab_management.scripts.launch_lab.launch_lab">[docs]</a><span class="k">def</span> <span class="nf">launch_lab</span><span class="p">():</span>
+    <span class="n">task_manager_process</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">launch_task_manager</span><span class="p">)</span>
+    <span class="n">executor_process</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">launch_executor</span><span class="p">)</span>
+
+    <span class="n">task_manager_process</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">executor_process</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">task_manager_process</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="n">executor_process</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">task_manager_process</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()</span>
+                <span class="ow">or</span> <span class="ow">not</span> <span class="n">executor_process</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()):</span>
+            <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
 </pre></div>
 
               </div>

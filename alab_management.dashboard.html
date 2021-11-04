@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>alab_management.scripts package &#8212; Alab Management</title>
+    <title>alab_management.dashboard package &#8212; Alab Management</title>
     
   <link href="_static/css/theme.css" rel="stylesheet" />
   <link href="_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -36,8 +36,8 @@
     <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="alab_management.task_view package" href="alab_management.task_view.html" />
-    <link rel="prev" title="alab_management.sample_view package" href="alab_management.sample_view.html" />
+    <link rel="next" title="alab_management.device_view package" href="alab_management.device_view.html" />
+    <link rel="prev" title="alab_management package" href="alab_management.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
     
@@ -102,8 +102,8 @@
      </i>
     </label>
     <ul class="current">
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.dashboard.html">
+     <li class="toctree-l3 current active">
+      <a class="current reference internal" href="#">
        alab_management.dashboard package
       </a>
      </li>
@@ -122,8 +122,8 @@
        alab_management.sample_view package
       </a>
      </li>
-     <li class="toctree-l3 current active">
-      <a class="current reference internal" href="#">
+     <li class="toctree-l3">
+      <a class="reference internal" href="alab_management.scripts.html">
        alab_management.scripts package
       </a>
      </li>
@@ -182,7 +182,7 @@
         <!-- ipynb file if we had a myst markdown file -->
         
         <!-- Download raw file -->
-        <a class="dropdown-buttons" href="_sources/alab_management.scripts.rst.txt"><button type="button"
+        <a class="dropdown-buttons" href="_sources/alab_management.dashboard.rst.txt"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
                 data-placement="left">.rst</button></a>
         <!-- Download PDF via print -->
@@ -226,27 +226,7 @@
             <nav id="bd-toc-nav" aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#submodules">
-   Submodules
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-alab_management.scripts.cleanup_lab">
-   alab_management.scripts.cleanup_lab module
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-alab_management.scripts.launch_lab">
-   alab_management.scripts.launch_lab module
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-alab_management.scripts.setup_lab">
-   alab_management.scripts.setup_lab module
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-alab_management.scripts">
+  <a class="reference internal nav-link" href="#module-alab_management.dashboard">
    Module contents
   </a>
  </li>
@@ -261,60 +241,10 @@
         
               <div>
                 
-  <div class="section" id="alab-management-scripts-package">
-<h1>alab_management.scripts package<a class="headerlink" href="#alab-management-scripts-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-alab_management.scripts.cleanup_lab">
-<span id="alab-management-scripts-cleanup-lab-module"></span><h2>alab_management.scripts.cleanup_lab module<a class="headerlink" href="#module-alab_management.scripts.cleanup_lab" title="Permalink to this headline">¶</a></h2>
-<p>To remove all the device, sample position definition from database</p>
-<dl class="py function">
-<dt id="alab_management.scripts.cleanup_lab.cleanup_lab">
-<code class="sig-name descname">cleanup_lab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/cleanup_lab.html#cleanup_lab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.cleanup_lab.cleanup_lab" title="Permalink to this definition">¶</a></dt>
-<dd><p>Drop device, sample_position collection from MongoDB</p>
-</dd></dl>
-
-</div>
-<div class="section" id="module-alab_management.scripts.launch_lab">
-<span id="alab-management-scripts-launch-lab-module"></span><h2>alab_management.scripts.launch_lab module<a class="headerlink" href="#module-alab_management.scripts.launch_lab" title="Permalink to this headline">¶</a></h2>
-<p>The script to launch task_view and executor, which are the core of the system.</p>
-<dl class="py function">
-<dt id="alab_management.scripts.launch_lab.launch_executor">
-<code class="sig-name descname">launch_executor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/launch_lab.html#launch_executor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.launch_lab.launch_executor" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="alab_management.scripts.launch_lab.launch_lab">
-<code class="sig-name descname">launch_lab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/launch_lab.html#launch_lab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.launch_lab.launch_lab" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="alab_management.scripts.launch_lab.launch_task_manager">
-<code class="sig-name descname">launch_task_manager</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/launch_lab.html#launch_task_manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.launch_lab.launch_task_manager" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</div>
-<div class="section" id="module-alab_management.scripts.setup_lab">
-<span id="alab-management-scripts-setup-lab-module"></span><h2>alab_management.scripts.setup_lab module<a class="headerlink" href="#module-alab_management.scripts.setup_lab" title="Permalink to this headline">¶</a></h2>
-<p>Generate device, sample position, task definitions from user defined files (task &amp; device)
-and write them to MongoDB, which will make it easier to query</p>
-<dl class="py function">
-<dt id="alab_management.scripts.setup_lab.setup_from_device_def">
-<code class="sig-name descname">setup_from_device_def</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/setup_lab.html#setup_from_device_def"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.setup_lab.setup_from_device_def" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set up sample positions, devices from user’s device definition, whose path is
-specified by <code class="docutils literal notranslate"><span class="pre">config[&quot;devices&quot;][&quot;device_dir&quot;]</span></code></p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="alab_management.scripts.setup_lab.setup_lab">
-<code class="sig-name descname">setup_lab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/setup_lab.html#setup_lab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.setup_lab.setup_lab" title="Permalink to this definition">¶</a></dt>
-<dd><p>Cleanup the db and then import all the definitions and set up the db</p>
-</dd></dl>
-
-</div>
-<div class="section" id="module-alab_management.scripts">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-alab_management.scripts" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="alab-management-dashboard-package">
+<h1>alab_management.dashboard package<a class="headerlink" href="#alab-management-dashboard-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-alab_management.dashboard">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-alab_management.dashboard" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -329,19 +259,19 @@ specified by <code class="docutils literal notranslate"><span class="pre">config
 <div class='prev-next-bottom'>
     
     <div id="prev">
-        <a class="left-prev" href="alab_management.sample_view.html" title="previous page">
+        <a class="left-prev" href="alab_management.html" title="previous page">
             <i class="prevnext-label fas fa-angle-left"></i>
             <div class="prevnext-info">
                 <p class="prevnext-label">previous</p>
-                <p class="prevnext-title">alab_management.sample_view package</p>
+                <p class="prevnext-title">alab_management package</p>
             </div>
         </a>
     </div>
      <div id="next">
-        <a class="right-next" href="alab_management.task_view.html" title="next page">
+        <a class="right-next" href="alab_management.device_view.html" title="next page">
             <div class="prevnext-info">
                 <p class="prevnext-label">next</p>
-                <p class="prevnext-title">alab_management.task_view package</p>
+                <p class="prevnext-title">alab_management.device_view package</p>
             </div>
             <i class="prevnext-label fas fa-angle-right"></i>
         </a>
