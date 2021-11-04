@@ -1,7 +1,7 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from bson import ObjectId
-from pydantic.dataclasses import dataclass
 
 
 @dataclass(frozen=True)
