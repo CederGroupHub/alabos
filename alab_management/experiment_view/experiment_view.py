@@ -1,10 +1,24 @@
-from typing import List, Any, Dict, Union
+from enum import Enum, auto
+from typing import List, Any, Dict
 
 from bson import ObjectId
 
 from alab_management.config import config
 from alab_management.db import get_collection
-from alab_management.experiment_view.experiment import ExperimentStatus
+from alab_management.experiment_view.experiment import Experiment
+
+
+class ExperimentStatus(Enum):
+    """
+    The status of experiment
+
+    - ``PENDING``: The experiment has not been processed by experiment manager
+    - ``RUNNING``: The experiment has been submitted and put in the queue
+    - ``COMPLETED``: The experiment has been completed
+    """
+    PENDING = auto()
+    RUNNING = auto()
+    COMPLETED = auto()
 
 
 class ExperimentView:
@@ -12,12 +26,27 @@ class ExperimentView:
         self._experiment_collection = get_collection(config["experiment"]["experiment_collection"])
 
     def create_experiment(self, name: str, samples: List[str], tasks: List[Dict[str, Any]]):
-        result = self._experiment_collection.insert_one({
+        """
+        Create an experiment in the database
+        Args:
+            name: the name of current experiment
+            samples: list of sample names that will be handled in the experiment
+            tasks: the list of tasks that are included in this experiment, which should have
+                strucutre: {"task_id": ``ObjectId``, "parameters": ``Dict[str, Any]``, "samples": ``List[str]``,
+                "type": ``str``}
+
+        Returns:
+
+        """
+
+        # first validate the format of Experiment
+        exp = Experiment(**{
             "name": name,
-            "samples": samples,
+            "samples": [{"name": sample_name} for sample_name in samples],
             "tasks": tasks,
-            "status": ExperimentStatus.PENDING,
+            "status": ExperimentStatus.PENDING.name,
         })
+        result = self._experiment_collection.insert_one(exp.dict())
 
         return result.inserted_id
 

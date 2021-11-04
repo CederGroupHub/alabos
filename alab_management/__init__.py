@@ -1,5 +1,5 @@
 from .executor import Executor
-from .experiment_manager import TaskManager
+from .experiment_manager import ExperimentManager
 
 from .device_view import BaseDevice, SamplePosition, add_device
 from .sample_view import Sample

@@ -1,8 +1,8 @@
 import time
 from typing import Dict, Any
 
-from .experiment_view.experiment import ExperimentStatus
-from .experiment_view.experiment_view import ExperimentView
+from .experiment_view.experiment import Experiment
+from .experiment_view.experiment_view import ExperimentStatus, ExperimentView
 from .sample_view import SampleView
 from .task_view import TaskView, TaskStatus
 from .utils.graph_op import Graph
@@ -24,11 +24,16 @@ class ExperimentManager:
         self.mark_completed_experiments()
 
     def handle_pending_experiments(self):
+        """
+        This method will scan the database to find out if there are
+        any pending experiments and submit it to task database
+        """
         pending_experiments = self.experiment_view.get_experiments_with_status(ExperimentStatus.PENDING)
         for experiment in pending_experiments:
             self._handle_pending_experiment(experiment=experiment)
 
     def _handle_pending_experiment(self, experiment: Dict[str, Any]):
+        experiment = Experiment(**experiment).dict()  # first do data validation
         samples = experiment["samples"]
         tasks = experiment["tasks"]
         sample_ids = [self.sample_view.create_sample(sample["name"]) for sample in samples]
@@ -49,6 +54,9 @@ class ExperimentManager:
                                                    status=ExperimentStatus.RUNNING)
 
     def mark_completed_experiments(self):
+        """
+        This method will scan the database to mark completed experiments in time
+        """
         running_experiments = self.experiment_view.get_experiments_with_status(ExperimentStatus.RUNNING)
         for experiment in running_experiments:
             task_ids = [task["task_id"] for task in experiment["tasks"]]

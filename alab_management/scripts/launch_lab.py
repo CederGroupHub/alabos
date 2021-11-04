@@ -4,11 +4,11 @@ The script to launch task_view and executor, which are the core of the system.
 
 from multiprocessing import Process
 
-from .. import TaskManager, Executor
+from .. import ExperimentManager, Executor
 
 
 def launch_task_manager():
-    task_manager = TaskManager()
+    task_manager = ExperimentManager()
     task_manager.run()
 
 
