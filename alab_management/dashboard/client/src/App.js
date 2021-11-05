@@ -1,24 +1,24 @@
-import logo from './logo.svg';
-import './App.css';
+import SubmitExp from './submit_exp/SubmitExp';
+import { AppBar } from '@mui/material';
+import styled from 'styled-components';
+
+const StyledAppBar = styled(AppBar)`
+  height: 60px !important;
+  box-shadow: 0px 2px 4px -1px rgb(0 0 0 / 14%), 0px 4px 5px 0px rgb(0 0 0 / 10%), 0px 1px 5px 0px rgb(0 0 0 / 6%) !important;
+  display: flex;
+  justify-content: center;
+  `;
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <StyledAppBar position="relative">
+        <div style={{ display: "flex", alignItems: "center", fontWeight: 500, fontSize: "1.3em", margin: "0 16px" }}>
+          Alab Management - New Experiment
+        </div>
+      </StyledAppBar>
+      <SubmitExp />
+    </>
   );
 }
 
