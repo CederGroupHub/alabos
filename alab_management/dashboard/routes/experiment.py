@@ -33,3 +33,10 @@ def query_experiment(exp_id: str):
         "status": experiment["status"],
     }
 
+
+@experiment_bp.route("/<exp_id:exp_id>/edit", methods=["POST"])
+def edit_experiment(exp_id: str):
+    experiment = experiment_view.get_experiment(ObjectId(exp_id))
+    if experiment is None:
+        return None
+    data = request.get_json(force=True)

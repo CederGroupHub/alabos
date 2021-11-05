@@ -41,7 +41,7 @@ class DevicesLock:
         self._device_view: "DeviceView" = device_view
 
     @property
-    def device(self):
+    def devices(self):
         return self._devices
 
     def release(self):
@@ -49,7 +49,7 @@ class DevicesLock:
             self._device_view.release_device(device)
 
     def __enter__(self):
-        return self._devices.copy()
+        return self.devices
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.release()
@@ -80,7 +80,7 @@ class DeviceView:
                 raise NameError(f"Duplicated device name {device.name}, did you cleanup the database?")
             self._device_collection.insert_one({
                 "sample_positions": [sample_pos.name for sample_pos in device.sample_positions],
-                "status": DeviceStatus.UNKNOWN.name,
+                "status": DeviceStatus.IDLE.name,
                 "type": device.__class__.__name__,
                 "description": device.description,
                 "task_id": None,
@@ -94,7 +94,8 @@ class DeviceView:
         """
         self._device_collection.drop()
 
-    def request_devices(self, task_id: ObjectId, *device_type: Type[BaseDevice]) -> DevicesLock:
+    def request_devices(self, task_id: ObjectId, *device_type: Type[BaseDevice],
+                        timeout: Optional[int] = None) -> Optional[DevicesLock]:
         """
         Request a list of device, this function will return until all the requested device is ready.
 
@@ -104,6 +105,8 @@ class DeviceView:
         Args:
             task_id: the id of task that requests these devices
             *device_type: the requested device types
+            timeout: the maximum seconds to wait for the device to be available,
+                if waiting more than ``timeout`` seconds, the function will return ``None``.
 
         Returns:
             A context manager that you can get value, see also: :py:class:`DeviceLock <DeviceLock>`
@@ -111,7 +114,8 @@ class DeviceView:
         if len(device_type) != len(set(device_type)):
             raise ValueError("Currently we do not allow duplicated devices in one request.")
 
-        while True:
+        cnt = 0
+        while timeout is None or cnt < timeout:
             idle_devices: Dict[Type[BaseDevice], BaseDevice] = {}
             try:
                 self._lock.acquire(blocking=True)
@@ -129,11 +133,13 @@ class DeviceView:
                 self._lock.release()
 
             time.sleep(1)
+            cnt += 1
 
     def get_device(self, device_name: str) -> Optional[Dict[str, Any]]:
         return self._device_collection.find_one({"name": device_name})
 
-    def get_device_by_type(self, device_type: Type[BaseDevice], task_id: ObjectId, only_idle: bool = True) -> List[str]:
+    def get_device_by_type(self, device_type: Type[BaseDevice], task_id: Optional[ObjectId],
+                           only_idle: bool = True) -> List[str]:
         """
         Given device type, it will return all the device with this type.
 
@@ -151,6 +157,9 @@ class DeviceView:
             "name": device_type.__name__,
         }
         if only_idle:
+            if self.get_device_by_type(device_type, task_id, only_idle=False) is None:
+                raise ValueError(f"No such device_type: {device_type}")
+
             request_dict.update({"$or": [{
                 "status": DeviceStatus.IDLE.name,
             }, {

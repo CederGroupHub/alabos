@@ -1,15 +1,10 @@
 """
 Define the base class of task
 """
-
 from abc import ABC, abstractmethod
 from typing import Dict, Type
 
 from bson import ObjectId
-
-from ..device_view import DeviceView
-from ..logger import DBLogger
-from ..sample_view.sample_view import SampleView
 
 
 class BaseTask(ABC):
@@ -19,14 +14,13 @@ class BaseTask(ABC):
     All the tasks should inherit from this class.
 
     - ``task_id``: the identifier of task
-    - ``sample_id``: the id of sample to do tasks on
+    - ``lab_manager``: you can request devices and positions from it
     """
+    LONG_TIME_TASK = None
 
-    def __init__(self, task_id: ObjectId, device_view: DeviceView,
-                 sample_view: SampleView, logger: DBLogger):
+    def __init__(self, task_id: ObjectId, lab_manager, logger):
         self.task_id = task_id
-        self.device_view = device_view
-        self.sample_view = sample_view
+        self.lab_manager = lab_manager
         self.logger = logger
 
     @abstractmethod

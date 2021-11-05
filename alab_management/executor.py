@@ -10,6 +10,7 @@ from typing import Any, Dict
 from bson import ObjectId
 
 from .device_view import DeviceView
+from .lab_manager import LabManager
 from .logger import DBLogger
 from .sample_view.sample_view import SampleView
 from .task_view.task_view import TaskView, TaskStatus
@@ -52,11 +53,11 @@ class Executor:
         task_id = task_entry["task_id"]
         task_type = task_entry.pop("type")
         logger = DBLogger(task_id=task_id)
+        lab_manager = LabManager(device_view=self.device_view, sample_view=self.sample_view, task_id=task_id)
         try:
             task = task_type(
                 logger=logger,
-                device_view=self.device_view,
-                sample_view=self.sample_view,
+                lab_manager=lab_manager,
                 **task_entry,
             )
         except AttributeError as e:
