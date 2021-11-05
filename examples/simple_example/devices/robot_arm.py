@@ -25,3 +25,6 @@ class RobotArm(BaseDevice):
 
     def emergent_stop(self):
         self.driver.stop()
+
+    def run_program(self, program):
+        self.driver.run_program(program)

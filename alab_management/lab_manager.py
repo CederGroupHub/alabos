@@ -43,7 +43,8 @@ class LabManager:
     def request_sample_positions(self, timeout: Optional[int], *sample_position: str) -> SamplePositionsLock:
         return self._sample_view.request_sample_positions(task_id=self.task_id, timeout=timeout, *sample_position)
 
-    def request_resources(self, devices_and_sample_positions: Dict[Optional[Type[BaseDevice]], List[str]]) -> resource_lock:
+    def request_resources(self, devices_and_sample_positions: Dict[Optional[Type[BaseDevice]], List[str]]) \
+            -> resource_lock:
         while True:
             devices_lock = self.request_devices(*[device_type for device_type in devices_and_sample_positions.keys()
                                                   if device_type is not None])

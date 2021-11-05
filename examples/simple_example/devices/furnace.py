@@ -29,3 +29,12 @@ class Furnace(BaseDevice):
 
     def emergent_stop(self):
         self.driver.stop()
+
+    def run_program(self, *segments):
+        self.driver.run_program(*segments)
+
+    def is_running(self):
+        return self.driver.is_running()
+
+    def get_temperature(self):
+        return self.driver.current_temperature
