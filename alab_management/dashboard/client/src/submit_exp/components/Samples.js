@@ -4,9 +4,8 @@ import styled from 'styled-components';
 
 const AddSampleDiv = styled.div`
     display: flex;
-    justify-content: center;
     align-items: baseline;
-    margin-top: 16px;
+    margin-bottom: 16px;
 `;
 
 function Samples({ style, sampleNames, setSampleNames }) {
@@ -22,6 +21,10 @@ function Samples({ style, sampleNames, setSampleNames }) {
     }
     return (
         <div style={{...style, margin: "16px"}}>
+            <AddSampleDiv>
+                <TextField id="add_sample_input" size="small" inputRef={sampleNameInput} style={{ width: "50%" }} label="Sample Name" variant="standard" />
+                <Button variant="outlined" onClick={onClick} style={{ marginLeft: "16px" }}>Add sample</Button>
+            </AddSampleDiv>
             <h4>Samples:</h4>
             {
                 sampleNames.map((data) => {
@@ -34,10 +37,7 @@ function Samples({ style, sampleNames, setSampleNames }) {
                         />
                     )})
             }
-            <AddSampleDiv>
-                <TextField id="add_sample_input" size="small" inputRef={sampleNameInput} style={{ width: "50%" }} label="Sample Name" variant="standard" />
-                <Button variant="outlined" onClick={onClick} style={{ marginLeft: "16px" }}>Add sample</Button>
-            </AddSampleDiv>
+
         </div>
     )
 }

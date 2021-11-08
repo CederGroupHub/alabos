@@ -1,18 +1,10 @@
 from typing import ClassVar
 
-from alab_control.robot_arm_ur5e import URRobot
-
 from alab_management import BaseDevice, SamplePosition
 
 
 class RobotArm(BaseDevice):
-    description: ClassVar[str] = "UR5e robot arm"
-
-    def __init__(self, address: str, port: int = 502, *args, **kwargs):
-        super(RobotArm, self).__init__(*args, **kwargs)
-        self.address = address
-        self.port = port
-        self.driver = URRobot(self.address, port=port)
+    description: ClassVar[str] = "Fake robot arm"
 
     @property
     def sample_positions(self):
@@ -24,7 +16,7 @@ class RobotArm(BaseDevice):
         ]
 
     def emergent_stop(self):
-        self.driver.stop()
+        pass
 
     def run_program(self, program):
-        self.driver.run_program(program)
+        pass

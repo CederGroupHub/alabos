@@ -36,7 +36,7 @@ class DevicesLock:
         # will automatically release the devices when going outside the with block
     """
 
-    def __init__(self, devices: Dict[Type[BaseDevice], BaseDevice], device_view: "DeviceView"):
+    def __init__(self, devices: Optional[Dict[Type[BaseDevice], BaseDevice]], device_view: "DeviceView"):
         self._devices: Dict[Type[BaseDevice], BaseDevice] = devices
         self._device_view: "DeviceView" = device_view
 
@@ -52,7 +52,8 @@ class DevicesLock:
         return self.devices
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.release()
+        if self.devices is not None:
+            self.release()
 
 
 class DeviceView:
@@ -79,10 +80,11 @@ class DeviceView:
             if self._device_collection.find_one({"name": device.name}) is not None:
                 raise NameError(f"Duplicated device name {device.name}, did you cleanup the database?")
             self._device_collection.insert_one({
+                "name": device.name,
+                "description": device.description,
+                "type": device.__class__.__name__,
                 "sample_positions": [sample_pos.name for sample_pos in device.sample_positions],
                 "status": DeviceStatus.IDLE.name,
-                "type": device.__class__.__name__,
-                "description": device.description,
                 "task_id": None,
                 "created_at": datetime.now(),
                 "last_updated": datetime.now(),
@@ -135,8 +137,18 @@ class DeviceView:
             time.sleep(1)
             cnt += 1
 
+            # return a context manager with None
+            return DevicesLock(devices=None, device_view=self)
+
     def get_device(self, device_name: str) -> Optional[Dict[str, Any]]:
         return self._device_collection.find_one({"name": device_name})
+
+    def get_status(self, device_name: str) -> DeviceStatus:
+        device_entry = self.get_device(device_name=device_name)
+
+        if device_entry is None:
+            raise ValueError(f"Cannot find device with name: {device_name}")
+        return DeviceStatus[device_entry["status"]]
 
     def get_device_by_type(self, device_type: Type[BaseDevice], task_id: Optional[ObjectId],
                            only_idle: bool = True) -> List[str]:
@@ -154,10 +166,11 @@ class DeviceView:
             A list of devices' name that meet the requirements
         """
         request_dict = {
-            "name": device_type.__name__,
+            "type": device_type.__name__,
         }
+
         if only_idle:
-            if self.get_device_by_type(device_type, task_id, only_idle=False) is None:
+            if not self.get_device_by_type(device_type, task_id, only_idle=False):
                 raise ValueError(f"No such device_type: {device_type}")
 
             request_dict.update({"$or": [{
@@ -167,18 +180,18 @@ class DeviceView:
             }]})
         return [device_entry["name"] for device_entry in self._device_collection.find(request_dict)]
 
-    def occupy_device(self, device: BaseDevice, task_id: ObjectId):
+    def occupy_device(self, device: Union[BaseDevice, str], task_id: ObjectId):
         """
         Occupy a device with given task id
         """
         self._update_status(
             device=device,
             required_status=DeviceStatus.IDLE,
-            target_status=DeviceStatus.IDLE,
+            target_status=DeviceStatus.OCCUPIED,
             task_id=task_id,
         )
 
-    def release_device(self, device: BaseDevice):
+    def release_device(self, device: Union[BaseDevice, str],):
         """
         Release a device
         """

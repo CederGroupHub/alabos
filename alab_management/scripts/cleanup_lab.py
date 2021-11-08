@@ -2,8 +2,8 @@
 To remove all the device, sample position definition from database
 """
 
-from ..device_view import DeviceView
-from ..sample_view import SampleView
+from ..device_view.device_view import DeviceView
+from ..sample_view.sample_view import SampleView
 
 
 def cleanup_lab():

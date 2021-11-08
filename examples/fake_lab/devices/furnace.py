@@ -1,18 +1,16 @@
+import random
+import time
 from typing import ClassVar
-
-from alab_control.furnace_epc_3016 import FurnaceController
 
 from alab_management import BaseDevice, SamplePosition
 
 
 class Furnace(BaseDevice):
-    description: ClassVar[str] = "Simple furnace"
+    description: ClassVar[str] = "Fake furnace"
 
-    def __init__(self, address: str, port: int = 502, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(Furnace, self).__init__(*args, **kwargs)
-        self.address = address
-        self.port = port
-        self.driver = FurnaceController(address=address, port=port)
+        self._is_running = False
 
     @property
     def sample_positions(self):
@@ -28,13 +26,15 @@ class Furnace(BaseDevice):
         ]
 
     def emergent_stop(self):
-        self.driver.stop()
+        pass
 
     def run_program(self, *segments):
-        self.driver.run_program(*segments)
+        self._is_running = True
+        time.sleep(10)
+        self._is_running = False
 
     def is_running(self):
-        return self.driver.is_running()
+        return self._is_running
 
     def get_temperature(self):
-        return self.driver.current_temperature
+        return random.random() * 100

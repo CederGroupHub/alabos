@@ -8,18 +8,15 @@ from ..devices.robot_arm import RobotArm
 
 @dataclass
 class Moving(BaseTask):
-    LONG_TIME_TASK = False
-
     def __init__(self, sample: ObjectId, dest: str, *args, **kwargs):
         super(Moving, self).__init__(*args, **kwargs)
         self.sample = sample
         self.dest = dest
 
     @staticmethod
-    def get_path(src, dest, container):
+    def get_path(src, dest):
         # ignore container
-        if container:
-            return [(src, dest)]
+        return [(src, dest)]
 
     def run(self):
         sample = self.lab_manager.get_sample(sample_id=self.sample)
@@ -33,6 +30,7 @@ class Moving(BaseTask):
             robot_arm: RobotArm = devices[RobotArm]
             for p in path:
                 robot_arm.run_program(f"{p[0]}-{p[1]}-{sample_container}.urp")
+                self.lab_manager.move_sample(self.sample, p[1])
                 self.logger.log_device_signal({
                     "device": robot_arm.name,
                     "sample_id": sample,

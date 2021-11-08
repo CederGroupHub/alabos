@@ -1,9 +1,9 @@
 from .executor import Executor
 from .experiment_manager import ExperimentManager
 
-from .device_view import BaseDevice, SamplePosition, add_device
-from .sample_view import Sample
-from .task_view import BaseTask, add_task
+from .device_view import BaseDevice, SamplePosition, add_device, DeviceView
+from .sample_view import Sample, SampleView
+from .task_view import BaseTask, add_task, TaskView
 
 from .scripts import launch_lab, cleanup_lab
 

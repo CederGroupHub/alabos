@@ -10,7 +10,11 @@ import styled from 'styled-components';
 import { grey } from '@mui/material/colors';
 
 const FlowDiv = styled.div`
-    height: calc(100vh - 60px - 36px - 16px - 1.2px);
+    height: calc(100vh - 60px - 36px - 32px - 1.2px);
+`;
+
+const RoundButton = styled(Button)`
+  border-radius: 14px !important;
 `;
 
 const NODE_TYPE = {
@@ -60,13 +64,13 @@ function ExperimentFlow({ sampleNames }) {
 
     return (
       <div>
-        <div style={{ padding: "8px", backgroundColor: grey[100], borderBottom: `1.2px solid ${grey[300]}` }}>
-          <Button color="primary" style={{margin: "0 8px"}} variant="contained" onClick={addNode} startIcon={<AddIcon />}>
+        <div style={{ padding: "16px", backgroundColor: grey[100], borderBottom: `1.2px solid ${grey[300]}` }}>
+          <RoundButton color="primary" style={{margin: "0 8px"}} variant="contained" onClick={addNode} startIcon={<AddIcon />}>
             Add Node
-          </Button>
-          <Button color="primary" style={{margin: "0 8px"}} variant="contained" startIcon={<CallMadeIcon />}>
+          </RoundButton>
+          <RoundButton color="primary" style={{margin: "0 8px"}} variant="contained" startIcon={<CallMadeIcon />}>
             Submit
-          </Button>
+          </RoundButton>
         </div>
         <FlowDiv>
             <ReactFlow 

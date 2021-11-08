@@ -4,11 +4,9 @@ from typing import Type, Dict, List, Optional
 
 from bson import ObjectId
 
-from alab_management import BaseDevice
-from alab_management.device_view import DeviceView
-from alab_management.device_view.device_view import DevicesLock
-from alab_management.sample_view import SampleView
-from alab_management.sample_view.sample_view import SamplePositionsLock
+from .device_view.device import BaseDevice
+from .device_view.device_view import DeviceView, DevicesLock
+from .sample_view.sample_view import SampleView, SamplePositionsLock
 
 
 @contextmanager
