@@ -58,13 +58,16 @@ class Executor:
             task = task_type(
                 logger=logger,
                 lab_manager=lab_manager,
-                **task_entry,
+                **task_entry["samples"],
+                **task_entry["parameters"],
             )
         except AttributeError as e:
             raise ParameterError(e.args[0])
 
         def _run_task():
             self.task_view.update_status(task_id=task_id, status=TaskStatus.RUNNING)
+            for sample_id in task_entry["samples"]:
+                self.sample_view.update_sample_task_id(task_id=task_id, sample_id=sample_id)
             try:
                 task.run()
             except Exception:
@@ -72,6 +75,9 @@ class Executor:
                 raise
             else:
                 self.task_view.update_status(task_id=task_id, status=TaskStatus.COMPLETED)
+            finally:
+                for sample_id in task_entry["samples"]:
+                    self.sample_view.update_sample_task_id(task_id=None, sample_id=sample_id)
 
         task_thread = threading.Thread(target=_run_task)
         task_thread.start()

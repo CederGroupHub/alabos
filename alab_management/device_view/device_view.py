@@ -45,15 +45,15 @@ class DevicesLock:
         return self._devices
 
     def release(self):
-        for device in self._devices.values():
-            self._device_view.release_device(device)
+        if self._devices is not None:
+            for device in self._devices.values():
+                self._device_view.release_device(device)
 
     def __enter__(self):
         return self.devices
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.devices is not None:
-            self.release()
+        self.release()
 
 
 class DeviceView:
@@ -137,8 +137,8 @@ class DeviceView:
             time.sleep(1)
             cnt += 1
 
-            # return a context manager with None
-            return DevicesLock(devices=None, device_view=self)
+        # return a context manager with None
+        return DevicesLock(devices=None, device_view=self)
 
     def get_device(self, device_name: str) -> Optional[Dict[str, Any]]:
         return self._device_collection.find_one({"name": device_name})

@@ -18,8 +18,8 @@ class TestDeviceView(TestCase):
         self.device_list = self.device_view._device_list
         self.device_names = [device_name for device_name in self.device_view._device_list]
 
-    # def tearDown(self):
-    #     cleanup_lab()
+    def tearDown(self):
+        cleanup_lab()
 
     def test_get_status(self):
         device_name = "furnace_1"
@@ -98,18 +98,33 @@ class TestDeviceView(TestCase):
     def test_request_devices_queue(self):
         import threading
         import time
+        import pytest_reraise
+
+        reraise = pytest_reraise.Reraise()
 
         device_types = list({device.__class__ for device in self.device_list.values()})
         task_id = ObjectId()
         task_id_2 = ObjectId()
 
-        def _request(t):
-            with self.device_view.request_devices(t, *device_types, timeout=100) as devices:
+        @reraise.wrap
+        def _request_1():
+            start_time = time.perf_counter()
+            with self.device_view.request_devices(task_id, *device_types, timeout=100) as devices:
+                end_time = time.perf_counter()
+                self.assertAlmostEqual(end_time - start_time, 0.0, delta=0.2)
                 self.assertFalse(devices is None)
                 time.sleep(2)
 
-        t1 = threading.Thread(target=_request, args=(task_id,))
-        t2 = threading.Thread(target=_request, args=(task_id_2,))
+        @reraise.wrap
+        def _request_2():
+            start_time = time.perf_counter()
+            with self.device_view.request_devices(task_id_2, *device_types, timeout=100) as devices:
+                end_time = time.perf_counter()
+                self.assertAlmostEqual(end_time - start_time, 2.0, delta=0.2)
+                self.assertFalse(devices is None)
+
+        t1 = threading.Thread(target=_request_1)
+        t2 = threading.Thread(target=_request_2)
 
         t1.start()
         t2.start()
@@ -117,3 +132,4 @@ class TestDeviceView(TestCase):
         t1.join()
         t2.join()
 
+        reraise()
