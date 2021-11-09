@@ -302,6 +302,28 @@ in the lab</p></li>
 <div class="section" id="module-alab_management.sample_view.sample_view">
 <span id="alab-management-sample-view-sample-view-module"></span><h2>alab_management.sample_view.sample_view module<a class="headerlink" href="#module-alab_management.sample_view.sample_view" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
+<dt id="alab_management.sample_view.sample_view.SamplePositionStatus">
+<em class="property">class </em><code class="sig-name descname">SamplePositionStatus</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SamplePositionStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SamplePositionStatus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt id="alab_management.sample_view.sample_view.SamplePositionStatus.EMPTY">
+<code class="sig-name descname">EMPTY</code><em class="property"> = 1</em><a class="headerlink" href="#alab_management.sample_view.sample_view.SamplePositionStatus.EMPTY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="alab_management.sample_view.sample_view.SamplePositionStatus.LOCKED">
+<code class="sig-name descname">LOCKED</code><em class="property"> = 3</em><a class="headerlink" href="#alab_management.sample_view.sample_view.SamplePositionStatus.LOCKED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="alab_management.sample_view.sample_view.SamplePositionStatus.OCCUPIED">
+<code class="sig-name descname">OCCUPIED</code><em class="property"> = 2</em><a class="headerlink" href="#alab_management.sample_view.sample_view.SamplePositionStatus.OCCUPIED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="alab_management.sample_view.sample_view.SamplePositionsLock">
 <em class="property">class </em><code class="sig-name descname">SamplePositionsLock</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sample_positions</span></em>, <em class="sig-param"><span class="n">sample_view</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SamplePositionsLock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SamplePositionsLock" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
@@ -345,6 +367,7 @@ we will just skip it.</p>
 <dt id="alab_management.sample_view.sample_view.SampleView.create_sample">
 <code class="sig-name descname">create_sample</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">position</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.create_sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.create_sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a sample and return its uid in the database</p>
+<p>Samples with the same name can exist in the database</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code></p>
@@ -354,7 +377,7 @@ we will just skip it.</p>
 
 <dl class="py method">
 <dt id="alab_management.sample_view.sample_view.SampleView.get_available_sample_position">
-<code class="sig-name descname">get_available_sample_position</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em>, <em class="sig-param"><span class="n">position</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.get_available_sample_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.get_available_sample_position" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_available_sample_position</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em>, <em class="sig-param"><span class="n">position_prefix</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.get_available_sample_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.get_available_sample_position" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if the position is occupied</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -377,7 +400,9 @@ we will just skip it.</p>
 <dl class="py method">
 <dt id="alab_management.sample_view.sample_view.SampleView.get_sample_position">
 <code class="sig-name descname">get_sample_position</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">position</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.get_sample_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.get_sample_position" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Get the sample position entry in the database</p>
+<p>if the position is not a valid position (not defined in the database), return None</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</p>
 </dd>
@@ -385,9 +410,31 @@ we will just skip it.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="alab_management.sample_view.sample_view.SampleView.is_valid_position">
-<code class="sig-name descname">is_valid_position</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">position</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.is_valid_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.is_valid_position" title="Permalink to this definition">¶</a></dt>
-<dd><p>Tell if a sample position is valid in the database</p>
+<dt id="alab_management.sample_view.sample_view.SampleView.get_sample_position_status">
+<code class="sig-name descname">get_sample_position_status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">position</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.get_sample_position_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.get_sample_position_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the status of a sample position</p>
+<p>If there is a sample in the position, return OCCUPIED;
+else if the sample position is locked by a task, return LOCKED;
+return EMPTY</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>position</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the name of the sample position</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<a class="reference internal" href="#alab_management.sample_view.sample_view.SamplePositionStatus" title="alab_management.sample_view.sample_view.SamplePositionStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplePositionStatus</span></code></a>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>]]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>if the position is occupied by a sample, return OCCUPIED and the task id of the sample
+if the position is locked by a task, return LOCKED and the task id
+else, return EMPTY and None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="alab_management.sample_view.sample_view.SampleView.is_empty_position">
+<code class="sig-name descname">is_empty_position</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">position</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.is_empty_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.is_empty_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tell if a sample position is empty</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
@@ -396,20 +443,22 @@ we will just skip it.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="alab_management.sample_view.sample_view.SampleView.move_sample">
-<code class="sig-name descname">move_sample</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sample_id</span></em>, <em class="sig-param"><span class="n">position</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.move_sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.move_sample" title="Permalink to this definition">¶</a></dt>
-<dd><p>update the sample with new position</p>
+<dt id="alab_management.sample_view.sample_view.SampleView.lock_sample_position">
+<code class="sig-name descname">lock_sample_position</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em>, <em class="sig-param"><span class="n">position</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.lock_sample_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.lock_sample_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lock a sample position</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="alab_management.sample_view.sample_view.SampleView.occupy_sample_position">
-<code class="sig-name descname">occupy_sample_position</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em>, <em class="sig-param"><span class="n">position</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.occupy_sample_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.occupy_sample_position" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="alab_management.sample_view.sample_view.SampleView.move_sample">
+<code class="sig-name descname">move_sample</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sample_id</span></em>, <em class="sig-param"><span class="n">position</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.move_sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.move_sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the sample with new position</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="alab_management.sample_view.sample_view.SampleView.release_sample_position">
 <code class="sig-name descname">release_sample_position</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">position</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.release_sample_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.release_sample_position" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Unlock a sample position</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="alab_management.sample_view.sample_view.SampleView.request_sample_positions">
@@ -419,6 +468,12 @@ we will just skip it.</p>
 <dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="#alab_management.sample_view.sample_view.SamplePositionsLock" title="alab_management.sample_view.sample_view.SamplePositionsLock"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplePositionsLock</span></code></a>]</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="alab_management.sample_view.sample_view.SampleView.update_sample_task_id">
+<code class="sig-name descname">update_sample_task_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sample_id</span></em>, <em class="sig-param"><span class="n">task_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.update_sample_task_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.update_sample_task_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the task id for a sample</p>
 </dd></dl>
 
 </dd></dl>

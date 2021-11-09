@@ -282,13 +282,16 @@
             <span class="n">task</span> <span class="o">=</span> <span class="n">task_type</span><span class="p">(</span>
                 <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
                 <span class="n">lab_manager</span><span class="o">=</span><span class="n">lab_manager</span><span class="p">,</span>
-                <span class="o">**</span><span class="n">task_entry</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;samples&quot;</span><span class="p">],</span>
+                <span class="o">**</span><span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;parameters&quot;</span><span class="p">],</span>
             <span class="p">)</span>
         <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ParameterError</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
         <span class="k">def</span> <span class="nf">_run_task</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">sample_id</span> <span class="ow">in</span> <span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;samples&quot;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sample_view</span><span class="o">.</span><span class="n">update_sample_task_id</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">sample_id</span><span class="o">=</span><span class="n">sample_id</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">task</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
@@ -296,6 +299,9 @@
                 <span class="k">raise</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">COMPLETED</span><span class="p">)</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">sample_id</span> <span class="ow">in</span> <span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;samples&quot;</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sample_view</span><span class="o">.</span><span class="n">update_sample_task_id</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sample_id</span><span class="o">=</span><span class="n">sample_id</span><span class="p">)</span>
 
         <span class="n">task_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">_run_task</span><span class="p">)</span>
         <span class="n">task_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>

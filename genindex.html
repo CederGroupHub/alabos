@@ -530,16 +530,18 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.device_view.html#alab_management.device_view.device.BaseDevice.emergent_stop">emergent_stop() (BaseDevice method)</a>
 </li>
+      <li><a href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SamplePositionStatus.EMPTY">EMPTY (SamplePositionStatus attribute)</a>
+</li>
       <li><a href="alab_management.html#alab_management.logger.LoggingLevel.ERROR">ERROR (LoggingLevel attribute)</a>
 
       <ul>
         <li><a href="alab_management.task_view.html#alab_management.task_view.task_view.TaskStatus.ERROR">(TaskStatus attribute)</a>
 </li>
       </ul></li>
-      <li><a href="alab_management.html#alab_management.executor.Executor">Executor (class in alab_management.executor)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="alab_management.html#alab_management.executor.Executor">Executor (class in alab_management.executor)</a>
+</li>
       <li><a href="alab_management.experiment_view.html#alab_management.experiment_view.experiment.Experiment">Experiment (class in alab_management.experiment_view.experiment)</a>
 </li>
       <li><a href="alab_management.html#alab_management.experiment_manager.ExperimentManager">ExperimentManager (class in alab_management.experiment_manager)</a>
@@ -600,6 +602,8 @@
       </ul></li>
       <li><a href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_sample_position">get_sample_position() (SampleView method)</a>
 </li>
+      <li><a href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_sample_position_status">get_sample_position_status() (SampleView method)</a>
+</li>
       <li><a href="alab_management.device_view.html#alab_management.device_view.device_view.DeviceView.get_status">get_status() (DeviceView method)</a>
 
       <ul>
@@ -636,7 +640,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.html#alab_management.logger.LoggingLevel.INFO">INFO (LoggingLevel attribute)</a>
 </li>
-      <li><a href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SampleView.is_valid_position">is_valid_position() (SampleView method)</a>
+      <li><a href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SampleView.is_empty_position">is_empty_position() (SampleView method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -654,10 +658,14 @@
 </li>
       <li><a href="alab_management.utils.html#alab_management.utils.module_ops.load_definition">load_definition() (in module alab_management.utils.module_ops)</a>
 </li>
-      <li><a href="alab_management.html#alab_management.logger.DBLogger.log">log() (DBLogger method)</a>
+      <li><a href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SampleView.lock_sample_position">lock_sample_position() (SampleView method)</a>
+</li>
+      <li><a href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SamplePositionStatus.LOCKED">LOCKED (SamplePositionStatus attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="alab_management.html#alab_management.logger.DBLogger.log">log() (DBLogger method)</a>
+</li>
       <li><a href="alab_management.html#alab_management.logger.DBLogger.log_amount">log_amount() (DBLogger method)</a>
 </li>
       <li><a href="alab_management.html#alab_management.logger.DBLogger.log_characterization_result">log_characterization_result() (DBLogger method)</a>
@@ -766,12 +774,14 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.device_view.html#alab_management.device_view.device_view.DeviceStatus.OCCUPIED">OCCUPIED (DeviceStatus attribute)</a>
+
+      <ul>
+        <li><a href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SamplePositionStatus.OCCUPIED">(SamplePositionStatus attribute)</a>
 </li>
-      <li><a href="alab_management.device_view.html#alab_management.device_view.device_view.DeviceView.occupy_device">occupy_device() (DeviceView method)</a>
-</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SampleView.occupy_sample_position">occupy_sample_position() (SampleView method)</a>
+      <li><a href="alab_management.device_view.html#alab_management.device_view.device_view.DeviceView.occupy_device">occupy_device() (DeviceView method)</a>
 </li>
       <li><a href="alab_management.html#alab_management.logger.LoggingType.OTHER">OTHER (LoggingType attribute)</a>
 </li>
@@ -863,6 +873,8 @@
 </li>
       <li><a href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SamplePositionsLock">SamplePositionsLock (class in alab_management.sample_view.sample_view)</a>
 </li>
+      <li><a href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SamplePositionStatus">SamplePositionStatus (class in alab_management.sample_view.sample_view)</a>
+</li>
       <li><a href="alab_management.experiment_view.html#alab_management.experiment_view.experiment.Experiment.samples">samples (Experiment attribute)</a>
 </li>
   </ul></td>
@@ -906,7 +918,11 @@
       <li><a href="alab_management.device_view.html#alab_management.device_view.device_view.DeviceStatus.UNKNOWN">UNKNOWN (DeviceStatus attribute)</a>
 </li>
       <li><a href="alab_management.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.update_sample_task_id">update_sample_task_id() (ExperimentView method)</a>
+
+      <ul>
+        <li><a href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SampleView.update_sample_task_id">(SampleView method)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.task_view.html#alab_management.task_view.task_view.TaskView.update_status">update_status() (TaskView method)</a>
