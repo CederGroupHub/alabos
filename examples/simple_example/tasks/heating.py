@@ -8,7 +8,6 @@ from .moving import Moving
 
 
 class Heating(BaseTask):
-    LONG_TIME_TASK = True
 
     def __init__(self, sample_1: ObjectId, sample_2: Optional[ObjectId],
                  sample_3: Optional[ObjectId], sample_4: Optional[ObjectId],

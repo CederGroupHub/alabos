@@ -8,7 +8,6 @@ from ..devices.robot_arm import RobotArm
 
 @dataclass
 class Moving(BaseTask):
-    LONG_TIME_TASK = False
 
     def __init__(self, sample: ObjectId, dest: str, *args, **kwargs):
         super(Moving, self).__init__(*args, **kwargs)

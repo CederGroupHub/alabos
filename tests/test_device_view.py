@@ -100,13 +100,14 @@ class TestDeviceView(TestCase):
         import time
         import pytest_reraise
 
-        reraise = pytest_reraise.Reraise()
+        reraise_1 = pytest_reraise.Reraise()
+        reraise_2 = pytest_reraise.Reraise()
 
         device_types = list({device.__class__ for device in self.device_list.values()})
         task_id = ObjectId()
         task_id_2 = ObjectId()
 
-        @reraise.wrap
+        @reraise_1.wrap
         def _request_1():
             start_time = time.perf_counter()
             with self.device_view.request_devices(task_id, *device_types, timeout=100) as devices:
@@ -115,7 +116,7 @@ class TestDeviceView(TestCase):
                 self.assertFalse(devices is None)
                 time.sleep(2)
 
-        @reraise.wrap
+        @reraise_2.wrap
         def _request_2():
             start_time = time.perf_counter()
             with self.device_view.request_devices(task_id_2, *device_types, timeout=100) as devices:
@@ -132,4 +133,5 @@ class TestDeviceView(TestCase):
         t1.join()
         t2.join()
 
-        reraise()
+        reraise_1()
+        reraise_2()

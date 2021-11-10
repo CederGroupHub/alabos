@@ -3,7 +3,6 @@ from typing import List, Any, Dict, Optional
 
 from bson import ObjectId
 
-from alab_management.config import config
 from alab_management.db import get_collection
 from alab_management.experiment_view.experiment import Experiment
 
@@ -25,8 +24,9 @@ class ExperimentView:
     """
     Experiment view manages the experiment status, which is a collection of tasks and samples
     """
+
     def __init__(self):
-        self._experiment_collection = get_collection(config["experiment"]["experiment_collection"])
+        self._experiment_collection = get_collection("experiment")
 
     def create_experiment(self, experiment: Experiment) -> ObjectId:
         """

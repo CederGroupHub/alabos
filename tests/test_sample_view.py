@@ -2,10 +2,10 @@ import os
 from pathlib import Path
 from unittest import TestCase
 
-from bson import ObjectId
-
 os.environ["ALAB_CONFIG"] = (Path(__file__).parent.parent /
                              "examples" / "fake_lab" / "config.toml").as_posix()
+
+from bson import ObjectId
 
 from alab_management import SampleView, cleanup_lab
 from alab_management.scripts import setup_lab
@@ -18,9 +18,9 @@ class TestSampleView(TestCase):
         self.sample_view = SampleView()
         self.sample_view._sample_collection.drop()
 
-    # def tearDown(self) -> None:
-    #     cleanup_lab()
-    #     self.sample_view._sample_collection.drop()
+    def tearDown(self) -> None:
+        cleanup_lab()
+        self.sample_view._sample_collection.drop()
 
     def test_create_sample(self):
         sample_id = self.sample_view.create_sample("test", position="furnace_table")
@@ -101,7 +101,7 @@ class TestSampleView(TestCase):
         self.sample_view.lock_sample_position(task_id=task_id, position="furnace_table")
         sample = self.sample_view.get_sample(sample_id=sample_id)
         self.assertEqual("furnace_table", sample.position)
-        self.assertEqual("LOCKED", self.sample_view.get_sample_position_status("furnace_table")[0].name)
+        self.assertEqual("OCCUPIED", self.sample_view.get_sample_position_status("furnace_table")[0].name)
 
         self.sample_view.release_sample_position("furnace_table")
 
@@ -149,12 +149,13 @@ class TestSampleView(TestCase):
         import time
         import pytest_reraise
 
-        reraise = pytest_reraise.Reraise()
+        reraise_1 = pytest_reraise.Reraise()
+        reraise_2 = pytest_reraise.Reraise()
 
         task_id = ObjectId()
         task_id_2 = ObjectId()
 
-        @reraise.wrap
+        @reraise_1.wrap
         def _request_1():
             start_time = time.perf_counter()
             with self.sample_view.request_sample_positions(task_id,
@@ -165,7 +166,7 @@ class TestSampleView(TestCase):
                 self.assertFalse(sample_positions is None)
                 time.sleep(2)
 
-        @reraise.wrap
+        @reraise_2.wrap
         def _request_2():
             start_time = time.perf_counter()
             with self.sample_view.request_sample_positions(task_id_2,
@@ -184,4 +185,5 @@ class TestSampleView(TestCase):
         t1.join()
         t2.join()
 
-        reraise()
+        reraise_1()
+        reraise_2()

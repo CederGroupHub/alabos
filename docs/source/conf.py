@@ -49,6 +49,7 @@ extensions = [
     'sphinx.ext.githubpages',
     'recommonmark',
     'sphinx_autodoc_typehints'
+
 ]
 
 add_module_names = False
@@ -72,8 +73,8 @@ html_theme = 'sphinx_book_theme'
 html_theme_options = {
     "repository_url": "https://github.com/idocx/alab_management",
     "use_repository_button": True,
-    "show_toc_level": 1,
-    "show_navbar_depth": 1,
+    "home_page_in_toc": True,
+    "show_navbar_depth": 0,
 }
 
 html_logo = (Path(__file__).parent / "_static" / "logo.png").as_posix()
