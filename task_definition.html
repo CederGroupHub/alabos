@@ -1,0 +1,427 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Defining a new task &#8212; Alab Management</title>
+    
+  <link href="_static/css/theme.css" rel="stylesheet" />
+  <link href="_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    
+  <link rel="preload" as="script" href="_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="alab_management" href="modules.html" />
+    <link rel="prev" title="Defining a new device" href="device_definition.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="_static/logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">Alab Management</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="index.html">
+   Overview
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Quickstart
+ </span>
+</p>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="installation.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="setup.html">
+   Setup definition folder
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="device_definition.html">
+   Defining new devices
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Defining new tasks
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="modules.html">
+   API Docs
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="alab_management.html">
+     alab_management package
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+    <label for="toctree-checkbox-2">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="alab_management.dashboard.html">
+       alab_management.dashboard package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+      <label for="toctree-checkbox-3">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.dashboard.routes.html">
+         alab_management.dashboard.routes package
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="alab_management.device_view.html">
+       alab_management.device_view package
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="alab_management.experiment_view.html">
+       alab_management.experiment_view package
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="alab_management.sample_view.html">
+       alab_management.sample_view package
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="alab_management.scripts.html">
+       alab_management.scripts package
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="alab_management.task_view.html">
+       alab_management.task_view package
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="alab_management.utils.html">
+       alab_management.utils package
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="_sources/task_definition.rst.txt"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.rst</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/idocx/alab_management"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        
+        
+    </div>
+</div>
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav" aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#register-task">
+   Register task
+  </a>
+ </li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="defining-a-new-task">
+<h1>Defining a new task<a class="headerlink" href="#defining-a-new-task" title="Permalink to this headline">¶</a></h1>
+<p>Similar to define devices, we need to inherit classes from <a class="reference internal" href="#alab_management.task_view.task.BaseTask" title="alab_management.task_view.task.BaseTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTask</span></code></a>.</p>
+<dl class="py class">
+<dt id="alab_management.task_view.task.BaseTask">
+<em class="property">class </em><code class="sig-name descname">BaseTask</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em>, <em class="sig-param"><span class="n">lab_manager</span></em>, <em class="sig-param"><span class="n">logger</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask" title="Permalink to this definition">¶</a></dt>
+<dd><p>The abstract class of task.</p>
+<p>All the tasks should inherit from this class.</p>
+<dl class="py method">
+<dt id="alab_management.task_view.task.BaseTask.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em>, <em class="sig-param"><span class="n">lab_manager</span></em>, <em class="sig-param"><span class="n">logger</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>task_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the identifier of task</p></li>
+<li><p><strong>lab_manager</strong> – you can request devices and positions
+from it and update the sample’s position in the sample view, refer to
+<a class="reference internal" href="alab_management.html#alab_management.lab_manager.LabManager" title="alab_management.lab_manager.LabManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabManager</span></code></a> for more information</p></li>
+<li><p><strong>logger</strong> – you can use logger to record any data you want it to record, refer to
+<a class="reference internal" href="alab_management.html#alab_management.logger.DBLogger" title="alab_management.logger.DBLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">DBLogger</span></code></a> for more information</p></li>
+</ul>
+</dd>
+</dl>
+<p>Here is an example about how to define a custom task</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_1</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">sample_2</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">],</span>
+             <span class="n">sample_3</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">],</span> <span class="n">sample_4</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">],</span>
+              <span class="n">setpoints</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">(</span><span class="n">Heating</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">setpoints</span> <span class="o">=</span> <span class="n">setpoints</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">sample_1</span><span class="p">,</span> <span class="n">sample_2</span><span class="p">,</span> <span class="n">sample_3</span><span class="p">,</span> <span class="n">sample_4</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="alab_management.task_view.task.BaseTask.run">
+<em class="property">abstract </em><code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the task. In this function, you can request lab resources from lab manager and log data to database
+with logger.</p>
+<p><code class="docutils literal notranslate"><span class="pre">request_resources</span></code> will not return until all the requested resources are available. So the task will
+pend until it gets the requested resources, which prevent the conflict in the resource allocation.</p>
+<p>When a device get the requested device and sample positions, it also takes over the ownership of these
+resources, i.e., other task cannot use the device or request the sample positions this task has requested.</p>
+<p>We use a context manager to manage the ownership of the resources. when a task is completed, all the devices
+and sample positions will be released automatically.</p>
+<p>Here is an example about how to define the task</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># request devices and sample positions from lab manager. The `$` represents</span>
+<span class="c1"># the name of assigned devices in the sample positions we try to request,</span>
+<span class="c1"># 4 is the number of sample positions.</span>
+<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_manager</span><span class="o">.</span><span class="n">request_resources</span><span class="p">({</span><span class="n">Furnace</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;$.inside&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)]})</span> <span class="k">as</span> <span class="n">devices_and_positions</span><span class="p">:</span>
+    <span class="n">devices</span><span class="p">,</span> <span class="n">sample_positions</span> <span class="o">=</span> <span class="n">devices_and_positions</span>
+    <span class="n">furnace</span> <span class="o">=</span> <span class="n">devices</span><span class="p">[</span><span class="n">Furnace</span><span class="p">]</span>
+    <span class="n">inside_furnace</span> <span class="o">=</span> <span class="n">sample_positions</span><span class="p">[</span><span class="n">Furnace</span><span class="p">][</span><span class="s2">&quot;$.inside&quot;</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples</span><span class="p">:</span>
+        <span class="c1"># in a task, we can call other tasks, which will share the same</span>
+        <span class="c1"># task id, requested devices and sample positions.</span>
+        <span class="n">moving_task</span> <span class="o">=</span> <span class="n">Moving</span><span class="p">(</span><span class="n">sample</span><span class="o">=</span><span class="n">sample</span><span class="p">,</span>
+                             <span class="n">task_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span>
+                             <span class="n">dest</span><span class="o">=</span><span class="n">inside_furnace</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                             <span class="n">lab_manager</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lab_manager</span><span class="p">,</span>
+                             <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+        <span class="n">moving_task</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+    <span class="c1"># send command to device</span>
+    <span class="n">furnace</span><span class="o">.</span><span class="n">run_program</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setpoints</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="n">furnace</span><span class="o">.</span><span class="n">is_running</span><span class="p">():</span>
+        <span class="c1"># log the device data, which is current temperature of the furnace</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">log_device_signal</span><span class="p">({</span>
+            <span class="s2">&quot;device&quot;</span><span class="p">:</span> <span class="n">furnace</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="n">furnace</span><span class="o">.</span><span class="n">get_temperature</span><span class="p">(),</span>
+        <span class="p">})</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="register-task">
+<h2>Register task<a class="headerlink" href="#register-task" title="Permalink to this headline">¶</a></h2>
+<p>To make sure the task you defined can be loaded properly by the system, you need to register it in the system.</p>
+<p>We provide a function <a class="reference internal" href="alab_management.task_view.html#alab_management.task_view.task.add_task" title="alab_management.task_view.task.add_task"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_task</span></code></a> to register a device.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alab_management</span> <span class="kn">import</span> <span class="n">add_task</span>
+<span class="kn">from</span> <span class="nn">.tasks.heating</span> <span class="kn">import</span> <span class="n">Heating</span>
+
+<span class="n">add_task</span><span class="p">(</span><span class="n">Heating</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>It doesn’t matter where you register the device as long as the code can be executed. But we recommend it be defined in
+the <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> in the root dir to make sure it can always be reached.</p>
+</div>
+</div>
+
+
+              </div>
+              
+        
+            
+
+
+
+<div class='prev-next-bottom'>
+    
+    <div id="prev">
+        <a class="left-prev" href="device_definition.html" title="previous page">
+            <i class="prevnext-label fas fa-angle-left"></i>
+            <div class="prevnext-info">
+                <p class="prevnext-label">previous</p>
+                <p class="prevnext-title">Defining a new device</p>
+            </div>
+        </a>
+    </div>
+     <div id="next">
+        <a class="right-next" href="modules.html" title="next page">
+            <div class="prevnext-info">
+                <p class="prevnext-label">next</p>
+                <p class="prevnext-title">alab_management</p>
+            </div>
+            <i class="prevnext-label fas fa-angle-right"></i>
+        </a>
+     </div>
+
+</div>
+        
+        </div>
+    </div>
+    <footer class="footer">
+    <div class="container">
+      <p>
+        
+          By Alab Project Team<br/>
+        
+            &copy; Copyright 2021, Alab Project Team.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  
+  </body>
+</html>

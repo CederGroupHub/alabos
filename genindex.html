@@ -71,15 +71,39 @@
     <div class="bd-toc-item active">
         <ul class="nav bd-sidenav">
  <li class="toctree-l1">
+  <a class="reference internal" href="index.html">
+   Overview
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Quickstart
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
   <a class="reference internal" href="installation.html">
    Installation
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="quickstart.html">
-   Quickstart
+  <a class="reference internal" href="setup.html">
+   Setup definition folder
   </a>
  </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="device_definition.html">
+   Defining new devices
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="task_definition.html">
+   Defining new tasks
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1 has-children">
   <a class="reference internal" href="modules.html">
    API Docs
@@ -225,7 +249,8 @@
 <h1 id="index">Index</h1>
 
 <div class="genindex-jumpbox">
- <a href="#A"><strong>A</strong></a>
+ <a href="#_"><strong>_</strong></a>
+ | <a href="#A"><strong>A</strong></a>
  | <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
@@ -246,6 +271,18 @@
  | <a href="#W"><strong>W</strong></a>
  
 </div>
+<h2 id="_">_</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="device_definition.html#alab_management.device_view.device.BaseDevice.__init__">__init__() (BaseDevice method)</a>
+
+      <ul>
+        <li><a href="task_definition.html#alab_management.task_view.task.BaseTask.__init__">(BaseTask method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -456,11 +493,11 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="alab_management.device_view.html#alab_management.device_view.device.BaseDevice">BaseDevice (class in alab_management.device_view.device)</a>
+      <li><a href="alab_management.device_view.html#alab_management.device_view.device.BaseDevice">BaseDevice (class in alab_management.device_view.device)</a>, <a href="device_definition.html#alab_management.device_view.device.BaseDevice">[1]</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="alab_management.task_view.html#alab_management.task_view.task.BaseTask">BaseTask (class in alab_management.task_view.task)</a>
+      <li><a href="alab_management.task_view.html#alab_management.task_view.task.BaseTask">BaseTask (class in alab_management.task_view.task)</a>, <a href="task_definition.html#alab_management.task_view.task.BaseTask">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -528,7 +565,7 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="alab_management.device_view.html#alab_management.device_view.device.BaseDevice.emergent_stop">emergent_stop() (BaseDevice method)</a>
+      <li><a href="alab_management.device_view.html#alab_management.device_view.device.BaseDevice.emergent_stop">emergent_stop() (BaseDevice method)</a>, <a href="device_definition.html#alab_management.device_view.device.BaseDevice.emergent_stop">[1]</a>
 </li>
       <li><a href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SamplePositionStatus.EMPTY">EMPTY (SamplePositionStatus attribute)</a>
 </li>
@@ -660,10 +697,10 @@
 </li>
       <li><a href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SampleView.lock_sample_position">lock_sample_position() (SampleView method)</a>
 </li>
-      <li><a href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SamplePositionStatus.LOCKED">LOCKED (SamplePositionStatus attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SamplePositionStatus.LOCKED">LOCKED (SamplePositionStatus attribute)</a>
+</li>
       <li><a href="alab_management.html#alab_management.logger.DBLogger.log">log() (DBLogger method)</a>
 </li>
       <li><a href="alab_management.html#alab_management.logger.DBLogger.log_amount">log_amount() (DBLogger method)</a>
@@ -675,8 +712,6 @@
       <li><a href="alab_management.html#alab_management.logger.LoggingLevel">LoggingLevel (class in alab_management.logger)</a>
 </li>
       <li><a href="alab_management.html#alab_management.logger.LoggingType">LoggingType (class in alab_management.logger)</a>
-</li>
-      <li><a href="alab_management.task_view.html#alab_management.task_view.task.BaseTask.LONG_TIME_TASK">LONG_TIME_TASK (BaseTask attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -839,7 +874,7 @@
       </ul></li>
       <li><a href="alab_management.html#alab_management.lab_manager.resource_lock">resource_lock() (in module alab_management.lab_manager)</a>
 </li>
-      <li><a href="alab_management.task_view.html#alab_management.task_view.task.BaseTask.run">run() (BaseTask method)</a>
+      <li><a href="alab_management.task_view.html#alab_management.task_view.task.BaseTask.run">run() (BaseTask method)</a>, <a href="task_definition.html#alab_management.task_view.task.BaseTask.run">[1]</a>
 
       <ul>
         <li><a href="alab_management.html#alab_management.executor.Executor.run">(Executor method)</a>
@@ -863,7 +898,7 @@
 </li>
       <li><a href="alab_management.html#alab_management.logger.LoggingType.SAMPLE_AMOUNT">SAMPLE_AMOUNT (LoggingType attribute)</a>
 </li>
-      <li><a href="alab_management.device_view.html#alab_management.device_view.device.BaseDevice.sample_positions">sample_positions() (BaseDevice property)</a>
+      <li><a href="alab_management.device_view.html#alab_management.device_view.device.BaseDevice.sample_positions">sample_positions() (BaseDevice property)</a>, <a href="device_definition.html#alab_management.device_view.device.BaseDevice.sample_positions">[1]</a>
 
       <ul>
         <li><a href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SamplePositionsLock.sample_positions">(SamplePositionsLock property)</a>

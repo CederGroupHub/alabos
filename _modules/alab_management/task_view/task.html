@@ -71,15 +71,39 @@
     <div class="bd-toc-item active">
         <ul class="nav bd-sidenav">
  <li class="toctree-l1">
+  <a class="reference internal" href="../../../index.html">
+   Overview
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Quickstart
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
   <a class="reference internal" href="../../../installation.html">
    Installation
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../../quickstart.html">
-   Quickstart
+  <a class="reference internal" href="../../../setup.html">
+   Setup definition folder
   </a>
  </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../../device_definition.html">
+   Defining new devices
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../../task_definition.html">
+   Defining new tasks
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1 has-children">
   <a class="reference internal" href="../../../modules.html">
    API Docs
@@ -231,26 +255,85 @@
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 
 
-<div class="viewcode-block" id="BaseTask"><a class="viewcode-back" href="../../../alab_management.task_view.html#alab_management.task_view.task.BaseTask">[docs]</a><span class="k">class</span> <span class="nc">BaseTask</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseTask"><a class="viewcode-back" href="../../../task_definition.html#alab_management.task_view.task.BaseTask">[docs]</a><span class="k">class</span> <span class="nc">BaseTask</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The abstract class of task.</span>
 
 <span class="sd">    All the tasks should inherit from this class.</span>
-
-<span class="sd">    - ``task_id``: the identifier of task</span>
-<span class="sd">    - ``lab_manager``: you can request devices and positions from it</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">LONG_TIME_TASK</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">lab_manager</span><span class="p">,</span> <span class="n">logger</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseTask.__init__"><a class="viewcode-back" href="../../../task_definition.html#alab_management.task_view.task.BaseTask.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">lab_manager</span><span class="p">,</span> <span class="n">logger</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            task_id: the identifier of task</span>
+<span class="sd">            lab_manager: you can request devices and positions</span>
+<span class="sd">              from it and update the sample&#39;s position in the sample view, refer to</span>
+<span class="sd">              :py:class:`LabManager &lt;alab_management.lab_manager.LabManager&gt;` for more information</span>
+<span class="sd">            logger: you can use logger to record any data you want it to record, refer to</span>
+<span class="sd">              :py:class:`DBLogger &lt;alab_management.logger.DBLogger&gt;` for more information</span>
+
+<span class="sd">        Here is an example about how to define a custom task</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">          def __init__(self, sample_1: ObjectId, sample_2: Optional[ObjectId],</span>
+<span class="sd">                       sample_3: Optional[ObjectId], sample_4: Optional[ObjectId],</span>
+<span class="sd">                        setpoints: List[Tuple[float, float]], *args, **kwargs):</span>
+<span class="sd">              super(Heating, self).__init__(*args, **kwargs)</span>
+<span class="sd">              self.setpoints = setpoints</span>
+<span class="sd">              self.samples = [sample_1, sample_2, sample_3, sample_4]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span> <span class="o">=</span> <span class="n">task_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lab_manager</span> <span class="o">=</span> <span class="n">lab_manager</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span></div>
 
-<div class="viewcode-block" id="BaseTask.run"><a class="viewcode-back" href="../../../alab_management.task_view.html#alab_management.task_view.task.BaseTask.run">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseTask.run"><a class="viewcode-back" href="../../../task_definition.html#alab_management.task_view.task.BaseTask.run">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Run the task</span>
+<span class="sd">        Run the task. In this function, you can request lab resources from lab manager and log data to database</span>
+<span class="sd">        with logger.</span>
+
+<span class="sd">        ``request_resources`` will not return until all the requested resources are available. So the task will</span>
+<span class="sd">        pend until it gets the requested resources, which prevent the conflict in the resource allocation.</span>
+
+<span class="sd">        When a device get the requested device and sample positions, it also takes over the ownership of these</span>
+<span class="sd">        resources, i.e., other task cannot use the device or request the sample positions this task has requested.</span>
+
+<span class="sd">        We use a context manager to manage the ownership of the resources. when a task is completed, all the devices</span>
+<span class="sd">        and sample positions will be released automatically.</span>
+
+<span class="sd">        Here is an example about how to define the task</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">          # request devices and sample positions from lab manager. The `$` represents</span>
+<span class="sd">          # the name of assigned devices in the sample positions we try to request,</span>
+<span class="sd">          # 4 is the number of sample positions.</span>
+<span class="sd">          with self.lab_manager.request_resources({Furnace: [(&quot;$.inside&quot;, 4)]}) as devices_and_positions:</span>
+<span class="sd">              devices, sample_positions = devices_and_positions</span>
+<span class="sd">              furnace = devices[Furnace]</span>
+<span class="sd">              inside_furnace = sample_positions[Furnace][&quot;$.inside&quot;]</span>
+
+<span class="sd">              for sample in self.samples:</span>
+<span class="sd">                  # in a task, we can call other tasks, which will share the same</span>
+<span class="sd">                  # task id, requested devices and sample positions.</span>
+<span class="sd">                  moving_task = Moving(sample=sample,</span>
+<span class="sd">                                       task_id=self.task_id,</span>
+<span class="sd">                                       dest=inside_furnace[0],</span>
+<span class="sd">                                       lab_manager=self.lab_manager,</span>
+<span class="sd">                                       logger=self.logger)</span>
+<span class="sd">                  moving_task.run()</span>
+
+<span class="sd">              # send command to device</span>
+<span class="sd">              furnace.run_program(self.setpoints)</span>
+
+<span class="sd">              while furnace.is_running():</span>
+<span class="sd">                  # log the device data, which is current temperature of the furnace</span>
+<span class="sd">                  self.logger.log_device_signal({</span>
+<span class="sd">                      &quot;device&quot;: furnace.name,</span>
+<span class="sd">                      &quot;temperature&quot;: furnace.get_temperature(),</span>
+<span class="sd">                  })</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div></div>
 

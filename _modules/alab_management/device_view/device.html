@@ -71,15 +71,39 @@
     <div class="bd-toc-item active">
         <ul class="nav bd-sidenav">
  <li class="toctree-l1">
+  <a class="reference internal" href="../../../index.html">
+   Overview
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Quickstart
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
   <a class="reference internal" href="../../../installation.html">
    Installation
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../../quickstart.html">
-   Quickstart
+  <a class="reference internal" href="../../../setup.html">
+   Setup definition folder
   </a>
  </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../../device_definition.html">
+   Defining new devices
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../../task_definition.html">
+   Defining new tasks
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1 has-children">
   <a class="reference internal" href="../../../modules.html">
    API Docs
@@ -248,35 +272,74 @@
     <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">hash</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="BaseDevice"><a class="viewcode-back" href="../../../alab_management.device_view.html#alab_management.device_view.device.BaseDevice">[docs]</a><span class="k">class</span> <span class="nc">BaseDevice</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseDevice"><a class="viewcode-back" href="../../../device_definition.html#alab_management.device_view.device.BaseDevice">[docs]</a><span class="k">class</span> <span class="nc">BaseDevice</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The abstract class of device</span>
 
-<span class="sd">    All the defined classes should be inherited from this class</span>
-
-<span class="sd">    - ``name``: the name of device, which is the unique identifier of this device</span>
-<span class="sd">    - ``description``: description of this kind of device, which can include</span>
-<span class="sd">      the device type, how to set up and so on.</span>
+<span class="sd">    All the devices should be inherited from this class</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">description</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+<div class="viewcode-block" id="BaseDevice.__init__"><a class="viewcode-back" href="../../../device_definition.html#alab_management.device_view.device.BaseDevice.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a device object, you can set up connection to</span>
+<span class="sd">        the device in this method. The device will only be initialized</span>
+<span class="sd">        once in the system. So if your connection to driver need to be</span>
+<span class="sd">        renewed from time to time, you can write a custom function to</span>
+<span class="sd">        connect to the device when needed.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: the name of device, which is the unique identifier of this device</span>
+<span class="sd">            description: description of this kind of device, which can include</span>
+<span class="sd">              the device type, how to set up and so on.</span>
+
+<span class="sd">        Here is an example of how to write a new device</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">          def __init__(self, address: str, port: int = 502, *args, **kwargs):</span>
+<span class="sd">              super(Furnace, self).__init__(*args, **kwargs)</span>
+<span class="sd">              self.address = address</span>
+<span class="sd">              self.port = port</span>
+<span class="sd">              self.driver = FurnaceController(address=address, port=port)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span></div>
 
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">sample_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SamplePosition</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        The sample positions describe the position that can hold a sample.</span>
+<span class="sd">        The sample positions describe the position that can hold a sample. The name of sample</span>
+<span class="sd">        position will be the unique identifier of this sample position. It does not store any</span>
+<span class="sd">        coordinates information about where the position is in the lab. Users need to map the</span>
+<span class="sd">        sample positions to real lab coordinates manually.</span>
 
 <span class="sd">        .. note::</span>
 <span class="sd">          It doesn&#39;t matter in which device class a sample position is defined.</span>
 <span class="sd">          We use ``name`` attribute to identify them.</span>
+
+<span class="sd">        Here is an example of how to define some sample positions</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">          @property</span>
+<span class="sd">          def sample_positions(self):</span>
+<span class="sd">              return [</span>
+<span class="sd">                  SamplePosition(</span>
+<span class="sd">                      f&quot;{self.name}.inside&quot;,</span>
+<span class="sd">                      description=&quot;The position inside the furnace, where the samples are heated&quot;</span>
+<span class="sd">                  ),</span>
+<span class="sd">                  SamplePosition(</span>
+<span class="sd">                      &quot;furnace_table&quot;,</span>
+<span class="sd">                      description=&quot;Temporary position to transfer samples&quot;</span>
+<span class="sd">                  )</span>
+<span class="sd">              ]</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
 
-<div class="viewcode-block" id="BaseDevice.emergent_stop"><a class="viewcode-back" href="../../../alab_management.device_view.html#alab_management.device_view.device.BaseDevice.emergent_stop">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BaseDevice.emergent_stop"><a class="viewcode-back" href="../../../device_definition.html#alab_management.device_view.device.BaseDevice.emergent_stop">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">emergent_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Specify how the device should stop when emergency</span>

@@ -71,15 +71,39 @@
     <div class="bd-toc-item active">
         <ul class="nav bd-sidenav">
  <li class="toctree-l1">
+  <a class="reference internal" href="../../../index.html">
+   Overview
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Quickstart
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
   <a class="reference internal" href="../../../installation.html">
    Installation
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../../quickstart.html">
-   Quickstart
+  <a class="reference internal" href="../../../setup.html">
+   Setup definition folder
   </a>
  </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../../device_definition.html">
+   Defining new devices
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../../task_definition.html">
+   Defining new tasks
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1 has-children">
   <a class="reference internal" href="../../../modules.html">
    API Docs
@@ -227,7 +251,6 @@
 
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 
-<span class="kn">from</span> <span class="nn">alab_management.config</span> <span class="kn">import</span> <span class="n">config</span>
 <span class="kn">from</span> <span class="nn">alab_management.db</span> <span class="kn">import</span> <span class="n">get_collection</span>
 <span class="kn">from</span> <span class="nn">alab_management.experiment_view.experiment</span> <span class="kn">import</span> <span class="n">Experiment</span>
 
@@ -249,8 +272,9 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Experiment view manages the experiment status, which is a collection of tasks and samples</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;experiment&quot;</span><span class="p">][</span><span class="s2">&quot;experiment_collection&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;experiment&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ExperimentView.create_experiment"><a class="viewcode-back" href="../../../alab_management.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.create_experiment">[docs]</a>    <span class="k">def</span> <span class="nf">create_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment</span><span class="p">:</span> <span class="n">Experiment</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectId</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>

@@ -71,17 +71,41 @@
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item active">
-        <ul class="current nav bd-sidenav">
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="index.html">
+   Overview
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Quickstart
+ </span>
+</p>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="installation.html">
    Installation
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="quickstart.html">
-   Quickstart
+  <a class="reference internal" href="setup.html">
+   Setup definition folder
   </a>
  </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="device_definition.html">
+   Defining new devices
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="task_definition.html">
+   Defining new tasks
+  </a>
+ </li>
+</ul>
+<ul class="current nav bd-sidenav">
  <li class="toctree-l1 current active has-children">
   <a class="reference internal" href="modules.html">
    API Docs
@@ -281,12 +305,7 @@
 <em class="property">class </em><code class="sig-name descname">BaseDevice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>The abstract class of device</p>
-<p>All the defined classes should be inherited from this class</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: the name of device, which is the unique identifier of this device</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">description</span></code>: description of this kind of device, which can include
-the device type, how to set up and so on.</p></li>
-</ul>
+<p>All the devices should be inherited from this class</p>
 <dl class="py attribute">
 <dt id="alab_management.device_view.device.BaseDevice.description">
 <code class="sig-name descname">description</code><em class="property">: ClassVar<span class="p">[</span>str<span class="p">]</span></em><em class="property"> = ''</em><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.description" title="Permalink to this definition">¶</a></dt>
@@ -301,11 +320,29 @@ the device type, how to set up and so on.</p></li>
 <dl class="py method">
 <dt id="alab_management.device_view.device.BaseDevice.sample_positions">
 <em class="property">abstract property </em><code class="sig-name descname">sample_positions</code><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.sample_positions" title="Permalink to this definition">¶</a></dt>
-<dd><p>The sample positions describe the position that can hold a sample.</p>
+<dd><p>The sample positions describe the position that can hold a sample. The name of sample
+position will be the unique identifier of this sample position. It does not store any
+coordinates information about where the position is in the lab. Users need to map the
+sample positions to real lab coordinates manually.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>It doesn’t matter in which device class a sample position is defined.
 We use <code class="docutils literal notranslate"><span class="pre">name</span></code> attribute to identify them.</p>
+</div>
+<p>Here is an example of how to define some sample positions</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@property</span>
+<span class="k">def</span> <span class="nf">sample_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="n">SamplePosition</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.inside&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The position inside the furnace, where the samples are heated&quot;</span>
+        <span class="p">),</span>
+        <span class="n">SamplePosition</span><span class="p">(</span>
+            <span class="s2">&quot;furnace_table&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Temporary position to transfer samples&quot;</span>
+        <span class="p">)</span>
+    <span class="p">]</span>
+</pre></div>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -353,7 +390,7 @@ identifier of a sample position</p></li>
 <dd><p>Get all the device names in the device registry</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <a class="reference internal" href="#alab_management.device_view.device.BaseDevice" title="alab_management.device_view.device.BaseDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDevice</span></code></a>]</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <a class="reference internal" href="device_definition.html#alab_management.device_view.device.BaseDevice" title="alab_management.device_view.device.BaseDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDevice</span></code></a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -422,7 +459,7 @@ Device name is a unique identifier for a device</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>device_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference internal" href="#alab_management.device_view.device.BaseDevice" title="alab_management.device_view.device.BaseDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDevice</span></code></a>]) – the type of device, which should be <code class="docutils literal notranslate"><span class="pre">type[BaseDevice]</span></code></p></li>
+<li><p><strong>device_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference internal" href="device_definition.html#alab_management.device_view.device.BaseDevice" title="alab_management.device_view.device.BaseDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDevice</span></code></a>]) – the type of device, which should be <code class="docutils literal notranslate"><span class="pre">type[BaseDevice]</span></code></p></li>
 <li><p><strong>task_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>]) – the id of task that requests this device</p></li>
 <li><p><strong>only_idle</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – only return the idle devices</p></li>
 </ul>

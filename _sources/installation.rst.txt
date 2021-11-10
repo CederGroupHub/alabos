@@ -1,3 +1,6 @@
+.. _installation:
+
+============
 Installation
 ============
 
@@ -15,3 +18,9 @@ For development purpose
 .. code-block:: sh
 
   python setup.py develop
+
+
+What's next
+------------------
+
+Next, we will discuss how to set up a definition folder for custom devices and tasks.

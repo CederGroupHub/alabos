@@ -71,17 +71,41 @@
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item active">
-        <ul class="current nav bd-sidenav">
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="index.html">
+   Overview
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Quickstart
+ </span>
+</p>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="installation.html">
    Installation
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="quickstart.html">
-   Quickstart
+  <a class="reference internal" href="setup.html">
+   Setup definition folder
   </a>
  </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="device_definition.html">
+   Defining new devices
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="task_definition.html">
+   Defining new tasks
+  </a>
+ </li>
+</ul>
+<ul class="current nav bd-sidenav">
  <li class="toctree-l1 current active has-children">
   <a class="reference internal" href="modules.html">
    API Docs
@@ -282,19 +306,47 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>The abstract class of task.</p>
 <p>All the tasks should inherit from this class.</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">task_id</span></code>: the identifier of task</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">lab_manager</span></code>: you can request devices and positions from it</p></li>
-</ul>
-<dl class="py attribute">
-<dt id="alab_management.task_view.task.BaseTask.LONG_TIME_TASK">
-<code class="sig-name descname">LONG_TIME_TASK</code><em class="property"> = None</em><a class="headerlink" href="#alab_management.task_view.task.BaseTask.LONG_TIME_TASK" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="py method">
 <dt id="alab_management.task_view.task.BaseTask.run">
 <em class="property">abstract </em><code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Run the task</p>
+<dd><p>Run the task. In this function, you can request lab resources from lab manager and log data to database
+with logger.</p>
+<p><code class="docutils literal notranslate"><span class="pre">request_resources</span></code> will not return until all the requested resources are available. So the task will
+pend until it gets the requested resources, which prevent the conflict in the resource allocation.</p>
+<p>When a device get the requested device and sample positions, it also takes over the ownership of these
+resources, i.e., other task cannot use the device or request the sample positions this task has requested.</p>
+<p>We use a context manager to manage the ownership of the resources. when a task is completed, all the devices
+and sample positions will be released automatically.</p>
+<p>Here is an example about how to define the task</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># request devices and sample positions from lab manager. The `$` represents</span>
+<span class="c1"># the name of assigned devices in the sample positions we try to request,</span>
+<span class="c1"># 4 is the number of sample positions.</span>
+<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_manager</span><span class="o">.</span><span class="n">request_resources</span><span class="p">({</span><span class="n">Furnace</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;$.inside&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)]})</span> <span class="k">as</span> <span class="n">devices_and_positions</span><span class="p">:</span>
+    <span class="n">devices</span><span class="p">,</span> <span class="n">sample_positions</span> <span class="o">=</span> <span class="n">devices_and_positions</span>
+    <span class="n">furnace</span> <span class="o">=</span> <span class="n">devices</span><span class="p">[</span><span class="n">Furnace</span><span class="p">]</span>
+    <span class="n">inside_furnace</span> <span class="o">=</span> <span class="n">sample_positions</span><span class="p">[</span><span class="n">Furnace</span><span class="p">][</span><span class="s2">&quot;$.inside&quot;</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples</span><span class="p">:</span>
+        <span class="c1"># in a task, we can call other tasks, which will share the same</span>
+        <span class="c1"># task id, requested devices and sample positions.</span>
+        <span class="n">moving_task</span> <span class="o">=</span> <span class="n">Moving</span><span class="p">(</span><span class="n">sample</span><span class="o">=</span><span class="n">sample</span><span class="p">,</span>
+                             <span class="n">task_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span>
+                             <span class="n">dest</span><span class="o">=</span><span class="n">inside_furnace</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                             <span class="n">lab_manager</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lab_manager</span><span class="p">,</span>
+                             <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+        <span class="n">moving_task</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+    <span class="c1"># send command to device</span>
+    <span class="n">furnace</span><span class="o">.</span><span class="n">run_program</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setpoints</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="n">furnace</span><span class="o">.</span><span class="n">is_running</span><span class="p">():</span>
+        <span class="c1"># log the device data, which is current temperature of the furnace</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">log_device_signal</span><span class="p">({</span>
+            <span class="s2">&quot;device&quot;</span><span class="p">:</span> <span class="n">furnace</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="n">furnace</span><span class="o">.</span><span class="n">get_temperature</span><span class="p">(),</span>
+        <span class="p">})</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -311,7 +363,7 @@
 <dd><p>Get all the tasks in the registry</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference internal" href="#alab_management.task_view.task.BaseTask" title="alab_management.task_view.task.BaseTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTask</span></code></a>]]</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference internal" href="task_definition.html#alab_management.task_view.task.BaseTask" title="alab_management.task_view.task.BaseTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTask</span></code></a>]]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -377,7 +429,7 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>task_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the type of task, which should be a type name of class inherited from
-<a class="reference internal" href="#alab_management.task_view.task.BaseTask" title="alab_management.task_view.task.BaseTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTask</span></code></a></p></li>
+<a class="reference internal" href="task_definition.html#alab_management.task_view.task.BaseTask" title="alab_management.task_view.task.BaseTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTask</span></code></a></p></li>
 <li><p><strong>samples</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>]) – the samples that this task will handle, which will be passed to Task object
 the same as parameters.</p></li>
 <li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – the required tasks for this task</p></li>
@@ -403,7 +455,7 @@ the same as parameters.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><dl class="simple">
-<dt>{“task_id”: <code class="docutils literal notranslate"><span class="pre">ObjectId</span></code>,</dt><dd><p>”type”: <a class="reference internal" href="#alab_management.task_view.task.BaseTask" title="alab_management.task_view.task.BaseTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTask</span></code></a>}</p>
+<dt>{“task_id”: <code class="docutils literal notranslate"><span class="pre">ObjectId</span></code>,</dt><dd><p>”type”: <a class="reference internal" href="task_definition.html#alab_management.task_view.task.BaseTask" title="alab_management.task_view.task.BaseTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTask</span></code></a>}</p>
 </dd>
 </dl>
 </p>

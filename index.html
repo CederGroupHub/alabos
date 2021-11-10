@@ -71,16 +71,40 @@
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item active">
         <ul class="nav bd-sidenav">
+ <li class="toctree-l1 current">
+  <a class="reference internal" href="#">
+   Overview
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Quickstart
+ </span>
+</p>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="installation.html">
    Installation
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="quickstart.html">
-   Quickstart
+  <a class="reference internal" href="setup.html">
+   Setup definition folder
   </a>
  </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="device_definition.html">
+   Defining new devices
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="task_definition.html">
+   Defining new tasks
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1 has-children">
   <a class="reference internal" href="modules.html">
    API Docs
@@ -242,34 +266,36 @@
   </a>
   <ul class="visible nav section-nav flex-column">
    <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#modules-scripts">
-     Modules &amp; Scripts
+    <a class="reference internal nav-link" href="#terminology">
+     Terminology
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#modules">
+     Modules
     </a>
     <ul class="nav section-nav flex-column">
-     <li class="toc-h3 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#definition-reader">
-       Definition reader
-      </a>
-     </li>
      <li class="toc-h3 nav-item toc-entry">
       <a class="reference internal nav-link" href="#lab-status">
        Lab status
       </a>
      </li>
      <li class="toc-h3 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#task-manager-task-compiler">
-       Task manager (+ task compiler)
+      <a class="reference internal nav-link" href="#experiment-manager">
+       Experiment manager
       </a>
      </li>
      <li class="toc-h3 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#executor-scheduler">
-       Executor (+ scheduler)
+      <a class="reference internal nav-link" href="#executor">
+       Executor
       </a>
      </li>
      <li class="toc-h3 nav-item toc-entry">
       <a class="reference internal nav-link" href="#data-storage">
        Data Storage
       </a>
+      <ul class="nav section-nav flex-column">
+      </ul>
      </li>
     </ul>
    </li>
@@ -304,46 +330,76 @@ configuration throughout Git repository hosting website (e.g. <a class="referenc
 <div class="section" id="overview">
 <h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
 <div class="figure align-default" id="id1">
-<img alt="_images/arch_demo.gif" src="_images/arch_demo.gif" />
+<a class="reference internal image-reference" href="_images/arch.png"><img alt="_images/arch.png" src="_images/arch.png" style="width: 80%;" /></a>
 <p class="caption"><span class="caption-text">Architecture of the Alab management package</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
 </div>
-<div class="section" id="modules-scripts">
-<h2>Modules &amp; Scripts<a class="headerlink" href="#modules-scripts" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="definition-reader">
-<h3>Definition reader<a class="headerlink" href="#definition-reader" title="Permalink to this headline">¶</a></h3>
-<p>This script reads from user definitions to initialize the lab status
-(i.e. task view, sample view and device view)</p>
+<div class="section" id="terminology">
+<h2>Terminology<a class="headerlink" href="#terminology" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p><strong>Device</strong>: Device is the predefined abstract representation of the real device in the lab,
+which contains the device’s
+driver to communicate with the devices. A device should be inherited from
+<a class="reference internal" href="device_definition.html#alab_management.device_view.device.BaseDevice" title="alab_management.device_view.device.BaseDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDevice</span></code></a>.</p></li>
+<li><p><strong>Sample</strong>: In our system, sample refers to a <em>container</em> in the lab. The sample may ‘contain’
+some chemicals or just be empty. The sample may also be a batch of samples, e.g. a
+sample rack can hold multiple samples.</p></li>
+<li><p><strong>Sample position</strong>: The place that can hold a sample, which should be defined in the device definition. The sample
+position can be <code class="docutils literal notranslate"><span class="pre">LOCKED</span></code> by a task (not allow to put samples that are not in this task on the locked position)
+or be <code class="docutils literal notranslate"><span class="pre">OCCUPIED</span></code> by a sample.</p></li>
+<li><p><strong>Task</strong>: Task is a predefined code snippet that conducts certain operations. In the task definition, you can
+request devices and sample positions and occupy them. Each task should be inherit from
+<a class="reference internal" href="task_definition.html#alab_management.task_view.task.BaseTask" title="alab_management.task_view.task.BaseTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTask</span></code></a>.</p>
+<p>When you create a task instance, you must provide the samples this task will run on and the
+parameters for running this task (e.g. heating temperature for <code class="docutils literal notranslate"><span class="pre">Heating</span></code> task).</p>
+</li>
+<li><p><strong>Experiment</strong>: Experiment is basically a graph of task. An experiment specifies a list of samples, a list of
+tasks as well as the dependencies between samples and tasks (samples that a task will work on / the previous tasks
+of a task).</p>
+<p>Users can submit an experiment to do something in the lab.</p>
+</li>
+</ul>
+<div class="figure align-default" id="id2">
+<a class="reference internal image-reference" href="_images/exp_life_cycle.png"><img alt="_images/exp_life_cycle.png" src="_images/exp_life_cycle.png" style="width: 80%;" /></a>
+<p class="caption"><span class="caption-text">Life cycle of an experiment</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
 </div>
+</div>
+<div class="section" id="modules">
+<h2>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="lab-status">
 <h3>Lab status<a class="headerlink" href="#lab-status" title="Permalink to this headline">¶</a></h3>
 <p>Lab status manages all the information required to describe alab. It have three important data view class:</p>
 <ul class="simple">
+<li><p><strong>Experiment view</strong>: experiment view holds experiment data. Each experiment data records the sample and task ids used
+in this experiment, so that we can track the experiment easily. An experiment has a status of <code class="docutils literal notranslate"><span class="pre">PENDING</span></code>,
+<code class="docutils literal notranslate"><span class="pre">RUNNING</span></code>, <code class="docutils literal notranslate"><span class="pre">COMPLETED</span></code>.</p></li>
 <li><p><strong>Task view</strong>: task view holds task data, which is represented by a DAG (directed acyclic graph). Each vertex is an
 operation, which has a status of <code class="docutils literal notranslate"><span class="pre">WAITING</span></code>, <code class="docutils literal notranslate"><span class="pre">READY</span></code>, <code class="docutils literal notranslate"><span class="pre">RUNNING</span></code> and <code class="docutils literal notranslate"><span class="pre">COMPLETED</span></code>.</p></li>
 <li><p><strong>Device view</strong>: device view records the status of devices, which has the value of
 <code class="docutils literal notranslate"><span class="pre">IDLE</span></code>, <code class="docutils literal notranslate"><span class="pre">RUNNING</span></code>, <code class="docutils literal notranslate"><span class="pre">STOPPED</span></code> and <code class="docutils literal notranslate"><span class="pre">HOLD</span></code>.</p></li>
 <li><p><strong>Sample view</strong>: sample view tracks the position of each sample in the lab. User will need to define the
-<code class="docutils literal notranslate"><span class="pre">sample</span> <span class="pre">position</span></code> around the lab, which basically is a position that can place samples.</p></li>
+<code class="docutils literal notranslate"><span class="pre">sample</span> <span class="pre">position</span></code> in the device definitions, which is a position that can place samples.</p></li>
 </ul>
 </div>
-<div class="section" id="task-manager-task-compiler">
-<h3>Task manager (+ task compiler)<a class="headerlink" href="#task-manager-task-compiler" title="Permalink to this headline">¶</a></h3>
-<p>Task manager reads synthesis recipes from database and add some
-extra necessary operations to the recipes (e.g. <code class="docutils literal notranslate"><span class="pre">Moving</span></code> operation). We call compiled synthesis
-recipe - <code class="docutils literal notranslate"><span class="pre">task</span></code>, which is basically a sequence of <code class="docutils literal notranslate"><span class="pre">operations</span></code>.</p>
-<p>It will also manage the task view (update task status, pop completed tasks)</p>
+<div class="section" id="experiment-manager">
+<h3>Experiment manager<a class="headerlink" href="#experiment-manager" title="Permalink to this headline">¶</a></h3>
+<p>Experiment manager reads experiment request from <code class="docutils literal notranslate"><span class="pre">experiment</span></code> collection and then creates sample,
+task in <code class="docutils literal notranslate"><span class="pre">sample</span></code> and <code class="docutils literal notranslate"><span class="pre">task</span></code> collection. It will also update the experiment status to <code class="docutils literal notranslate"><span class="pre">COMPLETED</span></code> when
+all the tasks in an experiment are completed.</p>
 </div>
-<div class="section" id="executor-scheduler">
-<h3>Executor (+ scheduler)<a class="headerlink" href="#executor-scheduler" title="Permalink to this headline">¶</a></h3>
-<p>The executor is where commands are actually sent to the devices. The scheduler will check if an operation can
-be submitted and executor will send the operation command to corresponding devices and collect returned data when
-a task is finished.</p>
-<p>The executor will also manage the lab status and update the status when a task is launched / stopped / completed.</p>
+<div class="section" id="executor">
+<h3>Executor<a class="headerlink" href="#executor" title="Permalink to this headline">¶</a></h3>
+<p>The executor submits a task when it is ready (all its previous tasks are completed). The executor also contains a
+<a class="reference internal" href="alab_management.html#alab_management.lab_manager.LabManager" title="alab_management.lab_manager.LabManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabManager</span></code></a> instance, which is basically a wrapper over
+<a class="reference internal" href="alab_management.device_view.html#alab_management.device_view.device_view.DeviceView" title="alab_management.device_view.device_view.DeviceView"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceView</span></code></a> and
+<a class="reference internal" href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SampleView" title="alab_management.sample_view.sample_view.SampleView"><code class="xref py py-class docutils literal notranslate"><span class="pre">SampleView</span></code></a>. It is used to assign lab resources
+(devices and sample positions) to a task.</p>
 </div>
 <div class="section" id="data-storage">
 <h3>Data Storage<a class="headerlink" href="#data-storage" title="Permalink to this headline">¶</a></h3>
 <p>We will use <a class="reference external" href="https://www.mongodb.com/">MongoDB</a> as our database. We communicate with database
 via <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/">pymongo</a> package.</p>
+<div class="toctree-wrapper compound">
+</div>
 <div class="toctree-wrapper compound">
 </div>
 </div>
