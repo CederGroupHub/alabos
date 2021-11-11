@@ -300,28 +300,23 @@
 <div class="section" id="module-alab_management.experiment_view.experiment">
 <span id="alab-management-experiment-view-experiment-module"></span><h2>alab_management.experiment_view.experiment module<a class="headerlink" href="#module-alab_management.experiment_view.experiment" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="alab_management.experiment_view.experiment.Experiment">
-<em class="property">class </em><code class="sig-name descname">Experiment</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/experiment_view/experiment.html#Experiment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.experiment_view.experiment.Experiment" title="Permalink to this definition">¶</a></dt>
+<dt id="alab_management.experiment_view.experiment.InputExperiment">
+<em class="property">class </em><code class="sig-name descname">InputExperiment</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/experiment_view/experiment.html#InputExperiment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.experiment_view.experiment.InputExperiment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.main.BaseModel</span></code></p>
 <p>This is the format that user should follow to write to experiment database</p>
 <dl class="py attribute">
-<dt id="alab_management.experiment_view.experiment.Experiment.name">
-<code class="sig-name descname">name</code><em class="property">: str</em><a class="headerlink" href="#alab_management.experiment_view.experiment.Experiment.name" title="Permalink to this definition">¶</a></dt>
+<dt id="alab_management.experiment_view.experiment.InputExperiment.name">
+<code class="sig-name descname">name</code><em class="property">: str</em><a class="headerlink" href="#alab_management.experiment_view.experiment.InputExperiment.name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="alab_management.experiment_view.experiment.Experiment.samples">
-<code class="sig-name descname">samples</code><em class="property">: List<span class="p">[</span>alab_management.experiment_view.experiment._Sample<span class="p">]</span></em><a class="headerlink" href="#alab_management.experiment_view.experiment.Experiment.samples" title="Permalink to this definition">¶</a></dt>
+<dt id="alab_management.experiment_view.experiment.InputExperiment.samples">
+<code class="sig-name descname">samples</code><em class="property">: List<span class="p">[</span>alab_management.experiment_view.experiment._Sample<span class="p">]</span></em><a class="headerlink" href="#alab_management.experiment_view.experiment.InputExperiment.samples" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="alab_management.experiment_view.experiment.Experiment.status">
-<code class="sig-name descname">status</code><em class="property">: str</em><a class="headerlink" href="#alab_management.experiment_view.experiment.Experiment.status" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="alab_management.experiment_view.experiment.Experiment.tasks">
-<code class="sig-name descname">tasks</code><em class="property">: List<span class="p">[</span>alab_management.experiment_view.experiment._Task<span class="p">]</span></em><a class="headerlink" href="#alab_management.experiment_view.experiment.Experiment.tasks" title="Permalink to this definition">¶</a></dt>
+<dt id="alab_management.experiment_view.experiment.InputExperiment.tasks">
+<code class="sig-name descname">tasks</code><em class="property">: List<span class="p">[</span>alab_management.experiment_view.experiment._Task<span class="p">]</span></em><a class="headerlink" href="#alab_management.experiment_view.experiment.InputExperiment.tasks" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -365,7 +360,8 @@
 <dt id="alab_management.experiment_view.experiment_view.ExperimentView.create_experiment">
 <code class="sig-name descname">create_experiment</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">experiment</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/experiment_view/experiment_view.html#ExperimentView.create_experiment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.experiment_view.experiment_view.ExperimentView.create_experiment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an experiment in the database
-:type experiment: <a class="reference internal" href="#alab_management.experiment_view.experiment.Experiment" title="alab_management.experiment_view.experiment.Experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Experiment</span></code></a>
+se
+:type experiment: <a class="reference internal" href="#alab_management.experiment_view.experiment.InputExperiment" title="alab_management.experiment_view.experiment.InputExperiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">InputExperiment</span></code></a>
 :param experiment: the experiment object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>

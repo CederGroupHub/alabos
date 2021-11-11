@@ -252,7 +252,7 @@
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 
 <span class="kn">from</span> <span class="nn">alab_management.db</span> <span class="kn">import</span> <span class="n">get_collection</span>
-<span class="kn">from</span> <span class="nn">alab_management.experiment_view.experiment</span> <span class="kn">import</span> <span class="n">Experiment</span>
+<span class="kn">from</span> <span class="nn">alab_management.experiment_view.experiment</span> <span class="kn">import</span> <span class="n">InputExperiment</span>
 
 
 <div class="viewcode-block" id="ExperimentStatus"><a class="viewcode-back" href="../../../alab_management.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentStatus">[docs]</a><span class="k">class</span> <span class="nc">ExperimentStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
@@ -276,13 +276,16 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;experiment&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ExperimentView.create_experiment"><a class="viewcode-back" href="../../../alab_management.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.create_experiment">[docs]</a>    <span class="k">def</span> <span class="nf">create_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment</span><span class="p">:</span> <span class="n">Experiment</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectId</span><span class="p">:</span>
+<div class="viewcode-block" id="ExperimentView.create_experiment"><a class="viewcode-back" href="../../../alab_management.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.create_experiment">[docs]</a>    <span class="k">def</span> <span class="nf">create_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment</span><span class="p">:</span> <span class="n">InputExperiment</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectId</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create an experiment in the database</span>
+<span class="sd">        se</span>
 <span class="sd">        Args:</span>
 <span class="sd">            experiment: the experiment object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">experiment</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span>
+        <span class="n">experiment_dict</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+        <span class="n">experiment_dict</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">experiment_dict</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span></div>
 
