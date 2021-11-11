@@ -3,8 +3,8 @@ from typing import List, Any, Dict, Optional
 
 from bson import ObjectId
 
-from alab_management.db import get_collection
-from alab_management.experiment_view.experiment import InputExperiment
+from ..db import get_collection
+from .experiment import InputExperiment
 
 
 class ExperimentStatus(Enum):
@@ -31,13 +31,18 @@ class ExperimentView:
     def create_experiment(self, experiment: InputExperiment) -> ObjectId:
         """
         Create an experiment in the database
-        se
+        which is intended for raw experiment inserted by users. The lab manager will add sample id and task id for
+        the samples and tasks
+
         Args:
-            experiment: the experiment object
+            experiment: the required format of experiment, see also
+              :py:class:`InputExperiment <alab_management.experiment_view.experiment.InputExperiment>`
         """
-        experiment_dict = experiment.dict()
-        experiment_dict["status"] = ExperimentStatus.PENDING.name
-        result = self._experiment_collection.insert_one(experiment_dict)
+        # check the format of input args
+        result = self._experiment_collection.insert_one({
+            **experiment.dict(),
+            "status": ExperimentStatus.PENDING.name,
+        })
 
         return result.inserted_id
 
@@ -54,7 +59,7 @@ class ExperimentView:
         experiment = self._experiment_collection.find_one({"_id": exp_id})
         return experiment
 
-    def set_experiment_status(self, exp_id: ObjectId, status: ExperimentStatus):
+    def update_experiment_status(self, exp_id: ObjectId, status: ExperimentStatus):
         """
         Update the status of a experiment
         """
@@ -72,12 +77,19 @@ class ExperimentView:
         """
         At the creation of experiment, the id of samples and tasks has not been assigned
 
-        Later, we will use this method to assign sample & task id
+        Later, we will use this method to assign sample & task id (done by
+        :py:class:`LabManager <alab_management.lab_manager.LabManager>`)
         """
         experiment = self._experiment_collection.find_one({"_id": exp_id})
 
         if experiment is None:
             raise ValueError(f"Cannot find experiment with id: {exp_id}")
+
+        if len(experiment["samples"]) != len(sample_ids):
+            raise ValueError(f"Difference length of samples and input sample ids")
+
+        if len(experiment["tasks"]) != len(task_ids):
+            raise ValueError(f"Difference length of tasks and input task ids")
 
         self._experiment_collection.update_one({"_id": exp_id}, {"$set": {
             **{f"samples.{i}.sample_id": sample_id for i, sample_id in enumerate(sample_ids)},

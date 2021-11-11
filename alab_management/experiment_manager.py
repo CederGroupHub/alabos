@@ -70,8 +70,7 @@ class ExperimentManager:
                                                    task_ids=task_ids)
 
         # update the status of experiment to RUNNING (have handled by experiment manager)
-        self.experiment_view.set_experiment_status(exp_id=experiment["_id"],
-                                                   status=ExperimentStatus.RUNNING)
+        self.experiment_view.update_experiment_status(exp_id=experiment["_id"], status=ExperimentStatus.RUNNING)
 
     def mark_completed_experiments(self):
         """
@@ -84,5 +83,5 @@ class ExperimentManager:
             # if all the tasks of an experiment have been finished
             if all(self.task_view.get_status(task_id=task_id) is TaskStatus.COMPLETED
                    for task_id in task_ids):
-                self.experiment_view.set_experiment_status(exp_id=experiment["_id"],
-                                                           status=ExperimentStatus.COMPLETED)
+                self.experiment_view.update_experiment_status(exp_id=experiment["_id"],
+                                                              status=ExperimentStatus.COMPLETED)
