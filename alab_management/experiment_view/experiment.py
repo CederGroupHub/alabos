@@ -13,11 +13,10 @@ class _Task(BaseModel):
     samples: Dict[str, str]
 
 
-class Experiment(BaseModel):
+class InputExperiment(BaseModel):
     """
     This is the format that user should follow to write to experiment database
     """
     name: str
-    status: str
     samples: List[_Sample]
     tasks: List[_Task]

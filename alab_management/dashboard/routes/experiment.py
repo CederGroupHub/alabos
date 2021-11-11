@@ -2,7 +2,7 @@ from bson import ObjectId
 from flask import Blueprint, request
 from pydantic import ValidationError
 
-from alab_management.experiment_view.experiment import Experiment
+from alab_management.experiment_view.experiment import InputExperiment
 from ..models import experiment_view
 
 experiment_bp = Blueprint("/experiment", __name__)
@@ -12,7 +12,7 @@ experiment_bp = Blueprint("/experiment", __name__)
 def submit_new_experiment():
     data = request.get_json(force=True)
     try:
-        experiment = Experiment(**data)
+        experiment = InputExperiment(**data)
     except ValidationError as e:
         return {"status": "error", "errors": e.errors()}, 400
 

@@ -4,7 +4,7 @@ from typing import List, Any, Dict, Optional
 from bson import ObjectId
 
 from alab_management.db import get_collection
-from alab_management.experiment_view.experiment import Experiment
+from alab_management.experiment_view.experiment import InputExperiment
 
 
 class ExperimentStatus(Enum):
@@ -28,13 +28,16 @@ class ExperimentView:
     def __init__(self):
         self._experiment_collection = get_collection("experiment")
 
-    def create_experiment(self, experiment: Experiment) -> ObjectId:
+    def create_experiment(self, experiment: InputExperiment) -> ObjectId:
         """
         Create an experiment in the database
+        se
         Args:
             experiment: the experiment object
         """
-        result = self._experiment_collection.insert_one(experiment.dict())
+        experiment_dict = experiment.dict()
+        experiment_dict["status"] = ExperimentStatus.PENDING.name
+        result = self._experiment_collection.insert_one(experiment_dict)
 
         return result.inserted_id
 
