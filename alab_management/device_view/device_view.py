@@ -2,7 +2,7 @@ import time
 from datetime import datetime
 from enum import unique, Enum, auto
 from threading import Lock
-from typing import Type, List, Optional, Union, Dict, Any
+from typing import Type, List, Optional, Union, Dict, Any, Collection
 
 import pymongo
 from bson import ObjectId
@@ -96,7 +96,7 @@ class DeviceView:
         """
         self._device_collection.drop()
 
-    def request_devices(self, task_id: ObjectId, *device_type: Type[BaseDevice],
+    def request_devices(self, task_id: ObjectId, device_types: Collection[Type[BaseDevice]],
                         timeout: Optional[int] = None) -> Optional[DevicesLock]:
         """
         Request a list of device, this function will return until all the requested device is ready.
@@ -106,14 +106,14 @@ class DeviceView:
 
         Args:
             task_id: the id of task that requests these devices
-            *device_type: the requested device types
+            device_types: the requested device types
             timeout: the maximum seconds to wait for the device to be available,
                 if waiting more than ``timeout`` seconds, the function will return ``None``.
 
         Returns:
             A context manager that you can get value, see also: :py:class:`DeviceLock <DeviceLock>`
         """
-        if len(device_type) != len(set(device_type)):
+        if len(device_types) != len(set(device_types)):
             raise ValueError("Currently we do not allow duplicated devices in one request.")
 
         cnt = 0
@@ -121,7 +121,7 @@ class DeviceView:
             idle_devices: Dict[Type[BaseDevice], BaseDevice] = {}
             try:
                 self._lock.acquire(blocking=True)
-                for device in device_type:
+                for device in device_types:
                     result = self.get_device_by_type(device_type=device, task_id=task_id, only_idle=True)
                     if not result:
                         break
@@ -191,7 +191,7 @@ class DeviceView:
             task_id=task_id,
         )
 
-    def release_device(self, device: Union[BaseDevice, str],):
+    def release_device(self, device: Union[BaseDevice, str], ):
         """
         Release a device
         """

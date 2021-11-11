@@ -16,6 +16,7 @@ class TestTaskView(TestCase):
         cleanup_lab()
         setup_lab()
         self.task_view = TaskView()
+        self.task_view._task_collection.drop()
 
     def tearDown(self) -> None:
         cleanup_lab()

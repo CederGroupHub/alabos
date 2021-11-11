@@ -17,6 +17,7 @@ class TestExperimentView(TestCase):
         setup_lab()
         self.experiment_view = ExperimentView()
         self.experiment_collection = self.experiment_view._experiment_collection
+        self.experiment_collection.drop()
 
     def tearDown(self) -> None:
         cleanup_lab()
@@ -28,6 +29,7 @@ class TestExperimentView(TestCase):
             "samples": [{"name": "test_sample"}],
             "tasks": [{
                 "type": "Heating",
+                "next_tasks": [],
                 "parameters": {
                     "p_1": 1,
                     "p_2": 2,
@@ -56,6 +58,7 @@ class TestExperimentView(TestCase):
             "samples": [{"name": "test_sample"}],
             "tasks": [{
                 "type": "Heating",
+                "next_tasks": [],
                 "parameters": {
                     "p_1": 1,
                     "p_2": 2,
@@ -82,6 +85,7 @@ class TestExperimentView(TestCase):
             "samples": [{"name": "test_sample"}],
             "tasks": [{
                 "type": "Heating",
+                "next_tasks": [],
                 "parameters": {
                     "p_1": 1,
                     "p_2": 2,
@@ -123,6 +127,7 @@ class TestExperimentView(TestCase):
             "samples": [{"name": "test_sample"}],
             "tasks": [{
                 "type": "Heating",
+                "next_tasks": [],
                 "parameters": {
                     "p_1": 1,
                     "p_2": 2,

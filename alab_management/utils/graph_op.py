@@ -6,6 +6,13 @@ class Graph:
     Use adjacent table to store a graph
     """
     def __init__(self, vertices: List[Any], edges: Dict[int, List[int]]):
+        """
+        Note that the all the keys and values are the index of vertices
+        """
+        if len(vertices) != len(edges):
+            raise ValueError("The edges (adjacent table) should be the same length as the vertices.")
+        if len(vertices) != len(set(vertices)):
+            raise ValueError("Duplicated value in vertices.")
         self.vertices = vertices
         self.edges = edges
 
@@ -40,9 +47,15 @@ class Graph:
         return False
 
     def get_parents(self, v: Any) -> List[Any]:
+        """
+        Provide the value of vertex, return the value of its parents vertices
+        """
         index = self.vertices.index(v)
-        return [self.vertices[i] for i, children in self.edges for child in children if child == index]
+        return [self.vertices[i] for i, children in self.edges.items() for child in children if child == index]
 
     def get_children(self, v: Any) -> List[Any]:
+        """
+        Provide the index of vertex, return the value of its children vertices
+        """
         index = self.vertices.index(v)
         return [self.vertices[i] for i in self.edges[index]]

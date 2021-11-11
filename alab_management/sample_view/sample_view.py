@@ -3,7 +3,7 @@ from dataclasses import asdict
 from datetime import datetime
 from enum import Enum, auto
 from threading import Lock
-from typing import Optional, List, Dict, Any, Tuple
+from typing import Optional, List, Dict, Any, Tuple, Collection
 
 import pymongo
 from bson import ObjectId
@@ -75,10 +75,10 @@ class SampleView:
         """
         self._sample_positions_collection.drop()
 
-    def request_sample_positions(self, task_id: ObjectId, *sample_position: str,
+    def request_sample_positions(self, task_id: ObjectId, sample_positions: Collection[str],
                                  timeout: Optional[int] = None) -> Optional[SamplePositionsLock]:
         # TODO: support it!
-        if len(sample_position) != len(set(sample_position)):
+        if len(sample_positions) != len(set(sample_positions)):
             raise ValueError("Currently we do not allow duplicated sample_positions in one request.")
 
         cnt = 0
@@ -86,7 +86,7 @@ class SampleView:
             try:
                 self._lock.acquire(blocking=True)
                 available_positions = {}
-                for sp in sample_position:
+                for sp in sample_positions:
                     result = self.get_available_sample_position(task_id, position_prefix=sp)
                     if not result:
                         break

@@ -31,8 +31,8 @@ class ExperimentView:
     def create_experiment(self, experiment: InputExperiment) -> ObjectId:
         """
         Create an experiment in the database
-        which is intended for raw experiment inserted by users. The lab manager will add sample id and task id for
-        the samples and tasks
+        which is intended for raw experiment inserted by users. The
+        lab manager will add sample id and task id for the samples and tasks
 
         Args:
             experiment: the required format of experiment, see also

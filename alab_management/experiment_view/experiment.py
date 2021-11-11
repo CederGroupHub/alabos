@@ -10,6 +10,7 @@ class _Sample(BaseModel):
 class _Task(BaseModel):
     type: str
     parameters: Dict[str, Any]
+    next_tasks: List[int]
     samples: Dict[str, str]
 
 

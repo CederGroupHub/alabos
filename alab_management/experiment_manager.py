@@ -39,7 +39,7 @@ class ExperimentManager:
         # check if there is any cycle in the graph
         task_graph = Graph(
             list(range(len(samples))),
-            {i: next_task for i, next_task in enumerate(tasks["next_tasks"])}
+            {i: task["next_tasks"] for i, task in enumerate(tasks)}
         )
         if task_graph.has_cycle():
             raise ValueError("Detect cycle in task graph, which is supposed "
@@ -64,6 +64,7 @@ class ExperimentManager:
         for task_id in task_ids:
             self.task_view.update_task_dependency(task_id, next_tasks=task_graph.get_children(task_id),
                                                   prev_tasks=task_graph.get_parents(task_id))
+            self.task_view.try_to_mark_task_ready(task_id)
 
         # write back the assign task & sample ids
         self.experiment_view.update_sample_task_id(exp_id=experiment["_id"], sample_ids=list(sample_ids.values()),

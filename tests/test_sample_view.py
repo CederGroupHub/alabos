@@ -121,7 +121,7 @@ class TestSampleView(TestCase):
     def test_request_sample_position_single(self):
         task_id = ObjectId()
 
-        with self.sample_view.request_sample_positions(task_id, "furnace_table", "furnace_1.inside", timeout=5) \
+        with self.sample_view.request_sample_positions(task_id, ["furnace_table", "furnace_1.inside"], timeout=5) \
                 as sample_positions:
             self.assertFalse(sample_positions is None)
             for sample_position_prefix, sample_position in sample_positions.items():
@@ -137,10 +137,10 @@ class TestSampleView(TestCase):
         task_id = ObjectId()
         task_id_2 = ObjectId()
 
-        with self.sample_view.request_sample_positions(task_id, "furnace_table", "furnace_1.inside", timeout=1) \
+        with self.sample_view.request_sample_positions(task_id, ["furnace_table", "furnace_1.inside"], timeout=1) \
                 as sample_positions:
             self.assertFalse(sample_positions is None)
-            with self.sample_view.request_sample_positions(task_id_2, "furnace_table", "furnace_1.inside", timeout=1) \
+            with self.sample_view.request_sample_positions(task_id_2, ["furnace_table", "furnace_1.inside"], timeout=1)\
                     as _sample_positions:
                 self.assertIs(None, _sample_positions)
 
@@ -159,7 +159,7 @@ class TestSampleView(TestCase):
         def _request_1():
             start_time = time.perf_counter()
             with self.sample_view.request_sample_positions(task_id,
-                                                           "furnace_table", "furnace_1.inside", timeout=100) \
+                                                           ["furnace_table", "furnace_1.inside"], timeout=100) \
                     as sample_positions:
                 end_time = time.perf_counter()
                 self.assertAlmostEqual(end_time - start_time, 0.0, delta=0.2)
@@ -170,7 +170,7 @@ class TestSampleView(TestCase):
         def _request_2():
             start_time = time.perf_counter()
             with self.sample_view.request_sample_positions(task_id_2,
-                                                           "furnace_table", "furnace_1.inside", timeout=100) \
+                                                           ["furnace_table", "furnace_1.inside"], timeout=100) \
                     as sample_positions:
                 end_time = time.perf_counter()
                 self.assertAlmostEqual(end_time - start_time, 2.0, delta=0.2)

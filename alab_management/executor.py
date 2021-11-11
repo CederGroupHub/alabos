@@ -32,7 +32,6 @@ class Executor:
         self.device_view = DeviceView()
         self.sample_view = SampleView()
         self.task_view = TaskView()
-        self.task_pool: Dict[ObjectId, threading.Thread] = {}
 
     def run(self):
         while True:
@@ -81,5 +80,3 @@ class Executor:
 
         task_thread = threading.Thread(target=_run_task)
         task_thread.start()
-
-        self.task_pool[task_id] = task_thread

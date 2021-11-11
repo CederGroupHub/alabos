@@ -72,7 +72,7 @@ class TestDeviceView(TestCase):
         device_types = list({device.__class__ for device in self.device_list.values()})
         task_id = ObjectId()
 
-        with self.device_view.request_devices(task_id, *device_types, timeout=5) as devices:
+        with self.device_view.request_devices(task_id, device_types, timeout=5) as devices:
             self.assertFalse(devices is None)
             for device_type, device in devices.items():
                 self.assertIn(device_type, device_types)
@@ -90,9 +90,9 @@ class TestDeviceView(TestCase):
         task_id = ObjectId()
         task_id_2 = ObjectId()
 
-        with self.device_view.request_devices(task_id, *device_types, timeout=1) as devices:
+        with self.device_view.request_devices(task_id, device_types, timeout=1) as devices:
             self.assertFalse(devices is None)
-            with self.device_view.request_devices(task_id_2, *device_types, timeout=1) as _devices:
+            with self.device_view.request_devices(task_id_2, device_types, timeout=1) as _devices:
                 self.assertIs(None, _devices)
 
     def test_request_devices_queue(self):
@@ -110,7 +110,7 @@ class TestDeviceView(TestCase):
         @reraise_1.wrap
         def _request_1():
             start_time = time.perf_counter()
-            with self.device_view.request_devices(task_id, *device_types, timeout=100) as devices:
+            with self.device_view.request_devices(task_id, device_types, timeout=100) as devices:
                 end_time = time.perf_counter()
                 self.assertAlmostEqual(end_time - start_time, 0.0, delta=0.2)
                 self.assertFalse(devices is None)
@@ -119,7 +119,7 @@ class TestDeviceView(TestCase):
         @reraise_2.wrap
         def _request_2():
             start_time = time.perf_counter()
-            with self.device_view.request_devices(task_id_2, *device_types, timeout=100) as devices:
+            with self.device_view.request_devices(task_id_2, device_types, timeout=100) as devices:
                 end_time = time.perf_counter()
                 self.assertAlmostEqual(end_time - start_time, 2.0, delta=0.2)
                 self.assertFalse(devices is None)
