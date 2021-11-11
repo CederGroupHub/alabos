@@ -7,8 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>alab_management.experiment_view package &#8212; Alab Management</title>
     
-  <link href="_static/css/theme.css" rel="stylesheet" />
-  <link href="_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+  <link href="_static/css/theme.css" rel="stylesheet">
+  <link href="_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css" />
     
-  <link rel="preload" as="script" href="_static/js/index.1c5a1a01449ed65a7b51.js">
+  <link rel="preload" as="script" href="_static/js/index.be7d3bbb2ef33a8344ce.js">
 
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
@@ -39,7 +39,10 @@
     <link rel="next" title="alab_management.sample_view package" href="alab_management.sample_view.html" />
     <link rel="prev" title="alab_management.device_view package" href="alab_management.device_view.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
     
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
@@ -360,12 +363,15 @@
 <dt id="alab_management.experiment_view.experiment_view.ExperimentView.create_experiment">
 <code class="sig-name descname">create_experiment</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">experiment</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/experiment_view/experiment_view.html#ExperimentView.create_experiment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.experiment_view.experiment_view.ExperimentView.create_experiment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an experiment in the database
-se
-:type experiment: <a class="reference internal" href="#alab_management.experiment_view.experiment.InputExperiment" title="alab_management.experiment_view.experiment.InputExperiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">InputExperiment</span></code></a>
-:param experiment: the experiment object</p>
+which is intended for raw experiment inserted by users. The
+lab manager will add sample id and task id for the samples and tasks</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code></p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>experiment</strong> (<a class="reference internal" href="#alab_management.experiment_view.experiment.InputExperiment" title="alab_management.experiment_view.experiment.InputExperiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">InputExperiment</span></code></a>) – the required format of experiment, see also
+<a class="reference internal" href="#alab_management.experiment_view.experiment.InputExperiment" title="alab_management.experiment_view.experiment.InputExperiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">InputExperiment</span></code></a></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -393,8 +399,8 @@ se
 </dd></dl>
 
 <dl class="py method">
-<dt id="alab_management.experiment_view.experiment_view.ExperimentView.set_experiment_status">
-<code class="sig-name descname">set_experiment_status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">exp_id</span></em>, <em class="sig-param"><span class="n">status</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/experiment_view/experiment_view.html#ExperimentView.set_experiment_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.experiment_view.experiment_view.ExperimentView.set_experiment_status" title="Permalink to this definition">¶</a></dt>
+<dt id="alab_management.experiment_view.experiment_view.ExperimentView.update_experiment_status">
+<code class="sig-name descname">update_experiment_status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">exp_id</span></em>, <em class="sig-param"><span class="n">status</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/experiment_view/experiment_view.html#ExperimentView.update_experiment_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.experiment_view.experiment_view.ExperimentView.update_experiment_status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update the status of a experiment</p>
 </dd></dl>
 
@@ -402,7 +408,8 @@ se
 <dt id="alab_management.experiment_view.experiment_view.ExperimentView.update_sample_task_id">
 <code class="sig-name descname">update_sample_task_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">exp_id</span></em>, <em class="sig-param"><span class="n">sample_ids</span></em>, <em class="sig-param"><span class="n">task_ids</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/experiment_view/experiment_view.html#ExperimentView.update_sample_task_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.experiment_view.experiment_view.ExperimentView.update_sample_task_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>At the creation of experiment, the id of samples and tasks has not been assigned</p>
-<p>Later, we will use this method to assign sample &amp; task id</p>
+<p>Later, we will use this method to assign sample &amp; task id (done by
+<a class="reference internal" href="alab_management.html#alab_management.lab_manager.LabManager" title="alab_management.lab_manager.LabManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabManager</span></code></a>)</p>
 </dd></dl>
 
 </dd></dl>
@@ -417,31 +424,22 @@ se
               </div>
               
         
-            
-
-
-
-<div class='prev-next-bottom'>
-    
-    <div id="prev">
-        <a class="left-prev" href="alab_management.device_view.html" title="previous page">
-            <i class="prevnext-label fas fa-angle-left"></i>
-            <div class="prevnext-info">
-                <p class="prevnext-label">previous</p>
-                <p class="prevnext-title">alab_management.device_view package</p>
-            </div>
-        </a>
+            <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="alab_management.device_view.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">alab_management.device_view package</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="alab_management.sample_view.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">alab_management.sample_view package</p>
     </div>
-     <div id="next">
-        <a class="right-next" href="alab_management.sample_view.html" title="next page">
-            <div class="prevnext-info">
-                <p class="prevnext-label">next</p>
-                <p class="prevnext-title">alab_management.sample_view package</p>
-            </div>
-            <i class="prevnext-label fas fa-angle-right"></i>
-        </a>
-     </div>
-
+    <i class="fas fa-angle-right"></i>
+    </a>
 </div>
         
         </div>
@@ -462,8 +460,7 @@ se
       </div>
     </div>
   
-  <script src="_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+  <script src="_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
 
-  
   </body>
 </html>

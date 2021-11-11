@@ -7,8 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>alab_management package &#8212; Alab Management</title>
     
-  <link href="_static/css/theme.css" rel="stylesheet" />
-  <link href="_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+  <link href="_static/css/theme.css" rel="stylesheet">
+  <link href="_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css" />
     
-  <link rel="preload" as="script" href="_static/js/index.1c5a1a01449ed65a7b51.js">
+  <link rel="preload" as="script" href="_static/js/index.be7d3bbb2ef33a8344ce.js">
 
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
@@ -39,7 +39,10 @@
     <link rel="next" title="alab_management.dashboard package" href="alab_management.dashboard.html" />
     <link rel="prev" title="alab_management" href="modules.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
     
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
@@ -505,20 +508,29 @@ any pending experiments and submit it to task database</p>
 <dt id="alab_management.lab_manager.LabManager">
 <em class="property">class </em><code class="sig-name descname">LabManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em>, <em class="sig-param"><span class="n">device_view</span></em>, <em class="sig-param"><span class="n">sample_view</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>LabManager is a wrapper over device view and sample view.
+A task can get access to that to request resources, query sample and
+update sample positions.</p>
 <dl class="py method">
 <dt id="alab_management.lab_manager.LabManager.get_sample">
 <code class="sig-name descname">get_sample</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sample_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager.get_sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager.get_sample" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get a sample by id, see also
+<a class="reference internal" href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_sample" title="alab_management.sample_view.sample_view.SampleView.get_sample"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_sample</span></code></a></p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="alab_management.lab_manager.LabManager.move_sample">
 <code class="sig-name descname">move_sample</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sample_id</span></em>, <em class="sig-param"><span class="n">position</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager.move_sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager.move_sample" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Move a sample to a new position, see also
+<a class="reference internal" href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SampleView.move_sample" title="alab_management.sample_view.sample_view.SampleView.move_sample"><code class="xref py py-meth docutils literal notranslate"><span class="pre">move_sample</span></code></a></p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="alab_management.lab_manager.LabManager.request_devices">
-<code class="sig-name descname">request_devices</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">timeout</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">device_type</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager.request_devices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager.request_devices" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<code class="sig-name descname">request_devices</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device_types</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager.request_devices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager.request_devices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request devices, see also
+<a class="reference internal" href="alab_management.device_view.html#alab_management.device_view.device_view.DeviceView.request_devices" title="alab_management.device_view.device_view.DeviceView.request_devices"><code class="xref py py-meth docutils literal notranslate"><span class="pre">request_devices</span></code></a></p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="alab_management.device_view.html#alab_management.device_view.device_view.DevicesLock" title="alab_management.device_view.device_view.DevicesLock"><code class="xref py py-class docutils literal notranslate"><span class="pre">DevicesLock</span></code></a></p>
 </dd>
@@ -537,8 +549,10 @@ any pending experiments and submit it to task database</p>
 
 <dl class="py method">
 <dt id="alab_management.lab_manager.LabManager.request_sample_positions">
-<code class="sig-name descname">request_sample_positions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">timeout</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">sample_position</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager.request_sample_positions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager.request_sample_positions" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<code class="sig-name descname">request_sample_positions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sample_positions</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager.request_sample_positions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager.request_sample_positions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request sample positions, see also
+<a class="reference internal" href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SampleView.request_sample_positions" title="alab_management.sample_view.sample_view.SampleView.request_sample_positions"><code class="xref py py-meth docutils literal notranslate"><span class="pre">request_sample_positions</span></code></a></p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SamplePositionsLock" title="alab_management.sample_view.sample_view.SamplePositionsLock"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplePositionsLock</span></code></a></p>
 </dd>
@@ -682,31 +696,22 @@ any pending experiments and submit it to task database</p>
               </div>
               
         
-            
-
-
-
-<div class='prev-next-bottom'>
-    
-    <div id="prev">
-        <a class="left-prev" href="modules.html" title="previous page">
-            <i class="prevnext-label fas fa-angle-left"></i>
-            <div class="prevnext-info">
-                <p class="prevnext-label">previous</p>
-                <p class="prevnext-title">alab_management</p>
-            </div>
-        </a>
+            <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="modules.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">alab_management</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="alab_management.dashboard.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">alab_management.dashboard package</p>
     </div>
-     <div id="next">
-        <a class="right-next" href="alab_management.dashboard.html" title="next page">
-            <div class="prevnext-info">
-                <p class="prevnext-label">next</p>
-                <p class="prevnext-title">alab_management.dashboard package</p>
-            </div>
-            <i class="prevnext-label fas fa-angle-right"></i>
-        </a>
-     </div>
-
+    <i class="fas fa-angle-right"></i>
+    </a>
 </div>
         
         </div>
@@ -727,8 +732,7 @@ any pending experiments and submit it to task database</p>
       </div>
     </div>
   
-  <script src="_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+  <script src="_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
 
-  
   </body>
 </html>

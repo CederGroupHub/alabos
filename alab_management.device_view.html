@@ -7,8 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>alab_management.device_view package &#8212; Alab Management</title>
     
-  <link href="_static/css/theme.css" rel="stylesheet" />
-  <link href="_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+  <link href="_static/css/theme.css" rel="stylesheet">
+  <link href="_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css" />
     
-  <link rel="preload" as="script" href="_static/js/index.1c5a1a01449ed65a7b51.js">
+  <link rel="preload" as="script" href="_static/js/index.be7d3bbb2ef33a8344ce.js">
 
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
@@ -39,7 +39,10 @@
     <link rel="next" title="alab_management.experiment_view package" href="alab_management.experiment_view.html" />
     <link rel="prev" title="alab_management.dashboard.routes package" href="alab_management.dashboard.routes.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
     
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
@@ -497,7 +500,7 @@ Device name is a unique identifier for a device</p>
 
 <dl class="py method">
 <dt id="alab_management.device_view.device_view.DeviceView.request_devices">
-<code class="sig-name descname">request_devices</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">device_type</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.request_devices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.request_devices" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">request_devices</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em>, <em class="sig-param"><span class="n">device_types</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.request_devices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.request_devices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request a list of device, this function will return until all the requested device is ready.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -507,7 +510,7 @@ Device name is a unique identifier for a device</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>task_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the id of task that requests these devices</p></li>
-<li><p><strong>*device_type</strong> – the requested device types</p></li>
+<li><p><strong>device_types</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference internal" href="device_definition.html#alab_management.device_view.device.BaseDevice" title="alab_management.device_view.device.BaseDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDevice</span></code></a>]]) – the requested device types</p></li>
 <li><p><strong>timeout</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – the maximum seconds to wait for the device to be available,
 if waiting more than <code class="docutils literal notranslate"><span class="pre">timeout</span></code> seconds, the function will return <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 </ul>
@@ -559,31 +562,22 @@ which is the returned type by <a class="reference internal" href="#alab_manageme
               </div>
               
         
-            
-
-
-
-<div class='prev-next-bottom'>
-    
-    <div id="prev">
-        <a class="left-prev" href="alab_management.dashboard.routes.html" title="previous page">
-            <i class="prevnext-label fas fa-angle-left"></i>
-            <div class="prevnext-info">
-                <p class="prevnext-label">previous</p>
-                <p class="prevnext-title">alab_management.dashboard.routes package</p>
-            </div>
-        </a>
+            <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="alab_management.dashboard.routes.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">alab_management.dashboard.routes package</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="alab_management.experiment_view.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">alab_management.experiment_view package</p>
     </div>
-     <div id="next">
-        <a class="right-next" href="alab_management.experiment_view.html" title="next page">
-            <div class="prevnext-info">
-                <p class="prevnext-label">next</p>
-                <p class="prevnext-title">alab_management.experiment_view package</p>
-            </div>
-            <i class="prevnext-label fas fa-angle-right"></i>
-        </a>
-     </div>
-
+    <i class="fas fa-angle-right"></i>
+    </a>
 </div>
         
         </div>
@@ -604,8 +598,7 @@ which is the returned type by <a class="reference internal" href="#alab_manageme
       </div>
     </div>
   
-  <script src="_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+  <script src="_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
 
-  
   </body>
 </html>

@@ -7,8 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>alab_management.device_view.device_view &#8212; Alab Management</title>
     
-  <link href="../../../_static/css/theme.css" rel="stylesheet" />
-  <link href="../../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+  <link href="../../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
     
-  <link rel="preload" as="script" href="../../../_static/js/index.1c5a1a01449ed65a7b51.js">
+  <link rel="preload" as="script" href="../../../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
@@ -37,7 +37,10 @@
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
     
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
@@ -250,7 +253,7 @@
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">unique</span><span class="p">,</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
 <span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Lock</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Type</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Type</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Collection</span>
 
 <span class="kn">import</span> <span class="nn">pymongo</span>
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
@@ -344,7 +347,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">drop</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DeviceView.request_devices"><a class="viewcode-back" href="../../../alab_management.device_view.html#alab_management.device_view.device_view.DeviceView.request_devices">[docs]</a>    <span class="k">def</span> <span class="nf">request_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="o">*</span><span class="n">device_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">],</span>
+<div class="viewcode-block" id="DeviceView.request_devices"><a class="viewcode-back" href="../../../alab_management.device_view.html#alab_management.device_view.device_view.DeviceView.request_devices">[docs]</a>    <span class="k">def</span> <span class="nf">request_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">device_types</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">]],</span>
                         <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DevicesLock</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Request a list of device, this function will return until all the requested device is ready.</span>
@@ -354,14 +357,14 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            task_id: the id of task that requests these devices</span>
-<span class="sd">            *device_type: the requested device types</span>
+<span class="sd">            device_types: the requested device types</span>
 <span class="sd">            timeout: the maximum seconds to wait for the device to be available,</span>
 <span class="sd">                if waiting more than ``timeout`` seconds, the function will return ``None``.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            A context manager that you can get value, see also: :py:class:`DeviceLock &lt;DeviceLock&gt;`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">device_type</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">device_type</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">device_types</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">device_types</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Currently we do not allow duplicated devices in one request.&quot;</span><span class="p">)</span>
 
         <span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span>
@@ -369,7 +372,7 @@
             <span class="n">idle_devices</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">],</span> <span class="n">BaseDevice</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">(</span><span class="n">blocking</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">device_type</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">device_types</span><span class="p">:</span>
                     <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_device_by_type</span><span class="p">(</span><span class="n">device_type</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">only_idle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
                         <span class="k">break</span>
@@ -439,7 +442,7 @@
             <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="DeviceView.release_device"><a class="viewcode-back" href="../../../alab_management.device_view.html#alab_management.device_view.device_view.DeviceView.release_device">[docs]</a>    <span class="k">def</span> <span class="nf">release_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">,</span> <span class="nb">str</span><span class="p">],):</span>
+<div class="viewcode-block" id="DeviceView.release_device"><a class="viewcode-back" href="../../../alab_management.device_view.html#alab_management.device_view.device_view.DeviceView.release_device">[docs]</a>    <span class="k">def</span> <span class="nf">release_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Release a device</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -492,13 +495,8 @@
               </div>
               
         
-            
-
-
-
-<div class='prev-next-bottom'>
-    
-
+            <!-- Previous / next buttons -->
+<div class='prev-next-area'>
 </div>
         
         </div>
@@ -519,8 +517,7 @@
       </div>
     </div>
   
-  <script src="../../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+  <script src="../../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
 
-  
   </body>
 </html>
