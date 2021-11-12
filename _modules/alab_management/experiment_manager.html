@@ -281,6 +281,7 @@
         <span class="n">pending_experiments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span> \
             <span class="n">get_experiments_with_status</span><span class="p">(</span><span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="n">pending_experiments</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Submit experiment </span><span class="si">{</span><span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> to executor&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_handle_pending_experiment</span><span class="p">(</span><span class="n">experiment</span><span class="o">=</span><span class="n">experiment</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_handle_pending_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
@@ -289,7 +290,7 @@
 
         <span class="c1"># check if there is any cycle in the graph</span>
         <span class="n">task_graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">(</span>
-            <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">samples</span><span class="p">))),</span>
+            <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tasks</span><span class="p">))),</span>
             <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="n">task</span><span class="p">[</span><span class="s2">&quot;next_tasks&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">task</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tasks</span><span class="p">)}</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">task_graph</span><span class="o">.</span><span class="n">has_cycle</span><span class="p">():</span>
@@ -335,6 +336,7 @@
             <span class="c1"># if all the tasks of an experiment have been finished</span>
             <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span> <span class="ow">is</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">COMPLETED</span>
                    <span class="k">for</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="n">task_ids</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Experiment (</span><span class="si">{</span><span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">) completed.&quot;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span><span class="n">update_experiment_status</span><span class="p">(</span><span class="n">exp_id</span><span class="o">=</span><span class="n">experiment</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span>
                                                               <span class="n">status</span><span class="o">=</span><span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">COMPLETED</span><span class="p">)</span></div></div>
 </pre></div>

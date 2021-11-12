@@ -270,22 +270,22 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-alab_management.scripts.cleanup_lab">
+  <a class="reference internal nav-link" href="#alab-management-scripts-cleanup-lab-module">
    alab_management.scripts.cleanup_lab module
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-alab_management.scripts.launch_lab">
+  <a class="reference internal nav-link" href="#alab-management-scripts-launch-lab-module">
    alab_management.scripts.launch_lab module
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-alab_management.scripts.setup_lab">
+  <a class="reference internal nav-link" href="#alab-management-scripts-setup-lab-module">
    alab_management.scripts.setup_lab module
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-alab_management.scripts">
+  <a class="reference internal nav-link" href="#module-contents">
    Module contents
   </a>
  </li>
@@ -305,55 +305,17 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-alab_management.scripts.cleanup_lab">
-<span id="alab-management-scripts-cleanup-lab-module"></span><h2>alab_management.scripts.cleanup_lab module<a class="headerlink" href="#module-alab_management.scripts.cleanup_lab" title="Permalink to this headline">¶</a></h2>
-<p>To remove all the device, sample position definition from database</p>
-<dl class="py function">
-<dt id="alab_management.scripts.cleanup_lab.cleanup_lab">
-<code class="sig-name descname">cleanup_lab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/cleanup_lab.html#cleanup_lab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.cleanup_lab.cleanup_lab" title="Permalink to this definition">¶</a></dt>
-<dd><p>Drop device, sample_position collection from MongoDB</p>
-</dd></dl>
-
+<div class="section" id="alab-management-scripts-cleanup-lab-module">
+<h2>alab_management.scripts.cleanup_lab module<a class="headerlink" href="#alab-management-scripts-cleanup-lab-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-alab_management.scripts.launch_lab">
-<span id="alab-management-scripts-launch-lab-module"></span><h2>alab_management.scripts.launch_lab module<a class="headerlink" href="#module-alab_management.scripts.launch_lab" title="Permalink to this headline">¶</a></h2>
-<p>The script to launch task_view and executor, which are the core of the system.</p>
-<dl class="py function">
-<dt id="alab_management.scripts.launch_lab.launch_executor">
-<code class="sig-name descname">launch_executor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/launch_lab.html#launch_executor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.launch_lab.launch_executor" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="alab_management.scripts.launch_lab.launch_lab">
-<code class="sig-name descname">launch_lab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/launch_lab.html#launch_lab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.launch_lab.launch_lab" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="alab_management.scripts.launch_lab.launch_task_manager">
-<code class="sig-name descname">launch_task_manager</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/launch_lab.html#launch_task_manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.launch_lab.launch_task_manager" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="alab-management-scripts-launch-lab-module">
+<h2>alab_management.scripts.launch_lab module<a class="headerlink" href="#alab-management-scripts-launch-lab-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-alab_management.scripts.setup_lab">
-<span id="alab-management-scripts-setup-lab-module"></span><h2>alab_management.scripts.setup_lab module<a class="headerlink" href="#module-alab_management.scripts.setup_lab" title="Permalink to this headline">¶</a></h2>
-<p>Generate device, sample position, task definitions from user defined files (task &amp; device)
-and write them to MongoDB, which will make it easier to query</p>
-<dl class="py function">
-<dt id="alab_management.scripts.setup_lab.setup_from_device_def">
-<code class="sig-name descname">setup_from_device_def</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/setup_lab.html#setup_from_device_def"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.setup_lab.setup_from_device_def" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set up sample positions, devices from user’s device definition, whose path is
-specified by <code class="docutils literal notranslate"><span class="pre">config[&quot;devices&quot;][&quot;device_dir&quot;]</span></code></p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="alab_management.scripts.setup_lab.setup_lab">
-<code class="sig-name descname">setup_lab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/scripts/setup_lab.html#setup_lab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.scripts.setup_lab.setup_lab" title="Permalink to this definition">¶</a></dt>
-<dd><p>Cleanup the db and then import all the definitions and set up the db</p>
-</dd></dl>
-
+<div class="section" id="alab-management-scripts-setup-lab-module">
+<h2>alab_management.scripts.setup_lab module<a class="headerlink" href="#alab-management-scripts-setup-lab-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-alab_management.scripts">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-alab_management.scripts" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
