@@ -259,12 +259,19 @@
 
 
 <div class="viewcode-block" id="ExperimentManager"><a class="viewcode-back" href="../../alab_management.html#alab_management.experiment_manager.ExperimentManager">[docs]</a><span class="k">class</span> <span class="nc">ExperimentManager</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Experiment manager read experiments from the experiment collection</span>
+<span class="sd">    and submit the experiment to executor and flag the completed experiments</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span> <span class="o">=</span> <span class="n">ExperimentView</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span> <span class="o">=</span> <span class="n">TaskView</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sample_view</span> <span class="o">=</span> <span class="n">SampleView</span><span class="p">()</span>
 
 <div class="viewcode-block" id="ExperimentManager.run"><a class="viewcode-back" href="../../alab_management.html#alab_management.experiment_manager.ExperimentManager.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start the event loop</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">()</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span></div>

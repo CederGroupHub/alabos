@@ -275,7 +275,7 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#alab-management-config-module">
+  <a class="reference internal nav-link" href="#module-alab_management.config">
    alab_management.config module
   </a>
  </li>
@@ -305,7 +305,7 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-contents">
+  <a class="reference internal nav-link" href="#module-alab_management">
    Module contents
   </a>
  </li>
@@ -391,8 +391,43 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="alab-management-config-module">
-<h2>alab_management.config module<a class="headerlink" href="#alab-management-config-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-alab_management.config">
+<span id="alab-management-config-module"></span><h2>alab_management.config module<a class="headerlink" href="#module-alab_management.config" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="alab_management.config.AlabConfig">
+<em class="property">class </em><code class="sig-name descname">AlabConfig</code><a class="reference internal" href="_modules/alab_management/config.html#AlabConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.config.AlabConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class used for storing all the config data</p>
+<dl class="py method">
+<dt id="alab_management.config.AlabConfig.path">
+<em class="property">property </em><code class="sig-name descname">path</code><a class="headerlink" href="#alab_management.config.AlabConfig.path" title="Permalink to this definition">¶</a></dt>
+<dd><p>The absolute path to the config file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="alab_management.config.froze_config">
+<code class="sig-name descname">froze_config</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/config.html#froze_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.config.froze_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the config dict to frozen config</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> – the dict of config data</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">mappingproxy</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>frozen_config, which is not allowed to modify</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 <div class="section" id="module-alab_management.db">
 <span id="alab-management-db-module"></span><h2>alab_management.db module<a class="headerlink" href="#module-alab_management.db" title="Permalink to this headline">¶</a></h2>
@@ -422,7 +457,8 @@ which actually executes the tasks</p>
 <dl class="py method">
 <dt id="alab_management.executor.Executor.run">
 <code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/executor.html#Executor.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.executor.Executor.run" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Start the loop</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="alab_management.executor.Executor.submit_task">
@@ -448,6 +484,8 @@ process samples.</p>
 <dt id="alab_management.experiment_manager.ExperimentManager">
 <em class="property">class </em><code class="sig-name descname">ExperimentManager</code><a class="reference internal" href="_modules/alab_management/experiment_manager.html#ExperimentManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.experiment_manager.ExperimentManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Experiment manager read experiments from the experiment collection
+and submit the experiment to executor and flag the completed experiments</p>
 <dl class="py method">
 <dt id="alab_management.experiment_manager.ExperimentManager.handle_pending_experiments">
 <code class="sig-name descname">handle_pending_experiments</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/experiment_manager.html#ExperimentManager.handle_pending_experiments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.experiment_manager.ExperimentManager.handle_pending_experiments" title="Permalink to this definition">¶</a></dt>
@@ -464,7 +502,8 @@ any pending experiments and submit it to task database</p>
 <dl class="py method">
 <dt id="alab_management.experiment_manager.ExperimentManager.run">
 <code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/experiment_manager.html#ExperimentManager.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.experiment_manager.ExperimentManager.run" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Start the event loop</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -507,7 +546,16 @@ update sample positions.</p>
 <dl class="py method">
 <dt id="alab_management.lab_manager.LabManager.request_resources">
 <code class="sig-name descname">request_resources</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">devices_and_sample_positions</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager.request_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager.request_resources" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Request devices and sample positions</p>
+<p>Usually, devices_and_sample_positions has the format {DeviceType: [“sample_position_1”, …]}. The
+DeviceType can be <code class="docutils literal notranslate"><span class="pre">None</span></code> so that you can request the sample positions that do not belong to
+any devices (for readability, in principal you can put all the sample positions under one device type)</p>
+<p>Note that the sample position name will try to find available sample positions that start with this
+specified name prefix.</p>
+<p>And since sometimes you can only know which device you will use until you request the device,
+you can use <code class="docutils literal notranslate"><span class="pre">$</span></code> to represent the name of device, e.g. {Furnace: [“$.inside”]} will be parsed to
+<code class="docutils literal notranslate"><span class="pre">furnace_1.inside</span></code> if we are assigned to a furnace named <code class="docutils literal notranslate"><span class="pre">furnace_1</span></code>.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#alab_management.lab_manager.resource_lock" title="alab_management.lab_manager.resource_lock"><code class="xref py py-class docutils literal notranslate"><span class="pre">resource_lock</span></code></a></p>
 </dd>
@@ -518,7 +566,10 @@ update sample positions.</p>
 <dt id="alab_management.lab_manager.LabManager.request_sample_positions">
 <code class="sig-name descname">request_sample_positions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sample_positions</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager.request_sample_positions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager.request_sample_positions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request sample positions, see also
-<a class="reference internal" href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SampleView.request_sample_positions" title="alab_management.sample_view.sample_view.SampleView.request_sample_positions"><code class="xref py py-meth docutils literal notranslate"><span class="pre">request_sample_positions</span></code></a></p>
+:py:meth:<a href="#id1"><span class="problematic" id="id2">`</span></a>request_sample_positions</p>
+<blockquote>
+<div><p>&lt;alab_management.sample_view.sample_view.SampleView.request_sample_positions&gt;`</p>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SamplePositionsLock" title="alab_management.sample_view.sample_view.SamplePositionsLock"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplePositionsLock</span></code></a></p>
@@ -531,7 +582,8 @@ update sample positions.</p>
 <dl class="py function">
 <dt id="alab_management.lab_manager.resource_lock">
 <code class="sig-name descname">resource_lock</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">devices_lock</span></em>, <em class="sig-param"><span class="n">sample_positions_lock</span></em>, <em class="sig-param"><span class="n">devices_and_sample_positions</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#resource_lock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.resource_lock" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>A context manager that releases the devices and the sample positions when they are no longer needed.</p>
+</dd></dl>
 
 </div>
 <div class="section" id="module-alab_management.logger">
@@ -545,7 +597,8 @@ update sample positions.</p>
 <dl class="py method">
 <dt id="alab_management.logger.DBLogger.filter_log">
 <code class="sig-name descname">filter_log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">level</span></em>, <em class="sig-param"><span class="n">within</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#DBLogger.filter_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.logger.DBLogger.filter_log" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Find log within a range of time (1h/1d or else) higher than certain level</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</p>
 </dd>
@@ -555,27 +608,38 @@ update sample positions.</p>
 <dl class="py method">
 <dt id="alab_management.logger.DBLogger.log">
 <code class="sig-name descname">log</code><span class="sig-paren">(</span><em class="sig-param">level</em>, <em class="sig-param">log_data</em>, <em class="sig-param">logging_type=&lt;LoggingType.OTHER: 5&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#DBLogger.log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.logger.DBLogger.log" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Basic log function
+:type level: <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <a class="reference internal" href="#alab_management.logger.LoggingLevel" title="alab_management.logger.LoggingLevel"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoggingLevel</span></code></a>]
+:param level: the level of this log, which can be string, int or <a class="reference internal" href="#alab_management.logger.LoggingLevel" title="alab_management.logger.LoggingLevel"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoggingLevel</span></code></a>
+:type log_data: <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]
+:param log_data: the data to be logged
+:type logging_type: <a class="reference internal" href="#alab_management.logger.LoggingType" title="alab_management.logger.LoggingType"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoggingType</span></code></a>
+:param logging_type: the type of logging</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="alab_management.logger.DBLogger.log_amount">
 <code class="sig-name descname">log_amount</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">log_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#DBLogger.log_amount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.logger.DBLogger.log_amount" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Log the amount of samples and chemicals (e.g. weight)</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="alab_management.logger.DBLogger.log_characterization_result">
 <code class="sig-name descname">log_characterization_result</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">log_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#DBLogger.log_characterization_result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.logger.DBLogger.log_characterization_result" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Log the characterization result (e.g. XRD pattern)</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="alab_management.logger.DBLogger.log_device_signal">
 <code class="sig-name descname">log_device_signal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">log_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#DBLogger.log_device_signal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.logger.DBLogger.log_device_signal" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Log the device sensor’s signal (e.g. the voltage of batteries, the temperature of furnace)</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="alab_management.logger.DBLogger.system_log">
 <code class="sig-name descname">system_log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">log_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#DBLogger.system_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.logger.DBLogger.system_log" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Log that comes from the workflow system</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -583,7 +647,7 @@ update sample positions.</p>
 <dt id="alab_management.logger.LoggingLevel">
 <em class="property">class </em><code class="sig-name descname">LoggingLevel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#LoggingLevel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.logger.LoggingLevel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
-<p>An enumeration.</p>
+<p>Different level log</p>
 <dl class="py attribute">
 <dt id="alab_management.logger.LoggingLevel.CRITICAL">
 <code class="sig-name descname">CRITICAL</code><em class="property"> = 50</em><a class="headerlink" href="#alab_management.logger.LoggingLevel.CRITICAL" title="Permalink to this definition">¶</a></dt>
@@ -625,7 +689,7 @@ update sample positions.</p>
 <dt id="alab_management.logger.LoggingType">
 <em class="property">class </em><code class="sig-name descname">LoggingType</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#LoggingType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.logger.LoggingType" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
-<p>An enumeration.</p>
+<p>Different types of log</p>
 <dl class="py attribute">
 <dt id="alab_management.logger.LoggingType.CHARACTERIZATION_RESULT">
 <code class="sig-name descname">CHARACTERIZATION_RESULT</code><em class="property"> = 3</em><a class="headerlink" href="#alab_management.logger.LoggingType.CHARACTERIZATION_RESULT" title="Permalink to this definition">¶</a></dt>
@@ -654,8 +718,8 @@ update sample positions.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-alab_management">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-alab_management" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 

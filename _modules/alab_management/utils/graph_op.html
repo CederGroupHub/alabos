@@ -284,7 +284,7 @@
             <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">visited</span><span class="p">[</span><span class="n">child</span><span class="p">]</span> <span class="ow">and</span> <span class="n">_is_cyclic</span><span class="p">(</span><span class="n">child</span><span class="p">):</span>
                     <span class="k">return</span> <span class="kc">True</span>
-                <span class="k">elif</span> <span class="n">rec_stack</span><span class="p">[</span><span class="n">child</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">rec_stack</span><span class="p">[</span><span class="n">child</span><span class="p">]:</span>
                     <span class="k">return</span> <span class="kc">True</span>
 
             <span class="c1"># The vertex needs to be popped from</span>

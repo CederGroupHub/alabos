@@ -392,7 +392,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            List of task entry: {&quot;task_id&quot;: ``ObjectId``,</span>
-<span class="sd">              &quot;type&quot;: :py:class:`BaseTask &lt;alab_management.task_view.task.BaseTask&gt;`}</span>
+<span class="sd">            &quot;type&quot;: :py:class:`BaseTask &lt;alab_management.task_view.task.BaseTask&gt;`}</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_collection</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">READY</span><span class="o">.</span><span class="n">name</span><span class="p">})</span>
 
