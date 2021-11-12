@@ -141,9 +141,15 @@ class DeviceView:
         return DevicesLock(devices=None, device_view=self)
 
     def get_device(self, device_name: str) -> Optional[Dict[str, Any]]:
+        """
+        Get device by device name, if not found, return ``None``
+        """
         return self._device_collection.find_one({"name": device_name})
 
     def get_status(self, device_name: str) -> DeviceStatus:
+        """
+        Get device status by device name, if not found, raise ``ValueError``
+        """
         device_entry = self.get_device(device_name=device_name)
 
         if device_entry is None:

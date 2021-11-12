@@ -11,11 +11,14 @@ experiment_bp = Blueprint("/experiment", __name__, url_prefix="/experiment")
 
 @experiment_bp.route("/submit", methods=["POST"])
 def submit_new_experiment():
+    """
+    Submit a new experiment to the system
+    """
     data = request.get_json(force=True)
     try:
         experiment = InputExperiment(**data)
-    except ValidationError as e:
-        return {"status": "error", "errors": e.errors()}, 400
+    except ValidationError as exception:
+        return {"status": "error", "errors": exception.errors()}, 400
 
     exp_id = experiment_view.create_experiment(experiment)
     return {"status": "success", "data": {"exp_id": str(exp_id)}}
@@ -23,10 +26,13 @@ def submit_new_experiment():
 
 @experiment_bp.route("/search/<exp_id>", methods=["POST", "GET"])
 def query_experiment(exp_id: str):
+    """
+    Find an experiment by id
+    """
     try:
         experiment = experiment_view.get_experiment(ObjectId(exp_id))
-    except InvalidId as e:
-        return {"status": "error", "errors": e.args[0]}
+    except InvalidId as exception:
+        return {"status": "error", "errors": exception.args[0]}
     if experiment is None:
         return {"status": "error", "errors": "Cannot find experiment with this exp id"}
     return {

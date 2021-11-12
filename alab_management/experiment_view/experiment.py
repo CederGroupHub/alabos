@@ -1,6 +1,6 @@
 from typing import List, Any, Dict
 
-from pydantic.main import BaseModel
+from pydantic import BaseModel
 
 
 class _Sample(BaseModel):

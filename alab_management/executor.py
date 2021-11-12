@@ -7,8 +7,6 @@ import threading
 import time
 from typing import Any, Dict
 
-from bson import ObjectId
-
 from .device_view import DeviceView
 from .lab_manager import LabManager
 from .logger import DBLogger
@@ -27,6 +25,7 @@ class Executor:
     """
     Executor find all the ready tasks and submit them
     """
+
     def __init__(self):
         load_definition()
         self.device_view = DeviceView()
@@ -34,6 +33,9 @@ class Executor:
         self.task_view = TaskView()
 
     def run(self):
+        """
+        Start the loop
+        """
         while True:
             self._loop()
             time.sleep(1)
@@ -63,8 +65,8 @@ class Executor:
                 **task_entry["samples"],
                 **task_entry["parameters"],
             )
-        except AttributeError as e:
-            raise ParameterError(e.args[0])
+        except AttributeError as exception:
+            raise ParameterError(exception.args[0]) from exception
 
         def _run_task():
             self.task_view.update_status(task_id=task_id, status=TaskStatus.RUNNING)

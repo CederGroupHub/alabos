@@ -13,6 +13,9 @@ from .sample_view.sample_view import SampleView, SamplePositionsLock
 @contextmanager
 def resource_lock(devices_lock: DevicesLock, sample_positions_lock: SamplePositionsLock,
                   devices_and_sample_positions: Dict[Optional[Type[BaseDevice]], List[str]]):
+    """
+    A context manager that releases the devices and the sample positions when they are no longer needed.
+    """
     requested_sample_positions = {}
     flattened_sample_positions = sample_positions_lock.sample_positions.copy()
 
@@ -56,12 +59,27 @@ class LabManager:
             -> SamplePositionsLock:
         """
         Request sample positions, see also
-        :py:meth:`request_sample_positions <alab_management.sample_view.sample_view.SampleView.request_sample_positions>`
+        :py:meth:`request_sample_positions
+          <alab_management.sample_view.sample_view.SampleView.request_sample_positions>`
         """
         return self._sample_view.request_sample_positions(self.task_id, sample_positions, timeout=timeout)
 
     def request_resources(self, devices_and_sample_positions: Dict[Optional[Type[BaseDevice]], List[str]]) \
             -> resource_lock:
+        """
+        Request devices and sample positions
+
+        Usually, devices_and_sample_positions has the format {DeviceType: ["sample_position_1", ...]}. The
+        DeviceType can be ``None`` so that you can request the sample positions that do not belong to
+        any devices (for readability, in principal you can put all the sample positions under one device type)
+
+        Note that the sample position name will try to find available sample positions that start with this
+        specified name prefix.
+
+        And since sometimes you can only know which device you will use until you request the device,
+        you can use ``$`` to represent the name of device, e.g. {Furnace: ["$.inside"]} will be parsed to
+        ``furnace_1.inside`` if we are assigned to a furnace named ``furnace_1``.
+        """
         while True:
             devices_lock = self.request_devices([device_type for device_type in devices_and_sample_positions.keys()
                                                  if device_type is not None])
@@ -72,6 +90,10 @@ class LabManager:
                     device_name = device.name
                     parsed_sample_positions.extend([re.sub(r"\$", device_name, sample_position)
                                                     for sample_position in devices_and_sample_positions[device_type]])
+
+                if any("$" in sample_position_prefix
+                       for sample_position_prefix in devices_and_sample_positions.get(None, [])):
+                    raise ValueError("$ should not appear under `None`, which is actually not a device.")
                 parsed_sample_positions.extend(devices_and_sample_positions.get(None, []))
                 # wait for 10 minutes
                 # if it is still not available, release it, wait for 1 minutes

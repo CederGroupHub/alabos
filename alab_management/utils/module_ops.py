@@ -16,8 +16,8 @@ def import_module_from_path(path: Union[str, Path]):
     sys.path.insert(0, path.parent.as_posix())
     try:
         module = importlib.import_module(path.name)
-    except AttributeError as e:
-        e.args = (e.args[0] + " Maybe there is some bugs in your definition, please check that.")
+    except AttributeError as exception:
+        exception.args = (exception.args[0] + " Maybe there is some bugs in your definition, please check that.")
         raise
     sys.path.pop(0)
     return module

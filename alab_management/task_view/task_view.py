@@ -141,7 +141,7 @@ class TaskView:
 
         Returns:
             List of task entry: {"task_id": ``ObjectId``,
-              "type": :py:class:`BaseTask <alab_management.task_view.task.BaseTask>`}
+            "type": :py:class:`BaseTask <alab_management.task_view.task.BaseTask>`}
         """
         result = self._task_collection.find({"status": TaskStatus.READY.name})
 

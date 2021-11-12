@@ -8,7 +8,8 @@ os.environ["ALAB_CONFIG"] = (Path(__file__).parent.parent /
                              "examples" / "fake_lab" / "config.toml").as_posix()
 
 from alab_management.lab_manager import LabManager
-from alab_management import setup_lab, cleanup_lab, DeviceView, SampleView
+from alab_management import DeviceView, SampleView
+from alab_management.scripts import cleanup_lab, setup_lab
 
 
 class TestLabManager(TestCase):

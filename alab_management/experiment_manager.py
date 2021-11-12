@@ -8,12 +8,19 @@ from .utils.graph_op import Graph
 
 
 class ExperimentManager:
+    """
+    Experiment manager read experiments from the experiment collection
+    and submit the experiment to executor and flag the completed experiments
+    """
     def __init__(self):
         self.experiment_view = ExperimentView()
         self.task_view = TaskView()
         self.sample_view = SampleView()
 
     def run(self):
+        """
+        Start the event loop
+        """
         while True:
             self._loop()
             time.sleep(2)

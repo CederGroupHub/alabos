@@ -23,10 +23,10 @@ def froze_config(config_: Dict[str, Any]) -> FrozenDict:
         """
         if isinstance(collection_or_element, list):
             return tuple(_froze_collection(element) for element in collection_or_element)
-        elif isinstance(collection_or_element, dict):
+        if isinstance(collection_or_element, dict):
             return FrozenDict({k: _froze_collection(v) for k, v in collection_or_element.items()})
-        else:
-            return collection_or_element
+
+        return collection_or_element
 
     return _froze_collection(config_)
 
@@ -44,7 +44,10 @@ class AlabConfig:
 
         if config_path is None:
             config_path = "config.toml"
-        _config = toml.load(open(config_path, "r", encoding="utf-8"))
+
+        with open(config_path, "r", encoding="utf-8") as f:
+            _config = toml.load(f)
+
         self._path = Path(config_path).absolute()
         self._config = froze_config(_config)
 
@@ -61,6 +64,9 @@ class AlabConfig:
 
     @property
     def path(self) -> Path:
+        """
+        The absolute path to the config file
+        """
         return self._path
 
 

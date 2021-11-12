@@ -86,10 +86,10 @@ class ExperimentView:
             raise ValueError(f"Cannot find experiment with id: {exp_id}")
 
         if len(experiment["samples"]) != len(sample_ids):
-            raise ValueError(f"Difference length of samples and input sample ids")
+            raise ValueError("Difference length of samples and input sample ids")
 
         if len(experiment["tasks"]) != len(task_ids):
-            raise ValueError(f"Difference length of tasks and input task ids")
+            raise ValueError("Difference length of tasks and input task ids")
 
         self._experiment_collection.update_one({"_id": exp_id}, {"$set": {
             **{f"samples.{i}.sample_id": sample_id for i, sample_id in enumerate(sample_ids)},

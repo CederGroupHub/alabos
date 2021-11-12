@@ -8,7 +8,8 @@ os.environ["ALAB_CONFIG"] = (Path(__file__).parent.parent /
                              "examples" / "fake_lab" / "config.toml").as_posix()
 
 from alab_management.task_view import TaskStatus
-from alab_management import TaskView, cleanup_lab, setup_lab
+from alab_management import TaskView
+from alab_management.scripts import cleanup_lab, setup_lab
 
 
 class TestTaskView(TestCase):

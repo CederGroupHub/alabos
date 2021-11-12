@@ -7,7 +7,8 @@ os.environ["ALAB_CONFIG"] = (Path(__file__).parent.parent /
 
 from alab_management.task_view import TaskStatus
 from alab_management.experiment_view import InputExperiment
-from alab_management import ExperimentManager, setup_lab, cleanup_lab
+from alab_management import ExperimentManager
+from alab_management.scripts import cleanup_lab, setup_lab
 
 
 class TestExperimentManager(TestCase):

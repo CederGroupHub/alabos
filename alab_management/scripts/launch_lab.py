@@ -1,15 +1,16 @@
 """
 The script to launch task_view and executor, which are the core of the system.
 """
+import sys
 import time
 from multiprocessing import Process
 
 import click
+from gevent.pywsgi import WSGIServer
 
 from .. import ExperimentManager, Executor, __version__
 from ..dashboard import create_app
 from ..utils.module_ops import load_definition
-from gevent.pywsgi import WSGIServer
 
 
 def launch_dashboard(host, port):
@@ -61,14 +62,14 @@ def launch_lab(host, port):
         if not experiment_manager_process.is_alive():
             executor_process.kill()
             dashboard_process.kill()
-            exit(1001)
+            sys.exit(1001)
 
         if not executor_process.is_alive():
             experiment_manager_process.kill()
             dashboard_process.kill()
-            exit(1002)
+            sys.exit(1002)
 
         if not dashboard_process.is_alive():
             executor_process.kill()
             experiment_manager_process.kill()
-            exit(1003)
+            sys.exit(1003)

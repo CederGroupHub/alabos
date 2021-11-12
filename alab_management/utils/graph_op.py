@@ -33,7 +33,7 @@ class Graph:
             for child in self.edges[v]:
                 if not visited[child] and _is_cyclic(child):
                     return True
-                elif rec_stack[child]:
+                if rec_stack[child]:
                     return True
 
             # The vertex needs to be popped from

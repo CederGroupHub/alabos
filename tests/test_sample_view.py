@@ -7,8 +7,8 @@ os.environ["ALAB_CONFIG"] = (Path(__file__).parent.parent /
 
 from bson import ObjectId
 
-from alab_management import SampleView, cleanup_lab
-from alab_management.scripts import setup_lab
+from alab_management import SampleView
+from alab_management.scripts import setup_lab, cleanup_lab
 
 
 class TestSampleView(TestCase):
@@ -154,7 +154,7 @@ class TestSampleView(TestCase):
                                                            ["furnace_table", "furnace_1.inside"], timeout=100) \
                     as sample_positions:
                 end_time = time.perf_counter()
-                self.assertAlmostEqual(end_time - start_time, 0.0, delta=0.2)
+                self.assertAlmostEqual(end_time - start_time, 0.0, delta=0.3)
                 self.assertFalse(sample_positions is None)
                 time.sleep(2)
 
@@ -165,7 +165,7 @@ class TestSampleView(TestCase):
                                                            ["furnace_table", "furnace_1.inside"], timeout=100) \
                     as sample_positions:
                 end_time = time.perf_counter()
-                self.assertAlmostEqual(end_time - start_time, 2.0, delta=0.2)
+                self.assertAlmostEqual(end_time - start_time, 2.0, delta=1.2)
                 self.assertFalse(sample_positions is None)
 
         t1 = threading.Thread(target=_request_1)
