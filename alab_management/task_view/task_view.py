@@ -34,7 +34,7 @@ class TaskView:
 
     def __init__(self):
         self._task_collection = get_collection("tasks")
-        self._operations_definition: Dict[str, Type[BaseTask]] = get_all_tasks()
+        self._tasks_definition: Dict[str, Type[BaseTask]] = get_all_tasks()
 
     def create_task(
             self, task_type: str,
@@ -60,7 +60,7 @@ class TaskView:
         Returns:
             the assigned id for this task
         """
-        if task_type not in self._operations_definition:
+        if task_type not in self._tasks_definition:
             raise ValueError(f"Unsupported task type: {task_type}")
 
         prev_tasks = prev_tasks if prev_tasks is not None else []
@@ -147,7 +147,7 @@ class TaskView:
 
         ready_tasks: List[Dict[str, Any]] = []
         for task_entry in result:
-            operation_type: Type[BaseTask] = self._operations_definition[task_entry["type"]]
+            operation_type: Type[BaseTask] = self._tasks_definition[task_entry["type"]]
             task_entry["task_id"] = task_entry.pop("_id")  # change the key name of `_id` to `task_id`
             ready_tasks.append({
                 **task_entry,

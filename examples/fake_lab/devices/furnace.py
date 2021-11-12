@@ -1,5 +1,5 @@
 import random
-import time
+from threading import Timer
 from typing import ClassVar
 
 from alab_management import BaseDevice, SamplePosition
@@ -30,8 +30,12 @@ class Furnace(BaseDevice):
 
     def run_program(self, *segments):
         self._is_running = True
-        time.sleep(10)
-        self._is_running = False
+
+        def finish():
+            self._is_running = False
+
+        t = Timer(10, finish)
+        t.start()
 
     def is_running(self):
         return self._is_running

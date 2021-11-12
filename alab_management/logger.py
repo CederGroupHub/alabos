@@ -46,11 +46,11 @@ class DBLogger:
         if isinstance(level, str):
             level = LoggingLevel[level].value
         elif isinstance(level, LoggingLevel):
-            level = LoggingLevel.value
+            level = level.value
 
         self._logging_collection.insert_one({
             "task_id": self.task_id,
-            "type": logging_type,
+            "type": logging_type.name,
             "level": level,
             "log_data": log_data,
             "created_at": datetime.now()

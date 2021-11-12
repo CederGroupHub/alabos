@@ -30,6 +30,7 @@ class ExperimentManager:
         pending_experiments = self.experiment_view. \
             get_experiments_with_status(ExperimentStatus.PENDING)
         for experiment in pending_experiments:
+            print(f"Submit experiment {experiment['_id']} to executor")
             self._handle_pending_experiment(experiment=experiment)
 
     def _handle_pending_experiment(self, experiment: Dict[str, Any]):
@@ -38,7 +39,7 @@ class ExperimentManager:
 
         # check if there is any cycle in the graph
         task_graph = Graph(
-            list(range(len(samples))),
+            list(range(len(tasks))),
             {i: task["next_tasks"] for i, task in enumerate(tasks)}
         )
         if task_graph.has_cycle():
@@ -84,5 +85,6 @@ class ExperimentManager:
             # if all the tasks of an experiment have been finished
             if all(self.task_view.get_status(task_id=task_id) is TaskStatus.COMPLETED
                    for task_id in task_ids):
+                print(f"Experiment ({experiment['_id']}) completed.")
                 self.experiment_view.update_experiment_status(exp_id=experiment["_id"],
                                                               status=ExperimentStatus.COMPLETED)

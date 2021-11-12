@@ -53,10 +53,13 @@ class Executor:
         task_type = task_entry.pop("type")
         logger = DBLogger(task_id=task_id)
         lab_manager = LabManager(device_view=self.device_view, sample_view=self.sample_view, task_id=task_id)
+        print(f"  Starting task: {task_id} ({task_type.__name__})")
+
         try:
             task = task_type(
                 logger=logger,
                 lab_manager=lab_manager,
+                task_id=task_id,
                 **task_entry["samples"],
                 **task_entry["parameters"],
             )
@@ -65,7 +68,7 @@ class Executor:
 
         def _run_task():
             self.task_view.update_status(task_id=task_id, status=TaskStatus.RUNNING)
-            for sample_id in task_entry["samples"]:
+            for sample_id in task_entry["samples"].values():
                 self.sample_view.update_sample_task_id(task_id=task_id, sample_id=sample_id)
             try:
                 task.run()
@@ -75,7 +78,7 @@ class Executor:
             else:
                 self.task_view.update_status(task_id=task_id, status=TaskStatus.COMPLETED)
             finally:
-                for sample_id in task_entry["samples"]:
+                for sample_id in task_entry["samples"].values():
                     self.sample_view.update_sample_task_id(task_id=None, sample_id=sample_id)
 
         task_thread = threading.Thread(target=_run_task)

@@ -42,5 +42,5 @@ class TestGraph(TestCase):
         vertices = list(range(5))
         edges = {0: [1, 2], 1: [2, 3], 2: [3, 4], 3: [4], 4: []}
         graph = Graph(vertices, edges)
-        self.assertListEqual([], graph.get_children(3))
+        self.assertListEqual([4], graph.get_children(3))
         self.assertListEqual([1, 2], graph.get_children(0))

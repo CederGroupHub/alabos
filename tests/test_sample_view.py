@@ -76,17 +76,9 @@ class TestSampleView(TestCase):
         task_id = ObjectId()
         self.sample_view.lock_sample_position(task_id=task_id, position="furnace_table")
 
-        sample_id = self.sample_view.create_sample("test", None)
+        sample_id = self.sample_view.create_sample("test")
 
         self.assertEqual("LOCKED", self.sample_view.get_sample_position_status("furnace_table")[0].name)
-
-        # try to move a sample to a locked position
-        with self.assertRaises(ValueError):
-            self.sample_view.move_sample(sample_id, "furnace_table")
-
-        # try to create a sample in a lock position
-        with self.assertRaises(ValueError):
-            self.sample_view.create_sample("test_", "furnace_table")
 
         self.sample_view.release_sample_position("furnace_table")
 

@@ -23,11 +23,12 @@ class Heating(BaseTask):
 
             moving_task = Moving(sample=self.sample,
                                  task_id=self.task_id,
-                                 dest=inside_furnace[0],
+                                 dest=inside_furnace,
                                  lab_manager=self.lab_manager,
                                  logger=self.logger)
             moving_task.run()
 
+            print(f"    Heating ({self.task_id}) is on \033[92m{devices[Furnace].name}\033[0m")
             furnace.run_program(self.setpoints)
 
             while furnace.is_running():

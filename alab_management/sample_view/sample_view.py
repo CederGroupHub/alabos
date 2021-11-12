@@ -141,11 +141,11 @@ class SampleView:
 
         return SamplePositionStatus.EMPTY, None
 
-    def is_empty_position(self, position: str) -> bool:
+    def is_unoccupied_position(self, position: str) -> bool:
         """
-        Tell if a sample position is empty
+        Tell if a sample position is unoccupied or not
         """
-        return self.get_sample_position_status(position)[0] is SamplePositionStatus.EMPTY
+        return not self.get_sample_position_status(position)[0] is SamplePositionStatus.OCCUPIED
 
     def get_available_sample_position(self, task_id: ObjectId, position_prefix: str) -> List[str]:
         """
@@ -207,7 +207,7 @@ class SampleView:
 
         Samples with the same name can exist in the database
         """
-        if position is not None and not self.is_empty_position(position):
+        if position is not None and not self.is_unoccupied_position(position):
             raise ValueError(f"Requested position ({position}) is not EMPTY.")
 
         result = self._sample_collection.insert_one({
@@ -247,12 +247,13 @@ class SampleView:
         """
         Update the sample with new position
         """
+
         result = self._sample_collection.find_one({"_id": sample_id})
         if result is None:
             raise ValueError(f"Cannot find sample with id: {sample_id}")
 
-        if position is not None and not self.is_empty_position(position):
-            raise ValueError(f"Requested position ({position}) is not EMPTY.")
+        if position is not None and not self.is_unoccupied_position(position):
+                raise ValueError(f"Requested position ({position}) is not EMPTY or LOCKED by other task.")
 
         self._sample_collection.update_one({"_id": sample_id}, {"$set": {
             "position": position,
