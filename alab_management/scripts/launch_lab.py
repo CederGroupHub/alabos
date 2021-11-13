@@ -60,16 +60,16 @@ def launch_lab(host, port):
     while True:
         time.sleep(1)
         if not experiment_manager_process.is_alive():
-            executor_process.kill()
-            dashboard_process.kill()
+            executor_process.terminate()
+            dashboard_process.terminate()
             sys.exit(1001)
 
         if not executor_process.is_alive():
-            experiment_manager_process.kill()
-            dashboard_process.kill()
+            experiment_manager_process.terminate()
+            dashboard_process.terminate()
             sys.exit(1002)
 
         if not dashboard_process.is_alive():
-            executor_process.kill()
-            experiment_manager_process.kill()
+            executor_process.terminate()
+            experiment_manager_process.terminate()
             sys.exit(1003)
