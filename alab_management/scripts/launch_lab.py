@@ -42,7 +42,7 @@ def launch_lab(host, port):
      / _ \ | |/ _` | '_ \   | | | \___ \ 
     / ___ \| | (_| | |_) |  | |_| |___) |
    /_/   \_\_|\__,_|_.__/    \___/|____/      
- 
+
 ----  Alab OS v{__version__} -- Alab Project Team  ----
 """)
     dashboard_process = Process(target=launch_dashboard, args=(host, port))

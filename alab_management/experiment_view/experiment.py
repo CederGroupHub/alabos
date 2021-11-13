@@ -1,6 +1,6 @@
 from typing import List, Any, Dict
 
-from pydantic import BaseModel
+from pydantic import BaseModel  # pylint: disable=no-name-in-module
 
 
 class _Sample(BaseModel):

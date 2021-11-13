@@ -87,7 +87,18 @@ class SampleView:
         self._sample_positions_collection.drop()
 
     def request_sample_positions(self, task_id: ObjectId, sample_positions: Collection[str],
-                                 timeout: Optional[int] = None) -> Optional[SamplePositionsLock]:
+                                 timeout: Optional[int] = None) -> SamplePositionsLock:
+        """
+        Request a list of sample positions, this function will return until all the sample positions are available
+
+        Args:
+            task_id: the task id that requests these resources
+            sample_positions: the list of sample positions, which is requested by their names.
+              The sample position name is actually the prefix of a sample position, which we
+              will try to match all the sample positions will the name
+            timeout: if we cannot request the resources after ``timeout`` seconds, this function
+              will return ``SamplePositionsLock(None)`` directly.
+        """
         # TODO: support it!
         if len(sample_positions) != len(set(sample_positions)):
             raise ValueError("Currently we do not allow duplicated sample_positions in one request.")
@@ -95,7 +106,7 @@ class SampleView:
         cnt = 0
         while timeout is None or cnt < timeout:
             try:
-                self._lock.acquire(blocking=True)
+                self._lock.acquire(blocking=True)  # pylint: disable=consider-using-with
                 available_positions = {}
                 for sample_position_prefix in sample_positions:
                     result = self.get_available_sample_position(task_id, position_prefix=sample_position_prefix)

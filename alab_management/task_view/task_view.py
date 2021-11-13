@@ -129,6 +129,8 @@ class TaskView:
         if so, mark it as READY
         """
         task = self.get_task(task_id)
+        if task is None:
+            raise ValueError(f"Cannot find task with id: {task_id}")
         prev_task_ids = task["prev_tasks"]
         if task["status"] == TaskStatus.WAITING.name and \
                 all(self.get_status(task_id=task_id_) is TaskStatus.COMPLETED

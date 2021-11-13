@@ -17,9 +17,9 @@ def resource_lock(devices_lock: DevicesLock, sample_positions_lock: SamplePositi
     A context manager that releases the devices and the sample positions when they are no longer needed.
     """
     requested_sample_positions = {}
-    flattened_sample_positions = sample_positions_lock.sample_positions.copy()
+    flattened_sample_positions = sample_positions_lock.sample_positions.copy()  # type: ignore
 
-    for device_type, device in devices_lock.devices.items():
+    for device_type, device in devices_lock.devices.items():  # type: ignore
         device_name = device.name
         sample_positions_prefixes = devices_and_sample_positions[device_type]
         requested_sample_positions[device_type] = {
@@ -59,12 +59,12 @@ class LabManager:
             -> SamplePositionsLock:
         """
         Request sample positions, see also
-        :py:meth:`request_sample_positions <alab_management.sample_view.sample_view.SampleView.request_sample_positions>`
+        :py:meth:`request_sample_positions <alab_management.sample_view.sample_view.SampleView.request_sample_positions>`  # noqa pylint: disable=line-too-long
         """
         return self._sample_view.request_sample_positions(self.task_id, sample_positions, timeout=timeout)
 
     def request_resources(self, devices_and_sample_positions: Dict[Optional[Type[BaseDevice]], List[str]]) \
-            -> resource_lock:
+            -> resource_lock:  # type: ignore
         """
         Request devices and sample positions
 
@@ -80,12 +80,14 @@ class LabManager:
         ``furnace_1.inside`` if we are assigned to a furnace named ``furnace_1``.
         """
         while True:
-            devices_lock = self.request_devices([device_type for device_type in devices_and_sample_positions.keys()
-                                                 if device_type is not None])
+            devices_lock = self.request_devices([
+                device_type for device_type in devices_and_sample_positions.keys()
+                if device_type is not None
+            ])
 
             try:
                 parsed_sample_positions = []
-                for device_type, device in devices_lock.devices.items():
+                for device_type, device in devices_lock.devices.items():  # type: ignore
                     device_name = device.name
                     parsed_sample_positions.extend([re.sub(r"\$", device_name, sample_position)
                                                     for sample_position in devices_and_sample_positions[device_type]])
@@ -101,7 +103,8 @@ class LabManager:
                                                                       sample_positions=parsed_sample_positions)
 
                 if sample_positions_lock is not None:
-                    return resource_lock(devices_lock=devices_lock, sample_positions_lock=sample_positions_lock,
+                    return resource_lock(devices_lock=devices_lock,  # type: ignore
+                                         sample_positions_lock=sample_positions_lock,
                                          devices_and_sample_positions=devices_and_sample_positions)
             except Exception:
                 devices_lock.release()

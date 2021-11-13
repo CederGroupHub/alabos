@@ -37,7 +37,7 @@ class DevicesLock:
     """
 
     def __init__(self, devices: Optional[Dict[Type[BaseDevice], BaseDevice]], device_view: "DeviceView"):
-        self._devices: Dict[Type[BaseDevice], BaseDevice] = devices
+        self._devices: Optional[Dict[Type[BaseDevice], BaseDevice]] = devices
         self._device_view: "DeviceView" = device_view
 
     @property
@@ -97,7 +97,7 @@ class DeviceView:
         self._device_collection.drop()
 
     def request_devices(self, task_id: ObjectId, device_types: Collection[Type[BaseDevice]],
-                        timeout: Optional[int] = None) -> Optional[DevicesLock]:
+                        timeout: Optional[int] = None) -> DevicesLock:
         """
         Request a list of device, this function will return until all the requested device is ready.
 
@@ -120,7 +120,7 @@ class DeviceView:
         while timeout is None or cnt < timeout:
             idle_devices: Dict[Type[BaseDevice], BaseDevice] = {}
             try:
-                self._lock.acquire(blocking=True)
+                self._lock.acquire(blocking=True)  # pylint: disable=consider-using-with
                 for device in device_types:
                     result = self.get_device_by_type(device_type=device, task_id=task_id, only_idle=True)
                     if not result:
@@ -179,7 +179,7 @@ class DeviceView:
             if not self.get_device_by_type(device_type, task_id, only_idle=False):
                 raise ValueError(f"No such device_type: {device_type}")
 
-            request_dict.update({"$or": [{
+            request_dict.update({"$or": [{  # type: ignore
                 "status": DeviceStatus.IDLE.name,
             }, {
                 "task_id": task_id,

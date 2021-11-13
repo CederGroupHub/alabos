@@ -1,3 +1,5 @@
+# type: ignore
+
 import os
 from pathlib import Path
 from types import MappingProxyType as FrozenDict
@@ -57,9 +59,10 @@ class AlabConfig:
     def __str__(self):
         return self._config.__repr__()
 
-    __repr__ = __str__
+    def __repr__(self):
+        return self.__str__()
 
-    def __hash__(self):
+    def __hash__(self):  # type: ignore
         return self._config.__hash__()
 
     @property
