@@ -4,7 +4,7 @@ jobs:
   py3test:
     docker:
       - image: circleci/python:3.8.12
-      - image: circleci/mongo:latest
+      - image: circleci/mongo:4.4.10
     steps:
       - checkout
       - run:
