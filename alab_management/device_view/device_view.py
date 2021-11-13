@@ -2,7 +2,7 @@ import time
 from datetime import datetime
 from enum import unique, Enum, auto
 from threading import Lock
-from typing import Type, List, Optional, Union, Dict, Any, Collection, TYPE_CHECKING
+from typing import Type, List, Optional, Union, Dict, Any, Collection
 
 import pymongo
 from bson import ObjectId

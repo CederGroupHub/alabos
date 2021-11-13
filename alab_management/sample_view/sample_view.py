@@ -3,7 +3,7 @@ from dataclasses import asdict
 from datetime import datetime
 from enum import Enum, auto
 from threading import Lock
-from typing import Optional, List, Dict, Any, Tuple, Collection, TYPE_CHECKING
+from typing import Optional, List, Dict, Any, Tuple, Collection
 
 import pymongo
 from bson import ObjectId
@@ -30,6 +30,7 @@ class SamplePositionsLock:
     Lock of sample position, which is a context manager that will release the sample positions
     when exiting.
     """
+
     def __init__(self, sample_positions: Optional[Dict[str, str]], sample_view: "SampleView"):
         self._sample_positions = sample_positions
         self._sample_view = sample_view
