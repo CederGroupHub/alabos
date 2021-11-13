@@ -475,7 +475,7 @@ else, return EMPTY and None</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>task_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the task id that requests these resources</p></li>
-<li><p><strong>sample_positions</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the list of sample positions, which is requested by their names.
+<li><p><strong>sample_positions</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the list of sample positions, which is requested by their names.
 The sample position name is actually the prefix of a sample position, which we
 will try to match all the sample positions will the name</p></li>
 <li><p><strong>timeout</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – if we cannot request the resources after <code class="docutils literal notranslate"><span class="pre">timeout</span></code> seconds, this function
