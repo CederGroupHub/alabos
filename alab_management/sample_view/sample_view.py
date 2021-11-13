@@ -3,7 +3,7 @@ from dataclasses import asdict
 from datetime import datetime
 from enum import Enum, auto
 from threading import Lock
-from typing import Optional, List, Dict, Any, Tuple, Collection
+from typing import Optional, List, Dict, Any, Tuple, Collection, cast
 
 import pymongo
 from bson import ObjectId
@@ -242,7 +242,7 @@ class SampleView:
             "last_updated": datetime.now(),
         })
 
-        return result.inserted_id
+        return cast(ObjectId, result.inserted_id)
 
     def get_sample(self, sample_id: ObjectId) -> Optional[Sample]:
         """

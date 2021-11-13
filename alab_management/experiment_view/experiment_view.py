@@ -1,5 +1,5 @@
 from enum import Enum, auto
-from typing import List, Any, Dict, Optional
+from typing import List, Any, Dict, Optional, cast
 
 from bson import ObjectId
 
@@ -44,13 +44,13 @@ class ExperimentView:
             "status": ExperimentStatus.PENDING.name,
         })
 
-        return result.inserted_id
+        return cast(ObjectId, result.inserted_id)
 
     def get_experiments_with_status(self, status: ExperimentStatus) -> List[Dict[str, Any]]:
         """
         Filter experiments by its status
         """
-        return self._experiment_collection.find({"status": status.name})
+        return cast(List[Dict[str, Any]], self._experiment_collection.find({"status": status.name}))
 
     def get_experiment(self, exp_id: ObjectId) -> Optional[Dict[str, Any]]:
         """

@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any, Dict, List, Type, Union, Optional
+from typing import Any, Dict, List, Type, Union, Optional, cast
 
 from bson import ObjectId
 
@@ -79,7 +79,7 @@ class TaskView:
             "created_at": datetime.now(),
             "last_updated": datetime.now(),
         })
-        return result.inserted_id
+        return cast(ObjectId, result.inserted_id)
 
     def get_task(self, task_id: ObjectId) -> Optional[Dict[str, Any]]:
         """

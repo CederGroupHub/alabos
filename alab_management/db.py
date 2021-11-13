@@ -3,6 +3,7 @@ A convenient wrapper for MongoClient
 in case we need to add authentication procedure
 """
 import pymongo
+from pymongo import collection
 
 from .config import config
 
@@ -16,7 +17,7 @@ _db = pymongo.MongoClient(
 )[db_config["name"]]
 
 
-def get_collection(name: str) -> pymongo.collection.Collection:
+def get_collection(name: str) -> collection.Collection:
     """
     Get collection by name
     """
