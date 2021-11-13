@@ -17,6 +17,7 @@ jobs:
             pytest
       - run:
           name: Run pylint
+          command: |
             echo "Checking code style..."
             pylint alab_management
             echo "Done..."
