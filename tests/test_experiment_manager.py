@@ -2,8 +2,8 @@ import os
 from pathlib import Path
 from unittest import TestCase
 
-os.environ["ALAB_CONFIG"] = (Path(__file__).parent.parent /
-                             "examples" / "fake_lab" / "config.toml").as_posix()
+os.environ["ALAB_CONFIG"] = (Path(__file__).parent /
+                             "fake_lab" / "config.toml").as_posix()
 
 from alab_management.task_view import TaskStatus
 from alab_management.experiment_view import InputExperiment

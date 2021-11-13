@@ -4,8 +4,8 @@ from unittest import TestCase
 
 from bson import ObjectId
 
-os.environ["ALAB_CONFIG"] = (Path(__file__).parent.parent /
-                             "examples" / "fake_lab" / "config.toml").as_posix()
+os.environ["ALAB_CONFIG"] = (Path(__file__).parent /
+                             "fake_lab" / "config.toml").as_posix()
 
 from alab_management.lab_manager import LabManager
 from alab_management import DeviceView, SampleView
