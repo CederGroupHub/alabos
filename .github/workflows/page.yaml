@@ -33,3 +33,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/build/html
           publish_branch: sphinx-docs
+          exclude_assets: '.github,**/_static/__pycache__,**/_static/__init__.py'
