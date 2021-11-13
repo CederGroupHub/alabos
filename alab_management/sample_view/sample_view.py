@@ -13,12 +13,23 @@ from ..db import get_collection
 
 
 class SamplePositionStatus(Enum):
-    EMPTY = auto()  # the sample position is neither locked nor occupied
-    OCCUPIED = auto()  # there is a sample in the sample position
-    LOCKED = auto()  # the sample position is locked by a task
+    """
+    The status of a sample position
+
+    - ``EMPTY``: the sample position is neither locked nor occupied
+    - ``OCCUPIED``: there is a sample in the sample position
+    - ``LOCKED``: the sample position is reserved by a task
+    """
+    EMPTY = auto()
+    OCCUPIED = auto()
+    LOCKED = auto()
 
 
 class SamplePositionsLock:
+    """
+    Lock of sample position, which is a context manager that will release the sample positions
+    when exiting.
+    """
     def __init__(self, sample_positions: Optional[Dict[str, str]], sample_view: "SampleView"):
         self._sample_positions = sample_positions
         self._sample_view = sample_view
@@ -86,14 +97,14 @@ class SampleView:
             try:
                 self._lock.acquire(blocking=True)
                 available_positions = {}
-                for sp in sample_positions:
-                    result = self.get_available_sample_position(task_id, position_prefix=sp)
+                for sample_position_prefix in sample_positions:
+                    result = self.get_available_sample_position(task_id, position_prefix=sample_position_prefix)
                     if not result:
                         break
-                    available_positions[sp] = result[0]
+                    available_positions[sample_position_prefix] = result[0]
                 else:
-                    for sp in available_positions.values():
-                        self.lock_sample_position(task_id, sp)
+                    for sample_position in available_positions.values():
+                        self.lock_sample_position(task_id, sample_position)
                     return SamplePositionsLock(sample_positions=available_positions, sample_view=self)
             finally:
                 self._lock.release()
@@ -163,10 +174,10 @@ class SampleView:
             }]}
         )
         available_sp_names = []
-        for sp in available_sample_positions:
-            status, current_task_id = self.get_sample_position_status(sp["name"])
+        for sample_position in available_sample_positions:
+            status, current_task_id = self.get_sample_position_status(sample_position["name"])
             if status is SamplePositionStatus.EMPTY or task_id == current_task_id:
-                available_sp_names.append(sp["name"])
+                available_sp_names.append(sample_position["name"])
         return available_sp_names
 
     def lock_sample_position(self, task_id: ObjectId, position: str):
@@ -178,7 +189,7 @@ class SampleView:
         if current_task_id != task_id:
             if sample_status is SamplePositionStatus.OCCUPIED:
                 raise ValueError(f"Position ({position}) is currently occupied")
-            elif sample_status is SamplePositionStatus.LOCKED:
+            if sample_status is SamplePositionStatus.LOCKED:
                 raise ValueError(f"Position is currently locked by task: {task_id}")
 
         self._sample_positions_collection.update_one({"name": position}, {"$set": {
@@ -227,8 +238,8 @@ class SampleView:
         result = self._sample_collection.find_one({"_id": sample_id})
         if result is not None:
             return Sample(_id=result["_id"], name=result["name"], position=result["position"])
-        else:
-            return None
+
+        return None
 
     def update_sample_task_id(self, sample_id: ObjectId, task_id: Optional[ObjectId]):
         """
@@ -253,7 +264,7 @@ class SampleView:
             raise ValueError(f"Cannot find sample with id: {sample_id}")
 
         if position is not None and not self.is_unoccupied_position(position):
-                raise ValueError(f"Requested position ({position}) is not EMPTY or LOCKED by other task.")
+            raise ValueError(f"Requested position ({position}) is not EMPTY or LOCKED by other task.")
 
         self._sample_collection.update_one({"_id": sample_id}, {"$set": {
             "position": position,

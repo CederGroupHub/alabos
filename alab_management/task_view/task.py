@@ -98,7 +98,7 @@ def add_task(task: Type[BaseTask]):
     Register a task
     """
     if task.__name__ in _task_registry:
-        raise KeyError("Duplicated operation name {}".format(task.__name__))
+        raise KeyError(f"Duplicated operation name {task.__name__}")
     _task_registry[task.__name__] = task
 
 

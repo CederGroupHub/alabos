@@ -107,7 +107,7 @@ def add_device(device: BaseDevice):
     Register a device instance
     """
     if device.name in _device_registry:
-        raise KeyError("Duplicated device name {}".format(device.name))
+        raise KeyError(f"Duplicated device name {device.name}")
     _device_registry[device.name] = device
 
 
