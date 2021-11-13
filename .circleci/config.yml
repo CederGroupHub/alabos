@@ -1,0 +1,27 @@
+version: 2.1
+
+jobs:
+  py3test:
+    docker:
+      - image: circleci/python:3.8-buster
+      - image: circleci/mongo:latest
+    steps:
+      - run:
+          name: Install dependencies
+          command: |
+            pip install --quiet -r requirements.txt -r requirements-dev.txt
+            pip install --quiet -e .
+      - run:
+          name: Run pytest
+          command: |
+            pytest
+      - run:
+          name: Run pylint
+            echo "Checking code style..."
+            pylint alab_management
+            echo "Done..."
+
+workflows:
+  test_and_lint:
+    jobs:
+      - py3test
