@@ -16,14 +16,14 @@ jobs:
         with:
           python-version: '3.8'
       - name: Set up dependencies
-        run: pip install -r ./requirements.txt -r ./requirements-dev.txt
+        run: pip install --quiet -r ./requirements.txt -r ./requirements-dev.txt
       - name: Clear old rst files
         working-directory: ./docs/source
         run: rm alab_management* modules.rst || true
       - name: Compile sphinx
         working-directory: ./docs
         run: |
-          sphinx-apidoc -o ./source ../alab_management
+          sphinx-apidoc -o ./source ../alab_management ../alab_management/*dashboard* ../alab_management/*scripts* ../alab_management/*utils*
           make clean
           make html
       - name: Deploy
