@@ -6,7 +6,7 @@ setup(
     packages=find_packages(exclude=["tests", "tests.*"]),
     version="0.1.0",
     author="Alab Project Team",
-    python_requires=">=3.7",
+    python_requires=">=3.6",
     description="Workflow management system for alab",
     zip_safe=False,
     install_requires=[
