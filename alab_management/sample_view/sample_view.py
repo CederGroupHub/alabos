@@ -3,13 +3,20 @@ from dataclasses import asdict
 from datetime import datetime
 from enum import Enum, auto
 from threading import Lock
-from typing import Optional, List, Dict, Any, Tuple, Collection
+from typing import Optional, List, Dict, Any, Tuple, Collection, TYPE_CHECKING
 
 import pymongo
 from bson import ObjectId
 
 from .sample import Sample
 from ..db import get_collection
+
+if not TYPE_CHECKING:
+    # Work around PyLint issue on Python 3.6.
+    #   https://github.com/PyCQA/pylint/issues/2377
+    from typing import Sequence  # pylint: disable=ungrouped-imports
+
+    Collection = Sequence  # noqa pylint: disable=invalid-name
 
 
 class SamplePositionStatus(Enum):

@@ -2,13 +2,20 @@ import time
 from datetime import datetime
 from enum import unique, Enum, auto
 from threading import Lock
-from typing import Type, List, Optional, Union, Dict, Any, Collection
+from typing import Type, List, Optional, Union, Dict, Any, Collection, TYPE_CHECKING
 
 import pymongo
 from bson import ObjectId
 
 from .device import BaseDevice, get_all_devices
 from ..db import get_collection
+
+if not TYPE_CHECKING:
+    # Work around PyLint issue on Python 3.6.
+    #   https://github.com/PyCQA/pylint/issues/2377
+    from typing import Sequence  # pylint: disable=ungrouped-imports
+
+    Collection = Sequence  # noqa pylint: disable=invalid-name
 
 
 @unique
