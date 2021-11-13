@@ -3,9 +3,10 @@ version: 2.1
 jobs:
   py3test:
     docker:
-      - image: circleci/python:3.8-buster
+      - image: circleci/python:3.8.12
       - image: circleci/mongo:latest
     steps:
+      - checkout
       - run:
           name: Install dependencies
           command: |
