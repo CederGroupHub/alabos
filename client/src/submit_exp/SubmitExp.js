@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import ExperimentFlow from "./components/ExperimentFlow";
 import ControlPanel from './components/ControlPanel';
-import { Container } from '@mui/material';
+import {Container} from '@mui/material';
 import styled from 'styled-components';
-import { grey } from '@mui/material/colors';
+import {grey} from '@mui/material/colors';
 
 const MainExpDiv = styled.div`
     display: flex;
@@ -23,8 +23,8 @@ const FlowPanelContainer = styled.div`
 `;
 
 function SubmitExp() {
-    const [ sampleNames, setSampleNames ] = useState([]);
-    
+    const [sampleNames, setSampleNames] = useState([]);
+
     return (
         <MainExpDiv>
             <ControlPanelContainer>
