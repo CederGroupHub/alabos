@@ -10,13 +10,6 @@ from bson import ObjectId
 from .device import BaseDevice, get_all_devices
 from ..db import get_collection
 
-if not TYPE_CHECKING:
-    # Work around PyLint issue on Python 3.6.
-    #   https://github.com/PyCQA/pylint/issues/2377
-    from typing import Sequence  # pylint: disable=ungrouped-imports
-
-    Collection = Sequence  # noqa pylint: disable=invalid-name
-
 
 @unique
 class DeviceStatus(Enum):
@@ -103,7 +96,8 @@ class DeviceView:
         """
         self._device_collection.drop()
 
-    def request_devices(self, task_id: ObjectId, device_types: Collection[Type[BaseDevice]],
+    def request_devices(self, task_id: ObjectId,
+                        device_types: Collection[Type[BaseDevice]],  # pylint: disable=unsubscriptable-object
                         timeout: Optional[int] = None) -> DevicesLock:
         """
         Request a list of device, this function will return until all the requested device is ready.

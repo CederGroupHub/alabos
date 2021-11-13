@@ -11,13 +11,6 @@ from bson import ObjectId
 from .sample import Sample
 from ..db import get_collection
 
-if not TYPE_CHECKING:
-    # Work around PyLint issue on Python 3.6.
-    #   https://github.com/PyCQA/pylint/issues/2377
-    from typing import Sequence  # pylint: disable=ungrouped-imports
-
-    Collection = Sequence  # noqa pylint: disable=invalid-name
-
 
 class SamplePositionStatus(Enum):
     """
@@ -93,7 +86,8 @@ class SampleView:
         """
         self._sample_positions_collection.drop()
 
-    def request_sample_positions(self, task_id: ObjectId, sample_positions: Collection[str],
+    def request_sample_positions(self, task_id: ObjectId,
+                                 sample_positions: Collection[str],  # pylint: disable=unsubscriptable-object
                                  timeout: Optional[int] = None) -> SamplePositionsLock:
         """
         Request a list of sample positions, this function will return until all the sample positions are available
