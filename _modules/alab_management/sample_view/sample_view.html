@@ -127,23 +127,6 @@
      </i>
     </label>
     <ul>
-     <li class="toctree-l3 has-children">
-      <a class="reference internal" href="../../../alab_management.dashboard.html">
-       alab_management.dashboard package
-      </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
-      <label for="toctree-checkbox-3">
-       <i class="fas fa-chevron-down">
-       </i>
-      </label>
-      <ul>
-       <li class="toctree-l4">
-        <a class="reference internal" href="../../../alab_management.dashboard.routes.html">
-         alab_management.dashboard.routes package
-        </a>
-       </li>
-      </ul>
-     </li>
      <li class="toctree-l3">
       <a class="reference internal" href="../../../alab_management.device_view.html">
        alab_management.device_view package
@@ -160,18 +143,8 @@
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="../../../alab_management.scripts.html">
-       alab_management.scripts package
-      </a>
-     </li>
-     <li class="toctree-l3">
       <a class="reference internal" href="../../../alab_management.task_view.html">
        alab_management.task_view package
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../alab_management.utils.html">
-       alab_management.utils package
       </a>
      </li>
     </ul>
@@ -264,12 +237,23 @@
 
 
 <div class="viewcode-block" id="SamplePositionStatus"><a class="viewcode-back" href="../../../alab_management.sample_view.html#alab_management.sample_view.sample_view.SamplePositionStatus">[docs]</a><span class="k">class</span> <span class="nc">SamplePositionStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-    <span class="n">EMPTY</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># the sample position is neither locked nor occupied</span>
-    <span class="n">OCCUPIED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># there is a sample in the sample position</span>
-    <span class="n">LOCKED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># the sample position is locked by a task</span></div>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The status of a sample position</span>
+
+<span class="sd">    - ``EMPTY``: the sample position is neither locked nor occupied</span>
+<span class="sd">    - ``OCCUPIED``: there is a sample in the sample position</span>
+<span class="sd">    - ``LOCKED``: the sample position is reserved by a task</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">EMPTY</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">OCCUPIED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">LOCKED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="SamplePositionsLock"><a class="viewcode-back" href="../../../alab_management.sample_view.html#alab_management.sample_view.sample_view.SamplePositionsLock">[docs]</a><span class="k">class</span> <span class="nc">SamplePositionsLock</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Lock of sample position, which is a context manager that will release the sample positions</span>
+<span class="sd">    when exiting.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_positions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span> <span class="n">sample_view</span><span class="p">:</span> <span class="s2">&quot;SampleView&quot;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions</span> <span class="o">=</span> <span class="n">sample_positions</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span> <span class="o">=</span> <span class="n">sample_view</span>
@@ -337,14 +321,14 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">(</span><span class="n">blocking</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="n">available_positions</span> <span class="o">=</span> <span class="p">{}</span>
-                <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="n">sample_positions</span><span class="p">:</span>
-                    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_available_sample_position</span><span class="p">(</span><span class="n">task_id</span><span class="p">,</span> <span class="n">position_prefix</span><span class="o">=</span><span class="n">sp</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">sample_position_prefix</span> <span class="ow">in</span> <span class="n">sample_positions</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_available_sample_position</span><span class="p">(</span><span class="n">task_id</span><span class="p">,</span> <span class="n">position_prefix</span><span class="o">=</span><span class="n">sample_position_prefix</span><span class="p">)</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
                         <span class="k">break</span>
-                    <span class="n">available_positions</span><span class="p">[</span><span class="n">sp</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">available_positions</span><span class="p">[</span><span class="n">sample_position_prefix</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="n">available_positions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">lock_sample_position</span><span class="p">(</span><span class="n">task_id</span><span class="p">,</span> <span class="n">sp</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">sample_position</span> <span class="ow">in</span> <span class="n">available_positions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">lock_sample_position</span><span class="p">(</span><span class="n">task_id</span><span class="p">,</span> <span class="n">sample_position</span><span class="p">)</span>
                     <span class="k">return</span> <span class="n">SamplePositionsLock</span><span class="p">(</span><span class="n">sample_positions</span><span class="o">=</span><span class="n">available_positions</span><span class="p">,</span> <span class="n">sample_view</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
             <span class="k">finally</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
@@ -414,10 +398,10 @@
             <span class="p">}]}</span>
         <span class="p">)</span>
         <span class="n">available_sp_names</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="n">available_sample_positions</span><span class="p">:</span>
-            <span class="n">status</span><span class="p">,</span> <span class="n">current_task_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sample_position_status</span><span class="p">(</span><span class="n">sp</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">sample_position</span> <span class="ow">in</span> <span class="n">available_sample_positions</span><span class="p">:</span>
+            <span class="n">status</span><span class="p">,</span> <span class="n">current_task_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sample_position_status</span><span class="p">(</span><span class="n">sample_position</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
             <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="n">SamplePositionStatus</span><span class="o">.</span><span class="n">EMPTY</span> <span class="ow">or</span> <span class="n">task_id</span> <span class="o">==</span> <span class="n">current_task_id</span><span class="p">:</span>
-                <span class="n">available_sp_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sp</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+                <span class="n">available_sp_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample_position</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">available_sp_names</span></div>
 
 <div class="viewcode-block" id="SampleView.lock_sample_position"><a class="viewcode-back" href="../../../alab_management.sample_view.html#alab_management.sample_view.sample_view.SampleView.lock_sample_position">[docs]</a>    <span class="k">def</span> <span class="nf">lock_sample_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -429,7 +413,7 @@
         <span class="k">if</span> <span class="n">current_task_id</span> <span class="o">!=</span> <span class="n">task_id</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">sample_status</span> <span class="ow">is</span> <span class="n">SamplePositionStatus</span><span class="o">.</span><span class="n">OCCUPIED</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Position (</span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2">) is currently occupied&quot;</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">sample_status</span> <span class="ow">is</span> <span class="n">SamplePositionStatus</span><span class="o">.</span><span class="n">LOCKED</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">sample_status</span> <span class="ow">is</span> <span class="n">SamplePositionStatus</span><span class="o">.</span><span class="n">LOCKED</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Position is currently locked by task: </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">position</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -478,8 +462,8 @@
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">Sample</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">position</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">])</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span></div>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="SampleView.update_sample_task_id"><a class="viewcode-back" href="../../../alab_management.sample_view.html#alab_management.sample_view.sample_view.SampleView.update_sample_task_id">[docs]</a>    <span class="k">def</span> <span class="nf">update_sample_task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -504,7 +488,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find sample with id: </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">position</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_unoccupied_position</span><span class="p">(</span><span class="n">position</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Requested position (</span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2">) is not EMPTY or LOCKED by other task.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Requested position (</span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2">) is not EMPTY or LOCKED by other task.&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="n">position</span><span class="p">,</span>

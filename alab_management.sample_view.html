@@ -36,7 +36,7 @@
     <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="alab_management.scripts package" href="alab_management.scripts.html" />
+    <link rel="next" title="alab_management.task_view package" href="alab_management.task_view.html" />
     <link rel="prev" title="alab_management.experiment_view package" href="alab_management.experiment_view.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
@@ -129,23 +129,6 @@
      </i>
     </label>
     <ul class="current">
-     <li class="toctree-l3 has-children">
-      <a class="reference internal" href="alab_management.dashboard.html">
-       alab_management.dashboard package
-      </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
-      <label for="toctree-checkbox-3">
-       <i class="fas fa-chevron-down">
-       </i>
-      </label>
-      <ul>
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.dashboard.routes.html">
-         alab_management.dashboard.routes package
-        </a>
-       </li>
-      </ul>
-     </li>
      <li class="toctree-l3">
       <a class="reference internal" href="alab_management.device_view.html">
        alab_management.device_view package
@@ -162,18 +145,8 @@
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.scripts.html">
-       alab_management.scripts package
-      </a>
-     </li>
-     <li class="toctree-l3">
       <a class="reference internal" href="alab_management.task_view.html">
        alab_management.task_view package
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.utils.html">
-       alab_management.utils package
       </a>
      </li>
     </ul>
@@ -332,7 +305,12 @@ in the lab</p></li>
 <dt id="alab_management.sample_view.sample_view.SamplePositionStatus">
 <em class="property">class </em><code class="sig-name descname">SamplePositionStatus</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SamplePositionStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SamplePositionStatus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
-<p>An enumeration.</p>
+<p>The status of a sample position</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">EMPTY</span></code>: the sample position is neither locked nor occupied</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OCCUPIED</span></code>: there is a sample in the sample position</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LOCKED</span></code>: the sample position is reserved by a task</p></li>
+</ul>
 <dl class="py attribute">
 <dt id="alab_management.sample_view.sample_view.SamplePositionStatus.EMPTY">
 <code class="sig-name descname">EMPTY</code><em class="property"> = 1</em><a class="headerlink" href="#alab_management.sample_view.sample_view.SamplePositionStatus.EMPTY" title="Permalink to this definition">¶</a></dt>
@@ -354,6 +332,8 @@ in the lab</p></li>
 <dt id="alab_management.sample_view.sample_view.SamplePositionsLock">
 <em class="property">class </em><code class="sig-name descname">SamplePositionsLock</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sample_positions</span></em>, <em class="sig-param"><span class="n">sample_view</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SamplePositionsLock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SamplePositionsLock" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Lock of sample position, which is a context manager that will release the sample positions
+when exiting.</p>
 <dl class="py method">
 <dt id="alab_management.sample_view.sample_view.SamplePositionsLock.release">
 <code class="sig-name descname">release</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SamplePositionsLock.release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SamplePositionsLock.release" title="Permalink to this definition">¶</a></dt>
@@ -524,10 +504,10 @@ else, return EMPTY and None</p>
             <p class="prev-next-title">alab_management.experiment_view package</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="alab_management.scripts.html" title="next page">
+    <a class='right-next' id="next-link" href="alab_management.task_view.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">alab_management.scripts package</p>
+        <p class="prev-next-title">alab_management.task_view package</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>
