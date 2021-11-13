@@ -227,6 +227,7 @@
 <span class="sd">in case we need to add authentication procedure</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">pymongo</span>
+<span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">collection</span>
 
 <span class="kn">from</span> <span class="nn">.config</span> <span class="kn">import</span> <span class="n">config</span>
 
@@ -240,7 +241,7 @@
 <span class="p">)[</span><span class="n">db_config</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span>
 
 
-<div class="viewcode-block" id="get_collection"><a class="viewcode-back" href="../../alab_management.html#alab_management.db.get_collection">[docs]</a><span class="k">def</span> <span class="nf">get_collection</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">Collection</span><span class="p">:</span>
+<div class="viewcode-block" id="get_collection"><a class="viewcode-back" href="../../alab_management.html#alab_management.db.get_collection">[docs]</a><span class="k">def</span> <span class="nf">get_collection</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">collection</span><span class="o">.</span><span class="n">Collection</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get collection by name</span>
 <span class="sd">    &quot;&quot;&quot;</span>
