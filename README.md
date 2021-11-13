@@ -17,9 +17,4 @@ python setup.py develop
 
 ## Docs
 
-The docs are temporarily hosted on my personal domain: [`https://alab.yuxingfei.top`](https://alab.yuxingfei.top)
-
-Username and password are required to access this site.
-
-- Username: `alab`
-- Password: `.p/Ct6qySN.7{StT`
+The docs is served at Github page: https://idocx.github.io/alab_management/

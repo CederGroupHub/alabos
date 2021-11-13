@@ -59,8 +59,7 @@ class LabManager:
             -> SamplePositionsLock:
         """
         Request sample positions, see also
-        :py:meth:`request_sample_positions
-          <alab_management.sample_view.sample_view.SampleView.request_sample_positions>`
+        :py:meth:`request_sample_positions <alab_management.sample_view.sample_view.SampleView.request_sample_positions>`
         """
         return self._sample_view.request_sample_positions(self.task_id, sample_positions, timeout=timeout)
 
