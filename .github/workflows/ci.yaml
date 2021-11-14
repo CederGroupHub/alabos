@@ -31,7 +31,7 @@ jobs:
       - name: Pyright
         uses: jakebailey/pyright-action@v1
         with:
-          working-directory: alab_management/
+          working-directory: ./alab_management/
           lib: true
       - name: Flake8
         run: flake8 alab_management
