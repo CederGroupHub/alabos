@@ -14,10 +14,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Start MongoDB
+      - name: Set up node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+      - name: Set up MongoDB
         uses: supercharge/mongodb-github-action@1.6.0
         with:
-          mongodb-version: 4.4
+          mongodb-version: "4.4"
       - name: Set up python
         uses: actions/setup-python@v2
         with:
@@ -26,14 +30,14 @@ jobs:
         run: |
           pip install --quiet -r ./requirements.txt -r ./requirements-dev.txt
           pip install --quiet .
+      - name: Set up pyright
+        run: |
+          npm install -g pyright
       - name: Pytest
         run: pytest
-      - name: Pyright
-        uses: jakebailey/pyright-action@v1
-        with:
-          working-directory: ./alab_management/
-          lib: true
       - name: Flake8
         run: flake8 alab_management
       - name: Pylint
         run: pylint alab_management
+      - name: Pyright
+        run: pyright
