@@ -15,6 +15,7 @@ from ..utils.module_ops import load_definition
 
 def launch_dashboard(host, port):
     app = create_app()
+    # server = WSGIServer((host, port), app)
     server = WSGIServer((host, port), app, log=None, error_log=None)
     print(f"Starting dashboard on http://{host}:{port}")
     server.serve_forever()

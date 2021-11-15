@@ -2,7 +2,7 @@ import time
 from datetime import datetime
 from enum import unique, Enum, auto
 from threading import Lock
-from typing import Type, List, Optional, Union, Dict, Any, Collection
+from typing import Type, List, Optional, Union, Dict, Any, Collection, cast
 
 import pymongo
 from bson import ObjectId
@@ -89,6 +89,12 @@ class DeviceView:
                 "created_at": datetime.now(),
                 "last_updated": datetime.now(),
             })
+
+    def get_all(self) -> List[Dict[str, Any]]:
+        """
+        Get all the devices in the database, used for dashboard
+        """
+        return cast(List[Dict[str, Any]], self._device_collection.find())
 
     def clean_up_device_collection(self):
         """

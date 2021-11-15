@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import ExperimentFlow from "./components/ExperimentFlow";
 import ControlPanel from './components/ControlPanel';
-import {Container} from '@mui/material';
 import styled from 'styled-components';
 import {grey} from '@mui/material/colors';
 

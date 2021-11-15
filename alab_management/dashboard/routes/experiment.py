@@ -6,7 +6,7 @@ from pydantic import ValidationError
 from alab_management.experiment_view.experiment import InputExperiment
 from ..lab_views import experiment_view
 
-experiment_bp = Blueprint("/experiment", __name__, url_prefix="/experiment")
+experiment_bp = Blueprint("/experiment", __name__, url_prefix="/api/experiment")
 
 
 @experiment_bp.route("/submit", methods=["POST"])
@@ -24,7 +24,7 @@ def submit_new_experiment():
     return {"status": "success", "data": {"exp_id": str(exp_id)}}
 
 
-@experiment_bp.route("/search/<exp_id>", methods=["POST", "GET"])
+@experiment_bp.route("/query/<exp_id>", methods=["POST", "GET"])
 def query_experiment(exp_id: str):
     """
     Find an experiment by id
