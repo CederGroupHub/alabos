@@ -1,6 +1,7 @@
+from datetime import timedelta
 from typing import ClassVar
 
-from alab_control.furnace_epc_3016 import FurnaceController
+from alab_control.furnace_epc_3016 import FurnaceController, Segment, SegmentType
 
 from alab_management import BaseDevice, SamplePosition
 
@@ -30,7 +31,20 @@ class Furnace(BaseDevice):
     def emergent_stop(self):
         self.driver.stop()
 
-    def run_program(self, *segments):
+    def run_program(self, heating_time: float, heating_temperature: float):
+        segments = [Segment(
+            segment_type=SegmentType.RAMP_RATE,
+            target_setpoint=heating_temperature,
+            ramp_rate_per_sec=10,
+        ), Segment(
+            segment_type=SegmentType.DWELL,
+            duration=timedelta(hours=heating_time),
+        ), Segment(
+            segment_type=SegmentType.STEP,
+            target_setpoint=0,
+        ), Segment(
+            segment_type=SegmentType.END,
+        )]
         self.driver.run_program(*segments)
 
     def is_running(self):

@@ -1,17 +1,18 @@
-from typing import List, Tuple, Optional
+from typing import List, Tuple
 
 from bson import ObjectId
 
 from alab_management import BaseTask
-from ..devices.furnace import Furnace
 from .moving import Moving
+from ..devices.furnace import Furnace
 
 
 class Heating(BaseTask):
 
-    def __init__(self, sample: ObjectId, setpoints: List[Tuple[float, float]], *args, **kwargs):
+    def __init__(self, sample: ObjectId, heating_time: float, heating_temperature: float, *args, **kwargs):
         super(Heating, self).__init__(*args, **kwargs)
-        self.setpoints = setpoints
+        self.heating_time = heating_time
+        self.heating_temperature = heating_temperature
         self.sample = sample
 
     def run(self):
@@ -26,7 +27,7 @@ class Heating(BaseTask):
                                  logger=self.logger)
             moving_task.run()
 
-            furnace.run_program(self.setpoints)
+            furnace.run_program(heating_time=self.heating_time, heating_temperature=self.heating_temperature)
 
             while furnace.is_running():
                 self.logger.log_device_signal({
