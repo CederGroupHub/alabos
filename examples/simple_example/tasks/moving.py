@@ -1,12 +1,9 @@
-from dataclasses import dataclass
-
 from bson import ObjectId
 
 from alab_management.task_view.task import BaseTask
 from ..devices.robot_arm import RobotArm
 
 
-@dataclass
 class Moving(BaseTask):
 
     def __init__(self, sample: ObjectId, dest: str, *args, **kwargs):
@@ -14,18 +11,9 @@ class Moving(BaseTask):
         self.sample = sample
         self.dest = dest
 
-    @staticmethod
-    def get_path(src, dest, container):
-        # ignore container
-        if container:
-            return [(src, dest)]
-
     def run(self):
         sample = self.lab_manager.get_sample(sample_id=self.sample)
         sample_position = sample.position
-        sample_container = sample.container
-        path = self.get_path(sample_position, dest=self.dest, container=sample_container)
-        all_nodes = [p[0] for p in path] + [self.dest]
 
         with self.lab_manager.request_resources({RobotArm: [all_nodes]}) as devices_and_positions:
             devices, sample_positions = devices_and_positions

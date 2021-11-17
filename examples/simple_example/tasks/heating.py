@@ -9,26 +9,22 @@ from .moving import Moving
 
 class Heating(BaseTask):
 
-    def __init__(self, sample_1: ObjectId, sample_2: Optional[ObjectId],
-                 sample_3: Optional[ObjectId], sample_4: Optional[ObjectId],
-                 setpoints: List[Tuple[float, float]], *args, **kwargs):
+    def __init__(self, sample: ObjectId, setpoints: List[Tuple[float, float]], *args, **kwargs):
         super(Heating, self).__init__(*args, **kwargs)
         self.setpoints = setpoints
-        self.samples = [sample_1, sample_2, sample_3, sample_4]
+        self.sample = sample
 
     def run(self):
-        with self.lab_manager.request_resources({Furnace: [("$.inside", 4)]}) as devices_and_positions:
+        with self.lab_manager.request_resources({Furnace: ["$.inside"]}) as devices_and_positions:
             devices, sample_positions = devices_and_positions
             furnace = devices[Furnace]
-            inside_furnace = sample_positions[Furnace]["$.inside"]
 
-            for sample in self.samples:
-                moving_task = Moving(sample=sample,
-                                     task_id=self.task_id,
-                                     dest=inside_furnace[0],
-                                     lab_manager=self.lab_manager,
-                                     logger=self.logger)
-                moving_task.run()
+            moving_task = Moving(sample=self.sample,
+                                 task_id=self.task_id,
+                                 dest=sample_positions[Furnace]["$.inside"],
+                                 lab_manager=self.lab_manager,
+                                 logger=self.logger)
+            moving_task.run()
 
             furnace.run_program(self.setpoints)
 
