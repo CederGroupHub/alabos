@@ -13,10 +13,12 @@ from ..dashboard import create_app
 from ..utils.module_ops import load_definition
 
 
-def launch_dashboard(host, port):
+def launch_dashboard(host: str, port: int, debug: bool = False):
     app = create_app()
-    # server = WSGIServer((host, port), app)
-    server = WSGIServer((host, port), app, log=None, error_log=None)
+    if debug:
+        server = WSGIServer((host, port), app)  # print server's log on the console
+    else:
+        server = WSGIServer((host, port), app, log=None, error_log=None)
     print(f"Starting dashboard on http://{host}:{port}")
     server.serve_forever()
 
@@ -36,7 +38,8 @@ def launch_executor():
 @click.command()
 @click.option("--host", default="127.0.0.1", )
 @click.option("-p", "--port", default="8895", type=int)
-def launch_lab(host, port):
+@click.option("--debug", default=False, type=bool)
+def launch_lab(host, port, debug):
     print(rf"""
        _    _       _         ___  ____  
       / \  | | __ _| |__     / _ \/ ___| 
@@ -46,13 +49,13 @@ def launch_lab(host, port):
 
 ----  Alab OS v{__version__} -- Alab Project Team  ----
 """)
-    dashboard_process = Process(target=launch_dashboard, args=(host, port))
+    dashboard_process = Process(target=launch_dashboard, args=(host, port, debug))
     experiment_manager_process = Process(target=launch_experiment_manager)
     executor_process = Process(target=launch_executor)
 
-    dashboard_process.daemon = False
-    experiment_manager_process.daemon = False
-    executor_process.daemon = False
+    dashboard_process.daemon = \
+        experiment_manager_process.daemon = \
+        executor_process.daemon = False
 
     dashboard_process.start()
     experiment_manager_process.start()

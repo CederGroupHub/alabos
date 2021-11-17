@@ -13,7 +13,7 @@ def get_all_status():
     devices = device_view.get_all()
     experiments = experiment_view.get_experiments_with_status("RUNNING")
     experiments = [{
-        "id": experiment["_id"],
+        "id": str(experiment["_id"]),
         "name": experiment["name"],
         "samples": [{"name": sample["name"], "id": str(sample["sample_id"])}
                     for sample in experiment["samples"]],

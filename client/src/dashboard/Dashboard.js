@@ -38,7 +38,7 @@ function Dashboard() {
     //           {id: "xxxx", status: "READY", type: "Heating"}]
     // }]});
 
-    const [statusData, setStatusData] = useState({devices: [], experiements: []});
+    const [statusData, setStatusData] = useState({devices: [], experiments: []});
 
     useInterval(() => {
         fetch(STATUS_API)
@@ -54,7 +54,7 @@ function Dashboard() {
                 <Devices devices={statusData.devices}/>
             </StyledDevicesDiv>
             <StyledExperimentsDiv>
-                <Experiments experiments={statusData.experiements}/>
+                <Experiments experiments={statusData.experiments}/>
             </StyledExperimentsDiv>
         </StyledDashboardDiv>
     )
