@@ -500,6 +500,9 @@
         <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find sample with id: </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">position</span><span class="p">:</span>
+            <span class="k">return</span>
+
         <span class="k">if</span> <span class="n">position</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_unoccupied_position</span><span class="p">(</span><span class="n">position</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Requested position (</span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2">) is not EMPTY or LOCKED by other task.&quot;</span><span class="p">)</span>
 
