@@ -1,4 +1,5 @@
 from bson import ObjectId
+import time
 
 from alab_management.task_view.task import BaseTask
 from ..devices.robot_arm import RobotArm
@@ -14,7 +15,6 @@ class Pouring(BaseTask):
             devices, sample_positions = devices_and_positions
             robot_arm: RobotArm = devices[RobotArm]
             robot_arm.run_program("vial_pour_2.urp")
-
             self.lab_manager.move_sample(sample_id=self.sample, position="furnace_table")
             self.logger.log_device_signal({
                 "device": RobotArm.__name__,

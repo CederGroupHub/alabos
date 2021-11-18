@@ -26,7 +26,7 @@ class Scale(BaseDevice):
 
     def read_data(self) -> bytes:
         requests.get(self.UPDATE_URL)
-        time.sleep(1.5)
+        time.sleep(4)
         return requests.get(self.GET_URL).content
 
     def is_running(self):

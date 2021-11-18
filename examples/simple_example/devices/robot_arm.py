@@ -1,4 +1,5 @@
 from typing import ClassVar
+import time
 
 from alab_control.robot_arm_ur5e import URRobot
 
@@ -8,7 +9,7 @@ from alab_management import BaseDevice, SamplePosition
 class RobotArm(BaseDevice):
     description: ClassVar[str] = "UR5e robot arm"
 
-    def __init__(self, address: str, port: int = 502, *args, **kwargs):
+    def __init__(self, address: str, port: int = 29999, *args, **kwargs):
         super(RobotArm, self).__init__(*args, **kwargs)
         self.address = address
         self.port = port
@@ -28,3 +29,8 @@ class RobotArm(BaseDevice):
 
     def run_program(self, program):
         self.driver.run_program(program)
+        time.sleep(2)
+        self.driver.wait_for_finish()
+
+    def is_running(self):
+        return self.driver.is_running()

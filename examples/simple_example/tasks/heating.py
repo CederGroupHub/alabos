@@ -19,7 +19,6 @@ class Heating(BaseTask):
         with self.lab_manager.request_resources({Furnace: ["$.inside"]}) as devices_and_positions:
             devices, sample_positions = devices_and_positions
             furnace = devices[Furnace]
-
             moving_task = Moving(sample=self.sample,
                                  task_id=self.task_id,
                                  dest=sample_positions[Furnace]["$.inside"],
@@ -34,3 +33,11 @@ class Heating(BaseTask):
                     "device": furnace.name,
                     "temperature": furnace.get_temperature(),
                 })
+
+        with self.lab_manager.request_resources({None: ["furnace_table"]}) as devices_and_positions:
+            moving_task = Moving(sample=self.sample,
+                                 task_id=self.task_id,
+                                 dest=sample_positions[None]["furnace_table"],
+                                 lab_manager=self.lab_manager,
+                                 logger=self.logger)
+            moving_task.run()

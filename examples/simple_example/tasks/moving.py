@@ -1,4 +1,5 @@
 from bson import ObjectId
+import time
 
 from alab_management.task_view.task import BaseTask
 from ..devices.robot_arm import RobotArm
@@ -6,10 +7,10 @@ from ..devices.robot_arm import RobotArm
 
 class Moving(BaseTask):
     MOVING_URPS = {
-        ("furnace_table", "scale.inside"): ["weigh.urp"],
-        ("scale.inside", "furnace_table"): ["weigh2_11_15.urp"],
-        ("furnace_table", "furnace.inside"): ["open_new_m.urp", "1_2.urp", "close_new_m.urp"],
-        ("furnace.inside", "furnace_table"): ["open_new_m.urp", "2_1.urp", "close_new_m.urp"],
+        ("furnace_table", "ipad.inside"): ["weigh.urp"],
+        ("ipad.inside", "furnace_table"): ["weigh2_11_15.urp"],
+        ("furnace_table", "furnace.inside"): ["open_new_m.urp", "1-2.urp", "close_new_m.urp"],
+        ("furnace.inside", "furnace_table"): ["open_new_m.urp", "2-1.urp", "close_new_m.urp"],
     }
 
     def __init__(self, sample: ObjectId, dest: str, *args, **kwargs):
@@ -26,11 +27,13 @@ class Moving(BaseTask):
             robot_arm: RobotArm = devices[RobotArm]
             urps = self.MOVING_URPS[(sample_position, self.dest)]
             for urp in urps:
+                time.sleep(1)
                 robot_arm.run_program(urp)
+            
             self.lab_manager.move_sample(sample_id=self.sample, position=self.dest)
             self.logger.log_device_signal({
                 "device": robot_arm.name,
-                "sample_id": sample,
+                "sample_id": self.sample,
                 "src": sample_positions[RobotArm][sample_position],
                 "dest": sample_positions[RobotArm][self.dest],
             })

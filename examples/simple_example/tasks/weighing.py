@@ -33,5 +33,10 @@ class Weighing(BaseTask):
                 "sample_id": self.sample,
             })
 
-            moving_out_scale = Moving(self.sample, task_id=self.task_id, dest=sample_positions[None]["furnace_table"])
+            moving_out_scale = Moving(
+                self.sample,
+                 task_id=self.task_id, 
+                 dest=sample_positions[None]["furnace_table"],
+                lab_manager=self.lab_manager,
+                logger=self.logger)
             moving_out_scale.run()

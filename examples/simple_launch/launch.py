@@ -4,37 +4,37 @@ import time
 exp = {
     "samples": [{"name": "test_sample"}],
     "tasks": [{
-        "type": "Starting",
+        "type": "Pouring",
         "next_tasks": [1],
-        "parameters": {
-            "dest": "furnace_table"
-        },
+        "parameters": {},
+        "samples": {
+            "sample": "test_sample"
+        }
+    }, {
+        "type": "Weighing",
+        "next_tasks": [2],
+        "parameters": {},
         "samples": {
             "sample": "test_sample"
         }
     }, {
         "type": "Heating",
-        "next_tasks": [2],
-        "parameters": {
-            "setpoints": [(10, 100)]
-        },
-        "samples": {
-            "sample": "test_sample"
-        }
-    }, {
-        "type": "Ending",
         "next_tasks": [],
-        "parameters": {},
+        "parameters": {
+            "heating_time": 0.5,
+            "heating_temperature": 300.0
+        },
         "samples": {
             "sample": "test_sample"
         }
     }],
 }
 
+
 url = "http://127.0.0.1:8895/api/experiment/submit"
 
-for i in range(10):
+for i in range(1):
     exp_ = exp.copy()
-    exp_["name"] = f"Heating @ {i * 100 + 400}°C"
+    exp_["name"] = f"Heating baking soda"
     print(requests.post(url, json=exp_).json())
     time.sleep(1)
