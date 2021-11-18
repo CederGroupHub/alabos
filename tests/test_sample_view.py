@@ -8,18 +8,19 @@ os.environ["ALAB_CONFIG"] = (Path(__file__).parent /
 from bson import ObjectId
 
 from alab_management import SampleView
-from alab_management.scripts import setup_lab, cleanup_lab
+from alab_management.scripts import setup_lab
+from alab_management.scripts.cleanup_lab import _cleanup_lab
 
 
 class TestSampleView(TestCase):
     def setUp(self) -> None:
-        cleanup_lab()
+        _cleanup_lab()
         setup_lab()
         self.sample_view = SampleView()
         self.sample_view._sample_collection.drop()
 
     def tearDown(self) -> None:
-        cleanup_lab()
+        _cleanup_lab()
         self.sample_view._sample_collection.drop()
 
     def test_create_sample(self):
@@ -138,7 +139,7 @@ class TestSampleView(TestCase):
         with self.sample_view.request_sample_positions(task_id, ["furnace_table", "furnace_1.inside"], timeout=1) \
                 as sample_positions:
             self.assertFalse(sample_positions is None)
-            with self.sample_view.request_sample_positions(task_id_2, ["furnace_table", "furnace_1.inside"], timeout=1)\
+            with self.sample_view.request_sample_positions(task_id_2, ["furnace_table", "furnace_1.inside"], timeout=1) \
                     as _sample_positions:
                 self.assertIs(None, _sample_positions)
 

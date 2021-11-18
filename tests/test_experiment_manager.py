@@ -8,12 +8,13 @@ os.environ["ALAB_CONFIG"] = (Path(__file__).parent /
 from alab_management.task_view import TaskStatus
 from alab_management.experiment_view import InputExperiment
 from alab_management import ExperimentManager
-from alab_management.scripts import cleanup_lab, setup_lab
+from alab_management.scripts import setup_lab
+from alab_management.scripts.cleanup_lab import _cleanup_lab
 
 
 class TestExperimentManager(TestCase):
     def setUp(self) -> None:
-        cleanup_lab()
+        _cleanup_lab()
         setup_lab()
         self.experiment_manager = ExperimentManager()
         self.experiment_manager.sample_view._sample_collection.drop()
@@ -21,7 +22,7 @@ class TestExperimentManager(TestCase):
         self.experiment_manager.experiment_view._experiment_collection.drop()
 
     def tearDown(self) -> None:
-        cleanup_lab()
+        _cleanup_lab()
         self.experiment_manager.sample_view._sample_collection.drop()
         self.experiment_manager.task_view._task_collection.drop()
         self.experiment_manager.experiment_view._experiment_collection.drop()
@@ -139,4 +140,3 @@ class TestExperimentManager(TestCase):
 
         self.assertEqual("COMPLETED", self.experiment_manager.experiment_view.get_experiment(exp_id_1)["status"])
         self.assertEqual("RUNNING", self.experiment_manager.experiment_view.get_experiment(exp_id_2)["status"])
-

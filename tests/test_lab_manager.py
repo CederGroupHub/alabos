@@ -9,12 +9,13 @@ os.environ["ALAB_CONFIG"] = (Path(__file__).parent /
 
 from alab_management.lab_manager import LabManager
 from alab_management import DeviceView, SampleView
-from alab_management.scripts import cleanup_lab, setup_lab
+from alab_management.scripts import setup_lab
+from alab_management.scripts.cleanup_lab import _cleanup_lab
 
 
 class TestLabManager(TestCase):
     def setUp(self) -> None:
-        cleanup_lab()
+        _cleanup_lab()
         setup_lab()
         self.device_view = DeviceView()
         self.device_list = self.device_view._device_list
@@ -22,7 +23,7 @@ class TestLabManager(TestCase):
         self.sample_view._sample_collection.drop()
 
     def tearDown(self) -> None:
-        cleanup_lab()
+        _cleanup_lab()
         self.sample_view._sample_collection.drop()
 
     def test_request_resources(self):

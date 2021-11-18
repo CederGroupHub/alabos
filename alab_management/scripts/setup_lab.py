@@ -3,7 +3,6 @@ Generate device, sample position, task definitions from user defined files (task
 and write them to MongoDB, which will make it easier to query
 """
 
-from .cleanup_lab import cleanup_lab
 from ..device_view import get_all_devices, DeviceView
 from ..sample_view import SampleView
 from ..utils.module_ops import load_definition
@@ -25,6 +24,5 @@ def setup_lab():
     """
     Cleanup the db and then import all the definitions and set up the db
     """
-    cleanup_lab()
     load_definition()
     setup_from_device_def()

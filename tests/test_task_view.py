@@ -9,18 +9,19 @@ os.environ["ALAB_CONFIG"] = (Path(__file__).parent /
 
 from alab_management.task_view import TaskStatus
 from alab_management import TaskView
-from alab_management.scripts import cleanup_lab, setup_lab
+from alab_management.scripts import setup_lab
+from alab_management.scripts.cleanup_lab import _cleanup_lab
 
 
 class TestTaskView(TestCase):
     def setUp(self) -> None:
-        cleanup_lab()
+        _cleanup_lab()
         setup_lab()
         self.task_view = TaskView()
         self.task_view._task_collection.drop()
 
     def tearDown(self) -> None:
-        cleanup_lab()
+        _cleanup_lab()
         self.task_view._task_collection.drop()
 
     def test_create_task(self):
