@@ -28,7 +28,7 @@ class Moving(BaseTask):
             urps = self.MOVING_URPS[(sample_position, self.dest)]
             for urp in urps:
                 robot_arm.run_program(urp)
-            
+
             self.lab_manager.move_sample(sample_id=self.sample, position=self.dest)
             self.logger.log_device_signal({
                 "device": robot_arm.name,

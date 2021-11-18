@@ -98,6 +98,13 @@ class BaseDevice(ABC):
         """
         raise NotImplementedError()
 
+    @abstractmethod
+    def is_running(self) -> bool:
+        """
+        Check whether this device is running
+        """
+        raise NotImplementedError()
+
 
 _device_registry: Dict[str, BaseDevice] = {}
 

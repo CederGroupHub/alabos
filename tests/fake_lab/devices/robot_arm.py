@@ -20,3 +20,6 @@ class RobotArm(BaseDevice):
 
     def run_program(self, program):
         pass
+
+    def is_running(self) -> bool:
+        return False
