@@ -1,40 +1,53 @@
 import requests
-import time
 
 exp = {
-    "samples": [{"name": "test_sample"}],
+    "name": "Firing baking soda",
+    "samples": [{
+        "name": "baking_soda"
+    }],
     "tasks": [{
-        "type": "Pouring",
+        "type": "Starting",
         "next_tasks": [1],
-        "parameters": {},
+        "parameters": {
+            "start_position": "furnace_table",
+        },
         "samples": {
-            "sample": "test_sample"
+            "sample": "baking_soda"
         }
     }, {
-        "type": "Weighing",
+        "type": "Pouring",
         "next_tasks": [2],
         "parameters": {},
         "samples": {
-            "sample": "test_sample"
+            "sample": "baking_soda"
+        }
+    }, {
+        "type": "Weighing",
+        "next_tasks": [3],
+        "parameters": {},
+        "samples": {
+            "sample": "baking_soda"
         }
     }, {
         "type": "Heating",
-        "next_tasks": [],
+        "next_tasks": [4],
         "parameters": {
             "heating_time": 0.5,
-            "heating_temperature": 300.0
+            "heating_temperature": 300.0,
         },
         "samples": {
-            "sample": "test_sample"
+            "sample": "baking_soda"
+        }
+    }, {
+        "type": "Ending",
+        "next_tasks": [5],
+        "parameters": {},
+        "samples": {
+            "sample": "baking_soda"
         }
     }],
 }
 
-
 url = "http://127.0.0.1:8895/api/experiment/submit"
 
-for i in range(1):
-    exp_ = exp.copy()
-    exp_["name"] = f"Heating baking soda"
-    print(requests.post(url, json=exp_).json())
-    time.sleep(1)
+print(requests.post(url, json=exp).json())

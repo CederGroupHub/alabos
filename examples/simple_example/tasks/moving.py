@@ -22,12 +22,11 @@ class Moving(BaseTask):
         sample = self.lab_manager.get_sample(sample_id=self.sample)
         sample_position = sample.position
 
-        with self.lab_manager.request_resources({RobotArm: [sample_position, self.dest]}) as devices_and_positions:
-            devices, sample_positions = devices_and_positions
+        with self.lab_manager.request_resources({RobotArm: [sample_position, self.dest]}) as \
+                (devices, sample_positions):
             robot_arm: RobotArm = devices[RobotArm]
             urps = self.MOVING_URPS[(sample_position, self.dest)]
             for urp in urps:
-                time.sleep(1)
                 robot_arm.run_program(urp)
             
             self.lab_manager.move_sample(sample_id=self.sample, position=self.dest)

@@ -61,6 +61,12 @@ class TestSampleView(TestCase):
         with self.assertRaises(ValueError):
             self.sample_view.move_sample(sample_id=ObjectId(), position="furnace_table")
 
+        # try to move a sample to where it is
+        self.sample_view.move_sample(sample_id=sample_id,
+                                     position=self.sample_view.get_sample(sample_id).position)
+        sample = self.sample_view.get_sample(sample_id=sample_id)
+        self.assertEqual("furnace_table", sample.position)
+
         # try to move a sample to an occupied position
         with self.assertRaises(ValueError):
             self.sample_view.move_sample(sample_id=sample_id_2, position="furnace_table")

@@ -38,7 +38,7 @@ def launch_executor():
 @click.command()
 @click.option("--host", default="127.0.0.1", )
 @click.option("-p", "--port", default="8895", type=int)
-@click.option("--debug", default=False, type=bool)
+@click.option("--debug", default=False, is_flag=True)
 def launch_lab(host, port, debug):
     print(rf"""
        _    _       _         ___  ____  

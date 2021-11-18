@@ -1,10 +1,10 @@
 import time
 
+from alab_management.task_view.task import BaseTask
 from bson import ObjectId
 
-from alab_management.task_view.task import BaseTask
-from ..devices.scale import Scale
 from .moving import Moving
+from ..devices.scale import Scale
 
 
 class Weighing(BaseTask):
@@ -25,18 +25,18 @@ class Weighing(BaseTask):
                                        logger=self.logger)
             moving_into_scale.run()
 
-            time.sleep(15)
+            time.sleep(5)
             image = scale.read_data()
             self.logger.log_amount({
-                "type": "jpeg",
+                "type": "image/jpeg",
                 "data": image,
                 "sample_id": self.sample,
             })
 
             moving_out_scale = Moving(
                 self.sample,
-                 task_id=self.task_id, 
-                 dest=sample_positions[None]["furnace_table"],
+                task_id=self.task_id,
+                dest=sample_positions[None]["furnace_table"],
                 lab_manager=self.lab_manager,
                 logger=self.logger)
             moving_out_scale.run()

@@ -276,6 +276,9 @@ class SampleView:
         if result is None:
             raise ValueError(f"Cannot find sample with id: {sample_id}")
 
+        if result["position"] == position:
+            return
+
         if position is not None and not self.is_unoccupied_position(position):
             raise ValueError(f"Requested position ({position}) is not EMPTY or LOCKED by other task.")
 

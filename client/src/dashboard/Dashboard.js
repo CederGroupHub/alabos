@@ -24,7 +24,7 @@ const StyledExperimentsDiv = styled.div`
 `;
 
 function Dashboard() {
-    // const [statusData, setStatusData] = useState({devices: [], experiements: [{
+    // const [statusData, setStatusData] = useState({devices: [], experiments: [{
     //   name: "xxxxx",
     //   id: "xxxxxx",
     //   samples: [{name: "xxx", id: "fdfdsf"}],

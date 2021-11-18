@@ -1,3 +1,4 @@
+import time
 from datetime import timedelta
 from typing import ClassVar
 
@@ -46,6 +47,7 @@ class Furnace(BaseDevice):
             segment_type=SegmentType.END,
         )]
         self.driver.run_program(*segments)
+        time.sleep(2)
 
     def is_running(self):
         return self.driver.is_running()

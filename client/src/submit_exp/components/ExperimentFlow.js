@@ -1,9 +1,8 @@
 import React, {useState, useRef, useCallback, useEffect} from 'react';
-import ReactFlow, {removeElements, addEdge, Controls} from 'react-flow-renderer';
+import ReactFlow, {removeElements, addEdge} from 'react-flow-renderer';
 import {Button} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CallMadeIcon from '@mui/icons-material/CallMade';
-import DeleteIcon from '@mui/icons-material/Delete';
 import TaskNode from './TaskNode';
 import {uid} from 'uid';
 import styled from 'styled-components';
@@ -28,8 +27,6 @@ function ExperimentFlow({sampleNames}) {
         type: "task",
         data: {sampleNames: sampleNames},
     }]);
-
-    const [selectedNode, setSelectedNode] = useState({})
 
     const xPos = useRef(50);
 
@@ -78,10 +75,6 @@ function ExperimentFlow({sampleNames}) {
                     elements={els}
                     onConnect={onConnect}
                     onElementsRemove={onElementsRemove}
-                    onSelectionChange={(selectedElements) => {
-                        const node = selectedElements?.[0]
-                        setSelectedNode(node)
-                    }}
                     nodeTypes={NODE_TYPE}
                 >
                 </ReactFlow>

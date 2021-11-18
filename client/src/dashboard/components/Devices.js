@@ -13,8 +13,7 @@ const StyledDevicesDiv = styled.div`
   margin: 12px 16px;
 
   .status {
-    font-family: ui-monospace,SFMono-Regular,SF Mono,
-      Menlo,Consolas,Liberation Mono,monospace;
+    font-family: Source Code Pro;
     color: black;
   }
 
@@ -27,8 +26,7 @@ const StyledDevicesDiv = styled.div`
   }
   
   .task-id {
-    font-family: ui-monospace,SFMono-Regular,SF Mono,
-      Menlo,Consolas,Liberation Mono,monospace;
+    font-family: Source Code Pro;
   }
 
   h3 {

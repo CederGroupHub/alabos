@@ -15,13 +15,12 @@ const StyledDevicesDiv = styled.div`
   .status,
   .task-id,
   .task-type {
-    font-family: ui-monospace,SFMono-Regular,SF Mono,
-      Menlo,Consolas,Liberation Mono,monospace;
+    font-family: Source Code Pro;
     color: black;
   }
 
   .task-id {
-    font-size: 60%;
+    font-size: 80%;
   }
 
   .status-waiting {

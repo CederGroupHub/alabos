@@ -9,6 +9,8 @@ from .tasks.heating import Heating
 from .tasks.moving import Moving
 from .tasks.weighing import Weighing
 from .tasks.pouring import Pouring
+from .tasks.starting import Starting
+from .tasks.ending import Ending
 
 add_device(Furnace(name="furnace", address="128.3.19.20"))
 add_device(Scale(name="ipad"))
@@ -18,3 +20,5 @@ add_task(Heating)
 add_task(Moving)
 add_task(Weighing)
 add_task(Pouring)
+add_task(Starting)
+add_task(Ending)
