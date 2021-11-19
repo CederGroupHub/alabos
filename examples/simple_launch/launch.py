@@ -40,7 +40,7 @@ exp = {
         }
     }, {
         "type": "Ending",
-        "next_tasks": [5],
+        "next_tasks": [],
         "parameters": {},
         "samples": {
             "sample": "baking_soda"

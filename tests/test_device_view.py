@@ -97,6 +97,31 @@ class TestDeviceView(TestCase):
             with self.device_view.request_devices(task_id_2, device_types, timeout=1) as _devices:
                 self.assertIs(None, _devices)
 
+    def test_request_device_twice(self):
+        device_types = list({device.__class__ for device in self.device_list.values()})
+        task_id = ObjectId()
+
+        with self.device_view.request_devices(task_id, device_types) as devices:
+            for device in devices.values():
+                self.assertEqual("OCCUPIED", self.device_view.get_status(device.name).name)
+                self.assertEqual(task_id, self.device_view.get_device(device.name)["task_id"])
+
+            with self.device_view.request_devices(task_id, device_types, timeout=1) as devices_:
+                for device in devices_.values():
+                    self.assertEqual("OCCUPIED", self.device_view.get_status(device.name).name)
+                    self.assertEqual(task_id, self.device_view.get_device(device.name)["task_id"])
+                with self.device_view.request_devices(task_id, device_types, timeout=1) as devices__:
+                    for device in devices__.values():
+                        self.assertEqual("OCCUPIED", self.device_view.get_status(device.name).name)
+                        self.assertEqual(task_id, self.device_view.get_device(device.name)["task_id"])
+            for device in devices.values():
+                self.assertEqual("OCCUPIED", self.device_view.get_status(device.name).name)
+                self.assertEqual(task_id, self.device_view.get_device(device.name)["task_id"])
+
+        for device in devices.values():
+            self.assertEqual("IDLE", self.device_view.get_status(device.name).name)
+            self.assertEqual(None, self.device_view.get_device(device.name)["task_id"])
+
     def test_request_devices_queue(self):
         import threading
         import time
@@ -114,7 +139,7 @@ class TestDeviceView(TestCase):
             start_time = time.perf_counter()
             with self.device_view.request_devices(task_id, device_types, timeout=100) as devices:
                 end_time = time.perf_counter()
-                self.assertAlmostEqual(end_time - start_time, 0.0, delta=0.2)
+                self.assertAlmostEqual(end_time - start_time, 0.0, delta=1.2)
                 self.assertFalse(devices is None)
                 time.sleep(2)
 
@@ -123,7 +148,7 @@ class TestDeviceView(TestCase):
             start_time = time.perf_counter()
             with self.device_view.request_devices(task_id_2, device_types, timeout=100) as devices:
                 end_time = time.perf_counter()
-                self.assertAlmostEqual(end_time - start_time, 2.0, delta=0.2)
+                self.assertAlmostEqual(end_time - start_time, 2.0, delta=1.2)
                 self.assertFalse(devices is None)
 
         t1 = threading.Thread(target=_request_1)

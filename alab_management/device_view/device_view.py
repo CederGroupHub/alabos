@@ -34,20 +34,26 @@ class DevicesLock:
             # do something here
 
         # will automatically release the devices when going outside the with block
+
+    The format of devices: ``{"<device_name_1>": {"device": BaseDevice, "need_release": bool}}``
     """
 
-    def __init__(self, devices: Optional[Dict[Type[BaseDevice], BaseDevice]], device_view: "DeviceView"):
-        self._devices: Optional[Dict[Type[BaseDevice], BaseDevice]] = devices
+    def __init__(self, devices: Optional[Dict[Type[BaseDevice], Dict[str, Union[str, BaseDevice]]]],
+                 device_view: "DeviceView"):
+        self._devices = devices
         self._device_view: "DeviceView" = device_view
 
     @property
-    def devices(self):
-        return self._devices
+    def devices(self) -> Optional[Dict[Type[BaseDevice], BaseDevice]]:
+        if self._devices is None:
+            return None
+        return {k: cast(BaseDevice, v["device"]) for k, v in self._devices.items()}
 
     def release(self):
         if self._devices is not None:
             for device in self._devices.values():
-                self._device_view.release_device(device)
+                if device["need_release"]:
+                    self._device_view.release_device(device["device"])
 
     def __enter__(self):
         return self.devices
@@ -125,19 +131,19 @@ class DeviceView:
 
         cnt = 0
         while timeout is None or cnt < timeout:
-            idle_devices: Dict[Type[BaseDevice], BaseDevice] = {}
+            idle_devices: Dict[Type[BaseDevice], Dict[str, Union[BaseDevice, bool]]] = {}
             try:
                 self._lock.acquire(blocking=True)  # pylint: disable=consider-using-with
                 for device in device_types:
-                    result = self.get_device_by_type(device_type=device, task_id=task_id, only_idle=True)
+                    result = self.get_available_devices(device_type=device, task_id=task_id)
                     if not result:
                         break
                     # just pick the first device
-                    idle_devices[device] = self._device_list[result[0]]
+                    idle_devices[device] = next(filter(lambda device_: not device_["need_release"], result), result[0])
                 else:
                     for device in idle_devices.values():
-                        self.occupy_device(device=device, task_id=task_id)
-                    return DevicesLock(devices=idle_devices, device_view=self)
+                        self.occupy_device(device=cast(BaseDevice, device["device"]), task_id=task_id)
+                    return DevicesLock(devices=idle_devices, device_view=self)  # type: ignore
             finally:
                 self._lock.release()
 
@@ -163,8 +169,8 @@ class DeviceView:
             raise ValueError(f"Cannot find device with name: {device_name}")
         return DeviceStatus[device_entry["status"]]
 
-    def get_device_by_type(self, device_type: Type[BaseDevice], task_id: Optional[ObjectId],
-                           only_idle: bool = True) -> List[str]:
+    def get_available_devices(self, device_type: Type[BaseDevice], task_id: Optional[ObjectId]) \
+            -> List[Dict[str, Union[BaseDevice, bool]]]:
         """
         Given device type, it will return all the device with this type.
 
@@ -173,25 +179,29 @@ class DeviceView:
         Args:
             device_type: the type of device, which should be ``type[BaseDevice]``
             task_id: the id of task that requests this device
-            only_idle: only return the idle devices
 
         Returns:
-            A list of devices' name that meet the requirements
+            [{"device": BaseDevice, "need_release": bool}]
+            The entry need_release indicates whether a device needs to be released
+            when __exit__ method is called in the ``DevicesLock``.
         """
         request_dict = {
             "type": device_type.__name__,
         }
 
-        if only_idle:
-            if not self.get_device_by_type(device_type, task_id, only_idle=False):
-                raise ValueError(f"No such device_type: {device_type}")
+        if self._device_collection.find_one(request_dict) is None:
+            raise ValueError(f"No such device_type: {device_type}")
 
-            request_dict.update({"$or": [{  # type: ignore
-                "status": DeviceStatus.IDLE.name,
-            }, {
-                "task_id": task_id,
-            }]})
-        return [device_entry["name"] for device_entry in self._device_collection.find(request_dict)]
+        request_dict.update({"$or": [{  # type: ignore
+            "status": DeviceStatus.IDLE.name,
+        }, {
+            "task_id": task_id,
+        }]})
+
+        return [{
+            "device": self._device_list[device_entry["name"]],
+            "need_release": not device_entry["task_id"] == task_id,
+        } for device_entry in self._device_collection.find(request_dict)]
 
     def occupy_device(self, device: Union[BaseDevice, str], task_id: ObjectId):
         """

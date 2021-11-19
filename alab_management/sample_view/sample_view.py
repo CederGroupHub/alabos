@@ -3,7 +3,7 @@ from dataclasses import asdict
 from datetime import datetime
 from enum import Enum, auto
 from threading import Lock
-from typing import Optional, List, Dict, Any, Tuple, Collection, cast
+from typing import Optional, List, Dict, Any, Tuple, Collection, cast, Union
 
 import pymongo
 from bson import ObjectId
@@ -29,20 +29,26 @@ class SamplePositionsLock:
     """
     Lock of sample position, which is a context manager that will release the sample positions
     when exiting.
+
+    The input sample position should have format of
+    ``{"<sample_position_prefix_1>": {"name": str, "need_release": bool}, ...}``
     """
 
-    def __init__(self, sample_positions: Optional[Dict[str, str]], sample_view: "SampleView"):
+    def __init__(self, sample_positions: Optional[Dict[str, Dict[str, Any]]], sample_view: "SampleView"):
         self._sample_positions = sample_positions
         self._sample_view = sample_view
 
     @property
-    def sample_positions(self):
-        return self._sample_positions
+    def sample_positions(self) -> Optional[Dict[str, str]]:
+        if self._sample_positions is None:
+            return None
+        return {k: v["name"] for k, v in self._sample_positions.items()}
 
     def release(self):
         if self._sample_positions is not None:
             for sample_position in self._sample_positions.values():
-                self._sample_view.release_sample_position(sample_position)
+                if sample_position["need_release"]:
+                    self._sample_view.release_sample_position(sample_position["name"])
 
     def __enter__(self):
         return self.sample_positions
@@ -109,15 +115,17 @@ class SampleView:
         while timeout is None or cnt < timeout:
             try:
                 self._lock.acquire(blocking=True)  # pylint: disable=consider-using-with
-                available_positions = {}
+                available_positions: Dict[str, Dict[str, Union[str, bool]]] = {}
                 for sample_position_prefix in sample_positions:
                     result = self.get_available_sample_position(task_id, position_prefix=sample_position_prefix)
                     if not result:
                         break
-                    available_positions[sample_position_prefix] = result[0]
+                    # we try to choose the position that has already been locked by this task
+                    available_positions[sample_position_prefix] = \
+                        next(filter(lambda task: not task["need_release"], result), result[0])
                 else:
                     for sample_position in available_positions.values():
-                        self.lock_sample_position(task_id, sample_position)
+                        self.lock_sample_position(task_id, cast(str, sample_position["name"]))
                     return SamplePositionsLock(sample_positions=available_positions, sample_view=self)
             finally:
                 self._lock.release()
@@ -171,9 +179,14 @@ class SampleView:
         """
         return not self.get_sample_position_status(position)[0] is SamplePositionStatus.OCCUPIED
 
-    def get_available_sample_position(self, task_id: ObjectId, position_prefix: str) -> List[str]:
+    def get_available_sample_position(self, task_id: ObjectId, position_prefix: str) \
+            -> List[Dict[str, Union[str, bool]]]:
         """
         Check if the position is occupied
+
+        The structure of returned list is ``{"name": str, "need_release": bool}``.
+        The entry need_release indicates whether a sample position needs to be released
+        when __exit__ method is called in the ``SamplePositionsLock``.
         """
         if self._sample_positions_collection.find_one({"name": {"$regex": f"^{position_prefix}"}}) is None:
             raise ValueError(f"Cannot find device with prefix: {position_prefix}")
@@ -190,7 +203,10 @@ class SampleView:
         for sample_position in available_sample_positions:
             status, current_task_id = self.get_sample_position_status(sample_position["name"])
             if status is SamplePositionStatus.EMPTY or task_id == current_task_id:
-                available_sp_names.append(sample_position["name"])
+                available_sp_names.append({
+                    "name": sample_position["name"],
+                    "need_release": not task_id == current_task_id,
+                })
         return available_sp_names
 
     def lock_sample_position(self, task_id: ObjectId, position: str):
