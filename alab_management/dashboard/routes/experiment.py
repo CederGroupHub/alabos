@@ -17,10 +17,12 @@ def submit_new_experiment():
     data = request.get_json(force=True)
     try:
         experiment = InputExperiment(**data)
+        exp_id = experiment_view.create_experiment(experiment)
     except ValidationError as exception:
         return {"status": "error", "errors": exception.errors()}, 400
+    except ValueError as exception:
+        return {"status": "error", "errors": exception.args[0]}, 400
 
-    exp_id = experiment_view.create_experiment(experiment)
     return {"status": "success", "data": {"exp_id": str(exp_id)}}
 
 

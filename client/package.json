@@ -24,9 +24,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && ncp build ../alab_management/dashboard/ui",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "build": "react-scripts build && del-cli --force ../alab_management/dashboard/ui && ncp build ../alab_management/dashboard/ui",
+    "test": "react-scripts test"
   },
   "eslintConfig": {
     "extends": [
@@ -47,6 +46,7 @@
     ]
   },
   "devDependencies": {
+    "del-cli": "^4.0.1",
     "ncp": "^2.0.0"
   }
 }
