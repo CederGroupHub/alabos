@@ -334,6 +334,8 @@ in the lab</p></li>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Lock of sample position, which is a context manager that will release the sample positions
 when exiting.</p>
+<p>The input sample position should have format of
+<code class="docutils literal notranslate"><span class="pre">{&quot;&lt;sample_position_prefix_1&gt;&quot;:</span> <span class="pre">{&quot;name&quot;:</span> <span class="pre">str,</span> <span class="pre">&quot;need_release&quot;:</span> <span class="pre">bool},</span> <span class="pre">...}</span></code></p>
 <dl class="py method">
 <dt id="alab_management.sample_view.sample_view.SamplePositionsLock.release">
 <code class="sig-name descname">release</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SamplePositionsLock.release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SamplePositionsLock.release" title="Permalink to this definition">¶</a></dt>
@@ -342,7 +344,12 @@ when exiting.</p>
 <dl class="py method">
 <dt id="alab_management.sample_view.sample_view.SamplePositionsLock.sample_positions">
 <em class="property">property </em><code class="sig-name descname">sample_positions</code><a class="headerlink" href="#alab_management.sample_view.sample_view.SamplePositionsLock.sample_positions" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -386,9 +393,12 @@ we will just skip it.</p>
 <dt id="alab_management.sample_view.sample_view.SampleView.get_available_sample_position">
 <code class="sig-name descname">get_available_sample_position</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em>, <em class="sig-param"><span class="n">position_prefix</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.get_available_sample_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.get_available_sample_position" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if the position is occupied</p>
+<p>The structure of returned list is <code class="docutils literal notranslate"><span class="pre">{&quot;name&quot;:</span> <span class="pre">str,</span> <span class="pre">&quot;need_release&quot;:</span> <span class="pre">bool}</span></code>.
+The entry need_release indicates whether a sample position needs to be released
+when __exit__ method is called in the <code class="docutils literal notranslate"><span class="pre">SamplePositionsLock</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]]]</p>
 </dd>
 </dl>
 </dd></dl>
