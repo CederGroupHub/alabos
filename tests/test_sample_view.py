@@ -204,3 +204,22 @@ class TestSampleView(TestCase):
                 self.assertEqual("LOCKED", self.sample_view.get_sample_position_status("furnace_table")[0].name)
 
             self.assertEqual("LOCKED", self.sample_view.get_sample_position_status("furnace_table")[0].name)
+
+        self.assertEqual("EMPTY", self.sample_view.get_sample_position_status("furnace_table")[0].name)
+        self.assertEqual(None, self.sample_view.get_sample_position_status("furnace_table")[1])
+
+    def test_request_sample_positions_occupied(self):
+        task_id = ObjectId()
+        sample_id = self.sample_view.create_sample("test", position=None)
+        self.assertEqual("EMPTY", self.sample_view.get_sample_position_status("furnace_table")[0].name)
+        self.sample_view.move_sample(sample_id, "furnace_table")
+        self.assertEqual("OCCUPIED", self.sample_view.get_sample_position_status("furnace_table")[0].name)
+
+        self.sample_view.update_sample_task_id(sample_id, task_id)
+
+        with self.sample_view.request_sample_positions(task_id, ["furnace_table", "furnace_1.inside"]):
+            self.assertEqual("OCCUPIED", self.sample_view.get_sample_position_status("furnace_table")[0].name)
+            self.assertEqual(task_id, self.sample_view.get_sample_position_status("furnace_table")[1])
+
+        self.assertEqual("OCCUPIED", self.sample_view.get_sample_position_status("furnace_table")[0].name)
+        self.assertEqual(None, self.sample_view.get_sample_position("furnace_table")["task_id"])

@@ -205,7 +205,7 @@ class SampleView:
             if status is SamplePositionStatus.EMPTY or task_id == current_task_id:
                 available_sp_names.append({
                     "name": sample_position["name"],
-                    "need_release": not task_id == current_task_id,
+                    "need_release": self.get_sample_position(sample_position["name"])["task_id"] != task_id,
                 })
         return available_sp_names
 
