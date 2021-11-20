@@ -429,7 +429,7 @@
             <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="n">SamplePositionStatus</span><span class="o">.</span><span class="n">EMPTY</span> <span class="ow">or</span> <span class="n">task_id</span> <span class="o">==</span> <span class="n">current_task_id</span><span class="p">:</span>
                 <span class="n">available_sp_names</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
                     <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">sample_position</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
-                    <span class="s2">&quot;need_release&quot;</span><span class="p">:</span> <span class="ow">not</span> <span class="n">task_id</span> <span class="o">==</span> <span class="n">current_task_id</span><span class="p">,</span>
+                    <span class="s2">&quot;need_release&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sample_position</span><span class="p">(</span><span class="n">sample_position</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">task_id</span><span class="p">,</span>
                 <span class="p">})</span>
         <span class="k">return</span> <span class="n">available_sp_names</span></div>
 
