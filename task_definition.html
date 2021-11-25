@@ -289,7 +289,7 @@ from it and update the sample’s position in the sample view, refer to
 
 <dl class="py method">
 <dt id="alab_management.task_view.task.BaseTask.run">
-<em class="property">abstract </em><code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask.run" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">devices</span></em>, <em class="sig-param"><span class="n">sample_positions</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the task. In this function, you can request lab resources from lab manager and log data to database
 with logger.</p>
 <p><code class="docutils literal notranslate"><span class="pre">request_resources</span></code> will not return until all the requested resources are available. So the task will

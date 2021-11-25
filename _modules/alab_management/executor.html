@@ -230,12 +230,13 @@
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">traceback</span> <span class="kn">import</span> <span class="n">format_exc</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">ContextManager</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">from</span> <span class="nn">.device_view</span> <span class="kn">import</span> <span class="n">DeviceView</span>
 <span class="kn">from</span> <span class="nn">.lab_manager</span> <span class="kn">import</span> <span class="n">LabManager</span>
 <span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="n">DBLogger</span>
 <span class="kn">from</span> <span class="nn">.sample_view.sample_view</span> <span class="kn">import</span> <span class="n">SampleView</span>
+<span class="kn">from</span> <span class="nn">.task_view.task</span> <span class="kn">import</span> <span class="n">BaseTask</span>
 <span class="kn">from</span> <span class="nn">.task_view.task_view</span> <span class="kn">import</span> <span class="n">TaskView</span><span class="p">,</span> <span class="n">TaskStatus</span>
 <span class="kn">from</span> <span class="nn">.utils.module_ops</span> <span class="kn">import</span> <span class="n">load_definition</span>
 
@@ -290,7 +291,7 @@
         <span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">task</span> <span class="o">=</span> <span class="n">task_type</span><span class="p">(</span>
+            <span class="n">task</span><span class="p">:</span> <span class="n">BaseTask</span> <span class="o">=</span> <span class="n">task_type</span><span class="p">(</span>
                 <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
                 <span class="n">lab_manager</span><span class="o">=</span><span class="n">lab_manager</span><span class="p">,</span>
                 <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span>
@@ -301,11 +302,17 @@
             <span class="k">raise</span> <span class="n">ParameterError</span><span class="p">(</span><span class="n">exception</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="kn">from</span> <span class="nn">exception</span>
 
         <span class="k">def</span> <span class="nf">_run_task</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">sample_id</span> <span class="ow">in</span> <span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;samples&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">sample_view</span><span class="o">.</span><span class="n">update_sample_task_id</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">sample_id</span><span class="o">=</span><span class="n">sample_id</span><span class="p">)</span>
+            <span class="n">resource_request</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">required_resources</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">REQUESTING_RESOURCE</span><span class="p">)</span>
+            <span class="n">resource_lock</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">ContextManager</span><span class="p">,</span> <span class="n">lab_manager</span><span class="o">.</span><span class="n">request_resources</span><span class="p">(</span><span class="n">resource_request</span><span class="o">=</span><span class="n">resource_request</span><span class="p">))</span>
+
+            <span class="n">devices</span><span class="p">,</span> <span class="n">sample_positions</span> <span class="o">=</span> <span class="n">resource_lock</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">()</span>  <span class="c1"># pylint: disable=no-member</span>
+
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">task</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">sample_id</span> <span class="ow">in</span> <span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;samples&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sample_view</span><span class="o">.</span><span class="n">update_sample_task_id</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">sample_id</span><span class="o">=</span><span class="n">sample_id</span><span class="p">)</span>
+                <span class="n">task</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">devices</span><span class="o">=</span><span class="n">devices</span><span class="p">,</span> <span class="n">sample_positions</span><span class="o">=</span><span class="n">sample_positions</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">system_log</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span>
@@ -329,6 +336,7 @@
                                            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;COMPLETED&quot;</span><span class="p">,</span>
                                        <span class="p">})</span>
             <span class="k">finally</span><span class="p">:</span>
+                <span class="n">resource_lock</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># pylint: disable=no-member</span>
                 <span class="k">for</span> <span class="n">sample_id</span> <span class="ow">in</span> <span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;samples&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">sample_view</span><span class="o">.</span><span class="n">update_sample_task_id</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sample_id</span><span class="o">=</span><span class="n">sample_id</span><span class="p">)</span>
 

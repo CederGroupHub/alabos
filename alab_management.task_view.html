@@ -282,8 +282,18 @@
 <p>The abstract class of task.</p>
 <p>All the tasks should inherit from this class.</p>
 <dl class="py method">
+<dt id="alab_management.task_view.task.BaseTask.required_resources">
+<em class="property">abstract </em><code class="sig-name descname">required_resources</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask.required_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask.required_resources" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference internal" href="device_definition.html#alab_management.device_view.device.BaseDevice" title="alab_management.device_view.device.BaseDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDevice</span></code></a>]], <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="alab_management.task_view.task.BaseTask.run">
-<em class="property">abstract </em><code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask.run" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">devices</span></em>, <em class="sig-param"><span class="n">sample_positions</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the task. In this function, you can request lab resources from lab manager and log data to database
 with logger.</p>
 <p><code class="docutils literal notranslate"><span class="pre">request_resources</span></code> will not return until all the requested resources are available. So the task will
@@ -361,12 +371,12 @@ and sample positions will be released automatically.</p>
 </ul>
 <dl class="py attribute">
 <dt id="alab_management.task_view.task_view.TaskStatus.COMPLETED">
-<code class="sig-name descname">COMPLETED</code><em class="property"> = 6</em><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus.COMPLETED" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">COMPLETED</code><em class="property"> = 8</em><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus.COMPLETED" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="alab_management.task_view.task_view.TaskStatus.ERROR">
-<code class="sig-name descname">ERROR</code><em class="property"> = 5</em><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus.ERROR" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">ERROR</code><em class="property"> = 7</em><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus.ERROR" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -376,12 +386,22 @@ and sample positions will be released automatically.</p>
 
 <dl class="py attribute">
 <dt id="alab_management.task_view.task_view.TaskStatus.READY">
-<code class="sig-name descname">READY</code><em class="property"> = 3</em><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus.READY" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">READY</code><em class="property"> = 4</em><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus.READY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="alab_management.task_view.task_view.TaskStatus.REQUESTING_RESOURCE">
+<code class="sig-name descname">REQUESTING_RESOURCE</code><em class="property"> = 5</em><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus.REQUESTING_RESOURCE" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="alab_management.task_view.task_view.TaskStatus.RUNNING">
-<code class="sig-name descname">RUNNING</code><em class="property"> = 4</em><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus.RUNNING" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">RUNNING</code><em class="property"> = 6</em><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus.RUNNING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="alab_management.task_view.task_view.TaskStatus.STOPPED">
+<code class="sig-name descname">STOPPED</code><em class="property"> = 3</em><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus.STOPPED" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
