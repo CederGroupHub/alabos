@@ -2,11 +2,15 @@
 Define the base class of task
 """
 from abc import ABC, abstractmethod
-from typing import Dict, Type
+from typing import Dict, Type, Any, Union, List, Optional, TypeVar
 
 from bson import ObjectId
+
+from ..device_view.device import BaseDevice
 from ..lab_manager import LabManager
 from ..logger import DBLogger
+
+_KV = TypeVar("_KV", bound=BaseDevice)
 
 
 class BaseTask(ABC):
@@ -42,7 +46,8 @@ class BaseTask(ABC):
         self.logger = logger
 
     @abstractmethod
-    def run(self):
+    def run(self, devices: Dict[Type[_KV], _KV],
+            sample_positions: Dict[Optional[Type[_KV]], Dict[str, List[str]]]):
         """
         Run the task. In this function, you can request lab resources from lab manager and log data to database
         with logger.
@@ -89,6 +94,10 @@ class BaseTask(ABC):
                   })
 
         """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def required_resources(self) -> Dict[Optional[Type[BaseDevice]], List[Union[Dict[str, Any], str]]]:
         raise NotImplementedError()
 
 

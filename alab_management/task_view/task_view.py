@@ -21,7 +21,9 @@ class TaskStatus(Enum):
     """
     WAITING = auto()
     PAUSED = auto()
+    STOPPED = auto()
     READY = auto()
+    REQUESTING_RESOURCE = auto()
     RUNNING = auto()
     ERROR = auto()
     COMPLETED = auto()

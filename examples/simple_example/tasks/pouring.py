@@ -9,7 +9,10 @@ class Pouring(BaseTask):
         super(Pouring, self).__init__(*args, **kwargs)
         self.sample = sample
 
-    def run(self):
+    def required_resources(self):
+        return {}
+
+    def run(self, devices, sample_positions):
         with self.lab_manager.request_resources({RobotArm: []}) as (devices, sample_positions):
             robot_arm: RobotArm = devices[RobotArm]
             robot_arm.run_program("vial_pour_2.urp")

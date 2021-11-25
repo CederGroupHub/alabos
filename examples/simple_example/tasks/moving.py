@@ -18,7 +18,10 @@ class Moving(BaseTask):
         self.sample = sample
         self.dest = dest
 
-    def run(self):
+    def required_resources(self):
+        return {}
+
+    def run(self, devices, sample_positions):
         sample = self.lab_manager.get_sample(sample_id=self.sample)
         sample_position = sample.position
 

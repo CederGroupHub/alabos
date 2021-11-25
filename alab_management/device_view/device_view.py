@@ -2,13 +2,15 @@ import time
 from datetime import datetime
 from enum import unique, Enum, auto
 from threading import Lock
-from typing import Type, List, Optional, Union, Dict, Any, Collection, cast
+from typing import Type, List, Optional, Union, Dict, Any, Collection, cast, TypeVar
 
 import pymongo
 from bson import ObjectId
 
 from .device import BaseDevice, get_all_devices
 from ..db import get_collection
+
+_DeviceType = TypeVar("_DeviceType", bound=BaseDevice)
 
 
 @unique
@@ -40,16 +42,16 @@ class DevicesLock:
     The format of devices: ``{"<device_name_1>": {"device": BaseDevice, "need_release": bool}}``
     """
 
-    def __init__(self, devices: Optional[Dict[Type[BaseDevice], Dict[str, Union[str, BaseDevice]]]],
+    def __init__(self, devices: Optional[Dict[Type[_DeviceType], Dict[str, Union[str, _DeviceType]]]],
                  device_view: "DeviceView"):
         self._devices = devices
         self._device_view: "DeviceView" = device_view
 
     @property
-    def devices(self) -> Optional[Dict[Type[BaseDevice], BaseDevice]]:
+    def devices(self) -> Optional[Dict[Type[_DeviceType], _DeviceType]]:
         if self._devices is None:
             return None
-        return {k: cast(BaseDevice, v["device"]) for k, v in self._devices.items()}
+        return {k: cast(BaseDevice, v["device"]) for k, v in self._devices.items()}  # type: ignore
 
     def release(self):
         if self._devices is not None:

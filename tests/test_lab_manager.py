@@ -52,3 +52,11 @@ class TestLabManager(TestCase):
 
         self.assertEqual("EMPTY", self.sample_view.get_sample_position_status("furnace_1/inside")[0].name)
         self.assertEqual("EMPTY", self.sample_view.get_sample_position_status("furnace_table")[0].name)
+
+    def test_request_resources_empty(self):
+        task_id = ObjectId()
+        lab_manager = LabManager(task_id=task_id, device_view=self.device_view, sample_view=self.sample_view)
+
+        with lab_manager.request_resources({}) as (devices, sample_positions):
+            self.assertDictEqual({}, devices)
+            self.assertEqual({}, sample_positions)

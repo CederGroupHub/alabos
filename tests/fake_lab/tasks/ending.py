@@ -11,5 +11,5 @@ class Ending(BaseTask):
         super(Ending, self).__init__(*args, **kwargs)
         self.sample = sample
 
-    def run(self):
+    def run(self, devices, sample_positions):
         self.lab_manager.move_sample(self.sample, None)

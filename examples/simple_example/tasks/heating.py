@@ -15,7 +15,10 @@ class Heating(BaseTask):
         self.heating_temperature = heating_temperature
         self.sample = sample
 
-    def run(self):
+    def required_resources(self):
+        return {}
+
+    def run(self, devices, sample_positions):
         with self.lab_manager.request_resources({Furnace: ["$/inside"]}) as (devices, sample_positions):
             furnace = devices[Furnace]
             move_to_furnace = Moving(sample=self.sample,

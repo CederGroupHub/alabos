@@ -7,9 +7,9 @@ from bson import ObjectId
 from pydantic import root_validator
 from pydantic.main import BaseModel
 
-from .logger import DBLogger
 from .device_view.device import BaseDevice
 from .device_view.device_view import DeviceView, DevicesLock
+from .logger import DBLogger
 from .sample_view.sample_view import SampleView, SamplePositionsLock, SamplePositionRequest
 
 
@@ -98,8 +98,8 @@ class LabManager:
 
     def request_resources(
             self,
-            resource_request: Union[
-                ResourcesRequest, Dict[Optional[Type[BaseDevice]], List[Union[Dict[str, Any], str]]]]
+            resource_request: Union[ResourcesRequest,
+                                    Dict[Optional[Type[BaseDevice]], List[Union[Dict[str, Any], str]]]]
     ) -> _resource_lock:  # type: ignore
         """
         Request devices and sample positions

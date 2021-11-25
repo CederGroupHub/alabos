@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import cast
 
 from bson import ObjectId
 
@@ -12,20 +13,18 @@ class Moving(BaseTask):
         super(Moving, self).__init__(*args, **kwargs)
         self.sample = sample
         self.dest = dest
+        self.sample_position = self.lab_manager.get_sample(sample_id=self.sample).position
 
-    def run(self):
-        sample = self.lab_manager.get_sample(sample_id=self.sample)
-        sample_position = sample.position
+    def required_resources(self):
+        return {RobotArm: [self.sample_position, self.dest]}
 
-        with self.lab_manager.request_resources({RobotArm: [sample_position, self.dest]}) \
-                as devices_and_positions:
-            devices, sample_positions = devices_and_positions
-            robot_arm: RobotArm = devices[RobotArm]
-            robot_arm.run_program(f"{sample_positions[sample_position]}-{self.dest}.urp")
-            self.lab_manager.move_sample(self.sample, self.dest)
-            self.logger.log_device_signal({
-                "device": robot_arm.name,
-                "sample_id": self.sample,
-                "src": sample_positions[sample_position],
-                "dest": sample_positions[self.dest],
-            })
+    def run(self, devices, sample_positions):
+        robot_arm = cast(RobotArm, devices[RobotArm])
+        robot_arm.run_program(f"{sample_positions[RobotArm][self.sample_position][0]}-{self.dest}.urp")
+        self.lab_manager.move_sample(self.sample, self.dest)
+        self.logger.log_device_signal({
+            "device": robot_arm.name,
+            "sample_id": self.sample,
+            "src": sample_positions[RobotArm][self.sample_position][0],
+            "dest": sample_positions[RobotArm][self.dest][0],
+        })
