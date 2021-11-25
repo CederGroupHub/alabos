@@ -13,14 +13,14 @@ class Weighing(BaseTask):
         self.sample = sample
 
     def run(self):
-        with self.lab_manager.request_resources({Scale: ["$.inside"],
+        with self.lab_manager.request_resources({Scale: ["$/inside"],
                                                  None: ["furnace_table"]}) as devices_and_positions:
             devices, sample_positions = devices_and_positions
             scale: Scale = devices[Scale]
 
             moving_into_scale = Moving(sample=self.sample,
                                        task_id=self.task_id,
-                                       dest=sample_positions[Scale]["$.inside"],
+                                       dest=sample_positions[Scale]["$/inside"][0],
                                        lab_manager=self.lab_manager,
                                        logger=self.logger)
             moving_into_scale.run()
@@ -36,7 +36,7 @@ class Weighing(BaseTask):
             moving_out_scale = Moving(
                 self.sample,
                 task_id=self.task_id,
-                dest=sample_positions[None]["furnace_table"],
+                dest=sample_positions[None]["furnace_table"][0],
                 lab_manager=self.lab_manager,
                 logger=self.logger)
             moving_out_scale.run()

@@ -3,8 +3,7 @@ from typing import ClassVar
 
 import requests
 
-from alab_management import BaseDevice
-from sample_view.sample import SamplePosition
+from alab_management import BaseDevice, SamplePosition
 
 
 class Scale(BaseDevice):
@@ -17,7 +16,7 @@ class Scale(BaseDevice):
     def sample_positions(self):
         return [
             SamplePosition(
-                f"{self.name}.inside",
+                f"{self.name}/inside",
                 description="Where we weigh things"
             ),
         ]

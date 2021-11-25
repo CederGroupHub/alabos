@@ -1,5 +1,4 @@
 from bson import ObjectId
-import time
 
 from alab_management.task_view.task import BaseTask
 from ..devices.robot_arm import RobotArm

@@ -3,8 +3,7 @@ import time
 
 from alab_control.robot_arm_ur5e import URRobot
 
-from alab_management import BaseDevice
-from sample_view.sample import SamplePosition
+from alab_management import BaseDevice, SamplePosition
 
 
 class RobotArm(BaseDevice):
@@ -20,7 +19,7 @@ class RobotArm(BaseDevice):
     def sample_positions(self):
         return [
             SamplePosition(
-                "{name}.sample_holder".format(name=self.name),
+                "{name}/sample_holder".format(name=self.name),
                 description="The position that can hold the sample"
             ),
         ]

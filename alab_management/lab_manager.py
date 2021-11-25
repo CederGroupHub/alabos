@@ -106,14 +106,17 @@ class LabManager:
 
         Usually, devices_and_sample_positions has the format {DeviceType: ["sample_position_1", ...]}. The
         DeviceType can be ``None`` so that you can request the sample positions that do not belong to
-        any devices (for readability, in principal you can put all the sample positions under one device type)
+        any devices (in principal, you can put all the sample positions under one device type)
+
+        If you want to request multiple sample positions with the same prefix, you can instead replace the name of
+        sample position name with a dict {"prefix": <str>, "number": <int>}
 
         Note that the sample position name will try to find available sample positions that start with this
         specified name prefix.
 
         And since sometimes you can only know which device you will use until you request the device,
-        you can use ``$`` to represent the name of device, e.g. {Furnace: ["$.inside"]} will be parsed to
-        ``furnace_1.inside`` if we are assigned to a furnace named ``furnace_1``.
+        you can use ``$`` to represent the name of device, e.g. {Furnace: ["$/inside"]} will be parsed to
+        ``furnace_1/inside`` if we are assigned to a furnace named ``furnace_1``.
         """
         if not isinstance(resource_request, ResourcesRequest):
             resource_request = ResourcesRequest(__root__=resource_request)
@@ -171,9 +174,18 @@ class LabManager:
         """
         return self._sample_view.get_sample(sample_id)
 
-    def move_sample(self, sample_id: ObjectId, position: str):
+    def move_sample(self, sample_id: ObjectId, position: Optional[str]):
         """
         Move a sample to a new position, see also
         :py:meth:`move_sample <alab_management.sample_view.sample_view.SampleView.move_sample>`
         """
+        # check if this sample position is locked by current task
+        if position is not None and self._sample_view.get_sample_position_status(position)[1] != self.task_id:
+            raise ValueError(f"Cannot move sample to a sample position ({position}) without locking it.")
+
+        # check if this sample is owned by current task
+        sample = self._sample_view.get_sample(sample_id=sample_id)
+        if sample is not None and sample.task_id != self.task_id:
+            raise ValueError("Cannot move a sample that is not belong to this task.")
+
         return self._sample_view.move_sample(sample_id=sample_id, position=position)

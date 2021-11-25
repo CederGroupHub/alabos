@@ -33,6 +33,6 @@ class Moving(BaseTask):
             self.logger.log_device_signal({
                 "device": robot_arm.name,
                 "sample_id": self.sample,
-                "src": sample_positions[RobotArm][sample_position],
-                "dest": sample_positions[RobotArm][self.dest],
+                "src": sample_positions[RobotArm][sample_position][0],
+                "dest": sample_positions[RobotArm][self.dest][0],
             })

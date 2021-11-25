@@ -1,3 +1,4 @@
+import re
 import time
 from datetime import datetime
 from enum import Enum, auto
@@ -108,10 +109,10 @@ class SampleView:
         """
         for sample_pos in sample_positions:
             for i in range(sample_pos.number):
-                # we use <dot><number> format to create multiple sample positions
+                # we use <name>/<number> format to create multiple sample positions
                 # if there is only one sample position (sample_position.number == 1)
                 # the name of sample position will be directly used as the sample position's name in the database
-                name = f"{sample_pos.name}.{i}" if sample_pos.number != 1 else sample_pos.name
+                name = f"{sample_pos.name}/{i}" if sample_pos.number != 1 else sample_pos.name
 
                 sample_pos_ = self._sample_positions_collection.find_one({"name": name})
                 if sample_pos_ is None:
@@ -156,7 +157,7 @@ class SampleView:
         # check if there are enough positions
         for sample_position in sample_positions_request:
             count = self._sample_positions_collection.count_documents(
-                {"name": {"$regex": f"^{sample_position.prefix}"}}
+                {"name": {"$regex": f"^{re.escape(sample_position.prefix)}"}}
             )
             if count < sample_position.number:
                 raise ValueError(f"Position prefix `{sample_position.prefix}` can only "
@@ -240,11 +241,11 @@ class SampleView:
         The entry need_release indicates whether a sample position needs to be released
         when __exit__ method is called in the ``SamplePositionsLock``.
         """
-        if self._sample_positions_collection.find_one({"name": {"$regex": f"^{position_prefix}"}}) is None:
+        if self._sample_positions_collection.find_one({"name": {"$regex": f"^{re.escape(position_prefix)}"}}) is None:
             raise ValueError(f"Cannot find device with prefix: {position_prefix}")
 
         available_sample_positions = self._sample_positions_collection.find({
-            "name": {"$regex": f"^{position_prefix}"},
+            "name": {"$regex": f"^{re.escape(position_prefix)}"},
             "$or": [{
                 "task_id": None,
             }, {
@@ -320,7 +321,8 @@ class SampleView:
         """
         result = self._sample_collection.find_one({"_id": sample_id})
         if result is not None:
-            return Sample(_id=result["_id"], name=result["name"], position=result["position"])
+            return Sample(_id=result["_id"], name=result["name"],
+                          position=result["position"], task_id=result["task_id"])
 
         return None
 

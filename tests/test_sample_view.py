@@ -30,9 +30,9 @@ class TestSampleView(TestCase):
         self.assertEqual("test", sample.name)
 
         # try to create samples with same name
-        sample_id = self.sample_view.create_sample("test", position="furnace_1.inside")
+        sample_id = self.sample_view.create_sample("test", position="furnace_1/inside")
         sample = self.sample_view.get_sample(sample_id=sample_id)
-        self.assertEqual("furnace_1.inside", sample.position)
+        self.assertEqual("furnace_1/inside", sample.position)
         self.assertEqual("test", sample.name)
 
         # try to create samples with non-exist positions
@@ -120,7 +120,7 @@ class TestSampleView(TestCase):
     def test_request_sample_position_single(self):
         task_id = ObjectId()
 
-        with self.sample_view.request_sample_positions(task_id, ["furnace_table", "furnace_1.inside"], timeout=5) \
+        with self.sample_view.request_sample_positions(task_id, ["furnace_table", "furnace_1/inside"], timeout=5) \
                 as sample_positions:
             self.assertFalse(sample_positions is None)
             for sample_position_prefix, sample_position in sample_positions.items():
@@ -136,10 +136,10 @@ class TestSampleView(TestCase):
         task_id = ObjectId()
         task_id_2 = ObjectId()
 
-        with self.sample_view.request_sample_positions(task_id, ["furnace_table", "furnace_1.inside"], timeout=1) \
+        with self.sample_view.request_sample_positions(task_id, ["furnace_table", "furnace_1/inside"], timeout=1) \
                 as sample_positions:
             self.assertFalse(sample_positions is None)
-            with self.sample_view.request_sample_positions(task_id_2, ["furnace_table", "furnace_1.inside"], timeout=1) \
+            with self.sample_view.request_sample_positions(task_id_2, ["furnace_table", "furnace_1/inside"], timeout=1) \
                     as _sample_positions:
                 self.assertIs(None, _sample_positions)
 
@@ -158,7 +158,7 @@ class TestSampleView(TestCase):
         def _request_1():
             start_time = time.perf_counter()
             with self.sample_view.request_sample_positions(task_id,
-                                                           ["furnace_table", "furnace_1.inside"], timeout=100) \
+                                                           ["furnace_table", "furnace_1/inside"], timeout=100) \
                     as sample_positions:
                 end_time = time.perf_counter()
                 self.assertAlmostEqual(end_time - start_time, 0.0, delta=1.2)
@@ -169,7 +169,7 @@ class TestSampleView(TestCase):
         def _request_2():
             start_time = time.perf_counter()
             with self.sample_view.request_sample_positions(task_id_2,
-                                                           ["furnace_table", "furnace_1.inside"], timeout=100) \
+                                                           ["furnace_table", "furnace_1/inside"], timeout=100) \
                     as sample_positions:
                 end_time = time.perf_counter()
                 self.assertAlmostEqual(end_time - start_time, 1.0, delta=1.2)
@@ -192,13 +192,13 @@ class TestSampleView(TestCase):
         task_id = ObjectId()
 
         self.assertEqual("EMPTY", self.sample_view.get_sample_position_status("furnace_table")[0].name)
-        with self.sample_view.request_sample_positions(task_id, ["furnace_table", "furnace_1.inside",
+        with self.sample_view.request_sample_positions(task_id, ["furnace_table", "furnace_1/inside",
                                                                  {"prefix": "furnace_temp", "number": 3}]):
             self.assertEqual("LOCKED", self.sample_view.get_sample_position_status("furnace_table")[0].name)
-            self.assertEqual("LOCKED", self.sample_view.get_sample_position_status("furnace_temp.0")[0].name)
-            with self.sample_view.request_sample_positions(task_id, ["furnace_table", "furnace_temp.0"], timeout=1) \
+            self.assertEqual("LOCKED", self.sample_view.get_sample_position_status("furnace_temp/0")[0].name)
+            with self.sample_view.request_sample_positions(task_id, ["furnace_table", "furnace_temp/0"], timeout=1) \
                     as sample_positions_:
-                self.assertDictEqual({"furnace_table": ["furnace_table"], "furnace_temp.0": ["furnace_temp.0"]},
+                self.assertDictEqual({"furnace_table": ["furnace_table"], "furnace_temp/0": ["furnace_temp/0"]},
                                      sample_positions_)
                 self.assertEqual("LOCKED", self.sample_view.get_sample_position_status("furnace_table")[0].name)
                 with self.sample_view.request_sample_positions(task_id, ["furnace_table"],
@@ -222,7 +222,7 @@ class TestSampleView(TestCase):
 
         self.sample_view.update_sample_task_id(sample_id, task_id)
 
-        with self.sample_view.request_sample_positions(task_id, ["furnace_table", "furnace_1.inside"]):
+        with self.sample_view.request_sample_positions(task_id, ["furnace_table", "furnace_1/inside"]):
             self.assertEqual("OCCUPIED", self.sample_view.get_sample_position_status("furnace_table")[0].name)
             self.assertEqual(task_id, self.sample_view.get_sample_position_status("furnace_table")[1])
 

@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Optional, ClassVar
 
 from bson import ObjectId
 
@@ -15,6 +15,7 @@ class Sample:
       in the lab
     """
     _id: ObjectId
+    task_id: Optional[ObjectId]
     name: str
     position: Optional[str]
 
@@ -32,6 +33,7 @@ class SamplePosition:
       identifier of a sample position
     - ``description``: a string that describes the sample position briefly
     """
+    SEPARATOR: ClassVar[str] = "/"
     name: str
     number: int = field(default=1)
     description: str = field(default="", compare=False, hash=False)
