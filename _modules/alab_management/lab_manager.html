@@ -258,35 +258,53 @@
 
 <span class="nd">@contextmanager</span>
 <span class="k">def</span> <span class="nf">_resource_lock</span><span class="p">(</span><span class="n">devices_lock</span><span class="p">:</span> <span class="n">DevicesLock</span><span class="p">,</span> <span class="n">sample_positions_lock</span><span class="p">:</span> <span class="n">SamplePositionsLock</span><span class="p">,</span>
-                   <span class="n">devices_and_sample_positions</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]):</span>
+                   <span class="n">resource_request</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]],</span>
+                   <span class="n">logger</span><span class="p">:</span> <span class="n">DBLogger</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A context manager that releases the devices and the sample positions when they are no longer needed.</span>
 
 <span class="sd">    This context manager is only supposed to be used internally, to create context manager and expose</span>
 <span class="sd">    to the task definitions</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">devices_lock</span><span class="o">.</span><span class="n">devices</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">sample_positions_lock</span><span class="o">.</span><span class="n">sample_positions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Get empty devices_lock or sample_positions_lock&quot;</span><span class="p">)</span>
     <span class="n">requested_sample_positions</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">flattened_sample_positions</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">sample_positions_lock</span><span class="o">.</span><span class="n">sample_positions</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">device_type</span><span class="p">,</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">devices_lock</span><span class="o">.</span><span class="n">devices</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>  <span class="c1"># type: ignore</span>
         <span class="n">device_name</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span>
-        <span class="n">sample_position_requests</span> <span class="o">=</span> <span class="n">devices_and_sample_positions</span><span class="p">[</span><span class="n">device_type</span><span class="p">]</span>
+        <span class="n">sample_position_requests</span> <span class="o">=</span> <span class="n">resource_request</span><span class="p">[</span><span class="n">device_type</span><span class="p">]</span>
         <span class="n">requested_sample_positions</span><span class="p">[</span><span class="n">device_type</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">sample_position_request</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">]:</span> <span class="n">flattened_sample_positions</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
                 <span class="n">sample_position_request</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;$&quot;</span><span class="p">,</span> <span class="n">device_name</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">sample_position_request</span> <span class="ow">in</span> <span class="n">sample_position_requests</span>
         <span class="p">}</span>
-    <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">devices_and_sample_positions</span><span class="p">:</span>
+    <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">resource_request</span><span class="p">:</span>
         <span class="n">requested_sample_positions</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">sample_position_request</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">]:</span> <span class="n">flattened_sample_positions</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">sample_position_request</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">])</span>
-            <span class="k">for</span> <span class="n">sample_position_request</span> <span class="ow">in</span> <span class="n">devices_and_sample_positions</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">sample_position_request</span> <span class="ow">in</span> <span class="n">resource_request</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span>
         <span class="p">}</span>
 
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">flattened_sample_positions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;All the sample positions should be consumed.&quot;</span>
+    <span class="n">log_id</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">system_log</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span> <span class="n">log_data</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;logged_by&quot;</span><span class="p">:</span> <span class="s2">&quot;LabManager&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;AssignedResources&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;resources_list&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">k</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">if</span> <span class="n">k</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">):</span> <span class="p">[</span><span class="n">v_</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">v_</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]</span>
+                           <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">resource_request</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
+        <span class="s2">&quot;devices&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">device_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span>
+                    <span class="k">for</span> <span class="n">device_type</span><span class="p">,</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">devices_lock</span><span class="o">.</span><span class="n">devices</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
+        <span class="s2">&quot;sample_positions&quot;</span><span class="p">:</span> <span class="n">sample_positions_lock</span><span class="o">.</span><span class="n">sample_positions</span><span class="p">,</span>
+    <span class="p">})</span>
+
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">flattened_sample_positions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;All the sample positions should have been popped out.&quot;</span>
     <span class="k">yield</span> <span class="n">devices_lock</span><span class="o">.</span><span class="n">devices</span><span class="p">,</span> <span class="n">requested_sample_positions</span>
 
     <span class="n">devices_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
     <span class="n">sample_positions_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">system_log</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span> <span class="n">log_data</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;logged_by&quot;</span><span class="p">:</span> <span class="s2">&quot;LabManager&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;ReleaseResources&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;assign_log_id&quot;</span><span class="p">:</span> <span class="n">log_id</span><span class="p">,</span>
+    <span class="p">})</span>
 
 
 <div class="viewcode-block" id="LabManager"><a class="viewcode-back" href="../../alab_management.html#alab_management.lab_manager.LabManager">[docs]</a><span class="k">class</span> <span class="nc">LabManager</span><span class="p">:</span>
@@ -306,7 +324,6 @@
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">resource_request</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
                 <span class="n">ResourcesRequest</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]]]</span>
-            <span class="c1"># noqa pylint: disable=line-too-long</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_resource_lock</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Request devices and sample positions</span>
@@ -363,7 +380,7 @@
                 <span class="k">if</span> <span class="n">sample_positions_lock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">_resource_lock</span><span class="p">(</span><span class="n">devices_lock</span><span class="o">=</span><span class="n">devices_lock</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
                                           <span class="n">sample_positions_lock</span><span class="o">=</span><span class="n">sample_positions_lock</span><span class="p">,</span>
-                                          <span class="n">devices_and_sample_positions</span><span class="o">=</span><span class="n">resource_request_formatted</span><span class="p">)</span>
+                                          <span class="n">resource_request</span><span class="o">=</span><span class="n">resource_request_formatted</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
                 <span class="n">devices_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="n">devices_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
