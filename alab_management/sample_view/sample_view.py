@@ -26,6 +26,12 @@ class SamplePositionRequest(BaseModel):
     def from_str(cls, sample_position_prefix: str) -> "SamplePositionRequest":  # pylint: disable=no-self-use
         return cls(prefix=sample_position_prefix)
 
+    @classmethod
+    def from_py_type(cls, sample_position: Union[str, Dict[str, Any]]):  # pylint: disable=no-self-use
+        if isinstance(sample_position, str):
+            return cls.from_str(sample_position_prefix=sample_position)
+        return cls(**sample_position)
+
     @validator("number")
     def check_number(cls, number):  # pylint: disable=no-self-argument,no-self-use
         if number <= 0:
@@ -101,11 +107,11 @@ class SampleView:
             sample_positions: some sample position instances
         """
         for sample_pos in sample_positions:
-            for _ in range(sample_pos.number):
-                # we use <dot> <number> format to create multiple sample positions
+            for i in range(sample_pos.number):
+                # we use <dot><number> format to create multiple sample positions
                 # if there is only one sample position (sample_position.number == 1)
                 # the name of sample position will be directly used as the sample position's name in the database
-                name = f"{sample_pos.name}.{sample_pos.number}" if sample_pos.number != 1 else sample_pos.name
+                name = f"{sample_pos.name}.{i}" if sample_pos.number != 1 else sample_pos.name
 
                 sample_pos_ = self._sample_positions_collection.find_one({"name": name})
                 if sample_pos_ is None:
@@ -123,7 +129,7 @@ class SampleView:
         self._sample_positions_collection.drop()
 
     def request_sample_positions(self, task_id: ObjectId,
-                                 sample_positions: List[Union[SamplePositionRequest, str]],
+                                 sample_positions: List[Union[SamplePositionRequest, str, Dict[str, Any]]],
                                  timeout: Optional[int] = None) -> SamplePositionsLock:
         """
         Request a list of sample positions, this function will return until all the sample positions are available
@@ -137,8 +143,8 @@ class SampleView:
               will return ``SamplePositionsLock(None)`` directly.
         """
         sample_positions_request: List[SamplePositionRequest] = [
-            SamplePositionRequest.from_str(sample_position)
-            if isinstance(sample_position, str)
+            SamplePositionRequest.from_py_type(sample_position)
+            if not isinstance(sample_position, SamplePositionRequest)
             else sample_position
             for sample_position in sample_positions
         ]
@@ -147,6 +153,7 @@ class SampleView:
                                                     for sample_position in sample_positions_request)):
             raise ValueError("Duplicated sample_positions in one request.")
 
+        # check if there are enough positions
         for sample_position in sample_positions_request:
             count = self._sample_positions_collection.count_documents(
                 {"name": {"$regex": f"^{sample_position.prefix}"}}

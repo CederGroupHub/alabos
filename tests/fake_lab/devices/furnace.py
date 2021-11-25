@@ -22,6 +22,11 @@ class Furnace(BaseDevice):
             SamplePosition(
                 "furnace_table",
                 description="Temporary position to transfer samples"
+            ),
+            SamplePosition(
+                "furnace_temp",
+                number=4,
+                description="Test positions",
             )
         ]
 

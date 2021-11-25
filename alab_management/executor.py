@@ -108,7 +108,7 @@ class Executor:
                 for sample_id in task_entry["samples"].values():
                     self.sample_view.update_sample_task_id(task_id=None, sample_id=sample_id)
 
-        task_thread = threading.Thread(target=_run_task)
+        task_thread = threading.Thread(target=_run_task, name=str(task_id))
         task_thread.start()
         self.logger.system_log(level="INFO",
                                log_data={

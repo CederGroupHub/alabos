@@ -34,35 +34,53 @@ class ResourcesRequest(BaseModel):
 
 @contextmanager
 def _resource_lock(devices_lock: DevicesLock, sample_positions_lock: SamplePositionsLock,
-                   devices_and_sample_positions: Dict[Optional[Type[BaseDevice]], List[Dict[str, Any]]]):
+                   resource_request: Dict[Optional[Type[BaseDevice]], List[Dict[str, Any]]],
+                   logger: DBLogger):
     """
     A context manager that releases the devices and the sample positions when they are no longer needed.
 
     This context manager is only supposed to be used internally, to create context manager and expose
     to the task definitions
     """
+    if devices_lock.devices is None or sample_positions_lock.sample_positions is None:
+        raise ValueError("Get empty devices_lock or sample_positions_lock")
     requested_sample_positions = {}
     flattened_sample_positions = cast(Dict[str, List[str]], sample_positions_lock.sample_positions)
 
     for device_type, device in devices_lock.devices.items():  # type: ignore
         device_name = device.name
-        sample_position_requests = devices_and_sample_positions[device_type]
+        sample_position_requests = resource_request[device_type]
         requested_sample_positions[device_type] = {
             sample_position_request["prefix"]: flattened_sample_positions.pop(
                 sample_position_request["prefix"].replace("$", device_name))
             for sample_position_request in sample_position_requests
         }
-    if None in devices_and_sample_positions:
+    if None in resource_request:
         requested_sample_positions[None] = {
             sample_position_request["prefix"]: flattened_sample_positions.pop(sample_position_request["prefix"])
-            for sample_position_request in devices_and_sample_positions[None]
+            for sample_position_request in resource_request[None]
         }
 
-    assert len(flattened_sample_positions) == 0, "All the sample positions should be consumed."
+    log_id = logger.system_log(level="DEBUG", log_data={
+        "logged_by": "LabManager",
+        "type": "AssignedResources",
+        "resources_list": {k.__name__ if k else str(k): [v_["prefix"] for v_ in v]
+                           for k, v in resource_request.items()},
+        "devices": {device_type.__name__: device.name
+                    for device_type, device in devices_lock.devices.items()},
+        "sample_positions": sample_positions_lock.sample_positions,
+    })
+
+    assert len(flattened_sample_positions) == 0, "All the sample positions should have been popped out."
     yield devices_lock.devices, requested_sample_positions
 
     devices_lock.release()
     sample_positions_lock.release()
+    logger.system_log(level="DEBUG", log_data={
+        "logged_by": "LabManager",
+        "type": "ReleaseResources",
+        "assign_log_id": log_id,
+    })
 
 
 class LabManager:
@@ -82,7 +100,6 @@ class LabManager:
             self,
             resource_request: Union[
                 ResourcesRequest, Dict[Optional[Type[BaseDevice]], List[Union[Dict[str, Any], str]]]]
-            # noqa pylint: disable=line-too-long
     ) -> _resource_lock:  # type: ignore
         """
         Request devices and sample positions
@@ -139,7 +156,7 @@ class LabManager:
                 if sample_positions_lock is not None:
                     return _resource_lock(devices_lock=devices_lock,  # type: ignore
                                           sample_positions_lock=sample_positions_lock,
-                                          devices_and_sample_positions=resource_request_formatted)
+                                          resource_request=resource_request_formatted, logger=self.logger)
                 devices_lock.release()
             except Exception:
                 devices_lock.release()

@@ -4,7 +4,7 @@ Logger module takes charge of recording information, warnings and errors during 
 
 from datetime import datetime, timedelta
 from enum import Enum, auto, unique
-from typing import Dict, Any, Union, Optional, Iterable
+from typing import Dict, Any, Union, Optional, Iterable, cast
 
 from bson import ObjectId
 
@@ -48,7 +48,7 @@ class DBLogger:
     def log(self,
             level: Union[str, int, LoggingLevel],
             log_data: Dict[str, Any],
-            logging_type: LoggingType = LoggingType.OTHER):
+            logging_type: LoggingType = LoggingType.OTHER) -> ObjectId:
         """
         Basic log function
         Args:
@@ -61,7 +61,7 @@ class DBLogger:
         elif isinstance(level, LoggingLevel):
             level = level.value
 
-        self._logging_collection.insert_one({
+        result = self._logging_collection.insert_one({
             "task_id": self.task_id,
             "type": logging_type.name,
             "level": level,
@@ -69,29 +69,31 @@ class DBLogger:
             "created_at": datetime.now()
         })
 
+        return cast(ObjectId, result.inserted_id)
+
     def log_amount(self, log_data: Dict[str, Any]):
         """
         Log the amount of samples and chemicals (e.g. weight)
         """
-        self.log(level=LoggingLevel.INFO, log_data=log_data, logging_type=LoggingType.SAMPLE_AMOUNT)
+        return self.log(level=LoggingLevel.INFO, log_data=log_data, logging_type=LoggingType.SAMPLE_AMOUNT)
 
     def log_characterization_result(self, log_data: Dict[str, Any]):
         """
         Log the characterization result (e.g. XRD pattern)
         """
-        self.log(level=LoggingLevel.INFO, log_data=log_data, logging_type=LoggingType.CHARACTERIZATION_RESULT)
+        return self.log(level=LoggingLevel.INFO, log_data=log_data, logging_type=LoggingType.CHARACTERIZATION_RESULT)
 
     def log_device_signal(self, log_data: Dict[str, Any]):
         """
         Log the device sensor's signal (e.g. the voltage of batteries, the temperature of furnace)
         """
-        self.log(level=LoggingLevel.DEBUG, log_data=log_data, logging_type=LoggingType.DEVICE_SIGNAL)
+        return self.log(level=LoggingLevel.DEBUG, log_data=log_data, logging_type=LoggingType.DEVICE_SIGNAL)
 
     def system_log(self, level: Union[str, int, LoggingLevel], log_data: Dict[str, Any]):
         """
         Log that comes from the workflow system
         """
-        self.log(level=level, log_data=log_data, logging_type=LoggingType.SYSTEM_LOG)
+        return self.log(level=level, log_data=log_data, logging_type=LoggingType.SYSTEM_LOG)
 
     def filter_log(self, level: Union[str, int, LoggingLevel], within: timedelta) -> Iterable[Dict[str, Any]]:
         """
