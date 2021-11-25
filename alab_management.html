@@ -479,12 +479,14 @@ update sample positions.</p>
 <dd><p>Request devices and sample positions</p>
 <p>Usually, devices_and_sample_positions has the format {DeviceType: [“sample_position_1”, …]}. The
 DeviceType can be <code class="docutils literal notranslate"><span class="pre">None</span></code> so that you can request the sample positions that do not belong to
-any devices (for readability, in principal you can put all the sample positions under one device type)</p>
+any devices (in principal, you can put all the sample positions under one device type)</p>
+<p>If you want to request multiple sample positions with the same prefix, you can instead replace the name of
+sample position name with a dict {“prefix”: &lt;str&gt;, “number”: &lt;int&gt;}</p>
 <p>Note that the sample position name will try to find available sample positions that start with this
 specified name prefix.</p>
 <p>And since sometimes you can only know which device you will use until you request the device,
-you can use <code class="docutils literal notranslate"><span class="pre">$</span></code> to represent the name of device, e.g. {Furnace: [“$.inside”]} will be parsed to
-<code class="docutils literal notranslate"><span class="pre">furnace_1.inside</span></code> if we are assigned to a furnace named <code class="docutils literal notranslate"><span class="pre">furnace_1</span></code>.</p>
+you can use <code class="docutils literal notranslate"><span class="pre">$</span></code> to represent the name of device, e.g. {Furnace: [“$/inside”]} will be parsed to
+<code class="docutils literal notranslate"><span class="pre">furnace_1/inside</span></code> if we are assigned to a furnace named <code class="docutils literal notranslate"><span class="pre">furnace_1</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_resource_lock</span></code></p>

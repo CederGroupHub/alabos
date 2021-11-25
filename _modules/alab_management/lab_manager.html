@@ -330,14 +330,17 @@
 
 <span class="sd">        Usually, devices_and_sample_positions has the format {DeviceType: [&quot;sample_position_1&quot;, ...]}. The</span>
 <span class="sd">        DeviceType can be ``None`` so that you can request the sample positions that do not belong to</span>
-<span class="sd">        any devices (for readability, in principal you can put all the sample positions under one device type)</span>
+<span class="sd">        any devices (in principal, you can put all the sample positions under one device type)</span>
+
+<span class="sd">        If you want to request multiple sample positions with the same prefix, you can instead replace the name of</span>
+<span class="sd">        sample position name with a dict {&quot;prefix&quot;: &lt;str&gt;, &quot;number&quot;: &lt;int&gt;}</span>
 
 <span class="sd">        Note that the sample position name will try to find available sample positions that start with this</span>
 <span class="sd">        specified name prefix.</span>
 
 <span class="sd">        And since sometimes you can only know which device you will use until you request the device,</span>
-<span class="sd">        you can use ``$`` to represent the name of device, e.g. {Furnace: [&quot;$.inside&quot;]} will be parsed to</span>
-<span class="sd">        ``furnace_1.inside`` if we are assigned to a furnace named ``furnace_1``.</span>
+<span class="sd">        you can use ``$`` to represent the name of device, e.g. {Furnace: [&quot;$/inside&quot;]} will be parsed to</span>
+<span class="sd">        ``furnace_1/inside`` if we are assigned to a furnace named ``furnace_1``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">resource_request</span><span class="p">,</span> <span class="n">ResourcesRequest</span><span class="p">):</span>
             <span class="n">resource_request</span> <span class="o">=</span> <span class="n">ResourcesRequest</span><span class="p">(</span><span class="n">__root__</span><span class="o">=</span><span class="n">resource_request</span><span class="p">)</span>
@@ -395,11 +398,20 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span><span class="o">.</span><span class="n">get_sample</span><span class="p">(</span><span class="n">sample_id</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="LabManager.move_sample"><a class="viewcode-back" href="../../alab_management.html#alab_management.lab_manager.LabManager.move_sample">[docs]</a>    <span class="k">def</span> <span class="nf">move_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="LabManager.move_sample"><a class="viewcode-back" href="../../alab_management.html#alab_management.lab_manager.LabManager.move_sample">[docs]</a>    <span class="k">def</span> <span class="nf">move_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Move a sample to a new position, see also</span>
 <span class="sd">        :py:meth:`move_sample &lt;alab_management.sample_view.sample_view.SampleView.move_sample&gt;`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># check if this sample position is locked by current task</span>
+        <span class="k">if</span> <span class="n">position</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span><span class="o">.</span><span class="n">get_sample_position_status</span><span class="p">(</span><span class="n">position</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot move sample to a sample position (</span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2">) without locking it.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># check if this sample is owned by current task</span>
+        <span class="n">sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span><span class="o">.</span><span class="n">get_sample</span><span class="p">(</span><span class="n">sample_id</span><span class="o">=</span><span class="n">sample_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sample</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sample</span><span class="o">.</span><span class="n">task_id</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot move a sample that is not belong to this task.&quot;</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span><span class="o">.</span><span class="n">move_sample</span><span class="p">(</span><span class="n">sample_id</span><span class="o">=</span><span class="n">sample_id</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="n">position</span><span class="p">)</span></div></div>
 </pre></div>
 

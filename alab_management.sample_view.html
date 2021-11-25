@@ -277,7 +277,7 @@
 <span id="alab-management-sample-view-sample-module"></span><h2>alab_management.sample_view.sample module<a class="headerlink" href="#module-alab_management.sample_view.sample" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="alab_management.sample_view.sample.Sample">
-<em class="property">class </em><code class="sig-name descname">Sample</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_id</span></em>, <em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">position</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample.html#Sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_view.sample.Sample" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Sample</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_id</span></em>, <em class="sig-param"><span class="n">task_id</span></em>, <em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">position</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample.html#Sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.sample_view.sample.Sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Basic sample object</p>
 <ul class="simple">
@@ -296,6 +296,11 @@ in the lab</p></li>
 <code class="sig-name descname">position</code><em class="property">: Optional<span class="p">[</span>str<span class="p">]</span></em><a class="headerlink" href="#alab_management.sample_view.sample.Sample.position" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="alab_management.sample_view.sample.Sample.task_id">
+<code class="sig-name descname">task_id</code><em class="property">: Optional<span class="p">[</span>bson.objectid.ObjectId<span class="p">]</span></em><a class="headerlink" href="#alab_management.sample_view.sample.Sample.task_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -311,6 +316,11 @@ position in the lab</p>
 identifier of a sample position</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">description</span></code>: a string that describes the sample position briefly</p></li>
 </ul>
+<dl class="py attribute">
+<dt id="alab_management.sample_view.sample.SamplePosition.SEPARATOR">
+<code class="sig-name descname">SEPARATOR</code><em class="property">: ClassVar<span class="p">[</span>str<span class="p">]</span></em><em class="property"> = '/'</em><a class="headerlink" href="#alab_management.sample_view.sample.SamplePosition.SEPARATOR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py attribute">
 <dt id="alab_management.sample_view.sample.SamplePosition.description">
 <code class="sig-name descname">description</code><em class="property">: str</em><em class="property"> = ''</em><a class="headerlink" href="#alab_management.sample_view.sample.SamplePosition.description" title="Permalink to this definition">¶</a></dt>
