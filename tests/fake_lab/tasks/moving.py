@@ -13,26 +13,19 @@ class Moving(BaseTask):
         self.sample = sample
         self.dest = dest
 
-    @staticmethod
-    def get_path(src, dest):
-        # ignore container
-        return [(src, dest)]
-
     def run(self):
         sample = self.lab_manager.get_sample(sample_id=self.sample)
         sample_position = sample.position
-        path = self.get_path(sample_position, dest=self.dest)
-        all_nodes = [p[0] for p in path] + [self.dest]
 
-        with self.lab_manager.request_resources({RobotArm: all_nodes}) as devices_and_positions:
+        with self.lab_manager.request_resources({RobotArm: [sample_position, self.dest]}) \
+                as devices_and_positions:
             devices, sample_positions = devices_and_positions
             robot_arm: RobotArm = devices[RobotArm]
-            for p in path:
-                robot_arm.run_program(f"{p[0]}-{p[1]}.urp")
-                self.lab_manager.move_sample(self.sample, p[1])
-                self.logger.log_device_signal({
-                    "device": robot_arm.name,
-                    "sample_id": self.sample,
-                    "src": p[0],
-                    "dest": p[1],
-                })
+            robot_arm.run_program(f"{sample_positions[sample_position]}-{self.dest}.urp")
+            self.lab_manager.move_sample(self.sample, p[1])
+            self.logger.log_device_signal({
+                "device": robot_arm.name,
+                "sample_id": self.sample,
+                "src": sample_positions[sample_position],
+                "dest": sample_positions[self.dest],
+            })

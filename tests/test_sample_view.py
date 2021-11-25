@@ -124,13 +124,13 @@ class TestSampleView(TestCase):
                 as sample_positions:
             self.assertFalse(sample_positions is None)
             for sample_position_prefix, sample_position in sample_positions.items():
-                self.assertTrue(sample_position.startswith(sample_position_prefix))
-                self.assertEqual("LOCKED", self.sample_view.get_sample_position_status(sample_position)[0].name)
-                self.assertEqual(task_id, self.sample_view.get_sample_position_status(sample_position)[1])
+                self.assertTrue(sample_position[0].startswith(sample_position_prefix))
+                self.assertEqual("LOCKED", self.sample_view.get_sample_position_status(sample_position[0])[0].name)
+                self.assertEqual(task_id, self.sample_view.get_sample_position_status(sample_position[0])[1])
 
         for sample_position in sample_positions.values():
-            self.assertEqual("EMPTY", self.sample_view.get_sample_position_status(sample_position)[0].name)
-            self.assertEqual(None, self.sample_view.get_sample_position_status(sample_position)[1])
+            self.assertEqual("EMPTY", self.sample_view.get_sample_position_status(sample_position[0])[0].name)
+            self.assertEqual(None, self.sample_view.get_sample_position_status(sample_position[0])[1])
 
     def test_request_device_timeout(self):
         task_id = ObjectId()
@@ -194,11 +194,11 @@ class TestSampleView(TestCase):
         with self.sample_view.request_sample_positions(task_id, ["furnace_table", "furnace_1.inside"]):
             self.assertEqual("LOCKED", self.sample_view.get_sample_position_status("furnace_table")[0].name)
             with self.sample_view.request_sample_positions(task_id, ["furnace_table"], timeout=1) as sample_positions_:
-                self.assertDictEqual({"furnace_table": "furnace_table"}, sample_positions_)
+                self.assertDictEqual({"furnace_table": ["furnace_table"]}, sample_positions_)
                 self.assertEqual("LOCKED", self.sample_view.get_sample_position_status("furnace_table")[0].name)
                 with self.sample_view.request_sample_positions(task_id, ["furnace_table"],
                                                                timeout=1) as sample_positions__:
-                    self.assertDictEqual({"furnace_table": "furnace_table"}, sample_positions__)
+                    self.assertDictEqual({"furnace_table": ["furnace_table"]}, sample_positions__)
                     self.assertEqual("LOCKED", self.sample_view.get_sample_position_status("furnace_table")[0].name)
 
                 self.assertEqual("LOCKED", self.sample_view.get_sample_position_status("furnace_table")[0].name)

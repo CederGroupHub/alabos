@@ -1,15 +1,36 @@
 import time
-from dataclasses import asdict
 from datetime import datetime
 from enum import Enum, auto
 from threading import Lock
-from typing import Optional, List, Dict, Any, Tuple, Collection, cast, Union
+from typing import Optional, List, Dict, Any, Tuple, cast, Union
 
 import pymongo
 from bson import ObjectId
+from pydantic import BaseModel, validator
 
-from .sample import Sample
+from .sample import Sample, SamplePosition
 from ..db import get_collection
+
+
+class SamplePositionRequest(BaseModel):
+    """
+    The class is used to request sample position.
+
+    You need to specify the prefix of the sample position (will be used to match by `startwith` method) and
+    the number you request. By default, the number is set to be 1.
+    """
+    prefix: str
+    number: int = 1
+
+    @classmethod
+    def from_str(cls, sample_position_prefix: str) -> "SamplePositionRequest":  # pylint: disable=no-self-use
+        return cls(prefix=sample_position_prefix)
+
+    @validator("number")
+    def check_number(cls, number):  # pylint: disable=no-self-argument,no-self-use
+        if number <= 0:
+            raise ValueError("Number must be positive.")
+        return number
 
 
 class SamplePositionStatus(Enum):
@@ -34,21 +55,22 @@ class SamplePositionsLock:
     ``{"<sample_position_prefix_1>": {"name": str, "need_release": bool}, ...}``
     """
 
-    def __init__(self, sample_positions: Optional[Dict[str, Dict[str, Any]]], sample_view: "SampleView"):
+    def __init__(self, sample_positions: Optional[Dict[str, List[Dict[str, Any]]]], sample_view: "SampleView"):
         self._sample_positions = sample_positions
         self._sample_view = sample_view
 
     @property
-    def sample_positions(self) -> Optional[Dict[str, str]]:
+    def sample_positions(self) -> Optional[Dict[str, List[str]]]:
         if self._sample_positions is None:
             return None
-        return {k: v["name"] for k, v in self._sample_positions.items()}
+        return {k: [v_["name"] for v_ in v] for k, v in self._sample_positions.items()}
 
     def release(self):
         if self._sample_positions is not None:
-            for sample_position in self._sample_positions.values():
-                if sample_position["need_release"]:
-                    self._sample_view.release_sample_position(sample_position["name"])
+            for sample_positions_ in self._sample_positions.values():
+                for sample_position in sample_positions_:
+                    if sample_position["need_release"]:
+                        self._sample_view.release_sample_position(sample_position["name"])
 
     def __enter__(self):
         return self.sample_positions
@@ -68,7 +90,7 @@ class SampleView:
         self._sample_positions_collection.create_index([("name", pymongo.HASHED,)])
         self._lock = Lock()
 
-    def add_sample_positions_to_db(self, sample_positions):
+    def add_sample_positions_to_db(self, sample_positions: List[SamplePosition]):
         """
         Insert sample positions info to db, which includes position name and description
 
@@ -79,13 +101,20 @@ class SampleView:
             sample_positions: some sample position instances
         """
         for sample_pos in sample_positions:
-            sample_pos_ = self._sample_positions_collection.find_one({"name": sample_pos.name})
-            if sample_pos_ is None:
-                self._sample_positions_collection.insert_one({
-                    "task_id": None,
-                    "last_updated": datetime.now(),
-                    **asdict(sample_pos)
-                })
+            for _ in range(sample_pos.number):
+                # we use <dot> <number> format to create multiple sample positions
+                # if there is only one sample position (sample_position.number == 1)
+                # the name of sample position will be directly used as the sample position's name in the database
+                name = f"{sample_pos.name}.{sample_pos.number}" if sample_pos.number != 1 else sample_pos.name
+
+                sample_pos_ = self._sample_positions_collection.find_one({"name": name})
+                if sample_pos_ is None:
+                    self._sample_positions_collection.insert_one({
+                        "name": name,
+                        "description": sample_pos.description,
+                        "task_id": None,
+                        "last_updated": datetime.now(),
+                    })
 
     def clean_up_sample_position_collection(self):
         """
@@ -94,7 +123,7 @@ class SampleView:
         self._sample_positions_collection.drop()
 
     def request_sample_positions(self, task_id: ObjectId,
-                                 sample_positions: Collection[str],  # pylint: disable=unsubscriptable-object
+                                 sample_positions: List[Union[SamplePositionRequest, str]],
                                  timeout: Optional[int] = None) -> SamplePositionsLock:
         """
         Request a list of sample positions, this function will return until all the sample positions are available
@@ -107,25 +136,41 @@ class SampleView:
             timeout: if we cannot request the resources after ``timeout`` seconds, this function
               will return ``SamplePositionsLock(None)`` directly.
         """
-        # TODO: support it!
-        if len(sample_positions) != len(set(sample_positions)):
-            raise ValueError("Currently we do not allow duplicated sample_positions in one request.")
+        sample_positions_request: List[SamplePositionRequest] = [
+            SamplePositionRequest.from_str(sample_position)
+            if isinstance(sample_position, str)
+            else sample_position
+            for sample_position in sample_positions
+        ]
+
+        if len(sample_positions_request) != len(set(sample_position.prefix
+                                                    for sample_position in sample_positions_request)):
+            raise ValueError("Duplicated sample_positions in one request.")
+
+        for sample_position in sample_positions_request:
+            count = self._sample_positions_collection.count_documents(
+                {"name": {"$regex": f"^{sample_position.prefix}"}}
+            )
+            if count < sample_position.number:
+                raise ValueError(f"Position prefix `{sample_position.prefix}` can only "
+                                 f"have {count} matches, but requests {sample_position.number}")
 
         cnt = 0
         while timeout is None or cnt < timeout:
             try:
                 self._lock.acquire(blocking=True)  # pylint: disable=consider-using-with
-                available_positions: Dict[str, Dict[str, Union[str, bool]]] = {}
-                for sample_position_prefix in sample_positions:
-                    result = self.get_available_sample_position(task_id, position_prefix=sample_position_prefix)
-                    if not result:
+                available_positions: Dict[str, List[Dict[str, Union[str, bool]]]] = {}
+                for sample_position in sample_positions_request:
+                    result = self.get_available_sample_position(task_id, position_prefix=sample_position.prefix)
+                    if not result or len(result) < sample_position.number:
                         break
                     # we try to choose the position that has already been locked by this task
-                    available_positions[sample_position_prefix] = \
-                        next(filter(lambda task: not task["need_release"], result), result[0])
+                    available_positions[sample_position.prefix] = \
+                        sorted(result, key=lambda task: int(task["need_release"]))[:sample_position.number]
                 else:
-                    for sample_position in available_positions.values():
-                        self.lock_sample_position(task_id, cast(str, sample_position["name"]))
+                    for sample_positions_ in available_positions.values():
+                        for sample_position_ in sample_positions_:
+                            self.lock_sample_position(task_id, cast(str, sample_position_["name"]))
                     return SamplePositionsLock(sample_positions=available_positions, sample_view=self)
             finally:
                 self._lock.release()
@@ -203,7 +248,6 @@ class SampleView:
         for sample_position in available_sample_positions:
             status, current_task_id = self.get_sample_position_status(sample_position["name"])
             if status is SamplePositionStatus.EMPTY or task_id == current_task_id:
-
                 available_sp_names.append({
                     "name": sample_position["name"],
                     "need_release": self.get_sample_position(

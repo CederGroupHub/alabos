@@ -35,11 +35,12 @@ class TestLabManager(TestCase):
         task_id = ObjectId()
         lab_manager = LabManager(task_id=task_id, device_view=self.device_view, sample_view=self.sample_view)
 
-        with lab_manager.request_resources({Furnace: ["$.inside"], RobotArm: [], None: ["furnace_table"]}) \
+        with lab_manager.request_resources({Furnace: ["$.inside"], RobotArm: [], None: [{"prefix": "furnace_table",
+                                                                                         "number": 1}]}) \
                 as (devices, sample_positions):
             self.assertDictEqual({Furnace: self.device_list["furnace_1"], RobotArm: self.device_list["dummy"]}, devices)
-            self.assertDictEqual({Furnace: {"$.inside": "furnace_1.inside"}, RobotArm: {},
-                                  None: {"furnace_table": "furnace_table"}}, sample_positions)
+            self.assertDictEqual({Furnace: {"$.inside": ["furnace_1.inside"]}, RobotArm: {},
+                                  None: {"furnace_table": ["furnace_table"]}}, sample_positions)
             self.assertEqual("OCCUPIED", self.device_view.get_status("furnace_1").name)
             self.assertEqual("OCCUPIED", self.device_view.get_status("dummy").name)
 

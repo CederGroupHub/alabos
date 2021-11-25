@@ -10,6 +10,6 @@ class Starting(BaseTask):
         self.sample = sample
 
     def run(self):
-        with self.lab_manager.request_sample_positions([self.start_position]) as sample_positions:
+        with self.lab_manager.request_resources({None: self.start_position}) as (devices, sample_positions):
             self.lab_manager.move_sample(sample_id=self.sample,
-                                         position=sample_positions[self.start_position])
+                                         position=sample_positions[None][self.start_position])

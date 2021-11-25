@@ -19,6 +19,8 @@ class DeviceStatus(Enum):
     UNKNOWN = auto()
     IDLE = auto()
     OCCUPIED = auto()
+    ERROR = auto()
+    HOLD = auto()
 
 
 class DevicesLock:
@@ -73,6 +75,20 @@ class DeviceView:
         self._device_collection.create_index([("name", pymongo.HASHED)])
         self._device_list = get_all_devices()
         self._lock = Lock()
+
+    def sync_device_status(self):
+        """
+        Sync the device status (usually when the system is set up)
+
+        Some devices may still be running, so it is not usable now. We will set the
+        status to ``OCCUPIED``
+        """
+        for device in self._device_list.values():
+            status = DeviceStatus.OCCUPIED if device.is_running() else DeviceStatus.IDLE
+            self._update_status(device=device.name,
+                                target_status=status,
+                                required_status=None,
+                                task_id=None)
 
     def add_devices_to_db(self):
         """

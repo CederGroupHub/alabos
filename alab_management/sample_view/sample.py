@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 
 from bson import ObjectId
@@ -17,3 +17,21 @@ class Sample:
     _id: ObjectId
     name: str
     position: Optional[str]
+
+
+@dataclass(frozen=True)
+class SamplePosition:
+    """
+    A sample position in the lab
+
+    Sample position is a position in the lab that can hold sample,
+    it is not a geographic coordinate in the lab, but a defined
+    position in the lab
+
+    - ``name``: the name of this sample position, which is the unique
+      identifier of a sample position
+    - ``description``: a string that describes the sample position briefly
+    """
+    name: str
+    number: int = field(default=1)
+    description: str = field(default="", compare=False, hash=False)

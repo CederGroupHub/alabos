@@ -11,7 +11,7 @@ class Pouring(BaseTask):
         self.sample = sample
 
     def run(self):
-        with self.lab_manager.request_devices([RobotArm]) as devices:
+        with self.lab_manager.request_resources({RobotArm: []}) as (devices, sample_positions):
             robot_arm: RobotArm = devices[RobotArm]
             robot_arm.run_program("vial_pour_2.urp")
             self.logger.log_device_signal({

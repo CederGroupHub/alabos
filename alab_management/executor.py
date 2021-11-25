@@ -5,6 +5,7 @@ which actually executes the tasks
 
 import threading
 import time
+from traceback import format_exc
 from typing import Any, Dict
 
 from .device_view import DeviceView
@@ -31,6 +32,10 @@ class Executor:
         self.device_view = DeviceView()
         self.sample_view = SampleView()
         self.task_view = TaskView()
+        self.logger = DBLogger(task_id=None)  # system log
+
+        # init
+        self.device_view.sync_device_status()
 
     def run(self):
         """
@@ -54,8 +59,11 @@ class Executor:
         task_id = task_entry["task_id"]
         task_type = task_entry.pop("type")
         logger = DBLogger(task_id=task_id)
-        lab_manager = LabManager(device_view=self.device_view, sample_view=self.sample_view, task_id=task_id)
-        print(f"  Starting task: {task_id} ({task_type.__name__})")
+        lab_manager = LabManager(
+            device_view=self.device_view,
+            sample_view=self.sample_view,
+            task_id=task_id
+        )
 
         try:
             task = task_type(
@@ -76,12 +84,35 @@ class Executor:
                 task.run()
             except Exception:
                 self.task_view.update_status(task_id=task_id, status=TaskStatus.ERROR)
+                self.logger.system_log(level="ERROR",
+                                       log_data={
+                                           "logged_by": self.__class__.__name__,
+                                           "type": "TaskEnd",
+                                           "task_id": task_id,
+                                           "task_type": task_type.__name__,
+                                           "status": "ERROR",
+                                           "traceback": format_exc(),
+                                       })
                 raise
             else:
                 self.task_view.update_status(task_id=task_id, status=TaskStatus.COMPLETED)
+                self.logger.system_log(level="INFO",
+                                       log_data={
+                                           "logged_by": self.__class__.__name__,
+                                           "type": "TaskEnd",
+                                           "task_id": task_id,
+                                           "task_type": task_type.__name__,
+                                           "status": "COMPLETED",
+                                       })
             finally:
                 for sample_id in task_entry["samples"].values():
                     self.sample_view.update_sample_task_id(task_id=None, sample_id=sample_id)
 
         task_thread = threading.Thread(target=_run_task)
         task_thread.start()
+        self.logger.system_log(level="INFO",
+                               log_data={
+                                   "type": "TaskStart",
+                                   "task_id": task_id,
+                                   "task_type": task_type.__name__
+                               })

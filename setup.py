@@ -4,7 +4,7 @@ from pathlib import Path
 setup(
     name="alab_management",
     packages=find_packages(exclude=["tests", "tests.*"]),
-    version="0.1.0",
+    version="0.2.0",
     author="Alab Project Team",
     python_requires=">=3.6",
     description="Workflow management system for alab",

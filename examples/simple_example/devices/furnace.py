@@ -4,7 +4,8 @@ from typing import ClassVar
 
 from alab_control.furnace_epc_3016 import FurnaceController, Segment, SegmentType
 
-from alab_management import BaseDevice, SamplePosition
+from alab_management import BaseDevice
+from sample_view.sample import SamplePosition
 
 
 class Furnace(BaseDevice):

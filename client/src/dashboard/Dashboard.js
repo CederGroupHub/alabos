@@ -24,21 +24,38 @@ const StyledExperimentsDiv = styled.div`
 `;
 
 function Dashboard() {
-    // const [statusData, setStatusData] = useState({devices: [], experiments: [{
-    //   name: "xxxxx",
-    //   id: "xxxxxx",
-    //   samples: [{name: "xxx", id: "fdfdsf"}],
-    //   tasks: [{id: "xxxx", status: "ERROR", type: "Heating"},
-    //           {id: "xxxx", status: "RUNNING", type: "Heating"}]
-    // }, {
-    //   name: "xxxxx",
-    //   id: "xxxxxx",
-    //   samples: [{name: "xxx", id: "fdfdsf"}],
-    //   tasks: [{id: "xxxx", status: "RUNNING", type: "Heating"},
-    //           {id: "xxxx", status: "READY", type: "Heating"}]
-    // }]});
+    const [statusData, setStatusData] = useState({
+        devices: [{
+            name: "furnace",
+            type: "Furnace",
+            status: "IDLE",
+            task: "null",
+        }, {
+            name: "scale",
+            type: "Scale",
+            status: "IDLE",
+            task: "null",
+        }, {
+            name: "robot_arm",
+            type: "RobotArm",
+            status: "OCCUPIED",
+            task: "6196fc9b5d573f2efdd8d98d",
+        }], experiments: [{
+            name: "Firing baking soda",
+            id: "xxxxxx",
+            samples: [{name: "soda", id: "fdfdsf"}],
+            tasks: [
+                {id: "6196fc9b5d573f2efdd8d989", status: "COMPLETED", type: "Starting"},
+                {id: "6196fc9b5d573f2efdd8d98a", status: "COMPLETED", type: "Pouring"},
+                {id: "6196fc9b5d573f2efdd8d98b", status: "COMPLETED", type: "Weighing"},
+                {id: "6196fc9b5d573f2efdd8d98c", status: "COMPLETED", type: "Heating"},
+                {id: "6196fc9b5d573f2efdd8d98d", status: "RUNNING", type: "Weighing"},
+                {id: "6196fc9b5d573f2efdd8d98e", status: "WAITING", type: "Ending"},
+            ]
+        }]
+    });
 
-    const [statusData, setStatusData] = useState({devices: [], experiments: []});
+    // const [statusData, setStatusData] = useState({devices: [], experiments: []});
 
     useInterval(() => {
         fetch(STATUS_API)

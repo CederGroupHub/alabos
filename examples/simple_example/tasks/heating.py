@@ -34,10 +34,10 @@ class Heating(BaseTask):
                 })
                 time.sleep(30)
 
-        with self.lab_manager.request_sample_positions(["furnace_table"]) as sample_positions:
+        with self.lab_manager.request_resources({None: ["furnace_table"]}) as (devices, sample_positions):
             move_out_furnace = Moving(sample=self.sample,
                                       task_id=self.task_id,
-                                      dest=sample_positions["furnace_table"],
+                                      dest=sample_positions[None]["furnace_table"],
                                       lab_manager=self.lab_manager,
                                       logger=self.logger)
             move_out_furnace.run()

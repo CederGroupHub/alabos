@@ -6,6 +6,7 @@ from bson import ObjectId
 from alab_management import BaseTask
 from .moving import Moving
 from ..devices.furnace import Furnace
+from alab_management.lab_manager import ResourcesRequest
 
 
 class Heating(BaseTask):
@@ -28,7 +29,6 @@ class Heating(BaseTask):
                                  logger=self.logger)
             moving_task.run()
 
-            print(f"    Heating ({self.task_id}) is on \033[92m{devices[Furnace].name}\033[0m")
             furnace.run_program(self.setpoints)
 
             while furnace.is_running():

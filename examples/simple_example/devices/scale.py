@@ -3,7 +3,8 @@ from typing import ClassVar
 
 import requests
 
-from alab_management import BaseDevice, SamplePosition
+from alab_management import BaseDevice
+from sample_view.sample import SamplePosition
 
 
 class Scale(BaseDevice):

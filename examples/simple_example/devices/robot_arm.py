@@ -3,7 +3,8 @@ import time
 
 from alab_control.robot_arm_ur5e import URRobot
 
-from alab_management import BaseDevice, SamplePosition
+from alab_management import BaseDevice
+from sample_view.sample import SamplePosition
 
 
 class RobotArm(BaseDevice):

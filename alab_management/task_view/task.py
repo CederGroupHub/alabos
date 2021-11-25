@@ -5,6 +5,8 @@ from abc import ABC, abstractmethod
 from typing import Dict, Type
 
 from bson import ObjectId
+from ..lab_manager import LabManager
+from ..logger import DBLogger
 
 
 class BaseTask(ABC):
@@ -14,7 +16,7 @@ class BaseTask(ABC):
     All the tasks should inherit from this class.
     """
 
-    def __init__(self, task_id: ObjectId, lab_manager, logger):
+    def __init__(self, task_id: ObjectId, lab_manager: LabManager, logger: DBLogger):
         """
         Args:
             task_id: the identifier of task

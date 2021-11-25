@@ -3,25 +3,9 @@ Define the base class of devices
 """
 
 from abc import ABC, abstractmethod
-from dataclasses import field, dataclass
 from typing import List, ClassVar, Dict
 
-
-@dataclass(frozen=True)
-class SamplePosition:
-    """
-    A sample position in the lab
-
-    Sample position is a position in the lab that can hold sample,
-    it is not a geographic coordinate in the lab, but a defined
-    position in the lab
-
-    - ``name``: the name of this sample position, which is the unique
-      identifier of a sample position
-    - ``description``: a string that describes the sample position briefly
-    """
-    name: str
-    description: str = field(compare=False, hash=False)
+from ..sample_view.sample import SamplePosition
 
 
 class BaseDevice(ABC):

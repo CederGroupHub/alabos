@@ -1,36 +1,64 @@
 import re
 import time
 from contextlib import contextmanager
-from typing import Type, Dict, List, Optional
+from typing import Type, Dict, List, Optional, Union, Any, cast
 
 from bson import ObjectId
+from pydantic import root_validator
+from pydantic.main import BaseModel
 
+from .logger import DBLogger
 from .device_view.device import BaseDevice
 from .device_view.device_view import DeviceView, DevicesLock
-from .sample_view.sample_view import SampleView, SamplePositionsLock
+from .sample_view.sample_view import SampleView, SamplePositionsLock, SamplePositionRequest
+
+
+class ResourcesRequest(BaseModel):
+    """
+    This class is used to validate the resource request. Each request should have a format of
+    [DeviceType: List of SamplePositionRequest]
+
+    See Also:
+        :py:class:`SamplePositionRequest <alab_management.sample_view.sample_view.SamplePositionRequest>`
+    """
+    __root__: Dict[Optional[Type[BaseDevice]], List[SamplePositionRequest]]
+
+    @root_validator(pre=True, allow_reuse=True)
+    def preprocess(cls, values):  # pylint: disable=no-self-use,no-self-argument
+        values = values["__root__"]
+        # if the sample position request is string, we will automatically add a number attribute = 1.
+        values = {k: [SamplePositionRequest.from_str(v_) if isinstance(v_, str) else v_
+                      for v_ in v] for k, v in values.items()}
+        return {"__root__": values}
 
 
 @contextmanager
-def resource_lock(devices_lock: DevicesLock, sample_positions_lock: SamplePositionsLock,
-                  devices_and_sample_positions: Dict[Optional[Type[BaseDevice]], List[str]]):
+def _resource_lock(devices_lock: DevicesLock, sample_positions_lock: SamplePositionsLock,
+                   devices_and_sample_positions: Dict[Optional[Type[BaseDevice]], List[Dict[str, Any]]]):
     """
     A context manager that releases the devices and the sample positions when they are no longer needed.
+
+    This context manager is only supposed to be used internally, to create context manager and expose
+    to the task definitions
     """
     requested_sample_positions = {}
-    flattened_sample_positions = sample_positions_lock.sample_positions.copy()  # type: ignore
+    flattened_sample_positions = cast(Dict[str, List[str]], sample_positions_lock.sample_positions)
 
     for device_type, device in devices_lock.devices.items():  # type: ignore
         device_name = device.name
-        sample_positions_prefixes = devices_and_sample_positions[device_type]
+        sample_position_requests = devices_and_sample_positions[device_type]
         requested_sample_positions[device_type] = {
-            sample_positions_prefix: flattened_sample_positions.pop(sample_positions_prefix.replace("$", device_name))
-            for sample_positions_prefix in sample_positions_prefixes
+            sample_position_request["prefix"]: flattened_sample_positions.pop(
+                sample_position_request["prefix"].replace("$", device_name))
+            for sample_position_request in sample_position_requests
         }
     if None in devices_and_sample_positions:
         requested_sample_positions[None] = {
-            sample_positions: flattened_sample_positions.pop(sample_positions)
-            for sample_positions in devices_and_sample_positions[None]
+            sample_position_request["prefix"]: flattened_sample_positions.pop(sample_position_request["prefix"])
+            for sample_position_request in devices_and_sample_positions[None]
         }
+
+    assert len(flattened_sample_positions) == 0, "All the sample positions should be consumed."
     yield devices_lock.devices, requested_sample_positions
 
     devices_lock.release()
@@ -43,28 +71,19 @@ class LabManager:
     A task can get access to that to request resources, query sample and
     update sample positions.
     """
+
     def __init__(self, task_id: ObjectId, device_view: DeviceView, sample_view: SampleView):
         self.task_id = task_id
         self._device_view = device_view
         self._sample_view = sample_view
+        self.logger = DBLogger(task_id=task_id)
 
-    def request_devices(self, device_types: List[Type[BaseDevice]], timeout: Optional[int] = None) -> DevicesLock:
-        """
-        Request devices, see also
-        :py:meth:`request_devices <alab_management.device_view.device_view.DeviceView.request_devices>`
-        """
-        return self._device_view.request_devices(self.task_id, device_types, timeout=timeout)
-
-    def request_sample_positions(self, sample_positions: List[str], timeout: Optional[int] = None) \
-            -> SamplePositionsLock:
-        """
-        Request sample positions, see also
-        :py:meth:`request_sample_positions <alab_management.sample_view.sample_view.SampleView.request_sample_positions>`  # noqa pylint: disable=line-too-long
-        """
-        return self._sample_view.request_sample_positions(self.task_id, sample_positions, timeout=timeout)
-
-    def request_resources(self, devices_and_sample_positions: Dict[Optional[Type[BaseDevice]], List[str]]) \
-            -> resource_lock:  # type: ignore
+    def request_resources(
+            self,
+            resource_request: Union[
+                ResourcesRequest, Dict[Optional[Type[BaseDevice]], List[Union[Dict[str, Any], str]]]]
+            # noqa pylint: disable=line-too-long
+    ) -> _resource_lock:  # type: ignore
         """
         Request devices and sample positions
 
@@ -79,33 +98,49 @@ class LabManager:
         you can use ``$`` to represent the name of device, e.g. {Furnace: ["$.inside"]} will be parsed to
         ``furnace_1.inside`` if we are assigned to a furnace named ``furnace_1``.
         """
+        if not isinstance(resource_request, ResourcesRequest):
+            resource_request = ResourcesRequest(__root__=resource_request)
+        resource_request_formatted = resource_request.dict()["__root__"]
+        self.logger.system_log(level="DEBUG", log_data={
+            "logged_by": self.__class__.__name__,
+            "type": "StartRequestResources",
+            "task_id": self.task_id,
+            "resources_list": {k.__name__ if k else str(k): [v_["prefix"] for v_ in v]
+                               for k, v in resource_request_formatted.items()}
+        })
         while True:
-            devices_lock = self.request_devices([
-                device_type for device_type in devices_and_sample_positions.keys()
+            devices_lock = self._device_view.request_devices(task_id=self.task_id, device_types=[
+                device_type for device_type in resource_request_formatted.keys()
                 if device_type is not None
             ])
 
             try:
-                parsed_sample_positions = []
+                parsed_sample_positions_request = []
                 for device_type, device in devices_lock.devices.items():  # type: ignore
                     device_name = device.name
-                    parsed_sample_positions.extend([re.sub(r"\$", device_name, sample_position)
-                                                    for sample_position in devices_and_sample_positions[device_type]])
+                    parsed_sample_positions_request.extend([
+                        {**sample_position_request,
+                         "prefix": re.sub(r"\$", device_name, sample_position_request["prefix"])}
+                        for sample_position_request in resource_request_formatted[device_type]])
 
-                if any("$" in sample_position_prefix
-                       for sample_position_prefix in devices_and_sample_positions.get(None, [])):
+                if any("$" in sample_position_request["prefix"]
+                       for sample_position_request in resource_request_formatted.get(None, [])):
                     raise ValueError("$ should not appear under `None`, which is actually not a device.")
-                parsed_sample_positions.extend(devices_and_sample_positions.get(None, []))
+                parsed_sample_positions_request.extend(resource_request_formatted.get(None, []))
                 # wait for 10 minutes
                 # if it is still not available, release it, wait for 1 minutes
                 # and start to request devices again
-                sample_positions_lock = self.request_sample_positions(timeout=600,
-                                                                      sample_positions=parsed_sample_positions)
+                sample_positions_lock = self._sample_view.request_sample_positions(
+                    task_id=self.task_id,
+                    sample_positions=[SamplePositionRequest(**request) for request in parsed_sample_positions_request],
+                    timeout=600
+                )
 
                 if sample_positions_lock is not None:
-                    return resource_lock(devices_lock=devices_lock,  # type: ignore
-                                         sample_positions_lock=sample_positions_lock,
-                                         devices_and_sample_positions=devices_and_sample_positions)
+                    return _resource_lock(devices_lock=devices_lock,  # type: ignore
+                                          sample_positions_lock=sample_positions_lock,
+                                          devices_and_sample_positions=resource_request_formatted)
+                devices_lock.release()
             except Exception:
                 devices_lock.release()
                 raise

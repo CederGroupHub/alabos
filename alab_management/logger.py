@@ -87,11 +87,11 @@ class DBLogger:
         """
         self.log(level=LoggingLevel.DEBUG, log_data=log_data, logging_type=LoggingType.DEVICE_SIGNAL)
 
-    def system_log(self, log_data: Dict[str, Any]):
+    def system_log(self, level: Union[str, int, LoggingLevel], log_data: Dict[str, Any]):
         """
         Log that comes from the workflow system
         """
-        self.log(level=LoggingLevel.DEBUG, log_data=log_data, logging_type=LoggingType.SYSTEM_LOG)
+        self.log(level=level, log_data=log_data, logging_type=LoggingType.SYSTEM_LOG)
 
     def filter_log(self, level: Union[str, int, LoggingLevel], within: timedelta) -> Iterable[Dict[str, Any]]:
         """
