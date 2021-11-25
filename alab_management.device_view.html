@@ -333,35 +333,10 @@ We use <code class="docutils literal notranslate"><span class="pre">name</span><
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#alab_management.device_view.device.SamplePosition" title="alab_management.device_view.device.SamplePosition"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplePosition</span></code></a>]</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="alab_management.sample_view.html#alab_management.sample_view.sample.SamplePosition" title="alab_management.sample_view.sample.SamplePosition"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplePosition</span></code></a>]</p>
 </dd>
 </dl>
 </dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="alab_management.device_view.device.SamplePosition">
-<em class="property">class </em><code class="sig-name descname">SamplePosition</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">description</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#SamplePosition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device.SamplePosition" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A sample position in the lab</p>
-<p>Sample position is a position in the lab that can hold sample,
-it is not a geographic coordinate in the lab, but a defined
-position in the lab</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: the name of this sample position, which is the unique
-identifier of a sample position</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">description</span></code>: a string that describes the sample position briefly</p></li>
-</ul>
-<dl class="py attribute">
-<dt id="alab_management.device_view.device.SamplePosition.description">
-<code class="sig-name descname">description</code><em class="property">: str</em><a class="headerlink" href="#alab_management.device_view.device.SamplePosition.description" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="alab_management.device_view.device.SamplePosition.name">
-<code class="sig-name descname">name</code><em class="property">: str</em><a class="headerlink" href="#alab_management.device_view.device.SamplePosition.name" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 </dd></dl>
 
@@ -390,6 +365,16 @@ identifier of a sample position</p></li>
 <em class="property">class </em><code class="sig-name descname">DeviceStatus</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceStatus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
 <p>The status of devices</p>
+<dl class="py attribute">
+<dt id="alab_management.device_view.device_view.DeviceStatus.ERROR">
+<code class="sig-name descname">ERROR</code><em class="property"> = 4</em><a class="headerlink" href="#alab_management.device_view.device_view.DeviceStatus.ERROR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="alab_management.device_view.device_view.DeviceStatus.HOLD">
+<code class="sig-name descname">HOLD</code><em class="property"> = 5</em><a class="headerlink" href="#alab_management.device_view.device_view.DeviceStatus.HOLD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py attribute">
 <dt id="alab_management.device_view.device_view.DeviceStatus.IDLE">
 <code class="sig-name descname">IDLE</code><em class="property"> = 2</em><a class="headerlink" href="#alab_management.device_view.device_view.DeviceStatus.IDLE" title="Permalink to this definition">¶</a></dt>
@@ -520,6 +505,14 @@ if waiting more than <code class="docutils literal notranslate"><span class="pre
 <dd class="field-odd"><p>A context manager that you can get value, see also</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="alab_management.device_view.device_view.DeviceView.sync_device_status">
+<code class="sig-name descname">sync_device_status</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.sync_device_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.sync_device_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sync the device status (usually when the system is set up)</p>
+<p>Some devices may still be running, so it is not usable now. We will set the
+status to <code class="docutils literal notranslate"><span class="pre">OCCUPIED</span></code></p>
 </dd></dl>
 
 </dd></dl>

@@ -474,20 +474,8 @@ update sample positions.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="alab_management.lab_manager.LabManager.request_devices">
-<code class="sig-name descname">request_devices</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device_types</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager.request_devices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager.request_devices" title="Permalink to this definition">¶</a></dt>
-<dd><p>Request devices, see also
-<a class="reference internal" href="alab_management.device_view.html#alab_management.device_view.device_view.DeviceView.request_devices" title="alab_management.device_view.device_view.DeviceView.request_devices"><code class="xref py py-meth docutils literal notranslate"><span class="pre">request_devices</span></code></a></p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="alab_management.device_view.html#alab_management.device_view.device_view.DevicesLock" title="alab_management.device_view.device_view.DevicesLock"><code class="xref py py-class docutils literal notranslate"><span class="pre">DevicesLock</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt id="alab_management.lab_manager.LabManager.request_resources">
-<code class="sig-name descname">request_resources</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">devices_and_sample_positions</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager.request_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager.request_resources" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">request_resources</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">resource_request</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager.request_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager.request_resources" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request devices and sample positions</p>
 <p>Usually, devices_and_sample_positions has the format {DeviceType: [“sample_position_1”, …]}. The
 DeviceType can be <code class="docutils literal notranslate"><span class="pre">None</span></code> so that you can request the sample positions that do not belong to
@@ -499,29 +487,28 @@ you can use <code class="docutils literal notranslate"><span class="pre">$</span
 <code class="docutils literal notranslate"><span class="pre">furnace_1.inside</span></code> if we are assigned to a furnace named <code class="docutils literal notranslate"><span class="pre">furnace_1</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#alab_management.lab_manager.resource_lock" title="alab_management.lab_manager.resource_lock"><code class="xref py py-class docutils literal notranslate"><span class="pre">resource_lock</span></code></a></p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_resource_lock</span></code></p>
 </dd>
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py class">
+<dt id="alab_management.lab_manager.ResourcesRequest">
+<em class="property">class </em><code class="sig-name descname">ResourcesRequest</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#ResourcesRequest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.ResourcesRequest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.main.BaseModel</span></code></p>
+<p>This class is used to validate the resource request. Each request should have a format of
+[DeviceType: List of SamplePositionRequest]</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SamplePositionRequest" title="alab_management.sample_view.sample_view.SamplePositionRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplePositionRequest</span></code></a></p>
+</div>
 <dl class="py method">
-<dt id="alab_management.lab_manager.LabManager.request_sample_positions">
-<code class="sig-name descname">request_sample_positions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sample_positions</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager.request_sample_positions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager.request_sample_positions" title="Permalink to this definition">¶</a></dt>
-<dd><p>Request sample positions, see also
-<a class="reference internal" href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SampleView.request_sample_positions" title="alab_management.sample_view.sample_view.SampleView.request_sample_positions"><code class="xref py py-meth docutils literal notranslate"><span class="pre">request_sample_positions</span></code></a>  # noqa pylint: disable=line-too-long</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="alab_management.sample_view.html#alab_management.sample_view.sample_view.SamplePositionsLock" title="alab_management.sample_view.sample_view.SamplePositionsLock"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplePositionsLock</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
+<dt id="alab_management.lab_manager.ResourcesRequest.preprocess">
+<em class="property">classmethod </em><code class="sig-name descname">preprocess</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">values</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#ResourcesRequest.preprocess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.ResourcesRequest.preprocess" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-</dd></dl>
-
-<dl class="py function">
-<dt id="alab_management.lab_manager.resource_lock">
-<code class="sig-name descname">resource_lock</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">devices_lock</span></em>, <em class="sig-param"><span class="n">sample_positions_lock</span></em>, <em class="sig-param"><span class="n">devices_and_sample_positions</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#resource_lock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.resource_lock" title="Permalink to this definition">¶</a></dt>
-<dd><p>A context manager that releases the devices and the sample positions when they are no longer needed.</p>
 </dd></dl>
 
 </div>
@@ -576,7 +563,7 @@ you can use <code class="docutils literal notranslate"><span class="pre">$</span
 
 <dl class="py method">
 <dt id="alab_management.logger.DBLogger.system_log">
-<code class="sig-name descname">system_log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">log_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#DBLogger.system_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.logger.DBLogger.system_log" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">system_log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">level</span></em>, <em class="sig-param"><span class="n">log_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#DBLogger.system_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.logger.DBLogger.system_log" title="Permalink to this definition">¶</a></dt>
 <dd><p>Log that comes from the workflow system</p>
 </dd></dl>
 
