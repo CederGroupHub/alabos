@@ -11,6 +11,7 @@ from .device_view.device import BaseDevice
 from .device_view.device_view import DeviceView, DevicesLock
 from .logger import DBLogger
 from .sample_view.sample_view import SampleView, SamplePositionsLock, SamplePositionRequest
+from .task_view.task_view import TaskView, TaskStatus
 
 
 class ResourcesRequest(BaseModel):
@@ -90,10 +91,12 @@ class LabManager:
     update sample positions.
     """
 
-    def __init__(self, task_id: ObjectId, device_view: DeviceView, sample_view: SampleView):
+    def __init__(self, task_id: ObjectId, task_view: TaskView,
+                 device_view: DeviceView, sample_view: SampleView):
         self.task_id = task_id
         self._device_view = device_view
         self._sample_view = sample_view
+        self._task_view = task_view
         self.logger = DBLogger(task_id=task_id)
 
     def request_resources(
@@ -121,6 +124,7 @@ class LabManager:
         if not isinstance(resource_request, ResourcesRequest):
             resource_request = ResourcesRequest(__root__=resource_request)
         resource_request_formatted = resource_request.dict()["__root__"]
+        self._task_view.update_status(task_id=self.task_id, status=TaskStatus.REQUESTING_RESOURCE)
         self.logger.system_log(level="DEBUG", log_data={
             "logged_by": self.__class__.__name__,
             "type": "StartRequestResources",
@@ -157,6 +161,7 @@ class LabManager:
                 )
 
                 if sample_positions_lock is not None:
+                    self._task_view.update_status(task_id=self.task_id, status=TaskStatus.RUNNING)
                     return _resource_lock(devices_lock=devices_lock,  # type: ignore
                                           sample_positions_lock=sample_positions_lock,
                                           resource_request=resource_request_formatted, logger=self.logger)

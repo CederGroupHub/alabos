@@ -8,7 +8,7 @@ os.environ["ALAB_CONFIG"] = (Path(__file__).parent /
                              "fake_lab" / "config.toml").as_posix()
 
 from alab_management.lab_manager import LabManager
-from alab_management import DeviceView, SampleView
+from alab_management import DeviceView, SampleView, TaskView
 from alab_management.scripts import setup_lab
 from alab_management.scripts.cleanup_lab import _cleanup_lab
 
@@ -21,10 +21,13 @@ class TestLabManager(TestCase):
         self.device_list = self.device_view._device_list
         self.sample_view = SampleView()
         self.sample_view._sample_collection.drop()
+        self.task_view = TaskView()
+        self.task_view._task_collection.drop()
 
     def tearDown(self) -> None:
         _cleanup_lab()
         self.sample_view._sample_collection.drop()
+        self.task_view._task_collection.drop()
 
     def test_request_resources(self):
         device_types = {device.__name__: device
@@ -32,8 +35,13 @@ class TestLabManager(TestCase):
         Furnace = device_types["Furnace"]
         RobotArm = device_types["RobotArm"]
 
-        task_id = ObjectId()
-        lab_manager = LabManager(task_id=task_id, device_view=self.device_view, sample_view=self.sample_view)
+        task_id = self.task_view.create_task(**{
+            "task_type": "Heating",
+            "samples": {"sample": ObjectId()},
+            "parameters": {"setpoints": [[10, 600]]}
+        })
+        lab_manager = LabManager(task_id=task_id, device_view=self.device_view,
+                                 sample_view=self.sample_view, task_view=self.task_view)
 
         with lab_manager.request_resources({Furnace: ["$/inside"], RobotArm: [], None: [{"prefix": "furnace_table",
                                                                                          "number": 1}]}) \
@@ -54,8 +62,13 @@ class TestLabManager(TestCase):
         self.assertEqual("EMPTY", self.sample_view.get_sample_position_status("furnace_table")[0].name)
 
     def test_request_resources_empty(self):
-        task_id = ObjectId()
-        lab_manager = LabManager(task_id=task_id, device_view=self.device_view, sample_view=self.sample_view)
+        task_id = self.task_view.create_task(**{
+            "task_type": "Heating",
+            "samples": {"sample": ObjectId()},
+            "parameters": {"setpoints": [[10, 600]]}
+        })
+        lab_manager = LabManager(task_id=task_id, device_view=self.device_view,
+                                 sample_view=self.sample_view, task_view=self.task_view)
 
         with lab_manager.request_resources({}) as (devices, sample_positions):
             self.assertDictEqual({}, devices)

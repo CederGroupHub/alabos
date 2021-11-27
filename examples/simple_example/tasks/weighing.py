@@ -12,10 +12,7 @@ class Weighing(BaseTask):
         super(Weighing, self).__init__(*args, **kwargs)
         self.sample = sample
 
-    def required_resources(self):
-        return {}
-
-    def run(self, devices, sample_positions):
+    def run(self):
         with self.lab_manager.request_resources({Scale: ["$/inside"],
                                                  None: ["furnace_table"]}) as devices_and_positions:
             devices, sample_positions = devices_and_positions

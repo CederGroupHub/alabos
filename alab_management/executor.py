@@ -6,7 +6,7 @@ which actually executes the tasks
 import threading
 import time
 from traceback import format_exc
-from typing import Any, Dict, ContextManager, cast
+from typing import Any, Dict
 
 from .device_view import DeviceView
 from .lab_manager import LabManager
@@ -59,16 +59,11 @@ class Executor:
         """
         task_id = task_entry["task_id"]
         task_type = task_entry.pop("type")
-        logger = DBLogger(task_id=task_id)
-        lab_manager = LabManager(
-            device_view=self.device_view,
-            sample_view=self.sample_view,
-            task_id=task_id
-        )
+        lab_manager = LabManager(task_id=task_id, task_view=self.task_view,
+                                 sample_view=self.sample_view, device_view=self.device_view)
 
         try:
             task: BaseTask = task_type(
-                logger=logger,
                 lab_manager=lab_manager,
                 task_id=task_id,
                 **task_entry["samples"],
@@ -78,17 +73,12 @@ class Executor:
             raise ParameterError(exception.args[0]) from exception
 
         def _run_task():
-            resource_request = task.required_resources()
-            self.task_view.update_status(task_id=task_id, status=TaskStatus.REQUESTING_RESOURCE)
-            resource_lock = cast(ContextManager, lab_manager.request_resources(resource_request=resource_request))
-
-            devices, sample_positions = resource_lock.__enter__()  # pylint: disable=no-member
+            self.task_view.update_status(task_id=task_id, status=TaskStatus.RUNNING)
+            for sample_id in task_entry["samples"].values():
+                self.sample_view.update_sample_task_id(task_id=task_id, sample_id=sample_id)
 
             try:
-                self.task_view.update_status(task_id=task_id, status=TaskStatus.RUNNING)
-                for sample_id in task_entry["samples"].values():
-                    self.sample_view.update_sample_task_id(task_id=task_id, sample_id=sample_id)
-                task.run(devices=devices, sample_positions=sample_positions)
+                task.run()
             except Exception:
                 self.task_view.update_status(task_id=task_id, status=TaskStatus.ERROR)
                 self.logger.system_log(level="ERROR",
@@ -112,7 +102,6 @@ class Executor:
                                            "status": "COMPLETED",
                                        })
             finally:
-                resource_lock.__exit__(None, None, None)  # pylint: disable=no-member
                 for sample_id in task_entry["samples"].values():
                     self.sample_view.update_sample_task_id(task_id=None, sample_id=sample_id)
 

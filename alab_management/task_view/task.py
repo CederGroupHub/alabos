@@ -2,15 +2,15 @@
 Define the base class of task
 """
 from abc import ABC, abstractmethod
-from typing import Dict, Type, Any, Union, List, Optional, TypeVar
+from typing import Dict, Type
+from typing import TYPE_CHECKING
 
 from bson import ObjectId
 
-from ..device_view.device import BaseDevice
-from ..lab_manager import LabManager
 from ..logger import DBLogger
 
-_KV = TypeVar("_KV", bound=BaseDevice)
+if TYPE_CHECKING:
+    from ..lab_manager import LabManager
 
 
 class BaseTask(ABC):
@@ -20,15 +20,13 @@ class BaseTask(ABC):
     All the tasks should inherit from this class.
     """
 
-    def __init__(self, task_id: ObjectId, lab_manager: LabManager, logger: DBLogger):
+    def __init__(self, task_id: ObjectId, lab_manager: "LabManager"):
         """
         Args:
             task_id: the identifier of task
             lab_manager: you can request devices and positions
               from it and update the sample's position in the sample view, refer to
               :py:class:`LabManager <alab_management.lab_manager.LabManager>` for more information
-            logger: you can use logger to record any data you want it to record, refer to
-              :py:class:`DBLogger <alab_management.logger.DBLogger>` for more information
 
         Here is an example about how to define a custom task
 
@@ -43,11 +41,10 @@ class BaseTask(ABC):
         """
         self.task_id = task_id
         self.lab_manager = lab_manager
-        self.logger = logger
+        self.logger = DBLogger(task_id=task_id)
 
     @abstractmethod
-    def run(self, devices: Dict[Type[_KV], _KV],
-            sample_positions: Dict[Optional[Type[_KV]], Dict[str, List[str]]]):
+    def run(self):
         """
         Run the task. In this function, you can request lab resources from lab manager and log data to database
         with logger.
@@ -94,10 +91,6 @@ class BaseTask(ABC):
                   })
 
         """
-        raise NotImplementedError()
-
-    @abstractmethod
-    def required_resources(self) -> Dict[Optional[Type[BaseDevice]], List[Union[Dict[str, Any], str]]]:
         raise NotImplementedError()
 
 

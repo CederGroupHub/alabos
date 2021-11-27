@@ -40,10 +40,12 @@ class TestTaskView(TestCase):
         self.assertEqual([], task["next_tasks"])
         self.assertEqual([], task["prev_tasks"])
 
+        test_task_ids = [self.task_view.create_task(**task_dict) for i in range(5)]
+
         # test prev/next task
         task_dict_ = task_dict.copy()
         task_dict_["prev_tasks"] = None
-        task_dict_["next_tasks"] = [ObjectId()]
+        task_dict_["next_tasks"] = [test_task_ids[0]]
         task_id = self.task_view.create_task(**task_dict_)
         task = self.task_view.get_task(task_id)
         self.assertListEqual([], task["prev_tasks"])
@@ -51,8 +53,8 @@ class TestTaskView(TestCase):
 
         # test single objectId case
         task_dict_ = task_dict.copy()
-        task_dict_["prev_tasks"] = ObjectId()
-        task_dict_["next_tasks"] = ObjectId()
+        task_dict_["prev_tasks"] = test_task_ids[1]
+        task_dict_["next_tasks"] = test_task_ids[2]
         task_id = self.task_view.create_task(**task_dict_)
         task = self.task_view.get_task(task_id)
         self.assertListEqual([task_dict_["prev_tasks"]], task["prev_tasks"])

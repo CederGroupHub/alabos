@@ -66,11 +66,18 @@ class TaskView:
             raise ValueError(f"Unsupported task type: {task_type}")
 
         prev_tasks = prev_tasks if prev_tasks is not None else []
-        prev_tasks = prev_tasks if isinstance(prev_tasks, (list, tuple)) else [prev_tasks]
+        prev_tasks = prev_tasks if isinstance(prev_tasks, list) else [prev_tasks]
         next_tasks = next_tasks if next_tasks is not None else []
-        next_tasks = next_tasks if isinstance(next_tasks, (list, tuple)) else [next_tasks]
+        next_tasks = next_tasks if isinstance(next_tasks, list) else [next_tasks]
 
-        # TODO: check samples and parameters and check prev/next task id
+        for prev_task in prev_tasks:
+            if self.get_task(task_id=prev_task) is None:
+                raise ValueError(f"Non-exist task id: {prev_task}")
+
+        for next_task in next_tasks:
+            if self.get_task(task_id=next_task) is None:
+                raise ValueError(f"Non-exist task id: {next_task}")
+
         result = self._task_collection.insert_one({
             "type": task_type,
             "status": TaskStatus.WAITING.name,
@@ -175,11 +182,18 @@ class TaskView:
         if result is None:
             raise ValueError(f"Cannot find task with id: {task_id}")
 
-        # TODO: check if the task exists
         prev_tasks = prev_tasks if prev_tasks is not None else []
-        prev_tasks = prev_tasks if isinstance(prev_tasks, (list, tuple)) else [prev_tasks]
+        prev_tasks = prev_tasks if isinstance(prev_tasks, list) else [prev_tasks]
         next_tasks = next_tasks if next_tasks is not None else []
-        next_tasks = next_tasks if isinstance(next_tasks, (list, tuple)) else [next_tasks]
+        next_tasks = next_tasks if isinstance(next_tasks, list) else [next_tasks]
+
+        for prev_task in prev_tasks:
+            if self.get_task(task_id=prev_task) is None:
+                raise ValueError(f"Non-exist task id: {prev_task}")
+
+        for next_task in next_tasks:
+            if self.get_task(task_id=next_task) is None:
+                raise ValueError(f"Non-exist task id: {next_task}")
 
         self._task_collection.update_one({"_id": task_id}, {"$push": {
             "next_tasks": {"$each": next_tasks},

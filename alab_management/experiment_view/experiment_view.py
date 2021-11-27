@@ -3,8 +3,8 @@ from typing import List, Any, Dict, Optional, cast, Union
 
 from bson import ObjectId
 
-from ..db import get_collection
 from .experiment import InputExperiment
+from ..db import get_collection
 
 
 class ExperimentStatus(Enum):

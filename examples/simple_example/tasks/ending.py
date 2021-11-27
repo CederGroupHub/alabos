@@ -8,8 +8,5 @@ class Ending(BaseTask):
         super(Ending, self).__init__(*args, **kwargs)
         self.sample = sample
 
-    def required_resources(self):
-        return {}
-
-    def run(self, devices, sample_positions):
+    def run(self):
         self.lab_manager.move_sample(sample_id=self.sample, position=None)

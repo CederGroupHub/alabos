@@ -15,25 +15,22 @@ class Heating(BaseTask):
         self.setpoints = setpoints
         self.sample = sample
 
-    def required_resources(self):
-        return {Furnace: ["$/inside"]}
+    def run(self):
+        with self.lab_manager.request_resources({Furnace: ["$/inside"]}) as (devices, sample_positions):
+            furnace = devices[Furnace]
+            inside_furnace = sample_positions[Furnace]["$/inside"][0]
 
-    def run(self, devices, sample_positions):
-        furnace = devices[Furnace]
-        inside_furnace = sample_positions[Furnace]["$/inside"][0]
+            moving_task = Moving(sample=self.sample,
+                                 task_id=self.task_id,
+                                 dest=inside_furnace,
+                                 lab_manager=self.lab_manager)
+            moving_task.run()
 
-        moving_task = Moving(sample=self.sample,
-                             task_id=self.task_id,
-                             dest=inside_furnace,
-                             lab_manager=self.lab_manager,
-                             logger=self.logger)
-        moving_task.run()
+            furnace.run_program(self.setpoints)
 
-        furnace.run_program(self.setpoints)
-
-        while furnace.is_running():
-            self.logger.log_device_signal({
-                "device": furnace.name,
-                "temperature": furnace.get_temperature(),
-            })
-            time.sleep(1)
+            while furnace.is_running():
+                self.logger.log_device_signal({
+                    "device": furnace.name,
+                    "temperature": furnace.get_temperature(),
+                })
+                time.sleep(1)
