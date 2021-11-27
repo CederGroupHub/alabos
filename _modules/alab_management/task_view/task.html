@@ -226,15 +226,15 @@
 <span class="sd">Define the base class of task</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Type</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 
-<span class="kn">from</span> <span class="nn">..device_view.device</span> <span class="kn">import</span> <span class="n">BaseDevice</span>
-<span class="kn">from</span> <span class="nn">..lab_manager</span> <span class="kn">import</span> <span class="n">LabManager</span>
 <span class="kn">from</span> <span class="nn">..logger</span> <span class="kn">import</span> <span class="n">DBLogger</span>
 
-<span class="n">_KV</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_KV&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">BaseDevice</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">..lab_manager</span> <span class="kn">import</span> <span class="n">LabManager</span>
 
 
 <div class="viewcode-block" id="BaseTask"><a class="viewcode-back" href="../../../task_definition.html#alab_management.task_view.task.BaseTask">[docs]</a><span class="k">class</span> <span class="nc">BaseTask</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
@@ -244,15 +244,13 @@
 <span class="sd">    All the tasks should inherit from this class.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="BaseTask.__init__"><a class="viewcode-back" href="../../../task_definition.html#alab_management.task_view.task.BaseTask.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">lab_manager</span><span class="p">:</span> <span class="n">LabManager</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">DBLogger</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseTask.__init__"><a class="viewcode-back" href="../../../task_definition.html#alab_management.task_view.task.BaseTask.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">lab_manager</span><span class="p">:</span> <span class="s2">&quot;LabManager&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            task_id: the identifier of task</span>
 <span class="sd">            lab_manager: you can request devices and positions</span>
 <span class="sd">              from it and update the sample&#39;s position in the sample view, refer to</span>
 <span class="sd">              :py:class:`LabManager &lt;alab_management.lab_manager.LabManager&gt;` for more information</span>
-<span class="sd">            logger: you can use logger to record any data you want it to record, refer to</span>
-<span class="sd">              :py:class:`DBLogger &lt;alab_management.logger.DBLogger&gt;` for more information</span>
 
 <span class="sd">        Here is an example about how to define a custom task</span>
 
@@ -267,11 +265,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span> <span class="o">=</span> <span class="n">task_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lab_manager</span> <span class="o">=</span> <span class="n">lab_manager</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">DBLogger</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseTask.run"><a class="viewcode-back" href="../../../task_definition.html#alab_management.task_view.task.BaseTask.run">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">devices</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">_KV</span><span class="p">],</span> <span class="n">_KV</span><span class="p">],</span>
-            <span class="n">sample_positions</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">_KV</span><span class="p">]],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]):</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run the task. In this function, you can request lab resources from lab manager and log data to database</span>
 <span class="sd">        with logger.</span>
@@ -318,10 +315,6 @@
 <span class="sd">                  })</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="BaseTask.required_resources"><a class="viewcode-back" href="../../../alab_management.task_view.html#alab_management.task_view.task.BaseTask.required_resources">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">required_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]]:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div></div>
 
 

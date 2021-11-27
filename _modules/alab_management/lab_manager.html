@@ -235,6 +235,7 @@
 <span class="kn">from</span> <span class="nn">.device_view.device_view</span> <span class="kn">import</span> <span class="n">DeviceView</span><span class="p">,</span> <span class="n">DevicesLock</span>
 <span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="n">DBLogger</span>
 <span class="kn">from</span> <span class="nn">.sample_view.sample_view</span> <span class="kn">import</span> <span class="n">SampleView</span><span class="p">,</span> <span class="n">SamplePositionsLock</span><span class="p">,</span> <span class="n">SamplePositionRequest</span>
+<span class="kn">from</span> <span class="nn">.task_view.task_view</span> <span class="kn">import</span> <span class="n">TaskView</span><span class="p">,</span> <span class="n">TaskStatus</span>
 
 
 <div class="viewcode-block" id="ResourcesRequest"><a class="viewcode-back" href="../../alab_management.html#alab_management.lab_manager.ResourcesRequest">[docs]</a><span class="k">class</span> <span class="nc">ResourcesRequest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
@@ -314,10 +315,12 @@
 <span class="sd">    update sample positions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">device_view</span><span class="p">:</span> <span class="n">DeviceView</span><span class="p">,</span> <span class="n">sample_view</span><span class="p">:</span> <span class="n">SampleView</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">task_view</span><span class="p">:</span> <span class="n">TaskView</span><span class="p">,</span>
+                 <span class="n">device_view</span><span class="p">:</span> <span class="n">DeviceView</span><span class="p">,</span> <span class="n">sample_view</span><span class="p">:</span> <span class="n">SampleView</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span> <span class="o">=</span> <span class="n">task_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span> <span class="o">=</span> <span class="n">device_view</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span> <span class="o">=</span> <span class="n">sample_view</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_task_view</span> <span class="o">=</span> <span class="n">task_view</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">DBLogger</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span>
 
 <div class="viewcode-block" id="LabManager.request_resources"><a class="viewcode-back" href="../../alab_management.html#alab_management.lab_manager.LabManager.request_resources">[docs]</a>    <span class="k">def</span> <span class="nf">request_resources</span><span class="p">(</span>
@@ -345,6 +348,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">resource_request</span><span class="p">,</span> <span class="n">ResourcesRequest</span><span class="p">):</span>
             <span class="n">resource_request</span> <span class="o">=</span> <span class="n">ResourcesRequest</span><span class="p">(</span><span class="n">__root__</span><span class="o">=</span><span class="n">resource_request</span><span class="p">)</span>
         <span class="n">resource_request_formatted</span> <span class="o">=</span> <span class="n">resource_request</span><span class="o">.</span><span class="n">dict</span><span class="p">()[</span><span class="s2">&quot;__root__&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_task_view</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">REQUESTING_RESOURCE</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">system_log</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span> <span class="n">log_data</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;logged_by&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
             <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;StartRequestResources&quot;</span><span class="p">,</span>
@@ -381,6 +385,7 @@
                 <span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">sample_positions_lock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_task_view</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">)</span>
                     <span class="k">return</span> <span class="n">_resource_lock</span><span class="p">(</span><span class="n">devices_lock</span><span class="o">=</span><span class="n">devices_lock</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
                                           <span class="n">sample_positions_lock</span><span class="o">=</span><span class="n">sample_positions_lock</span><span class="p">,</span>
                                           <span class="n">resource_request</span><span class="o">=</span><span class="n">resource_request_formatted</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
