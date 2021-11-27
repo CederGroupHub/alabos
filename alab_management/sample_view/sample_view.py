@@ -7,7 +7,7 @@ from typing import Optional, List, Dict, Any, Tuple, cast, Union
 
 import pymongo
 from bson import ObjectId
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, conint
 
 from .sample import Sample, SamplePosition
 from ..db import get_collection
@@ -21,7 +21,7 @@ class SamplePositionRequest(BaseModel):
     the number you request. By default, the number is set to be 1.
     """
     prefix: str
-    number: int = 1
+    number: conint(ge=0) = 1  # type: ignore
 
     @classmethod
     def from_str(cls, sample_position_prefix: str) -> "SamplePositionRequest":  # pylint: disable=no-self-use
@@ -32,12 +32,6 @@ class SamplePositionRequest(BaseModel):
         if isinstance(sample_position, str):
             return cls.from_str(sample_position_prefix=sample_position)
         return cls(**sample_position)
-
-    @validator("number")
-    def check_number(cls, number):  # pylint: disable=no-self-argument,no-self-use
-        if number <= 0:
-            raise ValueError("Number must be positive.")
-        return number
 
 
 class SamplePositionStatus(Enum):
@@ -109,10 +103,15 @@ class SampleView:
         """
         for sample_pos in sample_positions:
             for i in range(sample_pos.number):
-                # we use <name>/<number> format to create multiple sample positions
+                # we use <name><SEPARATOR><number> format to create multiple sample positions
                 # if there is only one sample position (sample_position.number == 1)
                 # the name of sample position will be directly used as the sample position's name in the database
-                name = f"{sample_pos.name}/{i}" if sample_pos.number != 1 else sample_pos.name
+                name = f"{sample_pos.name}{SamplePosition.SEPARATOR}{i}" \
+                    if sample_pos.number != 1 else sample_pos.name
+
+                if re.search(r"[$.]", name) is not None:
+                    raise ValueError(f"Unsupported sample position name: {name}. "
+                                     f"Sample position name should not contain '.' or '$'")
 
                 sample_pos_ = self._sample_positions_collection.find_one({"name": name})
                 if sample_pos_ is None:

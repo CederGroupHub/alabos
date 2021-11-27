@@ -37,3 +37,7 @@ class SamplePosition:
     name: str
     number: int = field(default=1)
     description: str = field(default="", compare=False, hash=False)
+
+    def __post_init__(self):
+        if self.number < 0:
+            raise ValueError(f"The number of sample position ({self.name}) should be >= 0, but get {self.number}")

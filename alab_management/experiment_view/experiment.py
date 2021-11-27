@@ -1,6 +1,6 @@
 from typing import List, Any, Dict
 
-from pydantic import BaseModel  # pylint: disable=no-name-in-module
+from pydantic import BaseModel, constr  # pylint: disable=no-name-in-module
 
 
 class _Sample(BaseModel):
@@ -18,6 +18,6 @@ class InputExperiment(BaseModel):
     """
     This is the format that user should follow to write to experiment database
     """
-    name: str
+    name: constr(regex=r"^[^$.]+$")  # type: ignore # noqa: F722
     samples: List[_Sample]
     tasks: List[_Task]
