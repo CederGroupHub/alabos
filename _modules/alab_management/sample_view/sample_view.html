@@ -231,7 +231,7 @@
 
 <span class="kn">import</span> <span class="nn">pymongo</span>
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">validator</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">conint</span>
 
 <span class="kn">from</span> <span class="nn">.sample</span> <span class="kn">import</span> <span class="n">Sample</span><span class="p">,</span> <span class="n">SamplePosition</span>
 <span class="kn">from</span> <span class="nn">..db</span> <span class="kn">import</span> <span class="n">get_collection</span>
@@ -245,7 +245,7 @@
 <span class="sd">    the number you request. By default, the number is set to be 1.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">number</span><span class="p">:</span> <span class="n">conint</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># type: ignore</span>
 
 <div class="viewcode-block" id="SamplePositionRequest.from_str"><a class="viewcode-back" href="../../../alab_management.sample_view.html#alab_management.sample_view.sample_view.SamplePositionRequest.from_str">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_str</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sample_position_prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SamplePositionRequest&quot;</span><span class="p">:</span>  <span class="c1"># pylint: disable=no-self-use</span>
@@ -255,13 +255,7 @@
     <span class="k">def</span> <span class="nf">from_py_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sample_position</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]):</span>  <span class="c1"># pylint: disable=no-self-use</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sample_position</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="n">sample_position_prefix</span><span class="o">=</span><span class="n">sample_position</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">sample_position</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="SamplePositionRequest.check_number"><a class="viewcode-back" href="../../../alab_management.sample_view.html#alab_management.sample_view.sample_view.SamplePositionRequest.check_number">[docs]</a>    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;number&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">check_number</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>  <span class="c1"># pylint: disable=no-self-argument,no-self-use</span>
-        <span class="k">if</span> <span class="n">number</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number must be positive.&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">number</span></div></div>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">sample_position</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="SamplePositionStatus"><a class="viewcode-back" href="../../../alab_management.sample_view.html#alab_management.sample_view.sample_view.SamplePositionStatus">[docs]</a><span class="k">class</span> <span class="nc">SamplePositionStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
@@ -333,10 +327,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">sample_pos</span> <span class="ow">in</span> <span class="n">sample_positions</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sample_pos</span><span class="o">.</span><span class="n">number</span><span class="p">):</span>
-                <span class="c1"># we use &lt;name&gt;/&lt;number&gt; format to create multiple sample positions</span>
+                <span class="c1"># we use &lt;name&gt;&lt;SEPARATOR&gt;&lt;number&gt; format to create multiple sample positions</span>
                 <span class="c1"># if there is only one sample position (sample_position.number == 1)</span>
                 <span class="c1"># the name of sample position will be directly used as the sample position&#39;s name in the database</span>
-                <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sample_pos</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">sample_pos</span><span class="o">.</span><span class="n">number</span> <span class="o">!=</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">sample_pos</span><span class="o">.</span><span class="n">name</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sample_pos</span><span class="o">.</span><span class="n">name</span><span class="si">}{</span><span class="n">SamplePosition</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="si">}{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> \
+                    <span class="k">if</span> <span class="n">sample_pos</span><span class="o">.</span><span class="n">number</span> <span class="o">!=</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">sample_pos</span><span class="o">.</span><span class="n">name</span>
+
+                <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[$.]&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported sample position name: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">. &quot;</span>
+                                     <span class="sa">f</span><span class="s2">&quot;Sample position name should not contain &#39;.&#39; or &#39;$&#39;&quot;</span><span class="p">)</span>
 
                 <span class="n">sample_pos_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">})</span>
                 <span class="k">if</span> <span class="n">sample_pos_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -529,6 +528,10 @@
         <span class="k">if</span> <span class="n">position</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_unoccupied_position</span><span class="p">(</span><span class="n">position</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Requested position (</span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2">) is not EMPTY.&quot;</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[.$]&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported sample name: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">. &quot;</span>
+                             <span class="sa">f</span><span class="s2">&quot;Sample name should not contain &#39;.&#39; or &#39;$&#39;&quot;</span><span class="p">)</span>
+
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span>
             <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
             <span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="n">position</span><span class="p">,</span>
@@ -547,7 +550,6 @@
         <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">Sample</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
                           <span class="n">position</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">],</span> <span class="n">task_id</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">])</span>
-
         <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="SampleView.update_sample_task_id"><a class="viewcode-back" href="../../../alab_management.sample_view.html#alab_management.sample_view.sample_view.SampleView.update_sample_task_id">[docs]</a>    <span class="k">def</span> <span class="nf">update_sample_task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]):</span>
