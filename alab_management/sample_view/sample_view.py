@@ -304,6 +304,10 @@ class SampleView:
         if position is not None and not self.is_unoccupied_position(position):
             raise ValueError(f"Requested position ({position}) is not EMPTY.")
 
+        if re.search(r"[.$]", name) is not None:
+            raise ValueError(f"Unsupported sample name: {name}. "
+                             f"Sample name should not contain '.' or '$'")
+
         result = self._sample_collection.insert_one({
             "name": name,
             "position": position,
@@ -322,7 +326,6 @@ class SampleView:
         if result is not None:
             return Sample(_id=result["_id"], name=result["name"],
                           position=result["position"], task_id=result["task_id"])
-
         return None
 
     def update_sample_task_id(self, sample_id: ObjectId, task_id: Optional[ObjectId]):
