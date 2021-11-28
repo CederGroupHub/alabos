@@ -50,9 +50,9 @@ def import_device_definitions(file_folder: str, module_name: str):
 
     for path in file_folder_path.iterdir():
         file_name = path.relative_to(file_folder_path)
-        if re.match(r'^[a-zA-Z][a-zA-Z0-9_.]*$', file_name.name) is None:
+        if re.match(r'^[a-zA-Z][a-zA-Z0-9_]*(\.py)?$', file_name.name) is None:
             continue
-        device_module = importlib.import_module("." + re.sub(r'\.py$', '', path.name), package=module_name)
+        device_module = importlib.import_module("." + re.sub(r'(\.py)$', '', path.name), package=module_name)
 
         for v in device_module.__dict__.values():
             if (isinstance(v, BaseDevice)
@@ -75,9 +75,9 @@ def import_task_definitions(file_folder: str, module_name: str):
 
     for path in file_folder_path.iterdir():
         file_name = path.relative_to(file_folder_path)
-        if re.match(r'^[a-zA-Z][a-zA-Z0-9_.]*$', file_name.name) is None:
+        if re.match(r'^[a-zA-Z][a-zA-Z0-9_.]*(\.py)?$', file_name.name) is None:
             continue
-        task_module = importlib.import_module("." + re.sub(r'\.py$', '', path.name), package=module_name)
+        task_module = importlib.import_module("." + re.sub(r'(\.py)$', '', path.name), package=module_name)
 
         for v in task_module.__dict__.values():
             if (isinstance(v, type)

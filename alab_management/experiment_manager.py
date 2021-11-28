@@ -4,7 +4,7 @@ from typing import Dict, Any
 from .experiment_view.experiment_view import ExperimentStatus, ExperimentView
 from .sample_view import SampleView
 from .task_view import TaskView, TaskStatus
-from .utils.graph_op import Graph
+from .utils.graph_ops import Graph
 
 
 class ExperimentManager:

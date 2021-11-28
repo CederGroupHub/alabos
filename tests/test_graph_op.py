@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from alab_management.utils.graph_op import Graph
+from alab_management.utils.graph_ops import Graph
 
 
 class TestGraph(TestCase):
