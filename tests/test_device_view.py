@@ -1,27 +1,22 @@
-import os
-from pathlib import Path
 from unittest import TestCase
-
-os.environ["ALAB_CONFIG"] = (Path(__file__).parent /
-                             "fake_lab" / "config.toml").as_posix()
 
 from bson import ObjectId
 
-from alab_management import DeviceView
-from alab_management.scripts import setup_lab
-from alab_management.scripts.cleanup_lab import _cleanup_lab
+from alab_management.device_view import DeviceView
+from alab_management.scripts.cleanup_lab import cleanup_lab
+from alab_management.scripts.setup_lab import setup_lab
 
 
 class TestDeviceView(TestCase):
     def setUp(self):
-        _cleanup_lab()
+        cleanup_lab()
         setup_lab()
         self.device_view = DeviceView()
         self.device_list = self.device_view._device_list
         self.device_names = [device_name for device_name in self.device_view._device_list]
 
     def tearDown(self):
-        _cleanup_lab()
+        cleanup_lab()
 
     def test_get_status(self):
         device_name = "furnace_1"

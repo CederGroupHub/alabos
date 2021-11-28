@@ -26,7 +26,9 @@ def load_definition():
     """
     Load device and task definitions from file (specified in config file)
     """
-    from ..config import config
+    from ..config import AlabConfig
+
+    config = AlabConfig()
 
     import_module_from_path(config.path.parent / config["general"]["working_dir"]
                             if not os.path.isabs(config["general"]["working_dir"])

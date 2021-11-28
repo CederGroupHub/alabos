@@ -8,47 +8,38 @@ from multiprocessing import Process
 import click
 from gevent.pywsgi import WSGIServer
 
-from .. import ExperimentManager, Executor, __version__
-from ..dashboard import create_app
-from ..utils.module_ops import load_definition
-
 
 def launch_dashboard(host: str, port: int, debug: bool = False):
+    from ..dashboard import create_app
+
     app = create_app()
     if debug:
         server = WSGIServer((host, port), app)  # print server's log on the console
     else:
         server = WSGIServer((host, port), app, log=None, error_log=None)
-    print(f"Starting dashboard on http://{host}:{port}")
+    click.echo(f"Starting dashboard on http://{host}:{port}")
     server.serve_forever()
 
 
 def launch_experiment_manager():
+    from ..experiment_manager import ExperimentManager
+    from ..utils.module_ops import load_definition
+
     load_definition()
     experiment_manager = ExperimentManager()
     experiment_manager.run()
 
 
 def launch_executor():
+    from ..executor import Executor
+    from ..utils.module_ops import load_definition
+
     load_definition()
     executor = Executor()
     executor.run()
 
 
-@click.command()
-@click.option("--host", default="127.0.0.1", )
-@click.option("-p", "--port", default="8895", type=int)
-@click.option("--debug", default=False, is_flag=True)
 def launch_lab(host, port, debug):
-    print(rf"""
-       _    _       _         ___  ____  
-      / \  | | __ _| |__     / _ \/ ___| 
-     / _ \ | |/ _` | '_ \   | | | \___ \ 
-    / ___ \| | (_| | |_) |  | |_| |___) |
-   /_/   \_\_|\__,_|_.__/    \___/|____/      
-
-----  Alab OS v{__version__} -- Alab Project Team  ----
-""")
     dashboard_process = Process(target=launch_dashboard, args=(host, port, debug))
     experiment_manager_process = Process(target=launch_experiment_manager)
     executor_process = Process(target=launch_executor)

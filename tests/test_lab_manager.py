@@ -1,21 +1,18 @@
-import os
-from pathlib import Path
 from unittest import TestCase
 
 from bson import ObjectId
 
-os.environ["ALAB_CONFIG"] = (Path(__file__).parent /
-                             "fake_lab" / "config.toml").as_posix()
-
+from alab_management.device_view import DeviceView
 from alab_management.lab_manager import LabManager
-from alab_management import DeviceView, SampleView, TaskView
-from alab_management.scripts import setup_lab
-from alab_management.scripts.cleanup_lab import _cleanup_lab
+from alab_management.sample_view import SampleView
+from alab_management.scripts.cleanup_lab import cleanup_lab
+from alab_management.scripts.setup_lab import setup_lab
+from alab_management.task_view import TaskView
 
 
 class TestLabManager(TestCase):
     def setUp(self) -> None:
-        _cleanup_lab()
+        cleanup_lab()
         setup_lab()
         self.device_view = DeviceView()
         self.device_list = self.device_view._device_list
@@ -25,7 +22,7 @@ class TestLabManager(TestCase):
         self.task_view._task_collection.drop()
 
     def tearDown(self) -> None:
-        _cleanup_lab()
+        cleanup_lab()
         self.sample_view._sample_collection.drop()
         self.task_view._task_collection.drop()
 

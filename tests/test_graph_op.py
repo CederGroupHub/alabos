@@ -1,9 +1,4 @@
-import os
-from pathlib import Path
 from unittest import TestCase
-
-os.environ["ALAB_CONFIG"] = (Path(__file__).parent /
-                             "fake_lab" / "config.toml").as_posix()
 
 from alab_management.utils.graph_op import Graph
 

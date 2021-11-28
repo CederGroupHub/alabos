@@ -260,7 +260,7 @@ class DeviceView:
         device_entry = self._device_collection.find_one({"name": device_name})
 
         if device_entry is None:
-            raise ValueError(f"Cannot find device ({device_name})")
+            raise ValueError(f"Cannot find device ({device_name}). Did you run `setup` command?")
 
         required_status = [required_status] \
             if isinstance(required_status, DeviceStatus) \

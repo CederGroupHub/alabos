@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 from types import MappingProxyType as FrozenDict
 from typing import Any, Dict
-
+from monty.design_patterns import singleton
 import toml
 
 
@@ -33,6 +33,7 @@ def froze_config(config_: Dict[str, Any]) -> FrozenDict:
     return _froze_collection(config_)
 
 
+@singleton
 class AlabConfig:
     """
     Class used for storing all the config data
@@ -71,6 +72,3 @@ class AlabConfig:
         The absolute path to the config file
         """
         return self._path
-
-
-config = AlabConfig()

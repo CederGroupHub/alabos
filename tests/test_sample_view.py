@@ -1,26 +1,21 @@
-import os
-from pathlib import Path
 from unittest import TestCase
-
-os.environ["ALAB_CONFIG"] = (Path(__file__).parent /
-                             "fake_lab" / "config.toml").as_posix()
 
 from bson import ObjectId
 
-from alab_management import SampleView
-from alab_management.scripts import setup_lab
-from alab_management.scripts.cleanup_lab import _cleanup_lab
+from alab_management.sample_view import SampleView
+from alab_management.scripts.cleanup_lab import cleanup_lab
+from alab_management.scripts.setup_lab import setup_lab
 
 
 class TestSampleView(TestCase):
     def setUp(self) -> None:
-        _cleanup_lab()
+        cleanup_lab()
         setup_lab()
         self.sample_view = SampleView()
         self.sample_view._sample_collection.drop()
 
     def tearDown(self) -> None:
-        _cleanup_lab()
+        cleanup_lab()
         self.sample_view._sample_collection.drop()
 
     def test_create_sample(self):

@@ -15,9 +15,7 @@ setup(
     include_package_data=True,
     entry_points={
         "console_scripts": [
-            "alabsetup = alab_management.scripts.setup_lab:setup_lab",
-            "alabcleanup = alab_management.scripts.cleanup_lab:cleanup_lab",
-            "alablaunch = alab_management.scripts.launch_lab:launch_lab",
+            "alabos = alab_management.scripts.cli:cli",
         ]
     }
 )
