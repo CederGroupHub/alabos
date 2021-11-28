@@ -1,4 +1,4 @@
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 
 from .device_view.device import BaseDevice, add_device
 from .sample_view import Sample, SamplePosition

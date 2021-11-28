@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import cast
 
 from bson import ObjectId
@@ -7,7 +6,6 @@ from alab_management.task_view.task import BaseTask
 from ..devices.robot_arm import RobotArm
 
 
-@dataclass
 class Moving(BaseTask):
     def __init__(self, sample: ObjectId, dest: str, *args, **kwargs):
         super(Moving, self).__init__(*args, **kwargs)

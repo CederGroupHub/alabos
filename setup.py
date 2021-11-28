@@ -1,10 +1,13 @@
-from setuptools import setup, find_packages
 from pathlib import Path
+
+from setuptools import setup, find_packages
+
+from alab_management import __version__
 
 setup(
     name="alab_management",
     packages=find_packages(exclude=["tests", "tests.*"]),
-    version="0.2.1",
+    version=__version__,
     author="Alab Project Team",
     python_requires=">=3.6",
     description="Workflow management system for alab",

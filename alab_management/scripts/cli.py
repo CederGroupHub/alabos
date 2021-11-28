@@ -1,6 +1,7 @@
 import click
 
 from .cleanup_lab import cleanup_lab
+from .init_project import init_project
 from .launch_lab import launch_lab
 from .setup_lab import setup_lab
 from .. import __version__
@@ -21,11 +22,15 @@ def cli():
     """)
 
 
-@cli.command("clean", short_help="Clean up the database")
-@click.option("-a", "--all-collections", is_flag=True, default=False)
-def cleanup_lab_cli(all_collections: bool):
-    if cleanup_lab(all_collections):
+@cli.command("init", short_help="Init definition folder with default configuration")
+def init_cli():
+    if init_project():
         click.echo("Done")
+
+
+@cli.command("setup", short_help="Read and write definitions to database")
+def setup_lab_cli():
+    setup_lab()
 
 
 @cli.command("launch", short_help="Start to run the lab")
@@ -37,6 +42,8 @@ def launch_lab_cli(host, port, debug):
         click.echo("Done")
 
 
-@cli.command("setup", short_help="Read and write definitions to database")
-def setup_lab_cli():
-    setup_lab()
+@cli.command("clean", short_help="Clean up the database")
+@click.option("-a", "--all-collections", is_flag=True, default=False)
+def cleanup_lab_cli(all_collections: bool):
+    if cleanup_lab(all_collections):
+        click.echo("Done")
