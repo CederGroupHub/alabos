@@ -238,6 +238,16 @@
             <nav id="bd-toc-nav" aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#initiate-a-definition-project-via-command-line">
+   Initiate a definition project via command line
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#definition-folder-structure">
+   Definition folder structure
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#configuration-file">
    Configuration File
   </a>
@@ -260,6 +270,19 @@
                 
   <div class="section" id="set-up-definition-folder">
 <h1>Set up definition folder<a class="headerlink" href="#set-up-definition-folder" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="initiate-a-definition-project-via-command-line">
+<h2>Initiate a definition project via command line<a class="headerlink" href="#initiate-a-definition-project-via-command-line" title="Permalink to this headline">¶</a></h2>
+<p>To initiate a project, you only need to run following command in the target folder.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>python -m alabos init
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The folder you run this command must be empty</p>
+</div>
+</div>
+<div class="section" id="definition-folder-structure">
+<h2>Definition folder structure<a class="headerlink" href="#definition-folder-structure" title="Permalink to this headline">¶</a></h2>
 <p>Alab Management serves as a Python package, which will handle the resource assignment in the lab automatically for you.
 Before you run the system, you need to define devices and tasks according to your need.
 The definition itself is a Python module, which has the structure:</p>
@@ -282,6 +305,7 @@ The definition itself is a Python module, which has the structure:</p>
 </div>
 <p>For more examples, please refer to
 <a class="reference external" href="https://github.com/idocx/alab_management/tree/master/example/devices">example</a> in the repo .</p>
+</div>
 <div class="section" id="configuration-file">
 <h2>Configuration File<a class="headerlink" href="#configuration-file" title="Permalink to this headline">¶</a></h2>
 <p>Besides the definition files, we also introduce a config file (<code class="docutils literal notranslate"><span class="pre">.toml</span></code>) for db
