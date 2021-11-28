@@ -1,6 +1,23 @@
 Set up definition folder
 ========================
 
+Initiate a definition project via command line
+----------------------------------------------
+
+To initiate a project, you only need to run following command in the target folder.
+
+.. code-block:: sh
+
+  python -m alabos init
+
+
+.. note::
+
+  The folder you run this command must be empty
+
+
+Definition folder structure
+---------------------------
 Alab Management serves as a Python package, which will handle the resource assignment in the lab automatically for you.
 Before you run the system, you need to define devices and tasks according to your need.
 The definition itself is a Python module, which has the structure:
