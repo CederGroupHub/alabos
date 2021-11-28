@@ -1,6 +1,6 @@
 from typing import ClassVar
 
-from alab_management import BaseDevice, SamplePosition, add_device
+from alab_management import BaseDevice, SamplePosition
 
 
 class DefaultDevice(BaseDevice):
@@ -28,4 +28,4 @@ class DefaultDevice(BaseDevice):
         return False
 
 
-add_device(DefaultDevice(name="default_device_1"))
+default_device_1 = DefaultDevice(name="default_device_1")

@@ -1,6 +1,6 @@
 from typing import ClassVar
 
-from alab_management import BaseDevice, SamplePosition, add_device
+from alab_management import BaseDevice, SamplePosition
 
 
 class RobotArm(BaseDevice):
@@ -25,4 +25,4 @@ class RobotArm(BaseDevice):
         return False
 
 
-add_device(RobotArm(name="dummy"))
+robot_arm = RobotArm(name="dummy")

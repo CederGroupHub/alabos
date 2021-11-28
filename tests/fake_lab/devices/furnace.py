@@ -2,7 +2,7 @@ import random
 from threading import Timer
 from typing import ClassVar
 
-from alab_management import BaseDevice, SamplePosition, add_device
+from alab_management import BaseDevice, SamplePosition
 
 
 class Furnace(BaseDevice):
@@ -49,7 +49,7 @@ class Furnace(BaseDevice):
         return random.random() * 100
 
 
-add_device(Furnace(name="furnace_1"))
-add_device(Furnace(name="furnace_2"))
-add_device(Furnace(name="furnace_3"))
-add_device(Furnace(name="furnace_4"))
+furnace_1 = Furnace(name="furnace_1")
+furnace_2 = Furnace(name="furnace_2")
+furnace_3 = Furnace(name="furnace_3")
+furnace_4 = Furnace(name="furnace_4")
