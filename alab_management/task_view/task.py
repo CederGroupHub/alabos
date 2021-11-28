@@ -1,6 +1,7 @@
 """
 Define the base class of task
 """
+
 from abc import ABC, abstractmethod
 from typing import Dict, Type
 from typing import TYPE_CHECKING

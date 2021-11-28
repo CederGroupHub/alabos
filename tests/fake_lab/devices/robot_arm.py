@@ -1,6 +1,6 @@
 from typing import ClassVar
 
-from alab_management import BaseDevice, SamplePosition
+from alab_management import BaseDevice, SamplePosition, add_device
 
 
 class RobotArm(BaseDevice):
@@ -23,3 +23,6 @@ class RobotArm(BaseDevice):
 
     def is_running(self) -> bool:
         return False
+
+
+add_device(RobotArm(name="dummy"))

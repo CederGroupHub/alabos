@@ -93,11 +93,15 @@ class LabManager:
 
     def __init__(self, task_id: ObjectId, task_view: TaskView,
                  device_view: DeviceView, sample_view: SampleView):
-        self.task_id = task_id
+        self._task_id = task_id
         self._device_view = device_view
         self._sample_view = sample_view
         self._task_view = task_view
         self.logger = DBLogger(task_id=task_id)
+
+    @property
+    def task_id(self) -> ObjectId:
+        return self._task_id
 
     def request_resources(
             self,
@@ -124,16 +128,16 @@ class LabManager:
         if not isinstance(resource_request, ResourcesRequest):
             resource_request = ResourcesRequest(__root__=resource_request)
         resource_request_formatted = resource_request.dict()["__root__"]
-        self._task_view.update_status(task_id=self.task_id, status=TaskStatus.REQUESTING_RESOURCE)
+        self._task_view.update_status(task_id=self._task_id, status=TaskStatus.REQUESTING_RESOURCE)
         self.logger.system_log(level="DEBUG", log_data={
             "logged_by": self.__class__.__name__,
             "type": "StartRequestResources",
-            "task_id": self.task_id,
+            "task_id": self._task_id,
             "resources_list": {k.__name__ if k else str(k): [v_["prefix"] for v_ in v]
                                for k, v in resource_request_formatted.items()}
         })
         while True:
-            devices_lock = self._device_view.request_devices(task_id=self.task_id, device_types=[
+            devices_lock = self._device_view.request_devices(task_id=self._task_id, device_types=[
                 device_type for device_type in resource_request_formatted.keys()
                 if device_type is not None
             ])
@@ -155,13 +159,13 @@ class LabManager:
                 # if it is still not available, release it, wait for 1 minutes
                 # and start to request devices again
                 sample_positions_lock = self._sample_view.request_sample_positions(
-                    task_id=self.task_id,
+                    task_id=self._task_id,
                     sample_positions=[SamplePositionRequest(**request) for request in parsed_sample_positions_request],
                     timeout=600
                 )
 
                 if sample_positions_lock is not None:
-                    self._task_view.update_status(task_id=self.task_id, status=TaskStatus.RUNNING)
+                    self._task_view.update_status(task_id=self._task_id, status=TaskStatus.RUNNING)
                     return _resource_lock(devices_lock=devices_lock,  # type: ignore
                                           sample_positions_lock=sample_positions_lock,
                                           resource_request=resource_request_formatted, logger=self.logger)
@@ -185,12 +189,12 @@ class LabManager:
         :py:meth:`move_sample <alab_management.sample_view.sample_view.SampleView.move_sample>`
         """
         # check if this sample position is locked by current task
-        if position is not None and self._sample_view.get_sample_position_status(position)[1] != self.task_id:
+        if position is not None and self._sample_view.get_sample_position_status(position)[1] != self._task_id:
             raise ValueError(f"Cannot move sample to a sample position ({position}) without locking it.")
 
         # check if this sample is owned by current task
         sample = self._sample_view.get_sample(sample_id=sample_id)
-        if sample is not None and sample.task_id != self.task_id:
+        if sample is not None and sample.task_id != self._task_id:
             raise ValueError("Cannot move a sample that is not belong to this task.")
 
         return self._sample_view.move_sample(sample_id=sample_id, position=position)

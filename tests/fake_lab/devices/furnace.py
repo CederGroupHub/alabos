@@ -2,7 +2,7 @@ import random
 from threading import Timer
 from typing import ClassVar
 
-from alab_management import BaseDevice, SamplePosition
+from alab_management import BaseDevice, SamplePosition, add_device
 
 
 class Furnace(BaseDevice):
@@ -47,3 +47,9 @@ class Furnace(BaseDevice):
 
     def get_temperature(self):
         return random.random() * 100
+
+
+add_device(Furnace(name="furnace_1"))
+add_device(Furnace(name="furnace_2"))
+add_device(Furnace(name="furnace_3"))
+add_device(Furnace(name="furnace_4"))
