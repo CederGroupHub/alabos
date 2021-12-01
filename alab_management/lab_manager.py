@@ -81,7 +81,7 @@ def _resource_lock(devices_lock: DevicesLock, sample_positions_lock: SamplePosit
     assert len(flattened_sample_positions) == 0, "All the sample positions should have been popped out."
     yield devices_lock.devices, requested_sample_positions
 
-    if any(device.is_running() for device in devices_lock.devices.values()):  # type: ignore
+    if devices_lock.running_devices:
         raise DeviceRunningException("There are some devices that is still running!")
 
     devices_lock.release()

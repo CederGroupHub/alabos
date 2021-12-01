@@ -59,6 +59,12 @@ class DevicesLock:
                 if device["need_release"]:
                     self._device_view.release_device(device["device"])
 
+    @property
+    def running_devices(self) -> Optional[Dict[Type[_DeviceType], _DeviceType]]:
+        if self.devices is None:
+            return None
+        return {k: v for k, v in self.devices.items() if v.is_running()}  # type: ignore
+
     def __enter__(self):
         return self.devices
 
