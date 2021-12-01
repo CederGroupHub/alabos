@@ -442,6 +442,28 @@ any pending experiments and submit it to task database</p>
 A task can get access to that to request resources, query sample and
 update sample positions.</p>
 <dl class="py method">
+<dt id="alab_management.lab_manager.LabManager.get_locked_sample_positions">
+<code class="sig-name descname">get_locked_sample_positions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager.get_locked_sample_positions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager.get_locked_sample_positions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of sample positions that is occupied by this task</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="alab_management.lab_manager.LabManager.get_occupied_devices">
+<code class="sig-name descname">get_occupied_devices</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager.get_occupied_devices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager.get_occupied_devices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of device instances that is occupied by this task (regardless of their status)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="device_definition.html#alab_management.device_view.device.BaseDevice" title="alab_management.device_view.device.BaseDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDevice</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="alab_management.lab_manager.LabManager.get_sample">
 <code class="sig-name descname">get_sample</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sample_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager.get_sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager.get_sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a sample by id, see also

@@ -459,6 +459,17 @@ when __exit__ method is called in the <code class="docutils literal notranslate"
 </dd></dl>
 
 <dl class="py method">
+<dt id="alab_management.device_view.device_view.DeviceView.get_devices_by_task">
+<code class="sig-name descname">get_devices_by_task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.get_devices_by_task"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.get_devices_by_task" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get devices given a task id (regardless of its status!)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="device_definition.html#alab_management.device_view.device.BaseDevice" title="alab_management.device_view.device.BaseDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDevice</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="alab_management.device_view.device_view.DeviceView.get_status">
 <code class="sig-name descname">get_status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.get_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.get_status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get device status by device name, if not found, raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code></p>
