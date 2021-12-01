@@ -76,11 +76,14 @@ class TestSampleView(TestCase):
 
     def test_lock_sample_position(self):
         task_id = ObjectId()
+
+        self.assertListEqual([], self.sample_view.get_sample_positions_by_task(task_id))
         self.sample_view.lock_sample_position(task_id=task_id, position="furnace_table")
 
         sample_id = self.sample_view.create_sample("test")
 
         self.assertEqual("LOCKED", self.sample_view.get_sample_position_status("furnace_table")[0].name)
+        self.assertListEqual(["furnace_table"], self.sample_view.get_sample_positions_by_task(task_id))
 
         self.sample_view.release_sample_position("furnace_table")
 

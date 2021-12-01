@@ -232,6 +232,13 @@ class DeviceView:
             task_id=task_id,
         )
 
+    def get_devices_by_task(self, task_id: Optional[ObjectId]) -> List[BaseDevice]:
+        """
+        Get devices given a task id (regardless of its status!)
+        """
+        return [self._device_list[device["name"]]
+                for device in self._device_collection.find({"task_id": task_id})]
+
     def release_device(self, device: Union[BaseDevice, str], ):
         """
         Release a device

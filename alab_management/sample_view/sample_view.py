@@ -290,6 +290,13 @@ class SampleView:
             "task_id": None,
         }})
 
+    def get_sample_positions_by_task(self, task_id: Optional[ObjectId]) -> List[str]:
+        """
+        Get the list of sample positions that is locked by a task (given task id)
+        """
+        return [sample_position["name"]
+                for sample_position in self._sample_positions_collection.find({"task_id": task_id})]
+
     #################################################################
     #                 operations related to samples                 #
     #################################################################

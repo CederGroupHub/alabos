@@ -29,7 +29,9 @@ class TestDeviceView(TestCase):
     def test_occupy_device(self):
         device_name = self.device_names[0]
         task_id = ObjectId()
+        self.assertEqual([], self.device_view.get_devices_by_task(task_id=task_id))
         self.device_view.occupy_device(device=device_name, task_id=task_id)
+        self.assertEqual([self.device_list[device_name]], self.device_view.get_devices_by_task(task_id=task_id))
         self.assertEqual("OCCUPIED", self.device_view.get_status(device_name).name)
         self.assertEqual(task_id, self.device_view.get_device(device_name)["task_id"])
         self.device_view.occupy_device(device=device_name, task_id=task_id)

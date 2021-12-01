@@ -198,3 +198,15 @@ class LabManager:
             raise ValueError("Cannot move a sample that is not belong to this task.")
 
         return self._sample_view.move_sample(sample_id=sample_id, position=position)
+
+    def get_occupied_devices(self) -> List[BaseDevice]:
+        """
+        Get a list of device instances that is occupied by this task (regardless of their status)
+        """
+        return self._device_view.get_devices_by_task(task_id=self._task_id)
+
+    def get_locked_sample_positions(self) -> List[str]:
+        """
+        Get a list of sample positions that is occupied by this task
+        """
+        return self._sample_view.get_sample_positions_by_task(task_id=self._task_id)
