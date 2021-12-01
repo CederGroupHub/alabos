@@ -14,6 +14,12 @@ from .sample_view.sample_view import SampleView, SamplePositionsLock, SamplePosi
 from .task_view.task_view import TaskView, TaskStatus
 
 
+class DeviceRunningException(Exception):
+    """
+    Raise when a task try to release a device that is still running
+    """
+
+
 class ResourcesRequest(BaseModel):
     """
     This class is used to validate the resource request. Each request should have a format of
@@ -74,6 +80,9 @@ def _resource_lock(devices_lock: DevicesLock, sample_positions_lock: SamplePosit
 
     assert len(flattened_sample_positions) == 0, "All the sample positions should have been popped out."
     yield devices_lock.devices, requested_sample_positions
+
+    if any(device.is_running() for device in devices_lock.devices.values()):  # type: ignore
+        raise DeviceRunningException("There are some devices that is still running!")
 
     devices_lock.release()
     sample_positions_lock.release()
