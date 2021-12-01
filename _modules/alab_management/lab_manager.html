@@ -238,6 +238,12 @@
 <span class="kn">from</span> <span class="nn">.task_view.task_view</span> <span class="kn">import</span> <span class="n">TaskView</span><span class="p">,</span> <span class="n">TaskStatus</span>
 
 
+<div class="viewcode-block" id="DeviceRunningException"><a class="viewcode-back" href="../../alab_management.html#alab_management.lab_manager.DeviceRunningException">[docs]</a><span class="k">class</span> <span class="nc">DeviceRunningException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raise when a task try to release a device that is still running</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
 <div class="viewcode-block" id="ResourcesRequest"><a class="viewcode-back" href="../../alab_management.html#alab_management.lab_manager.ResourcesRequest">[docs]</a><span class="k">class</span> <span class="nc">ResourcesRequest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class is used to validate the resource request. Each request should have a format of</span>
@@ -298,6 +304,9 @@
 
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">flattened_sample_positions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;All the sample positions should have been popped out.&quot;</span>
     <span class="k">yield</span> <span class="n">devices_lock</span><span class="o">.</span><span class="n">devices</span><span class="p">,</span> <span class="n">requested_sample_positions</span>
+
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">is_running</span><span class="p">()</span> <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">devices_lock</span><span class="o">.</span><span class="n">devices</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>  <span class="c1"># type: ignore</span>
+        <span class="k">raise</span> <span class="n">DeviceRunningException</span><span class="p">(</span><span class="s2">&quot;There are some devices that is still running!&quot;</span><span class="p">)</span>
 
     <span class="n">devices_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
     <span class="n">sample_positions_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
