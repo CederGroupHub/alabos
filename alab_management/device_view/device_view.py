@@ -1,7 +1,7 @@
 import time
 from datetime import datetime
 from enum import unique, Enum, auto
-from threading import Lock
+from multiprocessing import Lock
 from typing import Type, List, Optional, Union, Dict, Any, Collection, cast, TypeVar
 
 import pymongo

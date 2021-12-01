@@ -1,6 +1,7 @@
 """
 The script to launch task_view and executor, which are the core of the system.
 """
+import multiprocessing
 import sys
 import time
 from multiprocessing import Process
@@ -40,6 +41,8 @@ def launch_executor():
 
 
 def launch_lab(host, port, debug):
+    multiprocessing.set_start_method('spawn')
+
     dashboard_process = Process(target=launch_dashboard, args=(host, port, debug))
     experiment_manager_process = Process(target=launch_experiment_manager)
     executor_process = Process(target=launch_executor)

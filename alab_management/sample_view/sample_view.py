@@ -2,7 +2,7 @@ import re
 import time
 from datetime import datetime
 from enum import Enum, auto
-from threading import Lock
+from multiprocessing import Lock
 from typing import Optional, List, Dict, Any, Tuple, cast, Union
 
 import pymongo
