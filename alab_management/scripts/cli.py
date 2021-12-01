@@ -30,7 +30,8 @@ def init_cli():
 
 @cli.command("setup", short_help="Read and write definitions to database")
 def setup_lab_cli():
-    setup_lab()
+    if setup_lab():
+        click.echo("Done")
 
 
 @cli.command("launch", short_help="Start to run the lab")
@@ -38,8 +39,7 @@ def setup_lab_cli():
 @click.option("-p", "--port", default="8895", type=int)
 @click.option("--debug", default=False, is_flag=True)
 def launch_lab_cli(host, port, debug):
-    if launch_lab(host, port, debug):
-        click.echo("Done")
+    launch_lab(host, port, debug)
 
 
 @cli.command("clean", short_help="Clean up the database")
