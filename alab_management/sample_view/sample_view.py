@@ -165,7 +165,7 @@ class SampleView:
         cnt = 0
         while timeout is None or cnt < timeout:
             try:
-                self._lock.acquire(blocking=True)  # pylint: disable=consider-using-with
+                self._lock.acquire(block=True)  # pylint: disable=consider-using-with
                 available_positions: Dict[str, List[Dict[str, Union[str, bool]]]] = {}
                 for sample_position in sample_positions_request:
                     result = self.get_available_sample_position(task_id, position_prefix=sample_position.prefix)

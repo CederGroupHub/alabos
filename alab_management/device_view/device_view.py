@@ -157,7 +157,7 @@ class DeviceView:
         while timeout is None or cnt < timeout:
             idle_devices: Dict[Type[BaseDevice], Dict[str, Union[BaseDevice, bool]]] = {}
             try:
-                self._lock.acquire(blocking=True)  # pylint: disable=consider-using-with
+                self._lock.acquire(block=True)  # pylint: disable=consider-using-with
                 for device in device_types:
                     result = self.get_available_devices(device_type=device, task_id=task_id)
                     if not result:
