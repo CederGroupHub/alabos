@@ -26,12 +26,16 @@ def cli():
 def init_cli():
     if init_project():
         click.echo("Done")
+    else:
+        click.echo("Stopped")
 
 
 @cli.command("setup", short_help="Read and write definitions to database")
 def setup_lab_cli():
     if setup_lab():
         click.echo("Done")
+    else:
+        click.echo("Stopped")
 
 
 @cli.command("launch", short_help="Start to run the lab")
@@ -47,3 +51,5 @@ def launch_lab_cli(host, port, debug):
 def cleanup_lab_cli(all_collections: bool):
     if cleanup_lab(all_collections):
         click.echo("Done")
+    else:
+        click.echo("Stopped")

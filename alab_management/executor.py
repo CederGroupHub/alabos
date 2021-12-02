@@ -3,7 +3,7 @@ Executor is the core module of the system,
 which actually executes the tasks
 """
 
-import multiprocessing
+import threading
 import time
 from traceback import format_exc
 from typing import Any, Dict
@@ -105,8 +105,8 @@ class Executor:
                 for sample_id in task_entry["samples"].values():
                     self.sample_view.update_sample_task_id(task_id=None, sample_id=sample_id)
 
-        task_process = multiprocessing.Process(target=_run_task, name=str(task_id))
-        task_process.start()
+        task_thread = threading.Thread(target=_run_task, name=str(task_id))
+        task_thread.start()
         self.logger.system_log(level="INFO",
                                log_data={
                                    "type": "TaskStart",

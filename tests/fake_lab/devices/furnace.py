@@ -39,7 +39,7 @@ class Furnace(BaseDevice):
         def finish():
             self._is_running = False
 
-        t = Timer(10, finish)
+        t = Timer(2, finish)
         t.start()
 
     def is_running(self):

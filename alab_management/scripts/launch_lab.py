@@ -9,6 +9,11 @@ from multiprocessing import Process
 import click
 from gevent.pywsgi import WSGIServer
 
+try:
+    multiprocessing.set_start_method('spawn')
+except RuntimeError:
+    pass
+
 
 def launch_dashboard(host: str, port: int, debug: bool = False):
     from ..dashboard import create_app
@@ -41,8 +46,6 @@ def launch_executor():
 
 
 def launch_lab(host, port, debug):
-    multiprocessing.set_start_method('spawn')
-
     dashboard_process = Process(target=launch_dashboard, args=(host, port, debug))
     experiment_manager_process = Process(target=launch_experiment_manager)
     executor_process = Process(target=launch_executor)
@@ -60,14 +63,20 @@ def launch_lab(host, port, debug):
         if not experiment_manager_process.is_alive():
             executor_process.terminate()
             dashboard_process.terminate()
+            executor_process.join()
+            dashboard_process.join()
             sys.exit(1001)
 
         if not executor_process.is_alive():
             experiment_manager_process.terminate()
             dashboard_process.terminate()
+            experiment_manager_process.join()
+            dashboard_process.join()
             sys.exit(1002)
 
         if not dashboard_process.is_alive():
             executor_process.terminate()
             experiment_manager_process.terminate()
+            executor_process.join()
+            experiment_manager_process.join()
             sys.exit(1003)

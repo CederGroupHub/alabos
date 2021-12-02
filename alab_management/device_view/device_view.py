@@ -1,7 +1,7 @@
 import time
 from datetime import datetime
 from enum import unique, Enum, auto
-from multiprocessing import Lock
+from threading import Lock
 from typing import Type, List, Optional, Union, Dict, Any, Collection, cast, TypeVar
 
 import pymongo
@@ -157,7 +157,7 @@ class DeviceView:
         while timeout is None or cnt < timeout:
             idle_devices: Dict[Type[BaseDevice], Dict[str, Union[BaseDevice, bool]]] = {}
             try:
-                self._lock.acquire(block=True)  # pylint: disable=consider-using-with
+                self._lock.acquire(blocking=True)  # pylint: disable=consider-using-with
                 for device in device_types:
                     result = self.get_available_devices(device_type=device, task_id=task_id)
                     if not result:

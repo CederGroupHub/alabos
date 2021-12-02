@@ -6,7 +6,7 @@ be deleted.
 """
 
 
-def cleanup_lab(all_collections: bool = False):
+def cleanup_lab(all_collections: bool = False, _force_i_know_its_dangerous: bool = False):
     """
     Drop device, sample_position collection from MongoDB
     """
@@ -17,11 +17,12 @@ def cleanup_lab(all_collections: bool = False):
 
     config = AlabConfig()
     if all_collections:
-        y = input(f"Are you sure you want to remove the whole database? "
-                  f"It will purge all of your data in {config['db']['name']}, "
-                  f"which cannot be recovered. [yN]: ")
-        if y != "y":
-            return False
+        if not _force_i_know_its_dangerous:
+            y = input(f"Are you sure you want to remove the whole database? "
+                      f"It will purge all of your data in {config['db']['name']}, "
+                      f"which cannot be recovered. [yN]: ")
+            if y != "y":
+                return False
         _GetCollection.init()
         _GetCollection.client.drop_database(config['db']['name'])  # type: ignore
     DeviceView().clean_up_device_collection()
