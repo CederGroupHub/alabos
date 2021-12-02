@@ -65,7 +65,7 @@ class TaskThread(threading.Thread):
         super().__init__(*args, **kwargs)
         self._terminate_hook: Optional[Callable[..., None]] = None
 
-    def register_hook(self, hook: Callable[..., None], args: Tuple[Any] = tuple,
+    def register_hook(self, hook: Callable[..., None], args: Tuple[Any] = tuple(),
                       kwargs: Optional[Dict[str, Any]] = None):
         if kwargs is None:
             kwargs = {}
