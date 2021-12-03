@@ -226,6 +226,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
 
 <span class="kn">from</span> <span class="nn">.experiment_view.experiment_view</span> <span class="kn">import</span> <span class="n">ExperimentStatus</span><span class="p">,</span> <span class="n">ExperimentView</span>
+<span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="n">DBLogger</span>
 <span class="kn">from</span> <span class="nn">.sample_view</span> <span class="kn">import</span> <span class="n">SampleView</span>
 <span class="kn">from</span> <span class="nn">.task_view</span> <span class="kn">import</span> <span class="n">TaskView</span><span class="p">,</span> <span class="n">TaskStatus</span>
 <span class="kn">from</span> <span class="nn">.utils.graph_ops</span> <span class="kn">import</span> <span class="n">Graph</span>
@@ -236,10 +237,12 @@
 <span class="sd">    Experiment manager read experiments from the experiment collection</span>
 <span class="sd">    and submit the experiment to executor and flag the completed experiments</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span> <span class="o">=</span> <span class="n">ExperimentView</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span> <span class="o">=</span> <span class="n">TaskView</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sample_view</span> <span class="o">=</span> <span class="n">SampleView</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">DBLogger</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ExperimentManager.run"><a class="viewcode-back" href="../../alab_management.html#alab_management.experiment_manager.ExperimentManager.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -261,8 +264,13 @@
         <span class="n">pending_experiments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span> \
             <span class="n">get_experiments_with_status</span><span class="p">(</span><span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="n">pending_experiments</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Submit experiment </span><span class="si">{</span><span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> to executor&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_handle_pending_experiment</span><span class="p">(</span><span class="n">experiment</span><span class="o">=</span><span class="n">experiment</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_handle_pending_experiment</span><span class="p">(</span><span class="n">experiment</span><span class="o">=</span><span class="n">experiment</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Submit experiment (</span><span class="si">{</span><span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">) to executor&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">system_log</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span> <span class="n">log_data</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;logged_by&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;ExperimentStarted&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;exp_id&quot;</span><span class="p">:</span> <span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">],</span>
+            <span class="p">})</span></div>
 
     <span class="k">def</span> <span class="nf">_handle_pending_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="n">samples</span> <span class="o">=</span> <span class="n">experiment</span><span class="p">[</span><span class="s2">&quot;samples&quot;</span><span class="p">]</span>
@@ -316,9 +324,14 @@
             <span class="c1"># if all the tasks of an experiment have been finished</span>
             <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span> <span class="ow">is</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">COMPLETED</span>
                    <span class="k">for</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="n">task_ids</span><span class="p">):</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Experiment (</span><span class="si">{</span><span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">) completed.&quot;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span><span class="n">update_experiment_status</span><span class="p">(</span><span class="n">exp_id</span><span class="o">=</span><span class="n">experiment</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span>
-                                                              <span class="n">status</span><span class="o">=</span><span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">COMPLETED</span><span class="p">)</span></div></div>
+                                                              <span class="n">status</span><span class="o">=</span><span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">COMPLETED</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">system_log</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span> <span class="n">log_data</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;logged_by&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;ExperimentCompleted&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;exp_id&quot;</span><span class="p">:</span> <span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">],</span>
+                <span class="p">})</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Experiment (</span><span class="si">{</span><span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">) completed.&quot;</span><span class="p">)</span></div></div>
 </pre></div>
 
               </div>
