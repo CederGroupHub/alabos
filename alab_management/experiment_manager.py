@@ -2,6 +2,7 @@ import time
 from typing import Dict, Any
 
 from .experiment_view.experiment_view import ExperimentStatus, ExperimentView
+from .logger import DBLogger
 from .sample_view import SampleView
 from .task_view import TaskView, TaskStatus
 from .utils.graph_ops import Graph
@@ -12,10 +13,12 @@ class ExperimentManager:
     Experiment manager read experiments from the experiment collection
     and submit the experiment to executor and flag the completed experiments
     """
+
     def __init__(self):
         self.experiment_view = ExperimentView()
         self.task_view = TaskView()
         self.sample_view = SampleView()
+        self.logger = DBLogger(task_id=None)
 
     def run(self):
         """
@@ -37,8 +40,13 @@ class ExperimentManager:
         pending_experiments = self.experiment_view. \
             get_experiments_with_status(ExperimentStatus.PENDING)
         for experiment in pending_experiments:
-            print(f"Submit experiment {experiment['_id']} to executor")
             self._handle_pending_experiment(experiment=experiment)
+            print(f"Submit experiment ({experiment['_id']}) to executor")
+            self.logger.system_log(level="DEBUG", log_data={
+                "logged_by": self.__class__.__name__,
+                "type": "ExperimentStarted",
+                "exp_id": experiment['_id'],
+            })
 
     def _handle_pending_experiment(self, experiment: Dict[str, Any]):
         samples = experiment["samples"]
@@ -92,6 +100,11 @@ class ExperimentManager:
             # if all the tasks of an experiment have been finished
             if all(self.task_view.get_status(task_id=task_id) is TaskStatus.COMPLETED
                    for task_id in task_ids):
-                print(f"Experiment ({experiment['_id']}) completed.")
                 self.experiment_view.update_experiment_status(exp_id=experiment["_id"],
                                                               status=ExperimentStatus.COMPLETED)
+                self.logger.system_log(level="DEBUG", log_data={
+                    "logged_by": self.__class__.__name__,
+                    "type": "ExperimentCompleted",
+                    "exp_id": experiment['_id'],
+                })
+                print(f"Experiment ({experiment['_id']}) completed.")

@@ -43,6 +43,7 @@ def setup_lab_cli():
 @click.option("-p", "--port", default="8895", type=int)
 @click.option("--debug", default=False, is_flag=True)
 def launch_lab_cli(host, port, debug):
+    click.echo(f"The dashboard will be served on http://{host}:{port}")
     launch_lab(host, port, debug)
 
 

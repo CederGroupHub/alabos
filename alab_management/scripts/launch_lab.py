@@ -6,7 +6,6 @@ import sys
 import time
 from multiprocessing import Process
 
-import click
 from gevent.pywsgi import WSGIServer
 
 try:
@@ -23,7 +22,6 @@ def launch_dashboard(host: str, port: int, debug: bool = False):
         server = WSGIServer((host, port), app)  # print server's log on the console
     else:
         server = WSGIServer((host, port), app, log=None, error_log=None)
-    click.echo(f"Starting dashboard on http://{host}:{port}")
     server.serve_forever()
 
 

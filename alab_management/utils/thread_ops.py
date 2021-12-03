@@ -27,7 +27,8 @@ def _patched_sleep(sec: float):
     _sleep(sec_f)
 
 
-time.sleep = _patched_sleep
+if _sleep is not _patched_sleep:
+    time.sleep = _patched_sleep
 
 
 def _async_raise(tid, exctype):
@@ -41,8 +42,8 @@ def _async_raise(tid, exctype):
     else:
         tid = ctypes.c_long(tid)
     if not isinstance(exctype, type):
-        exctype = type(exctype)
-    ret = ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, ctypes.py_object(exctype)).value
+        raise ValueError(f"exctype should be a type, but get instance of {type(exctype)}.")
+    ret = ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, ctypes.py_object(exctype))
     if ret == 0:
         raise ValueError("Invalid thread id")
     if ret != 1:
@@ -72,7 +73,18 @@ class TaskThread(threading.Thread):
 
         self._terminate_hook = lambda: hook(*args, **kwargs)
 
+    def run(self) -> None:
+        try:
+            super().run()
+        except SystemExit:
+            pass
+
     def terminate(self):
+        """
+        Stop the threading
+
+        If there is a terminate hook registered, call that hook function before exiting.
+        """
         if self._terminate_hook is not None:
             self._terminate_hook()
 
