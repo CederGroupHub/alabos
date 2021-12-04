@@ -37,7 +37,7 @@ class TestThreadOps(unittest.TestCase):
             flag = False
 
         t = TaskThread(target=_run)
-        t.register_hook(_on_terminate)
+        t.register_terminate_hook(_on_terminate)
         t.start()
         time.sleep(0.1)
         start = time.perf_counter()

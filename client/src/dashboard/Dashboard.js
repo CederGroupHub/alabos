@@ -28,8 +28,8 @@ function Dashboard() {
         devices: [{
             name: "furnace",
             type: "Furnace",
-            status: "IDLE",
-            task: "null",
+            status: "OCCUPIED",
+            task: "6196fc9b5d573f2efdd8d98c",
         }, {
             name: "scale",
             type: "Scale",
@@ -39,7 +39,7 @@ function Dashboard() {
             name: "robot_arm",
             type: "RobotArm",
             status: "OCCUPIED",
-            task: "6196fc9b5d573f2efdd8d98d",
+            task: "6196fc9b5d573f2efdd8d98c",
         }], experiments: [{
             name: "Firing baking soda",
             id: "xxxxxx",
@@ -48,8 +48,8 @@ function Dashboard() {
                 {id: "6196fc9b5d573f2efdd8d989", status: "COMPLETED", type: "Starting"},
                 {id: "6196fc9b5d573f2efdd8d98a", status: "COMPLETED", type: "Pouring"},
                 {id: "6196fc9b5d573f2efdd8d98b", status: "COMPLETED", type: "Weighing"},
-                {id: "6196fc9b5d573f2efdd8d98c", status: "COMPLETED", type: "Heating"},
-                {id: "6196fc9b5d573f2efdd8d98d", status: "RUNNING", type: "Weighing"},
+                {id: "6196fc9b5d573f2efdd8d98c", status: "RUNNING", type: "Heating"},
+                {id: "6196fc9b5d573f2efdd8d98d", status: "WAITING", type: "Weighing"},
                 {id: "6196fc9b5d573f2efdd8d98e", status: "WAITING", type: "Ending"},
             ]
         }]
