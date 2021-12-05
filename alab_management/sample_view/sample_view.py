@@ -352,7 +352,6 @@ class SampleView:
         """
         Update the sample with new position
         """
-
         result = self._sample_collection.find_one({"_id": sample_id})
         if result is None:
             raise ValueError(f"Cannot find sample with id: {sample_id}")
