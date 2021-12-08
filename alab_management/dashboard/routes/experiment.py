@@ -14,7 +14,7 @@ def submit_new_experiment():
     """
     Submit a new experiment to the system
     """
-    data = request.get_json(force=True)
+    data = request.get_json(force=True)  # type: ignore
     try:
         experiment = InputExperiment(**data)
         exp_id = experiment_view.create_experiment(experiment)
