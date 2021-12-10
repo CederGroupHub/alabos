@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -36,9 +36,8 @@
     <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="alab_management.sample_view package" href="alab_management.sample_view.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
+    <meta name="docsearch:language" content="en">
     
 
     <!-- Google Analytics -->
@@ -105,52 +104,6 @@
   <a class="reference internal" href="task_definition.html">
    Defining new tasks
   </a>
- </li>
-</ul>
-<ul class="current nav bd-sidenav">
- <li class="toctree-l1 current active has-children">
-  <a class="reference internal" href="modules.html">
-   API Docs
-  </a>
-  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
-  <label for="toctree-checkbox-1">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul class="current">
-   <li class="toctree-l2 current active has-children">
-    <a class="reference internal" href="alab_management.html">
-     alab_management package
-    </a>
-    <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
-    <label for="toctree-checkbox-2">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul class="current">
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.device_view.html">
-       alab_management.device_view package
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.experiment_view.html">
-       alab_management.experiment_view package
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.sample_view.html">
-       alab_management.sample_view package
-      </a>
-     </li>
-     <li class="toctree-l3 current active">
-      <a class="current reference internal" href="#">
-       alab_management.task_view package
-      </a>
-     </li>
-    </ul>
-   </li>
-  </ul>
  </li>
 </ul>
 
@@ -241,21 +194,6 @@
    Submodules
   </a>
  </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-alab_management.task_view.task">
-   alab_management.task_view.task module
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-alab_management.task_view.task_view">
-   alab_management.task_view.task_view module
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-alab_management.task_view">
-   Module contents
-  </a>
- </li>
 </ul>
 
             </nav>
@@ -267,254 +205,16 @@
         
               <div>
                 
-  <div class="section" id="alab-management-task-view-package">
-<h1>alab_management.task_view package<a class="headerlink" href="#alab-management-task-view-package" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-alab_management.task_view">
+<span id="alab-management-task-view-package"></span><h1>alab_management.task_view package<a class="headerlink" href="#module-alab_management.task_view" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-alab_management.task_view.task">
-<span id="alab-management-task-view-task-module"></span><h2>alab_management.task_view.task module<a class="headerlink" href="#module-alab_management.task_view.task" title="Permalink to this headline">¶</a></h2>
-<p>Define the base class of task</p>
-<dl class="py class">
-<dt id="alab_management.task_view.task.BaseTask">
-<em class="property">class </em><code class="sig-name descname">BaseTask</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em>, <em class="sig-param"><span class="n">lab_manager</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
-<p>The abstract class of task.</p>
-<p>All the tasks should inherit from this class.</p>
-<dl class="py method">
-<dt id="alab_management.task_view.task.BaseTask.run">
-<em class="property">abstract </em><code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Run the task. In this function, you can request lab resources from lab manager and log data to database
-with logger.</p>
-<p><code class="docutils literal notranslate"><span class="pre">request_resources</span></code> will not return until all the requested resources are available. So the task will
-pend until it gets the requested resources, which prevent the conflict in the resource allocation.</p>
-<p>When a device get the requested device and sample positions, it also takes over the ownership of these
-resources, i.e., other task cannot use the device or request the sample positions this task has requested.</p>
-<p>We use a context manager to manage the ownership of the resources. when a task is completed, all the devices
-and sample positions will be released automatically.</p>
-<p>Here is an example about how to define the task</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># request devices and sample positions from lab manager. The `$` represents</span>
-<span class="c1"># the name of assigned devices in the sample positions we try to request,</span>
-<span class="c1"># 4 is the number of sample positions.</span>
-<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_manager</span><span class="o">.</span><span class="n">request_resources</span><span class="p">({</span><span class="n">Furnace</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;$.inside&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)]})</span> <span class="k">as</span> <span class="n">devices_and_positions</span><span class="p">:</span>
-    <span class="n">devices</span><span class="p">,</span> <span class="n">sample_positions</span> <span class="o">=</span> <span class="n">devices_and_positions</span>
-    <span class="n">furnace</span> <span class="o">=</span> <span class="n">devices</span><span class="p">[</span><span class="n">Furnace</span><span class="p">]</span>
-    <span class="n">inside_furnace</span> <span class="o">=</span> <span class="n">sample_positions</span><span class="p">[</span><span class="n">Furnace</span><span class="p">][</span><span class="s2">&quot;$.inside&quot;</span><span class="p">]</span>
-
-    <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples</span><span class="p">:</span>
-        <span class="c1"># in a task, we can call other tasks, which will share the same</span>
-        <span class="c1"># task id, requested devices and sample positions.</span>
-        <span class="n">moving_task</span> <span class="o">=</span> <span class="n">Moving</span><span class="p">(</span><span class="n">sample</span><span class="o">=</span><span class="n">sample</span><span class="p">,</span>
-                             <span class="n">task_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span>
-                             <span class="n">dest</span><span class="o">=</span><span class="n">inside_furnace</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                             <span class="n">lab_manager</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lab_manager</span><span class="p">,</span>
-                             <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
-        <span class="n">moving_task</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-
-    <span class="c1"># send command to device</span>
-    <span class="n">furnace</span><span class="o">.</span><span class="n">run_program</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setpoints</span><span class="p">)</span>
-
-    <span class="k">while</span> <span class="n">furnace</span><span class="o">.</span><span class="n">is_running</span><span class="p">():</span>
-        <span class="c1"># log the device data, which is current temperature of the furnace</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">log_device_signal</span><span class="p">({</span>
-            <span class="s2">&quot;device&quot;</span><span class="p">:</span> <span class="n">furnace</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-            <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="n">furnace</span><span class="o">.</span><span class="n">get_temperature</span><span class="p">(),</span>
-        <span class="p">})</span>
-</pre></div>
-</div>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt id="alab_management.task_view.task.add_task">
-<code class="sig-name descname">add_task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#add_task"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task.add_task" title="Permalink to this definition">¶</a></dt>
-<dd><p>Register a task</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="alab_management.task_view.task.get_all_tasks">
-<code class="sig-name descname">get_all_tasks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#get_all_tasks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task.get_all_tasks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get all the tasks in the registry</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference internal" href="task_definition.html#alab_management.task_view.task.BaseTask" title="alab_management.task_view.task.BaseTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTask</span></code></a>]]</p>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
-<div class="section" id="module-alab_management.task_view.task_view">
-<span id="alab-management-task-view-task-view-module"></span><h2>alab_management.task_view.task_view module<a class="headerlink" href="#module-alab_management.task_view.task_view" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt id="alab_management.task_view.task_view.TaskStatus">
-<em class="property">class </em><code class="sig-name descname">TaskStatus</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
-<p>The status of one task</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">WAITING</span></code>: the task cannot start now</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">READY</span></code>: the task is ready to submit</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">PAUSED</span></code>: the task is hold for a while</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">RUNNING</span></code>: the task is currently running</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ERROR</span></code>: the task encountered some errors during execution</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">COMPLETED</span></code>: the task is completed</p></li>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="alab_management.task_view.task.html">alab_management.task_view.task module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="alab_management.task_view.task_view.html">alab_management.task_view.task_view module</a></li>
 </ul>
-<dl class="py attribute">
-<dt id="alab_management.task_view.task_view.TaskStatus.COMPLETED">
-<code class="sig-name descname">COMPLETED</code><em class="property"> = 8</em><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus.COMPLETED" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="alab_management.task_view.task_view.TaskStatus.ERROR">
-<code class="sig-name descname">ERROR</code><em class="property"> = 7</em><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus.ERROR" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="alab_management.task_view.task_view.TaskStatus.PAUSED">
-<code class="sig-name descname">PAUSED</code><em class="property"> = 2</em><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus.PAUSED" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="alab_management.task_view.task_view.TaskStatus.READY">
-<code class="sig-name descname">READY</code><em class="property"> = 4</em><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus.READY" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="alab_management.task_view.task_view.TaskStatus.REQUESTING_RESOURCE">
-<code class="sig-name descname">REQUESTING_RESOURCE</code><em class="property"> = 5</em><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus.REQUESTING_RESOURCE" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="alab_management.task_view.task_view.TaskStatus.RUNNING">
-<code class="sig-name descname">RUNNING</code><em class="property"> = 6</em><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus.RUNNING" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="alab_management.task_view.task_view.TaskStatus.STOPPED">
-<code class="sig-name descname">STOPPED</code><em class="property"> = 3</em><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus.STOPPED" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="alab_management.task_view.task_view.TaskStatus.WAITING">
-<code class="sig-name descname">WAITING</code><em class="property"> = 1</em><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus.WAITING" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="alab_management.task_view.task_view.TaskView">
-<em class="property">class </em><code class="sig-name descname">TaskView</code><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Task view manages the status, parameters of a task</p>
-<dl class="py method">
-<dt id="alab_management.task_view.task_view.TaskView.create_task">
-<code class="sig-name descname">create_task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_type</span></em>, <em class="sig-param"><span class="n">samples</span></em>, <em class="sig-param"><span class="n">parameters</span></em>, <em class="sig-param"><span class="n">prev_tasks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">next_tasks</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.create_task"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.create_task" title="Permalink to this definition">¶</a></dt>
-<dd><p>Insert a task into the task collection</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>task_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the type of task, which should be a type name of class inherited from
-<a class="reference internal" href="task_definition.html#alab_management.task_view.task.BaseTask" title="alab_management.task_view.task.BaseTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTask</span></code></a></p></li>
-<li><p><strong>samples</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>]) – the samples that this task will handle, which will be passed to Task object
-the same as parameters.</p></li>
-<li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – the required tasks for this task</p></li>
-<li><p><strong>prev_tasks</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – one or a list of ObjectId that refer to prev tasks of this task
-(which must be completed before current task)</p></li>
-<li><p><strong>next_tasks</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – one or a list of ObjectId that refer to next tasks of this task
-(which cannot start until this task finishes)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the assigned id for this task</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="alab_management.task_view.task_view.TaskView.get_ready_tasks">
-<code class="sig-name descname">get_ready_tasks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.get_ready_tasks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.get_ready_tasks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a list of ready tasks</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>{“task_id”: <code class="docutils literal notranslate"><span class="pre">ObjectId</span></code>,
-“type”: <a class="reference internal" href="task_definition.html#alab_management.task_view.task.BaseTask" title="alab_management.task_view.task.BaseTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTask</span></code></a>}</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>List of task entry</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="alab_management.task_view.task_view.TaskView.get_status">
-<code class="sig-name descname">get_status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.get_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.get_status" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the status of a task</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#alab_management.task_view.task_view.TaskStatus" title="alab_management.task_view.task_view.TaskStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskStatus</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="alab_management.task_view.task_view.TaskView.get_task">
-<code class="sig-name descname">get_task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.get_task"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.get_task" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a task by its task id, which will return all the info stored in the database</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="alab_management.task_view.task_view.TaskView.try_to_mark_task_ready">
-<code class="sig-name descname">try_to_mark_task_ready</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.try_to_mark_task_ready"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.try_to_mark_task_ready" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if one task’s parent tasks are all completed,
-if so, mark it as READY</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="alab_management.task_view.task_view.TaskView.update_status">
-<code class="sig-name descname">update_status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em>, <em class="sig-param"><span class="n">status</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.update_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.update_status" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the status of one task</p>
-<p>If the status is <code class="docutils literal notranslate"><span class="pre">COMPLETED</span></code>, we will also try to
-mark its next tasks to <code class="docutils literal notranslate"><span class="pre">READY</span></code>, if all of its previous
-tasks are completed.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>task_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the id of task to be updated</p></li>
-<li><p><strong>status</strong> (<a class="reference internal" href="#alab_management.task_view.task_view.TaskStatus" title="alab_management.task_view.task_view.TaskStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskStatus</span></code></a>) – the new status of the task</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="alab_management.task_view.task_view.TaskView.update_task_dependency">
-<code class="sig-name descname">update_task_dependency</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em>, <em class="sig-param"><span class="n">prev_tasks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">next_tasks</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.update_task_dependency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.update_task_dependency" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add prev tasks and next tasks to one task entry,
-which will not overwrite old pre_task and next_tasks</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>task_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the id of task to be updated</p></li>
-<li><p><strong>prev_tasks</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – one or a list of ids of <code class="docutils literal notranslate"><span class="pre">prev_tasks</span></code></p></li>
-<li><p><strong>next_tasks</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – one or a list of ids of <code class="docutils literal notranslate"><span class="pre">next_tasks</span></code></p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 </div>
-<div class="section" id="module-alab_management.task_view">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-alab_management.task_view" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -523,14 +223,7 @@ which will not overwrite old pre_task and next_tasks</p>
               
         
             <!-- Previous / next buttons -->
-<div class='prev-next-area'> 
-    <a class='left-prev' id="prev-link" href="alab_management.sample_view.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">alab_management.sample_view package</p>
-        </div>
-    </a>
+<div class='prev-next-area'>
 </div>
         
         </div>

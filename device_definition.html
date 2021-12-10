@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -39,7 +39,7 @@
     <link rel="next" title="Defining a new task" href="task_definition.html" />
     <link rel="prev" title="Set up definition folder" href="setup.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
+    <meta name="docsearch:language" content="en">
     
 
     <!-- Google Analytics -->
@@ -106,52 +106,6 @@
   <a class="reference internal" href="task_definition.html">
    Defining new tasks
   </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1 has-children">
-  <a class="reference internal" href="modules.html">
-   API Docs
-  </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
-  <label for="toctree-checkbox-1">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul>
-   <li class="toctree-l2 has-children">
-    <a class="reference internal" href="alab_management.html">
-     alab_management package
-    </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
-    <label for="toctree-checkbox-2">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.device_view.html">
-       alab_management.device_view package
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.experiment_view.html">
-       alab_management.experiment_view package
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.sample_view.html">
-       alab_management.sample_view package
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.task_view.html">
-       alab_management.task_view package
-      </a>
-     </li>
-    </ul>
-   </li>
-  </ul>
  </li>
 </ul>
 
@@ -324,7 +278,7 @@ We use <code class="docutils literal notranslate"><span class="pre">name</span><
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="alab_management.sample_view.html#alab_management.sample_view.sample.SamplePosition" title="alab_management.sample_view.sample.SamplePosition"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplePosition</span></code></a>]</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="alab_management.sample_view.sample.html#alab_management.sample_view.sample.SamplePosition" title="alab_management.sample_view.sample.SamplePosition"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplePosition</span></code></a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -334,7 +288,7 @@ We use <code class="docutils literal notranslate"><span class="pre">name</span><
 <div class="section" id="register-device">
 <h2>Register device<a class="headerlink" href="#register-device" title="Permalink to this headline">¶</a></h2>
 <p>To make sure the device you defined can be loaded properly by the system, you need to register it in the system.</p>
-<p>We provide a function <a class="reference internal" href="alab_management.device_view.html#alab_management.device_view.device.add_device" title="alab_management.device_view.device.add_device"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_device</span></code></a> to register a device.</p>
+<p>We provide a function <a class="reference internal" href="alab_management.device_view.device.html#alab_management.device_view.device.add_device" title="alab_management.device_view.device.add_device"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_device</span></code></a> to register a device.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alab_management</span> <span class="kn">import</span> <span class="n">add_device</span>
 <span class="kn">from</span> <span class="nn">.devices.furnace</span> <span class="kn">import</span> <span class="n">Furnace</span>
 

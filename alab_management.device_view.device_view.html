@@ -1,0 +1,438 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>alab_management.device_view.device_view module &#8212; Alab Management</title>
+    
+  <link href="_static/css/theme.css" rel="stylesheet">
+  <link href="_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    
+  <link rel="preload" as="script" href="_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="_static/logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">Alab Management</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="index.html">
+   Overview
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Quickstart
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="installation.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="setup.html">
+   Setup definition folder
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="device_definition.html">
+   Defining new devices
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="task_definition.html">
+   Defining new tasks
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="_sources/alab_management.device_view.device_view.rst.txt"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.rst</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/idocx/alab_management"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        
+        
+    </div>
+</div>
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="module-alab_management.device_view.device_view">
+<span id="alab-management-device-view-device-view-module"></span><h1>alab_management.device_view.device_view module<a class="headerlink" href="#module-alab_management.device_view.device_view" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="alab_management.device_view.device_view.DeviceStatus">
+<em class="property">class </em><code class="sig-name descname">DeviceStatus</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceStatus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>The status of devices</p>
+<dl class="py attribute">
+<dt id="alab_management.device_view.device_view.DeviceStatus.ERROR">
+<code class="sig-name descname">ERROR</code><em class="property"> = 4</em><a class="headerlink" href="#alab_management.device_view.device_view.DeviceStatus.ERROR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="alab_management.device_view.device_view.DeviceStatus.HOLD">
+<code class="sig-name descname">HOLD</code><em class="property"> = 5</em><a class="headerlink" href="#alab_management.device_view.device_view.DeviceStatus.HOLD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="alab_management.device_view.device_view.DeviceStatus.IDLE">
+<code class="sig-name descname">IDLE</code><em class="property"> = 2</em><a class="headerlink" href="#alab_management.device_view.device_view.DeviceStatus.IDLE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="alab_management.device_view.device_view.DeviceStatus.OCCUPIED">
+<code class="sig-name descname">OCCUPIED</code><em class="property"> = 3</em><a class="headerlink" href="#alab_management.device_view.device_view.DeviceStatus.OCCUPIED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="alab_management.device_view.device_view.DeviceStatus.UNKNOWN">
+<code class="sig-name descname">UNKNOWN</code><em class="property"> = 1</em><a class="headerlink" href="#alab_management.device_view.device_view.DeviceStatus.UNKNOWN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="alab_management.device_view.device_view.DeviceView">
+<em class="property">class </em><code class="sig-name descname">DeviceView</code><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Device view provides API to get/set the status
+of a device as well as request ownership of one device</p>
+<dl class="py method">
+<dt id="alab_management.device_view.device_view.DeviceView.add_devices_to_db">
+<code class="sig-name descname">add_devices_to_db</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.add_devices_to_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.add_devices_to_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert device definitions to db, which includes devices’ name, descriptions, parameters,
+type (class name).</p>
+<p>When one device’s name has already appeared in the database, a <code class="docutils literal notranslate"><span class="pre">NameError</span></code> will be raised.
+Device name is a unique identifier for a device</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="alab_management.device_view.device_view.DeviceView.clean_up_device_collection">
+<code class="sig-name descname">clean_up_device_collection</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.clean_up_device_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.clean_up_device_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clean up the device collection</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="alab_management.device_view.device_view.DeviceView.get_all">
+<code class="sig-name descname">get_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.get_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.get_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all the devices in the database, used for dashboard</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="alab_management.device_view.device_view.DeviceView.get_available_devices">
+<code class="sig-name descname">get_available_devices</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device_type</span></em>, <em class="sig-param"><span class="n">task_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.get_available_devices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.get_available_devices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given device type, it will return all the device with this type.</p>
+<p>If only_idle set to True, only the idle devices will be returned (or ones have the same task id)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference internal" href="device_definition.html#alab_management.device_view.device.BaseDevice" title="alab_management.device_view.device.BaseDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDevice</span></code></a>]) – the type of device, which should be <code class="docutils literal notranslate"><span class="pre">type[BaseDevice]</span></code></p></li>
+<li><p><strong>task_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>]) – the id of task that requests this device</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>BaseDevice, “need_release”: bool}]
+The entry need_release indicates whether a device needs to be released
+when __exit__ method is called in the <code class="docutils literal notranslate"><span class="pre">DevicesLock</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[{“device”</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="alab_management.device_view.device_view.DeviceView.get_device">
+<code class="sig-name descname">get_device</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.get_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.get_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get device by device name, if not found, return <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="alab_management.device_view.device_view.DeviceView.get_devices_by_task">
+<code class="sig-name descname">get_devices_by_task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.get_devices_by_task"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.get_devices_by_task" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get devices given a task id (regardless of its status!)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="device_definition.html#alab_management.device_view.device.BaseDevice" title="alab_management.device_view.device.BaseDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDevice</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="alab_management.device_view.device_view.DeviceView.get_status">
+<code class="sig-name descname">get_status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.get_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.get_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get device status by device name, if not found, raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#alab_management.device_view.device_view.DeviceStatus" title="alab_management.device_view.device_view.DeviceStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceStatus</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="alab_management.device_view.device_view.DeviceView.occupy_device">
+<code class="sig-name descname">occupy_device</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">task_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.occupy_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.occupy_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Occupy a device with given task id</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="alab_management.device_view.device_view.DeviceView.release_device">
+<code class="sig-name descname">release_device</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.release_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.release_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Release a device</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="alab_management.device_view.device_view.DeviceView.request_devices">
+<code class="sig-name descname">request_devices</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em>, <em class="sig-param"><span class="n">device_types</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.request_devices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.request_devices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request a list of device, this function will return until all the requested device is ready.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>There should be no duplicated devices in the <code class="docutils literal notranslate"><span class="pre">device_type</span></code>, or a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> shall be raised</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>task_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the id of task that requests these devices</p></li>
+<li><p><strong>device_types</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference internal" href="device_definition.html#alab_management.device_view.device.BaseDevice" title="alab_management.device_view.device.BaseDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDevice</span></code></a>]]) – the requested device types</p></li>
+<li><p><strong>timeout</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – the maximum seconds to wait for the device to be available,
+if waiting more than <code class="docutils literal notranslate"><span class="pre">timeout</span></code> seconds, the function will return <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceLock</span></code></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>A context manager that you can get value, see also</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="alab_management.device_view.device_view.DeviceView.sync_device_status">
+<code class="sig-name descname">sync_device_status</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.sync_device_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.sync_device_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sync the device status (usually when the system is set up)</p>
+<p>Some devices may still be running, so it is not usable now. We will set the
+status to <code class="docutils literal notranslate"><span class="pre">OCCUPIED</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="alab_management.device_view.device_view.DevicesLock">
+<em class="property">class </em><code class="sig-name descname">DevicesLock</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">devices</span></em>, <em class="sig-param"><span class="n">device_view</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DevicesLock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device_view.DevicesLock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The context manager that release the requested devices when the device is no longer needed,
+which is the returned type by <a class="reference internal" href="#alab_management.device_view.device_view.DeviceView.request_devices" title="alab_management.device_view.device_view.DeviceView.request_devices"><code class="xref py py-meth docutils literal notranslate"><span class="pre">request_devices</span></code></a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">device_view</span><span class="o">.</span><span class="n">request_devices</span><span class="p">(</span><span class="n">Furnace</span><span class="p">,</span> <span class="n">RobotArm</span><span class="p">)</span> <span class="k">as</span> <span class="n">devices</span><span class="p">:</span>
+    <span class="n">furnace</span> <span class="o">=</span> <span class="n">devices</span><span class="p">[</span><span class="n">Furnace</span><span class="p">]</span>
+    <span class="n">robot_arm</span> <span class="o">=</span> <span class="n">device</span><span class="p">[</span><span class="n">RobotArm</span><span class="p">]</span>
+    <span class="c1"># do something here</span>
+
+<span class="c1"># will automatically release the devices when going outside the with block</span>
+</pre></div>
+</div>
+<p>The format of devices: <code class="docutils literal notranslate"><span class="pre">{&quot;&lt;device_name_1&gt;&quot;:</span> <span class="pre">{&quot;device&quot;:</span> <span class="pre">BaseDevice,</span> <span class="pre">&quot;need_release&quot;:</span> <span class="pre">bool}}</span></code></p>
+<dl class="py method">
+<dt id="alab_management.device_view.device_view.DevicesLock.devices">
+<em class="property">property </em><code class="sig-name descname">devices</code><a class="headerlink" href="#alab_management.device_view.device_view.DevicesLock.devices" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[~_DeviceType], ~_DeviceType]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="alab_management.device_view.device_view.DevicesLock.release">
+<code class="sig-name descname">release</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DevicesLock.release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device_view.DevicesLock.release" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="alab_management.device_view.device_view.DevicesLock.running_devices">
+<em class="property">property </em><code class="sig-name descname">running_devices</code><a class="headerlink" href="#alab_management.device_view.device_view.DevicesLock.running_devices" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[~_DeviceType], ~_DeviceType]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+              </div>
+              
+        
+            <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+        
+        </div>
+    </div>
+    <footer class="footer">
+    <div class="container">
+      <p>
+        
+          By Alab Project Team<br/>
+        
+            &copy; Copyright 2021, Alab Project Team.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+
+  </body>
+</html>

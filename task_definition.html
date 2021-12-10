@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -36,10 +36,9 @@
     <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="alab_management" href="modules.html" />
     <link rel="prev" title="Defining a new device" href="device_definition.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
+    <meta name="docsearch:language" content="en">
     
 
     <!-- Google Analytics -->
@@ -106,52 +105,6 @@
   <a class="current reference internal" href="#">
    Defining new tasks
   </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1 has-children">
-  <a class="reference internal" href="modules.html">
-   API Docs
-  </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
-  <label for="toctree-checkbox-1">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul>
-   <li class="toctree-l2 has-children">
-    <a class="reference internal" href="alab_management.html">
-     alab_management package
-    </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
-    <label for="toctree-checkbox-2">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.device_view.html">
-       alab_management.device_view package
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.experiment_view.html">
-       alab_management.experiment_view package
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.sample_view.html">
-       alab_management.sample_view package
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.task_view.html">
-       alab_management.task_view package
-      </a>
-     </li>
-    </ul>
-   </li>
-  </ul>
  </li>
 </ul>
 
@@ -268,9 +221,9 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>task_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the identifier of task</p></li>
-<li><p><strong>lab_manager</strong> (<a class="reference internal" href="alab_management.html#alab_management.lab_manager.LabManager" title="alab_management.lab_manager.LabManager"><em>LabManager</em></a>) – you can request devices and positions
+<li><p><strong>lab_manager</strong> (<a class="reference internal" href="alab_management.lab_manager.html#alab_management.lab_manager.LabManager" title="alab_management.lab_manager.LabManager"><em>LabManager</em></a>) – you can request devices and positions
 from it and update the sample’s position in the sample view, refer to
-<a class="reference internal" href="alab_management.html#alab_management.lab_manager.LabManager" title="alab_management.lab_manager.LabManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabManager</span></code></a> for more information</p></li>
+<a class="reference internal" href="alab_management.lab_manager.html#alab_management.lab_manager.LabManager" title="alab_management.lab_manager.LabManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabManager</span></code></a> for more information</p></li>
 </ul>
 </dd>
 </dl>
@@ -333,7 +286,7 @@ and sample positions will be released automatically.</p>
 <div class="section" id="register-task">
 <h2>Register task<a class="headerlink" href="#register-task" title="Permalink to this headline">¶</a></h2>
 <p>To make sure the task you defined can be loaded properly by the system, you need to register it in the system.</p>
-<p>We provide a function <a class="reference internal" href="alab_management.task_view.html#alab_management.task_view.task.add_task" title="alab_management.task_view.task.add_task"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_task</span></code></a> to register a device.</p>
+<p>We provide a function <a class="reference internal" href="alab_management.task_view.task.html#alab_management.task_view.task.add_task" title="alab_management.task_view.task.add_task"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_task</span></code></a> to register a device.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alab_management</span> <span class="kn">import</span> <span class="n">add_task</span>
 <span class="kn">from</span> <span class="nn">.tasks.heating</span> <span class="kn">import</span> <span class="n">Heating</span>
 
@@ -357,13 +310,6 @@ the <code class="docutils literal notranslate"><span class="pre">__init__.py</sp
             <p class="prev-next-subtitle">previous</p>
             <p class="prev-next-title">Defining a new device</p>
         </div>
-    </a>
-    <a class='right-next' id="next-link" href="modules.html" title="next page">
-    <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">alab_management</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
     </a>
 </div>
         
