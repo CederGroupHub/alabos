@@ -17,4 +17,4 @@ python setup.py develop
 
 ## Docs
 
-The docs is served at Github page: https://idocx.github.io/alab_management/
+The docs is served at https://alab-management.readthedocs.io/en/latest/
