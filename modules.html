@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>alab_management.device_view.device module &#8212; Alab Management</title>
+    <title>alab_management &#8212; Alab Management</title>
     
   <link href="_static/css/theme.css" rel="stylesheet">
   <link href="_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
@@ -36,8 +36,8 @@
     <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="alab_management.device_view.device_view module" href="alab_management.device_view.device_view.html" />
-    <link rel="prev" title="alab_management.device_view package" href="alab_management.device_view.html" />
+    <link rel="next" title="alab_management package" href="alab_management.html" />
+    <link rel="prev" title="Defining a new task" href="task_definition.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
     
@@ -110,7 +110,7 @@
 </ul>
 <ul class="current nav bd-sidenav">
  <li class="toctree-l1 current active has-children">
-  <a class="reference internal" href="modules.html">
+  <a class="current reference internal" href="#">
    API Docs
   </a>
   <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
@@ -118,29 +118,29 @@
    <i class="fas fa-chevron-down">
    </i>
   </label>
-  <ul class="current">
-   <li class="toctree-l2 current active has-children">
+  <ul>
+   <li class="toctree-l2 has-children">
     <a class="reference internal" href="alab_management.html">
      alab_management package
     </a>
-    <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+    <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
     <label for="toctree-checkbox-2">
      <i class="fas fa-chevron-down">
      </i>
     </label>
-    <ul class="current">
-     <li class="toctree-l3 current active has-children">
+    <ul>
+     <li class="toctree-l3 has-children">
       <a class="reference internal" href="alab_management.device_view.html">
        alab_management.device_view package
       </a>
-      <input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+      <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
       <label for="toctree-checkbox-3">
        <i class="fas fa-chevron-down">
        </i>
       </label>
-      <ul class="current">
-       <li class="toctree-l4 current active">
-        <a class="current reference internal" href="#">
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.device_view.device.html">
          alab_management.device_view.device module
         </a>
        </li>
@@ -292,7 +292,7 @@
         <!-- ipynb file if we had a myst markdown file -->
         
         <!-- Download raw file -->
-        <a class="dropdown-buttons" href="_sources/alab_management.device_view.device.rst.txt"><button type="button"
+        <a class="dropdown-buttons" href="_sources/modules.rst.txt"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
                 data-placement="left">.rst</button></a>
         <!-- Download PDF via print -->
@@ -338,90 +338,48 @@
         
               <div>
                 
-  <div class="section" id="module-alab_management.device_view.device">
-<span id="alab-management-device-view-device-module"></span><h1>alab_management.device_view.device module<a class="headerlink" href="#module-alab_management.device_view.device" title="Permalink to this headline">¶</a></h1>
-<p>Define the base class of devices</p>
-<dl class="py class">
-<dt id="alab_management.device_view.device.BaseDevice">
-<em class="property">class </em><code class="sig-name descname">BaseDevice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
-<p>The abstract class of device</p>
-<p>All the devices should be inherited from this class</p>
-<dl class="py attribute">
-<dt id="alab_management.device_view.device.BaseDevice.description">
-<code class="sig-name descname">description</code><em class="property">: ClassVar<span class="p">[</span>str<span class="p">]</span></em><em class="property"> = ''</em><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.description" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="alab_management.device_view.device.BaseDevice.emergent_stop">
-<em class="property">abstract </em><code class="sig-name descname">emergent_stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice.emergent_stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.emergent_stop" title="Permalink to this definition">¶</a></dt>
-<dd><p>Specify how the device should stop when emergency</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="alab_management.device_view.device.BaseDevice.is_running">
-<em class="property">abstract </em><code class="sig-name descname">is_running</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice.is_running"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.is_running" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check whether this device is running</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="alab_management.device_view.device.BaseDevice.sample_positions">
-<em class="property">abstract property </em><code class="sig-name descname">sample_positions</code><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.sample_positions" title="Permalink to this definition">¶</a></dt>
-<dd><p>The sample positions describe the position that can hold a sample. The name of sample
-position will be the unique identifier of this sample position. It does not store any
-coordinates information about where the position is in the lab. Users need to map the
-sample positions to real lab coordinates manually.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>It doesn’t matter in which device class a sample position is defined.
-We use <code class="docutils literal notranslate"><span class="pre">name</span></code> attribute to identify them.</p>
+  <div class="section" id="alab-management">
+<h1>alab_management<a class="headerlink" href="#alab-management" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="alab_management.html">alab_management package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="alab_management.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.device_view.html">alab_management.device_view package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.device_view.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.device_view.html#module-alab_management.device_view">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.experiment_view.html">alab_management.experiment_view package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.experiment_view.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.experiment_view.html#module-alab_management.experiment_view">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.sample_view.html">alab_management.sample_view package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.sample_view.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.sample_view.html#module-alab_management.sample_view">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.task_view.html">alab_management.task_view package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_view.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_view.html#module-alab_management.task_view">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="alab_management.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.config.html">alab_management.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.db.html">alab_management.db module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.executor.html">alab_management.executor module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.experiment_manager.html">alab_management.experiment_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.lab_manager.html">alab_management.lab_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.logger.html">alab_management.logger module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="alab_management.html#module-alab_management">Module contents</a></li>
+</ul>
+</li>
+</ul>
 </div>
-<p>Here is an example of how to define some sample positions</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@property</span>
-<span class="k">def</span> <span class="nf">sample_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">[</span>
-        <span class="n">SamplePosition</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.inside&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The position inside the furnace, where the samples are heated&quot;</span>
-        <span class="p">),</span>
-        <span class="n">SamplePosition</span><span class="p">(</span>
-            <span class="s2">&quot;furnace_table&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Temporary position to transfer samples&quot;</span>
-        <span class="p">)</span>
-    <span class="p">]</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="alab_management.sample_view.sample.html#alab_management.sample_view.sample.SamplePosition" title="alab_management.sample_view.sample.SamplePosition"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplePosition</span></code></a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt id="alab_management.device_view.device.add_device">
-<code class="sig-name descname">add_device</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device.add_device" title="Permalink to this definition">¶</a></dt>
-<dd><p>Register a device instance</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="alab_management.device_view.device.get_all_devices">
-<code class="sig-name descname">get_all_devices</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#get_all_devices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.device_view.device.get_all_devices" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get all the device names in the device registry</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <a class="reference internal" href="device_definition.html#alab_management.device_view.device.BaseDevice" title="alab_management.device_view.device.BaseDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDevice</span></code></a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
 </div>
 
 
@@ -430,17 +388,17 @@ We use <code class="docutils literal notranslate"><span class="pre">name</span><
         
             <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
-    <a class='left-prev' id="prev-link" href="alab_management.device_view.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="task_definition.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">alab_management.device_view package</p>
+            <p class="prev-next-title">Defining a new task</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="alab_management.device_view.device_view.html" title="next page">
+    <a class='right-next' id="next-link" href="alab_management.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">alab_management.device_view.device_view module</p>
+        <p class="prev-next-title">alab_management package</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>
