@@ -29,7 +29,8 @@ copyright = f'{date.today().year}, Alab Project Team'
 author = 'Alab Project Team'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.1'
+from alab_management import __version__
+release = __version__
 
 # -- General configuration ---------------------------------------------------
 
