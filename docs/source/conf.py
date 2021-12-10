@@ -92,3 +92,34 @@ StandaloneHTMLBuilder.supported_image_types = [
     'image/png',
     'image/jpeg'
 ]
+
+
+def run_apidoc(_):
+    ignore_paths = [
+        "alab_management/*dashboard*",
+        "alab_management/*scripts*", 
+        "alab_management/*utils*",
+    ]
+
+    argv = [
+        "-f",
+        "-T",
+        "-e",
+        "-M",
+        "-o", "./docs/source",
+        "alab_management",
+    ] + ignore_paths
+
+    try:
+        # Sphinx 1.7+
+        from sphinx.ext import apidoc
+        apidoc.main(argv)
+    except ImportError:
+        # Sphinx 1.6 (and earlier)
+        from sphinx import apidoc
+        argv.insert(0, apidoc.__file__)
+        apidoc.main(argv)
+
+
+def setup(app):
+    app.connect('builder-inited', run_apidoc)
