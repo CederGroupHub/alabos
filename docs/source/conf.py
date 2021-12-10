@@ -95,19 +95,21 @@ StandaloneHTMLBuilder.supported_image_types = [
 
 
 def run_apidoc(_):
+    from pathlib import Path
+    
     ignore_paths = [
         "alab_management/*dashboard*",
         "alab_management/*scripts*", 
         "alab_management/*utils*",
     ]
 
+    ignore_paths = [(Path(__file__).parent.parent.parent / p).absolute().as_posix() for p in ignore_paths]
+
     argv = [
         "-f",
-        "-T",
         "-e",
-        "-M",
-        "-o", "./docs/source",
-        "alab_management",
+        "-o", Path(__file__).parent.as_posix(),
+        (Path(__file__).parent.parent.parent / "alab_management").absolute().as_posix(),
     ] + ignore_paths
 
     try:
