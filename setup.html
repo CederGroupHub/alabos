@@ -33,7 +33,7 @@
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
-    <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script src="_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Defining a new device" href="device_definition.html" />
@@ -297,7 +297,7 @@
                 data-placement="left">.rst</button></a>
         <!-- Download PDF via print -->
         <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
     </div>
 </div>
 
@@ -328,7 +328,7 @@
         </div>
 
         <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
             
             <div class="tocsection onthispage pt-5 pb-3">
                 <i class="fas fa-list"></i> Contents
@@ -363,7 +363,45 @@
 </div>
     <div id="main-content" class="row">
         <div class="col-12 col-md-9 pl-md-3 pr-md-0">
-        
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Set up definition folder</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#initiate-a-definition-project-via-command-line">
+   Initiate a definition project via command line
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#definition-folder-structure">
+   Definition folder structure
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#configuration-file">
+   Configuration File
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#what-s-next">
+   What’s next
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            
               <div>
                 
   <div class="section" id="set-up-definition-folder">
@@ -409,21 +447,21 @@ The definition itself is a Python module, which has the structure:</p>
 <p>Besides the definition files, we also introduce a config file (<code class="docutils literal notranslate"><span class="pre">.toml</span></code>) for db
 connection and some general configurations.</p>
 <p>A default configuration may look like this. Usually, it is just okay to</p>
-<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[general]</span>
-<span class="c1"># the working dir specifies where the device and task definitions can be loaded</span>
-<span class="c1"># by default, the working directory should just be the directory where the config</span>
-<span class="c1"># file stores</span>
-<span class="n">working_dir</span> <span class="o">=</span> <span class="s">&quot;.&quot;</span>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[general]</span><span class="w"></span>
+<span class="c1"># the working dir specifies where the device and task definitions can be loaded</span><span class="w"></span>
+<span class="c1"># by default, the working directory should just be the directory where the config</span><span class="w"></span>
+<span class="c1"># file stores</span><span class="w"></span>
+<span class="n">working_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;.&quot;</span><span class="w"></span>
 
-<span class="k">[db]</span>
-<span class="c1"># this section specify how to connect to the database, you can specify the host</span>
-<span class="c1"># and port of database, and the name of database that we will use. If your database</span>
-<span class="c1"># needs authentication, you will also need to  provide username and password</span>
-<span class="n">host</span> <span class="o">=</span> <span class="s">&#39;localhost&#39;</span>
-<span class="n">port</span> <span class="o">=</span> <span class="mi">27017</span>
-<span class="n">name</span> <span class="o">=</span> <span class="s">&#39;Alab&#39;</span>
-<span class="n">username</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
-<span class="n">password</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+<span class="k">[db]</span><span class="w"></span>
+<span class="c1"># this section specify how to connect to the database, you can specify the host</span><span class="w"></span>
+<span class="c1"># and port of database, and the name of database that we will use. If your database</span><span class="w"></span>
+<span class="c1"># needs authentication, you will also need to  provide username and password</span><span class="w"></span>
+<span class="n">host</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;localhost&#39;</span><span class="w"></span>
+<span class="n">port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">27017</span><span class="w"></span>
+<span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;Alab&#39;</span><span class="w"></span>
+<span class="n">username</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
+<span class="n">password</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
@@ -436,8 +474,8 @@ connection and some general configurations.</p>
 
               </div>
               
-        
-            <!-- Previous / next buttons -->
+            
+                <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
     <a class='left-prev' id="prev-link" href="installation.html" title="previous page">
         <i class="fas fa-angle-left"></i>
@@ -454,19 +492,17 @@ connection and some general configurations.</p>
     <i class="fas fa-angle-right"></i>
     </a>
 </div>
-        
+            
         </div>
     </div>
     <footer class="footer">
-    <div class="container">
-      <p>
-        
-          By Alab Project Team<br/>
-        
-            &copy; Copyright 2021, Alab Project Team.<br/>
-      </p>
-    </div>
-  </footer>
+  <p>
+    
+      By Alab Project Team<br/>
+    
+        &copy; Copyright 2022, Alab Project Team.<br/>
+  </p>
+</footer>
 </main>
 
 
