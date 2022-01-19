@@ -1,7 +1,6 @@
 import time
 from datetime import datetime
 from enum import unique, Enum, auto
-from threading import Lock
 from typing import Type, List, Optional, Union, Dict, Any, Collection, cast, TypeVar
 
 import pymongo
@@ -20,9 +19,10 @@ class DeviceStatus(Enum):
     """
     UNKNOWN = auto()
     IDLE = auto()
+    RESERVED = auto()
     OCCUPIED = auto()
-    ERROR = auto()
     HOLD = auto()
+    ERROR = auto()
 
 
 class DevicesLock:
@@ -82,7 +82,6 @@ class DeviceView:
         self._device_collection = get_collection("devices")
         self._device_collection.create_index([("name", pymongo.HASHED)])
         self._device_list = get_all_devices()
-        self._lock = Lock()
 
     def sync_device_status(self):
         """
@@ -156,20 +155,22 @@ class DeviceView:
         cnt = 0
         while timeout is None or cnt < timeout:
             idle_devices: Dict[Type[BaseDevice], Dict[str, Union[BaseDevice, bool]]] = {}
-            try:
-                self._lock.acquire(blocking=True)  # pylint: disable=consider-using-with
-                for device in device_types:
-                    result = self.get_available_devices(device_type=device, task_id=task_id)
-                    if not result:
-                        break
-                    # just pick the first device
-                    idle_devices[device] = next(filter(lambda device_: not device_["need_release"], result), result[0])
-                else:
-                    for device in idle_devices.values():
-                        self.occupy_device(device=cast(BaseDevice, device["device"]), task_id=task_id)
-                    return DevicesLock(devices=idle_devices, device_view=self)  # type: ignore
-            finally:
-                self._lock.release()
+            for device in device_types:
+                result = self.get_available_devices(device_type=device, task_id=task_id)
+                if not result:
+                    for idle_device_dict in idle_devices.values():
+                        if idle_device_dict["need_release"]:
+                            self.release_device(cast(BaseDevice, idle_device_dict["device"]))
+                    break
+                # just pick the first device
+                reserved_device = next(filter(lambda device_: not device_["need_release"], result), result[0])
+                if reserved_device["need_release"]:
+                    self.reserve_device(device=cast(BaseDevice, reserved_device["device"]), task_id=task_id)
+                idle_devices[device] = reserved_device
+            else:
+                for device in idle_devices.values():
+                    self.occupy_device(device=cast(BaseDevice, device["device"]), task_id=task_id)
+                return DevicesLock(devices=idle_devices, device_view=self)  # type: ignore
 
             time.sleep(1)
             cnt += 1
@@ -226,6 +227,17 @@ class DeviceView:
             "device": self._device_list[device_entry["name"]],
             "need_release": not device_entry["task_id"] == task_id,
         } for device_entry in self._device_collection.find(request_dict)]
+
+    def reserve_device(self, device: Union[BaseDevice, str], task_id: ObjectId):
+        """
+        Reserve a device with a given task id
+        """
+        self._update_status(
+            device=device,
+            required_status=DeviceStatus.IDLE,
+            target_status=DeviceStatus.RESERVED,
+            task_id=task_id,
+        )
 
     def occupy_device(self, device: Union[BaseDevice, str], task_id: ObjectId):
         """
