@@ -100,9 +100,9 @@ class DBLogger:
         Find log within a range of time (1h/1d or else) higher than certain level
         """
         if isinstance(level, str):
-            level = cast(int, LoggingLevel[level].value)
+            level = LoggingLevel[level].value
         elif isinstance(level, LoggingLevel):
-            level = cast(int, LoggingLevel.value)
+            level = LoggingLevel.value
 
         return self._logging_collection.find({"level": {"$gte": level},
                                               "created_at": {"$gte": datetime.now() - within}})
