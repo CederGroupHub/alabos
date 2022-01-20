@@ -19,8 +19,12 @@ const StyledDevicesDiv = styled.div`
     color: black;
   }
 
+  .exp-name {
+    font-size: 120%;
+  }
+
   .task-id {
-    font-size: 80%;
+    font-size: 90%;
   }
 
   .status-waiting {
@@ -28,7 +32,7 @@ const StyledDevicesDiv = styled.div`
   }
 
   .status-running {
-    color: red;
+    color: green;
   }
 
   .status-error {
@@ -37,7 +41,7 @@ const StyledDevicesDiv = styled.div`
   }
 
   .status-ready {
-    color: green;
+    color: red;
   }
 
   h3 {

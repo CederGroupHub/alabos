@@ -12,6 +12,7 @@ const StyledAppBar = styled(AppBar)`
   display: flex;
   flex-direction: row !important;
   align-items: center;
+  font-family: roboto;
 
   a {
     color: inherit;

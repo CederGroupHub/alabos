@@ -18,11 +18,11 @@ const StyledDevicesDiv = styled.div`
   }
 
   .status-occupied {
-    color: red;
+    color: green;
   }
 
   .status-idle {
-    color: green;
+    color: red;
   }
   
   .task-id {
