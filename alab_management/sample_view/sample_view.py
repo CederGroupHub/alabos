@@ -2,7 +2,6 @@ import re
 import time
 from datetime import datetime
 from enum import Enum, auto
-from threading import Lock
 from typing import Optional, List, Dict, Any, Tuple, cast, Union
 
 import pymongo
@@ -10,7 +9,7 @@ from bson import ObjectId
 from pydantic import BaseModel, conint
 
 from .sample import Sample, SamplePosition
-from ..db import get_collection
+from ..db import get_collection, get_lock
 
 
 class SamplePositionRequest(BaseModel):
@@ -89,7 +88,7 @@ class SampleView:
         self._sample_collection = get_collection("samples")
         self._sample_positions_collection = get_collection("sample_positions")
         self._sample_positions_collection.create_index([("name", pymongo.HASHED,)])
-        self._lock = Lock()
+        self._lock = get_lock(self._sample_positions_collection.name)
 
     def add_sample_positions_to_db(self, sample_positions: List[SamplePosition]):
         """
@@ -164,8 +163,7 @@ class SampleView:
 
         cnt = 0
         while timeout is None or cnt < timeout:
-            try:
-                self._lock.acquire(blocking=True)  # pylint: disable=consider-using-with
+            with self._lock():  # pylint: disable=not-callable
                 available_positions: Dict[str, List[Dict[str, Union[str, bool]]]] = {}
                 for sample_position in sample_positions_request:
                     result = self.get_available_sample_position(task_id, position_prefix=sample_position.prefix)
@@ -179,8 +177,6 @@ class SampleView:
                         for sample_position_ in sample_positions_:
                             self.lock_sample_position(task_id, cast(str, sample_position_["name"]))
                     return SamplePositionsLock(sample_positions=available_positions, sample_view=self)
-            finally:
-                self._lock.release()
 
             time.sleep(1)
             cnt += 1

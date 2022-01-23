@@ -1,14 +1,13 @@
 import time
 from datetime import datetime
 from enum import unique, Enum, auto
-from threading import Lock
 from typing import Type, List, Optional, Union, Dict, Any, Collection, cast, TypeVar
 
 import pymongo
 from bson import ObjectId
 
 from .device import BaseDevice, get_all_devices
-from ..db import get_collection
+from ..db import get_collection, get_lock
 
 _DeviceType = TypeVar("_DeviceType", bound=BaseDevice)
 
@@ -82,7 +81,7 @@ class DeviceView:
         self._device_collection = get_collection("devices")
         self._device_collection.create_index([("name", pymongo.HASHED)])
         self._device_list = get_all_devices()
-        self._lock = Lock()
+        self._lock = get_lock(self._device_collection.name)
 
     def sync_device_status(self):
         """
@@ -156,8 +155,7 @@ class DeviceView:
         cnt = 0
         while timeout is None or cnt < timeout:
             idle_devices: Dict[Type[BaseDevice], Dict[str, Union[BaseDevice, bool]]] = {}
-            try:
-                self._lock.acquire(blocking=True)  # pylint: disable=consider-using-with
+            with self._lock():  # pylint: disable=not-callable
                 for device in device_types:
                     result = self.get_available_devices(device_type=device, task_id=task_id)
                     if not result:
@@ -168,8 +166,6 @@ class DeviceView:
                     for device in idle_devices.values():
                         self.occupy_device(device=cast(BaseDevice, device["device"]), task_id=task_id)
                     return DevicesLock(devices=idle_devices, device_view=self)  # type: ignore
-            finally:
-                self._lock.release()
 
             time.sleep(1)
             cnt += 1

@@ -6,11 +6,13 @@ from typing import Optional
 
 import pymongo
 from pymongo import collection, database
+from .utils.db_lock import MongoLock
 
 
 class _GetCollection:
     client: Optional[pymongo.MongoClient] = None
     db: Optional[database.Database] = None
+    db_lock: Optional[MongoLock] = None
 
     @classmethod
     def init(cls):
@@ -35,5 +37,12 @@ class _GetCollection:
 
         return cls.db[name]  # type: ignore # pylint: disable=unsubscriptable-object
 
+    @classmethod
+    def get_lock(cls, name: str) -> MongoLock:
+        if cls.db_lock is None:
+            cls.db_lock = MongoLock(collection=cls.get_collection("_lock"), name=name)
+        return cls.db_lock
+
 
 get_collection = _GetCollection.get_collection
+get_lock = _GetCollection.get_lock

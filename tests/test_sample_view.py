@@ -170,14 +170,13 @@ class TestSampleView(TestCase):
                                                            ["furnace_table", "furnace_1/inside"], timeout=100) \
                     as sample_positions:
                 end_time = time.perf_counter()
-                self.assertAlmostEqual(end_time - start_time, 1.0, delta=1.2)
+                self.assertAlmostEqual(end_time - start_time, 2.0, delta=1.2)
                 self.assertFalse(sample_positions is None)
 
         t1 = threading.Thread(target=_request_1)
         t2 = threading.Thread(target=_request_2)
 
         t1.start()
-        time.sleep(1)
         t2.start()
 
         t1.join()
