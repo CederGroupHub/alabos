@@ -338,11 +338,13 @@
 
 <span class="kn">import</span> <span class="nn">pymongo</span>
 <span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">collection</span><span class="p">,</span> <span class="n">database</span>
+<span class="kn">from</span> <span class="nn">.utils.db_lock</span> <span class="kn">import</span> <span class="n">MongoLock</span>
 
 
 <span class="k">class</span> <span class="nc">_GetCollection</span><span class="p">:</span>
     <span class="n">client</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pymongo</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">db</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">database</span><span class="o">.</span><span class="n">Database</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">db_lock</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MongoLock</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
@@ -367,8 +369,15 @@
 
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>  <span class="c1"># type: ignore # pylint: disable=unsubscriptable-object</span>
 
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_lock</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MongoLock</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">db_lock</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">db_lock</span> <span class="o">=</span> <span class="n">MongoLock</span><span class="p">(</span><span class="n">collection</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;_lock&quot;</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">db_lock</span>
+
 
 <span class="n">get_collection</span> <span class="o">=</span> <span class="n">_GetCollection</span><span class="o">.</span><span class="n">get_collection</span>
+<span class="n">get_lock</span> <span class="o">=</span> <span class="n">_GetCollection</span><span class="o">.</span><span class="n">get_lock</span>
 </pre></div>
 
               </div>
