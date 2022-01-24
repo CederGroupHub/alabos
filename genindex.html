@@ -226,11 +226,6 @@
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.executor.html">
-       alab_management.executor module
-      </a>
-     </li>
-     <li class="toctree-l3">
       <a class="reference internal" href="alab_management.experiment_manager.html">
        alab_management.experiment_manager module
       </a>
@@ -243,6 +238,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="alab_management.logger.html">
        alab_management.logger module
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="alab_management.task_launcher.html">
+       alab_management.task_launcher module
       </a>
      </li>
     </ul>
@@ -421,13 +421,6 @@
 </li>
       </ul></li>
       <li>
-    alab_management.executor
-
-      <ul>
-        <li><a href="alab_management.executor.html#module-alab_management.executor">module</a>
-</li>
-      </ul></li>
-      <li>
     alab_management.experiment_manager
 
       <ul>
@@ -441,8 +434,6 @@
         <li><a href="alab_management.experiment_view.html#module-alab_management.experiment_view">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     alab_management.experiment_view.experiment
 
@@ -450,6 +441,8 @@
         <li><a href="alab_management.experiment_view.experiment.html#module-alab_management.experiment_view.experiment">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     alab_management.experiment_view.experiment_view
 
@@ -490,6 +483,13 @@
 
       <ul>
         <li><a href="alab_management.sample_view.sample_view.html#module-alab_management.sample_view.sample_view">module</a>
+</li>
+      </ul></li>
+      <li>
+    alab_management.task_launcher
+
+      <ul>
+        <li><a href="alab_management.task_launcher.html#module-alab_management.task_launcher">module</a>
 </li>
       </ul></li>
       <li>
@@ -563,7 +563,7 @@
 </li>
       <li><a href="alab_management.logger.html#alab_management.logger.LoggingLevel.DEBUG">DEBUG (LoggingLevel attribute)</a>
 </li>
-      <li><a href="alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.description">description (BaseDevice attribute)</a>
+      <li><a href="alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.description">description (BaseDevice attribute)</a>, <a href="alab_management.device_view.device.html#id0">[1]</a>, <a href="device_definition.html#alab_management.device_view.device.BaseDevice.description">[2]</a>
 
       <ul>
         <li><a href="alab_management.sample_view.sample.html#alab_management.sample_view.sample.SamplePosition.description">(SamplePosition attribute)</a>
@@ -603,8 +603,6 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="alab_management.executor.html#alab_management.executor.Executor">Executor (class in alab_management.executor)</a>
-</li>
       <li><a href="alab_management.experiment_manager.html#alab_management.experiment_manager.ExperimentManager">ExperimentManager (class in alab_management.experiment_manager)</a>
 </li>
       <li><a href="alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentStatus">ExperimentStatus (class in alab_management.experiment_view.experiment_view)</a>
@@ -765,8 +763,6 @@
 </li>
         <li><a href="alab_management.device_view.device_view.html#module-alab_management.device_view.device_view">alab_management.device_view.device_view</a>
 </li>
-        <li><a href="alab_management.executor.html#module-alab_management.executor">alab_management.executor</a>
-</li>
         <li><a href="alab_management.experiment_manager.html#module-alab_management.experiment_manager">alab_management.experiment_manager</a>
 </li>
         <li><a href="alab_management.experiment_view.html#module-alab_management.experiment_view">alab_management.experiment_view</a>
@@ -784,6 +780,8 @@
         <li><a href="alab_management.sample_view.sample.html#module-alab_management.sample_view.sample">alab_management.sample_view.sample</a>
 </li>
         <li><a href="alab_management.sample_view.sample_view.html#module-alab_management.sample_view.sample_view">alab_management.sample_view.sample_view</a>
+</li>
+        <li><a href="alab_management.task_launcher.html#module-alab_management.task_launcher">alab_management.task_launcher</a>
 </li>
         <li><a href="alab_management.task_view.html#module-alab_management.task_view">alab_management.task_view</a>
 </li>
@@ -846,7 +844,7 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="alab_management.executor.html#alab_management.executor.ParameterError">ParameterError</a>
+      <li><a href="alab_management.task_launcher.html#alab_management.task_launcher.ParameterError">ParameterError</a>
 </li>
       <li><a href="alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskStatus.PAUSED">PAUSED (TaskStatus attribute)</a>
 </li>
@@ -893,9 +891,9 @@
       <li><a href="alab_management.task_view.task.html#alab_management.task_view.task.BaseTask.run">run() (BaseTask method)</a>, <a href="task_definition.html#alab_management.task_view.task.BaseTask.run">[1]</a>
 
       <ul>
-        <li><a href="alab_management.executor.html#alab_management.executor.Executor.run">(Executor method)</a>
-</li>
         <li><a href="alab_management.experiment_manager.html#alab_management.experiment_manager.ExperimentManager.run">(ExperimentManager method)</a>
+</li>
+        <li><a href="alab_management.task_launcher.html#alab_management.task_launcher.TaskLauncher.run">(TaskLauncher method)</a>
 </li>
       </ul></li>
       <li><a href="alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentStatus.RUNNING">RUNNING (ExperimentStatus attribute)</a>
@@ -940,7 +938,7 @@
 </li>
       <li><a href="alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskStatus.STOPPED">STOPPED (TaskStatus attribute)</a>
 </li>
-      <li><a href="alab_management.executor.html#alab_management.executor.Executor.submit_task">submit_task() (Executor method)</a>
+      <li><a href="alab_management.task_launcher.html#alab_management.task_launcher.TaskLauncher.submit_task">submit_task() (TaskLauncher method)</a>
 </li>
       <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.sync_device_status">sync_device_status() (DeviceView method)</a>
 </li>
@@ -958,10 +956,12 @@
 </li>
       <li><a href="alab_management.lab_manager.html#alab_management.lab_manager.LabManager.task_id">task_id() (LabManager property)</a>
 </li>
-      <li><a href="alab_management.experiment_view.experiment.html#alab_management.experiment_view.experiment.InputExperiment.tasks">tasks (InputExperiment attribute)</a>
+      <li><a href="alab_management.task_launcher.html#alab_management.task_launcher.TaskLauncher">TaskLauncher (class in alab_management.task_launcher)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="alab_management.experiment_view.experiment.html#alab_management.experiment_view.experiment.InputExperiment.tasks">tasks (InputExperiment attribute)</a>
+</li>
       <li><a href="alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskStatus">TaskStatus (class in alab_management.task_view.task_view)</a>
 </li>
       <li><a href="alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView">TaskView (class in alab_management.task_view.task_view)</a>

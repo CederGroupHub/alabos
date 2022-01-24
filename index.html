@@ -227,11 +227,6 @@
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.executor.html">
-       alab_management.executor module
-      </a>
-     </li>
-     <li class="toctree-l3">
       <a class="reference internal" href="alab_management.experiment_manager.html">
        alab_management.experiment_manager module
       </a>
@@ -244,6 +239,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="alab_management.logger.html">
        alab_management.logger module
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="alab_management.task_launcher.html">
+       alab_management.task_launcher module
       </a>
      </li>
     </ul>
@@ -360,8 +360,8 @@
       </a>
      </li>
      <li class="toc-h3 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#executor">
-       Executor
+      <a class="reference internal nav-link" href="#task-launcher">
+       Task launcher
       </a>
      </li>
      <li class="toc-h3 nav-item toc-entry">
@@ -426,8 +426,8 @@
       </a>
      </li>
      <li class="toc-h3 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#executor">
-       Executor
+      <a class="reference internal nav-link" href="#task-launcher">
+       Task launcher
       </a>
      </li>
      <li class="toc-h3 nav-item toc-entry">
@@ -524,9 +524,9 @@ operation, which has a status of <code class="docutils literal notranslate"><spa
 task in <code class="docutils literal notranslate"><span class="pre">sample</span></code> and <code class="docutils literal notranslate"><span class="pre">task</span></code> collection. It will also update the experiment status to <code class="docutils literal notranslate"><span class="pre">COMPLETED</span></code> when
 all the tasks in an experiment are completed.</p>
 </div>
-<div class="section" id="executor">
-<h3>Executor<a class="headerlink" href="#executor" title="Permalink to this headline">¶</a></h3>
-<p>The executor submits a task when it is ready (all its previous tasks are completed). The executor also contains a
+<div class="section" id="task-launcher">
+<h3>Task launcher<a class="headerlink" href="#task-launcher" title="Permalink to this headline">¶</a></h3>
+<p>The task launcher submits a task when it is ready (all its previous tasks are completed). The task launcher also contains a
 <a class="reference internal" href="alab_management.lab_manager.html#alab_management.lab_manager.LabManager" title="alab_management.lab_manager.LabManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabManager</span></code></a> instance, which is basically a wrapper over
 <a class="reference internal" href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView" title="alab_management.device_view.device_view.DeviceView"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceView</span></code></a> and
 <a class="reference internal" href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView" title="alab_management.sample_view.sample_view.SampleView"><code class="xref py py-class docutils literal notranslate"><span class="pre">SampleView</span></code></a>. It is used to assign lab resources

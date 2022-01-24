@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>alab_management.executor module &#8212; Alab Management</title>
+    <title>alab_management.task_launcher module &#8212; Alab Management</title>
     
   <link href="_static/css/theme.css" rel="stylesheet">
   <link href="_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
@@ -36,8 +36,7 @@
     <script src="_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="alab_management.experiment_manager module" href="alab_management.experiment_manager.html" />
-    <link rel="prev" title="alab_management.db module" href="alab_management.db.html" />
+    <link rel="prev" title="alab_management.logger module" href="alab_management.logger.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
     
@@ -227,11 +226,6 @@
        alab_management.db module
       </a>
      </li>
-     <li class="toctree-l3 current active">
-      <a class="current reference internal" href="#">
-       alab_management.executor module
-      </a>
-     </li>
      <li class="toctree-l3">
       <a class="reference internal" href="alab_management.experiment_manager.html">
        alab_management.experiment_manager module
@@ -245,6 +239,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="alab_management.logger.html">
        alab_management.logger module
+      </a>
+     </li>
+     <li class="toctree-l3 current active">
+      <a class="current reference internal" href="#">
+       alab_management.task_launcher module
       </a>
      </li>
     </ul>
@@ -292,7 +291,7 @@
         <!-- ipynb file if we had a myst markdown file -->
         
         <!-- Download raw file -->
-        <a class="dropdown-buttons" href="_sources/alab_management.executor.rst.txt"><button type="button"
+        <a class="dropdown-buttons" href="_sources/alab_management.task_launcher.rst.txt"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
                 data-placement="left">.rst</button></a>
         <!-- Download PDF via print -->
@@ -337,7 +336,7 @@
         <div class="col-12 col-md-9 pl-md-3 pr-md-0">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
-                <h1>alab_management.executor module</h1>
+                <h1>alab_management.task_launcher module</h1>
                 <!-- Table of contents -->
                 <div id="print-main-content">
                     <div id="jb-print-toc">
@@ -348,36 +347,36 @@
             
               <div>
                 
-  <div class="section" id="module-alab_management.executor">
-<span id="alab-management-executor-module"></span><h1>alab_management.executor module<a class="headerlink" href="#module-alab_management.executor" title="Permalink to this headline">¶</a></h1>
-<p>Executor is the core module of the system,
+  <div class="section" id="module-alab_management.task_launcher">
+<span id="alab-management-task-launcher-module"></span><h1>alab_management.task_launcher module<a class="headerlink" href="#module-alab_management.task_launcher" title="Permalink to this headline">¶</a></h1>
+<p>TaskLauncher is the core module of the system,
 which actually executes the tasks</p>
+<dl class="py exception">
+<dt id="alab_management.task_launcher.ParameterError">
+<em class="property">exception </em><code class="sig-name descname">ParameterError</code><a class="reference internal" href="_modules/alab_management/task_launcher.html#ParameterError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_launcher.ParameterError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>The exception raised when parameters of a task is wrong</p>
+</dd></dl>
+
 <dl class="py class">
-<dt id="alab_management.executor.Executor">
-<em class="property">class </em><code class="sig-name descname">Executor</code><a class="reference internal" href="_modules/alab_management/executor.html#Executor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.executor.Executor" title="Permalink to this definition">¶</a></dt>
+<dt id="alab_management.task_launcher.TaskLauncher">
+<em class="property">class </em><code class="sig-name descname">TaskLauncher</code><a class="reference internal" href="_modules/alab_management/task_launcher.html#TaskLauncher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_launcher.TaskLauncher" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Executor find all the ready tasks and submit them</p>
+<p>TaskLauncher find all the ready tasks and submit them</p>
 <dl class="py method">
-<dt id="alab_management.executor.Executor.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/executor.html#Executor.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.executor.Executor.run" title="Permalink to this definition">¶</a></dt>
+<dt id="alab_management.task_launcher.TaskLauncher.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_launcher.html#TaskLauncher.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_launcher.TaskLauncher.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start the loop</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="alab_management.executor.Executor.submit_task">
-<code class="sig-name descname">submit_task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_entry</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/executor.html#Executor.submit_task"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.executor.Executor.submit_task" title="Permalink to this definition">¶</a></dt>
+<dt id="alab_management.task_launcher.TaskLauncher.submit_task">
+<code class="sig-name descname">submit_task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_entry</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_launcher.html#TaskLauncher.submit_task"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_launcher.TaskLauncher.submit_task" title="Permalink to this definition">¶</a></dt>
 <dd><p>Submit a task. In this system, each task is run in an
 independent thread, which will try to acquire device and
 process samples.</p>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="py exception">
-<dt id="alab_management.executor.ParameterError">
-<em class="property">exception </em><code class="sig-name descname">ParameterError</code><a class="reference internal" href="_modules/alab_management/executor.html#ParameterError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.executor.ParameterError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
-<p>The exception raised when parameters of a task is wrong</p>
 </dd></dl>
 
 </div>
@@ -388,19 +387,12 @@ process samples.</p>
             
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
-    <a class='left-prev' id="prev-link" href="alab_management.db.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="alab_management.logger.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">alab_management.db module</p>
+            <p class="prev-next-title">alab_management.logger module</p>
         </div>
-    </a>
-    <a class='right-next' id="next-link" href="alab_management.experiment_manager.html" title="next page">
-    <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">alab_management.experiment_manager module</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
     </a>
 </div>
             

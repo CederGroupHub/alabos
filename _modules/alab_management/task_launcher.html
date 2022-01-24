@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>alab_management.executor &#8212; Alab Management</title>
+    <title>alab_management.task_launcher &#8212; Alab Management</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet">
   <link href="../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
@@ -226,11 +226,6 @@
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="../../alab_management.executor.html">
-       alab_management.executor module
-      </a>
-     </li>
-     <li class="toctree-l3">
       <a class="reference internal" href="../../alab_management.experiment_manager.html">
        alab_management.experiment_manager module
       </a>
@@ -243,6 +238,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="../../alab_management.logger.html">
        alab_management.logger module
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../alab_management.task_launcher.html">
+       alab_management.task_launcher module
       </a>
      </li>
     </ul>
@@ -329,9 +329,9 @@
             
               <div>
                 
-  <h1>Source code for alab_management.executor</h1><div class="highlight"><pre>
+  <h1>Source code for alab_management.task_launcher</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Executor is the core module of the system,</span>
+<span class="sd">TaskLauncher is the core module of the system,</span>
 <span class="sd">which actually executes the tasks</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -349,15 +349,15 @@
 <span class="kn">from</span> <span class="nn">.utils.module_ops</span> <span class="kn">import</span> <span class="n">load_definition</span>
 
 
-<div class="viewcode-block" id="ParameterError"><a class="viewcode-back" href="../../alab_management.executor.html#alab_management.executor.ParameterError">[docs]</a><span class="k">class</span> <span class="nc">ParameterError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="ParameterError"><a class="viewcode-back" href="../../alab_management.task_launcher.html#alab_management.task_launcher.ParameterError">[docs]</a><span class="k">class</span> <span class="nc">ParameterError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The exception raised when parameters of a task is wrong</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="Executor"><a class="viewcode-back" href="../../alab_management.executor.html#alab_management.executor.Executor">[docs]</a><span class="k">class</span> <span class="nc">Executor</span><span class="p">:</span>
+<div class="viewcode-block" id="TaskLauncher"><a class="viewcode-back" href="../../alab_management.task_launcher.html#alab_management.task_launcher.TaskLauncher">[docs]</a><span class="k">class</span> <span class="nc">TaskLauncher</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Executor find all the ready tasks and submit them</span>
+<span class="sd">    TaskLauncher find all the ready tasks and submit them</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -370,7 +370,7 @@
         <span class="c1"># init</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">device_view</span><span class="o">.</span><span class="n">sync_device_status</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Executor.run"><a class="viewcode-back" href="../../alab_management.executor.html#alab_management.executor.Executor.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TaskLauncher.run"><a class="viewcode-back" href="../../alab_management.task_launcher.html#alab_management.task_launcher.TaskLauncher.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start the loop</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -383,7 +383,7 @@
         <span class="k">for</span> <span class="n">task_entry</span> <span class="ow">in</span> <span class="n">ready_task_entries</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">submit_task</span><span class="p">(</span><span class="n">task_entry</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Executor.submit_task"><a class="viewcode-back" href="../../alab_management.executor.html#alab_management.executor.Executor.submit_task">[docs]</a>    <span class="k">def</span> <span class="nf">submit_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_entry</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+<div class="viewcode-block" id="TaskLauncher.submit_task"><a class="viewcode-back" href="../../alab_management.task_launcher.html#alab_management.task_launcher.TaskLauncher.submit_task">[docs]</a>    <span class="k">def</span> <span class="nf">submit_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_entry</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Submit a task. In this system, each task is run in an</span>
 <span class="sd">        independent thread, which will try to acquire device and</span>

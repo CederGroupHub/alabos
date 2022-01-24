@@ -78,10 +78,10 @@ Experiment manager reads experiment request from ``experiment`` collection and t
 task in ``sample`` and ``task`` collection. It will also update the experiment status to ``COMPLETED`` when
 all the tasks in an experiment are completed.
 
-Executor
+Task launcher
 """"""""""""""""""""""""
 
-The executor submits a task when it is ready (all its previous tasks are completed). The executor also contains a
+The task launcher submits a task when it is ready (all its previous tasks are completed). The task launcher also contains a
 :py:class:`LabManager <alab_management.lab_manager.LabManager>` instance, which is basically a wrapper over
 :py:class:`DeviceView <alab_management.device_view.device_view.DeviceView>` and
 :py:class:`SampleView <alab_management.sample_view.sample_view.SampleView>`. It is used to assign lab resources

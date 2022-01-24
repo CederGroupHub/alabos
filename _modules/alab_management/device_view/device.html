@@ -226,11 +226,6 @@
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="../../../alab_management.executor.html">
-       alab_management.executor module
-      </a>
-     </li>
-     <li class="toctree-l3">
       <a class="reference internal" href="../../../alab_management.experiment_manager.html">
        alab_management.experiment_manager module
       </a>
@@ -243,6 +238,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="../../../alab_management.logger.html">
        alab_management.logger module
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../alab_management.task_launcher.html">
+       alab_management.task_launcher module
       </a>
      </li>
     </ul>
@@ -345,6 +345,10 @@
 <span class="sd">    The abstract class of device</span>
 
 <span class="sd">    All the devices should be inherited from this class</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        description: description of this kind of device, which can include</span>
+<span class="sd">              the device type, how to set up and so on.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">description</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -359,8 +363,6 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            name: the name of device, which is the unique identifier of this device</span>
-<span class="sd">            description: description of this kind of device, which can include</span>
-<span class="sd">              the device type, how to set up and so on.</span>
 
 <span class="sd">        Here is an example of how to write a new device</span>
 
