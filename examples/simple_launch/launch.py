@@ -7,7 +7,7 @@ exp = {
     }],
     "tasks": [{
         "type": "Starting",
-        "next_tasks": [1],
+        "prev_tasks": [],
         "parameters": {
             "start_position": "furnace_table",
         },
@@ -16,21 +16,21 @@ exp = {
         }
     }, {
         "type": "Pouring",
-        "next_tasks": [2],
+        "prev_tasks": [0],
         "parameters": {},
         "samples": {
             "sample": "baking_soda"
         }
     }, {
         "type": "Weighing",
-        "next_tasks": [3],
+        "prev_tasks": [1],
         "parameters": {},
         "samples": {
             "sample": "baking_soda"
         }
     }, {
         "type": "Heating",
-        "next_tasks": [4],
+        "prev_tasks": [2],
         "parameters": {
             "heating_time": 0.5,
             "heating_temperature": 300.0,
@@ -40,7 +40,7 @@ exp = {
         }
     }, {
         "type": "Ending",
-        "next_tasks": [],
+        "prev_tasks": [3],
         "parameters": {},
         "samples": {
             "sample": "baking_soda"

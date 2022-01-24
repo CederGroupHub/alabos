@@ -25,7 +25,7 @@ class TestExperimentView(TestCase):
             "samples": [{"name": "test_sample"}],
             "tasks": [{
                 "type": "Heating",
-                "next_tasks": [],
+                "prev_tasks": [],
                 "parameters": {
                     "p_1": 1,
                     "p_2": 2,
@@ -54,7 +54,7 @@ class TestExperimentView(TestCase):
             "samples": [{"name": "test_sample"}],
             "tasks": [{
                 "type": "Heating",
-                "next_tasks": [],
+                "prev_tasks": [],
                 "parameters": {
                     "p_1": 1,
                     "p_2": 2,
@@ -81,7 +81,7 @@ class TestExperimentView(TestCase):
             "samples": [{"name": "test_sample"}],
             "tasks": [{
                 "type": "Heating",
-                "next_tasks": [],
+                "prev_tasks": [],
                 "parameters": {
                     "p_1": 1,
                     "p_2": 2,
@@ -123,7 +123,7 @@ class TestExperimentView(TestCase):
             "samples": [{"name": "test_sample"}],
             "tasks": [{
                 "type": "Heating",
-                "next_tasks": [],
+                "prev_tasks": [],
                 "parameters": {
                     "p_1": 1,
                     "p_2": 2,

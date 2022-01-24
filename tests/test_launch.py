@@ -25,7 +25,7 @@ class TestLaunch(unittest.TestCase):
         self.main_process.terminate()
         self.worker_process.terminate()
         time.sleep(3)
-        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True)
+        # cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True)
 
     def test_submit_experiment(self):
         experiment = {
@@ -33,7 +33,7 @@ class TestLaunch(unittest.TestCase):
             "samples": [{"name": "test_sample"}],
             "tasks": [{
                 "type": "Starting",
-                "next_tasks": [1],
+                "prev_tasks": [],
                 "parameters": {
                     "dest": "furnace_table",
                 },
@@ -42,7 +42,7 @@ class TestLaunch(unittest.TestCase):
                 }
             }, {
                 "type": "Heating",
-                "next_tasks": [2],
+                "prev_tasks": [0],
                 "parameters": {
                     "setpoints": ((1, 2),),
                 },
@@ -51,7 +51,7 @@ class TestLaunch(unittest.TestCase):
                 }
             }, {
                 "type": "Ending",
-                "next_tasks": [],
+                "prev_tasks": [1],
                 "parameters": {},
                 "samples": {
                     "sample": "test_sample",

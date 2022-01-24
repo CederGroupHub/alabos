@@ -41,7 +41,7 @@ class ExperimentManager:
             get_experiments_with_status(ExperimentStatus.PENDING)
         for experiment in pending_experiments:
             self._handle_pending_experiment(experiment=experiment)
-            print(f"Submit experiment ({experiment['_id']}) to executor")
+            print(f"Receive experiment ({experiment['_id']})")
             self.logger.system_log(level="DEBUG", log_data={
                 "logged_by": self.__class__.__name__,
                 "type": "ExperimentStarted",
@@ -53,9 +53,12 @@ class ExperimentManager:
         tasks = experiment["tasks"]
 
         # check if there is any cycle in the graph
+        reversed_edges = {i: task["prev_tasks"] for i, task in enumerate(tasks)}
         task_graph = Graph(
             list(range(len(tasks))),
-            {i: task["next_tasks"] for i, task in enumerate(tasks)}
+            # reverse reserved edges to get right directions of edges
+            {i: [j for j, children in reversed_edges.items() for child in children if child == i]
+             for i in list(range(len(tasks)))}
         )
         if task_graph.has_cycle():
             raise ValueError("Detect cycle in task graph, which is supposed "

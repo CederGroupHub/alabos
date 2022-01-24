@@ -28,7 +28,7 @@ class TestExperimentManager(TestCase):
             "samples": [{"name": "test_sample"}, {"name": "test_sample_2"}],
             "tasks": [{
                 "type": "Heating",
-                "next_tasks": [1],
+                "prev_tasks": [],
                 "parameters": {
                     "p_1": 1,
                     "p_2": 2,
@@ -38,7 +38,7 @@ class TestExperimentManager(TestCase):
                 }
             }, {
                 "type": "Heating",
-                "next_tasks": [],
+                "prev_tasks": [0],
                 "parameters": {
                     "p_1": 1,
                     "p_2": 2,
@@ -84,7 +84,7 @@ class TestExperimentManager(TestCase):
             "samples": [{"name": "test_sample"}, {"name": "test_sample_2"}],
             "tasks": [{
                 "type": "Heating",
-                "next_tasks": [1],
+                "prev_tasks": [],
                 "parameters": {
                     "p_1": 1,
                     "p_2": 2,
@@ -94,7 +94,7 @@ class TestExperimentManager(TestCase):
                 }
             }, {
                 "type": "Heating",
-                "next_tasks": [],
+                "prev_tasks": [0],
                 "parameters": {
                     "p_1": 1,
                     "p_2": 2,
