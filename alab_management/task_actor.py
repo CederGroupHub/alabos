@@ -49,8 +49,15 @@ def run_task(task_id_str: str):
     for sample_id in task_entry["samples"].values():
         sample_view.update_sample_task_id(task_id=task_id, sample_id=sample_id)
 
+    logger.system_log(level="INFO",
+                      log_data={
+                          "type": "TaskStart",
+                          "task_id": task_id,
+                          "task_type": task_type.__name__
+                      })
+
     try:
-        task.run()
+        result = task.run()
     except Exception:
         task_view.update_status(task_id=task_id, status=TaskStatus.ERROR)
         logger.system_log(level="ERROR",
@@ -65,6 +72,7 @@ def run_task(task_id_str: str):
         raise
     else:
         task_view.update_status(task_id=task_id, status=TaskStatus.COMPLETED)
+        task_view.update_result(task_id=task_id, task_result=result)
         logger.system_log(level="INFO",
                           log_data={
                               "logged_by": "TaskActor",
@@ -72,14 +80,8 @@ def run_task(task_id_str: str):
                               "task_id": task_id,
                               "task_type": task_type.__name__,
                               "status": "COMPLETED",
+                              "task_result": result,
                           })
     finally:
         for sample_id in task_entry["samples"].values():
             sample_view.update_sample_task_id(task_id=None, sample_id=sample_id)
-
-    logger.system_log(level="INFO",
-                      log_data={
-                          "type": "TaskStart",
-                          "task_id": task_id,
-                          "task_type": task_type.__name__
-                      })

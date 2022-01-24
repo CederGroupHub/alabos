@@ -138,6 +138,23 @@ class TaskView:
             for next_task_id in result["next_tasks"]:
                 self.try_to_mark_task_ready(task_id=next_task_id)
 
+    def update_result(self, task_id: ObjectId, task_result: Any):
+        """
+        Update result to completed job.
+
+        Args:
+            task_id: the id of task to be updated
+            task_result: the result returned by the task (which can be dumped into MongoDB)
+        """
+        result = self._task_collection.find_one({"_id": task_id})
+        if result is None:
+            raise ValueError(f"Cannot find task with id: {task_id}")
+
+        self._task_collection.update_one({"_id": task_id}, {"$set": {
+            "result": task_result,
+            "last_updated": datetime.now(),
+        }})
+
     def try_to_mark_task_ready(self, task_id: ObjectId):
         """
         Check if one task's parent tasks are all completed,
