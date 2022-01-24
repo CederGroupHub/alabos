@@ -90,11 +90,17 @@ class TaskView:
         })
         return cast(ObjectId, result.inserted_id)
 
-    def get_task(self, task_id: ObjectId) -> Optional[Dict[str, Any]]:
+    def get_task(self, task_id: ObjectId, encode: bool = False) -> Optional[Dict[str, Any]]:
         """
         Get a task by its task id, which will return all the info stored in the database
+
+        Args:
+            task_id: the task_id of interest. If not found, will return ``None``
+            encode: whether to encode the task using ``self.encode_task`` method
         """
         result = self._task_collection.find_one({"_id": task_id})
+        if encode and result is not None:
+            result = self.encode_task(result)
         return result
 
     def get_status(self, task_id: ObjectId) -> TaskStatus:
@@ -158,13 +164,20 @@ class TaskView:
 
         ready_tasks: List[Dict[str, Any]] = []
         for task_entry in result:
-            operation_type: Type[BaseTask] = self._tasks_definition[task_entry["type"]]
-            task_entry["task_id"] = task_entry.pop("_id")  # change the key name of `_id` to `task_id`
-            ready_tasks.append({
-                **task_entry,
-                "type": operation_type,
-            })
+            ready_tasks.append(self.encode_task(task_entry))
         return ready_tasks
+
+    def encode_task(self, task_entry: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Rename _id to task_id
+        Translate task's type into corresponding python class.
+        """
+        operation_type: Type[BaseTask] = self._tasks_definition[task_entry["type"]]
+        task_entry["task_id"] = task_entry.pop("_id")  # change the key name of `_id` to `task_id`
+        return {
+            **task_entry,
+            "type": operation_type,
+        }
 
     def update_task_dependency(self, task_id: ObjectId,
                                prev_tasks: Union[ObjectId, List[ObjectId]] = None,

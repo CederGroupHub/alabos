@@ -3,6 +3,7 @@ import click
 from .cleanup_lab import cleanup_lab
 from .init_project import init_project
 from .launch_lab import launch_lab
+from .launch_worker import launch_worker
 from .setup_lab import setup_lab
 from .. import __version__
 
@@ -45,6 +46,16 @@ def setup_lab_cli():
 def launch_lab_cli(host, port, debug):
     click.echo(f"The dashboard will be served on http://{host}:{port}")
     launch_lab(host, port, debug)
+
+
+@cli.command("launch_worker", short_help="Launch Dramatiq worker in current folder", context_settings=dict(
+    ignore_unknown_options=True,
+    allow_extra_args=True,
+    help_option_names=[],
+))
+@click.pass_context
+def launch_worker_cli(ctx):
+    launch_worker(ctx.args)
 
 
 @cli.command("clean", short_help="Clean up the database")

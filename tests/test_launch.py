@@ -34,7 +34,7 @@ class TestLaunch(unittest.TestCase):
         self.dashboard_process.join()
         self.experiment_manager_process.join()
         self.executor_process.join()
-        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True)
+        # cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True)
 
     def test_submit_experiment(self):
         experiment = {
