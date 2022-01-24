@@ -1,5 +1,5 @@
 """
-Executor is the core module of the system,
+TaskLauncher is the core module of the system,
 which actually executes the tasks
 """
 
@@ -23,9 +23,9 @@ class ParameterError(Exception):
     """
 
 
-class Executor:
+class TaskLauncher:
     """
-    Executor find all the ready tasks and submit them
+    TaskLauncher find all the ready tasks and submit them
     """
 
     def __init__(self):

@@ -13,6 +13,10 @@ class BaseDevice(ABC):
     The abstract class of device
 
     All the devices should be inherited from this class
+
+    Attributes:
+        description: description of this kind of device, which can include
+              the device type, how to set up and so on.
     """
 
     description: ClassVar[str] = ""
@@ -27,8 +31,6 @@ class BaseDevice(ABC):
 
         Args:
             name: the name of device, which is the unique identifier of this device
-            description: description of this kind of device, which can include
-              the device type, how to set up and so on.
 
         Here is an example of how to write a new device
 

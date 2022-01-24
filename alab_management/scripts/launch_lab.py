@@ -35,12 +35,12 @@ def launch_experiment_manager():
 
 
 def launch_executor():
-    from ..executor import Executor
+    from ..task_launcher import TaskLauncher
     from ..utils.module_ops import load_definition
 
     load_definition()
-    executor = Executor()
-    executor.run()
+    task_launcher = TaskLauncher()
+    task_launcher.run()
 
 
 def launch_lab(host, port, debug):
