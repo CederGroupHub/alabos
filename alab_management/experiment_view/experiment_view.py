@@ -63,7 +63,7 @@ class ExperimentView:
 
     def update_experiment_status(self, exp_id: ObjectId, status: ExperimentStatus):
         """
-        Update the status of a experiment
+        Update the status of an experiment
         """
         experiment = self._experiment_collection.find_one({"_id": exp_id})
 

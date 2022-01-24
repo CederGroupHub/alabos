@@ -34,3 +34,4 @@ class Heating(BaseTask):
                     "temperature": furnace.get_temperature(),
                 })
                 time.sleep(1)
+        return self.task_id

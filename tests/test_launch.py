@@ -78,6 +78,9 @@ class TestLaunch(unittest.TestCase):
         exp_id = ObjectId(resp_json["data"]["exp_id"])
         self.assertTrue("success", resp_json["status"])
         time.sleep(10)
+        self.assertEqual(3, self.task_view._task_collection.count_documents({}))
         self.assertTrue(all(task["status"] == "COMPLETED"
+                            for task in self.task_view._task_collection.find()))
+        self.assertTrue(all(task["result"] == task["_id"]
                             for task in self.task_view._task_collection.find()))
         self.assertEqual("COMPLETED", self.experiment_view.get_experiment(exp_id)["status"])

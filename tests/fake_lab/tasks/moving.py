@@ -25,3 +25,4 @@ class Moving(BaseTask):
                 "src": sample_positions[RobotArm][self.sample_position][0],
                 "dest": sample_positions[RobotArm][self.dest][0],
             })
+        return self.task_id
