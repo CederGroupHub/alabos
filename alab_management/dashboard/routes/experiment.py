@@ -16,7 +16,7 @@ def submit_new_experiment():
     """
     data = request.get_json(force=True)  # type: ignore
     try:
-        experiment = InputExperiment(**data)
+        experiment = InputExperiment(**data)  # type: ignore
         exp_id = experiment_view.create_experiment(experiment)
     except ValidationError as exception:
         return {"status": "error", "errors": exception.errors()}, 400

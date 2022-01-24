@@ -28,7 +28,7 @@ class ResourcesRequest(BaseModel):
     See Also:
         :py:class:`SamplePositionRequest <alab_management.sample_view.sample_view.SamplePositionRequest>`
     """
-    __root__: Dict[Optional[Type[BaseDevice]], List[SamplePositionRequest]]
+    __root__: Dict[Optional[Type[BaseDevice]], List[SamplePositionRequest]]  # type: ignore
 
     @root_validator(pre=True, allow_reuse=True)
     def preprocess(cls, values):  # pylint: disable=no-self-use,no-self-argument
@@ -134,7 +134,7 @@ class LabManager:
         ``furnace_1/inside`` if we are assigned to a furnace named ``furnace_1``.
         """
         if not isinstance(resource_request, ResourcesRequest):
-            resource_request = ResourcesRequest(__root__=resource_request)
+            resource_request = ResourcesRequest(__root__=resource_request)  # type: ignore
         resource_request_formatted = resource_request.dict()["__root__"]
         self._task_view.update_status(task_id=self._task_id, status=TaskStatus.REQUESTING_RESOURCE)
         self.logger.system_log(level="DEBUG", log_data={
