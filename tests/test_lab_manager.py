@@ -37,8 +37,7 @@ class TestLabManager(TestCase):
             "samples": {"sample": ObjectId()},
             "parameters": {"setpoints": [[10, 600]]}
         })
-        lab_manager = LabManager(task_id=task_id, device_view=self.device_view,
-                                 sample_view=self.sample_view, task_view=self.task_view)
+        lab_manager = LabManager(task_id=task_id)
 
         with lab_manager.request_resources({Furnace: ["$/inside"], RobotArm: [], None: [{"prefix": "furnace_table",
                                                                                          "number": 1}]}) \
@@ -64,8 +63,7 @@ class TestLabManager(TestCase):
             "samples": {"sample": ObjectId()},
             "parameters": {"setpoints": [[10, 600]]}
         })
-        lab_manager = LabManager(task_id=task_id, device_view=self.device_view,
-                                 sample_view=self.sample_view, task_view=self.task_view)
+        lab_manager = LabManager(task_id=task_id)
 
         with lab_manager.request_resources({}) as (devices, sample_positions):
             self.assertDictEqual({}, devices)

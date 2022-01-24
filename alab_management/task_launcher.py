@@ -59,13 +59,11 @@ class TaskLauncher:
         """
         task_id = task_entry["task_id"]
         task_type = task_entry.pop("type")
-        lab_manager = LabManager(task_id=task_id, task_view=self.task_view,
-                                 sample_view=self.sample_view, device_view=self.device_view)
 
         try:
             task: BaseTask = task_type(
-                lab_manager=lab_manager,
                 task_id=task_id,
+                lab_manager=LabManager(task_id=task_id),
                 **task_entry["samples"],
                 **task_entry["parameters"],
             )

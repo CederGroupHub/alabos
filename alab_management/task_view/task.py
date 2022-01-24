@@ -3,12 +3,9 @@ Define the base class of task
 """
 
 from abc import ABC, abstractmethod
-from typing import Dict, Type
-from typing import TYPE_CHECKING
+from typing import Dict, Type, TYPE_CHECKING
 
 from bson import ObjectId
-
-from ..logger import DBLogger
 
 if TYPE_CHECKING:
     from ..lab_manager import LabManager
@@ -25,9 +22,6 @@ class BaseTask(ABC):
         """
         Args:
             task_id: the identifier of task
-            lab_manager: you can request devices and positions
-              from it and update the sample's position in the sample view, refer to
-              :py:class:`LabManager <alab_management.lab_manager.LabManager>` for more information
 
         Here is an example about how to define a custom task
 
@@ -42,7 +36,7 @@ class BaseTask(ABC):
         """
         self.task_id = task_id
         self.lab_manager = lab_manager
-        self.logger = DBLogger(task_id=task_id)
+        self.logger = self.lab_manager.logger
 
     @abstractmethod
     def run(self):

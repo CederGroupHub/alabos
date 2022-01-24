@@ -100,12 +100,11 @@ class LabManager:
     update sample positions.
     """
 
-    def __init__(self, task_id: ObjectId, task_view: TaskView,
-                 device_view: DeviceView, sample_view: SampleView):
+    def __init__(self, task_id: ObjectId):
         self._task_id = task_id
-        self._device_view = device_view
-        self._sample_view = sample_view
-        self._task_view = task_view
+        self._device_view = DeviceView()
+        self._sample_view = SampleView()
+        self._task_view = TaskView()
         self.logger = DBLogger(task_id=task_id)
 
     @property
