@@ -8,7 +8,8 @@ from bson import ObjectId
 from alab_management.experiment_view import ExperimentView
 from alab_management.scripts.cleanup_lab import cleanup_lab
 from alab_management.scripts.launch_lab import launch_dashboard, \
-    launch_experiment_manager, launch_executor
+    launch_experiment_manager, launch_task
+from alab_management.scripts.launch_worker import launch_worker
 from alab_management.scripts.setup_lab import setup_lab
 from alab_management.task_view import TaskView
 
@@ -21,20 +22,24 @@ class TestLaunch(unittest.TestCase):
         self.experiment_view = ExperimentView()
         self.dashboard_process = Process(target=launch_dashboard, args=("127.0.0.1", 8896, False))
         self.experiment_manager_process = Process(target=launch_experiment_manager)
-        self.executor_process = Process(target=launch_executor)
+        self.launcher_process = Process(target=launch_task)
+        self.worker = Process(target=launch_worker, args=([],))
         self.dashboard_process.start()
         self.experiment_manager_process.start()
-        self.executor_process.start()
+        self.launcher_process.start()
+        self.worker.start()
         time.sleep(5)  # waiting for starting up
 
     def tearDown(self) -> None:
         self.dashboard_process.terminate()
         self.experiment_manager_process.terminate()
-        self.executor_process.terminate()
+        self.launcher_process.terminate()
+        self.worker.terminate()
         self.dashboard_process.join()
         self.experiment_manager_process.join()
-        self.executor_process.join()
-        # cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True)
+        self.launcher_process.join()
+        self.worker.terminate()
+        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True)
 
     def test_submit_experiment(self):
         experiment = {

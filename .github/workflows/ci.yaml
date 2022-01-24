@@ -25,6 +25,10 @@ jobs:
         uses: supercharge/mongodb-github-action@1.6.0
         with:
           mongodb-version: "4.4"
+      - name: Set up RabbitMQ
+        uses: nijel/rabbitmq-action@v1.0.0
+        with:
+          rabbitmq version: '5'
       - name: Set up python
         uses: actions/setup-python@v2
         with:
