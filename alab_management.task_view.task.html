@@ -22,18 +22,17 @@
       
 
     
-    <link rel="stylesheet" href="_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-book-theme.css?digest=84ace793992934648b4de8eed757e5a2" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css" />
     
   <link rel="preload" as="script" href="_static/js/index.be7d3bbb2ef33a8344ce.js">
 
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
-    <script src="_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
+    <script src="_static/sphinx-book-theme.9d8b4a8b9bb19db25eeaddc40d639ba2.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="alab_management.task_view.task_view module" href="alab_management.task_view.task_view.html" />
@@ -54,7 +53,12 @@
     <div class="container-xl">
       <div class="row">
           
-<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<div class="col-12 col-md-3 bd-sidebar site-navigation " id="site-navigation">
     
         <div class="navbar-brand-box">
     <a class="navbar-brand text-wrap" href="index.html">
@@ -81,7 +85,7 @@
   </a>
  </li>
 </ul>
-<p class="caption">
+<p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
   Quickstart
  </span>
@@ -272,22 +276,22 @@
 
 
           
+<!-- This is an invisible pixel that we watch to see if we've scrolled. -->
+<div class="sbt-scroll-pixel-helper"></div>
 <main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
     
     <div class="topbar container-xl fixed-top">
     <div class="topbar-contents row">
         <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
         <div class="col pl-md-4 topbar-main">
-            
-            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-                <i class="fas fa-bars"></i>
-                <i class="fas fa-arrow-left"></i>
-                <i class="fas fa-arrow-up"></i>
-            </button>
-            
+            <div class="topbar-left">
+                
+                <label class="nav-toggle-button" for="__navigation">
+                    <div class="visually-hidden">Toggle navigation</div>
+                    <i class="fas fa-bars"></i>
+                </label>
+                
+            </div>
             
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
@@ -357,14 +361,14 @@
 <span id="alab-management-task-view-task-module"></span><h1>alab_management.task_view.task module<a class="headerlink" href="#module-alab_management.task_view.task" title="Permalink to this headline">¶</a></h1>
 <p>Define the base class of task</p>
 <dl class="py class">
-<dt id="alab_management.task_view.task.BaseTask">
-<em class="property">class </em><code class="sig-name descname">BaseTask</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em>, <em class="sig-param"><span class="n">lab_manager</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="alab_management.task_view.task.BaseTask">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseTask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lab_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>The abstract class of task.</p>
 <p>All the tasks should inherit from this class.</p>
 <dl class="py method">
-<dt id="alab_management.task_view.task.BaseTask.run">
-<em class="property">abstract </em><code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask.run" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="alab_management.task_view.task.BaseTask.run">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the task. In this function, you can request lab resources from lab manager and log data to database
 with logger.</p>
 <p><code class="docutils literal notranslate"><span class="pre">request_resources</span></code> will not return until all the requested resources are available. So the task will
@@ -408,14 +412,14 @@ and sample positions will be released automatically.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="alab_management.task_view.task.add_task">
-<code class="sig-name descname">add_task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#add_task"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task.add_task" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="alab_management.task_view.task.add_task">
+<span class="sig-name descname"><span class="pre">add_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#add_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.add_task" title="Permalink to this definition">¶</a></dt>
 <dd><p>Register a task</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="alab_management.task_view.task.get_all_tasks">
-<code class="sig-name descname">get_all_tasks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#get_all_tasks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task.get_all_tasks" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="alab_management.task_view.task.get_all_tasks">
+<span class="sig-name descname"><span class="pre">get_all_tasks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#get_all_tasks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.get_all_tasks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all the tasks in the registry</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>

@@ -22,18 +22,17 @@
       
 
     
-    <link rel="stylesheet" href="_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-book-theme.css?digest=84ace793992934648b4de8eed757e5a2" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css" />
     
   <link rel="preload" as="script" href="_static/js/index.be7d3bbb2ef33a8344ce.js">
 
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
-    <script src="_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
+    <script src="_static/sphinx-book-theme.9d8b4a8b9bb19db25eeaddc40d639ba2.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="alab_management.logger module" href="alab_management.logger.html" />
@@ -54,7 +53,12 @@
     <div class="container-xl">
       <div class="row">
           
-<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<div class="col-12 col-md-3 bd-sidebar site-navigation " id="site-navigation">
     
         <div class="navbar-brand-box">
     <a class="navbar-brand text-wrap" href="index.html">
@@ -81,7 +85,7 @@
   </a>
  </li>
 </ul>
-<p class="caption">
+<p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
   Quickstart
  </span>
@@ -272,22 +276,22 @@
 
 
           
+<!-- This is an invisible pixel that we watch to see if we've scrolled. -->
+<div class="sbt-scroll-pixel-helper"></div>
 <main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
     
     <div class="topbar container-xl fixed-top">
     <div class="topbar-contents row">
         <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
         <div class="col pl-md-4 topbar-main">
-            
-            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-                <i class="fas fa-bars"></i>
-                <i class="fas fa-arrow-left"></i>
-                <i class="fas fa-arrow-up"></i>
-            </button>
-            
+            <div class="topbar-left">
+                
+                <label class="nav-toggle-button" for="__navigation">
+                    <div class="visually-hidden">Toggle navigation</div>
+                    <i class="fas fa-bars"></i>
+                </label>
+                
+            </div>
             
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
@@ -356,22 +360,22 @@
   <div class="section" id="module-alab_management.lab_manager">
 <span id="alab-management-lab-manager-module"></span><h1>alab_management.lab_manager module<a class="headerlink" href="#module-alab_management.lab_manager" title="Permalink to this headline">¶</a></h1>
 <dl class="py exception">
-<dt id="alab_management.lab_manager.DeviceRunningException">
-<em class="property">exception </em><code class="sig-name descname">DeviceRunningException</code><a class="reference internal" href="_modules/alab_management/lab_manager.html#DeviceRunningException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.DeviceRunningException" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="alab_management.lab_manager.DeviceRunningException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DeviceRunningException</span></span><a class="reference internal" href="_modules/alab_management/lab_manager.html#DeviceRunningException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_manager.DeviceRunningException" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 <p>Raise when a task try to release a device that is still running</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="alab_management.lab_manager.LabManager">
-<em class="property">class </em><code class="sig-name descname">LabManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="alab_management.lab_manager.LabManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LabManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>LabManager is a wrapper over device view and sample view.
 A task can get access to that to request resources, query sample and
 update sample positions.</p>
 <dl class="py method">
-<dt id="alab_management.lab_manager.LabManager.get_locked_sample_positions">
-<code class="sig-name descname">get_locked_sample_positions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager.get_locked_sample_positions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager.get_locked_sample_positions" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="alab_management.lab_manager.LabManager.get_locked_sample_positions">
+<span class="sig-name descname"><span class="pre">get_locked_sample_positions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager.get_locked_sample_positions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager.get_locked_sample_positions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a list of sample positions that is occupied by this task</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -381,8 +385,8 @@ update sample positions.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="alab_management.lab_manager.LabManager.get_occupied_devices">
-<code class="sig-name descname">get_occupied_devices</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager.get_occupied_devices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager.get_occupied_devices" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="alab_management.lab_manager.LabManager.get_occupied_devices">
+<span class="sig-name descname"><span class="pre">get_occupied_devices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager.get_occupied_devices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager.get_occupied_devices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a list of device instances that is occupied by this task (regardless of their status)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -392,22 +396,22 @@ update sample positions.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="alab_management.lab_manager.LabManager.get_sample">
-<code class="sig-name descname">get_sample</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sample_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager.get_sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager.get_sample" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="alab_management.lab_manager.LabManager.get_sample">
+<span class="sig-name descname"><span class="pre">get_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager.get_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager.get_sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a sample by id, see also
 <a class="reference internal" href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_sample" title="alab_management.sample_view.sample_view.SampleView.get_sample"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_sample</span></code></a></p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="alab_management.lab_manager.LabManager.move_sample">
-<code class="sig-name descname">move_sample</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sample_id</span></em>, <em class="sig-param"><span class="n">position</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager.move_sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager.move_sample" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="alab_management.lab_manager.LabManager.move_sample">
+<span class="sig-name descname"><span class="pre">move_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager.move_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager.move_sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Move a sample to a new position, see also
 <a class="reference internal" href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.move_sample" title="alab_management.sample_view.sample_view.SampleView.move_sample"><code class="xref py py-meth docutils literal notranslate"><span class="pre">move_sample</span></code></a></p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="alab_management.lab_manager.LabManager.request_resources">
-<code class="sig-name descname">request_resources</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">resource_request</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager.request_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager.request_resources" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="alab_management.lab_manager.LabManager.request_resources">
+<span class="sig-name descname"><span class="pre">request_resources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#LabManager.request_resources"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_manager.LabManager.request_resources" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request devices and sample positions</p>
 <p>Usually, devices_and_sample_positions has the format {DeviceType: [“sample_position_1”, …]}. The
 DeviceType can be <code class="docutils literal notranslate"><span class="pre">None</span></code> so that you can request the sample positions that do not belong to
@@ -426,9 +430,9 @@ you can use <code class="docutils literal notranslate"><span class="pre">$</span
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="alab_management.lab_manager.LabManager.task_id">
-<em class="property">property </em><code class="sig-name descname">task_id</code><a class="headerlink" href="#alab_management.lab_manager.LabManager.task_id" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="alab_management.lab_manager.LabManager.task_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">task_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bson.objectid.ObjectId</span></em><a class="headerlink" href="#alab_management.lab_manager.LabManager.task_id" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code></p>
@@ -439,8 +443,8 @@ you can use <code class="docutils literal notranslate"><span class="pre">$</span
 </dd></dl>
 
 <dl class="py class">
-<dt id="alab_management.lab_manager.ResourcesRequest">
-<em class="property">class </em><code class="sig-name descname">ResourcesRequest</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#ResourcesRequest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.ResourcesRequest" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="alab_management.lab_manager.ResourcesRequest">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ResourcesRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#ResourcesRequest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_manager.ResourcesRequest" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.main.BaseModel</span></code></p>
 <p>This class is used to validate the resource request. Each request should have a format of
 [DeviceType: List of SamplePositionRequest]</p>
@@ -449,8 +453,8 @@ you can use <code class="docutils literal notranslate"><span class="pre">$</span
 <p><a class="reference internal" href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SamplePositionRequest" title="alab_management.sample_view.sample_view.SamplePositionRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplePositionRequest</span></code></a></p>
 </div>
 <dl class="py method">
-<dt id="alab_management.lab_manager.ResourcesRequest.preprocess">
-<em class="property">classmethod </em><code class="sig-name descname">preprocess</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">values</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#ResourcesRequest.preprocess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.lab_manager.ResourcesRequest.preprocess" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="alab_management.lab_manager.ResourcesRequest.preprocess">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">preprocess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_manager.html#ResourcesRequest.preprocess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_manager.ResourcesRequest.preprocess" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
