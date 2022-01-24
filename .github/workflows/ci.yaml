@@ -14,6 +14,15 @@ jobs:
     strategy:
       matrix:
         python-version: [ "3.6", "3.7", "3.8", "3.9", "3.10" ]
+    services:
+      rabbitmq:
+        image: "rabbitmq:3.9"
+        ports:
+          - 5672:5672
+      mongodb:
+        image: "mongo:4.4"
+        ports:
+          - 27017:27017
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -21,14 +30,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: "14"
-      - name: Set up MongoDB
-        uses: supercharge/mongodb-github-action@1.6.0
-        with:
-          mongodb-version: "4.4"
-      - name: Set up RabbitMQ
-        uses: nijel/rabbitmq-action@v1.0.0
-        with:
-          rabbitmq version: '5'
       - name: Set up python
         uses: actions/setup-python@v2
         with:
