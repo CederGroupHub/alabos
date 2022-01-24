@@ -391,13 +391,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">task_id</span> <span class="o">=</span> <span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span>
         <span class="n">task_type</span> <span class="o">=</span> <span class="n">task_entry</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span>
-        <span class="n">lab_manager</span> <span class="o">=</span> <span class="n">LabManager</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">task_view</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="p">,</span>
-                                 <span class="n">sample_view</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_view</span><span class="p">,</span> <span class="n">device_view</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device_view</span><span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">task</span><span class="p">:</span> <span class="n">BaseTask</span> <span class="o">=</span> <span class="n">task_type</span><span class="p">(</span>
-                <span class="n">lab_manager</span><span class="o">=</span><span class="n">lab_manager</span><span class="p">,</span>
                 <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span>
+                <span class="n">lab_manager</span><span class="o">=</span><span class="n">LabManager</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">),</span>
                 <span class="o">**</span><span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;samples&quot;</span><span class="p">],</span>
                 <span class="o">**</span><span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;parameters&quot;</span><span class="p">],</span>
             <span class="p">)</span>
