@@ -23,7 +23,7 @@ class TestLaunch(unittest.TestCase):
         self.dashboard_process = Process(target=launch_dashboard, args=("127.0.0.1", 8896, False))
         self.experiment_manager_process = Process(target=launch_experiment_manager)
         self.launcher_process = Process(target=launch_task)
-        self.worker = Process(target=launch_worker, args=([],))
+        self.worker = Process(target=launch_worker, args=(["-p", "4"],))
         self.dashboard_process.start()
         self.experiment_manager_process.start()
         self.launcher_process.start()
@@ -72,15 +72,20 @@ class TestLaunch(unittest.TestCase):
                 }
             }]
         }
-
-        resp = requests.post("http://127.0.0.1:8896/api/experiment/submit", json=experiment)
-        resp_json = resp.json()
-        exp_id = ObjectId(resp_json["data"]["exp_id"])
-        self.assertTrue("success", resp_json["status"])
-        time.sleep(10)
-        self.assertEqual(3, self.task_view._task_collection.count_documents({}))
+        exp_ids = []
+        for _ in range(3):
+            resp = requests.post("http://127.0.0.1:8896/api/experiment/submit", json=experiment)
+            resp_json = resp.json()
+            exp_id = ObjectId(resp_json["data"]["exp_id"])
+            self.assertTrue("success", resp_json["status"])
+            exp_ids.append(exp_id)
+            time.sleep(3)
+        time.sleep(5)
+        self.assertEqual(9, self.task_view._task_collection.count_documents({}))
         self.assertTrue(all(task["status"] == "COMPLETED"
                             for task in self.task_view._task_collection.find()))
         self.assertTrue(all(task["result"] == task["_id"]
                             for task in self.task_view._task_collection.find()))
-        self.assertEqual("COMPLETED", self.experiment_view.get_experiment(exp_id)["status"])
+
+        for exp_id in exp_ids:
+            self.assertEqual("COMPLETED", self.experiment_view.get_experiment(exp_id)["status"])
