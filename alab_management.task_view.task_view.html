@@ -243,6 +243,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="alab_management.task_actor.html">
+       alab_management.task_actor module
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="alab_management.task_launcher.html">
        alab_management.task_launcher module
       </a>
@@ -438,6 +443,18 @@ the same as parameters.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt id="alab_management.task_view.task_view.TaskView.encode_task">
+<code class="sig-name descname">encode_task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_entry</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.encode_task"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.encode_task" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rename _id to task_id
+Translate task’s type into corresponding python class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="alab_management.task_view.task_view.TaskView.get_ready_tasks">
 <code class="sig-name descname">get_ready_tasks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.get_ready_tasks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.get_ready_tasks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a list of ready tasks</p>
@@ -465,11 +482,17 @@ the same as parameters.</p></li>
 
 <dl class="py method">
 <dt id="alab_management.task_view.task_view.TaskView.get_task">
-<code class="sig-name descname">get_task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.get_task"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.get_task" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em>, <em class="sig-param"><span class="n">encode</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.get_task"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.get_task" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a task by its task id, which will return all the info stored in the database</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>task_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the task_id of interest. If not found, will return <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>encode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – whether to encode the task using <code class="docutils literal notranslate"><span class="pre">self.encode_task</span></code> method</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</p>
 </dd>
 </dl>
 </dd></dl>
