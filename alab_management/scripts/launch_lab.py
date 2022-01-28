@@ -35,11 +35,11 @@ def launch_experiment_manager():
 
 
 def launch_task():
-    from ..task_launcher import TaskLauncher
+    from ..task_manager import TaskManager
     from ..utils.module_ops import load_definition
 
     load_definition()
-    task_launcher = TaskLauncher()
+    task_launcher = TaskManager()
     task_launcher.run()
 
 

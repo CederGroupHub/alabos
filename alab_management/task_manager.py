@@ -10,7 +10,7 @@ from .task_view.task_view import TaskView
 from .utils.module_ops import load_definition
 
 
-class TaskLauncher:
+class TaskManager:
     """
     TaskLauncher find all the ready tasks and submit them
     """

@@ -80,7 +80,7 @@ class ExperimentView:
         At the creation of experiment, the id of samples and tasks has not been assigned
 
         Later, we will use this method to assign sample & task id (done by
-        :py:class:`LabManager <alab_management.lab_manager.LabManager>`)
+        :py:class:`LabView <alab_management.lab_manager.LabView>`)
         """
         experiment = self._experiment_collection.find_one({"_id": exp_id})
 

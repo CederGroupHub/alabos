@@ -69,7 +69,7 @@ def _resource_lock(devices_lock: DevicesLock, sample_positions_lock: SamplePosit
         }
 
     log_id = logger.system_log(level="DEBUG", log_data={
-        "logged_by": "LabManager",
+        "logged_by": "LabView",
         "type": "AssignedResources",
         "resources_list": {k.__name__ if k else str(k): [v_["prefix"] for v_ in v]
                            for k, v in resource_request.items()},
@@ -87,15 +87,15 @@ def _resource_lock(devices_lock: DevicesLock, sample_positions_lock: SamplePosit
     devices_lock.release()
     sample_positions_lock.release()
     logger.system_log(level="DEBUG", log_data={
-        "logged_by": "LabManager",
+        "logged_by": "LabView",
         "type": "ReleaseResources",
         "assign_log_id": log_id,
     })
 
 
-class LabManager:
+class LabView:
     """
-    LabManager is a wrapper over device view and sample view.
+    LabView is a wrapper over device view and sample view.
     A task can get access to that to request resources, query sample and
     update sample positions.
     """

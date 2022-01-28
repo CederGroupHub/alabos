@@ -3,7 +3,7 @@ from traceback import format_exc
 import dramatiq
 from bson import ObjectId
 
-from .lab_manager import LabManager
+from .lab_view import LabView
 from .logger import DBLogger
 from .sample_view import SampleView
 from .task_view.task import BaseTask
@@ -38,7 +38,7 @@ def run_task(task_id_str: str):
     try:
         task: BaseTask = task_type(
             task_id=task_id,
-            lab_manager=LabManager(task_id=task_id),
+            lab_manager=LabView(task_id=task_id),
             **task_entry["samples"],
             **task_entry["parameters"],
         )

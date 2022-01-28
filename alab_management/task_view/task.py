@@ -8,7 +8,7 @@ from typing import Dict, Type, TYPE_CHECKING
 from bson import ObjectId
 
 if TYPE_CHECKING:
-    from ..lab_manager import LabManager
+    from ..lab_view import LabView
 
 
 class BaseTask(ABC):
@@ -18,7 +18,7 @@ class BaseTask(ABC):
     All the tasks should inherit from this class.
     """
 
-    def __init__(self, task_id: ObjectId, lab_manager: "LabManager"):
+    def __init__(self, task_id: ObjectId, lab_manager: "LabView"):
         """
         Args:
             task_id: the identifier of task
