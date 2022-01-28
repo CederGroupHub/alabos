@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>alab_management.lab_manager &#8212; Alab Management</title>
+    <title>alab_management.lab_view &#8212; Alab Management</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet">
   <link href="../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
@@ -235,8 +235,8 @@
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="../../alab_management.lab_manager.html">
-       alab_management.lab_manager module
+      <a class="reference internal" href="../../alab_management.lab_view.html">
+       alab_management.lab_view module
       </a>
      </li>
      <li class="toctree-l3">
@@ -250,8 +250,8 @@
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="../../alab_management.task_launcher.html">
-       alab_management.task_launcher module
+      <a class="reference internal" href="../../alab_management.task_manager.html">
+       alab_management.task_manager module
       </a>
      </li>
     </ul>
@@ -338,7 +338,7 @@
             
               <div>
                 
-  <h1>Source code for alab_management.lab_manager</h1><div class="highlight"><pre>
+  <h1>Source code for alab_management.lab_view</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
@@ -355,13 +355,13 @@
 <span class="kn">from</span> <span class="nn">.task_view.task_view</span> <span class="kn">import</span> <span class="n">TaskView</span><span class="p">,</span> <span class="n">TaskStatus</span>
 
 
-<div class="viewcode-block" id="DeviceRunningException"><a class="viewcode-back" href="../../alab_management.lab_manager.html#alab_management.lab_manager.DeviceRunningException">[docs]</a><span class="k">class</span> <span class="nc">DeviceRunningException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="DeviceRunningException"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.DeviceRunningException">[docs]</a><span class="k">class</span> <span class="nc">DeviceRunningException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Raise when a task try to release a device that is still running</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="ResourcesRequest"><a class="viewcode-back" href="../../alab_management.lab_manager.html#alab_management.lab_manager.ResourcesRequest">[docs]</a><span class="k">class</span> <span class="nc">ResourcesRequest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<div class="viewcode-block" id="ResourcesRequest"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.ResourcesRequest">[docs]</a><span class="k">class</span> <span class="nc">ResourcesRequest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class is used to validate the resource request. Each request should have a format of</span>
 <span class="sd">    [DeviceType: List of SamplePositionRequest]</span>
@@ -371,7 +371,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">__root__</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="n">SamplePositionRequest</span><span class="p">]]</span>  <span class="c1"># type: ignore</span>
 
-<div class="viewcode-block" id="ResourcesRequest.preprocess"><a class="viewcode-back" href="../../alab_management.lab_manager.html#alab_management.lab_manager.ResourcesRequest.preprocess">[docs]</a>    <span class="nd">@root_validator</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="ResourcesRequest.preprocess"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.ResourcesRequest.preprocess">[docs]</a>    <span class="nd">@root_validator</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>  <span class="c1"># pylint: disable=no-self-use,no-self-argument</span>
         <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;__root__&quot;</span><span class="p">]</span>
         <span class="c1"># if the sample position request is string, we will automatically add a number attribute = 1.</span>
@@ -410,7 +410,7 @@
         <span class="p">}</span>
 
     <span class="n">log_id</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">system_log</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span> <span class="n">log_data</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;logged_by&quot;</span><span class="p">:</span> <span class="s2">&quot;LabManager&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;logged_by&quot;</span><span class="p">:</span> <span class="s2">&quot;LabView&quot;</span><span class="p">,</span>
         <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;AssignedResources&quot;</span><span class="p">,</span>
         <span class="s2">&quot;resources_list&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">k</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">if</span> <span class="n">k</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">):</span> <span class="p">[</span><span class="n">v_</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">v_</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]</span>
                            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">resource_request</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
@@ -428,15 +428,15 @@
     <span class="n">devices_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
     <span class="n">sample_positions_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">system_log</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span> <span class="n">log_data</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;logged_by&quot;</span><span class="p">:</span> <span class="s2">&quot;LabManager&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;logged_by&quot;</span><span class="p">:</span> <span class="s2">&quot;LabView&quot;</span><span class="p">,</span>
         <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;ReleaseResources&quot;</span><span class="p">,</span>
         <span class="s2">&quot;assign_log_id&quot;</span><span class="p">:</span> <span class="n">log_id</span><span class="p">,</span>
     <span class="p">})</span>
 
 
-<div class="viewcode-block" id="LabManager"><a class="viewcode-back" href="../../alab_management.lab_manager.html#alab_management.lab_manager.LabManager">[docs]</a><span class="k">class</span> <span class="nc">LabManager</span><span class="p">:</span>
+<div class="viewcode-block" id="LabView"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.LabView">[docs]</a><span class="k">class</span> <span class="nc">LabView</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    LabManager is a wrapper over device view and sample view.</span>
+<span class="sd">    LabView is a wrapper over device view and sample view.</span>
 <span class="sd">    A task can get access to that to request resources, query sample and</span>
 <span class="sd">    update sample positions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -452,7 +452,7 @@
     <span class="k">def</span> <span class="nf">task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectId</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span>
 
-<div class="viewcode-block" id="LabManager.request_resources"><a class="viewcode-back" href="../../alab_management.lab_manager.html#alab_management.lab_manager.LabManager.request_resources">[docs]</a>    <span class="k">def</span> <span class="nf">request_resources</span><span class="p">(</span>
+<div class="viewcode-block" id="LabView.request_resources"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.LabView.request_resources">[docs]</a>    <span class="k">def</span> <span class="nf">request_resources</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">resource_request</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ResourcesRequest</span><span class="p">,</span>
                                     <span class="n">Dict</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]]]</span>
@@ -525,14 +525,14 @@
 
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">60</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="LabManager.get_sample"><a class="viewcode-back" href="../../alab_management.lab_manager.html#alab_management.lab_manager.LabManager.get_sample">[docs]</a>    <span class="k">def</span> <span class="nf">get_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
+<div class="viewcode-block" id="LabView.get_sample"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.LabView.get_sample">[docs]</a>    <span class="k">def</span> <span class="nf">get_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a sample by id, see also</span>
 <span class="sd">        :py:meth:`get_sample &lt;alab_management.sample_view.sample_view.SampleView.get_sample&gt;`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span><span class="o">.</span><span class="n">get_sample</span><span class="p">(</span><span class="n">sample_id</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="LabManager.move_sample"><a class="viewcode-back" href="../../alab_management.lab_manager.html#alab_management.lab_manager.LabManager.move_sample">[docs]</a>    <span class="k">def</span> <span class="nf">move_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<div class="viewcode-block" id="LabView.move_sample"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.LabView.move_sample">[docs]</a>    <span class="k">def</span> <span class="nf">move_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Move a sample to a new position, see also</span>
 <span class="sd">        :py:meth:`move_sample &lt;alab_management.sample_view.sample_view.SampleView.move_sample&gt;`</span>
@@ -548,13 +548,13 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span><span class="o">.</span><span class="n">move_sample</span><span class="p">(</span><span class="n">sample_id</span><span class="o">=</span><span class="n">sample_id</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="n">position</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="LabManager.get_occupied_devices"><a class="viewcode-back" href="../../alab_management.lab_manager.html#alab_management.lab_manager.LabManager.get_occupied_devices">[docs]</a>    <span class="k">def</span> <span class="nf">get_occupied_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">]:</span>
+<div class="viewcode-block" id="LabView.get_occupied_devices"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.LabView.get_occupied_devices">[docs]</a>    <span class="k">def</span> <span class="nf">get_occupied_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a list of device instances that is occupied by this task (regardless of their status)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">get_devices_by_task</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="LabManager.get_locked_sample_positions"><a class="viewcode-back" href="../../alab_management.lab_manager.html#alab_management.lab_manager.LabManager.get_locked_sample_positions">[docs]</a>    <span class="k">def</span> <span class="nf">get_locked_sample_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<div class="viewcode-block" id="LabView.get_locked_sample_positions"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.LabView.get_locked_sample_positions">[docs]</a>    <span class="k">def</span> <span class="nf">get_locked_sample_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a list of sample positions that is occupied by this task</span>
 <span class="sd">        &quot;&quot;&quot;</span>

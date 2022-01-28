@@ -82,7 +82,7 @@ Task launcher
 """"""""""""""""""""""""
 
 The task launcher submits a task when it is ready (all its previous tasks are completed). The task launcher also contains a
-:py:class:`LabManager <alab_management.lab_manager.LabManager>` instance, which is basically a wrapper over
+:py:class:`LabView <alab_management.lab_manager.LabView>` instance, which is basically a wrapper over
 :py:class:`DeviceView <alab_management.device_view.device_view.DeviceView>` and
 :py:class:`SampleView <alab_management.sample_view.sample_view.SampleView>`. It is used to assign lab resources
 (devices and sample positions) to a task.

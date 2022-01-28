@@ -235,8 +235,8 @@
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="../../../alab_management.lab_manager.html">
-       alab_management.lab_manager module
+      <a class="reference internal" href="../../../alab_management.lab_view.html">
+       alab_management.lab_view module
       </a>
      </li>
      <li class="toctree-l3">
@@ -250,8 +250,8 @@
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="../../../alab_management.task_launcher.html">
-       alab_management.task_launcher module
+      <a class="reference internal" href="../../../alab_management.task_manager.html">
+       alab_management.task_manager module
       </a>
      </li>
     </ul>
@@ -349,7 +349,7 @@
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">..lab_manager</span> <span class="kn">import</span> <span class="n">LabManager</span>
+    <span class="kn">from</span> <span class="nn">..lab_view</span> <span class="kn">import</span> <span class="n">LabView</span>
 
 
 <div class="viewcode-block" id="BaseTask"><a class="viewcode-back" href="../../../task_definition.html#alab_management.task_view.task.BaseTask">[docs]</a><span class="k">class</span> <span class="nc">BaseTask</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
@@ -359,7 +359,7 @@
 <span class="sd">    All the tasks should inherit from this class.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="BaseTask.__init__"><a class="viewcode-back" href="../../../task_definition.html#alab_management.task_view.task.BaseTask.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">lab_manager</span><span class="p">:</span> <span class="s2">&quot;LabManager&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseTask.__init__"><a class="viewcode-back" href="../../../task_definition.html#alab_management.task_view.task.BaseTask.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">lab_manager</span><span class="p">:</span> <span class="s2">&quot;LabView&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            task_id: the identifier of task</span>
