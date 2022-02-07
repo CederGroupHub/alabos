@@ -56,7 +56,7 @@ Modules
 Lab status
 """"""""""""
 
-Lab status manages all the information required to describe alab. It have three important data view class:
+Lab status manages all the information required to describe alab. It have five important data view class:
 
 - **Experiment view**: experiment view holds experiment data. Each experiment data records the sample and task ids used
   in this experiment, so that we can track the experiment easily. An experiment has a status of ``PENDING``,
@@ -71,6 +71,9 @@ Lab status manages all the information required to describe alab. It have three 
 - **Sample view**: sample view tracks the position of each sample in the lab. User will need to define the
   ``sample position`` in the device definitions, which is a position that can place samples.
 
+- **Lab View**: lab view is simply a wrapper over device view, sample view and task view. For each task, a lab view will
+  be instantiated so that user can request resources and move samples through this lab view.
+
 Experiment manager
 """"""""""""""""""""""""""""""""
 
@@ -78,14 +81,18 @@ Experiment manager reads experiment request from ``experiment`` collection and t
 task in ``sample`` and ``task`` collection. It will also update the experiment status to ``COMPLETED`` when
 all the tasks in an experiment are completed.
 
-Task launcher
+Task manager
 """"""""""""""""""""""""
 
-The task launcher submits a task when it is ready (all its previous tasks are completed). The task launcher also contains a
-:py:class:`LabView <alab_management.lab_manager.LabView>` instance, which is basically a wrapper over
-:py:class:`DeviceView <alab_management.device_view.device_view.DeviceView>` and
-:py:class:`SampleView <alab_management.sample_view.sample_view.SampleView>`. It is used to assign lab resources
+The task manager submits a task when it is ready (all its previous tasks are completed). It is used to assign lab resources
 (devices and sample positions) to a task.
+
+Task actor
+""""""""""""""""""""
+
+Task actor is a function that start a task process (managed by `Dramatiq <https://dramatiq.io/>`_). Each task actor process
+will run only one task (defined in the experiment, e.g. heating, moving, etc.) The task manager launch the task actor
+process and the actor process will not die even if the main process of the system ends.
 
 Data Storage
 """"""""""""""
