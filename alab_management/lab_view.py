@@ -156,7 +156,7 @@ class LabView:
                     device_name = device.name
                     parsed_sample_positions_request.extend([
                         {**sample_position_request,
-                         "prefix": re.sub(r"\$", device_name, sample_position_request["prefix"])}
+                         "prefix": re.sub(r"\$", device_name, sample_position_request["prefix"])}  # type: ignore
                         for sample_position_request in resource_request_formatted[device_type]])
 
                 if any("$" in sample_position_request["prefix"]
