@@ -359,7 +359,7 @@
 <span class="sd">    All the tasks should inherit from this class.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="BaseTask.__init__"><a class="viewcode-back" href="../../../task_definition.html#alab_management.task_view.task.BaseTask.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">lab_manager</span><span class="p">:</span> <span class="s2">&quot;LabView&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseTask.__init__"><a class="viewcode-back" href="../../../task_definition.html#alab_management.task_view.task.BaseTask.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">lab_view</span><span class="p">:</span> <span class="s2">&quot;LabView&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            task_id: the identifier of task</span>
@@ -376,8 +376,8 @@
 <span class="sd">              self.samples = [sample_1, sample_2, sample_3, sample_4]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span> <span class="o">=</span> <span class="n">task_id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lab_manager</span> <span class="o">=</span> <span class="n">lab_manager</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_manager</span><span class="o">.</span><span class="n">logger</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span> <span class="o">=</span> <span class="n">lab_view</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">logger</span></div>
 
 <div class="viewcode-block" id="BaseTask.run"><a class="viewcode-back" href="../../../task_definition.html#alab_management.task_view.task.BaseTask.run">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -401,7 +401,7 @@
 <span class="sd">          # request devices and sample positions from lab manager. The `$` represents</span>
 <span class="sd">          # the name of assigned devices in the sample positions we try to request,</span>
 <span class="sd">          # 4 is the number of sample positions.</span>
-<span class="sd">          with self.lab_manager.request_resources({Furnace: [(&quot;$.inside&quot;, 4)]}) as devices_and_positions:</span>
+<span class="sd">          with self.lab_view.request_resources({Furnace: [(&quot;$.inside&quot;, 4)]}) as devices_and_positions:</span>
 <span class="sd">              devices, sample_positions = devices_and_positions</span>
 <span class="sd">              furnace = devices[Furnace]</span>
 <span class="sd">              inside_furnace = sample_positions[Furnace][&quot;$.inside&quot;]</span>
@@ -412,7 +412,7 @@
 <span class="sd">                  moving_task = Moving(sample=sample,</span>
 <span class="sd">                                       task_id=self.task_id,</span>
 <span class="sd">                                       dest=inside_furnace[0],</span>
-<span class="sd">                                       lab_manager=self.lab_manager,</span>
+<span class="sd">                                       lab_view=self.lab_view,</span>
 <span class="sd">                                       logger=self.logger)</span>
 <span class="sd">                  moving_task.run()</span>
 

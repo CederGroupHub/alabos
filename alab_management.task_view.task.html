@@ -362,7 +362,7 @@
 <p>Define the base class of task</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="alab_management.task_view.task.BaseTask">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseTask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lab_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseTask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lab_view</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>The abstract class of task.</p>
 <p>All the tasks should inherit from this class.</p>
@@ -381,7 +381,7 @@ and sample positions will be released automatically.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># request devices and sample positions from lab manager. The `$` represents</span>
 <span class="c1"># the name of assigned devices in the sample positions we try to request,</span>
 <span class="c1"># 4 is the number of sample positions.</span>
-<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_manager</span><span class="o">.</span><span class="n">request_resources</span><span class="p">({</span><span class="n">Furnace</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;$.inside&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)]})</span> <span class="k">as</span> <span class="n">devices_and_positions</span><span class="p">:</span>
+<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">request_resources</span><span class="p">({</span><span class="n">Furnace</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;$.inside&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)]})</span> <span class="k">as</span> <span class="n">devices_and_positions</span><span class="p">:</span>
     <span class="n">devices</span><span class="p">,</span> <span class="n">sample_positions</span> <span class="o">=</span> <span class="n">devices_and_positions</span>
     <span class="n">furnace</span> <span class="o">=</span> <span class="n">devices</span><span class="p">[</span><span class="n">Furnace</span><span class="p">]</span>
     <span class="n">inside_furnace</span> <span class="o">=</span> <span class="n">sample_positions</span><span class="p">[</span><span class="n">Furnace</span><span class="p">][</span><span class="s2">&quot;$.inside&quot;</span><span class="p">]</span>
@@ -392,7 +392,7 @@ and sample positions will be released automatically.</p>
         <span class="n">moving_task</span> <span class="o">=</span> <span class="n">Moving</span><span class="p">(</span><span class="n">sample</span><span class="o">=</span><span class="n">sample</span><span class="p">,</span>
                              <span class="n">task_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span>
                              <span class="n">dest</span><span class="o">=</span><span class="n">inside_furnace</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                             <span class="n">lab_manager</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lab_manager</span><span class="p">,</span>
+                             <span class="n">lab_view</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="p">,</span>
                              <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
         <span class="n">moving_task</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 

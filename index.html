@@ -369,8 +369,13 @@
       </a>
      </li>
      <li class="toc-h3 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#task-launcher">
-       Task launcher
+      <a class="reference internal nav-link" href="#task-manager">
+       Task manager
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#task-actor">
+       Task actor
       </a>
      </li>
      <li class="toc-h3 nav-item toc-entry">
@@ -435,8 +440,13 @@
       </a>
      </li>
      <li class="toc-h3 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#task-launcher">
-       Task launcher
+      <a class="reference internal nav-link" href="#task-manager">
+       Task manager
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#task-actor">
+       Task actor
       </a>
      </li>
      <li class="toc-h3 nav-item toc-entry">
@@ -514,7 +524,7 @@ of a task).</p>
 <h2>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="lab-status">
 <h3>Lab status<a class="headerlink" href="#lab-status" title="Permalink to this headline">¶</a></h3>
-<p>Lab status manages all the information required to describe alab. It have three important data view class:</p>
+<p>Lab status manages all the information required to describe alab. It have five important data view class:</p>
 <ul class="simple">
 <li><p><strong>Experiment view</strong>: experiment view holds experiment data. Each experiment data records the sample and task ids used
 in this experiment, so that we can track the experiment easily. An experiment has a status of <code class="docutils literal notranslate"><span class="pre">PENDING</span></code>,
@@ -525,6 +535,8 @@ operation, which has a status of <code class="docutils literal notranslate"><spa
 <code class="docutils literal notranslate"><span class="pre">IDLE</span></code>, <code class="docutils literal notranslate"><span class="pre">RUNNING</span></code>, <code class="docutils literal notranslate"><span class="pre">STOPPED</span></code> and <code class="docutils literal notranslate"><span class="pre">HOLD</span></code>.</p></li>
 <li><p><strong>Sample view</strong>: sample view tracks the position of each sample in the lab. User will need to define the
 <code class="docutils literal notranslate"><span class="pre">sample</span> <span class="pre">position</span></code> in the device definitions, which is a position that can place samples.</p></li>
+<li><p><strong>Lab View</strong>: lab view is simply a wrapper over device view, sample view and task view. For each task, a lab view will
+be instantiated so that user can request resources and move samples through this lab view.</p></li>
 </ul>
 </div>
 <div class="section" id="experiment-manager">
@@ -533,13 +545,16 @@ operation, which has a status of <code class="docutils literal notranslate"><spa
 task in <code class="docutils literal notranslate"><span class="pre">sample</span></code> and <code class="docutils literal notranslate"><span class="pre">task</span></code> collection. It will also update the experiment status to <code class="docutils literal notranslate"><span class="pre">COMPLETED</span></code> when
 all the tasks in an experiment are completed.</p>
 </div>
-<div class="section" id="task-launcher">
-<h3>Task launcher<a class="headerlink" href="#task-launcher" title="Permalink to this headline">¶</a></h3>
-<p>The task launcher submits a task when it is ready (all its previous tasks are completed). The task launcher also contains a
-<code class="xref py py-class docutils literal notranslate"><span class="pre">LabView</span></code> instance, which is basically a wrapper over
-<a class="reference internal" href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView" title="alab_management.device_view.device_view.DeviceView"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceView</span></code></a> and
-<a class="reference internal" href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView" title="alab_management.sample_view.sample_view.SampleView"><code class="xref py py-class docutils literal notranslate"><span class="pre">SampleView</span></code></a>. It is used to assign lab resources
+<div class="section" id="task-manager">
+<h3>Task manager<a class="headerlink" href="#task-manager" title="Permalink to this headline">¶</a></h3>
+<p>The task manager submits a task when it is ready (all its previous tasks are completed). It is used to assign lab resources
 (devices and sample positions) to a task.</p>
+</div>
+<div class="section" id="task-actor">
+<h3>Task actor<a class="headerlink" href="#task-actor" title="Permalink to this headline">¶</a></h3>
+<p>Task actor is a function that start a task process (managed by <a class="reference external" href="https://dramatiq.io/">Dramatiq</a>). Each task actor process
+will run only one task (defined in the experiment, e.g. heating, moving, etc.) The task manager launch the task actor
+process and the actor process will not die even if the main process of the system ends.</p>
 </div>
 <div class="section" id="data-storage">
 <h3>Data Storage<a class="headerlink" href="#data-storage" title="Permalink to this headline">¶</a></h3>
