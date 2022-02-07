@@ -13,6 +13,6 @@ class DefaultTask(BaseTask):
         self.sample = sample
 
     def run(self):
-        with self.lab_manager.request_resources({None: [{"prefix": "DefaultSamplePosition", "number": 2}]}) \
+        with self.lab_view.request_resources({None: [{"prefix": "DefaultSamplePosition", "number": 2}]}) \
                 as (_, sample_positions):
-            self.lab_manager.move_sample(self.sample, sample_positions[None]["DefaultSamplePosition"][0])
+            self.lab_view.move_sample(self.sample, sample_positions[None]["DefaultSamplePosition"][0])

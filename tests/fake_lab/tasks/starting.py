@@ -10,6 +10,6 @@ class Starting(BaseTask):
         self.dest = dest
 
     def run(self):
-        with self.lab_manager.request_resources({None: [self.dest]}) as (devices, sample_positions):
-            self.lab_manager.move_sample(self.sample, sample_positions[None][self.dest][0])
+        with self.lab_view.request_resources({None: [self.dest]}) as (devices, sample_positions):
+            self.lab_view.move_sample(self.sample, sample_positions[None][self.dest][0])
         return self.task_id

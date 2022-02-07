@@ -18,7 +18,7 @@ class BaseTask(ABC):
     All the tasks should inherit from this class.
     """
 
-    def __init__(self, task_id: ObjectId, lab_manager: "LabView"):
+    def __init__(self, task_id: ObjectId, lab_view: "LabView"):
         """
         Args:
             task_id: the identifier of task
@@ -35,8 +35,8 @@ class BaseTask(ABC):
               self.samples = [sample_1, sample_2, sample_3, sample_4]
         """
         self.task_id = task_id
-        self.lab_manager = lab_manager
-        self.logger = self.lab_manager.logger
+        self.lab_view = lab_view
+        self.logger = self.lab_view.logger
 
     @abstractmethod
     def run(self):
@@ -60,7 +60,7 @@ class BaseTask(ABC):
           # request devices and sample positions from lab manager. The `$` represents
           # the name of assigned devices in the sample positions we try to request,
           # 4 is the number of sample positions.
-          with self.lab_manager.request_resources({Furnace: [("$.inside", 4)]}) as devices_and_positions:
+          with self.lab_view.request_resources({Furnace: [("$.inside", 4)]}) as devices_and_positions:
               devices, sample_positions = devices_and_positions
               furnace = devices[Furnace]
               inside_furnace = sample_positions[Furnace]["$.inside"]
@@ -71,7 +71,7 @@ class BaseTask(ABC):
                   moving_task = Moving(sample=sample,
                                        task_id=self.task_id,
                                        dest=inside_furnace[0],
-                                       lab_manager=self.lab_manager,
+                                       lab_view=self.lab_view,
                                        logger=self.logger)
                   moving_task.run()
 

@@ -41,7 +41,6 @@ class ExperimentManager:
             get_experiments_with_status(ExperimentStatus.PENDING)
         for experiment in pending_experiments:
             self._handle_pending_experiment(experiment=experiment)
-            print(f"Receive experiment ({experiment['_id']})")
             self.logger.system_log(level="DEBUG", log_data={
                 "logged_by": self.__class__.__name__,
                 "type": "ExperimentStarted",

@@ -9,4 +9,4 @@ class Ending(BaseTask):
         self.sample = sample
 
     def run(self):
-        self.lab_manager.move_sample(sample_id=self.sample, position=None)
+        self.lab_view.move_sample(sample_id=self.sample, position=None)

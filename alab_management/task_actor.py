@@ -38,7 +38,7 @@ def run_task(task_id_str: str):
     try:
         task: BaseTask = task_type(
             task_id=task_id,
-            lab_manager=LabView(task_id=task_id),
+            lab_view=LabView(task_id=task_id),
             **task_entry["samples"],
             **task_entry["parameters"],
         )

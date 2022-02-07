@@ -9,5 +9,5 @@ class Ending(BaseTask):
         self.sample = sample
 
     def run(self):
-        self.lab_manager.move_sample(self.sample, None)
+        self.lab_view.move_sample(self.sample, None)
         return self.task_id

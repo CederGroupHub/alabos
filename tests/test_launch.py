@@ -18,14 +18,14 @@ class TestLaunch(unittest.TestCase):
         self.task_view = TaskView()
         self.experiment_view = ExperimentView()
         self.main_process = subprocess.Popen(["alabos", "launch", "--port", "8896"])
-        self.worker_process = subprocess.Popen(["alabos", "launch_worker"])
+        self.worker_process = subprocess.Popen(["alabos", "launch_worker", "--processes", "3", "--threads", "1"])
         time.sleep(5)  # waiting for starting up
 
     def tearDown(self) -> None:
         self.main_process.terminate()
         self.worker_process.terminate()
         time.sleep(3)
-        # cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True)
+        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True)
 
     def test_submit_experiment(self):
         experiment = {
