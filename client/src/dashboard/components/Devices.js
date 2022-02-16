@@ -38,7 +38,7 @@ function Devices({devices}) {
     return (
         <TableContainer style={{height: "100%"}} component={Paper}>
             <StyledDevicesDiv>
-                <Typography variant="h5">Device View</Typography>
+                <Typography variant="h4" component="h3">Device View</Typography>
                 <Table stickyHeader aria-label="device table">
                     <TableHead>
                         <TableRow>

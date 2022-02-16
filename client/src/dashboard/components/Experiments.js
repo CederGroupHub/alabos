@@ -9,7 +9,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 
-const StyledDevicesDiv = styled.div`
+const StyledExpDiv = styled.div`
   margin: 12px 16px;
 
   .status,
@@ -53,8 +53,8 @@ function Experiments({experiments}) {
     console.log(experiments)
     return (
         <TableContainer style={{height: "100%"}} component={Paper}>
-            <StyledDevicesDiv>
-                <Typography variant="h5">Running Experiments</Typography>
+            <StyledExpDiv>
+                <Typography variant="h4" component="h3">Running Experiments</Typography>
                 <Table stickyHeader aria-label="task table">
                     <TableHead>
                         <TableRow>
@@ -87,7 +87,7 @@ function Experiments({experiments}) {
                         ))))}
                     </TableBody>
                 </Table>
-            </StyledDevicesDiv>
+            </StyledExpDiv>
         </TableContainer>
     )
 }

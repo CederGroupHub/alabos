@@ -54,32 +54,29 @@ const StyledNav = styled.nav`
 `;
 
 function App() {
-    return (
-        <BrowserRouter>
-            <StyledAppBar position="relative">
-                <div style={{
-                    display: "flex",
-                    alignItems: "center",
-                    fontWeight: 500,
-                    fontSize: "1.3em",
-                    margin: "0 16px",
-                }}>
-                    <Link to="/">Alab Management</Link>
-                </div>
-                <StyledNav>
-                    <NavLink to="/"
-                             className={({isActive}) => isActive ? 'link-active nav-link' : 'nav-link'}>Home</NavLink>
-                    <NavLink to="/experiment"
-                             className={({isActive}) => isActive ? 'link-active nav-link' : 'nav-link'}>New
-                        Experiment</NavLink>
-                </StyledNav>
-            </StyledAppBar>
-            <Routes>
-                <Route path="/" element={<Dashboard/>}/>
-                <Route path="/experiment" element={<SubmitExp/>}/>
-            </Routes>
-        </BrowserRouter>
-    );
+  return (
+    <BrowserRouter>
+      <StyledAppBar position="relative">
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          fontWeight: 500,
+          fontSize: "1.3em",
+          margin: "0 24px",
+        }}>
+          <Link to="/">Alab Management</Link>
+        </div>
+        <StyledNav>
+          <NavLink to="/" className={({isActive}) => isActive ? 'link-active nav-link' : 'nav-link'}>Dashboard</NavLink>
+          <NavLink to="/new-experiment" className={({isActive}) => isActive ? 'link-active nav-link' : 'nav-link'}>New Experiment</NavLink>
+        </StyledNav>
+      </StyledAppBar>
+      <Routes>
+        <Route path="/*" element={<Dashboard/>} />
+        <Route path="new-experiment" element={<SubmitExp/>}/>
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;
