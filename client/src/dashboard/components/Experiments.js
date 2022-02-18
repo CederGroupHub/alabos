@@ -50,7 +50,6 @@ const StyledExpDiv = styled.div`
 `;
 
 function Experiments({experiments}) {
-    console.log(experiments)
     return (
         <TableContainer style={{height: "100%"}} component={Paper}>
             <StyledExpDiv>

@@ -94,7 +94,7 @@ function Dashboard() {
           <List sx={{ [`& .MuiListItem-root`]: { padding: "4px 8px"} }}>
             <ListItem>
               <LinkedButton to="/#experiment">
-                <ListItemButton className={hash === "#experiment" ? "active list-button-round" : "list-button-round"}>
+                <ListItemButton className={hash === "#experiment" || hash === "" ? "active list-button-round" : "list-button-round"}>
                     <ListItemIcon>
                       <FireplaceIcon />
                     </ListItemIcon>
