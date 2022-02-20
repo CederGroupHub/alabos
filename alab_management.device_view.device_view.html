@@ -227,8 +227,8 @@
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.db.html">
-       alab_management.db module
+      <a class="reference internal" href="alab_management.device_manager.html">
+       alab_management.device_manager module
       </a>
      </li>
      <li class="toctree-l3">
@@ -413,6 +413,12 @@ Device name is a unique identifier for a device</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceView.execute_command">
+<span class="sig-name descname"><span class="pre">execute_command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.execute_command"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.execute_command" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call a callable function (<code class="docutils literal notranslate"><span class="pre">method</span></code>) with <code class="docutils literal notranslate"><span class="pre">*args</span></code> and <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> on <code class="docutils literal notranslate"><span class="pre">device_name</span></code></p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceView.get_all">
 <span class="sig-name descname"><span class="pre">get_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.get_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.get_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all the devices in the database, used for dashboard</p>
@@ -483,6 +489,14 @@ when __exit__ method is called in the <code class="docutils literal notranslate"
 <dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceView.occupy_device">
 <span class="sig-name descname"><span class="pre">occupy_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.occupy_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.occupy_device" title="Permalink to this definition">¶</a></dt>
 <dd><p>Occupy a device with given task id</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceView.query_property">
+<span class="sig-name descname"><span class="pre">query_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.query_property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.query_property" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the property value of a device (with <code class="docutils literal notranslate"><span class="pre">device_name</span></code>) with <code class="docutils literal notranslate"><span class="pre">prop</span></code>.</p>
+<p>If there is no such device with name <code class="docutils literal notranslate"><span class="pre">device_name</span></code>, a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> shall be raised.
+If there is no such property with name <code class="docutils literal notranslate"><span class="pre">prop</span></code>, a <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> shall be raised.</p>
 </dd></dl>
 
 <dl class="py method">

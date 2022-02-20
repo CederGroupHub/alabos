@@ -225,8 +225,8 @@
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="../../../alab_management.db.html">
-       alab_management.db module
+      <a class="reference internal" href="../../../alab_management.device_manager.html">
+       alab_management.device_manager module
       </a>
      </li>
      <li class="toctree-l3">
@@ -348,7 +348,7 @@
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 
 <span class="kn">from</span> <span class="nn">.device</span> <span class="kn">import</span> <span class="n">BaseDevice</span><span class="p">,</span> <span class="n">get_all_devices</span>
-<span class="kn">from</span> <span class="nn">..db</span> <span class="kn">import</span> <span class="n">get_collection</span><span class="p">,</span> <span class="n">get_lock</span>
+<span class="kn">from</span> <span class="nn">..utils.data_objects</span> <span class="kn">import</span> <span class="n">get_collection</span><span class="p">,</span> <span class="n">get_lock</span>
 
 <span class="n">_DeviceType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_DeviceType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">BaseDevice</span><span class="p">)</span>
 
@@ -629,7 +629,29 @@
             <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">target_status</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">,</span>
             <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
-        <span class="p">}})</span></div>
+        <span class="p">}})</span>
+
+<div class="viewcode-block" id="DeviceView.query_property"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.query_property">[docs]</a>    <span class="k">def</span> <span class="nf">query_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prop</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Query the property value of a device (with ``device_name``) with ``prop``.</span>
+
+<span class="sd">        If there is no such device with name ``device_name``, a ``ValueError`` shall be raised.</span>
+<span class="sd">        If there is no such property with name ``prop``, a ``AttributeError`` shall be raised.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">device_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_list</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find device with name: </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">device</span><span class="p">:</span> <span class="n">BaseDevice</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_list</span><span class="p">[</span><span class="n">device_name</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">prop</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find method with name: </span><span class="si">{</span><span class="n">prop</span><span class="si">}</span><span class="s2"> on </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">prop</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DeviceView.execute_command"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.execute_command">[docs]</a>    <span class="k">def</span> <span class="nf">execute_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call a callable function (``method``) with ``*args`` and ``**kwargs`` on ``device_name``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_property</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="n">method</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
 </pre></div>
 
               </div>
