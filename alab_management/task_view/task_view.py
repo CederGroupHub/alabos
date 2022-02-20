@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Type, Union, Optional, cast
 from bson import ObjectId
 
 from .task import get_all_tasks, BaseTask
-from ..db import get_collection
+from ..utils.data_objects import get_collection
 
 
 class TaskStatus(Enum):

@@ -4,28 +4,30 @@ in case we need to add authentication procedure
 """
 from typing import Optional
 
+import pika
 import pymongo
 from pymongo import collection, database
-from .utils.db_lock import MongoLock
+
+from .db_lock import MongoLock
 
 
-class _GetCollection:
+class _GetMongoCollection:
     client: Optional[pymongo.MongoClient] = None
     db: Optional[database.Database] = None
     db_lock: Optional[MongoLock] = None
 
     @classmethod
     def init(cls):
-        from .config import AlabConfig
+        from ..config import AlabConfig
 
-        db_config = AlabConfig()["db"]
+        db_config = AlabConfig()["mongodb"]
         cls.client = pymongo.MongoClient(
             host=db_config.get("host", None),
             port=db_config.get("port", None),
             username=db_config.get("username", ""),
             password=db_config.get("password", ""),
         )
-        cls.db = cls.client[db_config["name"]]  # type: ignore # pylint: disable=unsubscriptable-object
+        cls.db = cls.client[AlabConfig()["general"]["name"]]  # type: ignore # pylint: disable=unsubscriptable-object
 
     @classmethod
     def get_collection(cls, name: str) -> collection.Collection:
@@ -44,5 +46,16 @@ class _GetCollection:
         return cls.db_lock
 
 
-get_collection = _GetCollection.get_collection
-get_lock = _GetCollection.get_lock
+def get_rabbitmq_connection():
+    from ..config import AlabConfig
+
+    rabbit_mq_config = AlabConfig()["rabbitmq"]
+    _connection = pika.BlockingConnection(parameters=pika.ConnectionParameters(
+        host=rabbit_mq_config.get("host", "localhost"),
+        port=rabbit_mq_config.get("port", 5672)
+    ))
+    return _connection
+
+
+get_collection = _GetMongoCollection.get_collection
+get_lock = _GetMongoCollection.get_lock

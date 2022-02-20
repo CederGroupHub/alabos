@@ -9,7 +9,7 @@ from bson import ObjectId
 from pydantic import BaseModel, conint
 
 from .sample import Sample, SamplePosition
-from ..db import get_collection, get_lock
+from ..utils.data_objects import get_collection, get_lock
 
 
 class SamplePositionRequest(BaseModel):

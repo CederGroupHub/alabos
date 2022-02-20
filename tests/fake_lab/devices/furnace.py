@@ -46,7 +46,7 @@ class Furnace(BaseDevice):
         return self._is_running
 
     def get_temperature(self):
-        return random.random() * 100
+        return 300
 
 
 furnace_1 = Furnace(name="furnace_1")

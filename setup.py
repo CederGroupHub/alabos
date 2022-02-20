@@ -7,6 +7,7 @@ from alab_management import __version__
 setup(
     name="alab_management",
     packages=find_packages(exclude=["tests", "tests.*"]),
+    package_data={"alab_management": ["py.typed"]},
     version=__version__,
     author="Alab Project Team",
     python_requires=">=3.6",

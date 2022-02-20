@@ -8,7 +8,7 @@ from typing import Dict, Any, Union, Optional, Iterable, cast
 
 from bson import ObjectId
 
-from .db import get_collection
+from .utils.data_objects import get_collection
 
 
 @unique

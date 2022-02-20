@@ -7,7 +7,7 @@ import pymongo
 from bson import ObjectId
 
 from .device import BaseDevice, get_all_devices
-from ..db import get_collection, get_lock
+from ..utils.data_objects import get_collection, get_lock
 
 _DeviceType = TypeVar("_DeviceType", bound=BaseDevice)
 
@@ -289,3 +289,25 @@ class DeviceView:
             "task_id": task_id,
             "last_updated": datetime.now(),
         }})
+
+    def query_property(self, device_name: str, prop: str):
+        """
+        Query the property value of a device (with ``device_name``) with ``prop``.
+
+        If there is no such device with name ``device_name``, a ``ValueError`` shall be raised.
+        If there is no such property with name ``prop``, a ``AttributeError`` shall be raised.
+        """
+        if device_name not in self._device_list:
+            raise ValueError(f"Cannot find device with name: {device_name}")
+        device: BaseDevice = self._device_list[device_name]
+
+        if not hasattr(device, prop):
+            raise AttributeError(f"Cannot find method with name: {prop} on {device_name}")
+
+        return getattr(device, prop)
+
+    def execute_command(self, device_name: str, method: str, *args, **kwargs):
+        """
+        Call a callable function (``method``) with ``*args`` and ``**kwargs`` on ``device_name``
+        """
+        return self.query_property(device_name=device_name, prop=method)(*args, **kwargs)

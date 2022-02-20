@@ -4,7 +4,7 @@ from typing import List, Any, Dict, Optional, cast, Union
 from bson import ObjectId
 
 from .experiment import InputExperiment
-from ..db import get_collection
+from ..utils.data_objects import get_collection
 
 
 class ExperimentStatus(Enum):

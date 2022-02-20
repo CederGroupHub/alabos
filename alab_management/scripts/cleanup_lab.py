@@ -11,7 +11,7 @@ def cleanup_lab(all_collections: bool = False, _force_i_know_its_dangerous: bool
     Drop device, sample_position collection from MongoDB
     """
     from ..config import AlabConfig
-    from ..db import _GetCollection
+    from ..utils.data_objects import _GetMongoCollection
     from ..device_view.device_view import DeviceView
     from ..sample_view.sample_view import SampleView
 
@@ -23,8 +23,8 @@ def cleanup_lab(all_collections: bool = False, _force_i_know_its_dangerous: bool
                       f"which cannot be recovered. [yN]: ")
             if y != "y":
                 return False
-        _GetCollection.init()
-        _GetCollection.client.drop_database(config['db']['name'])  # type: ignore
+        _GetMongoCollection.init()
+        _GetMongoCollection.client.drop_database(config['general']['name'])  # type: ignore
     DeviceView().clean_up_device_collection()
     SampleView().clean_up_sample_position_collection()
     return True
