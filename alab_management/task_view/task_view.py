@@ -42,8 +42,8 @@ class TaskView:
             self, task_type: str,
             samples: Dict[str, ObjectId],
             parameters: Dict[str, Any],
-            prev_tasks: Union[ObjectId, List[ObjectId]] = None,
-            next_tasks: Union[ObjectId, List[ObjectId]] = None,
+            prev_tasks: Optional[Union[ObjectId, List[ObjectId]]] = None,
+            next_tasks: Optional[Union[ObjectId, List[ObjectId]]] = None,
     ) -> ObjectId:
         """
         Insert a task into the task collection
@@ -197,8 +197,8 @@ class TaskView:
         }
 
     def update_task_dependency(self, task_id: ObjectId,
-                               prev_tasks: Union[ObjectId, List[ObjectId]] = None,
-                               next_tasks: Union[ObjectId, List[ObjectId]] = None):
+                               prev_tasks: Optional[Union[ObjectId, List[ObjectId]]] = None,
+                               next_tasks: Optional[Union[ObjectId, List[ObjectId]]] = None):
         """
         Add prev tasks and next tasks to one task entry,
         which will not overwrite old pre_task and next_tasks

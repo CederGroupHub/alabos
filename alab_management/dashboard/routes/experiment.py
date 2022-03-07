@@ -26,7 +26,7 @@ def submit_new_experiment():
     return {"status": "success", "data": {"exp_id": str(exp_id)}}
 
 
-@experiment_bp.route("/query/<exp_id>", methods=["POST", "GET"])
+@experiment_bp.route("/<exp_id>", methods=["GET"])
 def query_experiment(exp_id: str):
     """
     Find an experiment by id

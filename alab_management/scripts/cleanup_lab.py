@@ -27,4 +27,6 @@ def cleanup_lab(all_collections: bool = False, _force_i_know_its_dangerous: bool
         _GetMongoCollection.client.drop_database(config['general']['name'])  # type: ignore
     DeviceView().clean_up_device_collection()
     SampleView().clean_up_sample_position_collection()
+    _GetMongoCollection.get_collection("_lock").drop()
+    _GetMongoCollection.get_collection("requests").drop()
     return True

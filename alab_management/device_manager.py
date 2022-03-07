@@ -2,8 +2,9 @@
 This module is adapted from https://github.com/Mause/rpc
 """
 from concurrent.futures import Future
+from functools import partial
 from threading import Thread
-from typing import Optional, Any, Dict, NoReturn, cast
+from typing import Optional, Any, Dict, NoReturn, cast, Callable
 
 import dill
 import pika
@@ -19,6 +20,54 @@ from .utils.module_ops import load_definition
 
 DEFAULT_SERVER_QUEUE_SUFFIX = ".device_rpc"
 DEFAULT_CLIENT_QUEUE_SUFFIX = DEFAULT_SERVER_QUEUE_SUFFIX + ".reply_to"
+
+
+class DeviceWrapper:
+    """
+    A wrapper over the device
+    """
+
+    class DeviceMethodWrapper:
+        """
+        A wrapper over a device method
+        """
+        def __init__(self, device_name: str, method: str, method_handler: Callable):
+            self._device_name = device_name
+            self._method: str = method
+            self._method_handler = method_handler
+
+        @property
+        def method(self) -> str:
+            return self._method
+
+        def __call__(self, *args, **kwargs):
+            return self._method_handler(*args, **kwargs)
+
+        def __repr__(self) -> str:
+            return f"<method {self._device_name}.{self._method}>"
+
+        def _raise(self, *args, **kwargs) -> NoReturn:  # pylint: disable=no-self-use
+            raise AttributeError("This is a class method, you cannot use it as an attribute.")
+
+        __str__ = __repr__
+
+        __len__ = __getattr__ = __getitem__ = __add__ = __sub__ = \
+            __eq__ = __lt__ = __gt__ = _raise
+
+    def __init__(self, name: str, devices_client: "DevicesClient"):
+        self._name = name
+        self._devices_client = devices_client
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    def __getattr__(self, method: str):
+        return self.DeviceMethodWrapper(
+            device_name=self.name,
+            method=method,
+            method_handler=partial(self._devices_client.call, self.name, method)
+        )
 
 
 class DeviceManager:
@@ -44,7 +93,7 @@ class DeviceManager:
         """
         with get_rabbitmq_connection().channel() as channel:
             channel.queue_declare(
-                queue=self._rpc_queue_name, auto_delete=True, exclusive=True,
+                queue=self._rpc_queue_name, auto_delete=True, exclusive=False,
             )
             channel.basic_consume(queue=self._rpc_queue_name, on_message_callback=self.on_message,
                                   auto_ack=False, consumer_tag=self._rpc_queue_name)
@@ -81,7 +130,7 @@ class DeviceManager:
                 raise PermissionError(f"Currently the task ({body['task_id']}) "
                                       f"does not occupy this device: {body['device']}")
 
-            result = self._device_view.execute_command(device_name=body["device"], method=body["method"],
+            result = self._device_view.execute_command(body["device"], body["method"],
                                                        *body["args"], **body["kwargs"])
             response = {
                 "status": "success",
@@ -156,36 +205,7 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
         Returns:
             A device wrapper that will send every call to class method to remote server.
         """
-        self_: "DevicesClient" = self
-
-        class DeviceWrapper:
-            """
-            A wrapper over the device
-            """
-
-            def __getattr__(self, method: str):
-                class DeviceMethodWrapper:
-                    """
-                    A wrapper over the device method
-                    """
-
-                    def __call__(self, *args, **kwargs):
-                        return self_.call(device_name=device_name, method=method, *args, **kwargs)
-
-                    def __repr__(self) -> str:
-                        return f"<method {device_name}.{method}>"
-
-                    def _raise(self, *args, **kwargs) -> NoReturn:  # pylint: disable=no-self-use
-                        raise AttributeError("This is a class method, you cannot use it as an attribute.")
-
-                    __str__ = __repr__
-
-                    __len__ = __getattr__ = __getitem__ = __add__ = __sub__ = \
-                        __eq__ = __lt__ = __gt__ = _raise
-
-                return DeviceMethodWrapper()
-
-        return DeviceWrapper()
+        return DeviceWrapper(name=device_name, devices_client=self)
 
     def call(self, device_name: str, method: str, *args, **kwargs) -> Any:
         """

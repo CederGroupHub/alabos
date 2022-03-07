@@ -1,7 +1,6 @@
-import time
 from datetime import datetime
 from enum import unique, Enum, auto
-from typing import Type, List, Optional, Union, Dict, Any, Collection, cast, TypeVar
+from typing import List, Optional, Union, Dict, Any, Collection, cast, TypeVar
 
 import pymongo
 from bson import ObjectId
@@ -22,53 +21,6 @@ class DeviceStatus(Enum):
     OCCUPIED = auto()
     ERROR = auto()
     HOLD = auto()
-
-
-class DevicesLock:
-    """
-    The context manager that release the requested devices when the device is no longer needed,
-    which is the returned type by :py:meth:`request_devices <DeviceView.request_devices>`
-
-    .. code-block:: python
-
-        with device_view.request_devices(Furnace, RobotArm) as devices:
-            furnace = devices[Furnace]
-            robot_arm = device[RobotArm]
-            # do something here
-
-        # will automatically release the devices when going outside the with block
-
-    The format of devices: ``{"<device_name_1>": {"device": BaseDevice, "need_release": bool}}``
-    """
-
-    def __init__(self, devices: Optional[Dict[Type[_DeviceType], Dict[str, Union[str, _DeviceType]]]],
-                 device_view: "DeviceView"):
-        self._devices = devices
-        self._device_view: "DeviceView" = device_view
-
-    @property
-    def devices(self) -> Optional[Dict[Type[_DeviceType], _DeviceType]]:
-        if self._devices is None:
-            return None
-        return {k: cast(BaseDevice, v["device"]) for k, v in self._devices.items()}  # type: ignore
-
-    def release(self):
-        if self._devices is not None:
-            for device in self._devices.values():
-                if device["need_release"]:
-                    self._device_view.release_device(device["device"])
-
-    @property
-    def running_devices(self) -> Optional[Dict[Type[_DeviceType], _DeviceType]]:
-        if self.devices is None:
-            return None
-        return {k: v for k, v in self.devices.items() if v.is_running()}  # type: ignore
-
-    def __enter__(self):
-        return self.devices
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.release()
 
 
 class DeviceView:
@@ -131,47 +83,69 @@ class DeviceView:
         """
         self._device_collection.drop()
 
-    def request_devices(self, task_id: ObjectId,
-                        device_types: Collection[Type[BaseDevice]],  # pylint: disable=unsubscriptable-object
-                        timeout: Optional[int] = None) -> DevicesLock:
+    def request_devices(
+            self,
+            task_id: ObjectId,
+            device_types_str: Collection[str],  # pylint: disable=unsubscriptable-object
+    ) -> Optional[Dict[str, Dict[str, Union[str, bool]]]]:
         """
-        Request a list of device, this function will return until all the requested device is ready.
+        Request a list of device, this function will return the name of devices if all the requested device is ready.
 
         .. note::
             There should be no duplicated devices in the ``device_type``, or a ``ValueError`` shall be raised
 
         Args:
             task_id: the id of task that requests these devices
-            device_types: the requested device types
-            timeout: the maximum seconds to wait for the device to be available,
-                if waiting more than ``timeout`` seconds, the function will return ``None``.
+            device_types_str: the requested device types
 
         Returns:
-            A context manager that you can get value, see also: :py:class:`DeviceLock <DeviceLock>`
+            {"device_type_name": {"name": device_name, "need_release": need_release (bool)}} or None
         """
-        if len(device_types) != len(set(device_types)):
+        if len(device_types_str) != len(set(device_types_str)):
             raise ValueError("Currently we do not allow duplicated devices in one request.")
 
-        cnt = 0
-        while timeout is None or cnt < timeout:
-            idle_devices: Dict[Type[BaseDevice], Dict[str, Union[BaseDevice, bool]]] = {}
-            with self._lock():  # pylint: disable=not-callable
-                for device in device_types:
-                    result = self.get_available_devices(device_type=device, task_id=task_id)
-                    if not result:
-                        break
-                    # just pick the first device
-                    idle_devices[device] = next(filter(lambda device_: not device_["need_release"], result), result[0])
-                else:
-                    for device in idle_devices.values():
-                        self.occupy_device(device=cast(BaseDevice, device["device"]), task_id=task_id)
-                    return DevicesLock(devices=idle_devices, device_view=self)  # type: ignore
+        idle_devices: Dict[str, Dict[str, Union[str, bool]]] = {}
+        with self._lock():  # pylint: disable=not-callable
+            for device in device_types_str:
+                result = self.get_available_devices(device_type_str=device, task_id=task_id)
+                if not result:  # Cannot meet all the requirements, return None
+                    return None
+                # just pick the first device
+                idle_devices[device] = next(filter(lambda device_: not device_["need_release"], result), result[0])
+            return idle_devices
 
-            time.sleep(1)
-            cnt += 1
+    def get_available_devices(self, device_type_str: str, task_id: Optional[ObjectId]) \
+            -> List[Dict[str, Union[str, bool]]]:
+        """
+        Given device type, it will return all the device with this type.
 
-        # return a context manager with None
-        return DevicesLock(devices=None, device_view=self)
+        If only_idle set to True, only the idle devices will be returned (or ones have the same task id)
+
+        Args:
+            device_type_str: the type of device
+            task_id: the id of task that requests this device
+
+        Returns:
+            [{"name": device_name, "need_release": bool}]
+            The entry need_release indicates whether a device needs to be released
+            when __exit__ method is called in the ``DevicesLock``.
+        """
+        request_dict = {
+            "type": device_type_str,
+        }
+        if self._device_collection.find_one(request_dict) is None:
+            raise ValueError(f"No such device_type: {device_type_str}")
+
+        request_dict.update({"$or": [{  # type: ignore
+            "status": DeviceStatus.IDLE.name,
+        }, {
+            "task_id": task_id,
+        }]})
+
+        return [{
+            "name": device_entry["name"],
+            "need_release": not device_entry["task_id"] == task_id,
+        } for device_entry in self._device_collection.find(request_dict)]
 
     def get_device(self, device_name: str) -> Optional[Dict[str, Any]]:
         """
@@ -188,40 +162,6 @@ class DeviceView:
         if device_entry is None:
             raise ValueError(f"Cannot find device with name: {device_name}")
         return DeviceStatus[device_entry["status"]]
-
-    def get_available_devices(self, device_type: Type[BaseDevice], task_id: Optional[ObjectId]) \
-            -> List[Dict[str, Union[BaseDevice, bool]]]:
-        """
-        Given device type, it will return all the device with this type.
-
-        If only_idle set to True, only the idle devices will be returned (or ones have the same task id)
-
-        Args:
-            device_type: the type of device, which should be ``type[BaseDevice]``
-            task_id: the id of task that requests this device
-
-        Returns:
-            [{"device": BaseDevice, "need_release": bool}]
-            The entry need_release indicates whether a device needs to be released
-            when __exit__ method is called in the ``DevicesLock``.
-        """
-        request_dict = {
-            "type": device_type.__name__,
-        }
-
-        if self._device_collection.find_one(request_dict) is None:
-            raise ValueError(f"No such device_type: {device_type}")
-
-        request_dict.update({"$or": [{  # type: ignore
-            "status": DeviceStatus.IDLE.name,
-        }, {
-            "task_id": task_id,
-        }]})
-
-        return [{
-            "device": self._device_list[device_entry["name"]],
-            "need_release": not device_entry["task_id"] == task_id,
-        } for device_entry in self._device_collection.find(request_dict)]
 
     def occupy_device(self, device: Union[BaseDevice, str], task_id: ObjectId):
         """
@@ -241,7 +181,7 @@ class DeviceView:
         return [self._device_list[device["name"]]
                 for device in self._device_collection.find({"task_id": task_id})]
 
-    def release_device(self, device: Union[BaseDevice, str], ):
+    def release_device(self, device: Union[BaseDevice, str]):
         """
         Release a device
         """

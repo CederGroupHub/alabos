@@ -34,7 +34,7 @@ def launch_experiment_manager():
     experiment_manager.run()
 
 
-def launch_task():
+def launch_task_manager():
     from ..task_manager import TaskManager
     from ..utils.module_ops import load_definition
 
@@ -43,18 +43,30 @@ def launch_task():
     task_launcher.run()
 
 
+def launch_device_manager():
+    from ..device_manager import DeviceManager
+    from ..utils.module_ops import load_definition
+
+    load_definition()
+    device_manager = DeviceManager()
+    device_manager.run()
+
+
 def launch_lab(host, port, debug):
     dashboard_thread = Thread(target=launch_dashboard, args=(host, port, debug))
     experiment_manager_thread = Thread(target=launch_experiment_manager)
-    task_launcher_thread = Thread(target=launch_task)
+    task_launcher_thread = Thread(target=launch_task_manager)
+    device_manager_thread = Thread(target=launch_device_manager)
 
     dashboard_thread.daemon = \
         experiment_manager_thread.daemon = \
-        task_launcher_thread.daemon = False
+        task_launcher_thread.daemon = \
+        device_manager_thread.daemon = True
 
     dashboard_thread.start()
     experiment_manager_thread.start()
     task_launcher_thread.start()
+    device_manager_thread.start()
 
     while True:
         time.sleep(1)
@@ -66,3 +78,6 @@ def launch_lab(host, port, debug):
 
         if not dashboard_thread.is_alive():
             sys.exit(1003)
+
+        if not device_manager_thread.is_alive():
+            sys.exit(1004)

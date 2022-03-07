@@ -3,7 +3,6 @@ from traceback import format_exc
 import dramatiq
 from bson import ObjectId
 
-from .lab_view import LabView
 from .logger import DBLogger
 from .sample_view import SampleView
 from .task_view.task import BaseTask
@@ -24,6 +23,8 @@ def run_task(task_id_str: str):
     independent process, which will try to acquire device and
     process samples.
     """
+    from .lab_view import LabView  # pylint: disable=cyclic-import
+
     load_definition()
     task_view = TaskView()
     sample_view = SampleView()

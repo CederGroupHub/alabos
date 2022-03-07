@@ -1,3 +1,7 @@
+import time
+from multiprocessing import Process
+from threading import Thread
+from traceback import print_exc
 from unittest import TestCase
 
 from bson import ObjectId
@@ -7,24 +11,35 @@ from alab_management.lab_view import LabView
 from alab_management.sample_view import SampleView
 from alab_management.scripts.cleanup_lab import cleanup_lab
 from alab_management.scripts.setup_lab import setup_lab
+from alab_management.task_manager import TaskManager
 from alab_management.task_view import TaskView
 
 
-class TestLabManager(TestCase):
+def launch_task_manager():
+    try:
+        task_manager = TaskManager()
+        task_manager.run()
+    except Exception:
+        print(print_exc())
+        raise
+
+
+class TestLabView(TestCase):
     def setUp(self) -> None:
-        cleanup_lab()
+        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True)
         setup_lab()
         self.device_view = DeviceView()
         self.device_list = self.device_view._device_list
         self.sample_view = SampleView()
-        self.sample_view._sample_collection.drop()
         self.task_view = TaskView()
-        self.task_view._task_collection.drop()
+        self.process = Process(target=launch_task_manager)
+        self.process.daemon = True
+        self.process.start()
+        time.sleep(1)
 
     def tearDown(self) -> None:
-        cleanup_lab()
-        self.sample_view._sample_collection.drop()
-        self.task_view._task_collection.drop()
+        self.process.terminate()
+        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True)
 
     def test_request_resources(self):
         device_types = {device.__name__: device
@@ -37,12 +52,11 @@ class TestLabManager(TestCase):
             "samples": {"sample": ObjectId()},
             "parameters": {"setpoints": [[10, 600]]}
         })
-        lab_manager = LabView(task_id=task_id)
+        lab_view = LabView(task_id=task_id)
 
-        with lab_manager.request_resources({Furnace: ["$/inside"], RobotArm: [], None: [{"prefix": "furnace_table",
-                                                                                         "number": 1}]}) \
+        with lab_view.request_resources({Furnace: ["$/inside"], RobotArm: [], None: [{"prefix": "furnace_table",
+                                                                                      "number": 1}]}) \
                 as (devices, sample_positions):
-            self.assertDictEqual({Furnace: self.device_list["furnace_1"], RobotArm: self.device_list["dummy"]}, devices)
             self.assertDictEqual({Furnace: {"$/inside": ["furnace_1/inside"]}, RobotArm: {},
                                   None: {"furnace_table": ["furnace_table"]}}, sample_positions)
             self.assertEqual("OCCUPIED", self.device_view.get_status("furnace_1").name)
@@ -50,7 +64,7 @@ class TestLabManager(TestCase):
 
             self.assertEqual("LOCKED", self.sample_view.get_sample_position_status("furnace_1/inside")[0].name)
             self.assertEqual("LOCKED", self.sample_view.get_sample_position_status("furnace_table")[0].name)
-
+        time.sleep(1)
         self.assertEqual("IDLE", self.device_view.get_status("furnace_1").name)
         self.assertEqual("IDLE", self.device_view.get_status("dummy").name)
 
@@ -63,8 +77,8 @@ class TestLabManager(TestCase):
             "samples": {"sample": ObjectId()},
             "parameters": {"setpoints": [[10, 600]]}
         })
-        lab_manager = LabView(task_id=task_id)
+        lab_view = LabView(task_id=task_id)
 
-        with lab_manager.request_resources({}) as (devices, sample_positions):
+        with lab_view.request_resources({}) as (devices, sample_positions):
             self.assertDictEqual({}, devices)
             self.assertEqual({}, sample_positions)

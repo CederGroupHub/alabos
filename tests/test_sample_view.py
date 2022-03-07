@@ -1,3 +1,5 @@
+import time
+from contextlib import contextmanager
 from unittest import TestCase
 
 from bson import ObjectId
@@ -7,16 +9,51 @@ from alab_management.scripts.cleanup_lab import cleanup_lab
 from alab_management.scripts.setup_lab import setup_lab
 
 
+def occupy_sample_positions(sample_positions, sample_view: SampleView, task_id: ObjectId):
+    for sample_positions_ in sample_positions.values():
+        for sample_position_ in sample_positions_:
+            sample_view.lock_sample_position(task_id, sample_position_["name"])
+
+
+def release_sample_positions(sample_positions, sample_view: SampleView):
+    for sample_positions_ in sample_positions.values():
+        for sample_position in sample_positions_:
+            if sample_position["need_release"]:
+                sample_view.release_sample_position(sample_position["name"])
+
+
 class TestSampleView(TestCase):
     def setUp(self) -> None:
-        cleanup_lab()
+        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True)
         setup_lab()
         self.sample_view = SampleView()
         self.sample_view._sample_collection.drop()
 
     def tearDown(self) -> None:
-        cleanup_lab()
+        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True)
         self.sample_view._sample_collection.drop()
+
+    @contextmanager
+    def request_sample_positions(self, sample_positions_list, task_id: ObjectId, _timeout=None):
+        cnt = 0
+        sample_positions = self.sample_view.request_sample_positions(
+            task_id=task_id,
+            sample_positions=sample_positions_list
+        )
+        while _timeout is not None and sample_positions is None and _timeout >= cnt / 10:
+            sample_positions = self.sample_view.request_sample_positions(
+                task_id=task_id,
+                sample_positions=sample_positions_list
+            )
+            cnt += 1
+            time.sleep(0.1)
+
+        if sample_positions is not None:
+            occupy_sample_positions(sample_positions, self.sample_view, task_id)
+        yield {prefix: [sp["name"] for sp in sps] for prefix, sps in sample_positions.items()} \
+            if sample_positions is not None else None
+        if sample_positions is not None:
+            release_sample_positions(sample_positions, self.sample_view)
 
     def test_create_sample(self):
         sample_id = self.sample_view.create_sample("test", position="furnace_table")
@@ -118,7 +155,7 @@ class TestSampleView(TestCase):
     def test_request_sample_position_single(self):
         task_id = ObjectId()
 
-        with self.sample_view.request_sample_positions(task_id, ["furnace_table", "furnace_1/inside"], timeout=5) \
+        with self.request_sample_positions(["furnace_table", "furnace_1/inside"], task_id) \
                 as sample_positions:
             self.assertFalse(sample_positions is None)
             for sample_position_prefix, sample_position in sample_positions.items():
@@ -134,72 +171,27 @@ class TestSampleView(TestCase):
         task_id = ObjectId()
         task_id_2 = ObjectId()
 
-        with self.sample_view.request_sample_positions(task_id, ["furnace_table", "furnace_1/inside"], timeout=1) \
+        with self.request_sample_positions(["furnace_table", "furnace_1/inside"], task_id) \
                 as sample_positions:
             self.assertFalse(sample_positions is None)
-            with self.sample_view.request_sample_positions(task_id_2, ["furnace_table", "furnace_1/inside"], timeout=1) \
+            with self.request_sample_positions(["furnace_table", "furnace_1/inside"], task_id_2) \
                     as _sample_positions:
                 self.assertIs(None, _sample_positions)
-
-    def test_request_devices_queue(self):
-        import threading
-        import time
-        import pytest_reraise
-
-        reraise_1 = pytest_reraise.Reraise()
-        reraise_2 = pytest_reraise.Reraise()
-
-        task_id = ObjectId()
-        task_id_2 = ObjectId()
-
-        @reraise_1.wrap
-        def _request_1():
-            start_time = time.perf_counter()
-            with self.sample_view.request_sample_positions(task_id,
-                                                           ["furnace_table", "furnace_1/inside"], timeout=100) \
-                    as sample_positions:
-                end_time = time.perf_counter()
-                self.assertAlmostEqual(end_time - start_time, 0.0, delta=1.2)
-                self.assertFalse(sample_positions is None)
-                time.sleep(2)
-
-        @reraise_2.wrap
-        def _request_2():
-            start_time = time.perf_counter()
-            with self.sample_view.request_sample_positions(task_id_2,
-                                                           ["furnace_table", "furnace_1/inside"], timeout=100) \
-                    as sample_positions:
-                end_time = time.perf_counter()
-                self.assertAlmostEqual(end_time - start_time, 2.0, delta=1.2)
-                self.assertFalse(sample_positions is None)
-
-        t1 = threading.Thread(target=_request_1)
-        t2 = threading.Thread(target=_request_2)
-
-        t1.start()
-        t2.start()
-
-        t1.join()
-        t2.join()
-
-        reraise_1()
-        reraise_2()
 
     def test_request_sample_positions_twice(self):
         task_id = ObjectId()
 
         self.assertEqual("EMPTY", self.sample_view.get_sample_position_status("furnace_table")[0].name)
-        with self.sample_view.request_sample_positions(task_id, ["furnace_table", "furnace_1/inside",
-                                                                 {"prefix": "furnace_temp", "number": 3}]):
+        with self.request_sample_positions(["furnace_table", "furnace_1/inside",
+                                            {"prefix": "furnace_temp", "number": 3}], task_id):
             self.assertEqual("LOCKED", self.sample_view.get_sample_position_status("furnace_table")[0].name)
             self.assertEqual("LOCKED", self.sample_view.get_sample_position_status("furnace_temp/0")[0].name)
-            with self.sample_view.request_sample_positions(task_id, ["furnace_table", "furnace_temp/0"], timeout=1) \
+            with self.request_sample_positions(["furnace_table", "furnace_temp/0"], task_id) \
                     as sample_positions_:
                 self.assertDictEqual({"furnace_table": ["furnace_table"], "furnace_temp/0": ["furnace_temp/0"]},
                                      sample_positions_)
                 self.assertEqual("LOCKED", self.sample_view.get_sample_position_status("furnace_table")[0].name)
-                with self.sample_view.request_sample_positions(task_id, ["furnace_table"],
-                                                               timeout=1) as sample_positions__:
+                with self.request_sample_positions(["furnace_table"], task_id) as sample_positions__:
                     self.assertDictEqual({"furnace_table": ["furnace_table"]}, sample_positions__)
                     self.assertEqual("LOCKED", self.sample_view.get_sample_position_status("furnace_table")[0].name)
 
@@ -219,7 +211,7 @@ class TestSampleView(TestCase):
 
         self.sample_view.update_sample_task_id(sample_id, task_id)
 
-        with self.sample_view.request_sample_positions(task_id, ["furnace_table", "furnace_1/inside"]):
+        with self.request_sample_positions(["furnace_table", "furnace_1/inside"], task_id):
             self.assertEqual("OCCUPIED", self.sample_view.get_sample_position_status("furnace_table")[0].name)
             self.assertEqual(task_id, self.sample_view.get_sample_position_status("furnace_table")[1])
 
@@ -230,8 +222,7 @@ class TestSampleView(TestCase):
         task_id = ObjectId()
 
         for j in range(1, 5):
-            with self.sample_view.request_sample_positions(task_id,
-                                                           [{"prefix": "furnace_temp", "number": j}], timeout=5) \
+            with self.request_sample_positions([{"prefix": "furnace_temp", "number": j}], task_id) \
                     as sample_positions:
                 self.assertFalse(sample_positions is None)
                 for sample_position_prefix, sample_position in sample_positions.items():
@@ -249,23 +240,24 @@ class TestSampleView(TestCase):
 
         # try when requesting sample positions more than we have in the lab
         with self.assertRaises(ValueError):
-            with self.sample_view.request_sample_positions(task_id, [{"prefix": "furnace_temp", "number": 5}]):
+            with self.request_sample_positions([{"prefix": "furnace_temp", "number": 5}], task_id):
                 pass
 
     def test_request_multiple_sample_positions_multiple_tasks(self):
         task_id_1 = ObjectId()
         task_id_2 = ObjectId()
 
-        with self.sample_view.request_sample_positions(task_id_1, [{"prefix": "furnace_temp", "number": 2}]) \
+        with self.request_sample_positions([{"prefix": "furnace_temp", "number": 2}], task_id_1) \
                 as sample_positions:
             self.assertEqual(2, len(sample_positions["furnace_temp"]))
             self.assertTrue(sample_positions["furnace_temp"][0].startswith("furnace_temp"))
             self.assertTrue(sample_positions["furnace_temp"][1].startswith("furnace_temp"))
-            with self.sample_view.request_sample_positions(
-                    task_id_2, [{"prefix": "furnace_temp", "number": 2}], timeout=1) as sample_positions_:
+            with self.request_sample_positions(
+                    [{"prefix": "furnace_temp", "number": 2}], task_id_2) as sample_positions_:
                 self.assertEqual(2, len(sample_positions_["furnace_temp"]))
                 self.assertTrue(sample_positions_["furnace_temp"][0].startswith("furnace_temp"))
                 self.assertTrue(sample_positions_["furnace_temp"][1].startswith("furnace_temp"))
-            with self.sample_view.request_sample_positions(
-                    task_id_2, [{"prefix": "furnace_temp", "number": 4}], timeout=1) as sample_positions_:
+            with self.request_sample_positions(
+                    [{"prefix": "furnace_temp", "number": 4}], task_id_2
+            ) as sample_positions_:
                 self.assertIs(None, sample_positions_)

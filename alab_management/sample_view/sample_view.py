@@ -1,5 +1,4 @@
 import re
-import time
 from datetime import datetime
 from enum import Enum, auto
 from typing import Optional, List, Dict, Any, Tuple, cast, Union
@@ -19,6 +18,11 @@ class SamplePositionRequest(BaseModel):
     You need to specify the prefix of the sample position (will be used to match by `startwith` method) and
     the number you request. By default, the number is set to be 1.
     """
+
+    class Config:
+        """raise error when extra kwargs"""
+        extra = "forbid"
+
     prefix: str
     number: conint(ge=0) = 1  # type: ignore
 
@@ -44,39 +48,6 @@ class SamplePositionStatus(Enum):
     EMPTY = auto()
     OCCUPIED = auto()
     LOCKED = auto()
-
-
-class SamplePositionsLock:
-    """
-    Lock of sample position, which is a context manager that will release the sample positions
-    when exiting.
-
-    The input sample position should have format of
-    ``{"<sample_position_prefix_1>": {"name": str, "need_release": bool}, ...}``
-    """
-
-    def __init__(self, sample_positions: Optional[Dict[str, List[Dict[str, Any]]]], sample_view: "SampleView"):
-        self._sample_positions = sample_positions
-        self._sample_view = sample_view
-
-    @property
-    def sample_positions(self) -> Optional[Dict[str, List[str]]]:
-        if self._sample_positions is None:
-            return None
-        return {k: [v_["name"] for v_ in v] for k, v in self._sample_positions.items()}
-
-    def release(self):
-        if self._sample_positions is not None:
-            for sample_positions_ in self._sample_positions.values():
-                for sample_position in sample_positions_:
-                    if sample_position["need_release"]:
-                        self._sample_view.release_sample_position(sample_position["name"])
-
-    def __enter__(self):
-        return self.sample_positions
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.release()
 
 
 class SampleView:
@@ -127,9 +98,10 @@ class SampleView:
         """
         self._sample_positions_collection.drop()
 
-    def request_sample_positions(self, task_id: ObjectId,
-                                 sample_positions: List[Union[SamplePositionRequest, str, Dict[str, Any]]],
-                                 timeout: Optional[int] = None) -> SamplePositionsLock:
+    def request_sample_positions(
+            self, task_id: ObjectId,
+            sample_positions: List[Union[SamplePositionRequest, str, Dict[str, Any]]]
+    ) -> Optional[Dict[str, List[Dict[str, Any]]]]:
         """
         Request a list of sample positions, this function will return until all the sample positions are available
 
@@ -138,8 +110,6 @@ class SampleView:
             sample_positions: the list of sample positions, which is requested by their names.
               The sample position name is actually the prefix of a sample position, which we
               will try to match all the sample positions will the name
-            timeout: if we cannot request the resources after ``timeout`` seconds, this function
-              will return ``SamplePositionsLock(None)`` directly.
         """
         sample_positions_request: List[SamplePositionRequest] = [
             SamplePositionRequest.from_py_type(sample_position)
@@ -161,27 +131,16 @@ class SampleView:
                 raise ValueError(f"Position prefix `{sample_position.prefix}` can only "
                                  f"have {count} matches, but requests {sample_position.number}")
 
-        cnt = 0
-        while timeout is None or cnt < timeout:
-            with self._lock():  # pylint: disable=not-callable
-                available_positions: Dict[str, List[Dict[str, Union[str, bool]]]] = {}
-                for sample_position in sample_positions_request:
-                    result = self.get_available_sample_position(task_id, position_prefix=sample_position.prefix)
-                    if not result or len(result) < sample_position.number:
-                        break
-                    # we try to choose the position that has already been locked by this task
-                    available_positions[sample_position.prefix] = \
-                        sorted(result, key=lambda task: int(task["need_release"]))[:sample_position.number]
-                else:
-                    for sample_positions_ in available_positions.values():
-                        for sample_position_ in sample_positions_:
-                            self.lock_sample_position(task_id, cast(str, sample_position_["name"]))
-                    return SamplePositionsLock(sample_positions=available_positions, sample_view=self)
-
-            time.sleep(1)
-            cnt += 1
-
-        return SamplePositionsLock(sample_positions=None, sample_view=self)
+        with self._lock():  # pylint: disable=not-callable
+            available_positions: Dict[str, List[Dict[str, Union[str, bool]]]] = {}
+            for sample_position in sample_positions_request:
+                result = self.get_available_sample_position(task_id, position_prefix=sample_position.prefix)
+                if not result or len(result) < sample_position.number:
+                    return None
+                # we try to choose the position that has already been locked by this task
+                available_positions[sample_position.prefix] = \
+                    sorted(result, key=lambda task: int(task["need_release"]))[:sample_position.number]
+            return available_positions
 
     def get_sample_position(self, position: str) -> Optional[Dict[str, Any]]:
         """

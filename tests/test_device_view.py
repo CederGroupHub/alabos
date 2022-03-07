@@ -1,3 +1,5 @@
+import time
+from contextlib import contextmanager
 from unittest import TestCase
 
 from bson import ObjectId
@@ -7,16 +9,42 @@ from alab_management.scripts.cleanup_lab import cleanup_lab
 from alab_management.scripts.setup_lab import setup_lab
 
 
+def occupy_devices(devices, device_view: DeviceView, task_id: ObjectId):
+    for device in devices.values():
+        device_view.occupy_device(device["name"], task_id=task_id)
+
+
+def release_devices(devices, device_view: DeviceView):
+    for device in devices.values():
+        if device["need_release"]:
+            device_view.release_device(device["name"])
+
+
 class TestDeviceView(TestCase):
     def setUp(self):
-        cleanup_lab()
+        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True)
         setup_lab()
         self.device_view = DeviceView()
         self.device_list = self.device_view._device_list
         self.device_names = [device_name for device_name in self.device_view._device_list]
 
     def tearDown(self):
-        cleanup_lab()
+        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True)
+
+    @contextmanager
+    def request_devices(self, device_list, task_id: ObjectId, _timeout=None):
+        cnt = 0
+        devices = self.device_view.request_devices(task_id=task_id, device_types_str=device_list)
+        while _timeout is not None and devices is None and _timeout >= cnt / 10:
+            devices = self.device_view.request_devices(task_id=task_id, device_types_str=device_list)
+            cnt += 1
+            time.sleep(0.1)
+
+        if devices is not None:
+            occupy_devices(devices, self.device_view, task_id)
+        yield {t: d["name"] for t, d in devices.items()} if devices is not None else None
+        if devices is not None:
+            release_devices(devices, self.device_view)
 
     def test_get_status(self):
         device_name = "furnace_1"
@@ -68,94 +96,57 @@ class TestDeviceView(TestCase):
             self.device_view.occupy_device(device_name, task_id=task_id_2)
 
     def test_request_devices_single(self):
-        device_types = list({device.__class__ for device in self.device_list.values()})
+        device_types = list({device.__class__.__name__ for device in self.device_list.values()})
         task_id = ObjectId()
 
-        with self.device_view.request_devices(task_id, device_types, timeout=5) as devices:
-            self.assertFalse(devices is None)
-            for device_type, device in devices.items():
-                self.assertIn(device_type, device_types)
-                self.assertIn(device.name, self.device_list)
-                self.assertIsInstance(device, device_type)
-                self.assertEqual("OCCUPIED", self.device_view.get_status(device.name).name)
-                self.assertEqual(task_id, self.device_view.get_device(device.name)["task_id"])
+        devices = self.device_view.request_devices(task_id, device_types)
+        occupy_devices(devices, device_view=self.device_view, task_id=task_id)
+        self.assertFalse(devices is None)
+        for device_type, device in devices.items():
+            self.assertIn(device_type, device_types)
+            self.assertIn(device["name"], self.device_names)
+            self.assertEqual(self.device_view.get_device(device["name"])["type"], device_type)
+            self.assertEqual("OCCUPIED", self.device_view.get_status(device["name"]).name)
+            self.assertEqual(task_id, self.device_view.get_device(device["name"])["task_id"])
+
+        release_devices(devices, device_view=self.device_view)
 
         for device in devices.values():
-            self.assertEqual("IDLE", self.device_view.get_status(device.name).name)
-            self.assertEqual(None, self.device_view.get_device(device.name)["task_id"])
+            self.assertEqual("IDLE", self.device_view.get_status(device["name"]).name)
+            self.assertEqual(None, self.device_view.get_device(device["name"])["task_id"])
 
     def test_request_device_timeout(self):
-        device_types = list({device.__class__ for device in self.device_list.values()})
+        device_types = list({device.__class__.__name__ for device in self.device_list.values()})
         task_id = ObjectId()
         task_id_2 = ObjectId()
 
-        with self.device_view.request_devices(task_id, device_types, timeout=1) as devices:
-            self.assertFalse(devices is None)
-            with self.device_view.request_devices(task_id_2, device_types, timeout=1) as _devices:
-                self.assertIs(None, _devices)
+        devices = self.device_view.request_devices(task_id, device_types)
+        self.assertFalse(devices is None)
+        occupy_devices(devices, device_view=self.device_view, task_id=task_id)
+        self.assertIs(None, self.device_view.request_devices(task_id_2, device_types))
+        release_devices(devices, device_view=self.device_view)
 
     def test_request_device_twice(self):
-        device_types = list({device.__class__ for device in self.device_list.values()})
+        device_types = list({device.__class__.__name__ for device in self.device_list.values()})
         task_id = ObjectId()
 
-        with self.device_view.request_devices(task_id, device_types) as devices:
+        with self.request_devices(device_types, task_id) as devices:
             for device in devices.values():
-                self.assertEqual("OCCUPIED", self.device_view.get_status(device.name).name)
-                self.assertEqual(task_id, self.device_view.get_device(device.name)["task_id"])
+                self.assertEqual("OCCUPIED", self.device_view.get_status(device).name)
+                self.assertEqual(task_id, self.device_view.get_device(device)["task_id"])
 
-            with self.device_view.request_devices(task_id, device_types, timeout=1) as devices_:
+            with self.request_devices(device_types, task_id) as devices_:
                 for device in devices_.values():
-                    self.assertEqual("OCCUPIED", self.device_view.get_status(device.name).name)
-                    self.assertEqual(task_id, self.device_view.get_device(device.name)["task_id"])
-                with self.device_view.request_devices(task_id, device_types, timeout=1) as devices__:
+                    self.assertEqual("OCCUPIED", self.device_view.get_status(device).name)
+                    self.assertEqual(task_id, self.device_view.get_device(device)["task_id"])
+                with self.request_devices(device_types, task_id) as devices__:
                     for device in devices__.values():
-                        self.assertEqual("OCCUPIED", self.device_view.get_status(device.name).name)
-                        self.assertEqual(task_id, self.device_view.get_device(device.name)["task_id"])
+                        self.assertEqual("OCCUPIED", self.device_view.get_status(device).name)
+                        self.assertEqual(task_id, self.device_view.get_device(device)["task_id"])
             for device in devices.values():
-                self.assertEqual("OCCUPIED", self.device_view.get_status(device.name).name)
-                self.assertEqual(task_id, self.device_view.get_device(device.name)["task_id"])
+                self.assertEqual("OCCUPIED", self.device_view.get_status(device).name)
+                self.assertEqual(task_id, self.device_view.get_device(device)["task_id"])
 
         for device in devices.values():
-            self.assertEqual("IDLE", self.device_view.get_status(device.name).name)
-            self.assertEqual(None, self.device_view.get_device(device.name)["task_id"])
-
-    def test_request_devices_queue(self):
-        import threading
-        import time
-        import pytest_reraise
-
-        reraise_1 = pytest_reraise.Reraise()
-        reraise_2 = pytest_reraise.Reraise()
-
-        device_types = list({device.__class__ for device in self.device_list.values()})
-        task_id = ObjectId()
-        task_id_2 = ObjectId()
-
-        @reraise_1.wrap
-        def _request_1():
-            start_time = time.perf_counter()
-            with self.device_view.request_devices(task_id, device_types, timeout=100) as devices:
-                end_time = time.perf_counter()
-                self.assertAlmostEqual(end_time - start_time, 0.0, delta=1.2)
-                self.assertFalse(devices is None)
-                time.sleep(2)
-
-        @reraise_2.wrap
-        def _request_2():
-            start_time = time.perf_counter()
-            with self.device_view.request_devices(task_id_2, device_types, timeout=100) as devices:
-                end_time = time.perf_counter()
-                self.assertAlmostEqual(end_time - start_time, 2.0, delta=1.2)
-                self.assertFalse(devices is None)
-
-        t1 = threading.Thread(target=_request_1)
-        t2 = threading.Thread(target=_request_2)
-
-        t1.start()
-        t2.start()
-
-        t1.join()
-        t2.join()
-
-        reraise_1()
-        reraise_2()
+            self.assertEqual("IDLE", self.device_view.get_status(device).name)
+            self.assertEqual(None, self.device_view.get_device(device)["task_id"])

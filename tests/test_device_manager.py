@@ -1,5 +1,7 @@
 import time
+from multiprocessing import Process
 from threading import Thread
+from traceback import print_exc
 from unittest import TestCase
 
 from bson import ObjectId
@@ -10,30 +12,34 @@ from alab_management.scripts.setup_lab import setup_lab
 
 
 def launch_device_manager():
-    from alab_management.utils.module_ops import load_definition
-
-    load_definition()
-    device_manager = DeviceManager(_check_status=False)
-    device_manager.run()
+    try:
+        device_manager = DeviceManager(_check_status=False)
+        device_manager.run()
+    except Exception:
+        print_exc()
+        raise
 
 
 class TestDeviceManager(TestCase):
     def setUp(self):
-        cleanup_lab()
+        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True)
         setup_lab()
         self.devices_client = DevicesClient(task_id=ObjectId(), timeout=5)
-        self.process = Thread(target=launch_device_manager)
+        self.process = Process(target=launch_device_manager)
         self.process.daemon = True
         self.process.start()
         time.sleep(1.5)
 
     def tearDown(self):
-        cleanup_lab()
+        self.process.terminate()
+        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True)
+        time.sleep(1)
 
     def test_rpc(self):
         furnace = self.devices_client["furnace_1"]
 
         self.assertEqual(300, furnace.get_temperature())
+        self.assertIs(None, furnace.run_program((1, 2)))
         with self.assertRaises(AttributeError):
             furnace.not_exist_func()
         f = furnace.sample_positions
