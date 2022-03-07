@@ -40,6 +40,7 @@ class TestLabView(TestCase):
     def tearDown(self) -> None:
         self.process.terminate()
         cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True)
+        time.sleep(1)
 
     def test_request_resources(self):
         device_types = {device.__name__: device

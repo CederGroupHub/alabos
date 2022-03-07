@@ -9,18 +9,12 @@ from alab_management.task_view import TaskStatus
 
 class TestExperimentManager(TestCase):
     def setUp(self) -> None:
-        cleanup_lab()
+        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True)
         setup_lab()
         self.experiment_manager = ExperimentManager()
-        self.experiment_manager.sample_view._sample_collection.drop()
-        self.experiment_manager.task_view._task_collection.drop()
-        self.experiment_manager.experiment_view._experiment_collection.drop()
 
     def tearDown(self) -> None:
-        cleanup_lab()
-        self.experiment_manager.sample_view._sample_collection.drop()
-        self.experiment_manager.task_view._task_collection.drop()
-        self.experiment_manager.experiment_view._experiment_collection.drop()
+        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True)
 
     def test_handle_pending_experiments(self):
         exp_template = InputExperiment(**{
