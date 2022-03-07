@@ -361,15 +361,138 @@
 <p>TaskLauncher is the core module of the system,
 which actually executes the tasks</p>
 <dl class="py class">
+<dt class="sig sig-object py" id="alab_management.task_manager.RequestMixin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RequestMixin</span></span><a class="reference internal" href="_modules/alab_management/task_manager.html#RequestMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_manager.RequestMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Simple wrapper for the request collection</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.task_manager.RequestMixin.get_request">
+<span class="sig-name descname"><span class="pre">get_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_manager.html#RequestMixin.get_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_manager.RequestMixin.get_request" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.task_manager.RequestMixin.get_request_with_status">
+<span class="sig-name descname"><span class="pre">get_request_with_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_manager.html#RequestMixin.get_request_with_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_manager.RequestMixin.get_request_with_status" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.task_manager.RequestMixin.update_request_status">
+<span class="sig-name descname"><span class="pre">update_request_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_manager.html#RequestMixin.update_request_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_manager.RequestMixin.update_request_status" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="alab_management.task_manager.RequestStatus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RequestStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_manager.html#RequestStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_manager.RequestStatus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>The status for a request. It will be stored in the database</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.task_manager.RequestStatus.CANCELED">
+<span class="sig-name descname"><span class="pre">CANCELED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#alab_management.task_manager.RequestStatus.CANCELED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.task_manager.RequestStatus.ERROR">
+<span class="sig-name descname"><span class="pre">ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#alab_management.task_manager.RequestStatus.ERROR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.task_manager.RequestStatus.FULFILLED">
+<span class="sig-name descname"><span class="pre">FULFILLED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#alab_management.task_manager.RequestStatus.FULFILLED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.task_manager.RequestStatus.NEED_RELEASE">
+<span class="sig-name descname"><span class="pre">NEED_RELEASE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#alab_management.task_manager.RequestStatus.NEED_RELEASE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.task_manager.RequestStatus.PENDING">
+<span class="sig-name descname"><span class="pre">PENDING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#alab_management.task_manager.RequestStatus.PENDING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.task_manager.RequestStatus.RELEASED">
+<span class="sig-name descname"><span class="pre">RELEASED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#alab_management.task_manager.RequestStatus.RELEASED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="alab_management.task_manager.ResourceRequester">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ResourceRequester</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_manager.html#ResourceRequester"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_manager.ResourceRequester" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#alab_management.task_manager.RequestMixin" title="alab_management.task_manager.RequestMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">alab_management.task_manager.RequestMixin</span></code></a></p>
+<p>Class for request lab resources easily</p>
+<p>It is used in <a class="reference internal" href="alab_management.lab_view.html#alab_management.lab_view.LabView" title="alab_management.lab_view.LabView"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabView</span></code></a>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.task_manager.ResourceRequester.release_resources">
+<span class="sig-name descname"><span class="pre">release_resources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_manager.html#ResourceRequester.release_resources"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_manager.ResourceRequester.release_resources" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.task_manager.ResourceRequester.request_resources">
+<span class="sig-name descname"><span class="pre">request_resources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource_request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_manager.html#ResourceRequester.request_resources"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_manager.ResourceRequester.request_resources" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="alab_management.task_manager.ResourcesRequest">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ResourcesRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_manager.html#ResourcesRequest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_manager.ResourcesRequest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.main.BaseModel</span></code></p>
+<p>This class is used to validate the resource request. Each request should have a format of
+[DeviceType: List of SamplePositionRequest]</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SamplePositionRequest" title="alab_management.sample_view.sample_view.SamplePositionRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplePositionRequest</span></code></a></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.task_manager.ResourcesRequest.preprocess">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">preprocess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_manager.html#ResourcesRequest.preprocess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_manager.ResourcesRequest.preprocess" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="alab_management.task_manager.TaskManager">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TaskManager</span></span><a class="reference internal" href="_modules/alab_management/task_manager.html#TaskManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_manager.TaskManager" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>TaskLauncher find all the ready tasks and submit them</p>
+<dd><p>Bases: <a class="reference internal" href="#alab_management.task_manager.RequestMixin" title="alab_management.task_manager.RequestMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">alab_management.task_manager.RequestMixin</span></code></a></p>
+<p>TaskManager will</p>
+<ol class="arabic simple">
+<li><p>find all the ready tasks and submit them,</p></li>
+<li><p>handle all the resource requests</p></li>
+</ol>
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.task_manager.TaskManager.handle_released_resources">
+<span class="sig-name descname"><span class="pre">handle_released_resources</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_manager.html#TaskManager.handle_released_resources"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_manager.TaskManager.handle_released_resources" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.task_manager.TaskManager.handle_requested_resources">
+<span class="sig-name descname"><span class="pre">handle_requested_resources</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_manager.html#TaskManager.handle_requested_resources"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_manager.TaskManager.handle_requested_resources" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.task_manager.TaskManager.run">
 <span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_manager.html#TaskManager.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_manager.TaskManager.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start the loop</p>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.task_manager.TaskManager.submit_ready_tasks">
+<span class="sig-name descname"><span class="pre">submit_ready_tasks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_manager.html#TaskManager.submit_ready_tasks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_manager.TaskManager.submit_ready_tasks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 

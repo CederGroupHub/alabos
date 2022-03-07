@@ -339,10 +339,9 @@
               <div>
                 
   <h1>Source code for alab_management.device_view.device_view</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">unique</span><span class="p">,</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Type</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">TypeVar</span>
 
 <span class="kn">import</span> <span class="nn">pymongo</span>
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
@@ -363,53 +362,6 @@
     <span class="n">OCCUPIED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">ERROR</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">HOLD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
-
-
-<div class="viewcode-block" id="DevicesLock"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DevicesLock">[docs]</a><span class="k">class</span> <span class="nc">DevicesLock</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The context manager that release the requested devices when the device is no longer needed,</span>
-<span class="sd">    which is the returned type by :py:meth:`request_devices &lt;DeviceView.request_devices&gt;`</span>
-
-<span class="sd">    .. code-block:: python</span>
-
-<span class="sd">        with device_view.request_devices(Furnace, RobotArm) as devices:</span>
-<span class="sd">            furnace = devices[Furnace]</span>
-<span class="sd">            robot_arm = device[RobotArm]</span>
-<span class="sd">            # do something here</span>
-
-<span class="sd">        # will automatically release the devices when going outside the with block</span>
-
-<span class="sd">    The format of devices: ``{&quot;&lt;device_name_1&gt;&quot;: {&quot;device&quot;: BaseDevice, &quot;need_release&quot;: bool}}``</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">devices</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">_DeviceType</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">_DeviceType</span><span class="p">]]]],</span>
-                 <span class="n">device_view</span><span class="p">:</span> <span class="s2">&quot;DeviceView&quot;</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_devices</span> <span class="o">=</span> <span class="n">devices</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="p">:</span> <span class="s2">&quot;DeviceView&quot;</span> <span class="o">=</span> <span class="n">device_view</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">devices</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">_DeviceType</span><span class="p">],</span> <span class="n">_DeviceType</span><span class="p">]]:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_devices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">cast</span><span class="p">(</span><span class="n">BaseDevice</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;device&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_devices</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>  <span class="c1"># type: ignore</span>
-
-<div class="viewcode-block" id="DevicesLock.release"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DevicesLock.release">[docs]</a>    <span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_devices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_devices</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">device</span><span class="p">[</span><span class="s2">&quot;need_release&quot;</span><span class="p">]:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">release_device</span><span class="p">(</span><span class="n">device</span><span class="p">[</span><span class="s2">&quot;device&quot;</span><span class="p">])</span></div>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">running_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">_DeviceType</span><span class="p">],</span> <span class="n">_DeviceType</span><span class="p">]]:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">is_running</span><span class="p">()}</span>  <span class="c1"># type: ignore</span>
-
-    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span>
-
-    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="DeviceView"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView">[docs]</a><span class="k">class</span> <span class="nc">DeviceView</span><span class="p">:</span>
@@ -472,47 +424,69 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">drop</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DeviceView.request_devices"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.request_devices">[docs]</a>    <span class="k">def</span> <span class="nf">request_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span>
-                        <span class="n">device_types</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">]],</span>  <span class="c1"># pylint: disable=unsubscriptable-object</span>
-                        <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DevicesLock</span><span class="p">:</span>
+<div class="viewcode-block" id="DeviceView.request_devices"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.request_devices">[docs]</a>    <span class="k">def</span> <span class="nf">request_devices</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span>
+            <span class="n">device_types_str</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>  <span class="c1"># pylint: disable=unsubscriptable-object</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]]]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Request a list of device, this function will return until all the requested device is ready.</span>
+<span class="sd">        Request a list of device, this function will return the name of devices if all the requested device is ready.</span>
 
 <span class="sd">        .. note::</span>
 <span class="sd">            There should be no duplicated devices in the ``device_type``, or a ``ValueError`` shall be raised</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            task_id: the id of task that requests these devices</span>
-<span class="sd">            device_types: the requested device types</span>
-<span class="sd">            timeout: the maximum seconds to wait for the device to be available,</span>
-<span class="sd">                if waiting more than ``timeout`` seconds, the function will return ``None``.</span>
+<span class="sd">            device_types_str: the requested device types</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            A context manager that you can get value, see also: :py:class:`DeviceLock &lt;DeviceLock&gt;`</span>
+<span class="sd">            {&quot;device_type_name&quot;: {&quot;name&quot;: device_name, &quot;need_release&quot;: need_release (bool)}} or None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">device_types</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">device_types</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">device_types_str</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">device_types_str</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Currently we do not allow duplicated devices in one request.&quot;</span><span class="p">)</span>
 
-        <span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">while</span> <span class="n">timeout</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">cnt</span> <span class="o">&lt;</span> <span class="n">timeout</span><span class="p">:</span>
-            <span class="n">idle_devices</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">():</span>  <span class="c1"># pylint: disable=not-callable</span>
-                <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">device_types</span><span class="p">:</span>
-                    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_available_devices</span><span class="p">(</span><span class="n">device_type</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
-                        <span class="k">break</span>
-                    <span class="c1"># just pick the first device</span>
-                    <span class="n">idle_devices</span><span class="p">[</span><span class="n">device</span><span class="p">]</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">device_</span><span class="p">:</span> <span class="ow">not</span> <span class="n">device_</span><span class="p">[</span><span class="s2">&quot;need_release&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">),</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">idle_devices</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">occupy_device</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">cast</span><span class="p">(</span><span class="n">BaseDevice</span><span class="p">,</span> <span class="n">device</span><span class="p">[</span><span class="s2">&quot;device&quot;</span><span class="p">]),</span> <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="n">DevicesLock</span><span class="p">(</span><span class="n">devices</span><span class="o">=</span><span class="n">idle_devices</span><span class="p">,</span> <span class="n">device_view</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="n">idle_devices</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">():</span>  <span class="c1"># pylint: disable=not-callable</span>
+            <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">device_types_str</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_available_devices</span><span class="p">(</span><span class="n">device_type_str</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>  <span class="c1"># Cannot meet all the requirements, return None</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+                <span class="c1"># just pick the first device</span>
+                <span class="n">idle_devices</span><span class="p">[</span><span class="n">device</span><span class="p">]</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">device_</span><span class="p">:</span> <span class="ow">not</span> <span class="n">device_</span><span class="p">[</span><span class="s2">&quot;need_release&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">),</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">idle_devices</span></div>
 
-            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">cnt</span> <span class="o">+=</span> <span class="mi">1</span>
+<div class="viewcode-block" id="DeviceView.get_available_devices"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_available_devices">[docs]</a>    <span class="k">def</span> <span class="nf">get_available_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_type_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">])</span> \
+            <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given device type, it will return all the device with this type.</span>
 
-        <span class="c1"># return a context manager with None</span>
-        <span class="k">return</span> <span class="n">DevicesLock</span><span class="p">(</span><span class="n">devices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device_view</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
+<span class="sd">        If only_idle set to True, only the idle devices will be returned (or ones have the same task id)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device_type_str: the type of device</span>
+<span class="sd">            task_id: the id of task that requests this device</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [{&quot;name&quot;: device_name, &quot;need_release&quot;: bool}]</span>
+<span class="sd">            The entry need_release indicates whether a device needs to be released</span>
+<span class="sd">            when __exit__ method is called in the ``DevicesLock``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">request_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">device_type_str</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">request_dict</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No such device_type: </span><span class="si">{</span><span class="n">device_type_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">request_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;$or&quot;</span><span class="p">:</span> <span class="p">[{</span>  <span class="c1"># type: ignore</span>
+            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">DeviceStatus</span><span class="o">.</span><span class="n">IDLE</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="p">},</span> <span class="p">{</span>
+            <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">,</span>
+        <span class="p">}]})</span>
+
+        <span class="k">return</span> <span class="p">[{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">device_entry</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;need_release&quot;</span><span class="p">:</span> <span class="ow">not</span> <span class="n">device_entry</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">task_id</span><span class="p">,</span>
+        <span class="p">}</span> <span class="k">for</span> <span class="n">device_entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">request_dict</span><span class="p">)]</span></div>
 
 <div class="viewcode-block" id="DeviceView.get_device"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_device">[docs]</a>    <span class="k">def</span> <span class="nf">get_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -529,40 +503,6 @@
         <span class="k">if</span> <span class="n">device_entry</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find device with name: </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">DeviceStatus</span><span class="p">[</span><span class="n">device_entry</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]]</span></div>
-
-<div class="viewcode-block" id="DeviceView.get_available_devices"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_available_devices">[docs]</a>    <span class="k">def</span> <span class="nf">get_available_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">],</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">])</span> \
-            <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Given device type, it will return all the device with this type.</span>
-
-<span class="sd">        If only_idle set to True, only the idle devices will be returned (or ones have the same task id)</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            device_type: the type of device, which should be ``type[BaseDevice]``</span>
-<span class="sd">            task_id: the id of task that requests this device</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            [{&quot;device&quot;: BaseDevice, &quot;need_release&quot;: bool}]</span>
-<span class="sd">            The entry need_release indicates whether a device needs to be released</span>
-<span class="sd">            when __exit__ method is called in the ``DevicesLock``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">request_dict</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">device_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
-        <span class="p">}</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">request_dict</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No such device_type: </span><span class="si">{</span><span class="n">device_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-        <span class="n">request_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;$or&quot;</span><span class="p">:</span> <span class="p">[{</span>  <span class="c1"># type: ignore</span>
-            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">DeviceStatus</span><span class="o">.</span><span class="n">IDLE</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-        <span class="p">},</span> <span class="p">{</span>
-            <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">,</span>
-        <span class="p">}]})</span>
-
-        <span class="k">return</span> <span class="p">[{</span>
-            <span class="s2">&quot;device&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_list</span><span class="p">[</span><span class="n">device_entry</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]],</span>
-            <span class="s2">&quot;need_release&quot;</span><span class="p">:</span> <span class="ow">not</span> <span class="n">device_entry</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">task_id</span><span class="p">,</span>
-        <span class="p">}</span> <span class="k">for</span> <span class="n">device_entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">request_dict</span><span class="p">)]</span></div>
 
 <div class="viewcode-block" id="DeviceView.occupy_device"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.occupy_device">[docs]</a>    <span class="k">def</span> <span class="nf">occupy_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -582,7 +522,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_device_list</span><span class="p">[</span><span class="n">device</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span>
                 <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">})]</span></div>
 
-<div class="viewcode-block" id="DeviceView.release_device"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.release_device">[docs]</a>    <span class="k">def</span> <span class="nf">release_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="p">):</span>
+<div class="viewcode-block" id="DeviceView.release_device"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.release_device">[docs]</a>    <span class="k">def</span> <span class="nf">release_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Release a device</span>
 <span class="sd">        &quot;&quot;&quot;</span>

@@ -340,7 +340,6 @@
                 
   <h1>Source code for alab_management.sample_view.sample_view</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">Union</span>
@@ -360,6 +359,11 @@
 <span class="sd">    You need to specify the prefix of the sample position (will be used to match by `startwith` method) and</span>
 <span class="sd">    the number you request. By default, the number is set to be 1.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SamplePositionRequest.Config"><a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SamplePositionRequest.Config">[docs]</a>    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;raise error when extra kwargs&quot;&quot;&quot;</span>
+        <span class="n">extra</span> <span class="o">=</span> <span class="s2">&quot;forbid&quot;</span></div>
+
     <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">number</span><span class="p">:</span> <span class="n">conint</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># type: ignore</span>
 
@@ -385,39 +389,6 @@
     <span class="n">EMPTY</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">OCCUPIED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">LOCKED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
-
-
-<div class="viewcode-block" id="SamplePositionsLock"><a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SamplePositionsLock">[docs]</a><span class="k">class</span> <span class="nc">SamplePositionsLock</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Lock of sample position, which is a context manager that will release the sample positions</span>
-<span class="sd">    when exiting.</span>
-
-<span class="sd">    The input sample position should have format of</span>
-<span class="sd">    ``{&quot;&lt;sample_position_prefix_1&gt;&quot;: {&quot;name&quot;: str, &quot;need_release&quot;: bool}, ...}``</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_positions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]],</span> <span class="n">sample_view</span><span class="p">:</span> <span class="s2">&quot;SampleView&quot;</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions</span> <span class="o">=</span> <span class="n">sample_positions</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span> <span class="o">=</span> <span class="n">sample_view</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">sample_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="p">[</span><span class="n">v_</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">v_</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-
-<div class="viewcode-block" id="SamplePositionsLock.release"><a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SamplePositionsLock.release">[docs]</a>    <span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">sample_positions_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                <span class="k">for</span> <span class="n">sample_position</span> <span class="ow">in</span> <span class="n">sample_positions_</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">sample_position</span><span class="p">[</span><span class="s2">&quot;need_release&quot;</span><span class="p">]:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span><span class="o">.</span><span class="n">release_sample_position</span><span class="p">(</span><span class="n">sample_position</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span></div>
-
-    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_positions</span>
-
-    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="SampleView"><a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView">[docs]</a><span class="k">class</span> <span class="nc">SampleView</span><span class="p">:</span>
@@ -468,9 +439,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span><span class="o">.</span><span class="n">drop</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="SampleView.request_sample_positions"><a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.request_sample_positions">[docs]</a>    <span class="k">def</span> <span class="nf">request_sample_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span>
-                                 <span class="n">sample_positions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">SamplePositionRequest</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]],</span>
-                                 <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SamplePositionsLock</span><span class="p">:</span>
+<div class="viewcode-block" id="SampleView.request_sample_positions"><a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.request_sample_positions">[docs]</a>    <span class="k">def</span> <span class="nf">request_sample_positions</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span>
+            <span class="n">sample_positions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">SamplePositionRequest</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Request a list of sample positions, this function will return until all the sample positions are available</span>
 
@@ -479,8 +451,6 @@
 <span class="sd">            sample_positions: the list of sample positions, which is requested by their names.</span>
 <span class="sd">              The sample position name is actually the prefix of a sample position, which we</span>
 <span class="sd">              will try to match all the sample positions will the name</span>
-<span class="sd">            timeout: if we cannot request the resources after ``timeout`` seconds, this function</span>
-<span class="sd">              will return ``SamplePositionsLock(None)`` directly.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sample_positions_request</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">SamplePositionRequest</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">SamplePositionRequest</span><span class="o">.</span><span class="n">from_py_type</span><span class="p">(</span><span class="n">sample_position</span><span class="p">)</span>
@@ -502,27 +472,16 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Position prefix `</span><span class="si">{</span><span class="n">sample_position</span><span class="o">.</span><span class="n">prefix</span><span class="si">}</span><span class="s2">` can only &quot;</span>
                                  <span class="sa">f</span><span class="s2">&quot;have </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> matches, but requests </span><span class="si">{</span><span class="n">sample_position</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">while</span> <span class="n">timeout</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">cnt</span> <span class="o">&lt;</span> <span class="n">timeout</span><span class="p">:</span>
-            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">():</span>  <span class="c1"># pylint: disable=not-callable</span>
-                <span class="n">available_positions</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]]]</span> <span class="o">=</span> <span class="p">{}</span>
-                <span class="k">for</span> <span class="n">sample_position</span> <span class="ow">in</span> <span class="n">sample_positions_request</span><span class="p">:</span>
-                    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_available_sample_position</span><span class="p">(</span><span class="n">task_id</span><span class="p">,</span> <span class="n">position_prefix</span><span class="o">=</span><span class="n">sample_position</span><span class="o">.</span><span class="n">prefix</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">sample_position</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
-                        <span class="k">break</span>
-                    <span class="c1"># we try to choose the position that has already been locked by this task</span>
-                    <span class="n">available_positions</span><span class="p">[</span><span class="n">sample_position</span><span class="o">.</span><span class="n">prefix</span><span class="p">]</span> <span class="o">=</span> \
-                        <span class="nb">sorted</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">task</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;need_release&quot;</span><span class="p">]))[:</span><span class="n">sample_position</span><span class="o">.</span><span class="n">number</span><span class="p">]</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">sample_positions_</span> <span class="ow">in</span> <span class="n">available_positions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                        <span class="k">for</span> <span class="n">sample_position_</span> <span class="ow">in</span> <span class="n">sample_positions_</span><span class="p">:</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">lock_sample_position</span><span class="p">(</span><span class="n">task_id</span><span class="p">,</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">sample_position_</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]))</span>
-                    <span class="k">return</span> <span class="n">SamplePositionsLock</span><span class="p">(</span><span class="n">sample_positions</span><span class="o">=</span><span class="n">available_positions</span><span class="p">,</span> <span class="n">sample_view</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
-
-            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">cnt</span> <span class="o">+=</span> <span class="mi">1</span>
-
-        <span class="k">return</span> <span class="n">SamplePositionsLock</span><span class="p">(</span><span class="n">sample_positions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sample_view</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">():</span>  <span class="c1"># pylint: disable=not-callable</span>
+            <span class="n">available_positions</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]]]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">sample_position</span> <span class="ow">in</span> <span class="n">sample_positions_request</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_available_sample_position</span><span class="p">(</span><span class="n">task_id</span><span class="p">,</span> <span class="n">position_prefix</span><span class="o">=</span><span class="n">sample_position</span><span class="o">.</span><span class="n">prefix</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">sample_position</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+                <span class="c1"># we try to choose the position that has already been locked by this task</span>
+                <span class="n">available_positions</span><span class="p">[</span><span class="n">sample_position</span><span class="o">.</span><span class="n">prefix</span><span class="p">]</span> <span class="o">=</span> \
+                    <span class="nb">sorted</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">task</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;need_release&quot;</span><span class="p">]))[:</span><span class="n">sample_position</span><span class="o">.</span><span class="n">number</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">available_positions</span></div>
 
 <div class="viewcode-block" id="SampleView.get_sample_position"><a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_sample_position">[docs]</a>    <span class="k">def</span> <span class="nf">get_sample_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
         <span class="sd">&quot;&quot;&quot;</span>

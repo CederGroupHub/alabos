@@ -366,6 +366,18 @@
 <p>The class is used to request sample position.</p>
 <p>You need to specify the prefix of the sample position (will be used to match by <cite>startwith</cite> method) and
 the number you request. By default, the number is set to be 1.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="alab_management.sample_view.sample_view.SamplePositionRequest.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SamplePositionRequest.Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SamplePositionRequest.Config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>raise error when extra kwargs</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.sample_view.sample_view.SamplePositionRequest.Config.extra">
+<span class="sig-name descname"><span class="pre">extra</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'forbid'</span></em><a class="headerlink" href="#alab_management.sample_view.sample_view.SamplePositionRequest.Config.extra" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.sample_view.sample_view.SamplePositionRequest.from_py_type">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_py_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_position</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SamplePositionRequest.from_py_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SamplePositionRequest.from_py_type" title="Permalink to this definition">¶</a></dt>
@@ -417,31 +429,6 @@ the number you request. By default, the number is set to be 1.</p>
 <dt class="sig sig-object py" id="alab_management.sample_view.sample_view.SamplePositionStatus.OCCUPIED">
 <span class="sig-name descname"><span class="pre">OCCUPIED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#alab_management.sample_view.sample_view.SamplePositionStatus.OCCUPIED" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="alab_management.sample_view.sample_view.SamplePositionsLock">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SamplePositionsLock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_view</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SamplePositionsLock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SamplePositionsLock" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Lock of sample position, which is a context manager that will release the sample positions
-when exiting.</p>
-<p>The input sample position should have format of
-<code class="docutils literal notranslate"><span class="pre">{&quot;&lt;sample_position_prefix_1&gt;&quot;:</span> <span class="pre">{&quot;name&quot;:</span> <span class="pre">str,</span> <span class="pre">&quot;need_release&quot;:</span> <span class="pre">bool},</span> <span class="pre">...}</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="alab_management.sample_view.sample_view.SamplePositionsLock.release">
-<span class="sig-name descname"><span class="pre">release</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SamplePositionsLock.release"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SamplePositionsLock.release" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="alab_management.sample_view.sample_view.SamplePositionsLock.sample_positions">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample_positions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#alab_management.sample_view.sample_view.SamplePositionsLock.sample_positions" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]]</p>
-</dd>
-</dl>
-</dd></dl>
 
 </dd></dl>
 
@@ -582,7 +569,7 @@ else, return EMPTY and None</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.sample_view.sample_view.SampleView.request_sample_positions">
-<span class="sig-name descname"><span class="pre">request_sample_positions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.request_sample_positions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.request_sample_positions" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">request_sample_positions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_positions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.request_sample_positions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.request_sample_positions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request a list of sample positions, this function will return until all the sample positions are available</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -591,12 +578,10 @@ else, return EMPTY and None</p>
 <li><p><strong>sample_positions</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="#alab_management.sample_view.sample_view.SamplePositionRequest" title="alab_management.sample_view.sample_view.SamplePositionRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplePositionRequest</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]]) – the list of sample positions, which is requested by their names.
 The sample position name is actually the prefix of a sample position, which we
 will try to match all the sample positions will the name</p></li>
-<li><p><strong>timeout</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – if we cannot request the resources after <code class="docutils literal notranslate"><span class="pre">timeout</span></code> seconds, this function
-will return <code class="docutils literal notranslate"><span class="pre">SamplePositionsLock(None)</span></code> directly.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference internal" href="#alab_management.sample_view.sample_view.SamplePositionsLock" title="alab_management.sample_view.sample_view.SamplePositionsLock"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplePositionsLock</span></code></a></p>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]]]</p>
 </dd>
 </dl>
 </dd></dl>

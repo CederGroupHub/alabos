@@ -339,20 +339,18 @@
               <div>
                 
   <h1>Source code for alab_management.lab_view</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span>
+<span></span><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">root_validator</span>
 <span class="kn">from</span> <span class="nn">pydantic.main</span> <span class="kn">import</span> <span class="n">BaseModel</span>
 
+<span class="kn">from</span> <span class="nn">.device_manager</span> <span class="kn">import</span> <span class="n">DevicesClient</span>
 <span class="kn">from</span> <span class="nn">.device_view.device</span> <span class="kn">import</span> <span class="n">BaseDevice</span>
-<span class="kn">from</span> <span class="nn">.device_view.device_view</span> <span class="kn">import</span> <span class="n">DeviceView</span><span class="p">,</span> <span class="n">DevicesLock</span>
 <span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="n">DBLogger</span>
-<span class="kn">from</span> <span class="nn">.sample_view.sample_view</span> <span class="kn">import</span> <span class="n">SampleView</span><span class="p">,</span> <span class="n">SamplePositionsLock</span><span class="p">,</span> <span class="n">SamplePositionRequest</span>
-<span class="kn">from</span> <span class="nn">.task_view.task_view</span> <span class="kn">import</span> <span class="n">TaskView</span><span class="p">,</span> <span class="n">TaskStatus</span>
+<span class="kn">from</span> <span class="nn">.sample_view.sample_view</span> <span class="kn">import</span> <span class="n">SampleView</span><span class="p">,</span> <span class="n">SamplePositionRequest</span>
+<span class="kn">from</span> <span class="nn">.task_manager</span> <span class="kn">import</span> <span class="n">ResourceRequester</span>
 
 
 <div class="viewcode-block" id="DeviceRunningException"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.DeviceRunningException">[docs]</a><span class="k">class</span> <span class="nc">DeviceRunningException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -380,60 +378,6 @@
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;__root__&quot;</span><span class="p">:</span> <span class="n">values</span><span class="p">}</span></div></div>
 
 
-<span class="nd">@contextmanager</span>
-<span class="k">def</span> <span class="nf">_resource_lock</span><span class="p">(</span><span class="n">devices_lock</span><span class="p">:</span> <span class="n">DevicesLock</span><span class="p">,</span> <span class="n">sample_positions_lock</span><span class="p">:</span> <span class="n">SamplePositionsLock</span><span class="p">,</span>
-                   <span class="n">resource_request</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]],</span>
-                   <span class="n">logger</span><span class="p">:</span> <span class="n">DBLogger</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A context manager that releases the devices and the sample positions when they are no longer needed.</span>
-
-<span class="sd">    This context manager is only supposed to be used internally, to create context manager and expose</span>
-<span class="sd">    to the task definitions</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">devices_lock</span><span class="o">.</span><span class="n">devices</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">sample_positions_lock</span><span class="o">.</span><span class="n">sample_positions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Get empty devices_lock or sample_positions_lock&quot;</span><span class="p">)</span>
-    <span class="n">requested_sample_positions</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">flattened_sample_positions</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">sample_positions_lock</span><span class="o">.</span><span class="n">sample_positions</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">device_type</span><span class="p">,</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">devices_lock</span><span class="o">.</span><span class="n">devices</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>  <span class="c1"># type: ignore</span>
-        <span class="n">device_name</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span>
-        <span class="n">sample_position_requests</span> <span class="o">=</span> <span class="n">resource_request</span><span class="p">[</span><span class="n">device_type</span><span class="p">]</span>
-        <span class="n">requested_sample_positions</span><span class="p">[</span><span class="n">device_type</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">sample_position_request</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">]:</span> <span class="n">flattened_sample_positions</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
-                <span class="n">sample_position_request</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;$&quot;</span><span class="p">,</span> <span class="n">device_name</span><span class="p">))</span>
-            <span class="k">for</span> <span class="n">sample_position_request</span> <span class="ow">in</span> <span class="n">sample_position_requests</span>
-        <span class="p">}</span>
-    <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">resource_request</span><span class="p">:</span>
-        <span class="n">requested_sample_positions</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">sample_position_request</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">]:</span> <span class="n">flattened_sample_positions</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">sample_position_request</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">])</span>
-            <span class="k">for</span> <span class="n">sample_position_request</span> <span class="ow">in</span> <span class="n">resource_request</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span>
-        <span class="p">}</span>
-
-    <span class="n">log_id</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">system_log</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span> <span class="n">log_data</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;logged_by&quot;</span><span class="p">:</span> <span class="s2">&quot;LabView&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;AssignedResources&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;resources_list&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">k</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">if</span> <span class="n">k</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">):</span> <span class="p">[</span><span class="n">v_</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">v_</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]</span>
-                           <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">resource_request</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
-        <span class="s2">&quot;devices&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">device_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span>
-                    <span class="k">for</span> <span class="n">device_type</span><span class="p">,</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">devices_lock</span><span class="o">.</span><span class="n">devices</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
-        <span class="s2">&quot;sample_positions&quot;</span><span class="p">:</span> <span class="n">sample_positions_lock</span><span class="o">.</span><span class="n">sample_positions</span><span class="p">,</span>
-    <span class="p">})</span>
-
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">flattened_sample_positions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;All the sample positions should have been popped out.&quot;</span>
-    <span class="k">yield</span> <span class="n">devices_lock</span><span class="o">.</span><span class="n">devices</span><span class="p">,</span> <span class="n">requested_sample_positions</span>
-
-    <span class="k">if</span> <span class="n">devices_lock</span><span class="o">.</span><span class="n">running_devices</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">DeviceRunningException</span><span class="p">(</span><span class="s2">&quot;There are some devices that is still running!&quot;</span><span class="p">)</span>
-
-    <span class="n">devices_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
-    <span class="n">sample_positions_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">system_log</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span> <span class="n">log_data</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;logged_by&quot;</span><span class="p">:</span> <span class="s2">&quot;LabView&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;ReleaseResources&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;assign_log_id&quot;</span><span class="p">:</span> <span class="n">log_id</span><span class="p">,</span>
-    <span class="p">})</span>
-
-
 <div class="viewcode-block" id="LabView"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.LabView">[docs]</a><span class="k">class</span> <span class="nc">LabView</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    LabView is a wrapper over device view and sample view.</span>
@@ -443,26 +387,27 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span> <span class="o">=</span> <span class="n">task_id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span> <span class="o">=</span> <span class="n">DeviceView</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span> <span class="o">=</span> <span class="n">SampleView</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_task_view</span> <span class="o">=</span> <span class="n">TaskView</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resource_requester</span> <span class="o">=</span> <span class="n">ResourceRequester</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_device_client</span> <span class="o">=</span> <span class="n">DevicesClient</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">DBLogger</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectId</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span>
 
-<div class="viewcode-block" id="LabView.request_resources"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.LabView.request_resources">[docs]</a>    <span class="k">def</span> <span class="nf">request_resources</span><span class="p">(</span>
+<div class="viewcode-block" id="LabView.request_resources"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.LabView.request_resources">[docs]</a>    <span class="nd">@contextmanager</span>
+    <span class="k">def</span> <span class="nf">request_resources</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">resource_request</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ResourcesRequest</span><span class="p">,</span>
-                                    <span class="n">Dict</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]]]</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_resource_lock</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+            <span class="n">resource_request</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="nb">str</span><span class="p">]]],</span>
+            <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Request devices and sample positions</span>
 
 <span class="sd">        Usually, devices_and_sample_positions has the format {DeviceType: [&quot;sample_position_1&quot;, ...]}. The</span>
 <span class="sd">        DeviceType can be ``None`` so that you can request the sample positions that do not belong to</span>
-<span class="sd">        any devices (in principal, you can put all the sample positions under one device type)</span>
+<span class="sd">        any devices (in principle, you can put all the sample positions under one device type)</span>
 
 <span class="sd">        If you want to request multiple sample positions with the same prefix, you can instead replace the name of</span>
 <span class="sd">        sample position name with a dict {&quot;prefix&quot;: &lt;str&gt;, &quot;number&quot;: &lt;int&gt;}</span>
@@ -474,56 +419,16 @@
 <span class="sd">        you can use ``$`` to represent the name of device, e.g. {Furnace: [&quot;$/inside&quot;]} will be parsed to</span>
 <span class="sd">        ``furnace_1/inside`` if we are assigned to a furnace named ``furnace_1``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">resource_request</span><span class="p">,</span> <span class="n">ResourcesRequest</span><span class="p">):</span>
-            <span class="n">resource_request</span> <span class="o">=</span> <span class="n">ResourcesRequest</span><span class="p">(</span><span class="n">__root__</span><span class="o">=</span><span class="n">resource_request</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
-        <span class="n">resource_request_formatted</span> <span class="o">=</span> <span class="n">resource_request</span><span class="o">.</span><span class="n">dict</span><span class="p">()[</span><span class="s2">&quot;__root__&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_task_view</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">REQUESTING_RESOURCE</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">system_log</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span> <span class="n">log_data</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;logged_by&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;StartRequestResources&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span><span class="p">,</span>
-            <span class="s2">&quot;resources_list&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">k</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">if</span> <span class="n">k</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">):</span> <span class="p">[</span><span class="n">v_</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">v_</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]</span>
-                               <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">resource_request_formatted</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-        <span class="p">})</span>
-        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="n">devices_lock</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">request_devices</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span><span class="p">,</span> <span class="n">device_types</span><span class="o">=</span><span class="p">[</span>
-                <span class="n">device_type</span> <span class="k">for</span> <span class="n">device_type</span> <span class="ow">in</span> <span class="n">resource_request_formatted</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">device_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="p">])</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resource_requester</span><span class="o">.</span><span class="n">request_resources</span><span class="p">(</span><span class="n">resource_request</span><span class="o">=</span><span class="n">resource_request</span><span class="p">,</span>
+                                                            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="n">devices</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;devices&quot;</span><span class="p">]</span>
+        <span class="n">sample_positions</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;sample_positions&quot;</span><span class="p">]</span>
+        <span class="n">request_id</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;request_id&quot;</span><span class="p">]</span>
+        <span class="n">devices</span> <span class="o">=</span> <span class="p">{</span><span class="n">device_type</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_client</span><span class="o">.</span><span class="n">create_device_wrapper</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
+                   <span class="k">for</span> <span class="n">device_type</span><span class="p">,</span> <span class="n">device_name</span> <span class="ow">in</span> <span class="n">devices</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>  <span class="c1"># type: ignore</span>
+        <span class="k">yield</span> <span class="n">devices</span><span class="p">,</span> <span class="n">sample_positions</span>
 
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">parsed_sample_positions_request</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="k">for</span> <span class="n">device_type</span><span class="p">,</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">devices_lock</span><span class="o">.</span><span class="n">devices</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>  <span class="c1"># type: ignore</span>
-                    <span class="n">device_name</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span>
-                    <span class="n">parsed_sample_positions_request</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
-                        <span class="p">{</span><span class="o">**</span><span class="n">sample_position_request</span><span class="p">,</span>
-                         <span class="s2">&quot;prefix&quot;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\$&quot;</span><span class="p">,</span> <span class="n">device_name</span><span class="p">,</span> <span class="n">sample_position_request</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">])}</span>  <span class="c1"># type: ignore</span>
-                        <span class="k">for</span> <span class="n">sample_position_request</span> <span class="ow">in</span> <span class="n">resource_request_formatted</span><span class="p">[</span><span class="n">device_type</span><span class="p">]])</span>
-
-                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="s2">&quot;$&quot;</span> <span class="ow">in</span> <span class="n">sample_position_request</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">]</span>
-                       <span class="k">for</span> <span class="n">sample_position_request</span> <span class="ow">in</span> <span class="n">resource_request_formatted</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">[])):</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;$ should not appear under `None`, which is actually not a device.&quot;</span><span class="p">)</span>
-                <span class="n">parsed_sample_positions_request</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">resource_request_formatted</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">[]))</span>
-                <span class="c1"># wait for 10 minutes</span>
-                <span class="c1"># if it is still not available, release it, wait for 1 minutes</span>
-                <span class="c1"># and start to request devices again</span>
-                <span class="n">sample_positions_lock</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span><span class="o">.</span><span class="n">request_sample_positions</span><span class="p">(</span>
-                    <span class="n">task_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span><span class="p">,</span>
-                    <span class="n">sample_positions</span><span class="o">=</span><span class="p">[</span><span class="n">SamplePositionRequest</span><span class="p">(</span><span class="o">**</span><span class="n">request</span><span class="p">)</span> <span class="k">for</span> <span class="n">request</span> <span class="ow">in</span> <span class="n">parsed_sample_positions_request</span><span class="p">],</span>
-                    <span class="n">timeout</span><span class="o">=</span><span class="mi">600</span>
-                <span class="p">)</span>
-
-                <span class="k">if</span> <span class="n">sample_positions_lock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_task_view</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="n">_resource_lock</span><span class="p">(</span><span class="n">devices_lock</span><span class="o">=</span><span class="n">devices_lock</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
-                                          <span class="n">sample_positions_lock</span><span class="o">=</span><span class="n">sample_positions_lock</span><span class="p">,</span>
-                                          <span class="n">resource_request</span><span class="o">=</span><span class="n">resource_request_formatted</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
-                <span class="n">devices_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
-            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                <span class="n">devices_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
-                <span class="k">raise</span>
-
-            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">60</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resource_requester</span><span class="o">.</span><span class="n">release_resources</span><span class="p">(</span><span class="n">request_id</span><span class="o">=</span><span class="n">request_id</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="LabView.get_sample"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.LabView.get_sample">[docs]</a>    <span class="k">def</span> <span class="nf">get_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -547,12 +452,6 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot move a sample that is not belong to this task.&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span><span class="o">.</span><span class="n">move_sample</span><span class="p">(</span><span class="n">sample_id</span><span class="o">=</span><span class="n">sample_id</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="n">position</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="LabView.get_occupied_devices"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.LabView.get_occupied_devices">[docs]</a>    <span class="k">def</span> <span class="nf">get_occupied_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get a list of device instances that are occupied by this task (regardless of their status)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">get_devices_by_task</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="LabView.get_locked_sample_positions"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.LabView.get_locked_sample_positions">[docs]</a>    <span class="k">def</span> <span class="nf">get_locked_sample_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>

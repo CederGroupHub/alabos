@@ -343,8 +343,9 @@
 <span class="sd">This module is adapted from https://github.com/Mause/rpc</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="kn">import</span> <span class="n">Future</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 <span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Thread</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">NoReturn</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">NoReturn</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">Callable</span>
 
 <span class="kn">import</span> <span class="nn">dill</span>
 <span class="kn">import</span> <span class="nn">pika</span>
@@ -360,6 +361,54 @@
 
 <span class="n">DEFAULT_SERVER_QUEUE_SUFFIX</span> <span class="o">=</span> <span class="s2">&quot;.device_rpc&quot;</span>
 <span class="n">DEFAULT_CLIENT_QUEUE_SUFFIX</span> <span class="o">=</span> <span class="n">DEFAULT_SERVER_QUEUE_SUFFIX</span> <span class="o">+</span> <span class="s2">&quot;.reply_to&quot;</span>
+
+
+<div class="viewcode-block" id="DeviceWrapper"><a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DeviceWrapper">[docs]</a><span class="k">class</span> <span class="nc">DeviceWrapper</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A wrapper over the device</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DeviceWrapper.DeviceMethodWrapper"><a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DeviceWrapper.DeviceMethodWrapper">[docs]</a>    <span class="k">class</span> <span class="nc">DeviceMethodWrapper</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A wrapper over a device method</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method_handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_device_name</span> <span class="o">=</span> <span class="n">device_name</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">method</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_method_handler</span> <span class="o">=</span> <span class="n">method_handler</span>
+
+        <span class="nd">@property</span>
+        <span class="k">def</span> <span class="nf">method</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_method</span>
+
+        <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_method_handler</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;method </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_device_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_method</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">_raise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>  <span class="c1"># pylint: disable=no-self-use</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;This is a class method, you cannot use it as an attribute.&quot;</span><span class="p">)</span>
+
+        <span class="fm">__str__</span> <span class="o">=</span> <span class="fm">__repr__</span>
+
+        <span class="fm">__len__</span> <span class="o">=</span> <span class="fm">__getattr__</span> <span class="o">=</span> <span class="fm">__getitem__</span> <span class="o">=</span> <span class="fm">__add__</span> <span class="o">=</span> <span class="fm">__sub__</span> <span class="o">=</span> \
+            <span class="fm">__eq__</span> <span class="o">=</span> <span class="fm">__lt__</span> <span class="o">=</span> <span class="fm">__gt__</span> <span class="o">=</span> <span class="n">_raise</span></div>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">devices_client</span><span class="p">:</span> <span class="s2">&quot;DevicesClient&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_devices_client</span> <span class="o">=</span> <span class="n">devices_client</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">DeviceMethodWrapper</span><span class="p">(</span>
+            <span class="n">device_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">method_handler</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_devices_client</span><span class="o">.</span><span class="n">call</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DeviceManager"><a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DeviceManager">[docs]</a><span class="k">class</span> <span class="nc">DeviceManager</span><span class="p">:</span>
@@ -385,7 +434,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">get_rabbitmq_connection</span><span class="p">()</span><span class="o">.</span><span class="n">channel</span><span class="p">()</span> <span class="k">as</span> <span class="n">channel</span><span class="p">:</span>
             <span class="n">channel</span><span class="o">.</span><span class="n">queue_declare</span><span class="p">(</span>
-                <span class="n">queue</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_rpc_queue_name</span><span class="p">,</span> <span class="n">auto_delete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclusive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">queue</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_rpc_queue_name</span><span class="p">,</span> <span class="n">auto_delete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclusive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">channel</span><span class="o">.</span><span class="n">basic_consume</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_rpc_queue_name</span><span class="p">,</span> <span class="n">on_message_callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">on_message</span><span class="p">,</span>
                                   <span class="n">auto_ack</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">consumer_tag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_rpc_queue_name</span><span class="p">)</span>
@@ -422,7 +471,7 @@
                 <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Currently the task (</span><span class="si">{</span><span class="n">body</span><span class="p">[</span><span class="s1">&#39;task_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">) &quot;</span>
                                       <span class="sa">f</span><span class="s2">&quot;does not occupy this device: </span><span class="si">{</span><span class="n">body</span><span class="p">[</span><span class="s1">&#39;device&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">execute_command</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">body</span><span class="p">[</span><span class="s2">&quot;device&quot;</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="n">body</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">],</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">execute_command</span><span class="p">(</span><span class="n">body</span><span class="p">[</span><span class="s2">&quot;device&quot;</span><span class="p">],</span> <span class="n">body</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">],</span>
                                                        <span class="o">*</span><span class="n">body</span><span class="p">[</span><span class="s2">&quot;args&quot;</span><span class="p">],</span> <span class="o">**</span><span class="n">body</span><span class="p">[</span><span class="s2">&quot;kwargs&quot;</span><span class="p">])</span>
             <span class="n">response</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">,</span>
@@ -497,36 +546,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            A device wrapper that will send every call to class method to remote server.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">self_</span><span class="p">:</span> <span class="s2">&quot;DevicesClient&quot;</span> <span class="o">=</span> <span class="bp">self</span>
-
-        <span class="k">class</span> <span class="nc">DeviceWrapper</span><span class="p">:</span>
-            <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            A wrapper over the device</span>
-<span class="sd">            &quot;&quot;&quot;</span>
-
-            <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="k">class</span> <span class="nc">DeviceMethodWrapper</span><span class="p">:</span>
-                    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">                    A wrapper over the device method</span>
-<span class="sd">                    &quot;&quot;&quot;</span>
-
-                    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-                        <span class="k">return</span> <span class="n">self_</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-                    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-                        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;method </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
-
-                    <span class="k">def</span> <span class="nf">_raise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>  <span class="c1"># pylint: disable=no-self-use</span>
-                        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;This is a class method, you cannot use it as an attribute.&quot;</span><span class="p">)</span>
-
-                    <span class="fm">__str__</span> <span class="o">=</span> <span class="fm">__repr__</span>
-
-                    <span class="fm">__len__</span> <span class="o">=</span> <span class="fm">__getattr__</span> <span class="o">=</span> <span class="fm">__getitem__</span> <span class="o">=</span> <span class="fm">__add__</span> <span class="o">=</span> <span class="fm">__sub__</span> <span class="o">=</span> \
-                        <span class="fm">__eq__</span> <span class="o">=</span> <span class="fm">__lt__</span> <span class="o">=</span> <span class="fm">__gt__</span> <span class="o">=</span> <span class="n">_raise</span>
-
-                <span class="k">return</span> <span class="n">DeviceMethodWrapper</span><span class="p">()</span>
-
-        <span class="k">return</span> <span class="n">DeviceWrapper</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="n">DeviceWrapper</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">device_name</span><span class="p">,</span> <span class="n">devices_client</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DevicesClient.call"><a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DevicesClient.call">[docs]</a>    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>

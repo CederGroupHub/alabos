@@ -344,7 +344,6 @@
 <span class="kn">import</span> <span class="nn">dramatiq</span>
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 
-<span class="kn">from</span> <span class="nn">.lab_view</span> <span class="kn">import</span> <span class="n">LabView</span>
 <span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="n">DBLogger</span>
 <span class="kn">from</span> <span class="nn">.sample_view</span> <span class="kn">import</span> <span class="n">SampleView</span>
 <span class="kn">from</span> <span class="nn">.task_view.task</span> <span class="kn">import</span> <span class="n">BaseTask</span>
@@ -365,6 +364,8 @@
 <span class="sd">    independent process, which will try to acquire device and</span>
 <span class="sd">    process samples.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">.lab_view</span> <span class="kn">import</span> <span class="n">LabView</span>  <span class="c1"># pylint: disable=cyclic-import</span>
+
     <span class="n">load_definition</span><span class="p">()</span>
     <span class="n">task_view</span> <span class="o">=</span> <span class="n">TaskView</span><span class="p">()</span>
     <span class="n">sample_view</span> <span class="o">=</span> <span class="n">SampleView</span><span class="p">()</span>

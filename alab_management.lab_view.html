@@ -385,17 +385,6 @@ update sample positions.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="alab_management.lab_view.LabView.get_occupied_devices">
-<span class="sig-name descname"><span class="pre">get_occupied_devices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_view.html#LabView.get_occupied_devices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_view.LabView.get_occupied_devices" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a list of device instances that are occupied by this task (regardless of their status)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="device_definition.html#alab_management.device_view.device.BaseDevice" title="alab_management.device_view.device.BaseDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDevice</span></code></a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="alab_management.lab_view.LabView.get_sample">
 <span class="sig-name descname"><span class="pre">get_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_view.html#LabView.get_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_view.LabView.get_sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a sample by id, see also
@@ -411,11 +400,11 @@ update sample positions.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.lab_view.LabView.request_resources">
-<span class="sig-name descname"><span class="pre">request_resources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_view.html#LabView.request_resources"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_view.LabView.request_resources" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">request_resources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource_request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_view.html#LabView.request_resources"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_view.LabView.request_resources" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request devices and sample positions</p>
 <p>Usually, devices_and_sample_positions has the format {DeviceType: [“sample_position_1”, …]}. The
 DeviceType can be <code class="docutils literal notranslate"><span class="pre">None</span></code> so that you can request the sample positions that do not belong to
-any devices (in principal, you can put all the sample positions under one device type)</p>
+any devices (in principle, you can put all the sample positions under one device type)</p>
 <p>If you want to request multiple sample positions with the same prefix, you can instead replace the name of
 sample position name with a dict {“prefix”: &lt;str&gt;, “number”: &lt;int&gt;}</p>
 <p>Note that the sample position name will try to find available sample positions that start with this
@@ -423,11 +412,6 @@ specified name prefix.</p>
 <p>And since sometimes you can only know which device you will use until you request the device,
 you can use <code class="docutils literal notranslate"><span class="pre">$</span></code> to represent the name of device, e.g. {Furnace: [“$/inside”]} will be parsed to
 <code class="docutils literal notranslate"><span class="pre">furnace_1/inside</span></code> if we are assigned to a furnace named <code class="docutils literal notranslate"><span class="pre">furnace_1</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_resource_lock</span></code></p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py property">
