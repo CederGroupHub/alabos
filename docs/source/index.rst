@@ -106,7 +106,6 @@ via `pymongo <https://pymongo.readthedocs.io/en/stable/>`_ package.
    :hidden:
 
    Installation<installation>
-   Development<development>
    Setup definition folder<setup>
    Defining new devices<device_definition>
    Defining new tasks<task_definition>
@@ -115,6 +114,7 @@ via `pymongo <https://pymongo.readthedocs.io/en/stable/>`_ package.
    :maxdepth: -1
    :hidden:
 
+   Development<development>
    API Docs<modules>
 
 
