@@ -12,7 +12,7 @@ from bson import ObjectId
 from .device import BaseDevice, get_all_devices
 from ..utils.data_objects import get_collection, get_lock
 
-_DeviceType = TypeVar("_DeviceType", bound=BaseDevice)
+_DeviceType = TypeVar("_DeviceType", bound=BaseDevice)  # pylint: disable=invalid-name
 
 
 @unique
