@@ -111,6 +111,11 @@
     </a>
    </li>
    <li class="toctree-l1">
+    <a class="reference internal" href="../../../development.html">
+     Development
+    </a>
+   </li>
+   <li class="toctree-l1">
     <a class="reference internal" href="../../../setup.html">
      Setup definition folder
     </a>
@@ -248,11 +253,10 @@ title="Source repository"
 <span class="sd">    All the tasks should inherit from this class.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="BaseTask.__init__"><a class="viewcode-back" href="../../../task_definition.html#alab_management.task_view.task.BaseTask.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">lab_view</span><span class="p">:</span> <span class="s2">&quot;LabView&quot;</span><span class="p">,</span> <span class="n">sub_task_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseTask.__init__"><a class="viewcode-back" href="../../../task_definition.html#alab_management.task_view.task.BaseTask.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">lab_view</span><span class="p">:</span> <span class="s2">&quot;LabView&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            task_id: the identifier of task</span>
-<span class="sd">            sub_task_id: a string that indicate the parent_task</span>
 
 <span class="sd">        Here is an example about how to define a custom task</span>
 
@@ -266,7 +270,6 @@ title="Source repository"
 <span class="sd">              self.samples = [sample_1, sample_2, sample_3, sample_4]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span> <span class="o">=</span> <span class="n">task_id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sub_task_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">sub_task_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">child_task_num</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span> <span class="o">=</span> <span class="n">lab_view</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">logger</span></div>
@@ -319,19 +322,7 @@ title="Source repository"
 <span class="sd">                  })</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="BaseTask.get_one_child_sub_task_id"><a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.BaseTask.get_one_child_sub_task_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_one_child_sub_task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">child_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sub_task_id</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">child_task_num</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">child_task_num</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">return</span> <span class="n">child_id</span></div>
-
-<div class="viewcode-block" id="BaseTask.create_sub_task"><a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.BaseTask.create_sub_task">[docs]</a>    <span class="k">def</span> <span class="nf">create_sub_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="s2">&quot;BaseTask&quot;</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BaseTask&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create subtask by task_type</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">task_type</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span> <span class="n">lab_view</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="p">,</span>
-                         <span class="n">sub_task_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_one_child_sub_task_id</span><span class="p">(),</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div></div>
 
 
 <span class="n">_task_registry</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseTask</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>

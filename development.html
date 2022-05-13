@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>alab_management package &#8212; Alab Management</title>
+    <title>Development &#8212; Alab Management</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -34,8 +34,8 @@
     <script src="_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="alab_management.device_view package" href="alab_management.device_view.html" />
-    <link rel="prev" title="alab_management" href="modules.html" />
+    <link rel="next" title="Set up definition folder" href="setup.html" />
+    <link rel="prev" title="Installation" href="installation.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
     
@@ -102,19 +102,19 @@
     Quickstart
    </span>
   </p>
-  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
   <label class="label-parts" for="toctree-checkbox-1">
    <i class="fas fa-chevron-down">
    </i>
   </label>
-  <ul class="nav bd-sidenav">
+  <ul class="current nav bd-sidenav">
    <li class="toctree-l1">
     <a class="reference internal" href="installation.html">
      Installation
     </a>
    </li>
-   <li class="toctree-l1">
-    <a class="reference internal" href="development.html">
+   <li class="toctree-l1 current active">
+    <a class="current reference internal" href="#">
      Development
     </a>
    </li>
@@ -220,7 +220,7 @@ title="Source repository"
   <div class="menu-dropdown__content">
     <ul>
       <li>
-        <a href="_sources/alab_management.rst.txt"
+        <a href="_sources/development.rst.txt"
    class="headerbtn"
    data-toggle="tooltip"
 data-placement="left"
@@ -280,19 +280,21 @@ title="Print to PDF"
     <nav id="bd-toc-nav" aria-label="Page">
         <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#subpackages">
-   Subpackages
+  <a class="reference internal nav-link" href="#development-environment-setup">
+   Development Environment Setup
   </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#submodules">
-   Submodules
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-alab_management">
-   Module contents
-  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#ci-system">
+     CI System
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#git-commit-rules">
+     Git commit rules
+    </a>
+   </li>
+  </ul>
  </li>
 </ul>
 
@@ -303,7 +305,7 @@ title="Print to PDF"
         <div class="col pl-md-3 pl-lg-5 content-container">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
-                <h1>alab_management package</h1>
+                <h1>Development</h1>
                 <!-- Table of contents -->
                 <div id="print-main-content">
                     <div id="jb-print-toc">
@@ -314,19 +316,21 @@ title="Print to PDF"
                         <nav aria-label="Page">
                             <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#subpackages">
-   Subpackages
+  <a class="reference internal nav-link" href="#development-environment-setup">
+   Development Environment Setup
   </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#submodules">
-   Submodules
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-alab_management">
-   Module contents
-  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#ci-system">
+     CI System
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#git-commit-rules">
+     Git commit rules
+    </a>
+   </li>
+  </ul>
  </li>
 </ul>
 
@@ -338,68 +342,45 @@ title="Print to PDF"
                 
               <div>
                 
-  <section id="alab-management-package">
-<h1>alab_management package<a class="headerlink" href="#alab-management-package" title="Permalink to this headline">#</a></h1>
-<section id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">#</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="alab_management.device_view.html">alab_management.device_view package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.device_view.html#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="alab_management.device_view.device.html">alab_management.device_view.device module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="alab_management.device_view.device_view.html">alab_management.device_view.device_view module</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.device_view.html#module-alab_management.device_view">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="alab_management.experiment_view.html">alab_management.experiment_view package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.experiment_view.html#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="alab_management.experiment_view.experiment.html">alab_management.experiment_view.experiment module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="alab_management.experiment_view.experiment_view.html">alab_management.experiment_view.experiment_view module</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.experiment_view.html#module-alab_management.experiment_view">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="alab_management.sample_view.html">alab_management.sample_view package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.sample_view.html#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="alab_management.sample_view.sample.html">alab_management.sample_view.sample module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="alab_management.sample_view.sample_view.html">alab_management.sample_view.sample_view module</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.sample_view.html#module-alab_management.sample_view">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="alab_management.task_view.html">alab_management.task_view package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.task_view.html#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="alab_management.task_view.task.html">alab_management.task_view.task module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="alab_management.task_view.task_view.html">alab_management.task_view.task_view module</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.task_view.html#module-alab_management.task_view">Module contents</a></li>
-</ul>
-</li>
-</ul>
+  <section id="development">
+<span id="id1"></span><h1>Development<a class="headerlink" href="#development" title="Permalink to this headline">#</a></h1>
+<section id="development-environment-setup">
+<h2>Development Environment Setup<a class="headerlink" href="#development-environment-setup" title="Permalink to this headline">#</a></h2>
+<p>To set up the development environment, we need to first clone the repository and install the required dependencies.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:CederGroupHub/alab_management.git
+<span class="nb">cd</span> alab_management
+pip install -r requirements.txt -r requirements-dev.txt
+pip install -e .
+</pre></div>
+</div>
+<p>Also, you need to install MongoDB and RabbitMQ for communication purposes, please refer
+to the <a class="reference external" href="installation.html">installation</a> page for more information.</p>
+<p>Apart from these Python dependencies, we also use <a class="reference external" href="https://github.com/microsoft/pyright">pyright</a> for type checking.
+You may install it via npm or yarn</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>npm install -g pyright
+<span class="c1"># or</span>
+yarn global add pyright
+</pre></div>
+</div>
+<section id="ci-system">
+<h3>CI System<a class="headerlink" href="#ci-system" title="Permalink to this headline">#</a></h3>
+<p>Currently, we use Github Actions for code unit testing and format checking. Before pushing, you may want to
+run the following commands to make sure that the code is formatted correctly.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> alab_management
+
+pytest
+pylint alab_management
+flake8 alab_management
+pyright
+</pre></div>
 </div>
 </section>
-<section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">#</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="alab_management.config.html">alab_management.config module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="alab_management.device_manager.html">alab_management.device_manager module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="alab_management.experiment_manager.html">alab_management.experiment_manager module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="alab_management.lab_view.html">alab_management.lab_view module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="alab_management.logger.html">alab_management.logger module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="alab_management.task_actor.html">alab_management.task_actor module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="alab_management.task_manager.html">alab_management.task_manager module</a></li>
-</ul>
-</div>
+<section id="git-commit-rules">
+<h3>Git commit rules<a class="headerlink" href="#git-commit-rules" title="Permalink to this headline">#</a></h3>
+<p>We highly recommend you to follow the semantic commit message rule
+here: <a class="reference external" href="https://gist.github.com/ericavonb/3c79e5035567c8ef3267">https://gist.github.com/ericavonb/3c79e5035567c8ef3267</a>, so that
+we can track the changes in the code easily.</p>
 </section>
-<section id="module-alab_management">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-alab_management" title="Permalink to this headline">#</a></h2>
-<p>Managing everything in the autonomous lab.</p>
 </section>
 </section>
 
@@ -411,17 +392,17 @@ title="Print to PDF"
                 
     <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="modules.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="installation.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">alab_management</p>
+            <p class="prev-next-title">Installation</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="alab_management.device_view.html" title="next page">
+    <a class='right-next' id="next-link" href="setup.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">alab_management.device_view package</p>
+        <p class="prev-next-title">Set up definition folder</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>

@@ -34,7 +34,7 @@
     <script src="_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Set up definition folder" href="setup.html" />
+    <link rel="next" title="Development" href="development.html" />
     <link rel="prev" title="Overview" href="index.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
@@ -111,6 +111,11 @@
    <li class="toctree-l1 current active">
     <a class="current reference internal" href="#">
      Installation
+    </a>
+   </li>
+   <li class="toctree-l1">
+    <a class="reference internal" href="development.html">
+     Development
     </a>
    </li>
    <li class="toctree-l1">
@@ -280,8 +285,13 @@ title="Print to PDF"
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#for-development-purpose">
-   For development purpose
+  <a class="reference internal nav-link" href="#install-via-pip">
+   Install via pip
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#install-from-source-code">
+   Install from source code
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -314,8 +324,13 @@ title="Print to PDF"
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#for-development-purpose">
-   For development purpose
+  <a class="reference internal nav-link" href="#install-via-pip">
+   Install via pip
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#install-from-source-code">
+   Install from source code
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -340,9 +355,19 @@ title="Print to PDF"
 <p>You must have access to at least one <a class="reference external" href="https://www.mongodb.com/">MongoDB database</a> (locally or remotely).</p>
 <p>To install MongoDB locally, refer to <a class="reference external" href="https://docs.mongodb.com/manual/installation/">this</a>.</p>
 </section>
-<section id="for-development-purpose">
-<h2>For development purpose<a class="headerlink" href="#for-development-purpose" title="Permalink to this headline">#</a></h2>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>python setup.py develop
+<section id="install-via-pip">
+<h2>Install via pip<a class="headerlink" href="#install-via-pip" title="Permalink to this headline">#</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Coming soon.</p>
+</div>
+</section>
+<section id="install-from-source-code">
+<h2>Install from source code<a class="headerlink" href="#install-from-source-code" title="Permalink to this headline">#</a></h2>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:CederGroupHub/alab_management.git
+<span class="nb">cd</span> alab_management
+pip install -r requirements.txt
+pip install -e .
 </pre></div>
 </div>
 </section>
@@ -367,10 +392,10 @@ title="Print to PDF"
             <p class="prev-next-title">Overview</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="setup.html" title="next page">
+    <a class='right-next' id="next-link" href="development.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Set up definition folder</p>
+        <p class="prev-next-title">Development</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>

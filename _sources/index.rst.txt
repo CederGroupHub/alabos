@@ -106,6 +106,7 @@ via `pymongo <https://pymongo.readthedocs.io/en/stable/>`_ package.
    :hidden:
 
    Installation<installation>
+   Development<development>
    Setup definition folder<setup>
    Defining new devices<device_definition>
    Defining new tasks<task_definition>

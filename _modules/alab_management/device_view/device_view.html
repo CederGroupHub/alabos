@@ -111,6 +111,11 @@
     </a>
    </li>
    <li class="toctree-l1">
+    <a class="reference internal" href="../../../development.html">
+     Development
+    </a>
+   </li>
+   <li class="toctree-l1">
     <a class="reference internal" href="../../../setup.html">
      Setup definition folder
     </a>
@@ -242,7 +247,7 @@ title="Source repository"
 <span class="kn">from</span> <span class="nn">.device</span> <span class="kn">import</span> <span class="n">BaseDevice</span><span class="p">,</span> <span class="n">get_all_devices</span>
 <span class="kn">from</span> <span class="nn">..utils.data_objects</span> <span class="kn">import</span> <span class="n">get_collection</span><span class="p">,</span> <span class="n">get_lock</span>
 
-<span class="n">_DeviceType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_DeviceType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">BaseDevice</span><span class="p">)</span>
+<span class="n">_DeviceType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_DeviceType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">BaseDevice</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
 
 
 <div class="viewcode-block" id="DeviceStatus"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceStatus">[docs]</a><span class="nd">@unique</span>
