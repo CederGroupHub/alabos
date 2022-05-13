@@ -1,6 +1,11 @@
 """
 This module is adapted from https://github.com/Mause/rpc
+
+The task process can only get access to a wrapper over the real device object. The wrapper will
+redirect all the method calls to the real device object via RabbitMQ. The real device object is in
+DeviceManager class, which will handle all the request to run certain methods on the real device.
 """
+
 from concurrent.futures import Future
 from functools import partial
 from threading import Thread

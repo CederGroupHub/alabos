@@ -1,3 +1,7 @@
+"""
+This file contains a custom graph class and functions for checking if there are cycles in a graph.
+"""
+
 from typing import List, Any, Dict
 
 

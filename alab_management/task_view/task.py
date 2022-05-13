@@ -1,5 +1,5 @@
 """
-Define the base class of task
+Define the base class of task, which will be used for defining more tasks.
 """
 
 from abc import ABC, abstractmethod

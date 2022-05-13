@@ -1,5 +1,29 @@
 # type: ignore
 
+"""
+This file contains the configuration for the alab_management package.
+It will read from a yaml file to get all the configurations.
+
+An example of the yaml file is as follows:
+
+.. code-block:: yaml
+
+  [general]
+  working_dir = "."
+  name = 'default_lab'
+
+  [mongodb]
+  host = 'localhost'
+  port = 27017
+  username = ''
+  password = ''
+
+  [rabbitmq]
+  host = "localhost"
+  port = 5672
+
+"""
+
 import os
 from pathlib import Path
 from types import MappingProxyType as FrozenDict

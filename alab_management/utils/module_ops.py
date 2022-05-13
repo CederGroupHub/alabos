@@ -1,3 +1,7 @@
+"""
+This file contains the functions to load python modules from a path.
+"""
+
 import importlib
 import os.path
 import re

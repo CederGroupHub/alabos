@@ -1,3 +1,7 @@
+"""
+Wrapper over the ``devices`` collection.
+"""
+
 from datetime import datetime
 from enum import unique, Enum, auto
 from typing import List, Optional, Union, Dict, Any, Collection, cast, TypeVar

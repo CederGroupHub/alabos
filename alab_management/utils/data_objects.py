@@ -1,7 +1,7 @@
 """
-A convenient wrapper for MongoClient
-in case we need to add authentication procedure
+A convenient wrapper for MongoClient. We can get a database object by calling ``get_collection`` function.
 """
+
 from typing import Optional
 
 import pika

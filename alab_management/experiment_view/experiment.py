@@ -1,3 +1,7 @@
+"""
+Define the format of experiment request.
+"""
+
 from typing import List, Any, Dict
 
 from pydantic import BaseModel, constr  # pylint: disable=no-name-in-module

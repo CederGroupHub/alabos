@@ -1,3 +1,11 @@
+"""
+Experiment manager for the ALAB.
+
+It is responsible for parsing the incoming experiment requests into many
+tasks and samples and mark the finished tasks in the database when it is
+done.
+"""
+
 import time
 from typing import Dict, Any
 

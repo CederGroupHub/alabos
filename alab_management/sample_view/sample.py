@@ -1,3 +1,7 @@
+"""
+The definition of the Sample and SamplePosition classes.
+"""
+
 from dataclasses import dataclass, field
 from typing import Optional, ClassVar
 

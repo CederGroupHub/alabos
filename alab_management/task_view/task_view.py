@@ -1,3 +1,8 @@
+"""
+Tasks view is a convienent wrapper over the ``tasks`` collection in the database. It
+provides some convenience methods to query and manipulate the tasks collection.
+"""
+
 from datetime import datetime
 from enum import Enum, auto
 from typing import Any, Dict, List, Type, Union, Optional, cast

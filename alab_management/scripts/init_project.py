@@ -1,3 +1,7 @@
+"""
+Create an empty project.
+"""
+
 from pathlib import Path
 
 from monty import shutil

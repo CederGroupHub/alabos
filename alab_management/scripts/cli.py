@@ -1,3 +1,7 @@
+"""
+Useful CLI tools for the alab_management package.
+"""
+
 import click
 
 from .cleanup_lab import cleanup_lab

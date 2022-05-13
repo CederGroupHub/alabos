@@ -111,11 +111,18 @@ class TaskManager(RequestMixin):
         self.handle_requested_resources()
 
     def submit_ready_tasks(self):
+        """
+        Checking if there are any tasks that are ready to be submitted. (STATUS = READY)
+        If so, submit them to task actor (dramatiq worker).
+        """
         ready_task_entries = self.task_view.get_ready_tasks()
         for task_entry in ready_task_entries:
             run_task.send(task_id_str=str(task_entry["task_id"]))
 
     def handle_released_resources(self):
+        """
+        Release the resources.
+        """
         for request in self.get_request_with_status(RequestStatus.NEED_RELEASE):
             devices = request["assigned_devices"]
             sample_positions = request["assigned_sample_positions"]
@@ -124,6 +131,10 @@ class TaskManager(RequestMixin):
             self.update_request_status(request_id=request["_id"], status=RequestStatus.RELEASED)
 
     def handle_requested_resources(self):
+        """
+        Check if there are any requests that are in PENDING status. If so,
+        try to assign the resources to it.
+        """
         # TODO: add priority here (some sort function)
         for request in self.get_request_with_status(RequestStatus.PENDING):
             self._handle_requested_resources(request)
@@ -164,6 +175,7 @@ class TaskManager(RequestMixin):
             if sample_positions is None:
                 return
 
+        # in case some errors happen, we will raise the error in the task process instead of the main process
         except Exception as error:  # pylint: disable=broad-except
             self._request_collection.update_one({"_id": request_entry["_id"]}, {"$set": {
                 "status": RequestStatus.ERROR.name,
@@ -179,6 +191,7 @@ class TaskManager(RequestMixin):
             "assigned_sample_positions": sample_positions,
             "status": RequestStatus.FULFILLED.name,
         }})
+        # label the resources as occupied
         self._occupy_devices(devices=devices, task_id=task_id)
         self._occupy_sample_positions(sample_positions=sample_positions, task_id=task_id)
 
@@ -205,7 +218,8 @@ class TaskManager(RequestMixin):
 
 class ResourceRequester(RequestMixin):
     """
-    Class for request lab resources easily
+    Class for request lab resources easily. This class will insert a request into the database,
+    and then the task manager will read from the database and assign the resources.
 
     It is used in :py:class:`~alab_management.lab_view.LabView`.
     """
@@ -221,6 +235,10 @@ class ResourceRequester(RequestMixin):
 
     def request_resources(self, resource_request: _ResourceRequestDict,
                           timeout: Optional[float] = None) -> Dict[str, Any]:
+        """
+        Request lab resources. Write the request into the database, and then the task manager will read from the
+        database and assign the resources.
+        """
         f = Future()
 
         formatted_resource_request = {device_type.__name__: samples for device_type, samples in resource_request.items()
@@ -257,6 +275,19 @@ class ResourceRequester(RequestMixin):
             ),
             "request_id": result["request_id"],
         }
+
+    def release_resources(self, request_id: ObjectId) -> bool:
+        """
+        Release a request by request_id
+        """
+        result = self._request_collection.update_one({
+            "_id": request_id,
+            "status": RequestStatus.FULFILLED.name,
+        }, {"$set": {
+            "status": RequestStatus.NEED_RELEASE.name,
+        }})
+
+        return result.modified_count == 1
 
     def _check_request_status_loop(self):
         while True:
@@ -305,16 +336,6 @@ class ResourceRequester(RequestMixin):
         request: Dict[str, Any] = self._waiting.pop(request_id)
         f: Future = request["f"]
         f.set_exception(error)
-
-    def release_resources(self, request_id: ObjectId) -> bool:
-        result = self._request_collection.update_one({
-            "_id": request_id,
-            "status": RequestStatus.FULFILLED.name,
-        }, {"$set": {
-            "status": RequestStatus.NEED_RELEASE.name,
-        }})
-
-        return result.modified_count == 1
 
     @staticmethod
     def _post_process_requested_resource(devices: Dict[Type[BaseDevice], str], sample_positions: Dict[str, List[str]],

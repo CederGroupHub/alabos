@@ -1,3 +1,7 @@
+"""
+A wrapper over the ``experiment`` class.
+"""
+
 from enum import Enum, auto
 from typing import List, Any, Dict, Optional, cast, Union
 

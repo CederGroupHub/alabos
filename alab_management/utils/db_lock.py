@@ -1,3 +1,7 @@
+"""
+This file defines the database lock class, which can block other processes to access the database.
+"""
+
 import time
 from contextlib import contextmanager
 from typing import Optional

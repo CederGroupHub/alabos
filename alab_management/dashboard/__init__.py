@@ -1,3 +1,7 @@
+"""
+The UI and API module.
+"""
+
 from pathlib import Path
 
 from flask import Flask

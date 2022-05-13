@@ -1,3 +1,7 @@
+"""
+A wrapper over the ``samples`` and ``sample_positions`` collections.
+"""
+
 import re
 from datetime import datetime
 from enum import Enum, auto

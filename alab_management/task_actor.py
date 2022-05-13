@@ -1,3 +1,8 @@
+"""
+The ``run_task`` function is used to launch a task in the dramatiq worker. It will be called by the ``task_manager``.
+The function will update the status of the task in the database and initiate the task with proper parameters.
+"""
+
 from traceback import format_exc
 
 import dramatiq

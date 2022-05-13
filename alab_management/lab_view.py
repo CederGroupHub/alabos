@@ -1,3 +1,9 @@
+"""
+Each task process will have a ``LavView`` instance, through which it can request
+the lab resources (devices and sample positions). It can also update the position
+of a sample in the lab.
+"""
+
 from contextlib import contextmanager
 from typing import Type, Dict, List, Optional, Union
 
@@ -62,7 +68,8 @@ class LabView:
             timeout: Optional[float] = None,
     ):
         """
-        Request devices and sample positions
+        Request devices and sample positions. This function is a context manager, which should be used in
+        a with statement to ensure all the devices are released when the task is done.
 
         Usually, devices_and_sample_positions has the format {DeviceType: ["sample_position_1", ...]}. The
         DeviceType can be ``None`` so that you can request the sample positions that do not belong to
