@@ -5,7 +5,7 @@ Define the base class of task, which will be used for defining more tasks.
 from abc import ABC, abstractmethod
 from typing import Dict, Type, TYPE_CHECKING
 
-from bson import ObjectId
+from bson.objectid import ObjectId
 
 if TYPE_CHECKING:
     from ..lab_view import LabView
