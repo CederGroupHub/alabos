@@ -18,11 +18,10 @@ class BaseTask(ABC):
     All the tasks should inherit from this class.
     """
 
-    def __init__(self, task_id: ObjectId, lab_view: "LabView", sub_task_id: str = ""):
+    def __init__(self, task_id: ObjectId, lab_view: "LabView"):
         """
         Args:
             task_id: the identifier of task
-            sub_task_id: a string that indicate the parent_task
 
         Here is an example about how to define a custom task
 
@@ -36,7 +35,6 @@ class BaseTask(ABC):
               self.samples = [sample_1, sample_2, sample_3, sample_4]
         """
         self.task_id = task_id
-        self.sub_task_id: str = sub_task_id
         self.child_task_num: int = 0
         self.lab_view = lab_view
         self.logger = self.lab_view.logger
@@ -90,18 +88,6 @@ class BaseTask(ABC):
 
         """
         raise NotImplementedError()
-
-    def get_one_child_sub_task_id(self):
-        child_id = f"{self.sub_task_id}.{self.child_task_num}"
-        self.child_task_num += 1
-        return child_id
-
-    def create_sub_task(self, task_type: Type["BaseTask"], *args, **kwargs) -> "BaseTask":
-        """
-        Create subtask by task_type
-        """
-        return task_type(task_id=self.task_id, lab_view=self.lab_view,
-                         sub_task_id=self.get_one_child_sub_task_id(), *args, **kwargs)
 
 
 _task_registry: Dict[str, Type[BaseTask]] = {}
