@@ -24,6 +24,7 @@ class TaskStatus(Enum):
     - ``ERROR``: the task encountered some errors during execution
     - ``COMPLETED``: the task is completed
     """
+
     WAITING = auto()
     PAUSED = auto()
     STOPPED = auto()
@@ -44,11 +45,12 @@ class TaskView:
         self._tasks_definition: Dict[str, Type[BaseTask]] = get_all_tasks()
 
     def create_task(
-            self, task_type: str,
-            samples: Dict[str, ObjectId],
-            parameters: Dict[str, Any],
-            prev_tasks: Optional[Union[ObjectId, List[ObjectId]]] = None,
-            next_tasks: Optional[Union[ObjectId, List[ObjectId]]] = None,
+        self,
+        task_type: str,
+        samples: Dict[str, ObjectId],
+        parameters: Dict[str, Any],
+        prev_tasks: Optional[Union[ObjectId, List[ObjectId]]] = None,
+        next_tasks: Optional[Union[ObjectId, List[ObjectId]]] = None,
     ) -> ObjectId:
         """
         Insert a task into the task collection
@@ -77,25 +79,33 @@ class TaskView:
 
         for prev_task in prev_tasks:
             if self.get_task(task_id=prev_task) is None:
-                raise ValueError(f"Non-exist task id: {prev_task}")
+                raise ValueError(
+                    f"No task exists with provided previous task id: {prev_task}"
+                )
 
         for next_task in next_tasks:
             if self.get_task(task_id=next_task) is None:
-                raise ValueError(f"Non-exist task id: {next_task}")
+                raise ValueError(
+                    f"No task exists with provided next task id: {next_task}"
+                )
 
-        result = self._task_collection.insert_one({
-            "type": task_type,
-            "status": TaskStatus.WAITING.name,
-            "samples": samples,
-            "parameters": parameters,
-            "prev_tasks": prev_tasks,
-            "next_tasks": next_tasks,
-            "created_at": datetime.now(),
-            "last_updated": datetime.now(),
-        })
+        result = self._task_collection.insert_one(
+            {
+                "type": task_type,
+                "status": TaskStatus.WAITING.name,
+                "samples": samples,
+                "parameters": parameters,
+                "prev_tasks": prev_tasks,
+                "next_tasks": next_tasks,
+                "created_at": datetime.now(),
+                "last_updated": datetime.now(),
+            }
+        )
         return cast(ObjectId, result.inserted_id)
 
-    def get_task(self, task_id: ObjectId, encode: bool = False) -> Optional[Dict[str, Any]]:
+    def get_task(
+        self, task_id: ObjectId, encode: bool = False
+    ) -> Optional[Dict[str, Any]]:
         """
         Get a task by its task id, which will return all the info stored in the database
 
@@ -104,7 +114,9 @@ class TaskView:
             encode: whether to encode the task using ``self.encode_task`` method
         """
         result = self._task_collection.find_one({"_id": task_id})
-        if encode and result is not None:
+        if result is None:
+            raise ValueError(f"No task exists with provided task id: {task_id}")
+        if encode:
             result = self.encode_task(result)
         return result
 
@@ -113,8 +125,6 @@ class TaskView:
         Get the status of a task
         """
         task = self.get_task(task_id=task_id)
-        if task is None:
-            raise ValueError(f"Non-exist task with id: {task_id}")
         return TaskStatus[task["status"]]
 
     def update_status(self, task_id: ObjectId, status: TaskStatus):
@@ -129,14 +139,16 @@ class TaskView:
             task_id: the id of task to be updated
             status: the new status of the task
         """
-        result = self._task_collection.find_one({"_id": task_id})
-        if result is None:
-            raise ValueError(f"Cannot find task with id: {task_id}")
-
-        self._task_collection.update_one({"_id": task_id}, {"$set": {
-            "status": status.name,
-            "last_updated": datetime.now(),
-        }})
+        result = self.get_task(task_id=task_id, encode=False)
+        self._task_collection.update_one(
+            {"_id": task_id},
+            {
+                "$set": {
+                    "status": status.name,
+                    "last_updated": datetime.now(),
+                }
+            },
+        )
 
         if status is TaskStatus.COMPLETED:
             # try to figure out tasks that is READY
@@ -151,14 +163,19 @@ class TaskView:
             task_id: the id of task to be updated
             task_result: the result returned by the task (which can be dumped into MongoDB)
         """
-        result = self._task_collection.find_one({"_id": task_id})
-        if result is None:
-            raise ValueError(f"Cannot find task with id: {task_id}")
+        result = self.get_task(
+            task_id=task_id
+        )  # just to confirm that task_id exists in collection
 
-        self._task_collection.update_one({"_id": task_id}, {"$set": {
-            "result": task_result,
-            "last_updated": datetime.now(),
-        }})
+        self._task_collection.update_one(
+            {"_id": task_id},
+            {
+                "$set": {
+                    "result": task_result,
+                    "last_updated": datetime.now(),
+                }
+            },
+        )
 
     def try_to_mark_task_ready(self, task_id: ObjectId):
         """
@@ -166,12 +183,12 @@ class TaskView:
         if so, mark it as READY
         """
         task = self.get_task(task_id)
-        if task is None:
-            raise ValueError(f"Cannot find task with id: {task_id}")
+
         prev_task_ids = task["prev_tasks"]
-        if task["status"] == TaskStatus.WAITING.name and \
-                all(self.get_status(task_id=task_id_) is TaskStatus.COMPLETED
-                    for task_id_ in prev_task_ids):
+        if task["status"] == TaskStatus.WAITING.name and all(
+            self.get_status(task_id=task_id_) is TaskStatus.COMPLETED
+            for task_id_ in prev_task_ids
+        ):
             self.update_status(task_id, TaskStatus.READY)
 
     def get_ready_tasks(self) -> List[Dict[str, Any]]:
@@ -195,15 +212,20 @@ class TaskView:
         Translate task's type into corresponding python class.
         """
         operation_type: Type[BaseTask] = self._tasks_definition[task_entry["type"]]
-        task_entry["task_id"] = task_entry.pop("_id")  # change the key name of `_id` to `task_id`
+        task_entry["task_id"] = task_entry.pop(
+            "_id"
+        )  # change the key name of `_id` to `task_id`
         return {
             **task_entry,
             "type": operation_type,
         }
 
-    def update_task_dependency(self, task_id: ObjectId,
-                               prev_tasks: Optional[Union[ObjectId, List[ObjectId]]] = None,
-                               next_tasks: Optional[Union[ObjectId, List[ObjectId]]] = None):
+    def update_task_dependency(
+        self,
+        task_id: ObjectId,
+        prev_tasks: Optional[Union[ObjectId, List[ObjectId]]] = None,
+        next_tasks: Optional[Union[ObjectId, List[ObjectId]]] = None,
+    ):
         """
         Add prev tasks and next tasks to one task entry,
         which will not overwrite old pre_task and next_tasks
@@ -213,9 +235,7 @@ class TaskView:
             prev_tasks: one or a list of ids of ``prev_tasks``
             next_tasks: one or a list of ids of ``next_tasks``
         """
-        result = self._task_collection.find_one({"_id": task_id})
-        if result is None:
-            raise ValueError(f"Cannot find task with id: {task_id}")
+        result = self.get_task(task_id=task_id, encode=False)
 
         prev_tasks = prev_tasks if prev_tasks is not None else []
         prev_tasks = prev_tasks if isinstance(prev_tasks, list) else [prev_tasks]
@@ -230,9 +250,15 @@ class TaskView:
             if self.get_task(task_id=next_task) is None:
                 raise ValueError(f"Non-exist task id: {next_task}")
 
-        self._task_collection.update_one({"_id": task_id}, {"$push": {
-            "next_tasks": {"$each": next_tasks},
-            "prev_tasks": {"$each": prev_tasks},
-        }, "$set": {
-            "last_updated": datetime.now(),
-        }})
+        self._task_collection.update_one(
+            {"_id": task_id},
+            {
+                "$push": {
+                    "next_tasks": {"$each": next_tasks},
+                    "prev_tasks": {"$each": prev_tasks},
+                },
+                "$set": {
+                    "last_updated": datetime.now(),
+                },
+            },
+        )
