@@ -2,7 +2,7 @@
 Managing everything in the autonomous lab.
 """
 
-__version__ = "0.4.1"
+# __version__ = "0.4.1"
 
 from .device_view.device import BaseDevice, add_device
 from .sample_view import Sample, SamplePosition
