@@ -22,7 +22,7 @@ class TestTaskView(TestCase):
         task_dict = {
             "task_type": "Heating",
             "samples": {"sample": ObjectId()},
-            "parameters": {"setpoints": [[10, 600]]}
+            "parameters": {"setpoints": [[10, 600]]},
         }
 
         task_dict_ = task_dict.copy()
@@ -61,14 +61,14 @@ class TestTaskView(TestCase):
             self.task_view.create_task(**task_dict_)
 
     def test_get_task(self):
-        non_exist_task_id = ObjectId()
-        self.assertIs(None, self.task_view.get_task(non_exist_task_id))
+        non_existent_task_id = ObjectId()
+        self.assertRaises(ValueError, self.task_view.get_task, non_existent_task_id)
 
     def test_update_status(self):
         task_dict = {
             "task_type": "Heating",
             "samples": {"sample": ObjectId()},
-            "parameters": {"setpoints": [[10, 600]]}
+            "parameters": {"setpoints": [[10, 600]]},
         }
         task_id = self.task_view.create_task(**task_dict)
         task_id_2 = self.task_view.create_task(prev_tasks=task_id, **task_dict)
@@ -82,19 +82,18 @@ class TestTaskView(TestCase):
         self.task_view.update_status(task_id=task_id, status=TaskStatus.COMPLETED)
         self.assertEqual(TaskStatus.READY, self.task_view.get_status(task_id_2))
 
-        # try non-exist task id
-        fake_task_id = ObjectId()
+        non_existent_task_id = ObjectId()
         with self.assertRaises(ValueError):
-            self.task_view.update_status(fake_task_id, TaskStatus.READY)
+            self.task_view.update_status(non_existent_task_id, TaskStatus.READY)
 
         with self.assertRaises(ValueError):
-            self.task_view.get_status(fake_task_id)
+            self.task_view.get_status(non_existent_task_id)
 
     def test_get_ready_tasks(self):
         task_dict = {
             "task_type": "Heating",
             "samples": {"sample": ObjectId()},
-            "parameters": {"setpoints": [[10, 600]]}
+            "parameters": {"setpoints": [[10, 600]]},
         }
         task_id_1 = self.task_view.create_task(**task_dict)
         task_id_2 = self.task_view.create_task(**task_dict)
@@ -106,14 +105,18 @@ class TestTaskView(TestCase):
 
         ready_tasks = self.task_view.get_ready_tasks()
 
-        self.assertSetEqual({task_id_1, task_id_2}, set(task["task_id"] for task in ready_tasks))
-        self.assertListEqual(["Heating"] * 2, [task["type"].__name__ for task in ready_tasks])
+        self.assertSetEqual(
+            {task_id_1, task_id_2}, set(task["task_id"] for task in ready_tasks)
+        )
+        self.assertListEqual(
+            ["Heating"] * 2, [task["type"].__name__ for task in ready_tasks]
+        )
 
     def test_update_task_dependency(self):
         task_dict = {
             "task_type": "Heating",
             "samples": {"sample": ObjectId()},
-            "parameters": {"setpoints": [[10, 600]]}
+            "parameters": {"setpoints": [[10, 600]]},
         }
         task_id_1 = self.task_view.create_task(**task_dict)
         task_id_2 = self.task_view.create_task(**task_dict)
@@ -125,22 +128,54 @@ class TestTaskView(TestCase):
         # 1 -> 2 -> 3 -> 5
         #   \          /
         #      4 -> 6
-        self.task_view.update_task_dependency(task_id_1, prev_tasks=[], next_tasks=[task_id_2, task_id_4])
-        self.task_view.update_task_dependency(task_id_2, prev_tasks=task_id_1, next_tasks=[task_id_3])
-        self.task_view.update_task_dependency(task_id_3, prev_tasks=[task_id_2], next_tasks=task_id_5)
-        self.task_view.update_task_dependency(task_id_4, prev_tasks=[task_id_1], next_tasks=task_id_6)
-        self.task_view.update_task_dependency(task_id_5, prev_tasks=[task_id_3, task_id_6], next_tasks=None)
-        self.task_view.update_task_dependency(task_id_6, prev_tasks=task_id_4, next_tasks=[task_id_5])
+        self.task_view.update_task_dependency(
+            task_id_1, prev_tasks=[], next_tasks=[task_id_2, task_id_4]
+        )
+        self.task_view.update_task_dependency(
+            task_id_2, prev_tasks=task_id_1, next_tasks=[task_id_3]
+        )
+        self.task_view.update_task_dependency(
+            task_id_3, prev_tasks=[task_id_2], next_tasks=task_id_5
+        )
+        self.task_view.update_task_dependency(
+            task_id_4, prev_tasks=[task_id_1], next_tasks=task_id_6
+        )
+        self.task_view.update_task_dependency(
+            task_id_5, prev_tasks=[task_id_3, task_id_6], next_tasks=None
+        )
+        self.task_view.update_task_dependency(
+            task_id_6, prev_tasks=task_id_4, next_tasks=[task_id_5]
+        )
 
         self.assertListEqual([], self.task_view.get_task(task_id_1)["prev_tasks"])
-        self.assertListEqual([task_id_2, task_id_4], self.task_view.get_task(task_id_1)["next_tasks"])
-        self.assertListEqual([task_id_1], self.task_view.get_task(task_id_2)["prev_tasks"])
-        self.assertListEqual([task_id_3], self.task_view.get_task(task_id_2)["next_tasks"])
-        self.assertListEqual([task_id_2], self.task_view.get_task(task_id_3)["prev_tasks"])
-        self.assertListEqual([task_id_5], self.task_view.get_task(task_id_3)["next_tasks"])
-        self.assertListEqual([task_id_1], self.task_view.get_task(task_id_4)["prev_tasks"])
-        self.assertListEqual([task_id_6], self.task_view.get_task(task_id_4)["next_tasks"])
-        self.assertListEqual([task_id_3, task_id_6], self.task_view.get_task(task_id_5)["prev_tasks"])
+        self.assertListEqual(
+            [task_id_2, task_id_4], self.task_view.get_task(task_id_1)["next_tasks"]
+        )
+        self.assertListEqual(
+            [task_id_1], self.task_view.get_task(task_id_2)["prev_tasks"]
+        )
+        self.assertListEqual(
+            [task_id_3], self.task_view.get_task(task_id_2)["next_tasks"]
+        )
+        self.assertListEqual(
+            [task_id_2], self.task_view.get_task(task_id_3)["prev_tasks"]
+        )
+        self.assertListEqual(
+            [task_id_5], self.task_view.get_task(task_id_3)["next_tasks"]
+        )
+        self.assertListEqual(
+            [task_id_1], self.task_view.get_task(task_id_4)["prev_tasks"]
+        )
+        self.assertListEqual(
+            [task_id_6], self.task_view.get_task(task_id_4)["next_tasks"]
+        )
+        self.assertListEqual(
+            [task_id_3, task_id_6], self.task_view.get_task(task_id_5)["prev_tasks"]
+        )
         self.assertListEqual([], self.task_view.get_task(task_id_5)["next_tasks"])
-        self.assertListEqual([task_id_4], self.task_view.get_task(task_id_6)["prev_tasks"])
-        self.assertListEqual([task_id_5], self.task_view.get_task(task_id_6)["next_tasks"])
+        self.assertListEqual(
+            [task_id_4], self.task_view.get_task(task_id_6)["prev_tasks"]
+        )
+        self.assertListEqual(
+            [task_id_5], self.task_view.get_task(task_id_6)["next_tasks"]
+        )
