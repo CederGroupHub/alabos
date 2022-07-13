@@ -49,45 +49,60 @@ def run_task(task_id_str: str):
             **task_entry["parameters"],
         )
     except AttributeError as exception:
+        logger.system_log(
+            level="ERRO",
+            log_data={
+                "type": "TaskDefinition",
+                "task_id": task_id,
+                "task_type": task_type.__name__,
+                "message": str(exception),
+            },
+        )
         raise ParameterError(exception.args[0]) from exception
 
     task_view.update_status(task_id=task_id, status=TaskStatus.RUNNING)
     for sample_id in task_entry["samples"].values():
         sample_view.update_sample_task_id(task_id=task_id, sample_id=sample_id)
 
-    logger.system_log(level="INFO",
-                      log_data={
-                          "type": "TaskStart",
-                          "task_id": task_id,
-                          "task_type": task_type.__name__
-                      })
+    logger.system_log(
+        level="INFO",
+        log_data={
+            "type": "TaskStart",
+            "task_id": task_id,
+            "task_type": task_type.__name__,
+        },
+    )
 
     try:
         result = task.run()
     except Exception:
         task_view.update_status(task_id=task_id, status=TaskStatus.ERROR)
-        logger.system_log(level="ERROR",
-                          log_data={
-                              "logged_by": "TaskActor",
-                              "type": "TaskEnd",
-                              "task_id": task_id,
-                              "task_type": task_type.__name__,
-                              "status": "ERROR",
-                              "traceback": format_exc(),
-                          })
+        logger.system_log(
+            level="ERROR",
+            log_data={
+                "logged_by": "TaskActor",
+                "type": "TaskEnd",
+                "task_id": task_id,
+                "task_type": task_type.__name__,
+                "status": "ERROR",
+                "traceback": format_exc(),
+            },
+        )
         raise
     else:
         task_view.update_status(task_id=task_id, status=TaskStatus.COMPLETED)
         task_view.update_result(task_id=task_id, task_result=result)
-        logger.system_log(level="INFO",
-                          log_data={
-                              "logged_by": "TaskActor",
-                              "type": "TaskEnd",
-                              "task_id": task_id,
-                              "task_type": task_type.__name__,
-                              "status": "COMPLETED",
-                              "task_result": result,
-                          })
+        logger.system_log(
+            level="INFO",
+            log_data={
+                "logged_by": "TaskActor",
+                "type": "TaskEnd",
+                "task_id": task_id,
+                "task_type": task_type.__name__,
+                "status": "COMPLETED",
+                "task_result": result,
+            },
+        )
     finally:
         for sample_id in task_entry["samples"].values():
             sample_view.update_sample_task_id(task_id=None, sample_id=sample_id)
