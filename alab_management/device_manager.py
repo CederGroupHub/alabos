@@ -10,6 +10,7 @@ from concurrent.futures import Future
 from functools import partial
 from threading import Thread
 from typing import Optional, Any, Dict, NoReturn, cast, Callable
+from uuid import uuid4
 
 import dill
 import pika
@@ -36,6 +37,7 @@ class DeviceWrapper:
         """
         A wrapper over a device method
         """
+
         def __init__(self, device_name: str, method: str, method_handler: Callable):
             self._device_name = device_name
             self._method: str = method
@@ -52,12 +54,15 @@ class DeviceWrapper:
             return f"<method {self._device_name}.{self._method}>"
 
         def _raise(self, *args, **kwargs) -> NoReturn:  # pylint: disable=no-self-use
-            raise AttributeError("This is a class method, you cannot use it as an attribute.")
+            raise AttributeError(
+                "This is a class method, you cannot use it as an attribute."
+            )
 
         __str__ = __repr__
 
-        __len__ = __getattr__ = __getitem__ = __add__ = __sub__ = \
-            __eq__ = __lt__ = __gt__ = _raise
+        __len__ = (
+            __getattr__
+        ) = __getitem__ = __add__ = __sub__ = __eq__ = __lt__ = __gt__ = _raise
 
     def __init__(self, name: str, devices_client: "DevicesClient"):
         self._name = name
@@ -71,7 +76,7 @@ class DeviceWrapper:
         return self.DeviceMethodWrapper(
             device_name=self.name,
             method=method,
-            method_handler=partial(self._devices_client.call, self.name, method)
+            method_handler=partial(self._devices_client.call, self.name, method),
         )
 
 
@@ -88,7 +93,9 @@ class DeviceManager:
               running commands. (disable it only for test purpose)
         """
         load_definition()
-        self._rpc_queue_name = AlabConfig()["general"]["name"] + DEFAULT_SERVER_QUEUE_SUFFIX
+        self._rpc_queue_name = (
+            AlabConfig()["general"]["name"] + DEFAULT_SERVER_QUEUE_SUFFIX
+        )
         self._device_view = DeviceView()
         self._check_status = _check_status
 
@@ -98,17 +105,25 @@ class DeviceManager:
         """
         with get_rabbitmq_connection().channel() as channel:
             channel.queue_declare(
-                queue=self._rpc_queue_name, auto_delete=True, exclusive=False,
+                queue=self._rpc_queue_name,
+                auto_delete=True,
+                exclusive=False,
             )
-            channel.basic_consume(queue=self._rpc_queue_name, on_message_callback=self.on_message,
-                                  auto_ack=False, consumer_tag=self._rpc_queue_name)
+            channel.basic_consume(
+                queue=self._rpc_queue_name,
+                on_message_callback=self.on_message,
+                auto_ack=False,
+                consumer_tag=self._rpc_queue_name,
+            )
             channel.start_consuming()
 
-    def on_message(self,
-                   channel: BlockingChannel,
-                   method: Basic.Deliver,
-                   props: BasicProperties,
-                   _body: bytes):
+    def on_message(
+        self,
+        channel: BlockingChannel,
+        method: Basic.Deliver,
+        props: BasicProperties,
+        _body: bytes,
+    ):
         """
         Function that handle the command message.
 
@@ -125,18 +140,25 @@ class DeviceManager:
           }
         """
         body: Dict[str, Any] = dill.loads(_body)
-        device_entry: Optional[Dict[str, Any]] = self._device_view.get_device(body["device"])
+        device_entry: Optional[Dict[str, Any]] = self._device_view.get_device(
+            body["device"]
+        )
 
         try:
             # check if the device is currently occupied by this task
-            if self._check_status and (device_entry is None or
-                                       device_entry["status"] != DeviceStatus.OCCUPIED.name or
-                                       device_entry["task_id"] != ObjectId(body["task_id"])):
-                raise PermissionError(f"Currently the task ({body['task_id']}) "
-                                      f"does not occupy this device: {body['device']}")
+            if self._check_status and (
+                device_entry is None
+                or device_entry["status"] != DeviceStatus.OCCUPIED.name
+                or device_entry["task_id"] != ObjectId(body["task_id"])
+            ):
+                raise PermissionError(
+                    f"Currently the task ({body['task_id']}) "
+                    f"does not occupy this device: {body['device']}"
+                )
 
-            result = self._device_view.execute_command(body["device"], body["method"],
-                                                       *body["args"], **body["kwargs"])
+            result = self._device_view.execute_command(
+                body["device"], body["method"], *body["args"], **body["kwargs"]
+            )
             response = {
                 "status": "success",
                 "result": result,
@@ -149,13 +171,13 @@ class DeviceManager:
 
         if props.reply_to is not None:
             channel.basic_publish(
-                exchange='',
+                exchange="",
                 routing_key=props.reply_to,
                 properties=pika.BasicProperties(
                     correlation_id=props.correlation_id,
-                    content_type="application/python-dill"
+                    content_type="application/python-dill",
                 ),
-                body=dill.dumps(response)
+                body=dill.dumps(response),
             )
 
         channel.basic_ack(delivery_tag=cast(int, method.delivery_tag))
@@ -178,19 +200,29 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
         """
         assert task_id is not None, "task_id cannot be None!"
 
-        self._rpc_queue_name = AlabConfig()["general"]["name"] + DEFAULT_SERVER_QUEUE_SUFFIX
-        self._rpc_reply_queue_name = str(task_id) + DEFAULT_CLIENT_QUEUE_SUFFIX
+        self._rpc_queue_name = (
+            AlabConfig()["general"]["name"] + DEFAULT_SERVER_QUEUE_SUFFIX
+        )
+        self._rpc_reply_queue_name = (
+            str(task_id) + DEFAULT_CLIENT_QUEUE_SUFFIX
+        )  # TODO does this have to be taskid, or can be random? I think this dies with the resourcerequest context manager anyways?
+        # self._rpc_reply_queue_name = str(uuid4()) + DEFAULT_CLIENT_QUEUE_SUFFIX
         self._task_id = task_id
         self._waiting: Dict[ObjectId, Future] = {}
 
         self._conn = get_rabbitmq_connection()
         self._channel = self._conn.channel()
-        self._channel.queue_declare(self._rpc_reply_queue_name, exclusive=True, auto_delete=True)
+        self._channel.queue_declare(
+            self._rpc_reply_queue_name, exclusive=True, auto_delete=True
+        )
 
         self._thread: Optional[Thread] = None
 
-        self._channel.basic_consume(queue=self._rpc_reply_queue_name, on_message_callback=self.on_message,
-                                    auto_ack=True)
+        self._channel.basic_consume(
+            queue=self._rpc_reply_queue_name,
+            on_message_callback=self.on_message,
+            auto_ack=True,
+        )
         self._thread = Thread(target=self._channel.start_consuming)
         self._thread.daemon = True
         self._thread.start()
@@ -200,7 +232,9 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
     def __getitem__(self, device_name: str):
         return self.create_device_wrapper(device_name=device_name)
 
-    def create_device_wrapper(self, device_name: str) -> object:  # pylint: disable=no-self-use
+    def create_device_wrapper(
+        self, device_name: str
+    ) -> object:  # pylint: disable=no-self-use
         """
         Create a wrapper over a device with ``device_name``
 
@@ -236,20 +270,30 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
                 exchange="",
                 routing_key=self._rpc_queue_name,
                 body=dill.dumps(
-                    {"device": device_name, "method": method,
-                     "args": args, "kwargs": kwargs, "task_id": str(self._task_id)}
+                    {
+                        "device": device_name,
+                        "method": method,
+                        "args": args,
+                        "kwargs": kwargs,
+                        "task_id": str(self._task_id),
+                    }
                 ),
                 properties=BasicProperties(
                     reply_to=self._rpc_reply_queue_name,
                     content_type="application/python-dill",
-                    correlation_id=str(correlation_id)
+                    correlation_id=str(correlation_id),
                 ),
             )
         )
         return f.result(timeout=self._timeout)
 
-    def on_message(self, channel: BlockingChannel, method_frame: Basic.Deliver,  # pylint: disable=unused-argument
-                   properties: BasicProperties, _body: bytes):
+    def on_message(
+        self,
+        channel: BlockingChannel,
+        method_frame: Basic.Deliver,  # pylint: disable=unused-argument
+        properties: BasicProperties,
+        _body: bytes,
+    ):
         """
         Callback function to handle a returned message from Device Manager
         """

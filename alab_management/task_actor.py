@@ -45,10 +45,11 @@ def run_task(task_id_str: str):
         task: BaseTask = task_type(
             task_id=task_id,
             lab_view=LabView(task_id=task_id),
-            **task_entry["samples"],
+            sample=list(task_entry["samples"].values()),  # only the ObjectId's are sent
+            # **task_entry["samples"],
             **task_entry["parameters"],
         )
-    except AttributeError as exception:
+    except Exception as exception:
         logger.system_log(
             level="ERROR",
             log_data={
@@ -58,7 +59,10 @@ def run_task(task_id_str: str):
                 "message": str(exception),
             },
         )
-        raise ParameterError(exception.args[0]) from exception
+        raise Exception(
+            "Failed to create task {} of type {}".format(task_id, str(task_type))
+        )
+        # raise ParameterError(exception.args[0]) from exception
 
     task_view.update_status(task_id=task_id, status=TaskStatus.RUNNING)
     for sample_id in task_entry["samples"].values():

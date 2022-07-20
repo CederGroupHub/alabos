@@ -47,7 +47,7 @@ class TaskView:
     def create_task(
         self,
         task_type: str,
-        samples: Dict[str, ObjectId],
+        samples: List[ObjectId],
         parameters: Dict[str, Any],
         prev_tasks: Optional[Union[ObjectId, List[ObjectId]]] = None,
         next_tasks: Optional[Union[ObjectId, List[ObjectId]]] = None,

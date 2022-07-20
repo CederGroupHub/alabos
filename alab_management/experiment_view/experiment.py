@@ -15,13 +15,15 @@ class _Task(BaseModel):
     type: str
     parameters: Dict[str, Any]
     prev_tasks: List[int]
-    samples: Dict[str, str]
+    # samples: Dict[str, str]
+    samples: List[str]
 
 
 class InputExperiment(BaseModel):
     """
     This is the format that user should follow to write to experiment database
     """
+
     name: constr(regex=r"^[^$.]+$")  # type: ignore # noqa: F722
     samples: List[_Sample]
     tasks: List[_Task]
