@@ -36,4 +36,4 @@ yarn build
 ## Backend programming
 See [here](../alab_management/dashboard/routes). We use `Flask` as the backend. Just add one blueprint to include the endpoints you need.
 
-- Remember to add blueprint to [__init__.py](../alab_management/dashboard/routes/__init__.py#L6)
+- Remember to add blueprint to [\_\_init\_\_.py](../alab_management/dashboard/routes/__init__.py#L6)
