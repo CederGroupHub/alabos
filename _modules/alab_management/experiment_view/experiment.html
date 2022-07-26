@@ -131,6 +131,11 @@
      </i>
     </label>
     <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../alab_management.data_explorer.html">
+       alab_management.data_explorer package
+      </a>
+     </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="../../../alab_management.device_view.html">
        alab_management.device_view package
@@ -346,13 +351,15 @@
     <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
     <span class="n">prev_tasks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
-    <span class="n">samples</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+    <span class="c1"># samples: Dict[str, str]</span>
+    <span class="n">samples</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="InputExperiment"><a class="viewcode-back" href="../../../alab_management.experiment_view.experiment.html#alab_management.experiment_view.experiment.InputExperiment">[docs]</a><span class="k">class</span> <span class="nc">InputExperiment</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the format that user should follow to write to experiment database</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">name</span><span class="p">:</span> <span class="n">constr</span><span class="p">(</span><span class="n">regex</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;^[^$.]+$&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore # noqa: F722</span>
     <span class="n">samples</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">_Sample</span><span class="p">]</span>
     <span class="n">tasks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">_Task</span><span class="p">]</span></div>

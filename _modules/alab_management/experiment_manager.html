@@ -131,6 +131,11 @@
      </i>
     </label>
     <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../alab_management.data_explorer.html">
+       alab_management.data_explorer package
+      </a>
+     </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="../../alab_management.device_view.html">
        alab_management.device_view package
@@ -376,15 +381,19 @@
 <span class="sd">        This method will scan the database to find out if there are</span>
 <span class="sd">        any pending experiments and submit it to task database</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">pending_experiments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span> \
-            <span class="n">get_experiments_with_status</span><span class="p">(</span><span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="p">)</span>
+        <span class="n">pending_experiments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span><span class="n">get_experiments_with_status</span><span class="p">(</span>
+            <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">PENDING</span>
+        <span class="p">)</span>
         <span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="n">pending_experiments</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_handle_pending_experiment</span><span class="p">(</span><span class="n">experiment</span><span class="o">=</span><span class="n">experiment</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">system_log</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span> <span class="n">log_data</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;logged_by&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
-                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;ExperimentStarted&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;exp_id&quot;</span><span class="p">:</span> <span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">],</span>
-            <span class="p">})</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">system_log</span><span class="p">(</span>
+                <span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
+                <span class="n">log_data</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;logged_by&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;ExperimentStarted&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;exp_id&quot;</span><span class="p">:</span> <span class="n">experiment</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span>
+                <span class="p">},</span>
+            <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_handle_pending_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="n">samples</span> <span class="o">=</span> <span class="n">experiment</span><span class="p">[</span><span class="s2">&quot;samples&quot;</span><span class="p">]</span>
@@ -395,59 +404,92 @@
         <span class="n">task_graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">(</span>
             <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tasks</span><span class="p">))),</span>
             <span class="c1"># reverse reserved edges to get right directions of edges</span>
-            <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="p">[</span><span class="n">j</span> <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">children</span> <span class="ow">in</span> <span class="n">reversed_edges</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">children</span> <span class="k">if</span> <span class="n">child</span> <span class="o">==</span> <span class="n">i</span><span class="p">]</span>
-             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tasks</span><span class="p">)))}</span>
+            <span class="p">{</span>
+                <span class="n">i</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="n">j</span>
+                    <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">children</span> <span class="ow">in</span> <span class="n">reversed_edges</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">children</span>
+                    <span class="k">if</span> <span class="n">child</span> <span class="o">==</span> <span class="n">i</span>
+                <span class="p">]</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tasks</span><span class="p">)))</span>
+            <span class="p">},</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">task_graph</span><span class="o">.</span><span class="n">has_cycle</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Detect cycle in task graph, which is supposed &quot;</span>
-                             <span class="s2">&quot;to be a DAG (directed acyclic graph).&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Detect cycle in task graph, which is supposed &quot;</span>
+                <span class="s2">&quot;to be a DAG (directed acyclic graph).&quot;</span>
+            <span class="p">)</span>
 
         <span class="c1"># create samples in the sample database</span>
-        <span class="n">sample_ids</span> <span class="o">=</span> <span class="p">{</span><span class="n">sample</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_view</span><span class="o">.</span><span class="n">create_sample</span><span class="p">(</span><span class="n">sample</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
-                      <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">samples</span><span class="p">}</span>
+        <span class="n">sample_ids</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_view</span><span class="o">.</span><span class="n">create_sample</span><span class="p">(</span><span class="n">sample</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">samples</span>
+        <span class="p">}</span>
 
         <span class="c1"># create tasks in the task database</span>
         <span class="n">task_ids</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
-            <span class="n">samples</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">sample_ids</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">task</span><span class="p">[</span><span class="s2">&quot;samples&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-            <span class="n">task_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">task_type</span><span class="o">=</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span>
-                                                       <span class="n">parameters</span><span class="o">=</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;parameters&quot;</span><span class="p">],</span>
-                                                       <span class="n">samples</span><span class="o">=</span><span class="n">samples</span><span class="p">))</span>
+            <span class="n">samples</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">samplename</span><span class="p">:</span> <span class="n">sample_ids</span><span class="p">[</span><span class="n">samplename</span><span class="p">]</span> <span class="k">for</span> <span class="n">samplename</span> <span class="ow">in</span> <span class="n">task</span><span class="p">[</span><span class="s2">&quot;samples&quot;</span><span class="p">]</span>
+            <span class="p">}</span>
+            <span class="n">task_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
+                    <span class="n">task_type</span><span class="o">=</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span>
+                    <span class="n">parameters</span><span class="o">=</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;parameters&quot;</span><span class="p">],</span>
+                    <span class="n">samples</span><span class="o">=</span><span class="n">samples</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
 
         <span class="c1"># change the content of graph&#39;s vertices</span>
         <span class="n">task_graph</span><span class="o">.</span><span class="n">vertices</span> <span class="o">=</span> <span class="n">task_ids</span>
 
         <span class="c1"># add dependency to each task</span>
         <span class="k">for</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="n">task_ids</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">update_task_dependency</span><span class="p">(</span><span class="n">task_id</span><span class="p">,</span> <span class="n">next_tasks</span><span class="o">=</span><span class="n">task_graph</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">task_id</span><span class="p">),</span>
-                                                  <span class="n">prev_tasks</span><span class="o">=</span><span class="n">task_graph</span><span class="o">.</span><span class="n">get_parents</span><span class="p">(</span><span class="n">task_id</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">update_task_dependency</span><span class="p">(</span>
+                <span class="n">task_id</span><span class="p">,</span>
+                <span class="n">next_tasks</span><span class="o">=</span><span class="n">task_graph</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">task_id</span><span class="p">),</span>
+                <span class="n">prev_tasks</span><span class="o">=</span><span class="n">task_graph</span><span class="o">.</span><span class="n">get_parents</span><span class="p">(</span><span class="n">task_id</span><span class="p">),</span>
+            <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">try_to_mark_task_ready</span><span class="p">(</span><span class="n">task_id</span><span class="p">)</span>
 
         <span class="c1"># write back the assign task &amp; sample ids</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span><span class="n">update_sample_task_id</span><span class="p">(</span><span class="n">exp_id</span><span class="o">=</span><span class="n">experiment</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span> <span class="n">sample_ids</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">sample_ids</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
-                                                   <span class="n">task_ids</span><span class="o">=</span><span class="n">task_ids</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span><span class="n">update_sample_task_id</span><span class="p">(</span>
+            <span class="n">exp_id</span><span class="o">=</span><span class="n">experiment</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span>
+            <span class="n">sample_ids</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">sample_ids</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
+            <span class="n">task_ids</span><span class="o">=</span><span class="n">task_ids</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="c1"># update the status of experiment to RUNNING (have handled by experiment manager)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span><span class="n">update_experiment_status</span><span class="p">(</span><span class="n">exp_id</span><span class="o">=</span><span class="n">experiment</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span> <span class="n">status</span><span class="o">=</span><span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span><span class="n">update_experiment_status</span><span class="p">(</span>
+            <span class="n">exp_id</span><span class="o">=</span><span class="n">experiment</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span> <span class="n">status</span><span class="o">=</span><span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">RUNNING</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="ExperimentManager.mark_completed_experiments"><a class="viewcode-back" href="../../alab_management.experiment_manager.html#alab_management.experiment_manager.ExperimentManager.mark_completed_experiments">[docs]</a>    <span class="k">def</span> <span class="nf">mark_completed_experiments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method will scan the database to mark completed experiments in time</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">running_experiments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span><span class="n">get_experiments_with_status</span><span class="p">(</span><span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">)</span>
+        <span class="n">running_experiments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span><span class="n">get_experiments_with_status</span><span class="p">(</span>
+            <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">RUNNING</span>
+        <span class="p">)</span>
         <span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="n">running_experiments</span><span class="p">:</span>
             <span class="n">task_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">experiment</span><span class="p">[</span><span class="s2">&quot;tasks&quot;</span><span class="p">]]</span>
 
             <span class="c1"># if all the tasks of an experiment have been finished</span>
-            <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span> <span class="ow">is</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">COMPLETED</span>
-                   <span class="k">for</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="n">task_ids</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span><span class="n">update_experiment_status</span><span class="p">(</span><span class="n">exp_id</span><span class="o">=</span><span class="n">experiment</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span>
-                                                              <span class="n">status</span><span class="o">=</span><span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">COMPLETED</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">system_log</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span> <span class="n">log_data</span><span class="o">=</span><span class="p">{</span>
-                    <span class="s2">&quot;logged_by&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
-                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;ExperimentCompleted&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;exp_id&quot;</span><span class="p">:</span> <span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">],</span>
-                <span class="p">})</span>
+            <span class="k">if</span> <span class="nb">all</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span> <span class="ow">is</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">COMPLETED</span>
+                <span class="k">for</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="n">task_ids</span>
+            <span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span><span class="n">update_experiment_status</span><span class="p">(</span>
+                    <span class="n">exp_id</span><span class="o">=</span><span class="n">experiment</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span> <span class="n">status</span><span class="o">=</span><span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">COMPLETED</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">system_log</span><span class="p">(</span>
+                    <span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
+                    <span class="n">log_data</span><span class="o">=</span><span class="p">{</span>
+                        <span class="s2">&quot;logged_by&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;ExperimentCompleted&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;exp_id&quot;</span><span class="p">:</span> <span class="n">experiment</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span>
+                    <span class="p">},</span>
+                <span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Experiment (</span><span class="si">{</span><span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">) completed.&quot;</span><span class="p">)</span></div></div>
 </pre></div>
 

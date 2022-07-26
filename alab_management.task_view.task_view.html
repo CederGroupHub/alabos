@@ -133,6 +133,11 @@
      </i>
     </label>
     <ul class="current">
+     <li class="toctree-l3">
+      <a class="reference internal" href="alab_management.data_explorer.html">
+       alab_management.data_explorer package
+      </a>
+     </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="alab_management.device_view.html">
        alab_management.device_view package
@@ -420,7 +425,7 @@ provides some convenience methods to query and manipulate the tasks collection.<
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>task_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the type of task, which should be a type name of class inherited from
 <a class="reference internal" href="task_definition.html#alab_management.task_view.task.BaseTask" title="alab_management.task_view.task.BaseTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTask</span></code></a></p></li>
-<li><p><strong>samples</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>]) – the samples that this task will handle, which will be passed to Task object
+<li><p><strong>samples</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>]) – the samples that this task will handle, which will be passed to Task object
 the same as parameters.</p></li>
 <li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – the required tasks for this task</p></li>
 <li><p><strong>prev_tasks</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – one or a list of ObjectId that refer to prev tasks of this task

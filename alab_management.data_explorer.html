@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Set up definition folder &#8212; Alab Management</title>
+    <title>alab_management.data_explorer package &#8212; Alab Management</title>
     
   <link href="_static/css/theme.css" rel="stylesheet">
   <link href="_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
@@ -35,8 +35,8 @@
     <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Defining a new device" href="device_definition.html" />
-    <link rel="prev" title="Installation" href="installation.html" />
+    <link rel="next" title="alab_management.device_view package" href="alab_management.device_view.html" />
+    <link rel="prev" title="alab_management package" href="alab_management.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
     
@@ -85,14 +85,14 @@
   Quickstart
  </span>
 </p>
-<ul class="current nav bd-sidenav">
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="installation.html">
    Installation
   </a>
  </li>
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
+ <li class="toctree-l1">
+  <a class="reference internal" href="setup.html">
    Setup definition folder
   </a>
  </li>
@@ -107,34 +107,34 @@
   </a>
  </li>
 </ul>
-<ul class="nav bd-sidenav">
+<ul class="current nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="development.html">
    Development
   </a>
  </li>
- <li class="toctree-l1 has-children">
+ <li class="toctree-l1 current active has-children">
   <a class="reference internal" href="modules.html">
    API Docs
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
   <label for="toctree-checkbox-1">
    <i class="fas fa-chevron-down">
    </i>
   </label>
-  <ul>
-   <li class="toctree-l2 has-children">
+  <ul class="current">
+   <li class="toctree-l2 current active has-children">
     <a class="reference internal" href="alab_management.html">
      alab_management package
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+    <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
     <label for="toctree-checkbox-2">
      <i class="fas fa-chevron-down">
      </i>
     </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.data_explorer.html">
+    <ul class="current">
+     <li class="toctree-l3 current active">
+      <a class="current reference internal" href="#">
        alab_management.data_explorer package
       </a>
      </li>
@@ -306,7 +306,7 @@
         <!-- ipynb file if we had a myst markdown file -->
         
         <!-- Download raw file -->
-        <a class="dropdown-buttons" href="_sources/setup.rst.txt"><button type="button"
+        <a class="dropdown-buttons" href="_sources/alab_management.data_explorer.rst.txt"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
                 data-placement="left">.rst</button></a>
         <!-- Download PDF via print -->
@@ -350,23 +350,8 @@
             <nav id="bd-toc-nav" aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#initiate-a-definition-project-via-command-line">
-   Initiate a definition project via command line
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#definition-folder-structure">
-   Definition folder structure
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#configuration-file">
-   Configuration File
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#what-s-next">
-   What’s next
+  <a class="reference internal nav-link" href="#module-alab_management.data_explorer">
+   Module contents
   </a>
  </li>
 </ul>
@@ -380,70 +365,10 @@
         
               <div>
                 
-  <div class="section" id="set-up-definition-folder">
-<h1>Set up definition folder<a class="headerlink" href="#set-up-definition-folder" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="initiate-a-definition-project-via-command-line">
-<h2>Initiate a definition project via command line<a class="headerlink" href="#initiate-a-definition-project-via-command-line" title="Permalink to this headline">¶</a></h2>
-<p>To initiate a project, you only need to run following command in the target folder.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>python -m alabos init
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The folder you run this command must be empty</p>
-</div>
-</div>
-<div class="section" id="definition-folder-structure">
-<h2>Definition folder structure<a class="headerlink" href="#definition-folder-structure" title="Permalink to this headline">¶</a></h2>
-<p>Alab Management serves as a Python package, which will handle the resource assignment in the lab automatically for you.
-Before you run the system, you need to define devices and tasks according to your need.
-The definition itself is a Python module, which has the structure:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;project_root&gt;
-├── devices
-│   ├── device_1.py
-│   ├── device_2.py
-│   ├── device_3.py
-│   └── __init__.py
-│
-├── tasks
-│   ├── task_1.py
-│   ├── task_2.py
-│   ├── task_3.py
-│   └── __init__.py
-│
-├── config.toml
-└── __init__.py
-</pre></div>
-</div>
-<p>For more examples, please refer to
-<a class="reference external" href="https://github.com/idocx/alab_management/tree/master/example/devices">example</a> in the repo .</p>
-</div>
-<div class="section" id="configuration-file">
-<h2>Configuration File<a class="headerlink" href="#configuration-file" title="Permalink to this headline">¶</a></h2>
-<p>Besides the definition files, we also introduce a config file (<code class="docutils literal notranslate"><span class="pre">.toml</span></code>) for db
-connection and some general configurations.</p>
-<p>A default configuration may look like this. Usually, it is just okay to</p>
-<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[general]</span><span class="w"></span>
-<span class="c1"># the working dir specifies where the device and task definitions can be loaded</span><span class="w"></span>
-<span class="c1"># by default, the working directory should just be the directory where the config</span><span class="w"></span>
-<span class="c1"># file stores</span><span class="w"></span>
-<span class="n">working_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;.&quot;</span><span class="w"></span>
-
-<span class="k">[db]</span><span class="w"></span>
-<span class="c1"># this section specify how to connect to the database, you can specify the host</span><span class="w"></span>
-<span class="c1"># and port of database, and the name of database that we will use. If your database</span><span class="w"></span>
-<span class="c1"># needs authentication, you will also need to  provide username and password</span><span class="w"></span>
-<span class="n">host</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;localhost&#39;</span><span class="w"></span>
-<span class="n">port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">27017</span><span class="w"></span>
-<span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;Alab&#39;</span><span class="w"></span>
-<span class="n">username</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
-<span class="n">password</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="what-s-next">
-<h2>What’s next<a class="headerlink" href="#what-s-next" title="Permalink to this headline">¶</a></h2>
-<p>Next, we will introduce how to define custom devices and tasks and register them.</p>
+  <div class="section" id="alab-management-data-explorer-package">
+<h1>alab_management.data_explorer package<a class="headerlink" href="#alab-management-data-explorer-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-alab_management.data_explorer">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-alab_management.data_explorer" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -453,17 +378,17 @@ connection and some general configurations.</p>
         
             <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
-    <a class='left-prev' id="prev-link" href="installation.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="alab_management.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Installation</p>
+            <p class="prev-next-title">alab_management package</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="device_definition.html" title="next page">
+    <a class='right-next' id="next-link" href="alab_management.device_view.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Defining a new device</p>
+        <p class="prev-next-title">alab_management.device_view package</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>
