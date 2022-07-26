@@ -85,7 +85,7 @@ class RequestMixin:
     def get_request(self, request_id: ObjectId, **kwargs):
         return self._request_collection.find_one({"_id": request_id}, **kwargs)
 
-    def get_request_with_status(self, status: RequestStatus):
+    def get_requests_by_status(self, status: RequestStatus):
         return self._request_collection.find({"status": status.name})
 
 
@@ -131,7 +131,7 @@ class TaskManager(RequestMixin):
         """
         Release the resources.
         """
-        for request in self.get_request_with_status(RequestStatus.NEED_RELEASE):
+        for request in self.get_requests_by_status(RequestStatus.NEED_RELEASE):
             devices = request["assigned_devices"]
             sample_positions = request["assigned_sample_positions"]
             self._release_devices(devices)
@@ -146,7 +146,7 @@ class TaskManager(RequestMixin):
         try to assign the resources to it.
         """
         # TODO: add priority here (some sort function)
-        for request in self.get_request_with_status(RequestStatus.PENDING):
+        for request in self.get_requests_by_status(RequestStatus.PENDING):
             self._handle_requested_resources(request)
 
     def _handle_requested_resources(self, request_entry: Dict[str, Any]):

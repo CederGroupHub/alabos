@@ -20,6 +20,7 @@ class DeviceStatus(Enum):
     """
     The status of devices
     """
+
     UNKNOWN = auto()
     IDLE = auto()
     OCCUPIED = auto()
@@ -48,10 +49,12 @@ class DeviceView:
         """
         for device in self._device_list.values():
             status = DeviceStatus.OCCUPIED if device.is_running() else DeviceStatus.IDLE
-            self._update_status(device=device.name,
-                                target_status=status,
-                                required_status=None,
-                                task_id=None)
+            self._update_status(
+                device=device.name,
+                target_status=status,
+                required_status=None,
+                task_id=None,
+            )
 
     def add_devices_to_db(self):
         """
@@ -63,17 +66,23 @@ class DeviceView:
         """
         for device in self._device_list.values():
             if self._device_collection.find_one({"name": device.name}) is not None:
-                raise NameError(f"Duplicated device name {device.name}, did you cleanup the database?")
-            self._device_collection.insert_one({
-                "name": device.name,
-                "description": device.description,
-                "type": device.__class__.__name__,
-                "sample_positions": [sample_pos.name for sample_pos in device.sample_positions],
-                "status": DeviceStatus.IDLE.name,
-                "task_id": None,
-                "created_at": datetime.now(),
-                "last_updated": datetime.now(),
-            })
+                raise NameError(
+                    f"Duplicated device name {device.name}, did you cleanup the database?"
+                )
+            self._device_collection.insert_one(
+                {
+                    "name": device.name,
+                    "description": device.description,
+                    "type": device.__class__.__name__,
+                    "sample_positions": [
+                        sample_pos.name for sample_pos in device.sample_positions
+                    ],
+                    "status": DeviceStatus.IDLE.name,
+                    "task_id": None,
+                    "created_at": datetime.now(),
+                    "last_updated": datetime.now(),
+                }
+            )
 
     def get_all(self) -> List[Dict[str, Any]]:
         """
@@ -88,9 +97,9 @@ class DeviceView:
         self._device_collection.drop()
 
     def request_devices(
-            self,
-            task_id: ObjectId,
-            device_types_str: Collection[str],  # pylint: disable=unsubscriptable-object
+        self,
+        task_id: ObjectId,
+        device_types_str: Collection[str],  # pylint: disable=unsubscriptable-object
     ) -> Optional[Dict[str, Dict[str, Union[str, bool]]]]:
         """
         Request a list of device, this function will return the name of devices if all the requested device is ready.
@@ -106,20 +115,28 @@ class DeviceView:
             {"device_type_name": {"name": device_name, "need_release": need_release (bool)}} or None
         """
         if len(device_types_str) != len(set(device_types_str)):
-            raise ValueError("Currently we do not allow duplicated devices in one request.")
+            raise ValueError(
+                "Currently we do not allow duplicated devices in one request."
+            )
 
         idle_devices: Dict[str, Dict[str, Union[str, bool]]] = {}
         with self._lock():  # pylint: disable=not-callable
             for device in device_types_str:
-                result = self.get_available_devices(device_type_str=device, task_id=task_id)
+                result = self.get_available_devices(
+                    device_type_str=device, task_id=task_id
+                )
                 if not result:  # Cannot meet all the requirements, return None
                     return None
                 # just pick the first device
-                idle_devices[device] = next(filter(lambda device_: not device_["need_release"], result), result[0])
+                idle_devices[device] = next(
+                    filter(lambda device_: not device_["need_release"], result),
+                    result[0],
+                )
             return idle_devices
 
-    def get_available_devices(self, device_type_str: str, task_id: Optional[ObjectId]) \
-            -> List[Dict[str, Union[str, bool]]]:
+    def get_available_devices(
+        self, device_type_str: str, task_id: Optional[ObjectId]
+    ) -> List[Dict[str, Union[str, bool]]]:
         """
         Given device type, it will return all the device with this type.
 
@@ -140,16 +157,27 @@ class DeviceView:
         if self._device_collection.find_one(request_dict) is None:
             raise ValueError(f"No such device_type: {device_type_str}")
 
-        request_dict.update({"$or": [{  # type: ignore
-            "status": DeviceStatus.IDLE.name,
-        }, {
-            "task_id": task_id,
-        }]})
+        request_dict.update(
+            {
+                "$or": [
+                    {  # type: ignore
+                        "status": DeviceStatus.IDLE.name,
+                    },
+                    {
+                        "task_id": task_id,
+                    },
+                ]
+            }
+        )
 
-        return [{
-            "name": device_entry["name"],
-            "need_release": not device_entry["task_id"] == task_id,
-        } for device_entry in self._device_collection.find(request_dict)]
+        return [
+            {
+                "name": device_entry["name"],
+                "need_release": device_entry["task_id"]
+                != task_id,  # if device already held by this task, don't release with this request. Will be released by the older request.
+            }
+            for device_entry in self._device_collection.find(request_dict)
+        ]
 
     def get_device(self, device_name: str) -> Optional[Dict[str, Any]]:
         """
@@ -182,8 +210,10 @@ class DeviceView:
         """
         Get devices given a task id (regardless of its status!)
         """
-        return [self._device_list[device["name"]]
-                for device in self._device_collection.find({"task_id": task_id})]
+        return [
+            self._device_list[device["name"]]
+            for device in self._device_collection.find({"task_id": task_id})
+        ]
 
     def release_device(self, device: Union[BaseDevice, str]):
         """
@@ -193,12 +223,16 @@ class DeviceView:
             device=device,
             required_status=None,
             target_status=DeviceStatus.IDLE,
-            task_id=None
+            task_id=None,
         )
 
-    def _update_status(self, device: Union[BaseDevice, str],
-                       required_status: Optional[Union[DeviceStatus, List[DeviceStatus]]],
-                       target_status: DeviceStatus, task_id: Optional[ObjectId]):
+    def _update_status(
+        self,
+        device: Union[BaseDevice, str],
+        required_status: Optional[Union[DeviceStatus, List[DeviceStatus]]],
+        target_status: DeviceStatus,
+        task_id: Optional[ObjectId],
+    ):
         """
         A method that check and update the status of a device
 
@@ -213,26 +247,39 @@ class DeviceView:
         device_entry = self._device_collection.find_one({"name": device_name})
 
         if device_entry is None:
-            raise ValueError(f"Cannot find device ({device_name}). Did you run `setup` command?")
+            raise ValueError(
+                f"Cannot find device ({device_name}). Did you run `setup` command?"
+            )
 
-        required_status = [required_status] \
-            if isinstance(required_status, DeviceStatus) \
+        required_status = (
+            [required_status]
+            if isinstance(required_status, DeviceStatus)
             else required_status
+        )
 
         # if task_id has the same value, we will not check the current status
         if device_entry["task_id"] == task_id:
             required_status = None
 
-        if required_status is not None and \
-                DeviceStatus[device_entry["status"]] not in required_status:
-            raise ValueError(f"Device's status ({device_entry['status']}) is "
-                             f"not in {[status.name for status in required_status]}")
+        if (
+            required_status is not None
+            and DeviceStatus[device_entry["status"]] not in required_status
+        ):
+            raise ValueError(
+                f"Device's status ({device_entry['status']}) is "
+                f"not in {[status.name for status in required_status]}"
+            )
 
-        self._device_collection.update_one({"name": device_name}, {"$set": {
-            "status": target_status.name,
-            "task_id": task_id,
-            "last_updated": datetime.now(),
-        }})
+        self._device_collection.update_one(
+            {"name": device_name},
+            {
+                "$set": {
+                    "status": target_status.name,
+                    "task_id": task_id,
+                    "last_updated": datetime.now(),
+                }
+            },
+        )
 
     def query_property(self, device_name: str, prop: str):
         """
@@ -246,7 +293,9 @@ class DeviceView:
         device: BaseDevice = self._device_list[device_name]
 
         if not hasattr(device, prop):
-            raise AttributeError(f"Cannot find method with name: {prop} on {device_name}")
+            raise AttributeError(
+                f"Cannot find method with name: {prop} on {device_name}"
+            )
 
         return getattr(device, prop)
 
@@ -254,4 +303,6 @@ class DeviceView:
         """
         Call a callable function (``method``) with ``*args`` and ``**kwargs`` on ``device_name``
         """
-        return self.query_property(device_name=device_name, prop=method)(*args, **kwargs)
+        return self.query_property(device_name=device_name, prop=method)(
+            *args, **kwargs
+        )
