@@ -140,14 +140,19 @@ class TaskView:
             status: the new status of the task
         """
         result = self.get_task(task_id=task_id, encode=False)
+
+        update_dict = {
+            "status": status.name,
+            "last_updated": datetime.now(),
+        }
+        if status == TaskStatus.RUNNING:
+            update_dict["started_at"] = datetime.now()
+        elif status == TaskStatus.COMPLETED:
+            update_dict["completed_at"] = datetime.now()
+
         self._task_collection.update_one(
             {"_id": task_id},
-            {
-                "$set": {
-                    "status": status.name,
-                    "last_updated": datetime.now(),
-                }
-            },
+            {"$set": update_dict},
         )
 
         if status is TaskStatus.COMPLETED:

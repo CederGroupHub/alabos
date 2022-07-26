@@ -50,7 +50,7 @@ def run_task(task_id_str: str):
         )
     except AttributeError as exception:
         logger.system_log(
-            level="ERRO",
+            level="ERROR",
             log_data={
                 "type": "TaskDefinition",
                 "task_id": task_id,
