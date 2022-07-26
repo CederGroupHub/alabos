@@ -2,6 +2,7 @@
 TaskLauncher is the core module of the system,
 which actually executes the tasks
 """
+from datetime import datetime
 import re
 import time
 from concurrent.futures import Future
@@ -19,7 +20,7 @@ from .device_view.device import BaseDevice
 from .sample_view import SampleView
 from .sample_view.sample_view import SamplePositionRequest
 from .task_actor import run_task
-from .task_view.task_view import TaskView
+from .task_view import TaskView, TaskPriority
 from .utils.data_objects import get_collection
 from .utils.module_ops import load_definition
 
@@ -145,8 +146,12 @@ class TaskManager(RequestMixin):
         Check if there are any requests that are in PENDING status. If so,
         try to assign the resources to it.
         """
+        requests = list(self.get_requests_by_status(RequestStatus.PENDING))
+        # prioritize the oldest requests at the smallest priority value
+        requests.sort(key=lambda x: x["submitted_at"])
+        requests.sort(key=lambda x: x["priority"], reverse=True)
         # TODO: add priority here (some sort function)
-        for request in self.get_requests_by_status(RequestStatus.PENDING):
+        for request in requests:
             self._handle_requested_resources(request)
 
     def _handle_requested_resources(self, request_entry: Dict[str, Any]):
@@ -274,24 +279,35 @@ class ResourceRequester(RequestMixin):
     It is used in :py:class:`~alab_management.lab_view.LabView`.
     """
 
-    def __init__(self, task_id: ObjectId):
+    def __init__(
+        self,
+        task_id: ObjectId,
+    ):
         self._request_collection = get_collection("requests")
         self._waiting: Dict[ObjectId, Dict[str, Any]] = {}
         self.task_id = task_id
+        # task = TaskView().get_task(task_id=task_id)
+        # self.priority = task["parameters"].get(
+        #     "priority", TaskPriority.NORMAL
+        # )  # look for a user-defined priority in the task parameters
         super().__init__()
-
         self._thread = Thread(target=self._check_request_status_loop)
         self._thread.daemon = True
         self._thread.start()
 
     def request_resources(
-        self, resource_request: _ResourceRequestDict, timeout: Optional[float] = None
+        self,
+        resource_request: _ResourceRequestDict,
+        timeout: Optional[float] = None,
+        priority: Optional[Union[TaskPriority, int]] = None,
     ) -> Dict[str, Any]:
         """
         Request lab resources. Write the request into the database, and then the task manager will read from the
         database and assign the resources.
         """
         f = Future()
+        if priority is None:
+            priority = self.priority
 
         formatted_resource_request = {
             device_type.__name__: samples
@@ -310,6 +326,8 @@ class ResourceRequester(RequestMixin):
                 "request": formatted_resource_request,
                 "status": RequestStatus.PENDING.name,
                 "task_id": self.task_id,
+                "priority": int(priority),
+                "submitted_at": datetime.now(),
             }
         )
         _id: ObjectId = cast(ObjectId, result.inserted_id)

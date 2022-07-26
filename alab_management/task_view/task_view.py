@@ -9,30 +9,9 @@ from typing import Any, Dict, List, Type, Union, Optional, cast
 
 from bson import ObjectId
 
-from .task import get_all_tasks, BaseTask
-from ..utils.data_objects import get_collection
-
-
-class TaskStatus(Enum):
-    """
-    The status of one task
-
-    - ``WAITING``: the task cannot start now
-    - ``READY``: the task is ready to submit
-    - ``PAUSED``: the task is hold for a while
-    - ``RUNNING``: the task is currently running
-    - ``ERROR``: the task encountered some errors during execution
-    - ``COMPLETED``: the task is completed
-    """
-
-    WAITING = auto()
-    PAUSED = auto()
-    STOPPED = auto()
-    READY = auto()
-    REQUESTING_RESOURCE = auto()
-    RUNNING = auto()
-    ERROR = auto()
-    COMPLETED = auto()
+from alab_management.task_view.task import get_all_tasks, BaseTask
+from alab_management.utils.data_objects import get_collection
+from alab_management.task_view.task_enums import TaskStatus
 
 
 class TaskView:

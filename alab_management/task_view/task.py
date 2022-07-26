@@ -1,14 +1,13 @@
 """
 Define the base class of task, which will be used for defining more tasks.
 """
-
 from abc import ABC, abstractmethod
-from typing import Dict, Type, TYPE_CHECKING
-
+from typing import Dict, Type, TYPE_CHECKING, Optional, Union
 from bson.objectid import ObjectId
+from alab_management.task_view.task_enums import TaskPriority
 
 if TYPE_CHECKING:
-    from ..lab_view import LabView
+    from alab_management.lab_view import LabView
 
 
 class BaseTask(ABC):
@@ -18,7 +17,12 @@ class BaseTask(ABC):
     All the tasks should inherit from this class.
     """
 
-    def __init__(self, task_id: ObjectId, lab_view: "LabView"):
+    def __init__(
+        self,
+        task_id: ObjectId,
+        lab_view: "LabView",
+        priority: Optional[Union[TaskPriority, int]] = TaskPriority.NORMAL,
+    ):
         """
         Args:
             task_id: the identifier of task
@@ -38,6 +42,17 @@ class BaseTask(ABC):
         self.child_task_num: int = 0
         self.lab_view = lab_view
         self.logger = self.lab_view.logger
+        self.priority = priority
+
+    @property
+    def priority(self) -> int:
+        return self.lab_view._resource_requester.priority
+
+    @priority.setter
+    def priority(self, value: Union[int, TaskPriority]):
+        if value < 0:
+            raise ValueError("Priority should be a positive integer")
+        self.lab_view._resource_requester.priority = int(value)
 
     @abstractmethod
     def run(self):

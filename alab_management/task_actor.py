@@ -8,11 +8,13 @@ from traceback import format_exc
 import dramatiq
 from bson import ObjectId
 
-from .logger import DBLogger
-from .sample_view import SampleView
-from .task_view.task import BaseTask
-from .task_view.task_view import TaskView, TaskStatus
-from .utils.module_ops import load_definition
+from alab_management.logger import DBLogger
+from alab_management.sample_view import SampleView
+
+# from alab_management.task_view.task import BaseTask
+# from alab_management.task_view.task_view import TaskView
+from alab_management.task_view import BaseTask, TaskView, TaskStatus
+from alab_management.utils.module_ops import load_definition
 
 
 class ParameterError(Exception):

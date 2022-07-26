@@ -11,11 +11,11 @@ from bson import ObjectId
 from pydantic import root_validator
 from pydantic.main import BaseModel
 
-from .device_manager import DevicesClient
-from .device_view.device import BaseDevice
-from .logger import DBLogger
-from .sample_view.sample_view import SampleView, SamplePositionRequest
-from .task_manager import ResourceRequester
+from alab_management.device_manager import DevicesClient
+from alab_management.device_view.device import BaseDevice
+from alab_management.logger import DBLogger
+from alab_management.sample_view.sample_view import SampleView, SamplePositionRequest
+from alab_management.task_manager import ResourceRequester
 
 
 class DeviceRunningException(Exception):
@@ -32,14 +32,20 @@ class ResourcesRequest(BaseModel):
     See Also:
         :py:class:`SamplePositionRequest <alab_management.sample_view.sample_view.SamplePositionRequest>`
     """
+
     __root__: Dict[Optional[Type[BaseDevice]], List[SamplePositionRequest]]  # type: ignore
 
     @root_validator(pre=True, allow_reuse=True)
     def preprocess(cls, values):  # pylint: disable=no-self-use,no-self-argument
         values = values["__root__"]
         # if the sample position request is string, we will automatically add a number attribute = 1.
-        values = {k: [SamplePositionRequest.from_str(v_) if isinstance(v_, str) else v_
-                      for v_ in v] for k, v in values.items()}
+        values = {
+            k: [
+                SamplePositionRequest.from_str(v_) if isinstance(v_, str) else v_
+                for v_ in v
+            ]
+            for k, v in values.items()
+        }
         return {"__root__": values}
 
 
@@ -63,9 +69,12 @@ class LabView:
 
     @contextmanager
     def request_resources(
-            self,
-            resource_request: Dict[Optional[Type[BaseDevice]], List[Union[Dict[str, Union[str, int]], str]]],
-            timeout: Optional[float] = None,
+        self,
+        resource_request: Dict[
+            Optional[Type[BaseDevice]], List[Union[Dict[str, Union[str, int]], str]]
+        ],
+        priority: Optional[int] = None,
+        timeout: Optional[float] = None,
     ):
         """
         Request devices and sample positions. This function is a context manager, which should be used in
@@ -84,14 +93,19 @@ class LabView:
         And since sometimes you can only know which device you will use until you request the device,
         you can use ``$`` to represent the name of device, e.g. {Furnace: ["$/inside"]} will be parsed to
         ``furnace_1/inside`` if we are assigned to a furnace named ``furnace_1``.
+
+        The priority of the request can optionally be specified as a positive integer, which should probably be in the range of 0-40. 20 is the default "NORMAL" priority level. Higher number = higher priority. Numbers >= 100 are reserved for urgent/error correcting requests.
         """
-        result = self._resource_requester.request_resources(resource_request=resource_request,
-                                                            timeout=timeout)
+        result = self._resource_requester.request_resources(
+            resource_request=resource_request, timeout=timeout, priority=priority
+        )
         devices = result["devices"]
         sample_positions = result["sample_positions"]
         request_id = result["request_id"]
-        devices = {device_type: self._device_client.create_device_wrapper(device_name)
-                   for device_type, device_name in devices.items()}  # type: ignore
+        devices = {
+            device_type: self._device_client.create_device_wrapper(device_name)
+            for device_type, device_name in devices.items()
+        }  # type: ignore
         yield devices, sample_positions
 
         self._resource_requester.release_resources(request_id=request_id)
@@ -109,8 +123,14 @@ class LabView:
         :py:meth:`move_sample <alab_management.sample_view.sample_view.SampleView.move_sample>`
         """
         # check if this sample position is locked by current task
-        if position is not None and self._sample_view.get_sample_position_status(position)[1] != self._task_id:
-            raise ValueError(f"Cannot move sample to a sample position ({position}) without locking it.")
+        if (
+            position is not None
+            and self._sample_view.get_sample_position_status(position)[1]
+            != self._task_id
+        ):
+            raise ValueError(
+                f"Cannot move sample to a sample position ({position}) without locking it."
+            )
 
         # check if this sample is owned by current task
         sample = self._sample_view.get_sample(sample_id=sample_id)
