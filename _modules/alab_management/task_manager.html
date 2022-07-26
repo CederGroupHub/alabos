@@ -416,7 +416,7 @@
 <div class="viewcode-block" id="RequestMixin.get_request"><a class="viewcode-back" href="../../alab_management.task_manager.html#alab_management.task_manager.RequestMixin.get_request">[docs]</a>    <span class="k">def</span> <span class="nf">get_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RequestMixin.get_request_with_status"><a class="viewcode-back" href="../../alab_management.task_manager.html#alab_management.task_manager.RequestMixin.get_request_with_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_request_with_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="p">):</span>
+<div class="viewcode-block" id="RequestMixin.get_requests_by_status"><a class="viewcode-back" href="../../alab_management.task_manager.html#alab_management.task_manager.RequestMixin.get_requests_by_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_requests_by_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="p">})</span></div></div>
 
 
@@ -462,7 +462,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Release the resources.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">request</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request_with_status</span><span class="p">(</span><span class="n">RequestStatus</span><span class="o">.</span><span class="n">NEED_RELEASE</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">request</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_requests_by_status</span><span class="p">(</span><span class="n">RequestStatus</span><span class="o">.</span><span class="n">NEED_RELEASE</span><span class="p">):</span>
             <span class="n">devices</span> <span class="o">=</span> <span class="n">request</span><span class="p">[</span><span class="s2">&quot;assigned_devices&quot;</span><span class="p">]</span>
             <span class="n">sample_positions</span> <span class="o">=</span> <span class="n">request</span><span class="p">[</span><span class="s2">&quot;assigned_sample_positions&quot;</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_release_devices</span><span class="p">(</span><span class="n">devices</span><span class="p">)</span>
@@ -477,7 +477,7 @@
 <span class="sd">        try to assign the resources to it.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># TODO: add priority here (some sort function)</span>
-        <span class="k">for</span> <span class="n">request</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request_with_status</span><span class="p">(</span><span class="n">RequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">request</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_requests_by_status</span><span class="p">(</span><span class="n">RequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_handle_requested_resources</span><span class="p">(</span><span class="n">request</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_handle_requested_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_entry</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
