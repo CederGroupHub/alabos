@@ -53,6 +53,7 @@ def run_task(task_id_str: str):
         logger.system_log(
             level="ERROR",
             log_data={
+                "logged_by": "TaskActor",
                 "type": "TaskDefinition",
                 "task_id": task_id,
                 "task_type": task_type.__name__,
@@ -71,6 +72,7 @@ def run_task(task_id_str: str):
     logger.system_log(
         level="INFO",
         log_data={
+            "logged_by": "TaskActor",
             "type": "TaskStart",
             "task_id": task_id,
             "task_type": task_type.__name__,
@@ -104,7 +106,6 @@ def run_task(task_id_str: str):
                 "task_id": task_id,
                 "task_type": task_type.__name__,
                 "status": "COMPLETED",
-                "task_result": result,
             },
         )
     finally:
