@@ -218,6 +218,11 @@
         </a>
        </li>
        <li class="toctree-l4">
+        <a class="reference internal" href="../../../alab_management.task_view.task_enums.html">
+         alab_management.task_view.task_enums module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="../../../alab_management.task_view.task_view.html">
          alab_management.task_view.task_view module
         </a>
@@ -345,30 +350,9 @@
 
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 
-<span class="kn">from</span> <span class="nn">.task</span> <span class="kn">import</span> <span class="n">get_all_tasks</span><span class="p">,</span> <span class="n">BaseTask</span>
-<span class="kn">from</span> <span class="nn">..utils.data_objects</span> <span class="kn">import</span> <span class="n">get_collection</span>
-
-
-<div class="viewcode-block" id="TaskStatus"><a class="viewcode-back" href="../../../alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskStatus">[docs]</a><span class="k">class</span> <span class="nc">TaskStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The status of one task</span>
-
-<span class="sd">    - ``WAITING``: the task cannot start now</span>
-<span class="sd">    - ``READY``: the task is ready to submit</span>
-<span class="sd">    - ``PAUSED``: the task is hold for a while</span>
-<span class="sd">    - ``RUNNING``: the task is currently running</span>
-<span class="sd">    - ``ERROR``: the task encountered some errors during execution</span>
-<span class="sd">    - ``COMPLETED``: the task is completed</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">WAITING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">PAUSED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">STOPPED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">READY</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">REQUESTING_RESOURCE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">RUNNING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">ERROR</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">COMPLETED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
+<span class="kn">from</span> <span class="nn">alab_management.task_view.task</span> <span class="kn">import</span> <span class="n">get_all_tasks</span><span class="p">,</span> <span class="n">BaseTask</span>
+<span class="kn">from</span> <span class="nn">alab_management.utils.data_objects</span> <span class="kn">import</span> <span class="n">get_collection</span>
+<span class="kn">from</span> <span class="nn">alab_management.task_view.task_enums</span> <span class="kn">import</span> <span class="n">TaskStatus</span>
 
 
 <div class="viewcode-block" id="TaskView"><a class="viewcode-back" href="../../../alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView">[docs]</a><span class="k">class</span> <span class="nc">TaskView</span><span class="p">:</span>

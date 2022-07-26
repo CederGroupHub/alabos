@@ -218,6 +218,11 @@
         </a>
        </li>
        <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.task_view.task_enums.html">
+         alab_management.task_view.task_enums module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="../../alab_management.task_view.task_view.html">
          alab_management.task_view.task_view module
         </a>
@@ -338,6 +343,7 @@
 <span class="sd">TaskLauncher is the core module of the system,</span>
 <span class="sd">which actually executes the tasks</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="kn">import</span> <span class="n">Future</span>
@@ -355,7 +361,7 @@
 <span class="kn">from</span> <span class="nn">.sample_view</span> <span class="kn">import</span> <span class="n">SampleView</span>
 <span class="kn">from</span> <span class="nn">.sample_view.sample_view</span> <span class="kn">import</span> <span class="n">SamplePositionRequest</span>
 <span class="kn">from</span> <span class="nn">.task_actor</span> <span class="kn">import</span> <span class="n">run_task</span>
-<span class="kn">from</span> <span class="nn">.task_view.task_view</span> <span class="kn">import</span> <span class="n">TaskView</span>
+<span class="kn">from</span> <span class="nn">.task_view</span> <span class="kn">import</span> <span class="n">TaskView</span><span class="p">,</span> <span class="n">TaskPriority</span>
 <span class="kn">from</span> <span class="nn">.utils.data_objects</span> <span class="kn">import</span> <span class="n">get_collection</span>
 <span class="kn">from</span> <span class="nn">.utils.module_ops</span> <span class="kn">import</span> <span class="n">load_definition</span>
 
@@ -481,8 +487,12 @@
 <span class="sd">        Check if there are any requests that are in PENDING status. If so,</span>
 <span class="sd">        try to assign the resources to it.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">requests</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_requests_by_status</span><span class="p">(</span><span class="n">RequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="p">))</span>
+        <span class="c1"># prioritize the oldest requests at the smallest priority value</span>
+        <span class="n">requests</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;submitted_at&quot;</span><span class="p">])</span>
+        <span class="n">requests</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;priority&quot;</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="c1"># TODO: add priority here (some sort function)</span>
-        <span class="k">for</span> <span class="n">request</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_requests_by_status</span><span class="p">(</span><span class="n">RequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">request</span> <span class="ow">in</span> <span class="n">requests</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_handle_requested_resources</span><span class="p">(</span><span class="n">request</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_handle_requested_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_entry</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
@@ -610,24 +620,35 @@
 <span class="sd">    It is used in :py:class:`~alab_management.lab_view.LabView`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;requests&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span> <span class="o">=</span> <span class="n">task_id</span>
+        <span class="c1"># task = TaskView().get_task(task_id=task_id)</span>
+        <span class="c1"># self.priority = task[&quot;parameters&quot;].get(</span>
+        <span class="c1">#     &quot;priority&quot;, TaskPriority.NORMAL</span>
+        <span class="c1"># )  # look for a user-defined priority in the task parameters</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_check_request_status_loop</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
 <div class="viewcode-block" id="ResourceRequester.request_resources"><a class="viewcode-back" href="../../alab_management.task_manager.html#alab_management.task_manager.ResourceRequester.request_resources">[docs]</a>    <span class="k">def</span> <span class="nf">request_resources</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">resource_request</span><span class="p">:</span> <span class="n">_ResourceRequestDict</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">resource_request</span><span class="p">:</span> <span class="n">_ResourceRequestDict</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">priority</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">TaskPriority</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Request lab resources. Write the request into the database, and then the task manager will read from the</span>
 <span class="sd">        database and assign the resources.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">f</span> <span class="o">=</span> <span class="n">Future</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">priority</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">priority</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">priority</span>
 
         <span class="n">formatted_resource_request</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">device_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="n">samples</span>
@@ -646,6 +667,8 @@
                 <span class="s2">&quot;request&quot;</span><span class="p">:</span> <span class="n">formatted_resource_request</span><span class="p">,</span>
                 <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span>
+                <span class="s2">&quot;priority&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">priority</span><span class="p">),</span>
+                <span class="s2">&quot;submitted_at&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
             <span class="p">}</span>
         <span class="p">)</span>
         <span class="n">_id</span><span class="p">:</span> <span class="n">ObjectId</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">ObjectId</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span><span class="p">)</span>

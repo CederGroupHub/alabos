@@ -218,6 +218,11 @@
         </a>
        </li>
        <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.task_view.task_enums.html">
+         alab_management.task_view.task_enums module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="../../alab_management.task_view.task_view.html">
          alab_management.task_view.task_view module
         </a>
@@ -344,11 +349,13 @@
 <span class="kn">import</span> <span class="nn">dramatiq</span>
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 
-<span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="n">DBLogger</span>
-<span class="kn">from</span> <span class="nn">.sample_view</span> <span class="kn">import</span> <span class="n">SampleView</span>
-<span class="kn">from</span> <span class="nn">.task_view.task</span> <span class="kn">import</span> <span class="n">BaseTask</span>
-<span class="kn">from</span> <span class="nn">.task_view.task_view</span> <span class="kn">import</span> <span class="n">TaskView</span><span class="p">,</span> <span class="n">TaskStatus</span>
-<span class="kn">from</span> <span class="nn">.utils.module_ops</span> <span class="kn">import</span> <span class="n">load_definition</span>
+<span class="kn">from</span> <span class="nn">alab_management.logger</span> <span class="kn">import</span> <span class="n">DBLogger</span>
+<span class="kn">from</span> <span class="nn">alab_management.sample_view</span> <span class="kn">import</span> <span class="n">SampleView</span>
+
+<span class="c1"># from alab_management.task_view.task import BaseTask</span>
+<span class="c1"># from alab_management.task_view.task_view import TaskView</span>
+<span class="kn">from</span> <span class="nn">alab_management.task_view</span> <span class="kn">import</span> <span class="n">BaseTask</span><span class="p">,</span> <span class="n">TaskView</span><span class="p">,</span> <span class="n">TaskStatus</span>
+<span class="kn">from</span> <span class="nn">alab_management.utils.module_ops</span> <span class="kn">import</span> <span class="n">load_definition</span>
 
 
 <div class="viewcode-block" id="ParameterError"><a class="viewcode-back" href="../../alab_management.task_actor.html#alab_management.task_actor.ParameterError">[docs]</a><span class="k">class</span> <span class="nc">ParameterError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>

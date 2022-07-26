@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="alab_management.config module" href="alab_management.config.html" />
-    <link rel="prev" title="alab_management.task_view.task module" href="alab_management.task_view.task.html" />
+    <link rel="prev" title="alab_management.task_view.task_enums module" href="alab_management.task_view.task_enums.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
     
@@ -219,6 +219,11 @@
          alab_management.task_view.task module
         </a>
        </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_view.task_enums.html">
+         alab_management.task_view.task_enums module
+        </a>
+       </li>
        <li class="toctree-l4 current active">
         <a class="current reference internal" href="#">
          alab_management.task_view.task_view module
@@ -357,61 +362,6 @@
 <p>Tasks view is a convienent wrapper over the <code class="docutils literal notranslate"><span class="pre">tasks</span></code> collection in the database. It
 provides some convenience methods to query and manipulate the tasks collection.</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskStatus">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TaskStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
-<p>The status of one task</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">WAITING</span></code>: the task cannot start now</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">READY</span></code>: the task is ready to submit</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">PAUSED</span></code>: the task is hold for a while</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">RUNNING</span></code>: the task is currently running</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ERROR</span></code>: the task encountered some errors during execution</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">COMPLETED</span></code>: the task is completed</p></li>
-</ul>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskStatus.COMPLETED">
-<span class="sig-name descname"><span class="pre">COMPLETED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus.COMPLETED" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskStatus.ERROR">
-<span class="sig-name descname"><span class="pre">ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus.ERROR" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskStatus.PAUSED">
-<span class="sig-name descname"><span class="pre">PAUSED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus.PAUSED" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskStatus.READY">
-<span class="sig-name descname"><span class="pre">READY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus.READY" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskStatus.REQUESTING_RESOURCE">
-<span class="sig-name descname"><span class="pre">REQUESTING_RESOURCE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus.REQUESTING_RESOURCE" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskStatus.RUNNING">
-<span class="sig-name descname"><span class="pre">RUNNING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus.RUNNING" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskStatus.STOPPED">
-<span class="sig-name descname"><span class="pre">STOPPED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus.STOPPED" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskStatus.WAITING">
-<span class="sig-name descname"><span class="pre">WAITING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#alab_management.task_view.task_view.TaskStatus.WAITING" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
 <dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskView">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TaskView</span></span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
@@ -476,7 +426,7 @@ Translate task’s type into corresponding python class.</p>
 <dd><p>Get the status of a task</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#alab_management.task_view.task_view.TaskStatus" title="alab_management.task_view.task_view.TaskStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskStatus</span></code></a></p>
+<dd class="field-odd"><p><a class="reference internal" href="alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.TaskStatus" title="alab_management.task_view.task_enums.TaskStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskStatus</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -530,7 +480,7 @@ tasks are completed.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>task_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the id of task to be updated</p></li>
-<li><p><strong>status</strong> (<a class="reference internal" href="#alab_management.task_view.task_view.TaskStatus" title="alab_management.task_view.task_view.TaskStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskStatus</span></code></a>) – the new status of the task</p></li>
+<li><p><strong>status</strong> (<a class="reference internal" href="alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.TaskStatus" title="alab_management.task_view.task_enums.TaskStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskStatus</span></code></a>) – the new status of the task</p></li>
 </ul>
 </dd>
 </dl>
@@ -562,11 +512,11 @@ which will not overwrite old pre_task and next_tasks</p>
         
             <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
-    <a class='left-prev' id="prev-link" href="alab_management.task_view.task.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="alab_management.task_view.task_enums.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">alab_management.task_view.task module</p>
+            <p class="prev-next-title">alab_management.task_view.task_enums module</p>
         </div>
     </a>
     <a class='right-next' id="next-link" href="alab_management.config.html" title="next page">
