@@ -9,6 +9,7 @@ import PrecisionManufacturingIcon from '@mui/icons-material/PrecisionManufacturi
 import FireplaceIcon from '@mui/icons-material/Fireplace';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import UserInputs from './components/UserInput';
+import Badge from '@mui/material/Badge';
 
 const STATUS_API = "/api/status";
 
@@ -123,9 +124,11 @@ function Dashboard() {
               <LinkedButton to="/#userinput">
                 <ListItemButton className={hash === "#userinput" ? "active list-button-round" : "list-button-round"}>
                   <ListItemIcon>
-                    <NotificationsIcon />
-                  </ListItemIcon>
+                    <Badge badgeContent={statusData.userinputrequests.length} color="error">
+                      <NotificationsIcon color="action" />
+                    </Badge>                  </ListItemIcon>
                   <ListItemText primary="User Input Requests" />
+
                 </ListItemButton>
               </LinkedButton>
             </ListItem>

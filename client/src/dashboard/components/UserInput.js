@@ -45,7 +45,7 @@ const StyledDevicesDiv = styled.div`
 
 function UserInputs({ userinputs }) {
   //https://upmostly.com/tutorials/how-to-post-requests-react
-  function handleClick({ request_id, status }) {
+  function handleClick(request_id, status) {
     fetch(SUBMIT_RESPONSE_API, {
       method: 'POST',
       mode: 'cors',
@@ -53,7 +53,7 @@ function UserInputs({ userinputs }) {
         "request_id": request_id,
         "status": status
       })
-    })
+    });
   }
   return (
     <TableContainer style={{ height: "100%" }} component={Paper}>
@@ -71,7 +71,7 @@ function UserInputs({ userinputs }) {
           <TableBody>
             {userinputs.map((row) => (
               <TableRow
-                key={row.response_id}
+                key={row.id}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
                 <TableCell component="th" scope="row">
@@ -87,13 +87,13 @@ function UserInputs({ userinputs }) {
                 <TableCell align="center">
                   <Button
                     variant="contained"
-                    onClick={() => handleClick(row.request_id, "success")}
+                    onClick={() => handleClick(row.id, "success")}
                   >
                     Success
                   </Button>
                   <Button
                     variant="outlined"
-                    onClick={() => handleClick(row.request_id, "error")}
+                    onClick={() => handleClick(row.id, "error")}
                   >
                     Error
                   </Button>
