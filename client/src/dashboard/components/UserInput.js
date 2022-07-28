@@ -46,7 +46,7 @@ const StyledDevicesDiv = styled.div`
 function UserInputs({ userinputs }) {
   //https://upmostly.com/tutorials/how-to-post-requests-react
   function handleClick({ request_id, status }) {
-    fetch(SUBMIT_RESPONSE_API, {  //TODO get IP/port dynamically
+    fetch(SUBMIT_RESPONSE_API, {
       method: 'POST',
       mode: 'cors',
       body: JSON.stringify({

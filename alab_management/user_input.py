@@ -23,6 +23,7 @@ class UserInputView:
 
     def __init__(self):
         self._input_collection = get_collection("user_input")
+        self._task_view = TaskView()
 
     def insert_request(self, task_id: ObjectId, prompt: str) -> ObjectId:
         """
@@ -30,8 +31,7 @@ class UserInputView:
 
         Returns the request ObjectID
         """
-        task_view = TaskView(task_id=task_id)
-        task_view.get_task(
+        self._task_view.get_task(
             task_id=task_id
         )  # will throw error if task id does not exist
 

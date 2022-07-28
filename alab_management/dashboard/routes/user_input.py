@@ -15,14 +15,18 @@ def submit_user_input():
     Update status of user input request
     """
     data = request.get_json(force=True)  # type: ignore
+    # return {"dummy": "dummy"}
     try:
         user_input_view.update_request_status(
-            request_id=data["request_id"], status=UserRequestStatus(data["status"])
+            request_id=ObjectId(data["request_id"]),
+            status=UserRequestStatus(data["status"]),
         )
-    except ValidationError as exception:
-        return {"status": "error", "errors": exception.errors()}, 400
-    except ValueError as exception:
+    except Exception as exception:
         return {"status": "error", "errors": exception.args[0]}, 400
+    # except ValidationError as exception:
+    #     return {"status": "error", "errors": exception.errors()}, 400
+    # except ValueError as exception:
+    #     return {"status": "error", "errors": exception.errors()}, 400
 
     return {"status": "success", "data": data}
 
@@ -39,8 +43,8 @@ def query_user_input(request_id: str):
     except ValueError as exception:
         return {"status": "error", "errors": exception.args[0]}
     return {
-        "id": user_input_request["_id"],
+        "id": str(user_input_request["_id"]),
         "prompt": user_input_request["prompt"],
-        "task_id": user_input_request["task_id"],
-        "status": user_input_request["status"].value,
+        "task_id": str(user_input_request["task_id"]),
+        "status": user_input_request["status"],
     }
