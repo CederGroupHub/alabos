@@ -61,7 +61,7 @@ const initialData = process.env.NODE_ENV === 'production' ? { devices: [], exper
       { id: "6196fc9b5d573f2efdd8d98e", status: "WAITING", type: "Ending" },
     ]
   }],
-  userinputrequests: [{ id: "6196fc9b5d573f2efdd8d981", status: "pending", task_id: "6196fc9b5d573f2efdd8d989" }]
+  userinputrequests: [{ id: "6196fc9b5d573f2efdd8d981", status: "pending", task_id: "6196fc9b5d573f2efdd8d989", prompt: "Move sample1 to tray1/slot/0" }]
 };
 
 function Dashboard() {

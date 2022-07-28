@@ -8,9 +8,10 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import { Chip, TextField, Button } from '@mui/material';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
 
-
+const SUBMIT_RESPONSE_API = "/api/userinput/submit";
 const StyledDevicesDiv = styled.div`
   margin: 12px 16px;
 
@@ -34,33 +35,37 @@ const StyledDevicesDiv = styled.div`
   h3 {
     padding: 4px 8px;
   }
+
+  Button{
+    margin: 0px 8px;
+  }
 `;
 
 
 
 function UserInputs({ userinputs }) {
   //https://upmostly.com/tutorials/how-to-post-requests-react
-  function handleClick({ request_id }) {
-    fetch('http://localhost:8896/', {  //TODO get IP/port dynamically
+  function handleClick({ request_id, status }) {
+    fetch(SUBMIT_RESPONSE_API, {  //TODO get IP/port dynamically
       method: 'POST',
       mode: 'cors',
       body: JSON.stringify({
         "request_id": request_id,
-        "status": "success"
+        "status": status
       })
     })
-
   }
   return (
     <TableContainer style={{ height: "100%" }} component={Paper}>
       <StyledDevicesDiv>
-        <Typography variant="h4" component="h3">Requests for User Input</Typography>
+        <Typography variant="h4" component="h3">User Input Requests</Typography>
         <Table stickyHeader aria-label="user input table">
           <TableHead>
             <TableRow>
-              <TableCell><b>Request</b></TableCell>
+              <TableCell><b>Prompt</b></TableCell>
               <TableCell align="center"><b>Task ID</b></TableCell>
-              <TableCell align="center"><b>Response</b></TableCell>
+              <TableCell align="center"><b>Notes</b></TableCell>
+              <TableCell align="center"><b>Response Options</b></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -72,15 +77,28 @@ function UserInputs({ userinputs }) {
                 <TableCell component="th" scope="row">
                   {row.prompt}
                 </TableCell>
+
                 <TableCell align="center">{row.task_id}</TableCell>
+
+                <TableCell align="center">
+                  <TextField id="outlined-basic" label="Note (Optional)" variant="outlined" />
+                </TableCell>
+
                 <TableCell align="center">
                   <Button
                     variant="contained"
-                    onClick={handleClick(row.request_id)}
+                    onClick={() => handleClick(row.request_id, "success")}
                   >
-                    Complete
+                    Success
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    onClick={() => handleClick(row.request_id, "error")}
+                  >
+                    Error
                   </Button>
                 </TableCell>
+
               </TableRow>
             ))}
           </TableBody>
