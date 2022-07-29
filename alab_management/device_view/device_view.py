@@ -11,6 +11,7 @@ from bson import ObjectId
 
 from .device import BaseDevice, get_all_devices
 from ..utils.data_objects import get_collection, get_lock
+from alab_management.sample_view import SampleView
 
 _DeviceType = TypeVar("_DeviceType", bound=BaseDevice)  # pylint: disable=invalid-name
 
@@ -39,6 +40,7 @@ class DeviceView:
         self._device_collection.create_index([("name", pymongo.HASHED)])
         self._device_list = get_all_devices()
         self._lock = get_lock(self._device_collection.name)
+        self._sample_view = SampleView()
 
     def sync_device_status(self):
         """
@@ -306,3 +308,16 @@ class DeviceView:
         return self.query_property(device_name=device_name, prop=method)(
             *args, **kwargs
         )
+
+    def get_samples_on_device(self, device_name: str):
+        """
+        Get all samples on a device
+        """
+        device = self.get_device(device_name=device_name)
+        _sample_collection = get_collection("samples")
+
+        samples_per_position = {}
+        for position in device["sample_positions"]:
+            samples = _sample_collection.find({"position": {"$regex": position}})
+            samples_per_position[position] = [sample["_id"] for sample in samples]
+        return samples_per_position

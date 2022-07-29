@@ -8,7 +8,11 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-
+import Collapse from '@mui/material/Collapse';
+import List from '@mui/material/List';
+import ListItemText from '@mui/material/ListItemText';
+import ListItem from '@mui/material/ListItem';
+import ListSubheader from '@mui/material/ListSubheader';
 const StyledDevicesDiv = styled.div`
   margin: 12px 16px;
 
@@ -59,7 +63,38 @@ function Devices({ devices }) {
                   {row.name}
                 </TableCell>
                 <TableCell align="center">{row.type}</TableCell>
-                <TableCell align="center">{row.type}</TableCell>
+
+                {Object.entries(row.samples).map(([position, samples], i) => (
+
+                  <List
+                    sx={{
+                      bgcolor: 'background.paper',
+                      overflow: 'auto',
+                      maxHeight: 300,
+                    }}
+                    dense={true}
+                    subheader={
+                      <ListSubheader component="div" id="nested-list-subheader">
+                        {position}
+                      </ListSubheader>
+                    }
+                  >
+                    {samples.map((sample) => (
+                      <ListItem
+                        key={sample}
+                        disableGutters
+                      >
+                        <ListItemText primary={sample} />
+                      </ListItem>
+                    ))}
+                  </List>
+
+
+
+
+                ))}
+                {/* <TableCell align="center">{row.type}</TableCell> */}
+
                 <TableCell align="center">
                   <span className={`status status-${row.status.toLowerCase()}`}>
                     {row.status === "OCCUPIED" || row.status === "IDLE" ? '⬤' : ''} {row.status}

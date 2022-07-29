@@ -17,6 +17,7 @@ def get_all_status():
             "type": device["type"],
             "status": device["status"],
             "task": str(device["task_id"]) if device["task_id"] is not None else "null",
+            "samples": device_view.get_samples_on_device(device["name"]),
         }
         for device in devices
     ]

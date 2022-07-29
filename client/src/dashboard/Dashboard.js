@@ -39,16 +39,42 @@ const initialData = process.env.NODE_ENV === 'production' ? { devices: [], exper
     type: "Furnace",
     status: "OCCUPIED",
     task: "6196fc9b5d573f2efdd8d98c",
+    samples: {
+      position1: [
+        "6196fc9b5d573f2efdd8d98c",
+        "6196fc9b5d573f2efdd8d98c",
+      ]
+    }
   }, {
     name: "scale",
     type: "Scale",
     status: "IDLE",
     task: "null",
+    samples: {
+      position1: [
+        "6196fc9b5d573f2efdd8d98c",
+        "6196fc9b5d573f2efdd8d98c",
+      ],
+      position2: [
+        "6196fc9b5d573f2efdd8d98c",
+        "6196fc9b5d573f2efdd8d98c",
+      ]
+    }
   }, {
     name: "robot_arm",
     type: "RobotArm",
     status: "OCCUPIED",
     task: "6196fc9b5d573f2efdd8d98c",
+    samples: {
+      position1: [
+        "6196fc9b5d573f2efdd8d98c",
+        "6196fc9b5d573f2efdd8d98c",
+      ],
+      position2: [
+        "6196fc9b5d573f2efdd8d98c",
+        "6196fc9b5d573f2efdd8d98c",
+      ]
+    }
   }], experiments: [{
     name: "Firing baking soda",
     id: "xxxxxx",
