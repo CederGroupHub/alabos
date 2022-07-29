@@ -6,7 +6,8 @@ redirect all the method calls to the real device object via RabbitMQ. The real d
 DeviceManager class, which will handle all the request to run certain methods on the real device.
 """
 
-from concurrent.futures import Future
+from concurrent.futures import Future, ThreadPoolExecutor
+from enum import Enum, auto
 from functools import partial
 from threading import Thread
 from typing import Optional, Any, Dict, NoReturn, cast, Callable
@@ -25,6 +26,23 @@ from .utils.module_ops import load_definition
 
 DEFAULT_SERVER_QUEUE_SUFFIX = ".device_rpc"
 DEFAULT_CLIENT_QUEUE_SUFFIX = DEFAULT_SERVER_QUEUE_SUFFIX + ".reply_to"
+
+
+class MethodCallStatus(Enum):
+    PENDING = auto()
+    IN_PROGRESS = auto()
+    SUCCESS = auto()
+    FAILURE = auto()
+
+
+class DeviceMethodCallState:
+    """
+    holds the status of a pending method call to a device
+    """
+
+    status: MethodCallStatus
+    future: Future
+    last_updated: float
 
 
 class DeviceWrapper:
@@ -97,12 +115,14 @@ class DeviceManager:
         )
         self._device_view = DeviceView()
         self._check_status = _check_status
+        self.threads = []
 
     def run(self):
         """
         Start to listen on the device_rpc queue and conduct the command one by one.
         """
-        with get_rabbitmq_connection().channel() as channel:
+        self.connection = get_rabbitmq_connection()
+        with self.connection.channel() as channel:
             channel.queue_declare(
                 queue=self._rpc_queue_name,
                 auto_delete=True,
@@ -115,6 +135,43 @@ class DeviceManager:
                 consumer_tag=self._rpc_queue_name,
             )
             channel.start_consuming()
+
+    def _execute_command_wrapper(
+        self,
+        channel,
+        delivery_tag,
+        props,
+        device,
+        method,
+        *args,
+        **kwargs,
+    ):
+        """
+        Execute a command on the device. Acknowledges completion on rabbitmq channel.
+        """
+
+        def callback_publish(channel, delivery_tag, props, response):
+            if props.reply_to is not None:
+                channel.basic_publish(
+                    exchange="",
+                    routing_key=props.reply_to,
+                    properties=pika.BasicProperties(
+                        correlation_id=props.correlation_id,
+                        content_type="application/python-dill",
+                    ),
+                    body=dill.dumps(response),
+                )
+
+            channel.basic_ack(delivery_tag=cast(int, delivery_tag))
+
+        try:
+            result = self._device_view.execute_command(device, method, *args, **kwargs)
+            response = {"status": "success", "result": result}
+        except Exception as e:
+            response = {"status": "failure", "result": e}
+
+        cb = partial(callback_publish, channel, delivery_tag, props, response)
+        self.connection.add_callback_threadsafe(cb)
 
     def on_message(
         self,
@@ -143,43 +200,31 @@ class DeviceManager:
             body["device"]
         )
 
-        try:
-            # check if the device is currently occupied by this task
-            if self._check_status and (
-                device_entry is None
-                or device_entry["status"] != DeviceStatus.OCCUPIED.name
-                or device_entry["task_id"] != ObjectId(body["task_id"])
-            ):
-                raise PermissionError(
-                    f"Currently the task ({body['task_id']}) "
-                    f"does not occupy this device: {body['device']}"
-                )
-
-            result = self._device_view.execute_command(
-                body["device"], body["method"], *body["args"], **body["kwargs"]
-            )
-            response = {
-                "status": "success",
-                "result": result,
-            }
-        except Exception as error:  # pylint: disable=broad-except
-            response = {
-                "status": "fail",
-                "result": error,
-            }
-
-        if props.reply_to is not None:
-            channel.basic_publish(
-                exchange="",
-                routing_key=props.reply_to,
-                properties=pika.BasicProperties(
-                    correlation_id=props.correlation_id,
-                    content_type="application/python-dill",
-                ),
-                body=dill.dumps(response),
+        # check if the device is currently occupied by this task
+        if self._check_status and (
+            device_entry is None
+            or device_entry["status"] != DeviceStatus.OCCUPIED.name
+            or device_entry["task_id"] != ObjectId(body["task_id"])
+        ):
+            raise PermissionError(
+                f"Currently the task ({body['task_id']}) "
+                f"does not occupy this device: {body['device']}"
             )
 
-        channel.basic_ack(delivery_tag=cast(int, method.delivery_tag))
+        thread = Thread(
+            target=self._execute_command_wrapper,
+            args=(
+                channel,
+                method.delivery_tag,
+                props,
+                body["device"],
+                body["method"],
+                *body["args"],
+            ),
+            kwargs=body["kwargs"],
+        )
+        self.threads.append(thread)
+        thread.start()
 
 
 class DevicesClient:  # pylint: disable=too-many-instance-attributes
@@ -284,7 +329,7 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
                 ),
             )
         )
-        return f.result(timeout=self._timeout)
+        return f.result()
 
     def on_message(
         self,
