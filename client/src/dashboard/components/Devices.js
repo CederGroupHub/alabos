@@ -34,43 +34,45 @@ const StyledDevicesDiv = styled.div`
   }
 `;
 
-function Devices({devices}) {
-    return (
-        <TableContainer style={{height: "100%"}} component={Paper}>
-            <StyledDevicesDiv>
-                <Typography variant="h4" component="h3">Device View</Typography>
-                <Table stickyHeader aria-label="device table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell><b>Device Name</b></TableCell>
-                            <TableCell align="center"><b>Type</b></TableCell>
-                            <TableCell align="center"><b>Status</b></TableCell>
-                            <TableCell align="center"><b>Task</b></TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {devices.map((row) => (
-                            <TableRow
-                                key={row.name}
-                                sx={{'&:last-child td, &:last-child th': {border: 0}}}
-                            >
-                                <TableCell component="th" scope="row">
-                                    {row.name}
-                                </TableCell>
-                                <TableCell align="center">{row.type}</TableCell>
-                                <TableCell align="center">
+function Devices({ devices }) {
+  return (
+    <TableContainer style={{ height: "100%" }} component={Paper}>
+      <StyledDevicesDiv>
+        <Typography variant="h4" component="h3">Device View</Typography>
+        <Table stickyHeader aria-label="device table">
+          <TableHead>
+            <TableRow>
+              <TableCell><b>Device Name</b></TableCell>
+              <TableCell align="center"><b>Type</b></TableCell>
+              <TableCell align="center"><b>Samples</b></TableCell>
+              <TableCell align="center"><b>Status</b></TableCell>
+              <TableCell align="center"><b>Task</b></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {devices.map((row) => (
+              <TableRow
+                key={row.name}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              >
+                <TableCell component="th" scope="row">
+                  {row.name}
+                </TableCell>
+                <TableCell align="center">{row.type}</TableCell>
+                <TableCell align="center">{row.type}</TableCell>
+                <TableCell align="center">
                   <span className={`status status-${row.status.toLowerCase()}`}>
                     {row.status === "OCCUPIED" || row.status === "IDLE" ? '⬤' : ''} {row.status}
                   </span>
-                                </TableCell>
-                                <TableCell align="center"><span className="task-id">{row.task}</span></TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </StyledDevicesDiv>
-        </TableContainer>
-    )
+                </TableCell>
+                <TableCell align="center"><span className="task-id">{row.task}</span></TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </StyledDevicesDiv>
+    </TableContainer>
+  )
 }
 
 export default Devices;
