@@ -10,7 +10,6 @@ from concurrent.futures import Future
 from functools import partial
 from threading import Thread
 from typing import Optional, Any, Dict, NoReturn, cast, Callable
-from uuid import uuid4
 
 import dill
 import pika
