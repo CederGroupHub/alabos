@@ -7,15 +7,12 @@ DeviceManager class, which will handle all the request to run certain methods on
 """
 
 from concurrent.futures import Future
-import time
-from enum import Enum, auto
 from functools import partial
 from threading import Thread
 from typing import Optional, Any, Dict, NoReturn, cast, Callable
 from uuid import uuid4
 
 import dill
-from pexpect import TIMEOUT
 import pika
 from bson import ObjectId
 from pika import BasicProperties
@@ -29,14 +26,6 @@ from .utils.module_ops import load_definition
 
 DEFAULT_SERVER_QUEUE_SUFFIX = ".device_rpc"
 DEFAULT_CLIENT_QUEUE_SUFFIX = DEFAULT_SERVER_QUEUE_SUFFIX + ".reply_to"
-COMMUNICATION_TIMEOUT = 30
-
-
-class DeviceCommandStatus(Enum):
-    REQUESTED = auto()
-    IN_PROGRESS = auto()
-    SUCCESS = auto()
-    FAILED = auto()
 
 
 class DeviceWrapper:
@@ -214,9 +203,12 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
         self._rpc_queue_name = (
             AlabConfig()["general"]["name"] + DEFAULT_SERVER_QUEUE_SUFFIX
         )
-        self._rpc_reply_queue_name = str(task_id) + DEFAULT_CLIENT_QUEUE_SUFFIX
+        self._rpc_reply_queue_name = (
+            str(task_id) + DEFAULT_CLIENT_QUEUE_SUFFIX
+        )  # TODO does this have to be taskid, or can be random? I think this dies with the resourcerequest context manager anyways?
+        # self._rpc_reply_queue_name = str(uuid4()) + DEFAULT_CLIENT_QUEUE_SUFFIX
         self._task_id = task_id
-        self._running: Dict[ObjectId, Future] = {}
+        self._waiting: Dict[ObjectId, Future] = {}
 
         self._conn = get_rabbitmq_connection()
         self._channel = self._conn.channel()
@@ -234,6 +226,8 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
         self._thread = Thread(target=self._channel.start_consuming)
         self._thread.daemon = True
         self._thread.start()
+
+        self._timeout = timeout
 
     def __getitem__(self, device_name: str):
         return self.create_device_wrapper(device_name=device_name)
@@ -268,14 +262,9 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
         """
         assert self._conn and self._channel
 
-        # f: Future = Future()
+        f: Future = Future()
         correlation_id = ObjectId()
-        f = Future()
-        self._running[correlation_id] = {
-            "status": DeviceCommandStatus.REQUESTED,
-            "future": f,
-            "last_update": time.time(),
-        }
+        self._waiting[correlation_id] = f
         self._conn.add_callback_threadsafe(
             lambda: self._channel.basic_publish(
                 exchange="",
@@ -296,13 +285,7 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
                 ),
             )
         )
-        while f.running():
-            if time.time() - self._running[correlation_id]["last_update"] > COMMUNICATION_TIMEOUT:
-                raise TimeoutError(
-                    f"Timeout when calling {device_name}.{method} "
-                    f"with args {args} and kwargs {kwargs}"
-                )
-        return f.result()
+        return f.result(timeout=self._timeout)
 
     def on_message(
         self,
@@ -315,11 +298,9 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
         Callback function to handle a returned message from Device Manager
         """
         body = dill.loads(_body)
-        item = self._running[properties.correlation_id]
-        item["status"] = DeviceCommandStatus(body["status"])
-        item["last_update"] = time.time()
 
-        if item["status"] == DeviceCommandStatus.SUCCESS:
-            item["future"].set_result(body["result"])
+        f = self._waiting.pop(ObjectId(properties.correlation_id))
+        if body["status"] == "success":
+            f.set_result(body["result"])
         else:
-            item["future"].set_exception(body["result"])
+            f.set_exception(body["result"])
