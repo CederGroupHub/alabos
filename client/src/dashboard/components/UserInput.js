@@ -45,15 +45,61 @@ const StyledDevicesDiv = styled.div`
 
 function UserInputs({ userinputs }) {
   //https://upmostly.com/tutorials/how-to-post-requests-react
-  function handleClick(request_id, status) {
-    fetch(SUBMIT_RESPONSE_API, {
-      method: 'POST',
-      mode: 'cors',
-      body: JSON.stringify({
-        "request_id": request_id,
-        "status": status
-      })
-    });
+  class UserInputRow extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        text: ''
+      };
+    }
+    handleClick = (status) => {
+      fetch(SUBMIT_RESPONSE_API, {
+        method: 'POST',
+        mode: 'cors',
+        body: JSON.stringify({
+          "request_id": this.props.request.id,
+          "status": status,
+          "note": this.state.text
+        })
+      });
+    }
+    render() {
+      return (
+        <TableRow
+          key={this.props.request.id}
+          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+        >
+          <TableCell component="th" scope="row">
+            {this.props.request.prompt}
+          </TableCell>
+
+          <TableCell align="center">{this.props.request.task_id}</TableCell>
+          <TableCell align="center">
+            <TextField
+              id="outlined-basic"
+              label="Note (Optional)"
+              variant="outlined"
+              onChange={(event) => this.setState({ text: event.target.value })}
+              value={this.state.text}
+            />
+          </TableCell>
+          <TableCell align="center">
+            <Button
+              variant="contained"
+              onClick={() => this.handleClick("success")}
+            >
+              Success
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => this.handleClick("error")}
+            >
+              Error
+            </Button>
+          </TableCell>
+        </TableRow>
+      );
+    }
   }
   return (
     <TableContainer style={{ height: "100%" }} component={Paper}>
@@ -62,49 +108,20 @@ function UserInputs({ userinputs }) {
         <Table stickyHeader aria-label="user input table">
           <TableHead>
             <TableRow>
-              <TableCell><b>Prompt</b></TableCell>
+              <TableCell align="center"><b>Prompt</b></TableCell>
               <TableCell align="center"><b>Task ID</b></TableCell>
               <TableCell align="center"><b>Notes</b></TableCell>
-              <TableCell align="center"><b>Response Options</b></TableCell>
+              <TableCell align="center"><b>Send Response</b></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {userinputs.map((row) => (
-              <TableRow
-                key={row.id}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {row.prompt}
-                </TableCell>
-
-                <TableCell align="center">{row.task_id}</TableCell>
-
-                <TableCell align="center">
-                  <TextField id="outlined-basic" label="Note (Optional)" variant="outlined" />
-                </TableCell>
-
-                <TableCell align="center">
-                  <Button
-                    variant="contained"
-                    onClick={() => handleClick(row.id, "success")}
-                  >
-                    Success
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    onClick={() => handleClick(row.id, "error")}
-                  >
-                    Error
-                  </Button>
-                </TableCell>
-
-              </TableRow>
+            {userinputs.map((userinputrequest) => (
+              <UserInputRow request={userinputrequest} />
             ))}
           </TableBody>
         </Table>
       </StyledDevicesDiv>
-    </TableContainer>
+    </TableContainer >
   )
 }
 
