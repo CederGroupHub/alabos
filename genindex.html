@@ -264,6 +264,11 @@
        alab_management.task_manager module
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="alab_management.user_input.html">
+       alab_management.user_input module
+      </a>
+     </li>
     </ul>
    </li>
   </ul>
@@ -458,8 +463,6 @@
         <li><a href="alab_management.experiment_view.experiment.html#module-alab_management.experiment_view.experiment">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     alab_management.experiment_view.experiment_view
 
@@ -467,6 +470,8 @@
         <li><a href="alab_management.experiment_view.experiment_view.html#module-alab_management.experiment_view.experiment_view">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     alab_management.lab_view
 
@@ -544,6 +549,13 @@
         <li><a href="alab_management.task_view.task_view.html#module-alab_management.task_view.task_view">module</a>
 </li>
       </ul></li>
+      <li>
+    alab_management.user_input
+
+      <ul>
+        <li><a href="alab_management.user_input.html#module-alab_management.user_input">module</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -572,14 +584,16 @@
 </li>
       <li><a href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.clean_up_sample_position_collection">clean_up_sample_position_collection() (SampleView method)</a>
 </li>
+      <li><a href="alab_management.user_input.html#alab_management.user_input.UserInputView.clean_up_user_input_collection">clean_up_user_input_collection() (UserInputView method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentStatus.COMPLETED">COMPLETED (ExperimentStatus attribute)</a>
 
       <ul>
         <li><a href="alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.TaskStatus.COMPLETED">(TaskStatus attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.device_manager.html#alab_management.device_manager.DevicesClient.create_device_wrapper">create_device_wrapper() (DevicesClient method)</a>
 </li>
       <li><a href="alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.create_experiment">create_experiment() (ExperimentView method)</a>
@@ -645,6 +659,8 @@
 </li>
         <li><a href="alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.TaskStatus.ERROR">(TaskStatus attribute)</a>
 </li>
+        <li><a href="alab_management.user_input.html#alab_management.user_input.UserRequestStatus.ERROR">(UserRequestStatus attribute)</a>
+</li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -688,6 +704,8 @@
 </li>
       <li><a href="alab_management.device_view.device.html#alab_management.device_view.device.get_all_devices">get_all_devices() (in module alab_management.device_view.device)</a>
 </li>
+      <li><a href="alab_management.user_input.html#alab_management.user_input.UserInputView.get_all_pending_requests">get_all_pending_requests() (UserInputView method)</a>
+</li>
       <li><a href="alab_management.task_view.task.html#alab_management.task_view.task.get_all_tasks">get_all_tasks() (in module alab_management.task_view.task)</a>
 </li>
       <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_available_devices">get_available_devices() (DeviceView method)</a>
@@ -709,7 +727,11 @@
       <li><a href="alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.get_ready_tasks">get_ready_tasks() (TaskView method)</a>
 </li>
       <li><a href="alab_management.task_manager.html#alab_management.task_manager.RequestMixin.get_request">get_request() (RequestMixin method)</a>
+
+      <ul>
+        <li><a href="alab_management.user_input.html#alab_management.user_input.UserInputView.get_request">(UserInputView method)</a>
 </li>
+      </ul></li>
       <li><a href="alab_management.task_manager.html#alab_management.task_manager.RequestMixin.get_requests_by_status">get_requests_by_status() (RequestMixin method)</a>
 </li>
       <li><a href="alab_management.lab_view.html#alab_management.lab_view.LabView.get_sample">get_sample() (LabView method)</a>
@@ -760,9 +782,11 @@
 </li>
       <li><a href="alab_management.logger.html#alab_management.logger.LoggingLevel.INFO">INFO (LoggingLevel attribute)</a>
 </li>
+      <li><a href="alab_management.experiment_view.experiment.html#alab_management.experiment_view.experiment.InputExperiment">InputExperiment (class in alab_management.experiment_view.experiment)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="alab_management.experiment_view.experiment.html#alab_management.experiment_view.experiment.InputExperiment">InputExperiment (class in alab_management.experiment_view.experiment)</a>
+      <li><a href="alab_management.user_input.html#alab_management.user_input.UserInputView.insert_request">insert_request() (UserInputView method)</a>
 </li>
       <li><a href="alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.is_running">is_running() (BaseDevice method)</a>
 </li>
@@ -854,6 +878,8 @@
 </li>
         <li><a href="alab_management.task_view.task_view.html#module-alab_management.task_view.task_view">alab_management.task_view.task_view</a>
 </li>
+        <li><a href="alab_management.user_input.html#module-alab_management.user_input">alab_management.user_input</a>
+</li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -930,6 +956,8 @@
       <ul>
         <li><a href="alab_management.task_manager.html#alab_management.task_manager.RequestStatus.PENDING">(RequestStatus attribute)</a>
 </li>
+        <li><a href="alab_management.user_input.html#alab_management.user_input.UserRequestStatus.PENDING">(UserRequestStatus attribute)</a>
+</li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -974,6 +1002,8 @@
 </li>
       </ul></li>
       <li><a href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.request_sample_positions">request_sample_positions() (SampleView method)</a>
+</li>
+      <li><a href="alab_management.user_input.html#alab_management.user_input.request_user_input">request_user_input() (in module alab_management.user_input)</a>
 </li>
       <li><a href="alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.TaskStatus.REQUESTING_RESOURCE">REQUESTING_RESOURCE (TaskStatus attribute)</a>
 </li>
@@ -1027,10 +1057,10 @@
 </li>
       <li><a href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SamplePositionStatus">SamplePositionStatus (class in alab_management.sample_view.sample_view)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.experiment_view.experiment.html#alab_management.experiment_view.experiment.InputExperiment.samples">samples (InputExperiment attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView">SampleView (class in alab_management.sample_view.sample_view)</a>
 </li>
       <li><a href="alab_management.sample_view.sample.html#alab_management.sample_view.sample.SamplePosition.SEPARATOR">SEPARATOR (SamplePosition attribute)</a>
@@ -1038,6 +1068,8 @@
       <li><a href="alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.TaskStatus.STOPPED">STOPPED (TaskStatus attribute)</a>
 </li>
       <li><a href="alab_management.task_manager.html#alab_management.task_manager.TaskManager.submit_ready_tasks">submit_ready_tasks() (TaskManager method)</a>
+</li>
+      <li><a href="alab_management.user_input.html#alab_management.user_input.UserRequestStatus.SUCCESS">SUCCESS (UserRequestStatus attribute)</a>
 </li>
       <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.sync_device_status">sync_device_status() (DeviceView method)</a>
 </li>
@@ -1082,22 +1114,30 @@
       <li><a href="alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.update_experiment_status">update_experiment_status() (ExperimentView method)</a>
 </li>
       <li><a href="alab_management.task_manager.html#alab_management.task_manager.RequestMixin.update_request_status">update_request_status() (RequestMixin method)</a>
+
+      <ul>
+        <li><a href="alab_management.user_input.html#alab_management.user_input.UserInputView.update_request_status">(UserInputView method)</a>
 </li>
+      </ul></li>
       <li><a href="alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.update_result">update_result() (TaskView method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.update_sample_task_id">update_sample_task_id() (ExperimentView method)</a>
 
       <ul>
         <li><a href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.update_sample_task_id">(SampleView method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.update_status">update_status() (TaskView method)</a>
 </li>
       <li><a href="alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.update_task_dependency">update_task_dependency() (TaskView method)</a>
 </li>
       <li><a href="alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.TaskPriority.URGENT">URGENT (TaskPriority attribute)</a>
+</li>
+      <li><a href="alab_management.user_input.html#alab_management.user_input.UserInputView">UserInputView (class in alab_management.user_input)</a>
+</li>
+      <li><a href="alab_management.user_input.html#alab_management.user_input.UserRequestStatus">UserRequestStatus (class in alab_management.user_input)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1105,6 +1145,8 @@
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="alab_management.user_input.html#alab_management.user_input.UserInputView.wait_for_user_input">wait_for_user_input() (UserInputView method)</a>
+</li>
       <li><a href="alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.TaskStatus.WAITING">WAITING (TaskStatus attribute)</a>
 </li>
   </ul></td>
