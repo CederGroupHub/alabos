@@ -415,6 +415,13 @@
 </li>
       </ul></li>
       <li>
+    alab_management.device_manager
+
+      <ul>
+        <li><a href="alab_management.device_manager.html#module-alab_management.device_manager">module</a>
+</li>
+      </ul></li>
+      <li>
     alab_management.device_view
 
       <ul>
@@ -465,6 +472,13 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    alab_management.lab_view
+
+      <ul>
+        <li><a href="alab_management.lab_view.html#module-alab_management.lab_view">module</a>
+</li>
+      </ul></li>
       <li>
     alab_management.logger
 
@@ -560,6 +574,8 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="alab_management.device_manager.html#alab_management.device_manager.DevicesClient.call">call() (DevicesClient method)</a>
+</li>
       <li><a href="alab_management.task_manager.html#alab_management.task_manager.RequestStatus.CANCELED">CANCELED (RequestStatus attribute)</a>
 </li>
       <li><a href="alab_management.logger.html#alab_management.logger.LoggingType.CHARACTERIZATION_RESULT">CHARACTERIZATION_RESULT (LoggingType attribute)</a>
@@ -578,6 +594,8 @@
         <li><a href="alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.TaskStatus.COMPLETED">(TaskStatus attribute)</a>
 </li>
       </ul></li>
+      <li><a href="alab_management.device_manager.html#alab_management.device_manager.DevicesClient.create_device_wrapper">create_device_wrapper() (DevicesClient method)</a>
+</li>
       <li><a href="alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.create_experiment">create_experiment() (ExperimentView method)</a>
 </li>
       <li><a href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.create_sample">create_sample() (SampleView method)</a>
@@ -602,13 +620,23 @@
         <li><a href="alab_management.sample_view.sample.html#alab_management.sample_view.sample.SamplePosition.description">(SamplePosition attribute)</a>
 </li>
       </ul></li>
+      <li><a href="alab_management.logger.html#alab_management.logger.LoggingType.DEVICE_SIGNAL">DEVICE_SIGNAL (LoggingType attribute)</a>
+</li>
+      <li><a href="alab_management.device_manager.html#alab_management.device_manager.DeviceManager">DeviceManager (class in alab_management.device_manager)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="alab_management.logger.html#alab_management.logger.LoggingType.DEVICE_SIGNAL">DEVICE_SIGNAL (LoggingType attribute)</a>
+      <li><a href="alab_management.lab_view.html#alab_management.lab_view.DeviceRunningException">DeviceRunningException</a>
+</li>
+      <li><a href="alab_management.device_manager.html#alab_management.device_manager.DevicesClient">DevicesClient (class in alab_management.device_manager)</a>
 </li>
       <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceStatus">DeviceStatus (class in alab_management.device_view.device_view)</a>
 </li>
       <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView">DeviceView (class in alab_management.device_view.device_view)</a>
+</li>
+      <li><a href="alab_management.device_manager.html#alab_management.device_manager.DeviceWrapper">DeviceWrapper (class in alab_management.device_manager)</a>
+</li>
+      <li><a href="alab_management.device_manager.html#alab_management.device_manager.DeviceWrapper.DeviceMethodWrapper">DeviceWrapper.DeviceMethodWrapper (class in alab_management.device_manager)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -692,6 +720,8 @@
 </li>
       <li><a href="alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.get_experiments_with_status">get_experiments_with_status() (ExperimentView method)</a>
 </li>
+      <li><a href="alab_management.lab_view.html#alab_management.lab_view.LabView.get_locked_sample_positions">get_locked_sample_positions() (LabView method)</a>
+</li>
       <li><a href="alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.get_ready_tasks">get_ready_tasks() (TaskView method)</a>
 </li>
   </ul></td>
@@ -704,8 +734,12 @@
       </ul></li>
       <li><a href="alab_management.task_manager.html#alab_management.task_manager.RequestMixin.get_requests_by_status">get_requests_by_status() (RequestMixin method)</a>
 </li>
-      <li><a href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_sample">get_sample() (SampleView method)</a>
+      <li><a href="alab_management.lab_view.html#alab_management.lab_view.LabView.get_sample">get_sample() (LabView method)</a>
+
+      <ul>
+        <li><a href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_sample">(SampleView method)</a>
 </li>
+      </ul></li>
       <li><a href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_sample_position">get_sample_position() (SampleView method)</a>
 </li>
       <li><a href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_sample_position_status">get_sample_position_status() (SampleView method)</a>
@@ -766,6 +800,8 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="alab_management.lab_view.html#alab_management.lab_view.LabView">LabView (class in alab_management.lab_view)</a>
+</li>
       <li><a href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.lock_sample_position">lock_sample_position() (SampleView method)</a>
 </li>
       <li><a href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SamplePositionStatus.LOCKED">LOCKED (SamplePositionStatus attribute)</a>
@@ -794,6 +830,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.experiment_manager.html#alab_management.experiment_manager.ExperimentManager.mark_completed_experiments">mark_completed_experiments() (ExperimentManager method)</a>
 </li>
+      <li><a href="alab_management.device_manager.html#alab_management.device_manager.DeviceWrapper.DeviceMethodWrapper.method">method (DeviceWrapper.DeviceMethodWrapper property)</a>
+</li>
       <li>
     module
 
@@ -803,6 +841,8 @@
         <li><a href="alab_management.config.html#module-alab_management.config">alab_management.config</a>
 </li>
         <li><a href="alab_management.data_explorer.html#module-alab_management.data_explorer">alab_management.data_explorer</a>
+</li>
+        <li><a href="alab_management.device_manager.html#module-alab_management.device_manager">alab_management.device_manager</a>
 </li>
         <li><a href="alab_management.device_view.html#module-alab_management.device_view">alab_management.device_view</a>
 </li>
@@ -817,6 +857,8 @@
         <li><a href="alab_management.experiment_view.experiment.html#module-alab_management.experiment_view.experiment">alab_management.experiment_view.experiment</a>
 </li>
         <li><a href="alab_management.experiment_view.experiment_view.html#module-alab_management.experiment_view.experiment_view">alab_management.experiment_view.experiment_view</a>
+</li>
+        <li><a href="alab_management.lab_view.html#module-alab_management.lab_view">alab_management.lab_view</a>
 </li>
         <li><a href="alab_management.logger.html#module-alab_management.logger">alab_management.logger</a>
 </li>
@@ -843,17 +885,23 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.move_sample">move_sample() (SampleView method)</a>
+      <li><a href="alab_management.lab_view.html#alab_management.lab_view.LabView.move_sample">move_sample() (LabView method)</a>
+
+      <ul>
+        <li><a href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.move_sample">(SampleView method)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="alab_management.experiment_view.experiment.html#alab_management.experiment_view.experiment.InputExperiment.name">name (InputExperiment attribute)</a>
+      <li><a href="alab_management.device_manager.html#alab_management.device_manager.DeviceWrapper.name">name (DeviceWrapper property)</a>
 
       <ul>
+        <li><a href="alab_management.experiment_view.experiment.html#alab_management.experiment_view.experiment.InputExperiment.name">(InputExperiment attribute)</a>
+</li>
         <li><a href="alab_management.sample_view.sample.html#alab_management.sample_view.sample.Sample.name">(Sample attribute)</a>
 </li>
         <li><a href="alab_management.sample_view.sample.html#alab_management.sample_view.sample.SamplePosition.name">(SamplePosition attribute)</a>
@@ -883,10 +931,16 @@
         <li><a href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SamplePositionStatus.OCCUPIED">(SamplePositionStatus attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.occupy_device">occupy_device() (DeviceView method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="alab_management.device_manager.html#alab_management.device_manager.DeviceManager.on_message">on_message() (DeviceManager method)</a>
+
+      <ul>
+        <li><a href="alab_management.device_manager.html#alab_management.device_manager.DevicesClient.on_message">(DevicesClient method)</a>
+</li>
+      </ul></li>
       <li><a href="alab_management.logger.html#alab_management.logger.LoggingType.OTHER">OTHER (LoggingType attribute)</a>
 </li>
   </ul></td>
@@ -913,7 +967,7 @@
 </li>
       <li><a href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SamplePositionRequest.prefix">prefix (SamplePositionRequest attribute)</a>
 </li>
-      <li><a href="alab_management.task_manager.html#alab_management.task_manager.ResourcesRequest.preprocess">preprocess() (ResourcesRequest class method)</a>
+      <li><a href="alab_management.lab_view.html#alab_management.lab_view.ResourcesRequest.preprocess">preprocess() (ResourcesRequest class method)</a>, <a href="alab_management.task_manager.html#alab_management.task_manager.ResourcesRequest.preprocess">[1]</a>
 </li>
       <li><a href="alab_management.task_view.task.html#alab_management.task_view.task.BaseTask.priority">priority (BaseTask property)</a>
 </li>
@@ -943,27 +997,37 @@
 </li>
       <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.request_devices">request_devices() (DeviceView method)</a>
 </li>
-      <li><a href="alab_management.task_manager.html#alab_management.task_manager.ResourceRequester.request_resources">request_resources() (ResourceRequester method)</a>
+      <li><a href="alab_management.lab_view.html#alab_management.lab_view.LabView.request_resources">request_resources() (LabView method)</a>
+
+      <ul>
+        <li><a href="alab_management.task_manager.html#alab_management.task_manager.ResourceRequester.request_resources">(ResourceRequester method)</a>
 </li>
+      </ul></li>
       <li><a href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.request_sample_positions">request_sample_positions() (SampleView method)</a>
 </li>
       <li><a href="alab_management.user_input.html#alab_management.user_input.request_user_input">request_user_input() (in module alab_management.user_input)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.TaskStatus.REQUESTING_RESOURCE">REQUESTING_RESOURCE (TaskStatus attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.task_manager.html#alab_management.task_manager.RequestMixin">RequestMixin (class in alab_management.task_manager)</a>
 </li>
       <li><a href="alab_management.task_manager.html#alab_management.task_manager.RequestStatus">RequestStatus (class in alab_management.task_manager)</a>
 </li>
       <li><a href="alab_management.task_manager.html#alab_management.task_manager.ResourceRequester">ResourceRequester (class in alab_management.task_manager)</a>
 </li>
-      <li><a href="alab_management.task_manager.html#alab_management.task_manager.ResourcesRequest">ResourcesRequest (class in alab_management.task_manager)</a>
+      <li><a href="alab_management.lab_view.html#alab_management.lab_view.ResourcesRequest">ResourcesRequest (class in alab_management.lab_view)</a>
+
+      <ul>
+        <li><a href="alab_management.task_manager.html#alab_management.task_manager.ResourcesRequest">(class in alab_management.task_manager)</a>
 </li>
+      </ul></li>
       <li><a href="alab_management.task_view.task.html#alab_management.task_view.task.BaseTask.run">run() (BaseTask method)</a>, <a href="task_definition.html#alab_management.task_view.task.BaseTask.run">[1]</a>
 
       <ul>
+        <li><a href="alab_management.device_manager.html#alab_management.device_manager.DeviceManager.run">(DeviceManager method)</a>
+</li>
         <li><a href="alab_management.experiment_manager.html#alab_management.experiment_manager.ExperimentManager.run">(ExperimentManager method)</a>
 </li>
         <li><a href="alab_management.task_manager.html#alab_management.task_manager.TaskManager.run">(TaskManager method)</a>
@@ -1021,8 +1085,12 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="alab_management.sample_view.sample.html#alab_management.sample_view.sample.Sample.task_id">task_id (Sample attribute)</a>
+      <li><a href="alab_management.lab_view.html#alab_management.lab_view.LabView.task_id">task_id (LabView property)</a>
+
+      <ul>
+        <li><a href="alab_management.sample_view.sample.html#alab_management.sample_view.sample.Sample.task_id">(Sample attribute)</a>
 </li>
+      </ul></li>
       <li><a href="alab_management.task_manager.html#alab_management.task_manager.TaskManager">TaskManager (class in alab_management.task_manager)</a>
 </li>
       <li><a href="alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.TaskPriority">TaskPriority (class in alab_management.task_view.task_enums)</a>
