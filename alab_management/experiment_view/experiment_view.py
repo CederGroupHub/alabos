@@ -19,6 +19,7 @@ class ExperimentStatus(Enum):
     - ``RUNNING``: The experiment has been submitted and put in the queue
     - ``COMPLETED``: The experiment has been completed
     """
+
     PENDING = auto()
     RUNNING = auto()
     COMPLETED = auto()
@@ -42,21 +43,28 @@ class ExperimentView:
             experiment: the required format of experiment, see also
               :py:class:`InputExperiment <alab_management.experiment_view.experiment.InputExperiment>`
         """
-        # check the format of input args
-        result = self._experiment_collection.insert_one({
-            **experiment.dict(),
-            "status": ExperimentStatus.PENDING.name,
-        })
+        # format of experiment dict is checked in api endpoint upstream of this method
+        result = self._experiment_collection.insert_one(
+            {
+                **experiment.dict(),
+                "status": ExperimentStatus.PENDING.name,
+            }
+        )
 
         return cast(ObjectId, result.inserted_id)
 
-    def get_experiments_with_status(self, status: Union[str, ExperimentStatus]) -> List[Dict[str, Any]]:
+    def get_experiments_with_status(
+        self, status: Union[str, ExperimentStatus]
+    ) -> List[Dict[str, Any]]:
         """
         Filter experiments by its status
         """
         if isinstance(status, str):
             status = ExperimentStatus[status]
-        return cast(List[Dict[str, Any]], self._experiment_collection.find({"status": status.name}))
+        return cast(
+            List[Dict[str, Any]],
+            self._experiment_collection.find({"status": status.name}),
+        )
 
     def get_experiment(self, exp_id: ObjectId) -> Optional[Dict[str, Any]]:
         """
@@ -74,12 +82,18 @@ class ExperimentView:
         if experiment is None:
             raise ValueError(f"Cannot find experiment with id: {exp_id}")
 
-        self._experiment_collection.update_one({"_id": exp_id}, {"$set": {
-            "status": status.name,
-        }})
+        self._experiment_collection.update_one(
+            {"_id": exp_id},
+            {
+                "$set": {
+                    "status": status.name,
+                }
+            },
+        )
 
-    def update_sample_task_id(self, exp_id, sample_ids: List[ObjectId],
-                              task_ids: List[ObjectId]):
+    def update_sample_task_id(
+        self, exp_id, sample_ids: List[ObjectId], task_ids: List[ObjectId]
+    ):
         """
         At the creation of experiment, the id of samples and tasks has not been assigned
 
@@ -97,7 +111,18 @@ class ExperimentView:
         if len(experiment["tasks"]) != len(task_ids):
             raise ValueError("Difference length of tasks and input task ids")
 
-        self._experiment_collection.update_one({"_id": exp_id}, {"$set": {
-            **{f"samples.{i}.sample_id": sample_id for i, sample_id in enumerate(sample_ids)},
-            **{f"tasks.{j}.task_id": task_id for j, task_id in enumerate(task_ids)},
-        }})
+        self._experiment_collection.update_one(
+            {"_id": exp_id},
+            {
+                "$set": {
+                    **{
+                        f"samples.{i}.sample_id": sample_id
+                        for i, sample_id in enumerate(sample_ids)
+                    },
+                    **{
+                        f"tasks.{j}.task_id": task_id
+                        for j, task_id in enumerate(task_ids)
+                    },
+                }
+            },
+        )

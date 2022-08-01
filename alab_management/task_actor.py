@@ -47,8 +47,9 @@ def run_task(task_id_str: str):
         task: BaseTask = task_type(
             task_id=task_id,
             lab_view=LabView(task_id=task_id),
-            sample=list(task_entry["samples"].values()),  # only the ObjectId's are sent
-            # **task_entry["samples"],
+            samples=[
+                sample["sample_id"] for sample in task_entry["samples"]
+            ],  # only the sample ObjectId's are sent
             **task_entry["parameters"],
         )
     except Exception as exception:
@@ -68,8 +69,10 @@ def run_task(task_id_str: str):
         # raise ParameterError(exception.args[0]) from exception
 
     task_view.update_status(task_id=task_id, status=TaskStatus.RUNNING)
-    for sample_id in task_entry["samples"].values():
-        sample_view.update_sample_task_id(task_id=task_id, sample_id=sample_id)
+    for sample in task_entry["samples"]:
+        sample_view.update_sample_task_id(
+            task_id=task_id, sample_id=sample["sample_id"]
+        )
 
     logger.system_log(
         level="INFO",
@@ -111,5 +114,7 @@ def run_task(task_id_str: str):
             },
         )
     finally:
-        for sample_id in task_entry["samples"].values():
-            sample_view.update_sample_task_id(task_id=None, sample_id=sample_id)
+        for sample in task_entry["samples"]:
+            sample_view.update_sample_task_id(
+                task_id=None, sample_id=sample["sample_id"]
+            )

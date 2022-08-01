@@ -93,9 +93,10 @@ class ExperimentManager:
         # create tasks in the task database
         task_ids = []
         for task in tasks:
-            samples = {
-                samplename: sample_ids[samplename] for samplename in task["samples"]
-            }
+            samples = [
+                {"name": samplename, "sample_id": sample_ids[samplename]}
+                for samplename in task["samples"]
+            ]
             task_ids.append(
                 self.task_view.create_task(
                     task_type=task["type"],

@@ -88,8 +88,12 @@ class TestExperimentManager(TestCase):
         self.assertListEqual([task_id_2], task_1["next_tasks"])
         self.assertListEqual([task_id_1], task_2["prev_tasks"])
 
-        self.assertEqual(exp["samples"][0]["sample_id"], task_1["samples"]["sample"])
-        self.assertEqual(exp["samples"][1]["sample_id"], task_2["samples"]["sample"])
+        self.assertEqual(
+            exp["samples"][0]["sample_id"], task_1["samples"][0]["sample_id"]
+        )
+        self.assertEqual(
+            exp["samples"][1]["sample_id"], task_2["samples"][0]["sample_id"]
+        )
 
     def test_mark_completed_experiments(self):
         exp_template = InputExperiment(
