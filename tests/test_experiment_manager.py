@@ -17,42 +17,61 @@ class TestExperimentManager(TestCase):
         cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True)
 
     def test_handle_pending_experiments(self):
-        exp_template = InputExperiment(**{
-            "name": "test",
-            "samples": [{"name": "test_sample"}, {"name": "test_sample_2"}],
-            "tasks": [{
-                "type": "Heating",
-                "prev_tasks": [],
-                "parameters": {
-                    "p_1": 1,
-                    "p_2": 2,
-                },
-                "samples": {
-                    "sample": "test_sample"
-                }
-            }, {
-                "type": "Heating",
-                "prev_tasks": [0],
-                "parameters": {
-                    "p_1": 1,
-                    "p_2": 2,
-                },
-                "samples": {
-                    "sample": "test_sample_2"
-                }
-            }]
-        })
+        exp_template = InputExperiment(
+            **{
+                "name": "test",
+                "samples": [{"name": "test_sample"}, {"name": "test_sample_2"}],
+                "tasks": [
+                    {
+                        "type": "Heating",
+                        "prev_tasks": [],
+                        "parameters": {
+                            "p_1": 1,
+                            "p_2": 2,
+                        },
+                        "samples": {"sample": "test_sample"},
+                    },
+                    {
+                        "type": "Heating",
+                        "prev_tasks": [0],
+                        "parameters": {
+                            "p_1": 1,
+                            "p_2": 2,
+                        },
+                        "samples": [
+                            "test_sample_2",
+                        ],
+                    },
+                ],
+            }
+        )
 
-        exp_id_1 = self.experiment_manager.experiment_view.create_experiment(exp_template)
-        exp_id_2 = self.experiment_manager.experiment_view.create_experiment(exp_template)
+        exp_id_1 = self.experiment_manager.experiment_view.create_experiment(
+            exp_template
+        )
+        exp_id_2 = self.experiment_manager.experiment_view.create_experiment(
+            exp_template
+        )
 
-        self.assertEqual("PENDING", self.experiment_manager.experiment_view.get_experiment(exp_id_1)["status"])
-        self.assertEqual("PENDING", self.experiment_manager.experiment_view.get_experiment(exp_id_2)["status"])
+        self.assertEqual(
+            "PENDING",
+            self.experiment_manager.experiment_view.get_experiment(exp_id_1)["status"],
+        )
+        self.assertEqual(
+            "PENDING",
+            self.experiment_manager.experiment_view.get_experiment(exp_id_2)["status"],
+        )
 
         self.experiment_manager.handle_pending_experiments()
 
-        self.assertEqual("RUNNING", self.experiment_manager.experiment_view.get_experiment(exp_id_1)["status"])
-        self.assertEqual("RUNNING", self.experiment_manager.experiment_view.get_experiment(exp_id_2)["status"])
+        self.assertEqual(
+            "RUNNING",
+            self.experiment_manager.experiment_view.get_experiment(exp_id_1)["status"],
+        )
+        self.assertEqual(
+            "RUNNING",
+            self.experiment_manager.experiment_view.get_experiment(exp_id_2)["status"],
+        )
 
         exp = self.experiment_manager.experiment_view.get_experiment(exp_id_1)
         self.assertTrue(exp["samples"][0]["sample_id"] is not None)
@@ -73,45 +92,64 @@ class TestExperimentManager(TestCase):
         self.assertEqual(exp["samples"][1]["sample_id"], task_2["samples"]["sample"])
 
     def test_mark_completed_experiments(self):
-        exp_template = InputExperiment(**{
-            "name": "test",
-            "samples": [{"name": "test_sample"}, {"name": "test_sample_2"}],
-            "tasks": [{
-                "type": "Heating",
-                "prev_tasks": [],
-                "parameters": {
-                    "p_1": 1,
-                    "p_2": 2,
-                },
-                "samples": {
-                    "sample": "test_sample"
-                }
-            }, {
-                "type": "Heating",
-                "prev_tasks": [0],
-                "parameters": {
-                    "p_1": 1,
-                    "p_2": 2,
-                },
-                "samples": {
-                    "sample": "test_sample_2"
-                }
-            }]
-        })
+        exp_template = InputExperiment(
+            **{
+                "name": "test",
+                "samples": [{"name": "test_sample"}, {"name": "test_sample_2"}],
+                "tasks": [
+                    {
+                        "type": "Heating",
+                        "prev_tasks": [],
+                        "parameters": {
+                            "p_1": 1,
+                            "p_2": 2,
+                        },
+                        "samples": {"sample": "test_sample"},
+                    },
+                    {
+                        "type": "Heating",
+                        "prev_tasks": [0],
+                        "parameters": {
+                            "p_1": 1,
+                            "p_2": 2,
+                        },
+                        "samples": [
+                            "test_sample_2",
+                        ],
+                    },
+                ],
+            }
+        )
 
-        exp_id_1 = self.experiment_manager.experiment_view.create_experiment(exp_template)
-        exp_id_2 = self.experiment_manager.experiment_view.create_experiment(exp_template)
+        exp_id_1 = self.experiment_manager.experiment_view.create_experiment(
+            exp_template
+        )
+        exp_id_2 = self.experiment_manager.experiment_view.create_experiment(
+            exp_template
+        )
 
         self.experiment_manager.mark_completed_experiments()
 
-        self.assertEqual("PENDING", self.experiment_manager.experiment_view.get_experiment(exp_id_1)["status"])
-        self.assertEqual("PENDING", self.experiment_manager.experiment_view.get_experiment(exp_id_2)["status"])
+        self.assertEqual(
+            "PENDING",
+            self.experiment_manager.experiment_view.get_experiment(exp_id_1)["status"],
+        )
+        self.assertEqual(
+            "PENDING",
+            self.experiment_manager.experiment_view.get_experiment(exp_id_2)["status"],
+        )
 
         self.experiment_manager.handle_pending_experiments()
         self.experiment_manager.mark_completed_experiments()
 
-        self.assertEqual("RUNNING", self.experiment_manager.experiment_view.get_experiment(exp_id_1)["status"])
-        self.assertEqual("RUNNING", self.experiment_manager.experiment_view.get_experiment(exp_id_2)["status"])
+        self.assertEqual(
+            "RUNNING",
+            self.experiment_manager.experiment_view.get_experiment(exp_id_1)["status"],
+        )
+        self.assertEqual(
+            "RUNNING",
+            self.experiment_manager.experiment_view.get_experiment(exp_id_2)["status"],
+        )
 
         exp = self.experiment_manager.experiment_view.get_experiment(exp_id_1)
 
@@ -121,11 +159,23 @@ class TestExperimentManager(TestCase):
         self.experiment_manager.task_view.update_status(task_id_1, TaskStatus.COMPLETED)
         self.experiment_manager.mark_completed_experiments()
 
-        self.assertEqual("RUNNING", self.experiment_manager.experiment_view.get_experiment(exp_id_1)["status"])
-        self.assertEqual("RUNNING", self.experiment_manager.experiment_view.get_experiment(exp_id_2)["status"])
+        self.assertEqual(
+            "RUNNING",
+            self.experiment_manager.experiment_view.get_experiment(exp_id_1)["status"],
+        )
+        self.assertEqual(
+            "RUNNING",
+            self.experiment_manager.experiment_view.get_experiment(exp_id_2)["status"],
+        )
 
         self.experiment_manager.task_view.update_status(task_id_2, TaskStatus.COMPLETED)
         self.experiment_manager.mark_completed_experiments()
 
-        self.assertEqual("COMPLETED", self.experiment_manager.experiment_view.get_experiment(exp_id_1)["status"])
-        self.assertEqual("RUNNING", self.experiment_manager.experiment_view.get_experiment(exp_id_2)["status"])
+        self.assertEqual(
+            "COMPLETED",
+            self.experiment_manager.experiment_view.get_experiment(exp_id_1)["status"],
+        )
+        self.assertEqual(
+            "RUNNING",
+            self.experiment_manager.experiment_view.get_experiment(exp_id_2)["status"],
+        )

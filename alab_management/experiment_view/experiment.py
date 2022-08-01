@@ -15,7 +15,6 @@ class _Task(BaseModel):
     type: str
     parameters: Dict[str, Any]
     prev_tasks: List[int]
-    # samples: Dict[str, str]
     samples: List[str]
 
 

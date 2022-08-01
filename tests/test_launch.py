@@ -19,7 +19,9 @@ class TestLaunch(unittest.TestCase):
         self.task_view = TaskView()
         self.experiment_view = ExperimentView()
         self.main_process = subprocess.Popen(["alabos", "launch", "--port", "8896"])
-        self.worker_process = subprocess.Popen(["alabos", "launch_worker", "--processes", "4", "--threads", "1"])
+        self.worker_process = subprocess.Popen(
+            ["alabos", "launch_worker", "--processes", "4", "--threads", "1"]
+        )
         time.sleep(5)  # waiting for starting up
 
     def tearDown(self) -> None:
@@ -31,36 +33,40 @@ class TestLaunch(unittest.TestCase):
         experiment = {
             "name": "test",
             "samples": [{"name": "test_sample"}],
-            "tasks": [{
-                "type": "Starting",
-                "prev_tasks": [],
-                "parameters": {
-                    "dest": "furnace_table",
+            "tasks": [
+                {
+                    "type": "Starting",
+                    "prev_tasks": [],
+                    "parameters": {
+                        "dest": "furnace_table",
+                    },
+                    "samples": {
+                        "sample": "test_sample",
+                    },
                 },
-                "samples": {
-                    "sample": "test_sample",
-                }
-            }, {
-                "type": "Heating",
-                "prev_tasks": [0],
-                "parameters": {
-                    "setpoints": ((1, 2),),
+                {
+                    "type": "Heating",
+                    "prev_tasks": [0],
+                    "parameters": {
+                        "setpoints": ((1, 2),),
+                    },
+                    "samples": {
+                        "sample": "test_sample",
+                    },
                 },
-                "samples": {
-                    "sample": "test_sample",
-                }
-            }, {
-                "type": "Ending",
-                "prev_tasks": [1],
-                "parameters": {},
-                "samples": {
-                    "sample": "test_sample",
-                }
-            }]
+                {
+                    "type": "Ending",
+                    "prev_tasks": [1],
+                    "parameters": {},
+                    "samples": ["test_sample"],
+                },
+            ],
         }
         exp_ids = []
         for _ in range(3):
-            resp = requests.post("http://127.0.0.1:8896/api/experiment/submit", json=experiment)
+            resp = requests.post(
+                "http://127.0.0.1:8896/api/experiment/submit", json=experiment
+            )
             resp_json = resp.json()
             exp_id = ObjectId(resp_json["data"]["exp_id"])
             self.assertTrue("success", resp_json["status"])
@@ -68,10 +74,20 @@ class TestLaunch(unittest.TestCase):
             time.sleep(3)
         time.sleep(5)
         self.assertEqual(9, self.task_view._task_collection.count_documents({}))
-        self.assertTrue(all(task["status"] == "COMPLETED"
-                            for task in self.task_view._task_collection.find()))
-        self.assertTrue(all(task["result"] == task["_id"]
-                            for task in self.task_view._task_collection.find()))
+        self.assertTrue(
+            all(
+                task["status"] == "COMPLETED"
+                for task in self.task_view._task_collection.find()
+            )
+        )
+        self.assertTrue(
+            all(
+                task["result"] == task["_id"]
+                for task in self.task_view._task_collection.find()
+            )
+        )
 
         for exp_id in exp_ids:
-            self.assertEqual("COMPLETED", self.experiment_view.get_experiment(exp_id)["status"])
+            self.assertEqual(
+                "COMPLETED", self.experiment_view.get_experiment(exp_id)["status"]
+            )
