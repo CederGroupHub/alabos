@@ -21,7 +21,7 @@ class TestTaskView(TestCase):
     def test_create_task(self):
         task_dict = {
             "task_type": "Heating",
-            "samples": {"sample": ObjectId()},
+            "samples": [{"name": "sample1", "sample_id": ObjectId()}],
             "parameters": {"setpoints": [[10, 600]]},
         }
 
@@ -67,7 +67,7 @@ class TestTaskView(TestCase):
     def test_update_status(self):
         task_dict = {
             "task_type": "Heating",
-            "samples": {"sample": ObjectId()},
+            "samples": [{"name": "sample1", "sample_id": ObjectId()}],
             "parameters": {"setpoints": [[10, 600]]},
         }
         task_id = self.task_view.create_task(**task_dict)
@@ -92,7 +92,7 @@ class TestTaskView(TestCase):
     def test_get_ready_tasks(self):
         task_dict = {
             "task_type": "Heating",
-            "samples": {"sample": ObjectId()},
+            "samples": [{"name": "sample1", "sample_id": ObjectId()}],
             "parameters": {"setpoints": [[10, 600]]},
         }
         task_id_1 = self.task_view.create_task(**task_dict)
@@ -115,7 +115,7 @@ class TestTaskView(TestCase):
     def test_update_task_dependency(self):
         task_dict = {
             "task_type": "Heating",
-            "samples": {"sample": ObjectId()},
+            "samples": [{"name": "sample1", "sample_id": ObjectId()}],
             "parameters": {"setpoints": [[10, 600]]},
         }
         task_id_1 = self.task_view.create_task(**task_dict)
