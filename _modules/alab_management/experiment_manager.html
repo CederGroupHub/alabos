@@ -439,9 +439,10 @@
         <span class="c1"># create tasks in the task database</span>
         <span class="n">task_ids</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
-            <span class="n">samples</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="n">samplename</span><span class="p">:</span> <span class="n">sample_ids</span><span class="p">[</span><span class="n">samplename</span><span class="p">]</span> <span class="k">for</span> <span class="n">samplename</span> <span class="ow">in</span> <span class="n">task</span><span class="p">[</span><span class="s2">&quot;samples&quot;</span><span class="p">]</span>
-            <span class="p">}</span>
+            <span class="n">samples</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">samplename</span><span class="p">,</span> <span class="s2">&quot;sample_id&quot;</span><span class="p">:</span> <span class="n">sample_ids</span><span class="p">[</span><span class="n">samplename</span><span class="p">]}</span>
+                <span class="k">for</span> <span class="n">samplename</span> <span class="ow">in</span> <span class="n">task</span><span class="p">[</span><span class="s2">&quot;samples&quot;</span><span class="p">]</span>
+            <span class="p">]</span>
             <span class="n">task_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
                     <span class="n">task_type</span><span class="o">=</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span>

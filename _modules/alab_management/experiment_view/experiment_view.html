@@ -365,6 +365,7 @@
 <span class="sd">    - ``RUNNING``: The experiment has been submitted and put in the queue</span>
 <span class="sd">    - ``COMPLETED``: The experiment has been completed</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">PENDING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">RUNNING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">COMPLETED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
@@ -388,21 +389,28 @@
 <span class="sd">            experiment: the required format of experiment, see also</span>
 <span class="sd">              :py:class:`InputExperiment &lt;alab_management.experiment_view.experiment.InputExperiment&gt;`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># check the format of input args</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span>
-            <span class="o">**</span><span class="n">experiment</span><span class="o">.</span><span class="n">dict</span><span class="p">(),</span>
-            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-        <span class="p">})</span>
+        <span class="c1"># format of experiment dict is checked in api endpoint upstream of this method</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="o">**</span><span class="n">experiment</span><span class="o">.</span><span class="n">dict</span><span class="p">(),</span>
+                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">ObjectId</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ExperimentView.get_experiments_with_status"><a class="viewcode-back" href="../../../alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.get_experiments_with_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_experiments_with_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ExperimentStatus</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<div class="viewcode-block" id="ExperimentView.get_experiments_with_status"><a class="viewcode-back" href="../../../alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.get_experiments_with_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_experiments_with_status</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ExperimentStatus</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter experiments by its status</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">status</span> <span class="o">=</span> <span class="n">ExperimentStatus</span><span class="p">[</span><span class="n">status</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_collection</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="p">}))</span></div>
+        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
+            <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_collection</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="p">}),</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="ExperimentView.get_experiment"><a class="viewcode-back" href="../../../alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.get_experiment">[docs]</a>    <span class="k">def</span> <span class="nf">get_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exp_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -420,12 +428,18 @@
         <span class="k">if</span> <span class="n">experiment</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find experiment with id: </span><span class="si">{</span><span class="n">exp_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">exp_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-        <span class="p">}})</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">exp_id</span><span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+        <span class="p">)</span></div>
 
-<div class="viewcode-block" id="ExperimentView.update_sample_task_id"><a class="viewcode-back" href="../../../alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.update_sample_task_id">[docs]</a>    <span class="k">def</span> <span class="nf">update_sample_task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exp_id</span><span class="p">,</span> <span class="n">sample_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">],</span>
-                              <span class="n">task_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]):</span>
+<div class="viewcode-block" id="ExperimentView.update_sample_task_id"><a class="viewcode-back" href="../../../alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.update_sample_task_id">[docs]</a>    <span class="k">def</span> <span class="nf">update_sample_task_id</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">exp_id</span><span class="p">,</span> <span class="n">sample_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">],</span> <span class="n">task_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        At the creation of experiment, the id of samples and tasks has not been assigned</span>
 
@@ -443,10 +457,21 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">experiment</span><span class="p">[</span><span class="s2">&quot;tasks&quot;</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">task_ids</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Difference length of tasks and input task ids&quot;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">exp_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="o">**</span><span class="p">{</span><span class="sa">f</span><span class="s2">&quot;samples.</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.sample_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sample_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sample_ids</span><span class="p">)},</span>
-            <span class="o">**</span><span class="p">{</span><span class="sa">f</span><span class="s2">&quot;tasks.</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">.task_id&quot;</span><span class="p">:</span> <span class="n">task_id</span> <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">task_ids</span><span class="p">)},</span>
-        <span class="p">}})</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">exp_id</span><span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="o">**</span><span class="p">{</span>
+                        <span class="sa">f</span><span class="s2">&quot;samples.</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.sample_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span>
+                        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sample_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sample_ids</span><span class="p">)</span>
+                    <span class="p">},</span>
+                    <span class="o">**</span><span class="p">{</span>
+                        <span class="sa">f</span><span class="s2">&quot;tasks.</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">.task_id&quot;</span><span class="p">:</span> <span class="n">task_id</span>
+                        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">task_ids</span><span class="p">)</span>
+                    <span class="p">},</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+        <span class="p">)</span></div></div>
 </pre></div>
 
               </div>
