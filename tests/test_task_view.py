@@ -29,7 +29,7 @@ class TestTaskView(TestCase):
         task_id = self.task_view.create_task(**task_dict_)
         task = self.task_view.get_task(task_id)
         self.assertEqual(task_dict_["task_type"], task["type"])
-        self.assertDictEqual(task_dict_["samples"], task["samples"])
+        self.assertListEqual(task_dict_["samples"], task["samples"])
         self.assertDictEqual(task_dict_["parameters"], task["parameters"])
         self.assertEqual([], task["next_tasks"])
         self.assertEqual([], task["prev_tasks"])
