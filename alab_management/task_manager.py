@@ -60,9 +60,22 @@ class ResourcesRequest(BaseModel):
     def preprocess(cls, values):  # pylint: disable=no-self-use,no-self-argument
         values = values["__root__"]
         # if the sample position request is string, we will automatically add a number attribute = 1.
+        # new_values = {}
+        # for k, v in values.items():
+        #     subvalues = []
+        #     for v_ in v:
+        #         if isinstance(v_, str):
+        #             subvalues.append(SamplePositionRequest.from_str(v_))
+        #         elif isinstance(v_, dict):
+        #             subvalues.append(SamplePositionRequest.from_dict(v_))
+        #         else:
+        #             subvalues.append(v_)
+        #     new_values[k] = subvalues
         values = {
             k: [
-                SamplePositionRequest.from_str(v_) if isinstance(v_, str) else v_
+                SamplePositionRequest.from_str(v_)
+                if isinstance(v_, str)
+                else SamplePositionRequest(**v_)
                 for v_ in v
             ]
             for k, v in values.items()
@@ -286,10 +299,10 @@ class ResourceRequester(RequestMixin):
         self._request_collection = get_collection("requests")
         self._waiting: Dict[ObjectId, Dict[str, Any]] = {}
         self.task_id = task_id
-        # task = TaskView().get_task(task_id=task_id)
-        # self.priority = task["parameters"].get(
-        #     "priority", TaskPriority.NORMAL
-        # )  # look for a user-defined priority in the task parameters
+        self.priority = (
+            TaskPriority.NORMAL
+        )  # will usually be overwritten by BaseTask instantiation.
+
         super().__init__()
         self._thread = Thread(target=self._check_request_status_loop)
         self._thread.daemon = True
