@@ -43,41 +43,69 @@ class TestLabView(TestCase):
         time.sleep(1)
 
     def test_request_resources(self):
-        device_types = {device.__name__: device
-                        for device in {device.__class__ for device in self.device_list.values()}}
+        device_types = {
+            device.__name__: device
+            for device in {device.__class__ for device in self.device_list.values()}
+        }
         Furnace = device_types["Furnace"]
         RobotArm = device_types["RobotArm"]
 
-        task_id = self.task_view.create_task(**{
-            "task_type": "Heating",
-            "samples": {"sample": ObjectId()},
-            "parameters": {"setpoints": [[10, 600]]}
-        })
+        task_id = self.task_view.create_task(
+            **{
+                "task_type": "Heating",
+                "samples": {"sample": ObjectId()},
+                "parameters": {"setpoints": [[10, 600]]},
+            }
+        )
         lab_view = LabView(task_id=task_id)
 
-        with lab_view.request_resources({Furnace: ["$/inside"], RobotArm: [], None: [{"prefix": "furnace_table",
-                                                                                      "number": 1}]}) \
-                as (devices, sample_positions):
-            self.assertDictEqual({Furnace: {"$/inside": ["furnace_1/inside"]}, RobotArm: {},
-                                  None: {"furnace_table": ["furnace_table"]}}, sample_positions)
+        with lab_view.request_resources(
+            {
+                Furnace: ["$/inside"],
+                RobotArm: [],
+                None: [{"prefix": "furnace_table", "number": 1}],
+            }
+        ) as (devices, sample_positions):
+            self.assertDictEqual(
+                {
+                    Furnace: {"$/inside": ["furnace_1/inside"]},
+                    RobotArm: {},
+                    None: {"furnace_table": ["furnace_table"]},
+                },
+                sample_positions,
+            )
             self.assertEqual("OCCUPIED", self.device_view.get_status("furnace_1").name)
             self.assertEqual("OCCUPIED", self.device_view.get_status("dummy").name)
 
-            self.assertEqual("LOCKED", self.sample_view.get_sample_position_status("furnace_1/inside")[0].name)
-            self.assertEqual("LOCKED", self.sample_view.get_sample_position_status("furnace_table")[0].name)
+            self.assertEqual(
+                "LOCKED",
+                self.sample_view.get_sample_position_status("furnace_1/inside")[0].name,
+            )
+            self.assertEqual(
+                "LOCKED",
+                self.sample_view.get_sample_position_status("furnace_table")[0].name,
+            )
         time.sleep(1)
         self.assertEqual("IDLE", self.device_view.get_status("furnace_1").name)
         self.assertEqual("IDLE", self.device_view.get_status("dummy").name)
 
-        self.assertEqual("EMPTY", self.sample_view.get_sample_position_status("furnace_1/inside")[0].name)
-        self.assertEqual("EMPTY", self.sample_view.get_sample_position_status("furnace_table")[0].name)
+        self.assertEqual(
+            "EMPTY",
+            self.sample_view.get_sample_position_status("furnace_1/inside")[0].name,
+        )
+        self.assertEqual(
+            "EMPTY",
+            self.sample_view.get_sample_position_status("furnace_table")[0].name,
+        )
 
     def test_request_resources_empty(self):
-        task_id = self.task_view.create_task(**{
-            "task_type": "Heating",
-            "samples": {"sample": ObjectId()},
-            "parameters": {"setpoints": [[10, 600]]}
-        })
+        task_id = self.task_view.create_task(
+            **{
+                "task_type": "Heating",
+                "samples": {"sample": ObjectId()},
+                "parameters": {"setpoints": [[10, 600]]},
+            }
+        )
         lab_view = LabView(task_id=task_id)
 
         with lab_view.request_resources({}) as (devices, sample_positions):

@@ -40,9 +40,7 @@ class TestLaunch(unittest.TestCase):
                     "parameters": {
                         "dest": "furnace_table",
                     },
-                    "samples": {
-                        "sample": "test_sample",
-                    },
+                    "samples": ["test_sample"],
                 },
                 {
                     "type": "Heating",
@@ -50,9 +48,7 @@ class TestLaunch(unittest.TestCase):
                     "parameters": {
                         "setpoints": ((1, 2),),
                     },
-                    "samples": {
-                        "sample": "test_sample",
-                    },
+                    "samples": ["test_sample"],
                 },
                 {
                     "type": "Ending",

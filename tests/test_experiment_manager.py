@@ -29,7 +29,7 @@ class TestExperimentManager(TestCase):
                             "p_1": 1,
                             "p_2": 2,
                         },
-                        "samples": {"sample": "test_sample"},
+                        "samples": ["test_sample"],
                     },
                     {
                         "type": "Heating",
@@ -104,7 +104,7 @@ class TestExperimentManager(TestCase):
                             "p_1": 1,
                             "p_2": 2,
                         },
-                        "samples": {"sample": "test_sample"},
+                        "samples": ["test_sample"],
                     },
                     {
                         "type": "Heating",
