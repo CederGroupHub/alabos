@@ -399,6 +399,28 @@ executes commands on the device drivers, as requested by the task process.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="alab_management.device_manager.DeviceMethodCallState">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DeviceMethodCallState</span></span><a class="reference internal" href="_modules/alab_management/device_manager.html#DeviceMethodCallState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_manager.DeviceMethodCallState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>holds the status of a pending method call to a device</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.device_manager.DeviceMethodCallState.future">
+<span class="sig-name descname"><span class="pre">future</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">concurrent.futures._base.Future</span></em><a class="headerlink" href="#alab_management.device_manager.DeviceMethodCallState.future" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.device_manager.DeviceMethodCallState.last_updated">
+<span class="sig-name descname"><span class="pre">last_updated</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#alab_management.device_manager.DeviceMethodCallState.last_updated" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.device_manager.DeviceMethodCallState.status">
+<span class="sig-name descname"><span class="pre">status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#alab_management.device_manager.MethodCallStatus" title="alab_management.device_manager.MethodCallStatus"><span class="pre">alab_management.device_manager.MethodCallStatus</span></a></em><a class="headerlink" href="#alab_management.device_manager.DeviceMethodCallState.status" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="alab_management.device_manager.DeviceWrapper">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DeviceWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">devices_client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_manager.html#DeviceWrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_manager.DeviceWrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
@@ -483,6 +505,33 @@ the method directly.</p>
 <span class="sig-name descname"><span class="pre">on_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">properties</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_body</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_manager.html#DevicesClient.on_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_manager.DevicesClient.on_message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Callback function to handle a returned message from Device Manager</p>
 </dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="alab_management.device_manager.MethodCallStatus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MethodCallStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_manager.html#MethodCallStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_manager.MethodCallStatus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.device_manager.MethodCallStatus.FAILURE">
+<span class="sig-name descname"><span class="pre">FAILURE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#alab_management.device_manager.MethodCallStatus.FAILURE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.device_manager.MethodCallStatus.IN_PROGRESS">
+<span class="sig-name descname"><span class="pre">IN_PROGRESS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#alab_management.device_manager.MethodCallStatus.IN_PROGRESS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.device_manager.MethodCallStatus.PENDING">
+<span class="sig-name descname"><span class="pre">PENDING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#alab_management.device_manager.MethodCallStatus.PENDING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.device_manager.MethodCallStatus.SUCCESS">
+<span class="sig-name descname"><span class="pre">SUCCESS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#alab_management.device_manager.MethodCallStatus.SUCCESS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 

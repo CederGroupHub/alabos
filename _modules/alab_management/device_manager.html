@@ -352,7 +352,8 @@
 <span class="sd">DeviceManager class, which will handle all the request to run certain methods on the real device.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="kn">import</span> <span class="n">Future</span>
+<span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="kn">import</span> <span class="n">Future</span><span class="p">,</span> <span class="n">ThreadPoolExecutor</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 <span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Thread</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">NoReturn</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">Callable</span>
@@ -371,6 +372,23 @@
 
 <span class="n">DEFAULT_SERVER_QUEUE_SUFFIX</span> <span class="o">=</span> <span class="s2">&quot;.device_rpc&quot;</span>
 <span class="n">DEFAULT_CLIENT_QUEUE_SUFFIX</span> <span class="o">=</span> <span class="n">DEFAULT_SERVER_QUEUE_SUFFIX</span> <span class="o">+</span> <span class="s2">&quot;.reply_to&quot;</span>
+
+
+<div class="viewcode-block" id="MethodCallStatus"><a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.MethodCallStatus">[docs]</a><span class="k">class</span> <span class="nc">MethodCallStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">PENDING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">IN_PROGRESS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">SUCCESS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">FAILURE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DeviceMethodCallState"><a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DeviceMethodCallState">[docs]</a><span class="k">class</span> <span class="nc">DeviceMethodCallState</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    holds the status of a pending method call to a device</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">status</span><span class="p">:</span> <span class="n">MethodCallStatus</span>
+    <span class="n">future</span><span class="p">:</span> <span class="n">Future</span>
+    <span class="n">last_updated</span><span class="p">:</span> <span class="nb">float</span></div>
 
 
 <div class="viewcode-block" id="DeviceWrapper"><a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DeviceWrapper">[docs]</a><span class="k">class</span> <span class="nc">DeviceWrapper</span><span class="p">:</span>
@@ -443,12 +461,14 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span> <span class="o">=</span> <span class="n">DeviceView</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_status</span> <span class="o">=</span> <span class="n">_check_status</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threads</span> <span class="o">=</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="DeviceManager.run"><a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DeviceManager.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start to listen on the device_rpc queue and conduct the command one by one.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="n">get_rabbitmq_connection</span><span class="p">()</span><span class="o">.</span><span class="n">channel</span><span class="p">()</span> <span class="k">as</span> <span class="n">channel</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">get_rabbitmq_connection</span><span class="p">()</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">channel</span><span class="p">()</span> <span class="k">as</span> <span class="n">channel</span><span class="p">:</span>
             <span class="n">channel</span><span class="o">.</span><span class="n">queue_declare</span><span class="p">(</span>
                 <span class="n">queue</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_rpc_queue_name</span><span class="p">,</span>
                 <span class="n">auto_delete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -461,6 +481,43 @@
                 <span class="n">consumer_tag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_rpc_queue_name</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">channel</span><span class="o">.</span><span class="n">start_consuming</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_execute_command_wrapper</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">channel</span><span class="p">,</span>
+        <span class="n">delivery_tag</span><span class="p">,</span>
+        <span class="n">props</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute a command on the device. Acknowledges completion on rabbitmq channel.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">callback_publish</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">delivery_tag</span><span class="p">,</span> <span class="n">props</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">props</span><span class="o">.</span><span class="n">reply_to</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">channel</span><span class="o">.</span><span class="n">basic_publish</span><span class="p">(</span>
+                    <span class="n">exchange</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                    <span class="n">routing_key</span><span class="o">=</span><span class="n">props</span><span class="o">.</span><span class="n">reply_to</span><span class="p">,</span>
+                    <span class="n">properties</span><span class="o">=</span><span class="n">pika</span><span class="o">.</span><span class="n">BasicProperties</span><span class="p">(</span>
+                        <span class="n">correlation_id</span><span class="o">=</span><span class="n">props</span><span class="o">.</span><span class="n">correlation_id</span><span class="p">,</span>
+                        <span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;application/python-dill&quot;</span><span class="p">,</span>
+                    <span class="p">),</span>
+                    <span class="n">body</span><span class="o">=</span><span class="n">dill</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">response</span><span class="p">),</span>
+                <span class="p">)</span>
+
+            <span class="n">channel</span><span class="o">.</span><span class="n">basic_ack</span><span class="p">(</span><span class="n">delivery_tag</span><span class="o">=</span><span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">delivery_tag</span><span class="p">))</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">execute_command</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">result</span><span class="p">}</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;failure&quot;</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">e</span><span class="p">}</span>
+
+        <span class="n">cb</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">callback_publish</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">delivery_tag</span><span class="p">,</span> <span class="n">props</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">add_callback_threadsafe</span><span class="p">(</span><span class="n">cb</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DeviceManager.on_message"><a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DeviceManager.on_message">[docs]</a>    <span class="k">def</span> <span class="nf">on_message</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -489,43 +546,31 @@
             <span class="n">body</span><span class="p">[</span><span class="s2">&quot;device&quot;</span><span class="p">]</span>
         <span class="p">)</span>
 
-        <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># check if the device is currently occupied by this task</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_status</span> <span class="ow">and</span> <span class="p">(</span>
-                <span class="n">device_entry</span> <span class="ow">is</span> <span class="kc">None</span>
-                <span class="ow">or</span> <span class="n">device_entry</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">DeviceStatus</span><span class="o">.</span><span class="n">OCCUPIED</span><span class="o">.</span><span class="n">name</span>
-                <span class="ow">or</span> <span class="n">device_entry</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">body</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">])</span>
-            <span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Currently the task (</span><span class="si">{</span><span class="n">body</span><span class="p">[</span><span class="s1">&#39;task_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">) &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;does not occupy this device: </span><span class="si">{</span><span class="n">body</span><span class="p">[</span><span class="s1">&#39;device&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="p">)</span>
-
-            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">execute_command</span><span class="p">(</span>
-                <span class="n">body</span><span class="p">[</span><span class="s2">&quot;device&quot;</span><span class="p">],</span> <span class="n">body</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">],</span> <span class="o">*</span><span class="n">body</span><span class="p">[</span><span class="s2">&quot;args&quot;</span><span class="p">],</span> <span class="o">**</span><span class="n">body</span><span class="p">[</span><span class="s2">&quot;kwargs&quot;</span><span class="p">]</span>
-            <span class="p">)</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">result</span><span class="p">,</span>
-            <span class="p">}</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>  <span class="c1"># pylint: disable=broad-except</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;fail&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">error</span><span class="p">,</span>
-            <span class="p">}</span>
-
-        <span class="k">if</span> <span class="n">props</span><span class="o">.</span><span class="n">reply_to</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">channel</span><span class="o">.</span><span class="n">basic_publish</span><span class="p">(</span>
-                <span class="n">exchange</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="n">routing_key</span><span class="o">=</span><span class="n">props</span><span class="o">.</span><span class="n">reply_to</span><span class="p">,</span>
-                <span class="n">properties</span><span class="o">=</span><span class="n">pika</span><span class="o">.</span><span class="n">BasicProperties</span><span class="p">(</span>
-                    <span class="n">correlation_id</span><span class="o">=</span><span class="n">props</span><span class="o">.</span><span class="n">correlation_id</span><span class="p">,</span>
-                    <span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;application/python-dill&quot;</span><span class="p">,</span>
-                <span class="p">),</span>
-                <span class="n">body</span><span class="o">=</span><span class="n">dill</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">response</span><span class="p">),</span>
+        <span class="c1"># check if the device is currently occupied by this task</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_status</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="n">device_entry</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="ow">or</span> <span class="n">device_entry</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">DeviceStatus</span><span class="o">.</span><span class="n">OCCUPIED</span><span class="o">.</span><span class="n">name</span>
+            <span class="ow">or</span> <span class="n">device_entry</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">body</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">])</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Currently the task (</span><span class="si">{</span><span class="n">body</span><span class="p">[</span><span class="s1">&#39;task_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">) &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;does not occupy this device: </span><span class="si">{</span><span class="n">body</span><span class="p">[</span><span class="s1">&#39;device&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
-        <span class="n">channel</span><span class="o">.</span><span class="n">basic_ack</span><span class="p">(</span><span class="n">delivery_tag</span><span class="o">=</span><span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">method</span><span class="o">.</span><span class="n">delivery_tag</span><span class="p">))</span></div></div>
+        <span class="n">thread</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span>
+            <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_execute_command_wrapper</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">channel</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">.</span><span class="n">delivery_tag</span><span class="p">,</span>
+                <span class="n">props</span><span class="p">,</span>
+                <span class="n">body</span><span class="p">[</span><span class="s2">&quot;device&quot;</span><span class="p">],</span>
+                <span class="n">body</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">],</span>
+                <span class="o">*</span><span class="n">body</span><span class="p">[</span><span class="s2">&quot;args&quot;</span><span class="p">],</span>
+            <span class="p">),</span>
+            <span class="n">kwargs</span><span class="o">=</span><span class="n">body</span><span class="p">[</span><span class="s2">&quot;kwargs&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thread</span><span class="p">)</span>
+        <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="DevicesClient"><a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DevicesClient">[docs]</a><span class="k">class</span> <span class="nc">DevicesClient</span><span class="p">:</span>  <span class="c1"># pylint: disable=too-many-instance-attributes</span>
@@ -630,7 +675,7 @@
                 <span class="p">),</span>
             <span class="p">)</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">result</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">result</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DevicesClient.on_message"><a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DevicesClient.on_message">[docs]</a>    <span class="k">def</span> <span class="nf">on_message</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>

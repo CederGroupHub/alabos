@@ -406,9 +406,22 @@
     <span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>  <span class="c1"># pylint: disable=no-self-use,no-self-argument</span>
         <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;__root__&quot;</span><span class="p">]</span>
         <span class="c1"># if the sample position request is string, we will automatically add a number attribute = 1.</span>
+        <span class="c1"># new_values = {}</span>
+        <span class="c1"># for k, v in values.items():</span>
+        <span class="c1">#     subvalues = []</span>
+        <span class="c1">#     for v_ in v:</span>
+        <span class="c1">#         if isinstance(v_, str):</span>
+        <span class="c1">#             subvalues.append(SamplePositionRequest.from_str(v_))</span>
+        <span class="c1">#         elif isinstance(v_, dict):</span>
+        <span class="c1">#             subvalues.append(SamplePositionRequest.from_dict(v_))</span>
+        <span class="c1">#         else:</span>
+        <span class="c1">#             subvalues.append(v_)</span>
+        <span class="c1">#     new_values[k] = subvalues</span>
         <span class="n">values</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">k</span><span class="p">:</span> <span class="p">[</span>
-                <span class="n">SamplePositionRequest</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="n">v_</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v_</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">v_</span>
+                <span class="n">SamplePositionRequest</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="n">v_</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v_</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">SamplePositionRequest</span><span class="p">(</span><span class="o">**</span><span class="n">v_</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">v_</span> <span class="ow">in</span> <span class="n">v</span>
             <span class="p">]</span>
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
@@ -632,10 +645,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;requests&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span> <span class="o">=</span> <span class="n">task_id</span>
-        <span class="c1"># task = TaskView().get_task(task_id=task_id)</span>
-        <span class="c1"># self.priority = task[&quot;parameters&quot;].get(</span>
-        <span class="c1">#     &quot;priority&quot;, TaskPriority.NORMAL</span>
-        <span class="c1"># )  # look for a user-defined priority in the task parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">TaskPriority</span><span class="o">.</span><span class="n">NORMAL</span>
+        <span class="p">)</span>  <span class="c1"># will usually be overwritten by BaseTask instantiation.</span>
+
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_check_request_status_loop</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
