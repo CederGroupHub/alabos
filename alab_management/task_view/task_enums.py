@@ -18,19 +18,23 @@ class TaskStatus(Enum):
     """
     The status of one task
 
-    - ``WAITING``: the task cannot start now
+    - ``WAITING``: the task cannot start yet, waiting for preceding tasks to finish
+    - ``INITIATED``: the task has been sent to task actor, but not yet running
+    - ``PAUSED``: the task is paused by user
+    - ``STOPPED``: the task has been stopped by user
     - ``READY``: the task is ready to submit
-    - ``PAUSED``: the task is hold for a while
+    - ``REQUESTING_RESOURCES``: the task is requesting resources
     - ``RUNNING``: the task is currently running
     - ``ERROR``: the task encountered some errors during execution
     - ``COMPLETED``: the task is completed
     """
 
     WAITING = auto()
+    INITIATED = auto()
     PAUSED = auto()
     STOPPED = auto()
     READY = auto()
-    REQUESTING_RESOURCE = auto()
+    REQUESTING_RESOURCES = auto()
     RUNNING = auto()
     ERROR = auto()
     COMPLETED = auto()

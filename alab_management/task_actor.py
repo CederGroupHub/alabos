@@ -39,6 +39,7 @@ def run_task(task_id_str: str):
 
     task_id = ObjectId(task_id_str)
     task_entry = task_view.get_task(task_id, encode=True)
+
     if task_entry is None:
         raise ValueError(f"Cannot find task with task id: {task_id}")
     task_type = task_entry.pop("type")
@@ -68,7 +69,6 @@ def run_task(task_id_str: str):
         )
         # raise ParameterError(exception.args[0]) from exception
 
-    task_view.update_status(task_id=task_id, status=TaskStatus.RUNNING)
     for sample in task_entry["samples"]:
         sample_view.update_sample_task_id(
             task_id=task_id, sample_id=sample["sample_id"]
@@ -83,8 +83,8 @@ def run_task(task_id_str: str):
             "task_type": task_type.__name__,
         },
     )
-
     try:
+        task_view.update_status(task_id=task_id, status=TaskStatus.RUNNING)
         result = task.run()
     except Exception:
         task_view.update_status(task_id=task_id, status=TaskStatus.ERROR)

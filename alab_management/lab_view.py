@@ -16,6 +16,8 @@ from alab_management.device_view.device import BaseDevice
 from alab_management.logger import DBLogger
 from alab_management.sample_view.sample_view import SampleView, SamplePositionRequest
 from alab_management.task_manager import ResourceRequester
+from alab_management.task_view.task_enums import TaskStatus
+from alab_management.task_view.task_view import TaskView
 
 
 class DeviceRunningException(Exception):
@@ -59,6 +61,7 @@ class LabView:
     def __init__(self, task_id: ObjectId):
         self._task_id = task_id
         self._sample_view = SampleView()
+        self._task_view = TaskView()
         self._resource_requester = ResourceRequester(task_id=task_id)
         self._device_client = DevicesClient(task_id=task_id, timeout=30)
         self.logger = DBLogger(task_id=task_id)
@@ -92,6 +95,9 @@ class LabView:
 
         The priority of the request can optionally be specified as a positive integer, which should probably be in the range of 0-40. 20 is the default "NORMAL" priority level. Higher number = higher priority. Numbers >= 100 are reserved for urgent/error correcting requests.
         """
+        self._task_view.update_status(
+            task_id=self.task_id, status=TaskStatus.REQUESTING_RESOURCES
+        )
         result = self._resource_requester.request_resources(
             resource_request=resource_request, timeout=timeout, priority=priority
         )
@@ -102,6 +108,7 @@ class LabView:
             device_type: self._device_client.create_device_wrapper(device_name)
             for device_type, device_name in devices.items()
         }  # type: ignore
+        self._task_view.update_status(task_id=self.task_id, status=TaskStatus.RUNNING)
         yield devices, sample_positions
 
         self._resource_requester.release_resources(request_id=request_id)

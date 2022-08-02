@@ -124,7 +124,7 @@ class TaskView:
             "status": status.name,
             "last_updated": datetime.now(),
         }
-        if status == TaskStatus.RUNNING:
+        if status == TaskStatus.INITIATED:
             update_dict["started_at"] = datetime.now()
         elif status == TaskStatus.COMPLETED:
             update_dict["completed_at"] = datetime.now()

@@ -17,6 +17,7 @@ from matplotlib.pyplot import get
 from pydantic import BaseModel, root_validator
 
 from alab_management.sample_view.sample import SamplePosition
+from alab_management.task_view.task_enums import TaskStatus
 
 from .device_view import DeviceView
 from .device_view.device import BaseDevice, get_all_devices
@@ -159,6 +160,9 @@ class TaskManager(RequestMixin):
         """
         ready_task_entries = self.task_view.get_ready_tasks()
         for task_entry in ready_task_entries:
+            self.task_view.update_status(
+                task_id=task_entry["task_id"], status=TaskStatus.INITIATED
+            )
             run_task.send(task_id_str=str(task_entry["task_id"]))
 
     def handle_released_resources(self):
