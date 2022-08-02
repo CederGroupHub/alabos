@@ -366,6 +366,64 @@ class ResourceRequester(RequestMixin):
             "request_id": result["request_id"],
         }
 
+    # def request_resources(
+    #     self,
+    #     resource_request: _ResourceRequestDict,
+    #     timeout: Optional[float] = None,
+    #     priority: Optional[Union[TaskPriority, int]] = None,
+    # ) -> Dict[str, Any]:
+    #     """
+    #     Request lab resources. Write the request into the database, and then the task manager will read from the
+    #     database and assign the resources.
+    #     """
+    #     f = Future()
+    #     if priority is None:
+    #         priority = self.priority
+
+    #     formatted_resource_request = {
+    #         device_type.__name__: samples
+    #         for device_type, samples in resource_request.items()
+    #         if device_type is not None
+    #     }
+    #     if None in resource_request:
+    #         formatted_resource_request[_EXTRA_REQUEST] = resource_request[None]
+
+    #     if not isinstance(formatted_resource_request, ResourcesRequest):
+    #         formatted_resource_request = ResourcesRequest(__root__=formatted_resource_request)  # type: ignore
+    #     formatted_resource_request = formatted_resource_request.dict()["__root__"]
+
+    #     result = self._request_collection.insert_one(
+    #         {
+    #             "request": formatted_resource_request,
+    #             "status": RequestStatus.PENDING.name,
+    #             "task_id": self.task_id,
+    #             "priority": int(priority),
+    #             "submitted_at": datetime.now(),
+    #         }
+    #     )
+    #     _id: ObjectId = cast(ObjectId, result.inserted_id)
+
+    #     self._waiting[_id] = {
+    #         "f": f,
+    #         "raw_request": resource_request,
+    #     }
+
+    #     try:
+    #         result = f.result(timeout=timeout)
+    #     except TimeoutError:
+    #         # cancel the task
+    #         self.update_request_status(request_id=_id, status=RequestStatus.CANCELED)
+    #         raise
+
+    #     return {
+    #         **self._post_process_requested_resource(
+    #             devices=result["devices"],
+    #             sample_positions=result["sample_positions"],
+    #             resource_request=formatted_resource_request,
+    #         ),
+    #         "request_id": result["request_id"],
+    #     }
+
     def release_resources(self, request_id: ObjectId) -> bool:
         """
         Release a request by request_id
