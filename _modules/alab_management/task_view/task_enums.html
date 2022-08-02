@@ -364,19 +364,23 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The status of one task</span>
 
-<span class="sd">    - ``WAITING``: the task cannot start now</span>
+<span class="sd">    - ``WAITING``: the task cannot start yet, waiting for preceding tasks to finish</span>
+<span class="sd">    - ``INITIATED``: the task has been sent to task actor, but not yet running</span>
+<span class="sd">    - ``PAUSED``: the task is paused by user</span>
+<span class="sd">    - ``STOPPED``: the task has been stopped by user</span>
 <span class="sd">    - ``READY``: the task is ready to submit</span>
-<span class="sd">    - ``PAUSED``: the task is hold for a while</span>
+<span class="sd">    - ``REQUESTING_RESOURCES``: the task is requesting resources</span>
 <span class="sd">    - ``RUNNING``: the task is currently running</span>
 <span class="sd">    - ``ERROR``: the task encountered some errors during execution</span>
 <span class="sd">    - ``COMPLETED``: the task is completed</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">WAITING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">INITIATED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">PAUSED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">STOPPED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">READY</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">REQUESTING_RESOURCE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">REQUESTING_RESOURCES</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">RUNNING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">ERROR</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">COMPLETED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>

@@ -398,46 +398,54 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
 <p>The status of one task</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">WAITING</span></code>: the task cannot start now</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">WAITING</span></code>: the task cannot start yet, waiting for preceding tasks to finish</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">INITIATED</span></code>: the task has been sent to task actor, but not yet running</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PAUSED</span></code>: the task is paused by user</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">STOPPED</span></code>: the task has been stopped by user</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">READY</span></code>: the task is ready to submit</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">PAUSED</span></code>: the task is hold for a while</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">REQUESTING_RESOURCES</span></code>: the task is requesting resources</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">RUNNING</span></code>: the task is currently running</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ERROR</span></code>: the task encountered some errors during execution</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">COMPLETED</span></code>: the task is completed</p></li>
 </ul>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="alab_management.task_view.task_enums.TaskStatus.COMPLETED">
-<span class="sig-name descname"><span class="pre">COMPLETED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="headerlink" href="#alab_management.task_view.task_enums.TaskStatus.COMPLETED" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">COMPLETED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9</span></em><a class="headerlink" href="#alab_management.task_view.task_enums.TaskStatus.COMPLETED" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="alab_management.task_view.task_enums.TaskStatus.ERROR">
-<span class="sig-name descname"><span class="pre">ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="headerlink" href="#alab_management.task_view.task_enums.TaskStatus.ERROR" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="headerlink" href="#alab_management.task_view.task_enums.TaskStatus.ERROR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.task_view.task_enums.TaskStatus.INITIATED">
+<span class="sig-name descname"><span class="pre">INITIATED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#alab_management.task_view.task_enums.TaskStatus.INITIATED" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="alab_management.task_view.task_enums.TaskStatus.PAUSED">
-<span class="sig-name descname"><span class="pre">PAUSED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#alab_management.task_view.task_enums.TaskStatus.PAUSED" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">PAUSED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#alab_management.task_view.task_enums.TaskStatus.PAUSED" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="alab_management.task_view.task_enums.TaskStatus.READY">
-<span class="sig-name descname"><span class="pre">READY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#alab_management.task_view.task_enums.TaskStatus.READY" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">READY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#alab_management.task_view.task_enums.TaskStatus.READY" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.task_view.task_enums.TaskStatus.REQUESTING_RESOURCE">
-<span class="sig-name descname"><span class="pre">REQUESTING_RESOURCE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#alab_management.task_view.task_enums.TaskStatus.REQUESTING_RESOURCE" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="alab_management.task_view.task_enums.TaskStatus.REQUESTING_RESOURCES">
+<span class="sig-name descname"><span class="pre">REQUESTING_RESOURCES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#alab_management.task_view.task_enums.TaskStatus.REQUESTING_RESOURCES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="alab_management.task_view.task_enums.TaskStatus.RUNNING">
-<span class="sig-name descname"><span class="pre">RUNNING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#alab_management.task_view.task_enums.TaskStatus.RUNNING" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">RUNNING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="headerlink" href="#alab_management.task_view.task_enums.TaskStatus.RUNNING" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="alab_management.task_view.task_enums.TaskStatus.STOPPED">
-<span class="sig-name descname"><span class="pre">STOPPED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#alab_management.task_view.task_enums.TaskStatus.STOPPED" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">STOPPED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#alab_management.task_view.task_enums.TaskStatus.STOPPED" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
