@@ -11,7 +11,7 @@ from bson import ObjectId
 
 from .device import BaseDevice, get_all_devices
 from ..utils.data_objects import get_collection, get_lock
-from alab_management.sample_view import SampleView
+from alab_management.sample_view import SampleView, SamplePosition
 
 _DeviceType = TypeVar("_DeviceType", bound=BaseDevice)  # pylint: disable=invalid-name
 
@@ -77,7 +77,8 @@ class DeviceView:
                     "description": device.description,
                     "type": device.__class__.__name__,
                     "sample_positions": [
-                        sample_pos.name for sample_pos in device.sample_positions
+                        f"{device.name}{SamplePosition.SEPARATOR}{sample_pos.name}"
+                        for sample_pos in device.sample_positions
                     ],
                     "status": DeviceStatus.IDLE.name,
                     "task_id": None,
