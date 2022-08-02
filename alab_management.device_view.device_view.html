@@ -437,13 +437,14 @@ Device name is a unique identifier for a device</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceView.get_available_devices">
-<span class="sig-name descname"><span class="pre">get_available_devices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_type_str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.get_available_devices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.get_available_devices" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_available_devices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_or_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.get_available_devices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.get_available_devices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given device type, it will return all the device with this type.</p>
 <p>If only_idle set to True, only the idle devices will be returned (or ones have the same task id)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>device_type_str</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the type of device</p></li>
+<li><p><strong>device_type_str</strong> – the type of device</p></li>
+<li><p><strong>type_or_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – “type” or “name” to specify whether searching for a type of device by Type(BaseDevice), or for a specific device by name</p></li>
 <li><p><strong>task_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>]) – the id of task that requests this device</p></li>
 </ul>
 </dd>
@@ -519,7 +520,7 @@ If there is no such property with name <code class="docutils literal notranslate
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceView.request_devices">
-<span class="sig-name descname"><span class="pre">request_devices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_types_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.request_devices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.request_devices" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">request_devices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_names_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_types_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.request_devices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.request_devices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request a list of device, this function will return the name of devices if all the requested device is ready.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -529,7 +530,7 @@ If there is no such property with name <code class="docutils literal notranslate
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>task_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the id of task that requests these devices</p></li>
-<li><p><strong>device_types_str</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the requested device types</p></li>
+<li><p><strong>device_types_str</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – the requested device types</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
