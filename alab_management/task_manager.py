@@ -13,10 +13,13 @@ from typing import Union, Dict, Optional, Type, List, Any, cast
 
 import dill
 from bson import ObjectId
+from matplotlib.pyplot import get
 from pydantic import BaseModel, root_validator
 
+from alab_management.sample_view.sample import SamplePosition
+
 from .device_view import DeviceView
-from .device_view.device import BaseDevice
+from .device_view.device import BaseDevice, get_all_devices
 from .sample_view import SampleView
 from .sample_view.sample_view import SamplePositionRequest
 from .task_actor import run_task
@@ -24,12 +27,13 @@ from .task_view import TaskView, TaskPriority
 from .utils.data_objects import get_collection
 from .utils.module_ops import load_definition
 
+_device_registry = get_all_devices()
 _SampleRequestDict = Union[str, Dict[str, Union[str, int]]]
 _ResourceRequestDict = Dict[
     Optional[Type[BaseDevice]], List[_SampleRequestDict]
 ]  # the raw request sent by task process
 
-_EXTRA_REQUEST: str = "__extras"
+_EXTRA_REQUEST: str = "__nodevice"
 
 
 class RequestStatus(Enum):
@@ -48,39 +52,55 @@ class RequestStatus(Enum):
 class ResourcesRequest(BaseModel):
     """
     This class is used to validate the resource request. Each request should have a format of
-    [DeviceType: List of SamplePositionRequest]
+    [
+        {
+            "device":{
+                "identifier": "name" or "type" or "nodevice",
+                "content": string corresponding to identifier
+            },
+            "sample_positions": [
+                {
+                    "prefix": prefix of sample position,
+                    "number": integer number of such positions requested.
+                },
+                ...
+            ]
+        },
+        ...
+    ]
 
     See Also:
         :py:class:`SamplePositionRequest <alab_management.sample_view.sample_view.SamplePositionRequest>`
     """
 
-    __root__: Dict[str, List[SamplePositionRequest]]  # type: ignore
+    __root__: List[
+        Dict[str, Union[List[Dict[str, Union[str, int]]], Dict[str, str]]]
+    ]  # type: ignore
 
     @root_validator(pre=True, allow_reuse=True)
     def preprocess(cls, values):  # pylint: disable=no-self-use,no-self-argument
         values = values["__root__"]
-        # if the sample position request is string, we will automatically add a number attribute = 1.
-        # new_values = {}
-        # for k, v in values.items():
-        #     subvalues = []
-        #     for v_ in v:
-        #         if isinstance(v_, str):
-        #             subvalues.append(SamplePositionRequest.from_str(v_))
-        #         elif isinstance(v_, dict):
-        #             subvalues.append(SamplePositionRequest.from_dict(v_))
-        #         else:
-        #             subvalues.append(v_)
-        #     new_values[k] = subvalues
-        values = {
-            k: [
-                SamplePositionRequest.from_str(v_)
-                if isinstance(v_, str)
-                else SamplePositionRequest(**v_)
-                for v_ in v
-            ]
-            for k, v in values.items()
-        }
-        return {"__root__": values}
+
+        new_values = []
+        for request_dict in values:
+            if request_dict["device"]["identifier"] not in [
+                "name",
+                "type",
+                _EXTRA_REQUEST,
+            ]:
+                raise ValueError(
+                    f"device identifier must be one of 'name', 'type', or {_EXTRA_REQUEST}"
+                )
+            new_values.append(
+                {
+                    "device": {
+                        "identifier": request_dict["device"]["identifier"],
+                        "content": request_dict["device"]["content"],
+                    },
+                    "sample_positions": request_dict["sample_positions"],
+                }
+            )
+        return {"__root__": new_values}
 
 
 class RequestMixin:
@@ -174,10 +194,15 @@ class TaskManager(RequestMixin):
 
             devices = self.device_view.request_devices(
                 task_id=task_id,
+                device_names_str=[
+                    entry["device"]["content"]
+                    for entry in resource_request
+                    if entry["device"]["identifier"] == "name"
+                ],
                 device_types_str=[
-                    device_type
-                    for device_type in resource_request.keys()
-                    if device_type != _EXTRA_REQUEST
+                    entry["device"]["content"]
+                    for entry in resource_request
+                    if entry["device"]["identifier"] == "type"
                 ],
             )
             # some devices are not available now
@@ -188,38 +213,25 @@ class TaskManager(RequestMixin):
             # replace device placeholder in sample position request
             # and make it into a single list
             parsed_sample_positions_request = []
-            for device_type, device in devices.items():
-                device_name = device["name"]
+            for request in resource_request:
+                if request["device"]["identifier"] == _EXTRA_REQUEST:
+                    device_prefix = ""
+                else:
+                    device_name = devices[request["device"]["content"]]["name"]
+                    device_prefix = f"{device_name}{SamplePosition.SEPARATOR}"
+
                 parsed_sample_positions_request.extend(
                     [
-                        {
-                            **sample_position_request,
-                            "prefix": re.sub(
-                                r"\$", device_name, sample_position_request["prefix"]
-                            ),
-                        }  # type: ignore
-                        for sample_position_request in resource_request[device_type]
+                        SamplePositionRequest(
+                            prefix=f"{device_prefix}{pos['prefix']}",
+                            number=pos["number"],
+                        )
+                        for pos in request["sample_positions"]
                     ]
                 )
-
-            if any(
-                "$" in sample_position_request["prefix"]
-                for sample_position_request in resource_request.get(_EXTRA_REQUEST, [])
-            ):
-                raise ValueError(
-                    "$ should not appear under `None`, which is actually not a device."
-                )
-            parsed_sample_positions_request.extend(
-                resource_request.get(_EXTRA_REQUEST, [])
-            )
             sample_positions = self.sample_view.request_sample_positions(
-                task_id=task_id,
-                sample_positions=[
-                    SamplePositionRequest(**request)
-                    for request in parsed_sample_positions_request
-                ],
+                task_id=task_id, sample_positions=parsed_sample_positions_request
             )
-
             if sample_positions is None:
                 return
 
@@ -318,17 +330,43 @@ class ResourceRequester(RequestMixin):
         Request lab resources. Write the request into the database, and then the task manager will read from the
         database and assign the resources.
         """
+
         f = Future()
         if priority is None:
             priority = self.priority
 
-        formatted_resource_request = {
-            device_type.__name__: samples
-            for device_type, samples in resource_request.items()
-            if device_type is not None
-        }
-        if None in resource_request:
-            formatted_resource_request[_EXTRA_REQUEST] = resource_request[None]
+        formatted_resource_request = []
+
+        device_str_to_request = {}
+        for device, position_dict in resource_request.items():
+            if device is None:
+                identifier = _EXTRA_REQUEST
+                content = _EXTRA_REQUEST
+            elif isinstance(device, str):
+                identifier = "name"
+                content = device
+            elif issubclass(device, BaseDevice):
+                identifier = "type"
+                content = device.__name__
+            else:
+                raise ValueError(
+                    "device must be a name of a specific device, a class of type BaseDevice, or None"
+                )
+            device_str_to_request[content] = device
+
+            positions = [
+                dict(SamplePositionRequest(prefix=prefix, number=number))
+                for prefix, number in position_dict.items()
+            ]  # immediate dict conversion - SamplePositionRequest is only used to check request format.
+            formatted_resource_request.append(
+                {
+                    "device": {
+                        "identifier": identifier,
+                        "content": content,
+                    },
+                    "sample_positions": positions,
+                }
+            )
 
         if not isinstance(formatted_resource_request, ResourcesRequest):
             formatted_resource_request = ResourcesRequest(__root__=formatted_resource_request)  # type: ignore
@@ -345,10 +383,7 @@ class ResourceRequester(RequestMixin):
         )
         _id: ObjectId = cast(ObjectId, result.inserted_id)
 
-        self._waiting[_id] = {
-            "f": f,
-            "raw_request": resource_request,
-        }
+        self._waiting[_id] = {"f": f, "device_str_to_request": device_str_to_request}
 
         try:
             result = f.result(timeout=timeout)
@@ -361,68 +396,10 @@ class ResourceRequester(RequestMixin):
             **self._post_process_requested_resource(
                 devices=result["devices"],
                 sample_positions=result["sample_positions"],
-                resource_request=formatted_resource_request,
+                resource_request=resource_request,
             ),
             "request_id": result["request_id"],
         }
-
-    # def request_resources(
-    #     self,
-    #     resource_request: _ResourceRequestDict,
-    #     timeout: Optional[float] = None,
-    #     priority: Optional[Union[TaskPriority, int]] = None,
-    # ) -> Dict[str, Any]:
-    #     """
-    #     Request lab resources. Write the request into the database, and then the task manager will read from the
-    #     database and assign the resources.
-    #     """
-    #     f = Future()
-    #     if priority is None:
-    #         priority = self.priority
-
-    #     formatted_resource_request = {
-    #         device_type.__name__: samples
-    #         for device_type, samples in resource_request.items()
-    #         if device_type is not None
-    #     }
-    #     if None in resource_request:
-    #         formatted_resource_request[_EXTRA_REQUEST] = resource_request[None]
-
-    #     if not isinstance(formatted_resource_request, ResourcesRequest):
-    #         formatted_resource_request = ResourcesRequest(__root__=formatted_resource_request)  # type: ignore
-    #     formatted_resource_request = formatted_resource_request.dict()["__root__"]
-
-    #     result = self._request_collection.insert_one(
-    #         {
-    #             "request": formatted_resource_request,
-    #             "status": RequestStatus.PENDING.name,
-    #             "task_id": self.task_id,
-    #             "priority": int(priority),
-    #             "submitted_at": datetime.now(),
-    #         }
-    #     )
-    #     _id: ObjectId = cast(ObjectId, result.inserted_id)
-
-    #     self._waiting[_id] = {
-    #         "f": f,
-    #         "raw_request": resource_request,
-    #     }
-
-    #     try:
-    #         result = f.result(timeout=timeout)
-    #     except TimeoutError:
-    #         # cancel the task
-    #         self.update_request_status(request_id=_id, status=RequestStatus.CANCELED)
-    #         raise
-
-    #     return {
-    #         **self._post_process_requested_resource(
-    #             devices=result["devices"],
-    #             sample_positions=result["sample_positions"],
-    #             resource_request=formatted_resource_request,
-    #         ),
-    #         "request_id": result["request_id"],
-    #     }
 
     def release_resources(self, request_id: ObjectId) -> bool:
         """
@@ -467,19 +444,15 @@ class ResourceRequester(RequestMixin):
         request: Dict[str, Any] = self._waiting.pop(request_id)
 
         f: Future = request["f"]
-        raw_request = request["raw_request"]
-
-        device_str_to_type: Dict[str, Type[BaseDevice]] = {
-            device_type.__name__: device_type
-            for device_type in raw_request
-            if device_type is not None
-        }
+        device_str_to_request: Dict[str, Union[Type[BaseDevice], str, None]] = request[
+            "device_str_to_request"
+        ]
 
         f.set_result(
             {
                 "devices": {
-                    device_str_to_type[device_type_str]: device_dict["name"]
-                    for device_type_str, device_dict in assigned_devices.items()
+                    device_str_to_request[device_str]: device_dict["name"]
+                    for device_str, device_dict in assigned_devices.items()
                 },
                 "sample_positions": {
                     name: [
@@ -512,23 +485,26 @@ class ResourceRequester(RequestMixin):
             Optional[Type[BaseDevice]], Dict[str, List[str]]
         ] = {}
 
-        for device_type, device_str in devices.items():  # type: ignore
-            sample_position_requests = resource_request[device_type.__name__]
-            processed_sample_positions[device_type] = {
-                cast(str, sample_position_request["prefix"]): sample_positions.pop(
-                    cast(str, sample_position_request["prefix"]).replace(
-                        "$", device_str
+        for device_request, sample_position_dict in resource_request.items():
+            if len(sample_position_dict) == 0:
+                continue
+            processed_sample_positions[device_request] = {}
+            for prefix in sample_position_dict:
+                if device_request is None:  # no device name to prepend
+                    reply_prefix = prefix
+                else:
+                    reply_prefix = (
+                        f"{devices[device_request]}{SamplePosition.SEPARATOR}{prefix}"
                     )
-                )
-                for sample_position_request in sample_position_requests
-            }
-        if _EXTRA_REQUEST in resource_request:
-            processed_sample_positions[None] = {
-                cast(str, sample_position_request["prefix"]): sample_positions.pop(
-                    cast(str, sample_position_request["prefix"])
-                )
-                for sample_position_request in resource_request[_EXTRA_REQUEST]
-            }
+                processed_sample_positions[device_request][prefix] = sample_positions[
+                    reply_prefix
+                ]
+                # {
+        #     device_request: {
+        #         prefix: sample_positions[prefix] for prefix in sample_position_dict
+        #     }
+        #     for device_request, sample_position_dict in resource_request.items()
+        # }
         return {
             "devices": devices,
             "sample_positions": processed_sample_positions,

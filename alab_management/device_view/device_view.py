@@ -102,7 +102,10 @@ class DeviceView:
     def request_devices(
         self,
         task_id: ObjectId,
-        device_types_str: Collection[str],  # pylint: disable=unsubscriptable-object
+        device_names_str: Optional[Collection[str]] = [],
+        device_types_str: Optional[
+            Collection[str]
+        ] = [],  # pylint: disable=unsubscriptable-object
     ) -> Optional[Dict[str, Dict[str, Union[str, bool]]]]:
         """
         Request a list of device, this function will return the name of devices if all the requested device is ready.
@@ -119,16 +122,23 @@ class DeviceView:
         """
         if len(device_types_str) != len(set(device_types_str)):
             raise ValueError(
-                "Currently we do not allow duplicated devices in one request."
+                "Currently we do not allow duplicated device types in one request."
             )
 
         idle_devices: Dict[str, Dict[str, Union[str, bool]]] = {}
         with self._lock():  # pylint: disable=not-callable
+            for device_name in device_names_str:
+                result = self.get_available_devices(
+                    device_str=device_name, type_or_name="name", task_id=task_id
+                )
+                if not result:
+                    return None  # cannot meet all requirement, return None
+                idle_devices[device_name] = result[0]
             for device in device_types_str:
                 result = self.get_available_devices(
-                    device_type_str=device, task_id=task_id
+                    device_str=device, type_or_name="type", task_id=task_id
                 )
-                if not result:  # Cannot meet all the requirements, return None
+                if not result:
                     return None
                 # just pick the first device
                 idle_devices[device] = next(
@@ -138,7 +148,7 @@ class DeviceView:
             return idle_devices
 
     def get_available_devices(
-        self, device_type_str: str, task_id: Optional[ObjectId]
+        self, device_str: str, type_or_name: str, task_id: Optional[ObjectId]
     ) -> List[Dict[str, Union[str, bool]]]:
         """
         Given device type, it will return all the device with this type.
@@ -147,6 +157,7 @@ class DeviceView:
 
         Args:
             device_type_str: the type of device
+            type_or_name: "type" or "name" to specify whether searching for a type of device by Type(BaseDevice), or for a specific device by name
             task_id: the id of task that requests this device
 
         Returns:
@@ -154,11 +165,15 @@ class DeviceView:
             The entry need_release indicates whether a device needs to be released
             when __exit__ method is called in the ``DevicesLock``.
         """
-        request_dict = {
-            "type": device_type_str,
-        }
+        if type_or_name == "type":
+            request_dict = {
+                "type": device_str,
+            }
+        elif type_or_name == "name":
+            request_dict = {"name": device_str}
+
         if self._device_collection.find_one(request_dict) is None:
-            raise ValueError(f"No such device_type: {device_type_str}")
+            raise ValueError(f"No such device of {type_or_name} {device_str}")
 
         request_dict.update(
             {
@@ -186,7 +201,10 @@ class DeviceView:
         """
         Get device by device name, if not found, return ``None``
         """
-        return self._device_collection.find_one({"name": device_name})
+        device_entry = self._device_collection.find_one({"name": device_name})
+        if device_entry is None:
+            raise ValueError(f"Cannot find device with name: {device_name}")
+        return device_entry
 
     def get_status(self, device_name: str) -> DeviceStatus:
         """
@@ -194,8 +212,6 @@ class DeviceView:
         """
         device_entry = self.get_device(device_name=device_name)
 
-        if device_entry is None:
-            raise ValueError(f"Cannot find device with name: {device_name}")
         return DeviceStatus[device_entry["status"]]
 
     def occupy_device(self, device: Union[BaseDevice, str], task_id: ObjectId):

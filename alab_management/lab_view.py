@@ -71,7 +71,7 @@ class LabView:
     def request_resources(
         self,
         resource_request: Dict[
-            Optional[Type[BaseDevice]], List[Union[Dict[str, Union[str, int]], str]]
+            Optional[Union[Type[BaseDevice], str]], Dict[str, Union[str, int]]
         ],
         priority: Optional[int] = None,
         timeout: Optional[float] = None,
@@ -80,19 +80,15 @@ class LabView:
         Request devices and sample positions. This function is a context manager, which should be used in
         a with statement to ensure all the devices are released when the task is done.
 
-        Usually, devices_and_sample_positions has the format {DeviceType: ["sample_position_1", ...]}. The
-        DeviceType can be ``None`` so that you can request the sample positions that do not belong to
-        any devices (in principle, you can put all the sample positions under one device type)
+        resource_request format is:
+            {device: {position: number, ...}, ...}
+        device can be a name of a specific device (str), a type of device, or None. If device is a type, the resource request will look for any available device of that type. If device is None, the resource request will look for sample positions that do not belong to a device.
+        position is the name of a sample position that should be reserved on the device, and number is the number of such positions that should be reserved. If the device is required but no positions are required, this can be left as an empty dictionary.
 
-        If you want to request multiple sample positions with the same prefix, you can instead replace the name of
-        sample position name with a dict {"prefix": <str>, "number": <int>}
+        Examples:
 
-        Note that the sample position name will try to find available sample positions that start with this
-        specified name prefix.
+        {TubeFurnace: {"tray": 4}, "arm1": {}} will find the first available TubeFurnace device, then reserve 4 sample positions of "{tubefurnacename}/tray/{tray_index}" on that device. It will also find the device named "arm1".
 
-        And since sometimes you can only know which device you will use until you request the device,
-        you can use ``$`` to represent the name of device, e.g. {Furnace: ["$/inside"]} will be parsed to
-        ``furnace_1/inside`` if we are assigned to a furnace named ``furnace_1``.
 
         The priority of the request can optionally be specified as a positive integer, which should probably be in the range of 0-40. 20 is the default "NORMAL" priority level. Higher number = higher priority. Numbers >= 100 are reserved for urgent/error correcting requests.
         """
