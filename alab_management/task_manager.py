@@ -514,7 +514,7 @@ class TaskManager(RequestMixin):
                 task_id=task_id,
                 lab_view=lab_view,
                 priority=TaskPriority.HIGH,
-                sample=sample_to_move["_id"],
+                samples=[sample_to_move["_id"]],
             ).run()
         self.__reroute_in_progress = False
 

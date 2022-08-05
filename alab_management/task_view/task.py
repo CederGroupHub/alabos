@@ -22,11 +22,16 @@ class BaseTask(ABC):
         self,
         task_id: ObjectId,
         lab_view: "LabView",
+        samples: List[ObjectId],
         priority: Optional[Union[TaskPriority, int]] = TaskPriority.NORMAL,
+        *args,
+        **kwargs,
     ):
         """
         Args:
             task_id: the identifier of task
+            lab_view: a lab_view corresponding to the task_id
+            samples: a list of sample_id's corresponding to samples involvend in the task.
 
         Here is an example about how to define a custom task
 
@@ -44,6 +49,7 @@ class BaseTask(ABC):
         self.lab_view = lab_view
         self.logger = self.lab_view.logger
         self.priority = priority
+        self.samples = samples
 
     @property
     def priority(self) -> int:
