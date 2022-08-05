@@ -40,8 +40,6 @@ def run_task(task_id_str: str):
     task_id = ObjectId(task_id_str)
     task_entry = task_view.get_task(task_id, encode=True)
 
-    if task_entry is None:
-        raise ValueError(f"Cannot find task with task id: {task_id}")
     task_type = task_entry.pop("type")
 
     try:

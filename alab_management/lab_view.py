@@ -1,10 +1,11 @@
 """
-Each task process will have a ``LavView`` instance, through which it can request
+Each task process will have a ``LabView`` instance, through which it can request
 the lab resources (devices and sample positions). It can also update the position
 of a sample in the lab.
 """
 
 from contextlib import contextmanager
+import time
 from typing import Type, Dict, List, Optional, Union
 
 from bson import ObjectId
@@ -16,8 +17,10 @@ from alab_management.device_view.device import BaseDevice
 from alab_management.logger import DBLogger
 from alab_management.sample_view.sample_view import SampleView, SamplePositionRequest
 from alab_management.task_manager import ResourceRequester
+from alab_management.task_view.task import BaseTask
 from alab_management.task_view.task_enums import TaskStatus
 from alab_management.task_view.task_view import TaskView
+from alab_management.user_input import request_user_input
 
 
 class DeviceRunningException(Exception):
@@ -59,11 +62,14 @@ class LabView:
     """
 
     def __init__(self, task_id: ObjectId):
+        self._task_view = TaskView()
+        self._task_view.get_task(
+            task_id=task_id
+        )  # will throw error if task_id does not exist
         self._task_id = task_id
         self._sample_view = SampleView()
-        self._task_view = TaskView()
         self._resource_requester = ResourceRequester(task_id=task_id)
-        self._device_client = DevicesClient(task_id=task_id, timeout=30)
+        self._device_client = DevicesClient(task_id=task_id, timeout=None)
         self.logger = DBLogger(task_id=task_id)
 
     @property
@@ -147,3 +153,39 @@ class LabView:
         Get a list of sample positions that are occupied by this task
         """
         return self._sample_view.get_sample_positions_by_task(task_id=self._task_id)
+
+    # def run_subtask(
+    #     self, task: Union[str, Type[BaseTask]], samples: List[ObjectId], **kwargs
+    # ):
+    #     """run a task as a subtask of the current task. this command blocks until the task is marked as completed. subtasks cannot have previous or next task dependencies, as they may otherwise generate cycles in the task graph.
+
+    #     Args:
+    #         task_type (Union[str, type[BaseTask]]): name or class of Task to run.
+    #         samples (List[ObjectId]): list of sample_id's to pass to subtask
+    #         **kwargs: will be passed to the Task method via the parameters entry in task collection.
+    #     """
+    #     if issubclass(task, BaseTask):
+    #         task_name = task.__name__
+    #     elif isinstance(task, str):
+    #         task_name = task
+    #     else:
+    #         raise ValueError("task must be a string or a class of BaseTask")
+
+    #     if isinstance(samples, ObjectId):
+    #         samples = [samples]
+    #     subtask_id = self._task_view.create_task(
+    #         task_type=task_name,
+    #         samples=samples,
+    #         parameters=kwargs,
+    #         prev_tasks=[],
+    #         next_tasks=[],
+    #         parent_task_id=self.task_id,
+    #     )
+    #     while self._task_view.get_status(task_id=subtask_id) != TaskStatus.COMPLETED:
+    #         time.sleep(0.5)
+
+    def request_user_input(self, prompt: str) -> str:
+        """
+        Request user input from the user. This function will block until the user inputs something.
+        """
+        return request_user_input(task_id=self.task_id, prompt=prompt)

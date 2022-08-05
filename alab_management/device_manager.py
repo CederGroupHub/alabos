@@ -11,6 +11,7 @@ from enum import Enum, auto
 from functools import partial
 from threading import Thread
 from typing import Optional, Any, Dict, NoReturn, cast, Callable
+from uuid import uuid4
 
 import dill
 import pika
@@ -247,17 +248,17 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
         self._rpc_queue_name = (
             AlabConfig()["general"]["name"] + DEFAULT_SERVER_QUEUE_SUFFIX
         )
-        self._rpc_reply_queue_name = (
-            str(task_id) + DEFAULT_CLIENT_QUEUE_SUFFIX
-        )  # TODO does this have to be taskid, or can be random? I think this dies with the resourcerequest context manager anyways?
-        # self._rpc_reply_queue_name = str(uuid4()) + DEFAULT_CLIENT_QUEUE_SUFFIX
+        # self._rpc_reply_queue_name = (
+        #     str(task_id) + DEFAULT_CLIENT_QUEUE_SUFFIX
+        # )  # TODO does this have to be taskid, or can be random? I think this dies with the resourcerequest context manager anyways?
+        self._rpc_reply_queue_name = str(uuid4()) + DEFAULT_CLIENT_QUEUE_SUFFIX
         self._task_id = task_id
         self._waiting: Dict[ObjectId, Future] = {}
 
         self._conn = get_rabbitmq_connection()
         self._channel = self._conn.channel()
         self._channel.queue_declare(
-            self._rpc_reply_queue_name, exclusive=True, auto_delete=True
+            self._rpc_reply_queue_name, exclusive=False, auto_delete=True
         )
 
         self._thread: Optional[Thread] = None

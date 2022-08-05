@@ -16,6 +16,7 @@ class LoggingType(Enum):
     """
     Different types of log
     """
+
     DEVICE_SIGNAL = auto()
     SAMPLE_AMOUNT = auto()
     CHARACTERIZATION_RESULT = auto()
@@ -27,6 +28,7 @@ class LoggingLevel(Enum):
     """
     Different level log
     """
+
     CRITICAL = 50
     FATAL = CRITICAL
     ERROR = 40
@@ -45,10 +47,12 @@ class DBLogger:
         self.task_id = task_id
         self._logging_collection = get_collection("logs")
 
-    def log(self,
-            level: Union[str, int, LoggingLevel],
-            log_data: Dict[str, Any],
-            logging_type: LoggingType = LoggingType.OTHER) -> ObjectId:
+    def log(
+        self,
+        level: Union[str, int, LoggingLevel],
+        log_data: Dict[str, Any],
+        logging_type: LoggingType = LoggingType.OTHER,
+    ) -> ObjectId:
         """
         Basic log function
         Args:
@@ -61,13 +65,15 @@ class DBLogger:
         elif isinstance(level, LoggingLevel):
             level = level.value
 
-        result = self._logging_collection.insert_one({
-            "task_id": self.task_id,
-            "type": logging_type.name,
-            "level": level,
-            "log_data": log_data,
-            "created_at": datetime.now()
-        })
+        result = self._logging_collection.insert_one(
+            {
+                "task_id": self.task_id,
+                "type": logging_type.name,
+                "level": level,
+                "log_data": log_data,
+                "created_at": datetime.now(),
+            }
+        )
 
         return cast(ObjectId, result.inserted_id)
 
@@ -75,27 +81,45 @@ class DBLogger:
         """
         Log the amount of samples and chemicals (e.g. weight)
         """
-        return self.log(level=LoggingLevel.INFO, log_data=log_data, logging_type=LoggingType.SAMPLE_AMOUNT)
+        return self.log(
+            level=LoggingLevel.INFO,
+            log_data=log_data,
+            logging_type=LoggingType.SAMPLE_AMOUNT,
+        )
 
     def log_characterization_result(self, log_data: Dict[str, Any]):
         """
         Log the characterization result (e.g. XRD pattern)
         """
-        return self.log(level=LoggingLevel.INFO, log_data=log_data, logging_type=LoggingType.CHARACTERIZATION_RESULT)
+        return self.log(
+            level=LoggingLevel.INFO,
+            log_data=log_data,
+            logging_type=LoggingType.CHARACTERIZATION_RESULT,
+        )
 
     def log_device_signal(self, log_data: Dict[str, Any]):
         """
         Log the device sensor's signal (e.g. the voltage of batteries, the temperature of furnace)
         """
-        return self.log(level=LoggingLevel.DEBUG, log_data=log_data, logging_type=LoggingType.DEVICE_SIGNAL)
+        return self.log(
+            level=LoggingLevel.DEBUG,
+            log_data=log_data,
+            logging_type=LoggingType.DEVICE_SIGNAL,
+        )
 
-    def system_log(self, level: Union[str, int, LoggingLevel], log_data: Dict[str, Any]):
+    def system_log(
+        self, level: Union[str, int, LoggingLevel], log_data: Dict[str, Any]
+    ):
         """
         Log that comes from the workflow system
         """
-        return self.log(level=level, log_data=log_data, logging_type=LoggingType.SYSTEM_LOG)
+        return self.log(
+            level=level, log_data=log_data, logging_type=LoggingType.SYSTEM_LOG
+        )
 
-    def filter_log(self, level: Union[str, int, LoggingLevel], within: timedelta) -> Iterable[Dict[str, Any]]:
+    def filter_log(
+        self, level: Union[str, int, LoggingLevel], within: timedelta
+    ) -> Iterable[Dict[str, Any]]:
         """
         Find log within a range of time (1h/1d or else) higher than certain level
         """
@@ -104,5 +128,6 @@ class DBLogger:
         elif isinstance(level, LoggingLevel):
             level = cast(int, LoggingLevel.value)
 
-        return self._logging_collection.find({"level": {"$gte": level},
-                                              "created_at": {"$gte": datetime.now() - within}})
+        return self._logging_collection.find(
+            {"level": {"$gte": level}, "created_at": {"$gte": datetime.now() - within}}
+        )

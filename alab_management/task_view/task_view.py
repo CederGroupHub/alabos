@@ -56,17 +56,8 @@ class TaskView:
         next_tasks = next_tasks if next_tasks is not None else []
         next_tasks = next_tasks if isinstance(next_tasks, list) else [next_tasks]
 
-        for prev_task in prev_tasks:
-            if self.get_task(task_id=prev_task) is None:
-                raise ValueError(
-                    f"No task exists with provided previous task id: {prev_task}"
-                )
-
-        for next_task in next_tasks:
-            if self.get_task(task_id=next_task) is None:
-                raise ValueError(
-                    f"No task exists with provided next task id: {next_task}"
-                )
+        for related_task_id in prev_tasks + next_tasks:
+            self.get_task(task_id=related_task_id)  # will raise error if not found
 
         result = self._task_collection.insert_one(
             {
@@ -80,6 +71,7 @@ class TaskView:
                 "last_updated": datetime.now(),
             }
         )
+
         return cast(ObjectId, result.inserted_id)
 
     def get_task(
@@ -183,12 +175,22 @@ class TaskView:
             List of task entry: {"task_id": ``ObjectId``,
             "type": :py:class:`BaseTask <alab_management.task_view.task.BaseTask>`}
         """
-        result = self._task_collection.find({"status": TaskStatus.READY.name})
+        return self.get_tasks_by_status(status=TaskStatus.READY)
 
-        ready_tasks: List[Dict[str, Any]] = []
+    def get_tasks_by_status(self, status: TaskStatus) -> List[Dict[str, Any]]:
+        """
+        Return a list of tasks with given status
+
+        Returns:
+            List of task entry: {"task_id": ``ObjectId``,
+            "type": :py:class:`BaseTask <alab_management.task_view.task.BaseTask>`}
+        """
+        result = self._task_collection.find({"status": status.name})
+
+        tasks: List[Dict[str, Any]] = []
         for task_entry in result:
-            ready_tasks.append(self.encode_task(task_entry))
-        return ready_tasks
+            tasks.append(self.encode_task(task_entry))
+        return tasks
 
     def encode_task(self, task_entry: Dict[str, Any]) -> Dict[str, Any]:
         """

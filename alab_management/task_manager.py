@@ -3,24 +3,27 @@ TaskLauncher is the core module of the system,
 which actually executes the tasks
 """
 from datetime import datetime
-import re
+from functools import partial
+from math import inf
 import time
 from concurrent.futures import Future
 from enum import Enum, auto
 from threading import Thread
 from traceback import print_exc
 from typing import Union, Dict, Optional, Type, List, Any, cast
+import networkx as nx
 
 import dill
 from bson import ObjectId
-from matplotlib.pyplot import get
 from pydantic import BaseModel, root_validator
+from alab_management.logger import DBLogger, LoggingLevel
 
 from alab_management.sample_view.sample import SamplePosition
+from alab_management.task_view.task import BaseTask
 from alab_management.task_view.task_enums import TaskStatus
 
 from .device_view import DeviceView
-from .device_view.device import BaseDevice, get_all_devices
+from .device_view.device import BaseDevice
 from .sample_view import SampleView
 from .sample_view.sample_view import SamplePositionRequest
 from .task_actor import run_task
@@ -28,13 +31,70 @@ from .task_view import TaskView, TaskPriority
 from .utils.data_objects import get_collection
 from .utils.module_ops import load_definition
 
-_device_registry = get_all_devices()
-_SampleRequestDict = Union[str, Dict[str, Union[str, int]]]
+_SampleRequestDict = Dict[str, int]
 _ResourceRequestDict = Dict[
-    Optional[Type[BaseDevice]], List[_SampleRequestDict]
+    Optional[Union[Type[BaseDevice], str]], List[_SampleRequestDict]
 ]  # the raw request sent by task process
 
 _EXTRA_REQUEST: str = "__nodevice"
+
+
+def parse_reroute_tasks() -> Dict[str, Type[BaseTask]]:
+    """Takes the reroute task registry and expands the supported sample positions (which is given in format similar to resource requests) to the individual sample positions
+
+    Raises:
+        ValueError: if the supported_sample_positions is not provided in the correct format.
+
+    Returns:
+        _type_: _description_
+    """
+    from alab_management.task_view.task import _reroute_task_registry
+    from alab_management.device_view.device import _device_registry
+    from alab_management.sample_view import SampleView
+
+    load_definition()
+
+    routes: Dict[str, BaseTask] = {}  # sample_position: Task
+    sample_view = SampleView()
+
+    for reroute in _reroute_task_registry:
+        route_task = partial(reroute["task"], **reroute["kwargs"])
+        supported_sample_positions = reroute["supported_sample_positions"]
+
+        for device_identifier, positions in supported_sample_positions.items():
+            if device_identifier is None:
+                devices = [None]
+            elif isinstance(device_identifier, str):
+                devices = [device_identifier]  # name of particular device
+            elif issubclass(device_identifier, BaseDevice):
+                devices = [
+                    name
+                    for name, device_instance in _device_registry.items()
+                    if isinstance(device_instance, device_identifier)
+                ]  # all devices of this type
+            else:
+                raise ValueError(
+                    "device must be a name of a specific device, a class of type BaseDevice, or None"
+                )
+
+            if type(positions) is str:
+                positions = [positions]
+            for device in devices:
+                for position in positions:
+                    if device is None and position == "":
+                        raise ValueError(
+                            'Cannot have device=None and position="" -- this would return every sample_position!'
+                        )
+                    if device is not None:
+                        position = f"{device}{SamplePosition.SEPARATOR}{position}"
+                    for found_position in sample_view._sample_positions_collection.find(
+                        {"name": {"$regex": position}}
+                    ):  # DB_ACCESS_OUTSIDE_VIEW
+                        routes[found_position["name"]] = route_task
+    return routes
+
+
+_reroute_registry = parse_reroute_tasks()
 
 
 class RequestStatus(Enum):
@@ -118,10 +178,14 @@ class RequestMixin:
         )
 
     def get_request(self, request_id: ObjectId, **kwargs):
-        return self._request_collection.find_one({"_id": request_id}, **kwargs)
+        return self._request_collection.find_one(
+            {"_id": request_id}, **kwargs
+        )  # DB_ACCESS_OUTSIDE_VIEW
 
     def get_requests_by_status(self, status: RequestStatus):
-        return self._request_collection.find({"status": status.name})
+        return self._request_collection.find(
+            {"status": status.name}
+        )  # DB_ACCESS_OUTSIDE_VIEW
 
 
 class TaskManager(RequestMixin):
@@ -137,6 +201,8 @@ class TaskManager(RequestMixin):
         self.task_view = TaskView()
         self.sample_view = SampleView()
         self.device_view = DeviceView()
+        self._request_collection = get_collection("requests")
+        self.__reroute_in_progress = False
         super().__init__()
         time.sleep(1)  # allow some time for other modules to launch
 
@@ -152,6 +218,8 @@ class TaskManager(RequestMixin):
         self.submit_ready_tasks()
         self.handle_released_resources()
         self.handle_requested_resources()
+        if not self.__reroute_in_progress:
+            self.handle_request_cycles()
 
     def submit_ready_tasks(self):
         """
@@ -187,9 +255,21 @@ class TaskManager(RequestMixin):
         # prioritize the oldest requests at the smallest priority value
         requests.sort(key=lambda x: x["submitted_at"])
         requests.sort(key=lambda x: x["priority"], reverse=True)
-        # TODO: add priority here (some sort function)
         for request in requests:
             self._handle_requested_resources(request)
+
+    def handle_request_cycles(self):
+        """check for request cycles (gridlocks where a set of tasks require sample_positions occupied by one another.). We attempt to resolve these cycles by moving a sample out of the way by a reroute_task defined in the alab configuration. This will move samples to free up the blocked task of highest priority. If this alone does not resolve the cycle, we will try again on the next call to this method."""
+        positions_to_reroute, taskid_to_reroute = self._check_for_request_cycle()
+        if len(positions_to_reroute) > 0:
+            thread = Thread(
+                target=self._reroute_to_fix_request_cycle,
+                kwargs=dict(
+                    task_id=taskid_to_reroute,
+                    sample_positions=positions_to_reroute,
+                ),
+            )
+            thread.start()
 
     def _handle_requested_resources(self, request_entry: Dict[str, Any]):
         try:
@@ -233,6 +313,17 @@ class TaskManager(RequestMixin):
                         for pos in request["sample_positions"]
                     ]
                 )
+
+            self._request_collection.update_one(
+                {"_id": request_entry["_id"]},
+                {
+                    "$set": {
+                        "parsed_sample_positions_request": [
+                            dict(spr) for spr in parsed_sample_positions_request
+                        ]
+                    }
+                },
+            )
             sample_positions = self.sample_view.request_sample_positions(
                 task_id=task_id, sample_positions=parsed_sample_positions_request
             )
@@ -298,6 +389,134 @@ class TaskManager(RequestMixin):
             for sample_position in sample_positions_:
                 if sample_position["need_release"]:
                     self.sample_view.release_sample_position(sample_position["name"])
+
+    def _check_for_request_cycle(self):
+        """
+        Check if there is a cycle in the request graph. (ie tasks occupy sample positions required by one another, no requests can be fufilled). If found, use a reroute task to fix the cycle. This function will only trigger if a reroute task has been defined using `add_reroute`
+        """
+        tasks = self.task_view.get_tasks_by_status(TaskStatus.REQUESTING_RESOURCES)
+
+        if len(tasks) < 2:
+            return [], None  # no cycle to fix
+
+        # get occupied and requested positions per task that is currently requesting resources
+        occupied_by_task = {}
+        requested_by_task = {}
+        task_priority = {}
+        task_ids_to_consider = []
+        for t in tasks:
+            request = self._request_collection.find_one(
+                {"task_id": t["task_id"], "status": RequestStatus.PENDING.name}
+            )  # DB_ACCESS_OUTSIDE_VIEW
+            if request is None:
+                continue  # race condition. task must have had resource request fulfilled between getting task and request entries.
+            if "parsed_sample_positions_request" not in request:
+                continue  # slight delay between setting TaskStatus.REQUESTING_RESOURCES and generating parsed_sample_positions_request. can catch these on the next call if necessary.
+            task_ids_to_consider.append(t["task_id"])
+            occupied = occupied_by_task[t["task_id"]] = []
+            blocked = requested_by_task[t["task_id"]] = []
+            task_priority[t["task_id"]] = request["priority"]
+            for s in t["samples"]:
+                occupied.append(self.sample_view.get_sample(s["sample_id"]).position)
+            for r in request["parsed_sample_positions_request"]:
+                if (
+                    len(
+                        self.sample_view.get_available_sample_position(
+                            task_id=t["task_id"], position_prefix=r["prefix"]
+                        )
+                    )
+                    < r["number"]
+                ):
+                    blocked.append(
+                        r["prefix"]
+                    )  # we dont have enough available positions for this request
+
+        # construct a directed graph where nodes are task_id's, and edges indicate that the tail node is blocked by the head node (ie the tail task is requesting a sample_position occupied by the head task)
+        edges = []
+        for i, t0 in enumerate(task_ids_to_consider):
+            for j, t1 in enumerate(task_ids_to_consider):
+                if i == j:
+                    continue
+                if any(
+                    [
+                        occupied in requested_by_task[t0]
+                        for occupied in occupied_by_task[t1]
+                    ]
+                ):
+                    edges.append((t0, t1))
+
+        if len(edges) < 2:
+            return [], None  # no cycle without at least two edges
+        g = nx.DiGraph(edges)
+        try:
+            cycle = nx.find_cycle(
+                g
+            )  # a cycle indicates a set of tasks that are blocking one another
+        except nx.NetworkXNoCycle:
+            return [], None  # no cycle to fix
+
+        # get the highest priority task in the cycle. We will unblock this task.
+        highest_priority = -inf
+        for (_blocking_taskid, _occupying_taskid) in cycle:
+            priority = task_priority[_blocking_taskid]
+            if priority > highest_priority:
+                highest_priority = priority
+                occupying_taskid = _occupying_taskid
+                blocked = requested_by_task[_blocking_taskid]
+                occupied = occupied_by_task[_occupying_taskid]
+        positions_to_vacate = [p for p in occupied if p in blocked]
+
+        return positions_to_vacate, occupying_taskid
+
+    def _reroute_to_fix_request_cycle(
+        self,
+        task_id: ObjectId,
+        sample_positions: List[str],
+    ):
+        from alab_management.lab_view import LabView
+
+        """
+        Runs rerouting tasks (as specified by add_reroute_task) to vacate sample_positions to resolve a request cycle. 
+
+        task_id: the task_id of the blocking task that will be rerouted
+        sample_positions: sample_positions occupied by the blocking task which will be moved by the appropriate reroute task.
+        """
+
+        self.__reroute_in_progress = True
+        lab_view = LabView(task_id=task_id)
+        for fix_position in sample_positions:
+            if fix_position not in _reroute_registry:
+                raise ValueError(
+                    f'No reroute task defined to move sample out from sample_position "{fix_position}". Please add a reroute task using `add_reroute`'
+                )
+            reroute_Task: BaseTask = _reroute_registry[fix_position]
+
+            sample_to_move = self.sample_view._sample_collection.find_one(
+                {"position": fix_position}
+            )  # DB_ACCESS_OUTSIDE_VIEW
+            lab_view.logger.system_log(
+                level=LoggingLevel.INFO,
+                log_data={
+                    "logged_by": "TaskManager",
+                    "type": "Reroute",
+                    "reroute_task": {
+                        "task_type": reroute_Task.func.__name__,
+                        "kwargs": reroute_Task.keywords,
+                    },
+                    "reroute_target": {
+                        "task_id": task_id,
+                        "sample_id": sample_to_move["_id"],
+                        "sample_position": fix_position,
+                    },
+                },
+            )
+            reroute_Task(
+                task_id=task_id,
+                lab_view=lab_view,
+                priority=TaskPriority.HIGH,
+                sample=sample_to_move["_id"],
+            ).run()
+        self.__reroute_in_progress = False
 
 
 class ResourceRequester(RequestMixin):
@@ -384,7 +603,7 @@ class ResourceRequester(RequestMixin):
                 "priority": int(priority),
                 "submitted_at": datetime.now(),
             }
-        )
+        )  # DB_ACCESS_OUTSIDE_VIEW
         _id: ObjectId = cast(ObjectId, result.inserted_id)
 
         self._waiting[_id] = {"f": f, "device_str_to_request": device_str_to_request}
