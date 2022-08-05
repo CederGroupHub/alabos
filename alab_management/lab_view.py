@@ -119,7 +119,7 @@ class LabView:
 
         self._resource_requester.release_resources(request_id=request_id)
 
-    def get_sample(self, sample_id: ObjectId):
+    def get_sample(self, sample_id: ObjectId) -> Optional[SampleView]:
         """
         Get a sample by id, see also
         :py:meth:`get_sample <alab_management.sample_view.sample_view.SampleView.get_sample>`
@@ -153,6 +153,12 @@ class LabView:
         Get a list of sample positions that are occupied by this task
         """
         return self._sample_view.get_sample_positions_by_task(task_id=self._task_id)
+
+    def get_sample_position_parent_device(self, position: str) -> Optional[str]:
+        """
+        Get the name of the device that owns the sample position.
+        """
+        return self._sample_view.get_sample_position_parent_device(position=position)
 
     # def run_subtask(
     #     self, task: Union[str, Type[BaseTask]], samples: List[ObjectId], **kwargs

@@ -78,7 +78,11 @@ class SampleView:
         )
         self._lock = get_lock(self._sample_positions_collection.name)
 
-    def add_sample_positions_to_db(self, sample_positions: List[SamplePosition]):
+    def add_sample_positions_to_db(
+        self,
+        sample_positions: List[SamplePosition],
+        parent_device_name: Optional[str] = None,
+    ):
         """
         Insert sample positions info to db, which includes position name and description
 
@@ -87,6 +91,7 @@ class SampleView:
 
         Args:
             sample_positions: some sample position instances
+            parent_device_name: name of the parent device to these sample_positions.
         """
         for sample_pos in sample_positions:
             for i in range(sample_pos.number):
@@ -98,6 +103,8 @@ class SampleView:
                     if sample_pos.number != 1
                     else sample_pos.name
                 )
+                if parent_device_name:
+                    name = f"{parent_device_name}{SamplePosition.SEPARATOR}{name}"
 
                 if re.search(r"[$.]", name) is not None:
                     raise ValueError(
@@ -107,14 +114,15 @@ class SampleView:
 
                 sample_pos_ = self._sample_positions_collection.find_one({"name": name})
                 if sample_pos_ is None:
-                    self._sample_positions_collection.insert_one(
-                        {
-                            "name": name,
-                            "description": sample_pos.description,
-                            "task_id": None,
-                            "last_updated": datetime.now(),
-                        }
-                    )
+                    new_entry = {
+                        "name": name,
+                        "description": sample_pos.description,
+                        "task_id": None,
+                        "last_updated": datetime.now(),
+                    }
+                    if parent_device_name:
+                        new_entry["parent_device"] = parent_device_name
+                    self._sample_positions_collection.insert_one(new_entry)
 
     def clean_up_sample_position_collection(self):
         """
@@ -199,8 +207,7 @@ class SampleView:
             if the position is locked by a task, return LOCKED and the task id
             else, return EMPTY and None
         """
-        sample_position = self._sample_positions_collection.find_one({"name": position})
-
+        sample_position = self.get_sample_position(position=position)
         if sample_position is None:
             raise ValueError(f"Invalid sample position: {position}")
 
@@ -212,6 +219,22 @@ class SampleView:
             return SamplePositionStatus.LOCKED, sample_position["task_id"]
 
         return SamplePositionStatus.EMPTY, None
+
+    def get_sample_position_parent_device(self, position: str) -> Optional[str]:
+        """
+        Get the parent device of a sample position. If no parent device is defined, returns None. If the "position" query is a prefix, will look for a single parent device across all matched positions (ie a query for position="furnace_1/tray" will properly return "furnace_1" even if "furnace_1/tray/1" and "furnace_1/tray/2" are in the database _as long as "furnace_1" is the parent device of both!_).
+        """
+        sample_positions = self._sample_positions_collection.find(
+            {"name": {"$regex": f"^{position}"}}
+        )
+        parent_devices = list(set(sp.get("parent_device") for sp in sample_positions))
+        if len(parent_devices) == 0:
+            raise ValueError(f"No sample position(s) beginning with: \"position\"")
+        elif len(parent_devices) > 1:
+            raise Exception(
+                f"Multiple parent devices ({parent_devices}) found for sample positions found beginning with: \"position\". Make a more specific position query that doesn't match multiple devices!"
+            )
+        return parent_devices[0]
 
     def is_unoccupied_position(self, position: str) -> bool:
         """

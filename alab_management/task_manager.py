@@ -304,15 +304,24 @@ class TaskManager(RequestMixin):
                     device_name = devices[request["device"]["content"]]["name"]
                     device_prefix = f"{device_name}{SamplePosition.SEPARATOR}"
 
-                parsed_sample_positions_request.extend(
-                    [
-                        SamplePositionRequest(
-                            prefix=f"{device_prefix}{pos['prefix']}",
-                            number=pos["number"],
-                        )
-                        for pos in request["sample_positions"]
-                    ]
-                )
+                for pos in request["sample_positions"]:
+                    prefix = pos["prefix"]
+                    if not prefix.startswith(
+                        device_prefix
+                    ):  # if this is a nested resource request, lets not prepend the device name twice.
+                        prefix = device_prefix + prefix
+                    parsed_sample_positions_request.append(
+                        SamplePositionRequest(prefix=prefix, number=pos["number"])
+                    )
+                # parsed_sample_positions_request.extend(
+                #     [
+                #         SamplePositionRequest(
+                #             prefix=f"{device_prefix}{pos['prefix']}",
+                #             number=pos["number"],
+                #         )
+                #         for pos in request["sample_positions"]
+                #     ]
+                # )
 
             self._request_collection.update_one(
                 {"_id": request_entry["_id"]},
@@ -713,12 +722,17 @@ class ResourceRequester(RequestMixin):
                 continue
             processed_sample_positions[device_request] = {}
             for prefix in sample_position_dict:
+                reply_prefix = prefix
                 if device_request is None:  # no device name to prepend
-                    reply_prefix = prefix
+                    pass
                 else:
-                    reply_prefix = (
-                        f"{devices[device_request]}{SamplePosition.SEPARATOR}{prefix}"
+                    device_prefix = (
+                        f"{devices[device_request]}{SamplePosition.SEPARATOR}"
                     )
+                    if not reply_prefix.startswith(
+                        device_prefix
+                    ):  # dont extra prepend for nested requests
+                        reply_prefix = device_prefix + reply_prefix
                 processed_sample_positions[device_request][prefix] = sample_positions[
                     reply_prefix
                 ]
