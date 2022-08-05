@@ -445,13 +445,16 @@ the number you request. By default, the number is set to be 1.</p>
 <p>Sample view manages the samples and their positions</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.sample_view.sample_view.SampleView.add_sample_positions_to_db">
-<span class="sig-name descname"><span class="pre">add_sample_positions_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_positions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.add_sample_positions_to_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.add_sample_positions_to_db" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">add_sample_positions_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_device_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.add_sample_positions_to_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.add_sample_positions_to_db" title="Permalink to this definition">¶</a></dt>
 <dd><p>Insert sample positions info to db, which includes position name and description</p>
 <p>If one sample position’s name has already appeared in the database,
 we will just skip it.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>sample_positions</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="alab_management.sample_view.sample.html#alab_management.sample_view.sample.SamplePosition" title="alab_management.sample_view.sample.SamplePosition"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplePosition</span></code></a>]) – some sample position instances</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sample_positions</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="alab_management.sample_view.sample.html#alab_management.sample_view.sample.SamplePosition" title="alab_management.sample_view.sample.SamplePosition"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplePosition</span></code></a>]) – some sample position instances</p></li>
+<li><p><strong>parent_device_name</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – name of the parent device to these sample_positions.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -507,6 +510,17 @@ when __exit__ method is called in the <code class="docutils literal notranslate"
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.sample_view.sample_view.SampleView.get_sample_position_parent_device">
+<span class="sig-name descname"><span class="pre">get_sample_position_parent_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.get_sample_position_parent_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.get_sample_position_parent_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the parent device of a sample position. If no parent device is defined, returns None. If the “position” query is a prefix, will look for a single parent device across all matched positions (ie a query for position=”furnace_1/tray” will properly return “furnace_1” even if “furnace_1/tray/1” and “furnace_1/tray/2” are in the database _as long as “furnace_1” is the parent device of both!_).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
 </dd>
 </dl>
 </dd></dl>
