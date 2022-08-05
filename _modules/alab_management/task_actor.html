@@ -386,8 +386,6 @@
     <span class="n">task_id</span> <span class="o">=</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">task_id_str</span><span class="p">)</span>
     <span class="n">task_entry</span> <span class="o">=</span> <span class="n">task_view</span><span class="o">.</span><span class="n">get_task</span><span class="p">(</span><span class="n">task_id</span><span class="p">,</span> <span class="n">encode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">task_entry</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find task with task id: </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">task_type</span> <span class="o">=</span> <span class="n">task_entry</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>

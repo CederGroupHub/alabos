@@ -357,6 +357,7 @@
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 <span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Thread</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">NoReturn</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">uuid4</span>
 
 <span class="kn">import</span> <span class="nn">dill</span>
 <span class="kn">import</span> <span class="nn">pika</span>
@@ -593,17 +594,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_rpc_queue_name</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">AlabConfig</span><span class="p">()[</span><span class="s2">&quot;general&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">DEFAULT_SERVER_QUEUE_SUFFIX</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_rpc_reply_queue_name</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="nb">str</span><span class="p">(</span><span class="n">task_id</span><span class="p">)</span> <span class="o">+</span> <span class="n">DEFAULT_CLIENT_QUEUE_SUFFIX</span>
-        <span class="p">)</span>  <span class="c1"># TODO does this have to be taskid, or can be random? I think this dies with the resourcerequest context manager anyways?</span>
-        <span class="c1"># self._rpc_reply_queue_name = str(uuid4()) + DEFAULT_CLIENT_QUEUE_SUFFIX</span>
+        <span class="c1"># self._rpc_reply_queue_name = (</span>
+        <span class="c1">#     str(task_id) + DEFAULT_CLIENT_QUEUE_SUFFIX</span>
+        <span class="c1"># )  # TODO does this have to be taskid, or can be random? I think this dies with the resourcerequest context manager anyways?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rpc_reply_queue_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid4</span><span class="p">())</span> <span class="o">+</span> <span class="n">DEFAULT_CLIENT_QUEUE_SUFFIX</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span> <span class="o">=</span> <span class="n">task_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">,</span> <span class="n">Future</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="o">=</span> <span class="n">get_rabbitmq_connection</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">channel</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">queue_declare</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_rpc_reply_queue_name</span><span class="p">,</span> <span class="n">exclusive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">auto_delete</span><span class="o">=</span><span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rpc_reply_queue_name</span><span class="p">,</span> <span class="n">exclusive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">auto_delete</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Thread</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>

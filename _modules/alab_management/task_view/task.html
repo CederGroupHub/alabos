@@ -348,9 +348,10 @@
 <span class="sd">Define the base class of task, which will be used for defining more tasks.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">from</span> <span class="nn">bson.objectid</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 <span class="kn">from</span> <span class="nn">alab_management.task_view.task_enums</span> <span class="kn">import</span> <span class="n">TaskPriority</span>
+<span class="kn">from</span> <span class="nn">alab_management.device_view.device</span> <span class="kn">import</span> <span class="n">BaseDevice</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">alab_management.lab_view</span> <span class="kn">import</span> <span class="n">LabView</span>
@@ -453,6 +454,13 @@
 
 <span class="n">_task_registry</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseTask</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
 
+<span class="n">SUPPORTED_SAMPLE_POSITIONS_TYPE</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span>
+    <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">],</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
+<span class="p">]</span>
+<span class="n">_reroute_task_registry</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span>
+    <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">BaseTask</span><span class="p">],</span> <span class="n">SUPPORTED_SAMPLE_POSITIONS_TYPE</span><span class="p">]]</span>
+<span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
 
 <div class="viewcode-block" id="add_task"><a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.add_task">[docs]</a><span class="k">def</span> <span class="nf">add_task</span><span class="p">(</span><span class="n">task</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseTask</span><span class="p">]):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -468,6 +476,27 @@
 <span class="sd">    Get all the tasks in the registry</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_task_registry</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="add_reroute_task"><a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.add_reroute_task">[docs]</a><span class="k">def</span> <span class="nf">add_reroute_task</span><span class="p">(</span>
+    <span class="n">supported_sample_positions</span><span class="p">:</span> <span class="n">SUPPORTED_SAMPLE_POSITIONS_TYPE</span><span class="p">,</span>
+    <span class="n">task</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseTask</span><span class="p">],</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Register a reroute task</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="vm">__name__</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_task_registry</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Task </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> is not registered! Register with `add_task` before registering as a reroute task.&quot;</span>
+        <span class="p">)</span>
+    <span class="n">_reroute_task_registry</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;supported_sample_positions&quot;</span><span class="p">:</span> <span class="n">supported_sample_positions</span><span class="p">,</span>
+            <span class="s2">&quot;task&quot;</span><span class="p">:</span> <span class="n">task</span><span class="p">,</span>
+            <span class="s2">&quot;kwargs&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">)</span></div>
 </pre></div>
 
               </div>
