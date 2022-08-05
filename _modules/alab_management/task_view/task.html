@@ -368,11 +368,16 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span>
         <span class="n">lab_view</span><span class="p">:</span> <span class="s2">&quot;LabView&quot;</span><span class="p">,</span>
+        <span class="n">samples</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">],</span>
         <span class="n">priority</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">TaskPriority</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">TaskPriority</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            task_id: the identifier of task</span>
+<span class="sd">            lab_view: a lab_view corresponding to the task_id</span>
+<span class="sd">            samples: a list of sample_id&#39;s corresponding to samples involvend in the task.</span>
 
 <span class="sd">        Here is an example about how to define a custom task</span>
 
@@ -389,7 +394,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">child_task_num</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span> <span class="o">=</span> <span class="n">lab_view</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">logger</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="n">priority</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="n">priority</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">samples</span> <span class="o">=</span> <span class="n">samples</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">priority</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
