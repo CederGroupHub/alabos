@@ -392,9 +392,9 @@
         <span class="n">task</span><span class="p">:</span> <span class="n">BaseTask</span> <span class="o">=</span> <span class="n">task_type</span><span class="p">(</span>
             <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span>
             <span class="n">lab_view</span><span class="o">=</span><span class="n">LabView</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">),</span>
-            <span class="n">samples</span><span class="o">=</span><span class="p">[</span>
-                <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;sample_id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;samples&quot;</span><span class="p">]</span>
-            <span class="p">],</span>  <span class="c1"># only the sample ObjectId&#39;s are sent</span>
+            <span class="c1"># samples=[</span>
+            <span class="c1">#     sample[&quot;sample_id&quot;] for sample in task_entry[&quot;samples&quot;]</span>
+            <span class="c1"># ],  # only the sample ObjectId&#39;s are sent</span>
             <span class="o">**</span><span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;parameters&quot;</span><span class="p">],</span>
         <span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exception</span><span class="p">:</span>

@@ -360,13 +360,14 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Basic sample object</span>
 
-<span class="sd">    - ``_id``: the unique id of a sample in the database</span>
+<span class="sd">    - ``sample_id``: the unique id of a sample in the database</span>
+<span class="sd">    - ``task_id``: the unique id of a task that currently &quot;owns&quot; (is processing) this sample</span>
 <span class="sd">    - ``name``: the name of this sample</span>
-<span class="sd">    - ``position``: current position of the sample, if None, which means the sample has not been initialized</span>
+<span class="sd">    - ``position``: current position of the sample in the lab. if None, the sample has not been initialized</span>
 <span class="sd">      in the lab</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_id</span><span class="p">:</span> <span class="n">ObjectId</span>
+    <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span>
     <span class="n">task_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">position</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></div>

@@ -494,10 +494,19 @@ when __exit__ method is called in the <code class="docutils literal notranslate"
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.sample_view.sample_view.SampleView.get_sample">
 <span class="sig-name descname"><span class="pre">get_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.get_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.get_sample" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a sample by sample_id</p>
+<dd><p>Get a sample by its id</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="alab_management.sample_view.sample.html#alab_management.sample_view.sample.Sample" title="alab_management.sample_view.sample.Sample"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sample</span></code></a>]</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sample_id</strong> (<em>ObjectId</em>) – id of the sample within sample collection</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – no sample found with given id</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Sample object for given id</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="alab_management.sample_view.sample.html#alab_management.sample_view.sample.Sample" title="alab_management.sample_view.sample.Sample">Sample</a></p>
 </dd>
 </dl>
 </dd></dl>

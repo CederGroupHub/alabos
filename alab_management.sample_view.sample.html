@@ -367,13 +367,14 @@
 <p>The definition of the Sample and SamplePosition classes.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="alab_management.sample_view.sample.Sample">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample.html#Sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.sample.Sample" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample.html#Sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.sample.Sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Basic sample object</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">_id</span></code>: the unique id of a sample in the database</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sample_id</span></code>: the unique id of a sample in the database</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">task_id</span></code>: the unique id of a task that currently “owns” (is processing) this sample</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: the name of this sample</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">position</span></code>: current position of the sample, if None, which means the sample has not been initialized
+<li><p><code class="docutils literal notranslate"><span class="pre">position</span></code>: current position of the sample in the lab. if None, the sample has not been initialized
 in the lab</p></li>
 </ul>
 <dl class="py attribute">
@@ -384,6 +385,11 @@ in the lab</p></li>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="alab_management.sample_view.sample.Sample.position">
 <span class="sig-name descname"><span class="pre">position</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#alab_management.sample_view.sample.Sample.position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.sample_view.sample.Sample.sample_id">
+<span class="sig-name descname"><span class="pre">sample_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bson.objectid.ObjectId</span></em><a class="headerlink" href="#alab_management.sample_view.sample.Sample.sample_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
