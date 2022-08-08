@@ -372,6 +372,12 @@ provides some convenience methods to query and manipulate the tasks collection.<
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Task view manages the status, parameters of a task</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskView.create_subtask">
+<span class="sig-name descname"><span class="pre">create_subtask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtask_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.create_subtask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.create_subtask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a subtask entry for a task.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskView.create_task">
 <span class="sig-name descname"><span class="pre">create_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prev_tasks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">next_tasks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.create_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.create_task" title="Permalink to this definition">¶</a></dt>
 <dd><p>Insert a task into the task collection</p>
@@ -504,6 +510,27 @@ tasks are completed.</p>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskView.update_subtask_result">
+<span class="sig-name descname"><span class="pre">update_subtask_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtask_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.update_subtask_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.update_subtask_result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update result of completed subtask within task job.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>task_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the id of task to be updated</p></li>
+<li><p><strong>subtask_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the id of subtask within task to be updated</p></li>
+<li><p><strong>result</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>) – the result returned by the task (which can be dumped into MongoDB)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskView.update_subtask_status">
+<span class="sig-name descname"><span class="pre">update_subtask_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtask_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.update_subtask_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.update_subtask_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the status of a subtask</p>
 </dd></dl>
 
 <dl class="py method">
