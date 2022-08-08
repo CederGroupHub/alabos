@@ -83,6 +83,7 @@ class DeviceView:
                     "status": DeviceStatus.IDLE.name,
                     "task_id": None,
                     "created_at": datetime.now(),
+                    "message": "",
                     "last_updated": datetime.now(),
                 }
             )
@@ -199,7 +200,7 @@ class DeviceView:
 
     def get_device(self, device_name: str) -> Optional[Dict[str, Any]]:
         """
-        Get device by device name, if not found, return ``None``
+        Get device by device name, if not found, raises ``ValueError``
         """
         device_entry = self._device_collection.find_one({"name": device_name})
         if device_entry is None:
@@ -338,3 +339,16 @@ class DeviceView:
             samples = _sample_collection.find({"position": {"$regex": position}})
             samples_per_position[position] = [sample["_id"] for sample in samples]
         return samples_per_position
+
+    def set_message(self, device_name: str, message: str):
+        """Sets the device message. Message is used to communicate device state with the user dashboard
+
+        Args:
+            device_name (str): name of the device to set the message for
+            message (str): message to be set
+        """
+        device = self.get_device(device_name=device_name)
+
+        self._device_collection.update_one(
+            {"name": device_name}, {"$set": {"message": message}}
+        )

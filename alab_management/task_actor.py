@@ -23,7 +23,9 @@ class ParameterError(Exception):
     """
 
 
-@dramatiq.actor(max_retries=0)
+@dramatiq.actor(
+    max_retries=0, time_limit=999999999
+)  # TODO no time limit -- None is not working, 0 is actually zero
 def run_task(task_id_str: str):
     """
     Submit a task. In this system, each task is run in an

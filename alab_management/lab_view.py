@@ -238,7 +238,7 @@ class LabView:
                 task_id=task_id, subtask_id=subtask_id, status=TaskStatus.RUNNING
             )
             result = subtask.run()  # block until completion
-        except Exception:
+        except Exception as exception:
             self._task_view.update_subtask_status(
                 task_id=task_id, subtask_id=subtask_id, status=TaskStatus.ERROR
             )
@@ -259,7 +259,7 @@ class LabView:
             raise
         else:
             self._task_view.update_subtask_status(
-                task_id=task_id, subtask_id=subtask_id, status=TaskStatus.COMPLETE
+                task_id=task_id, subtask_id=subtask_id, status=TaskStatus.COMPLETED
             )
             self._task_view.update_subtask_result(
                 task_id=task_id, subtask_id=subtask_id, result=result

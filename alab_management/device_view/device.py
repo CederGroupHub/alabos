@@ -5,7 +5,7 @@ Define the base class of devices
 from abc import ABC, abstractmethod
 from typing import List, ClassVar, Dict
 
-from ..sample_view.sample import SamplePosition
+from alab_management.sample_view.sample import SamplePosition
 
 
 class BaseDevice(ABC):
@@ -42,7 +42,22 @@ class BaseDevice(ABC):
               self.port = port
               self.driver = FurnaceController(address=address, port=port)
         """
+        from alab_management.device_view import DeviceView
+
         self.name = name
+        self._device_view = DeviceView()
+
+    @property
+    def message(self):
+        return self._message
+
+    @message.setter
+    def message(self, message: str):
+        self.set_message(message)
+
+    def set_message(self, message: str):
+        self._message = message
+        self._device_view.set_message(device_name=self.name, message=message)
 
     @property
     @abstractmethod
