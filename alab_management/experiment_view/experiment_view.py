@@ -71,17 +71,15 @@ class ExperimentView:
         Get an experiment by its id
         """
         experiment = self._experiment_collection.find_one({"_id": exp_id})
+        if experiment is None:
+            raise ValueError(f"Cannot find an experiment with id: {exp_id}")
         return experiment
 
     def update_experiment_status(self, exp_id: ObjectId, status: ExperimentStatus):
         """
         Update the status of an experiment
         """
-        experiment = self._experiment_collection.find_one({"_id": exp_id})
-
-        if experiment is None:
-            raise ValueError(f"Cannot find experiment with id: {exp_id}")
-
+        experiment = self.get_experiment(exp_id=exp_id)
         self._experiment_collection.update_one(
             {"_id": exp_id},
             {
@@ -126,3 +124,10 @@ class ExperimentView:
                 }
             },
         )
+
+    def get_experiment_by_task_id(self, task_id: ObjectId) -> Optional[Dict[str, Any]]:
+        """
+        Get an experiment that contains a task with the given task_id
+        """
+        experiment = self._experiment_collection.find_one({"tasks.task_id": task_id})
+        return experiment

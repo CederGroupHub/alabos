@@ -14,13 +14,14 @@ class Sample:
     """
     Basic sample object
 
-    - ``_id``: the unique id of a sample in the database
+    - ``sample_id``: the unique id of a sample in the database
+    - ``task_id``: the unique id of a task that currently "owns" (is processing) this sample
     - ``name``: the name of this sample
-    - ``position``: current position of the sample, if None, which means the sample has not been initialized
+    - ``position``: current position of the sample in the lab. if None, the sample has not been initialized
       in the lab
     """
 
-    _id: ObjectId
+    sample_id: ObjectId
     task_id: Optional[ObjectId]
     name: str
     position: Optional[str]

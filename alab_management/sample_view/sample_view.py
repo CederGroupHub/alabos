@@ -229,10 +229,10 @@ class SampleView:
         )
         parent_devices = list(set(sp.get("parent_device") for sp in sample_positions))
         if len(parent_devices) == 0:
-            raise ValueError(f"No sample position(s) beginning with: \"position\"")
+            raise ValueError(f'No sample position(s) beginning with: "position"')
         elif len(parent_devices) > 1:
             raise Exception(
-                f"Multiple parent devices ({parent_devices}) found for sample positions found beginning with: \"position\". Make a more specific position query that doesn't match multiple devices!"
+                f'Multiple parent devices ({parent_devices}) found for sample positions found beginning with: "position". Make a more specific position query that doesn\'t match multiple devices!'
             )
         return parent_devices[0]
 
@@ -374,19 +374,28 @@ class SampleView:
 
         return cast(ObjectId, result.inserted_id)
 
-    def get_sample(self, sample_id: ObjectId) -> Optional[Sample]:
-        """
-        Get a sample by sample_id
+    def get_sample(self, sample_id: ObjectId) -> Sample:
+        """Get a sample by its id
+
+        Args:
+            sample_id (ObjectId): id of the sample within sample collection
+
+        Raises:
+            ValueError: no sample found with given id
+
+        Returns:
+            Sample: Sample object for given id
         """
         result = self._sample_collection.find_one({"_id": sample_id})
-        if result is not None:
-            return Sample(
-                _id=result["_id"],
-                name=result["name"],
-                position=result["position"],
-                task_id=result["task_id"],
-            )
-        return None
+        if result is None:
+            raise ValueError("No sample found with id: {}".format(sample_id))
+
+        return Sample(
+            sample_id=result["_id"],
+            name=result["name"],
+            position=result["position"],
+            task_id=result["task_id"],
+        )
 
     def update_sample_task_id(self, sample_id: ObjectId, task_id: Optional[ObjectId]):
         """

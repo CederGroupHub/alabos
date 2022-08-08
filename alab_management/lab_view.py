@@ -14,6 +14,7 @@ from pydantic.main import BaseModel
 
 from alab_management.device_manager import DevicesClient
 from alab_management.device_view.device import BaseDevice
+from alab_management.experiment_view.experiment_view import ExperimentView
 from alab_management.logger import DBLogger
 from alab_management.sample_view.sample_view import SampleView, SamplePositionRequest
 from alab_management.task_manager import ResourceRequester
@@ -66,6 +67,7 @@ class LabView:
         self._task_view.get_task(
             task_id=task_id
         )  # will throw error if task_id does not exist
+        self._experiment_view = ExperimentView()
         self._task_id = task_id
         self._sample_view = SampleView()
         self._resource_requester = ResourceRequester(task_id=task_id)
@@ -119,16 +121,38 @@ class LabView:
 
         self._resource_requester.release_resources(request_id=request_id)
 
-    def get_sample(self, sample_id: ObjectId) -> Optional[SampleView]:
+    def _sample_name_to_id(self, sample_name: str) -> ObjectId:
         """
-        Get a sample by id, see also
+        Get a sample id by name. Looks up sample name->id mapping for the experiment `self.task_id` belongs to.
+        """
+        experiment = self._experiment_view.get_experiment_by_task_id(
+            task_id=self.task_id
+        )
+        for sample in experiment["samples"]:
+            if sample["name"] == sample_name:
+                return sample["sample_id"]
+        raise ValueError(
+            f"No sample with name \"{sample_name}\" found in experiment \"{experiment['name']}\""
+        )
+
+    def get_sample(self, sample: Union[Type[ObjectId], str]) -> Optional[SampleView]:
+        """
+        Get a sample by either an ObjectId corresponding to sample_id, or as a string corresponding to the sample's name within the experiment., see also
         :py:meth:`get_sample <alab_management.sample_view.sample_view.SampleView.get_sample>`
         """
-        return self._sample_view.get_sample(sample_id)
+        if isinstance(sample, str):
+            sample_id = self._sample_name_to_id(sample)
+        elif isinstance(sample, ObjectId):
+            sample_id = sample
+        else:
+            raise TypeError("sample must be a sample name (str) or id (ObjectId)")
+        return self._sample_view.get_sample(sample_id=sample_id)
 
-    def move_sample(self, sample_id: ObjectId, position: Optional[str]):
+    def move_sample(self, sample: Union[Type[ObjectId], str], position: Optional[str]):
         """
-        Move a sample to a new position, see also
+        Move a sample to a new position. `sample` can be given as either an ObjectId corresponding to sample_id, or as a string corresponding to the sample's name within the experiment.
+
+        see also:
         :py:meth:`move_sample <alab_management.sample_view.sample_view.SampleView.move_sample>`
         """
         # check if this sample position is locked by current task
@@ -142,11 +166,13 @@ class LabView:
             )
 
         # check if this sample is owned by current task
-        sample = self._sample_view.get_sample(sample_id=sample_id)
-        if sample is not None and sample.task_id != self._task_id:
+        sample_entry = self.get_sample(sample=sample)
+        if sample_entry.task_id != self._task_id:
             raise ValueError("Cannot move a sample that is not belong to this task.")
 
-        return self._sample_view.move_sample(sample_id=sample_id, position=position)
+        return self._sample_view.move_sample(
+            sample_id=sample_entry.sample_id, position=position
+        )
 
     def get_locked_sample_positions(self) -> List[str]:
         """

@@ -6,6 +6,7 @@ from typing import Dict, List, Type, TYPE_CHECKING, Optional, Union
 from bson.objectid import ObjectId
 from alab_management.task_view.task_enums import TaskPriority
 from alab_management.device_view.device import BaseDevice
+from inspect import getfullargspec
 
 if TYPE_CHECKING:
     from alab_management.lab_view import LabView
@@ -22,7 +23,7 @@ class BaseTask(ABC):
         self,
         task_id: ObjectId,
         lab_view: "LabView",
-        samples: List[ObjectId],
+        # samples: List[ObjectId],
         priority: Optional[Union[TaskPriority, int]] = TaskPriority.NORMAL,
         *args,
         **kwargs,
@@ -49,7 +50,7 @@ class BaseTask(ABC):
         self.lab_view = lab_view
         self.logger = self.lab_view.logger
         self.priority = priority
-        self.samples = samples
+        # self.samples = samples
 
     @property
     def priority(self) -> int:
@@ -111,6 +112,12 @@ class BaseTask(ABC):
         """
         raise NotImplementedError()
 
+    def run_subtask(self, *args, **kwargs):
+        """
+        Run a subtask of this current task.
+        """
+        self.lab_view.run_subtask(*args, **kwargs)
+
 
 _task_registry: Dict[str, Type[BaseTask]] = {}
 
@@ -149,6 +156,11 @@ def add_reroute_task(
     if task.__name__ not in _task_registry:
         raise KeyError(
             f"Task {task.__name__} is not registered! Register with `add_task` before registering as a reroute task."
+        )
+    if "sample" not in getfullargspec(task).args:
+        raise ValueError(
+            f"Task {task.__name__} does not have `sample` as a parameter! "
+            "Reroute tasks must accept a `sample` parameter that specifies the name or sample_id of the sample to be rerouted"
         )
     _reroute_task_registry.append(
         {
