@@ -160,35 +160,24 @@ class LabView:
         """
         return self._sample_view.get_sample_position_parent_device(position=position)
 
-    # def run_subtask(
-    #     self, task: Union[str, Type[BaseTask]], samples: List[ObjectId], **kwargs
-    # ):
-    #     """run a task as a subtask of the current task. this command blocks until the task is marked as completed. subtasks cannot have previous or next task dependencies, as they may otherwise generate cycles in the task graph.
+    def run_subtask(self, task: Union[str, Type[BaseTask]], *args, **kwargs):
+        """run a task as a subtask within the task. basically fills in task_id and lab_view for you.
+            this command blocks until the subtask is completed.
 
-    #     Args:
-    #         task_type (Union[str, type[BaseTask]]): name or class of Task to run.
-    #         samples (List[ObjectId]): list of sample_id's to pass to subtask
-    #         **kwargs: will be passed to the Task method via the parameters entry in task collection.
-    #     """
-    #     if issubclass(task, BaseTask):
-    #         task_name = task.__name__
-    #     elif isinstance(task, str):
-    #         task_name = task
-    #     else:
-    #         raise ValueError("task must be a string or a class of BaseTask")
+        Args:
+            task_type (Union[str, type[BaseTask]]): name or class of Task to run.
+            **kwargs: will be passed to the Task method via the parameters entry in task collection.
+        """
+        if not issubclass(task, BaseTask):
+            raise TypeError("task must be a subclass of BaseTask!")
+        # TODO maybe check if task is in task_registry? for future if tasks are somehow checked when adding to registry
 
-    #     if isinstance(samples, ObjectId):
-    #         samples = [samples]
-    #     subtask_id = self._task_view.create_task(
-    #         task_type=task_name,
-    #         samples=samples,
-    #         parameters=kwargs,
-    #         prev_tasks=[],
-    #         next_tasks=[],
-    #         parent_task_id=self.task_id,
-    #     )
-    #     while self._task_view.get_status(task_id=subtask_id) != TaskStatus.COMPLETED:
-    #         time.sleep(0.5)
+        # task_id and lab_view kwargs forced to match that of current LabView instance
+        task_id = kwargs.pop("task_id", self._task_id)
+        lab_view = kwargs.pop("lab_view", self)
+
+        subtask = task(task_id=task_id, lab_view=lab_view, *args, **kwargs)
+        subtask.run()  # block until completion
 
     def request_user_input(self, prompt: str) -> str:
         """
