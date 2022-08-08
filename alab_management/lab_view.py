@@ -6,6 +6,7 @@ of a sample in the lab.
 
 from contextlib import contextmanager
 import time
+from traceback import format_exc
 from typing import Type, Dict, List, Optional, Union
 
 from bson import ObjectId
@@ -186,7 +187,7 @@ class LabView:
         """
         return self._sample_view.get_sample_position_parent_device(position=position)
 
-    def run_subtask(self, task: Union[str, Type[BaseTask]], *args, **kwargs):
+    def run_subtask(self, task: Union[str, Type[BaseTask]], **kwargs):
         """run a task as a subtask within the task. basically fills in task_id and lab_view for you.
             this command blocks until the subtask is completed.
 
@@ -199,11 +200,80 @@ class LabView:
         # TODO maybe check if task is in task_registry? for future if tasks are somehow checked when adding to registry
 
         # task_id and lab_view kwargs forced to match that of current LabView instance
-        task_id = kwargs.pop("task_id", self._task_id)
-        lab_view = kwargs.pop("lab_view", self)
+        kwargs.pop("task_id", None)
+        kwargs.pop("lab_view", None)
+        task_id = self._task_id
+        lab_view = self
 
-        subtask = task(task_id=task_id, lab_view=lab_view, *args, **kwargs)
-        subtask.run()  # block until completion
+        subtask_id = self._task_view.create_subtask(
+            task_id=task_id, subtask_type=task.__name__, parameters=kwargs
+        )
+        try:
+            subtask: BaseTask = task(task_id=task_id, lab_view=lab_view, **kwargs)
+        except Exception as exception:
+            self._task_view.update_subtask_status(
+                task_id=task_id, subtask_id=subtask_id, status=TaskStatus.ERROR
+            )
+            self._task_view.update_subtask_result(
+                task_id=task_id, subtask_id=subtask_id, result=str(exception)
+            )
+            raise Exception(
+                "Failed to create subtask of type {} within task {} of type {}".format(
+                    task,
+                    task_id,
+                    self._task_view.get_task(task_id=task_id, encode=True)["type"],
+                )
+            )
+        self.logger.system_log(
+            level="INFO",
+            log_data={
+                "logged_by": "TaskActor",
+                "type": "SubTaskStart",
+                "task_id": task_id,
+                "subtask_type": task.__name__,
+            },
+        )
+        try:
+            self._task_view.update_subtask_status(
+                task_id=task_id, subtask_id=subtask_id, status=TaskStatus.RUNNING
+            )
+            result = subtask.run()  # block until completion
+        except Exception:
+            self._task_view.update_subtask_status(
+                task_id=task_id, subtask_id=subtask_id, status=TaskStatus.ERROR
+            )
+            self._task_view.update_subtask_result(
+                task_id=task_id, subtask_id=subtask_id, result=str(exception)
+            )
+            self.logger.system_log(
+                level="ERROR",
+                log_data={
+                    "logged_by": "TaskActor",
+                    "type": "SubTaskEnd",
+                    "task_id": task_id,
+                    "subtask_type": task.__name__,
+                    "status": "ERROR",
+                    "traceback": format_exc(),
+                },
+            )
+            raise
+        else:
+            self._task_view.update_subtask_status(
+                task_id=task_id, subtask_id=subtask_id, status=TaskStatus.COMPLETE
+            )
+            self._task_view.update_subtask_result(
+                task_id=task_id, subtask_id=subtask_id, result=result
+            )
+            self.logger.system_log(
+                level="INFO",
+                log_data={
+                    "logged_by": "TaskActor",
+                    "type": "SubTaskEnd",
+                    "task_id": task_id,
+                    "subtask_type": task.__name__,
+                    "status": "COMPLETED",
+                },
+            )
 
     def request_user_input(self, prompt: str) -> str:
         """

@@ -74,6 +74,35 @@ class TaskView:
 
         return cast(ObjectId, result.inserted_id)
 
+    def create_subtask(self, task_id, subtask_type, parameters: dict):
+        """
+        Create a subtask entry for a task.
+        """
+        task = self.get_task(task_id=task_id)
+        subtask_id = ObjectId()
+
+        subtasks = task.get("subtasks", [])
+        subtasks.append(
+            {
+                "subtask_id": subtask_id,
+                "type": subtask_type,
+                "status": TaskStatus.INITIATED.name,
+                "parameters": parameters,
+                "last_updated": datetime.now(),
+            }
+        )
+
+        self._task_collection.update_one(
+            {"_id": task_id},
+            {
+                "$set": {
+                    "subtasks": subtasks,
+                    "last_updated": datetime.now(),
+                }
+            },
+        )
+        return subtask_id
+
     def get_task(
         self, task_id: ObjectId, encode: bool = False
     ) -> Optional[Dict[str, Any]]:
@@ -131,6 +160,31 @@ class TaskView:
             for next_task_id in result["next_tasks"]:
                 self.try_to_mark_task_ready(task_id=next_task_id)
 
+    def update_subtask_status(
+        self, task_id: ObjectId, subtask_id: ObjectId, status: TaskStatus
+    ):
+        """
+        Update the status of a subtask
+        """
+        task = self.get_task(task_id=task_id, encode=False)
+        subtasks = task.get("subtasks", [])
+        found = False
+        for subtask in subtasks:
+            if subtask["subtask_id"] == subtask_id:
+                found = True
+                subtask["status"] = status.name
+                subtask["last_updated"] = datetime.now()
+                break
+        if not found:
+            raise ValueError(
+                f"No subtask found with id: {subtask_id} within task: {task_id}"
+            )
+
+        self._task_collection.update_one(
+            {"_id": task_id},
+            {"$set": {"subtasks": subtasks}},
+        )
+
     def update_result(self, task_id: ObjectId, task_result: Any):
         """
         Update result to completed job.
@@ -148,6 +202,42 @@ class TaskView:
             {
                 "$set": {
                     "result": task_result,
+                    "last_updated": datetime.now(),
+                }
+            },
+        )
+
+    def update_subtask_result(
+        self, task_id: ObjectId, subtask_id: ObjectId, result: Any
+    ):
+        """
+        Update result of completed subtask within task job.
+
+        Args:
+            task_id: the id of task to be updated
+            subtask_id: the id of subtask within task to be updated
+            result: the result returned by the task (which can be dumped into MongoDB)
+        """
+        task = self.get_task(task_id=task_id)
+        subtasks = task.get("subtasks", [])
+
+        found = False
+        for subtask in subtasks:
+            if subtask["subtask_id"] == subtask_id:
+                found = True
+                subtask["result"] = result
+                subtask["last_updated"] = datetime.now()
+                break
+        if not found:
+            raise ValueError(
+                f"No subtask found with id: {subtask_id} within task: {task_id}"
+            )
+
+        self._task_collection.update_one(
+            {"_id": task_id},
+            {
+                "$set": {
+                    "subtasks": subtasks,
                     "last_updated": datetime.now(),
                 }
             },
