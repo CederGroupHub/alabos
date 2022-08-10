@@ -10,7 +10,7 @@ from threading import Thread
 from gevent.pywsgi import WSGIServer
 
 try:
-    multiprocessing.set_start_method('spawn')
+    multiprocessing.set_start_method("spawn")
 except RuntimeError:
     pass
 
@@ -18,7 +18,7 @@ except RuntimeError:
 def launch_dashboard(host: str, port: int, debug: bool = False):
     from ..dashboard import create_app
 
-    app = create_app()
+    app = create_app(cors=debug)  # if debug enabled, allow cross-origin requests to API
     if debug:
         server = WSGIServer((host, port), app)  # print server's log on the console
     else:
@@ -59,10 +59,9 @@ def launch_lab(host, port, debug):
     task_launcher_thread = Thread(target=launch_task_manager)
     device_manager_thread = Thread(target=launch_device_manager)
 
-    dashboard_thread.daemon = \
-        experiment_manager_thread.daemon = \
-        task_launcher_thread.daemon = \
-        device_manager_thread.daemon = True
+    dashboard_thread.daemon = (
+        experiment_manager_thread.daemon
+    ) = task_launcher_thread.daemon = device_manager_thread.daemon = True
 
     dashboard_thread.start()
     experiment_manager_thread.start()

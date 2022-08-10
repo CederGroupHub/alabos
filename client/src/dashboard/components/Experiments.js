@@ -8,6 +8,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
+import { get_status } from '../../api_routes';
+import { useEffect } from 'react';
 
 const StyledExpDiv = styled.div`
   margin: 12px 16px;
@@ -49,46 +51,58 @@ const StyledExpDiv = styled.div`
   }
 `;
 
-function Experiments({experiments}) {
-    return (
-        <TableContainer style={{height: "100%"}} component={Paper}>
-            <StyledExpDiv>
-                <Typography variant="h4" component="h3">Running Experiments</Typography>
-                <Table stickyHeader aria-label="task table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell align="center"><b>Exp Name</b></TableCell>
-                            <TableCell align="center"><b>Task Id</b></TableCell>
-                            <TableCell align="center"><b>Type</b></TableCell>
-                            <TableCell align="center"><b>Status</b></TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {experiments.map((exp) => (exp.tasks?.map((row, index) => (
-                            <TableRow
-                                key={row.id}
-                            >
-                                {index === 0 ? (
-                                    <TableCell align="center" rowSpan={exp.tasks.length} component="th" scope="row">
-                                        <span className="exp-name">{exp.name}</span>
-                                    </TableCell>
-                                ) : <></>}
-                                <TableCell align="center">
+function Experiments() {
+  const [experiments, setExperiments] = React.useState([]);
+
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      get_status().then(status => {
+        setExperiments(status.experiments);
+      })
+    }, 250);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <TableContainer style={{ height: "100%" }} component={Paper}>
+      <StyledExpDiv>
+        <Typography variant="h4" component="h3">Running Experiments</Typography>
+        <Table stickyHeader aria-label="task table">
+          <TableHead>
+            <TableRow>
+              <TableCell align="center"><b>Exp Name</b></TableCell>
+              {/* <TableCell align="center"><b>Task Id</b></TableCell> */}
+              <TableCell align="center"><b>Type</b></TableCell>
+              <TableCell align="center"><b>Status</b></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {experiments.map((exp) => (exp.tasks?.map((row, index) => (
+              <TableRow
+                key={row.id}
+              >
+                {index === 0 ? (
+                  <TableCell align="center" rowSpan={exp.tasks.length} component="th" scope="row">
+                    <span className="exp-name">{exp.name}</span>
+                  </TableCell>
+                ) : <></>}
+                {/* <TableCell align="center">
                                     <span className="task-id">{row.id}</span>
-                                </TableCell>
-                                <TableCell align="center"><span className="task-type">{row.type}</span></TableCell>
-                                <TableCell align="center">
+                                </TableCell> */}
+                <TableCell align="center"><span className="task-type">{row.type}</span></TableCell>
+                <TableCell align="center">
                   <span className={`status status-${row.status.toLowerCase()}`}>
                     {row.status}
                   </span>
-                                </TableCell>
-                            </TableRow>
-                        ))))}
-                    </TableBody>
-                </Table>
-            </StyledExpDiv>
-        </TableContainer>
-    )
+                </TableCell>
+              </TableRow>
+            ))))}
+          </TableBody>
+        </Table>
+      </StyledExpDiv>
+    </TableContainer>
+  )
 }
 
 export default Experiments;

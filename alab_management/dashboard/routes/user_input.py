@@ -9,6 +9,23 @@ from ..lab_views import user_input_view
 userinput_bp = Blueprint("/userinput", __name__, url_prefix="/api/userinput")
 
 
+@userinput_bp.route("/pending", methods=["GET"])
+def get_userinput_status():
+    """
+    Get all the status in the database
+    """
+    user_input_requests = user_input_view.get_all_pending_requests()
+    user_input_requests = [
+        {
+            "id": str(request["_id"]),
+            "prompt": request["prompt"],
+            "task_id": str(request["task_id"]),
+        }
+        for request in user_input_requests
+    ]
+    return {"pending_requests": user_input_requests}
+
+
 @userinput_bp.route("/submit", methods=["POST"])
 def submit_user_input():
     """
@@ -20,6 +37,7 @@ def submit_user_input():
         user_input_view.update_request_status(
             request_id=ObjectId(data["request_id"]),
             status=UserRequestStatus(data["status"]),
+            note=data["note"],
         )
     except Exception as exception:
         return {"status": "error", "errors": exception.args[0]}, 400

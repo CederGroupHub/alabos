@@ -16,6 +16,7 @@ def get_all_status():
             "name": device["name"],
             "type": device["type"],
             "status": device["status"],
+            "message": device["message"],
             "task": str(device["task_id"]) if device["task_id"] is not None else "null",
             "samples": {
                 position: [str(s) for s in samples]
@@ -63,3 +64,4 @@ def get_all_status():
         "experiments": experiments,
         "userinputrequests": user_input_requests,
     }
+
