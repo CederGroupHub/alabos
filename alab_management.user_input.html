@@ -400,7 +400,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.user_input.UserInputView.insert_request">
-<span class="sig-name descname"><span class="pre">insert_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#UserInputView.insert_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.UserInputView.insert_request" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">insert_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#UserInputView.insert_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.UserInputView.insert_request" title="Permalink to this definition">¶</a></dt>
 <dd><p>Insert a request into the database.</p>
 <p>Returns the request ObjectID</p>
 <dl class="field-list simple">
@@ -411,21 +411,21 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="alab_management.user_input.UserInputView.update_request_status">
-<span class="sig-name descname"><span class="pre">update_request_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">note</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#UserInputView.update_request_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.UserInputView.update_request_status" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the status of a request.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="alab_management.user_input.UserInputView.wait_for_user_input">
-<span class="sig-name descname"><span class="pre">wait_for_user_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#UserInputView.wait_for_user_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.UserInputView.wait_for_user_input" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wait for user input.</p>
-<p>Returns the user response.</p>
+<dt class="sig sig-object py" id="alab_management.user_input.UserInputView.retrieve_user_input">
+<span class="sig-name descname"><span class="pre">retrieve_user_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#UserInputView.retrieve_user_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.UserInputView.retrieve_user_input" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrive response from user for a given request. Blocks until request is marked as completed.</p>
+<p>Returns the user response, which is one of a list of options</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#alab_management.user_input.UserRequestStatus" title="alab_management.user_input.UserRequestStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserRequestStatus</span></code></a></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.user_input.UserInputView.update_request_status">
+<span class="sig-name descname"><span class="pre">update_request_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">note</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#UserInputView.update_request_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.UserInputView.update_request_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the status of a request.</p>
 </dd></dl>
 
 </dd></dl>
@@ -441,22 +441,25 @@
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.user_input.UserRequestStatus.PENDING">
-<span class="sig-name descname"><span class="pre">PENDING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pending'</span></em><a class="headerlink" href="#alab_management.user_input.UserRequestStatus.PENDING" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="alab_management.user_input.UserRequestStatus.FULLFILLED">
+<span class="sig-name descname"><span class="pre">FULLFILLED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'fulfilled'</span></em><a class="headerlink" href="#alab_management.user_input.UserRequestStatus.FULLFILLED" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.user_input.UserRequestStatus.SUCCESS">
-<span class="sig-name descname"><span class="pre">SUCCESS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'success'</span></em><a class="headerlink" href="#alab_management.user_input.UserRequestStatus.SUCCESS" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="alab_management.user_input.UserRequestStatus.PENDING">
+<span class="sig-name descname"><span class="pre">PENDING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pending'</span></em><a class="headerlink" href="#alab_management.user_input.UserRequestStatus.PENDING" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="alab_management.user_input.request_user_input">
-<span class="sig-name descname"><span class="pre">request_user_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#request_user_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.request_user_input" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">request_user_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#request_user_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.request_user_input" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request user input through the dashboard. Blocks until response is given.</p>
-<p>Returns user response.</p>
+<p>task_id (ObjectId): task id requesting user input
+prompt (str): prompt to give user
+options (List[str]): response options to give user</p>
+<p>Returns user response as string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#alab_management.user_input.UserRequestStatus" title="alab_management.user_input.UserRequestStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserRequestStatus</span></code></a></p>
