@@ -275,8 +275,8 @@ class LabView:
                 },
             )
 
-    def request_user_input(self, prompt: str) -> str:
+    def request_user_input(self, prompt: str, options: List[str]) -> str:
         """
         Request user input from the user. This function will block until the user inputs something.
         """
-        return request_user_input(task_id=self.task_id, prompt=prompt)
+        return request_user_input(task_id=self.task_id, prompt=prompt, options=options)

@@ -12,7 +12,7 @@ class UserRequestStatus(Enum):
     Enum for user response.
     """
 
-    SUCCESS = "success"
+    FULLFILLED = "fulfilled"
     PENDING = "pending"
     ERROR = "error"
 
@@ -75,7 +75,7 @@ class UserInputView:
                 "$set": {
                     "response": response,
                     "note": note,
-                    "status": UserRequestStatus.SUCCESS.value,
+                    "status": UserRequestStatus.FULLFILLED.value,
                 }
             },
         )
