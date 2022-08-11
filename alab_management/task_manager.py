@@ -362,6 +362,7 @@ class TaskManager(RequestMixin):
                     "assigned_devices": devices,
                     "assigned_sample_positions": sample_positions,
                     "status": RequestStatus.FULFILLED.name,
+                    "fulfilled_at": datetime.now(),
                 }
             },
         )

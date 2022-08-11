@@ -88,6 +88,7 @@ class TaskView:
                 "type": subtask_type,
                 "status": TaskStatus.INITIATED.name,
                 "parameters": parameters,
+                "created_at": datetime.now(),
                 "last_updated": datetime.now(),
             }
         )
@@ -120,6 +121,17 @@ class TaskView:
             result = self.encode_task(result)
         return result
 
+    def get_task_with_sample(self, sample_id: ObjectId) -> Optional[Dict[str, Any]]:
+        """
+        Get a task that contains the sample with the provided id
+        """
+        result = self._task_collection.find({"samples.sample_id": sample_id})
+        if result is None:
+            raise ValueError(
+                f"No task exists containing provided sample id: {sample_id}"
+            )
+        return list(result)
+
     def get_status(self, task_id: ObjectId) -> TaskStatus:
         """
         Get the status of a task
@@ -139,13 +151,13 @@ class TaskView:
             task_id: the id of task to be updated
             status: the new status of the task
         """
-        result = self.get_task(task_id=task_id, encode=False)
+        task = self.get_task(task_id=task_id, encode=False)
 
         update_dict = {
             "status": status.name,
             "last_updated": datetime.now(),
         }
-        if status == TaskStatus.INITIATED:
+        if status == TaskStatus.RUNNING and "started_at" not in task:
             update_dict["started_at"] = datetime.now()
         elif status == TaskStatus.COMPLETED:
             update_dict["completed_at"] = datetime.now()
@@ -157,7 +169,7 @@ class TaskView:
 
         if status is TaskStatus.COMPLETED:
             # try to figure out tasks that is READY
-            for next_task_id in result["next_tasks"]:
+            for next_task_id in task["next_tasks"]:
                 self.try_to_mark_task_ready(task_id=next_task_id)
 
     def update_subtask_status(
@@ -174,6 +186,10 @@ class TaskView:
                 found = True
                 subtask["status"] = status.name
                 subtask["last_updated"] = datetime.now()
+                if status == TaskStatus.RUNNING and "started_at" not in subtask:
+                    subtask["started_at"] = datetime.now()
+                elif status == TaskStatus.COMPLETED:
+                    subtask["completed_at"] = datetime.now()
                 break
         if not found:
             raise ValueError(
