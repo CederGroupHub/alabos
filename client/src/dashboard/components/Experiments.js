@@ -73,6 +73,8 @@ function Row({ experiment_id }) {
   const [status, setStatus] = React.useState(
     { "_id": "", "status": "", "samples": [], "tasks": [], "progress": 50 }
   );
+  const [taskOpen, setTaskOpen] = React.useState(false);
+  const [sampleOpen, setSampleOpen] = React.useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -150,64 +152,85 @@ function Row({ experiment_id }) {
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
 
-              <Typography variant="h6" gutterBottom component="div">
-                Tasks
-              </Typography>
-              <Table size="small" aria-label="purchases">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Type</TableCell>
-                    {/* <TableCell>Task ID</TableCell> */}
-                    <TableCell>Status</TableCell>
-                    {/* <TableCell>Result</TableCell> */}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {status.tasks.map((task) => (
-                    <TableRow key={task.id}>
-                      <TableCell component="th" scope="row">
-                        {task.type}
-                      </TableCell>
-                      {/* <TableCell>{task.id}</TableCell> */}
-                      <TableCell>
-                        <Typography variant="body" color={taskStatusColor(task.status)}>
-                          {task.status}
-                        </Typography>
-                      </TableCell>
-                      {/* <TableCell>{task.result}</TableCell> */}
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
 
-              <Typography variant="h6" gutterBottom component="div">
+
+
+              <Typography variant="body1" gutterBottom component="div">
+                <IconButton
+                  aria-label="expand row"
+                  size="small"
+                  onClick={() => setSampleOpen(!sampleOpen)}
+                >
+                  {sampleOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                </IconButton>
                 Samples
               </Typography>
-              <Table size="small" aria-label="purchases">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Sample ID</TableCell>
-                    <TableCell>Position</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {status.samples.map((sample) => (
-                    <TableRow key={sample.id}>
-                      <TableCell component="th" scope="row">
-                        {sample.name}
-                      </TableCell>
-                      <TableCell>{sample.id}</TableCell>
-                      <TableCell>
-                        <Typography variant="body">
-                          {sample.position}
-                        </Typography>
-                      </TableCell>
+              <Collapse in={sampleOpen} timeout="auto" unmountOnExit>
+                <Table size="small" aria-label="purchases">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Name</TableCell>
+                      <TableCell>Sample ID</TableCell>
+                      <TableCell>Position</TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHead>
+                  <TableBody>
+                    {status.samples.map((sample) => (
+                      <TableRow key={sample.id}>
+                        <TableCell component="th" scope="row">
+                          {sample.name}
+                        </TableCell>
+                        <TableCell>{sample.id}</TableCell>
+                        <TableCell>
+                          <Typography variant="body">
+                            {sample.position}
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Collapse>
 
+
+              <Typography variant="body1" gutterBottom component="div">
+                <IconButton
+                  aria-label="expand row"
+                  size="small"
+                  onClick={() => setTaskOpen(!taskOpen)}
+                >
+                  {taskOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                </IconButton>
+                Tasks
+              </Typography>
+              <Collapse in={taskOpen} timeout="auto" unmountOnExit>
+                <Table size="small" aria-label="purchases">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Type</TableCell>
+                      {/* <TableCell>Task ID</TableCell> */}
+                      <TableCell>Status</TableCell>
+                      {/* <TableCell>Result</TableCell> */}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {status.tasks.map((task) => (
+                      <TableRow key={task.id}>
+                        <TableCell component="th" scope="row">
+                          {task.type}
+                        </TableCell>
+                        {/* <TableCell>{task.id}</TableCell> */}
+                        <TableCell>
+                          <Typography variant="body" color={taskStatusColor(task.status)}>
+                            {task.status}
+                          </Typography>
+                        </TableCell>
+                        {/* <TableCell>{task.result}</TableCell> */}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Collapse>
             </Box>
           </Collapse>
         </TableCell>
