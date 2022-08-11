@@ -23,13 +23,13 @@ export function get_pending_userinputrequests() {
         }).catch(error => console.warn(error));
 }
 
-export function respond_to_userinputrequest(request_id, status, note) {
+export function respond_to_userinputrequest(request_id, response, note) {
     return fetch(RESPOND_USERREQUEST_API, {
         method: 'POST',
         mode: 'cors',
         body: JSON.stringify({
             "request_id": request_id,
-            "status": status,
+            "response": response,
             "note": note
         })
     });

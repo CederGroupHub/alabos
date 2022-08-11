@@ -20,6 +20,8 @@ def get_userinput_status():
             "id": str(request["_id"]),
             "prompt": request["prompt"],
             "task_id": str(request["task_id"]),
+            "experiment_id": str(request["experiment_id"]),
+            "options": request["options"],
         }
         for request in user_input_requests
     ]
@@ -36,7 +38,7 @@ def submit_user_input():
     try:
         user_input_view.update_request_status(
             request_id=ObjectId(data["request_id"]),
-            status=UserRequestStatus(data["status"]),
+            response=data["response"],
             note=data["note"],
         )
     except Exception as exception:
@@ -52,7 +54,7 @@ def submit_user_input():
 @userinput_bp.route("/<request_id>", methods=["GET"])
 def query_user_input(request_id: str):
     """
-    Find an user input request by id
+    Find an user input request by idresponse
     """
     try:
         user_input_request = user_input_view.get_request(
@@ -64,5 +66,7 @@ def query_user_input(request_id: str):
         "id": str(user_input_request["_id"]),
         "prompt": user_input_request["prompt"],
         "task_id": str(user_input_request["task_id"]),
+        "experiment_id": str(user_input_request["experiment_id"]),
+        "options": user_input_request["options"],
         "status": user_input_request["status"],
     }

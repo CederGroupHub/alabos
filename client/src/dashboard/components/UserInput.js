@@ -10,10 +10,15 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import { useStickyState } from '../../hooks/StickyState';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+import Grow from '@mui/material/Grow';
+import Popper from '@mui/material/Popper';
+import MenuItem from '@mui/material/MenuItem';
+import MenuList from '@mui/material/MenuList';
 import { useEffect } from 'react';
 import { get_pending_userinputrequests, respond_to_userinputrequest } from '../../api_routes';
-const SUBMIT_RESPONSE_API = process.env.NODE_ENV === "production" ? "/api/userinput/submit" : "http://localhost:8896/api/userinput/submit";
 
 
 const StyledDevicesDiv = styled.div`
@@ -40,29 +45,100 @@ const StyledDevicesDiv = styled.div`
     padding: 4px 8px;
   }
 
-  Button{
-    margin: 0px 8px;
-  }
+  // Button{
+  //   margin: 0px 8px;
+  // }
 `;
 
-function UserInputRow({ request_id, task_id, prompt }) {
-  // const [note, setNote] = useStickyState("", String(request.id) + "-note");
+
+function SplitButton({ options, optionIndex, setOptionIndex, handleClick }) {
+  const [open, setOpen] = React.useState(false);
+  const anchorRef = React.useRef(null);
+  // const [selectedIndex, setSelectedIndex] = React.useState(1);
+
+  // const handleClick = () => {
+  //   console.info(`You clicked ${options[selectedIndex]}`);
+  // };
+
+  const handleMenuItemClick = (event, index) => {
+    setOptionIndex(index);
+    setOpen(false);
+  };
+
+  const handleToggle = () => {
+    setOpen((prevOpen) => !prevOpen);
+  };
+
+  const handleClose = (event) => {
+    if (anchorRef.current && anchorRef.current.contains(event.target)) {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  return (
+    <React.Fragment>
+      <ButtonGroup variant="contained" ref={anchorRef} aria-label="split button" fullWidth>
+        <Button onClick={handleClick} size="small" >{options[optionIndex]}</Button>
+        <Button
+          size="small"
+          color="primary"
+          aria-controls={open ? 'split-button-menu' : undefined}
+          aria-expanded={open ? 'true' : undefined}
+          aria-label="select reponse to user input request"
+          aria-haspopup="menu"
+          onClick={handleToggle}
+        >
+          <ArrowDropDownIcon />
+        </Button>
+      </ButtonGroup>
+      <Popper
+        open={open}
+        anchorEl={anchorRef.current}
+        role={undefined}
+        transition
+        disablePortal
+        style={{ zIndex: '100' }} //hack to get popper to show up on top of other elements
+      >
+        {({ TransitionProps, placement }) => (
+          <Grow
+            {...TransitionProps}
+            style={{
+              transformOrigin:
+                placement === 'bottom' ? 'center top' : 'center bottom',
+            }}
+          >
+            <Paper>
+              <ClickAwayListener onClickAway={handleClose}>
+                <MenuList id="split-button-menu" autoFocusItem>
+                  {options.map((option, index) => (
+                    <MenuItem
+                      key={option}
+                      selected={index === optionIndex}
+                      onClick={(event) => handleMenuItemClick(event, index)}
+                    >
+                      {option}
+                    </MenuItem>
+                  ))}
+                </MenuList>
+              </ClickAwayListener>
+            </Paper>
+          </Grow>
+        )}
+      </Popper>
+    </React.Fragment>
+  );
+}
+
+
+function UserInputRow({ request_id, task_id, prompt, options }) {
   const [note, setNote] = React.useState("");
+  const [optionIndex, setOptionIndex] = React.useState(0); //passed to splitbutton
 
-
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     fetch(SPECIFIC_ID_API_PREFIX + request_id, { mode: 'cors' })
-  //       .then(res => res.json())
-  //       .then(result => {
-  //         setRequest(result.data);
-  //       })
-  //   }, 1000);
-  //   return () => clearInterval(interval);
-  // }, []);
 
   function handleClick(status) {
-    respond_to_userinputrequest(request_id, status, note)
+    respond_to_userinputrequest(request_id, options[optionIndex], note)
   }
   return (
     <TableRow
@@ -87,18 +163,7 @@ function UserInputRow({ request_id, task_id, prompt }) {
         />
       </TableCell>
       <TableCell align="center" key="$request_id-cell4">
-        <Button
-          variant="contained"
-          onClick={() => handleClick("success")}
-        >
-          Success
-        </Button>
-        <Button
-          variant="outlined"
-          onClick={() => handleClick("error")}
-        >
-          Error
-        </Button>
+        <SplitButton options={options} optionIndex={optionIndex} setOptionIndex={setOptionIndex} handleClick={handleClick} />
       </TableCell>
     </TableRow>
   );
@@ -134,7 +199,7 @@ function UserInputs() {
           <TableBody>
             {pending.map((request) => (
               // UserInputRow(request_id)
-              <UserInputRow request_id={request.id} task_id={request.task_id} prompt={request.prompt} key={String(request.id)} />
+              <UserInputRow request_id={request.id} task_id={request.task_id} prompt={request.prompt} options={request.options} key={String(request.id)} />
             ))}
           </TableBody>
         </Table>

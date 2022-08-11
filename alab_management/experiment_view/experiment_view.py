@@ -133,6 +133,8 @@ class ExperimentView:
         Get an experiment that contains a task with the given task_id
         """
         experiment = self._experiment_collection.find_one({"tasks.task_id": task_id})
+        if experiment is None:
+            raise ValueError(f"Cannot find experiment containing task_id: {task_id}")
         return experiment
 
     def get_experiment_by_sample_id(
