@@ -209,7 +209,7 @@ class DeviceManager:
         ):
             raise PermissionError(
                 f"Currently the task ({body['task_id']}) "
-                f"does not occupy this device: {body['device']}"
+                f"does not occupy this device: {body['device']}, which is currently occupied by task {device_entry['task_id']}"
             )
 
         thread = Thread(

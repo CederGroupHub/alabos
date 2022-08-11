@@ -62,9 +62,8 @@ function UserInputRow({ request_id, task_id, prompt }) {
   // }, []);
 
   function handleClick(status) {
-    respond_to_userinputrequest(request_id = request_id, status = status, note = note)
+    respond_to_userinputrequest(request_id, status, note)
   }
-
   return (
     <TableRow
       sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -114,7 +113,7 @@ function UserInputs() {
       get_pending_userinputrequests().then(requests => {
         setPending(requests);
       })
-    }, 100);
+    }, 250);
     return () => clearInterval(interval);
   }, []);
 

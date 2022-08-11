@@ -34,3 +34,25 @@ export function respond_to_userinputrequest(request_id, status, note) {
         })
     });
 }
+
+// Experiments
+const ALL_EXPERIMENT_IDS_API = process.env.NODE_ENV === "production" ? "/api/experiment/get_all_ids" : "http://localhost:8896/api/experiment/get_all_ids";
+
+const SPECIFIC_EXPERIMENT_API = process.env.NODE_ENV === "production" ? "/api/experiment/" : "http://localhost:8896/api/experiment/";
+
+export function get_experiment_ids() {
+    return fetch(ALL_EXPERIMENT_IDS_API, { mode: 'cors' })
+        .then(res => res.json())
+        .then(result => {
+            return result.experiment_ids;
+        }).catch(error => console.warn(error));
+}
+
+
+export function get_experiment_status(experiment_id) {
+    return fetch(SPECIFIC_EXPERIMENT_API + experiment_id, { mode: 'cors' })
+        .then(res => res.json())
+        .then(result => {
+            return result;
+        }).catch(error => console.warn(error));
+}

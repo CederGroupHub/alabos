@@ -16,15 +16,8 @@ import ListSubheader from '@mui/material/ListSubheader';
 import Badge from '@mui/material/Badge';
 import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { useStickyState } from "../../hooks/StickyState";
 import { useEffect } from 'react';
 import { get_status } from '../../api_routes';
-// import STATUS_API from '../../api_routes';
-// import useWindowScrollPosition from "../../hooks/useWindowScrollPosition";
-// import { Button } from '@mui/material';
-// import { Fab } from '@mui/material';
-// import Button from '@mui/material/Button';
-// import TextField from '@mui/material/TextField';
 
 const STATUS_API = process.env.NODE_ENV === "production" ? "/api/status" : "http://localhost:8896/api/status";
 
@@ -165,7 +158,7 @@ function Devices() {
         setDevices(data.devices);
       })
 
-    }, 100);
+    }, 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -203,7 +196,9 @@ function Devices() {
                     {row.status === "OCCUPIED" || row.status === "IDLE" ? '⬤' : ''} {row.status}
                   </span>
                 </TableCell>
-                <TableCell align="center"><span className="message">{row.message}</span></TableCell>
+                <TableCell align="center" width="20%">
+                  <Typography variant="caption">{row.message}</Typography>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

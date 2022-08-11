@@ -2,6 +2,7 @@
 A wrapper over the ``experiment`` class.
 """
 
+from datetime import datetime
 from enum import Enum, auto
 from typing import List, Any, Dict, Optional, cast, Union
 
@@ -23,6 +24,7 @@ class ExperimentStatus(Enum):
     PENDING = auto()
     RUNNING = auto()
     COMPLETED = auto()
+    ERROR = auto()
 
 
 class ExperimentView:
@@ -47,6 +49,7 @@ class ExperimentView:
         result = self._experiment_collection.insert_one(
             {
                 **experiment.dict(),
+                "submitted_at": datetime.now(),
                 "status": ExperimentStatus.PENDING.name,
             }
         )
@@ -80,13 +83,13 @@ class ExperimentView:
         Update the status of an experiment
         """
         experiment = self.get_experiment(exp_id=exp_id)
+
+        update_dict = {"status": status.name}
+        if status == ExperimentStatus.COMPLETED:
+            update_dict["completed_at"] = datetime.now()
         self._experiment_collection.update_one(
             {"_id": exp_id},
-            {
-                "$set": {
-                    "status": status.name,
-                }
-            },
+            {"$set": update_dict},
         )
 
     def update_sample_task_id(
@@ -130,4 +133,15 @@ class ExperimentView:
         Get an experiment that contains a task with the given task_id
         """
         experiment = self._experiment_collection.find_one({"tasks.task_id": task_id})
+        return experiment
+
+    def get_experiment_by_sample_id(
+        self, sample_id: ObjectId
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Get an experiment that contains a sample with the given sample_id
+        """
+        experiment = self._experiment_collection.find_one(
+            {"samples.sample_id": sample_id}
+        )
         return experiment

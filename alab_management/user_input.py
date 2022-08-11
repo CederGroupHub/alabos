@@ -58,13 +58,13 @@ class UserInputView:
             raise ValueError(f"User input request id {request_id} does not exist!")
         return cast(Dict[str, Any], request)
 
-    def update_request_status(self, request_id: ObjectId, status: UserRequestStatus):
+    def update_request_status(self, request_id: ObjectId, status: UserRequestStatus, note:str):
         """
         Update the status of a request.
         """
         self.get_request(request_id)  # will error is request does not exist
         self._input_collection.update_one(
-            {"_id": request_id}, {"$set": {"status": status.value}}
+            {"_id": request_id}, {"$set": {"status": status.value, "note": note}}
         )
 
     def wait_for_user_input(self, request_id: ObjectId) -> UserRequestStatus:
