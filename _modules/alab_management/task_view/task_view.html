@@ -434,6 +434,7 @@
                 <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">subtask_type</span><span class="p">,</span>
                 <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">INITIATED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="s2">&quot;parameters&quot;</span><span class="p">:</span> <span class="n">parameters</span><span class="p">,</span>
+                <span class="s2">&quot;created_at&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
                 <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
             <span class="p">}</span>
         <span class="p">)</span>
@@ -466,6 +467,17 @@
             <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode_task</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
+<div class="viewcode-block" id="TaskView.get_task_with_sample"><a class="viewcode-back" href="../../../alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.get_task_with_sample">[docs]</a>    <span class="k">def</span> <span class="nf">get_task_with_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a task that contains the sample with the provided id</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_collection</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;samples.sample_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;No task exists containing provided sample id: </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="TaskView.get_status"><a class="viewcode-back" href="../../../alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.get_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TaskStatus</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the status of a task</span>
@@ -485,13 +497,13 @@
 <span class="sd">            task_id: the id of task to be updated</span>
 <span class="sd">            status: the new status of the task</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_task</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">encode</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_task</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">encode</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="n">update_dict</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
         <span class="p">}</span>
-        <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">INITIATED</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">RUNNING</span> <span class="ow">and</span> <span class="s2">&quot;started_at&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">task</span><span class="p">:</span>
             <span class="n">update_dict</span><span class="p">[</span><span class="s2">&quot;started_at&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
         <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">COMPLETED</span><span class="p">:</span>
             <span class="n">update_dict</span><span class="p">[</span><span class="s2">&quot;completed_at&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
@@ -503,7 +515,7 @@
 
         <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">COMPLETED</span><span class="p">:</span>
             <span class="c1"># try to figure out tasks that is READY</span>
-            <span class="k">for</span> <span class="n">next_task_id</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;next_tasks&quot;</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">next_task_id</span> <span class="ow">in</span> <span class="n">task</span><span class="p">[</span><span class="s2">&quot;next_tasks&quot;</span><span class="p">]:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">try_to_mark_task_ready</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">next_task_id</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TaskView.update_subtask_status"><a class="viewcode-back" href="../../../alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.update_subtask_status">[docs]</a>    <span class="k">def</span> <span class="nf">update_subtask_status</span><span class="p">(</span>
@@ -520,6 +532,10 @@
                 <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="n">subtask</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span>
                 <span class="n">subtask</span><span class="p">[</span><span class="s2">&quot;last_updated&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">RUNNING</span> <span class="ow">and</span> <span class="s2">&quot;started_at&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">subtask</span><span class="p">:</span>
+                    <span class="n">subtask</span><span class="p">[</span><span class="s2">&quot;started_at&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">COMPLETED</span><span class="p">:</span>
+                    <span class="n">subtask</span><span class="p">[</span><span class="s2">&quot;completed_at&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
                 <span class="k">break</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>

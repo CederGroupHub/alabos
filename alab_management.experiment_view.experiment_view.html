@@ -381,6 +381,11 @@
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.experiment_view.experiment_view.ExperimentStatus.ERROR">
+<span class="sig-name descname"><span class="pre">ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#alab_management.experiment_view.experiment_view.ExperimentStatus.ERROR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="alab_management.experiment_view.experiment_view.ExperimentStatus.PENDING">
 <span class="sig-name descname"><span class="pre">PENDING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#alab_management.experiment_view.experiment_view.ExperimentStatus.PENDING" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -418,6 +423,17 @@ lab manager will add sample id and task id for the samples and tasks</p>
 <dt class="sig sig-object py" id="alab_management.experiment_view.experiment_view.ExperimentView.get_experiment">
 <span class="sig-name descname"><span class="pre">get_experiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exp_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/experiment_view/experiment_view.html#ExperimentView.get_experiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.experiment_view.experiment_view.ExperimentView.get_experiment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get an experiment by its id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.experiment_view.experiment_view.ExperimentView.get_experiment_by_sample_id">
+<span class="sig-name descname"><span class="pre">get_experiment_by_sample_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/experiment_view/experiment_view.html#ExperimentView.get_experiment_by_sample_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.experiment_view.experiment_view.ExperimentView.get_experiment_by_sample_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get an experiment that contains a sample with the given sample_id</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</p>

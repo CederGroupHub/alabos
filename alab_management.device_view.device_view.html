@@ -462,7 +462,7 @@ when __exit__ method is called in the <code class="docutils literal notranslate"
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceView.get_device">
 <span class="sig-name descname"><span class="pre">get_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.get_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.get_device" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get device by device name, if not found, return <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd><p>Get device by device name, if not found, raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</p>
@@ -538,6 +538,20 @@ If there is no such property with name <code class="docutils literal notranslate
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>{“device_type_name”</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceView.set_message">
+<span class="sig-name descname"><span class="pre">set_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.set_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.set_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the device message. Message is used to communicate device state with the user dashboard</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device_name</strong> (<em>str</em>) – name of the device to set the message for</p></li>
+<li><p><strong>message</strong> (<em>str</em>) – message to be set</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

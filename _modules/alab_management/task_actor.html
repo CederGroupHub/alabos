@@ -369,7 +369,9 @@
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<span class="nd">@dramatiq</span><span class="o">.</span><span class="n">actor</span><span class="p">(</span><span class="n">max_retries</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="nd">@dramatiq</span><span class="o">.</span><span class="n">actor</span><span class="p">(</span>
+    <span class="n">max_retries</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">time_limit</span><span class="o">=</span><span class="mi">999999999</span>
+<span class="p">)</span>  <span class="c1"># TODO no time limit -- None is not working, 0 is actually zero</span>
 <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="n">task_id_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Submit a task. In this system, each task is run in an</span>

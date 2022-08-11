@@ -555,7 +555,7 @@
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Currently the task (</span><span class="si">{</span><span class="n">body</span><span class="p">[</span><span class="s1">&#39;task_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">) &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;does not occupy this device: </span><span class="si">{</span><span class="n">body</span><span class="p">[</span><span class="s1">&#39;device&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;does not occupy this device: </span><span class="si">{</span><span class="n">body</span><span class="p">[</span><span class="s1">&#39;device&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, which is currently occupied by task </span><span class="si">{</span><span class="n">device_entry</span><span class="p">[</span><span class="s1">&#39;task_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
         <span class="n">thread</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span>
