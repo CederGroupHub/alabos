@@ -57,15 +57,6 @@ function App() {
   return (
     <BrowserRouter>
       <StyledAppBar position="relative">
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          fontWeight: 500,
-          fontSize: "1.3em",
-          margin: "0 24px",
-        }}>
-          <Link to="/">Alab Management</Link>
-        </div>
         <StyledNav>
           <NavLink to="/" className={({ isActive }) => isActive ? 'link-active nav-link' : 'nav-link'}>Dashboard</NavLink>
           <NavLink to="/new-experiment" className={({ isActive }) => isActive ? 'link-active nav-link' : 'nav-link'}>New Experiment</NavLink>

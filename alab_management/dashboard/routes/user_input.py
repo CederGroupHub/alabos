@@ -21,9 +21,9 @@ def get_userinput_status():
             "prompt": request["prompt"],
             "task_id": str(request["task_id"]),
             "experiment_id": str(request["experiment_id"]),
-            "experiment_name": experiment_view.get_experiment_by_id(
-                request["experiment_id"]
-            )["name"],
+            "experiment_name": experiment_view.get_experiment(request["experiment_id"])[
+                "name"
+            ],
             "options": request["options"],
         }
         for request in user_input_requests
