@@ -4,7 +4,7 @@ from flask import Blueprint, request
 from pydantic import ValidationError
 
 from alab_management.user_input import UserRequestStatus
-from ..lab_views import user_input_view
+from ..lab_views import user_input_view, experiment_view
 
 userinput_bp = Blueprint("/userinput", __name__, url_prefix="/api/userinput")
 
@@ -21,6 +21,9 @@ def get_userinput_status():
             "prompt": request["prompt"],
             "task_id": str(request["task_id"]),
             "experiment_id": str(request["experiment_id"]),
+            "experiment_name": experiment_view.get_experiment_by_id(
+                request["experiment_id"]
+            )["name"],
             "options": request["options"],
         }
         for request in user_input_requests
