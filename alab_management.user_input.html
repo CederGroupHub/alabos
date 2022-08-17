@@ -400,7 +400,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.user_input.UserInputView.insert_request">
-<span class="sig-name descname"><span class="pre">insert_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#UserInputView.insert_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.UserInputView.insert_request" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">insert_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maintenance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#UserInputView.insert_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.UserInputView.insert_request" title="Permalink to this definition">¶</a></dt>
 <dd><p>Insert a request into the database.</p>
 <p>Returns the request ObjectID</p>
 <dl class="field-list simple">
@@ -454,11 +454,12 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="alab_management.user_input.request_user_input">
-<span class="sig-name descname"><span class="pre">request_user_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#request_user_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.request_user_input" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">request_user_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maintenance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#request_user_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.request_user_input" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request user input through the dashboard. Blocks until response is given.</p>
 <p>task_id (ObjectId): task id requesting user input
 prompt (str): prompt to give user
-options (List[str]): response options to give user</p>
+options (List[str]): response options to give user
+maintenance (bool): if true, mark this as a request for overall system maintenance</p>
 <p>Returns user response as string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
