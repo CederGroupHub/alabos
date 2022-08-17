@@ -93,6 +93,7 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange }) {
           </ListItemButton>
         </LinkedButton>
       </ListItem>
+      <Divider />
       <ListItem>
         <FormControl component="fieldset" variant="standard" sx={{ padding: "0px 16px" }}>
           <FormControlLabel
@@ -136,7 +137,7 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange }) {
         <Badge badgeContent={numUserInputRequests} color="error" sx={{
           left: 8,
           top: 'calc(50% - 30px)',
-        }}>
+        }} onClick={() => setMobileOpen(true)}>
           <Puller onClick={() => setMobileOpen(true)} />
         </Badge>
       </StyledBox>
