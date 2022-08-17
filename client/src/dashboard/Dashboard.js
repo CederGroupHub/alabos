@@ -2,20 +2,16 @@ import React, { useEffect, useState } from 'react';
 import Devices from './components/Devices';
 import Experiments from './components/Experiments';
 import styled from 'styled-components';
-import useInterval from '@use-it/interval';
 import { useLocation, Link } from "react-router-dom";
-import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
-import SwipeableDrawer from '@mui/material/SwipeableDrawer';
+import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, FormControl, FormControlLabel, Switch } from '@mui/material';
 import PrecisionManufacturingIcon from '@mui/icons-material/PrecisionManufacturing';
 import FireplaceIcon from '@mui/icons-material/Fireplace';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import UserInputs from './components/UserInput';
 import Badge from '@mui/material/Badge';
-import Fab from '@mui/material/Fab';
-import AddIcon from '@mui/icons-material/Add';
 import { grey } from '@mui/material/colors';
 import { get_pending_userinputrequests } from '../api_routes';
-import Typography from '@mui/material/Typography';
+
 const StyledDashboardDiv = styled.div`
   height: calc(100vh - 60px);
   display: flex;
@@ -37,6 +33,8 @@ const LinkedButton = styled(Link)`
 `;
 
 const pullerWidth = 12;
+const drawerWidth = 240;
+
 const StyledBox = styled(Box)(() => ({
   // backgroundColor: theme.palette.mode === 'light' ? '#fff' : grey[800],
   // backgroundColor: grey[50],
@@ -53,16 +51,11 @@ const Puller = styled(Box)(() => ({
   // top: 'calc(50% - 15px)',
 }));
 
-function Sidebar() {
+function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange }) {
   const [numUserInputRequests, setNumUserInputRequests] = useState(0);
   const { hash } = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
-
-  const drawerWidth = 240;
+  // const [hoverForId, setHoverForId] = useState(false);
 
 
   const drawerContents = (
@@ -87,6 +80,7 @@ function Sidebar() {
           </ListItemButton>
         </LinkedButton>
       </ListItem>
+      <Divider />
       <ListItem>
         <LinkedButton to="/#userinput">
           <ListItemButton className={hash === "#userinput" ? "active list-button-round" : "list-button-round"}>
@@ -99,7 +93,19 @@ function Sidebar() {
           </ListItemButton>
         </LinkedButton>
       </ListItem>
+      <ListItem>
+        <FormControl component="fieldset" variant="standard" sx={{ padding: "0px 16px" }}>
+          <FormControlLabel
+            control={
+              <Switch checked={hoverForId} onChange={handleHoverForIdChange} name="Hover for ID" />
+            }
+            label="Hover for ID"
+          />
+        </FormControl>
+      </ListItem>
     </List>
+
+
 
   )
   useEffect(() => {
@@ -163,19 +169,23 @@ function Sidebar() {
 
 function Dashboard() {
   const { hash } = useLocation();
+  const [hoverForId, setHoverForId] = useState(false);
+
+
+  const handleHoverForIdChange = (checked) => {
+    setHoverForId(checked);
+  }
 
   const SwitchContent = () => {
     console.log(hash)
     switch (hash) {
       case "#device":
-        // return <Devices devices={statusData.devices} />
         return <Devices />;
-
       case "#userinput":
         return <UserInputs />
       case "#experiment":
       case "":
-        return <Experiments />
+        return <Experiments hoverForId={hoverForId} />
       default:
         return null
     }
@@ -183,7 +193,7 @@ function Dashboard() {
 
   return (
     <StyledDashboardDiv>
-      <Sidebar />
+      <Sidebar hoverForId={hoverForId} setHoverForId={setHoverForId} handleHoverForIdChange={(event) => { handleHoverForIdChange(event.target.checked) }} />
       <Box component="main" sx={{ flexGrow: 1, margin: "16px 12px" }}>
         <SwitchContent />
       </Box>

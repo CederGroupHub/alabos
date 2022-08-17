@@ -8,7 +8,6 @@ import styled from 'styled-components';
 // import TableHead from '@mui/material/TableHead';
 // import TableRow from '@mui/material/TableRow';
 // import Typography from '@mui/material/Typography';
-import { get_status } from '../../api_routes';
 import { useEffect } from 'react';
 import { get_experiment_status, get_experiment_ids } from '../../api_routes';
 import LinearProgress from '@mui/material/LinearProgress';//
@@ -26,7 +25,7 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { createTheme } from '@mui/material/styles';
+import { HoverText } from '../../utils';
 
 const StyledExpDiv = styled.div`
   margin: 12px 16px;
@@ -68,7 +67,7 @@ const StyledExpDiv = styled.div`
   }
 `;
 
-function Row({ experiment_id }) {
+function Row({ experiment_id, hoverForId }) {
   const [open, setOpen] = React.useState(false);
   const [status, setStatus] = React.useState(
     { "_id": "", "status": "", "samples": [], "tasks": [], "progress": 50 }
@@ -128,12 +127,13 @@ function Row({ experiment_id }) {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
-          {status.name}
+          <HoverText defaultText={status.name} hoverText={status.id} variant="body1" active={hoverForId} />
+          {/* {status.name} */}
         </TableCell>
 
-        <TableCell align="left">
+        {/* <TableCell align="left">
           <Typography variant="body2">{status.id}</Typography>
-        </TableCell>
+        </TableCell> */}
 
         <TableCell align="right">
           <Typography variant="body2">{status.samples.length}</Typography>
@@ -170,7 +170,6 @@ function Row({ experiment_id }) {
                   <TableHead>
                     <TableRow>
                       <TableCell>Name</TableCell>
-                      <TableCell>Sample ID</TableCell>
                       <TableCell>Position</TableCell>
                     </TableRow>
                   </TableHead>
@@ -178,9 +177,9 @@ function Row({ experiment_id }) {
                     {status.samples.map((sample) => (
                       <TableRow key={sample.id}>
                         <TableCell component="th" scope="row">
-                          {sample.name}
+                          <HoverText defaultText={sample.name} hoverText={sample.id} variant="body2" active={hoverForId} />
+                          {/* {sample.name} */}
                         </TableCell>
-                        <TableCell>{sample.id}</TableCell>
                         <TableCell>
                           <Typography variant="body">
                             {sample.position}
@@ -207,7 +206,7 @@ function Row({ experiment_id }) {
                 <Table size="small" aria-label="purchases">
                   <TableHead>
                     <TableRow>
-                      <TableCell>Type</TableCell>
+                      <TableCell>Name</TableCell>
                       {/* <TableCell>Task ID</TableCell> */}
                       <TableCell>Status</TableCell>
                       {/* <TableCell>Result</TableCell> */}
@@ -217,7 +216,7 @@ function Row({ experiment_id }) {
                     {status.tasks.map((task) => (
                       <TableRow key={task.id}>
                         <TableCell component="th" scope="row">
-                          {task.type}
+                          <HoverText defaultText={task.type} hoverText={task.id} variant="body2" active={hoverForId} />
                         </TableCell>
                         {/* <TableCell>{task.id}</TableCell> */}
                         <TableCell>
@@ -239,7 +238,7 @@ function Row({ experiment_id }) {
   );
 }
 
-function CollapsibleTable({ experiment_ids }) {
+function CollapsibleTable({ experiment_ids, hoverForId }) {
   return (
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">
@@ -247,8 +246,6 @@ function CollapsibleTable({ experiment_ids }) {
           <TableRow>
             <TableCell />
             <TableCell>Name</TableCell>
-            <TableCell align="left">Experiment ID</TableCell>
-
             <TableCell align="right"># Samples</TableCell>
             <TableCell align="right">Submitted At</TableCell>
             <TableCell align="right">Progress</TableCell>
@@ -256,7 +253,7 @@ function CollapsibleTable({ experiment_ids }) {
         </TableHead>
         <TableBody>
           {experiment_ids.map((experiment_id) => (
-            <Row key={experiment_id} experiment_id={experiment_id} />
+            <Row key={experiment_id} experiment_id={experiment_id} hoverForId={hoverForId} />
           ))}
         </TableBody>
       </Table>
@@ -268,14 +265,13 @@ function CollapsibleTable({ experiment_ids }) {
 
 
 
-function Experiments() {
+function Experiments({ hoverForId }) {
   const [experimentIds, setExperimentIds] = React.useState([]);
 
 
   useEffect(() => {
     const interval = setInterval(() => {
       get_experiment_ids().then(ids => {
-        console.log(ids);
         setExperimentIds(ids);
       })
     }, 250);
@@ -283,7 +279,7 @@ function Experiments() {
   }, []);
 
   return (
-    <CollapsibleTable experiment_ids={experimentIds} />
+    <CollapsibleTable experiment_ids={experimentIds} hoverForId={hoverForId} />
 
   );
 }

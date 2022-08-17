@@ -56,7 +56,7 @@ const StyledNav = styled.nav`
 function App() {
   return (
     <BrowserRouter>
-      <StyledAppBar position="relative">
+      <StyledAppBar position="sticky">
         <StyledNav>
           <NavLink to="/" className={({ isActive }) => isActive ? 'link-active nav-link' : 'nav-link'}>Dashboard</NavLink>
           <NavLink to="/new-experiment" className={({ isActive }) => isActive ? 'link-active nav-link' : 'nav-link'}>New Experiment</NavLink>
