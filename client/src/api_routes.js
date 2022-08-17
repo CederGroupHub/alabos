@@ -1,7 +1,9 @@
 
 // General
-const STATUS_API = process.env.NODE_ENV === "production" ? "/api/status" : "http://localhost:8895/api/status";
 
+const URL = "http://192.168.2.12:8895";
+const STATUS_API = process.env.NODE_ENV === "production" ? "/api/status" : URL + "/api/status";
+console.log(STATUS_API);
 export function get_status() {
     return fetch(STATUS_API, { mode: 'cors' })
         .then(res => res.json())
@@ -11,9 +13,9 @@ export function get_status() {
 }
 
 // UserInputs
-const RESPOND_USERREQUEST_API = process.env.NODE_ENV === "production" ? "/api/userinput/submit" : "http://localhost:8895/api/userinput/submit";
-const PENDINGIDS_USERREQUEST_API = process.env.NODE_ENV === "production" ? "/api/userinput/pending" : "http://localhost:8895/api/userinput/pending";
-const SPECIFIC_USERREQUEST_PREFIX = process.env.NODE_ENV === "production" ? "/api/userinput/" : "http://localhost:8895/api/userinput/";
+const RESPOND_USERREQUEST_API = process.env.NODE_ENV === "production" ? "/api/userinput/submit" : URL + "/api/userinput/submit";
+const PENDINGIDS_USERREQUEST_API = process.env.NODE_ENV === "production" ? "/api/userinput/pending" : URL + "/api/userinput/pending";
+const SPECIFIC_USERREQUEST_PREFIX = process.env.NODE_ENV === "production" ? "/api/userinput/" : URL + "/api/userinput/";
 
 export function get_pending_userinputrequests() {
     return fetch(PENDINGIDS_USERREQUEST_API, { mode: 'cors' })
@@ -39,9 +41,9 @@ export function respond_to_userinputrequest(request_id, response, note) {
 }
 
 // Experiments
-const ALL_EXPERIMENT_IDS_API = process.env.NODE_ENV === "production" ? "/api/experiment/get_all_ids" : "http://localhost:8895/api/experiment/get_all_ids";
+const ALL_EXPERIMENT_IDS_API = process.env.NODE_ENV === "production" ? "/api/experiment/get_all_ids" : URL + "/api/experiment/get_all_ids";
 
-const SPECIFIC_EXPERIMENT_API = process.env.NODE_ENV === "production" ? "/api/experiment/" : "http://localhost:8895/api/experiment/";
+const SPECIFIC_EXPERIMENT_API = process.env.NODE_ENV === "production" ? "/api/experiment/" : URL + "/api/experiment/";
 
 export function get_experiment_ids() {
     return fetch(ALL_EXPERIMENT_IDS_API, { mode: 'cors' })

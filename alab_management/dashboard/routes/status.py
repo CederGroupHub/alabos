@@ -1,6 +1,12 @@
 from flask import Blueprint
 
-from ..lab_views import device_view, experiment_view, task_view, user_input_view
+from ..lab_views import (
+    device_view,
+    experiment_view,
+    task_view,
+    user_input_view,
+    sample_view,
+)
 
 status_bp = Blueprint("/status", __name__, url_prefix="/api/status")
 
@@ -19,8 +25,12 @@ def get_all_status():
             "message": device["message"],
             "task": str(device["task_id"]) if device["task_id"] is not None else "null",
             "samples": {
-                position: [str(s) for s in samples]
-                for position, samples in device_view.get_samples_on_device(
+                position: [
+                    {
+                        "id": str(sample_id),
+                        "name": sample_view.get_sample(sample_id).name,
+                    } for sample_id in samples
+                ] for position, samples in device_view.get_samples_on_device(
                     device["name"]
                 ).items()
             },
@@ -64,4 +74,3 @@ def get_all_status():
         "experiments": experiments,
         "userinputrequests": user_input_requests,
     }
-

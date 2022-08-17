@@ -3,7 +3,7 @@ import Dashboard from './dashboard/Dashboard';
 import { AppBar } from "@mui/material";
 import styled from "styled-components";
 import { Routes, Route, Link, NavLink, BrowserRouter } from "react-router-dom";
-
+import alabLogo from "./logo512.png";
 
 const StyledAppBar = styled(AppBar)`
   height: 60px !important;
@@ -53,18 +53,26 @@ const StyledNav = styled.nav`
   align-items: center
 `;
 
+const StyledLogo = styled.img`
+  height: 45px;
+  margin: 0 10px
+`;
+
 function App() {
   return (
     <BrowserRouter>
       <StyledAppBar position="sticky">
+        <div>
+          <NavLink to="/"><StyledLogo src={alabLogo} /></NavLink>
+        </div>
         <StyledNav>
           <NavLink to="/" className={({ isActive }) => isActive ? 'link-active nav-link' : 'nav-link'}>Dashboard</NavLink>
-          <NavLink to="/new-experiment" className={({ isActive }) => isActive ? 'link-active nav-link' : 'nav-link'}>New Experiment</NavLink>
+          {/* <NavLink to="/new-experiment" className={({ isActive }) => isActive ? 'link-active nav-link' : 'nav-link'}>New Experiment</NavLink> */}
         </StyledNav>
       </StyledAppBar>
       <Routes>
         <Route path="/*" element={<Dashboard />} />
-        <Route path="new-experiment" element={<SubmitExp />} />
+        {/* <Route path="new-experiment" element={<SubmitExp />} /> */}
       </Routes>
     </BrowserRouter>
   );

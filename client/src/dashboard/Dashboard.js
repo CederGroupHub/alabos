@@ -116,7 +116,6 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange }) {
         for (let requests of Object.values(result.pending)) {
           numRequests += requests.length;
         }
-        console.log(numRequests);
         setNumUserInputRequests(numRequests);
       })
     }, 1000);
@@ -186,9 +185,9 @@ function Dashboard() {
     console.log(hash)
     switch (hash) {
       case "#device":
-        return <Devices />;
+        return <Devices hoverForId={hoverForId} />;
       case "#userinput":
-        return <UserInputs />
+        return <UserInputs hoverForId={hoverForId} />
       case "#experiment":
       case "":
         return <Experiments hoverForId={hoverForId} />

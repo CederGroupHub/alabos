@@ -1,5 +1,5 @@
 import time
-from typing import Any, Dict, List, cast
+from typing import Any, Dict, List, Optional, cast
 from alab_management.experiment_view.experiment_view import ExperimentView
 from alab_management.utils.data_objects import get_collection
 from enum import Enum
@@ -29,9 +29,9 @@ class UserInputView:
 
     def insert_request(
         self,
-        task_id: ObjectId,
         prompt: str,
         options: List[str],
+        task_id: Optional[ObjectId] = None,
         maintenance: bool = False,
     ) -> ObjectId:
         """
@@ -39,20 +39,30 @@ class UserInputView:
 
         Returns the request ObjectID
         """
-        self._task_view.get_task(
-            task_id=task_id
-        )  # will throw error if task id does not exist
-        experiment_id = self._experiment_view.get_experiment_by_task_id(task_id)["_id"]
+        context = {"maintenance": maintenance}
+        if task_id is None and not maintenance:
+            raise ValueError("task_id is required for non-maintenance requests!")
+        if task_id is not None:
+            self._task_view.get_task(
+                task_id=task_id
+            )  # will throw error if task id does not exist
+            experiment_id = self._experiment_view.get_experiment_by_task_id(task_id)[
+                "_id"
+            ]
+            context.update(
+                {
+                    "experiment_id": experiment_id,
+                    "task_id": task_id,
+                }
+            )
         request_id = ObjectId()
         self._input_collection.insert_one(
             {
                 "_id": request_id,
                 "prompt": prompt,
-                "task_id": task_id,
-                "experiment_id": experiment_id,
                 "options": [str(opt) for opt in options],
                 "status": UserRequestStatus.PENDING.value,
-                "maintenance": maintenance,
+                "request_context": context,
             }
         )
         return request_id

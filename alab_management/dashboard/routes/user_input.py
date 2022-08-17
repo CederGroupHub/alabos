@@ -4,7 +4,7 @@ from flask import Blueprint, request
 from pydantic import ValidationError
 
 from alab_management.user_input import UserRequestStatus
-from ..lab_views import user_input_view, experiment_view
+from ..lab_views import user_input_view, experiment_view, task_view
 
 userinput_bp = Blueprint("/userinput", __name__, url_prefix="/api/userinput")
 
@@ -17,13 +17,27 @@ def get_userinput_status():
     user_input_requests = {}
     id_to_name = {}
     for request in user_input_view.get_all_pending_requests():
-        eid = str(request["experiment_id"])
-        if request["maintenance"]:
+        if request["request_context"]["maintenance"]:
             experiment_name = "Maintenance"
+            eid = "Maintenance"
+            if "task_id" not in request["request_context"]:
+                task_id = "This request came directly from a device, no task_id."
+                task_type = "DeviceRequest"
+            else:
+                task_id = str(request["request_context"]["task_id"])
+                task_type = task_view.get_task(request["request_context"]["task_id"])[
+                    "type"
+                ]
         else:
-            experiment_name = experiment_view.get_experiment(request["experiment_id"])[
-                "name"
+            eid = str(request["request_context"]["experiment_id"])
+            experiment_name = experiment_view.get_experiment(
+                request["request_context"]["experiment_id"]
+            )["name"]
+            task_id = str(request["request_context"]["task_id"])
+            task_type = task_view.get_task(request["request_context"]["task_id"])[
+                "type"
             ]
+
         if eid not in user_input_requests:
             user_input_requests[eid] = []
             id_to_name[eid] = experiment_name
@@ -32,7 +46,10 @@ def get_userinput_status():
             {
                 "id": str(request["_id"]),
                 "prompt": request["prompt"],
-                "task_id": str(request["task_id"]),
+                "task": {
+                    "id": task_id,
+                    "type": task_type,
+                },
                 "options": request["options"],
             }
         )

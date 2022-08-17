@@ -10,7 +10,6 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Collapse from '@mui/material/Collapse';
 import List from '@mui/material/List';
-import ListItemText from '@mui/material/ListItemText';
 import ListItem from '@mui/material/ListItem';
 import ListSubheader from '@mui/material/ListSubheader';
 import Badge from '@mui/material/Badge';
@@ -18,6 +17,8 @@ import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useEffect } from 'react';
 import { get_status } from '../../api_routes';
+import { HoverText } from '../../utils';
+import { FormControl, FormControlLabel, Switch } from '@mui/material';
 
 
 const StyledDevicesDiv = styled.div`
@@ -64,7 +65,7 @@ const statusSubtextColors = {
 }
 
 
-function OccupiedSamplePositions({ device, samples }) {
+function OccupiedSamplePositions({ device, samples, hoverForId }) {
   var total_samples = 0;
   // samples.map(sample => {
   //   total_samples += sample.samples.length;
@@ -86,7 +87,7 @@ function OccupiedSamplePositions({ device, samples }) {
         <AccordionDetails>
           {
             Object.entries(samples).map(([position, _samples]) => (
-              <SingleOccupiedSamplePositionsList position={position} samples={_samples} />
+              <SingleOccupiedSamplePositionsList position={position} samples={_samples} key={position} hoverForId={hoverForId} />
             ))
           }
         </AccordionDetails>
@@ -99,25 +100,17 @@ class SingleOccupiedSamplePositionsList extends React.Component {
     super(props);
     this.state = {
       open: false,
-      hover: false
     }
     this.handleClick = this.handleClick.bind(this);
   }
 
   handleClick() {
-    // console.log("Handle Clicked....");
     this.setState(prevState => ({
       open: !prevState.open
     }));
-    // this.samples = Object.entries(this.props.samples).filter(([position, samples]) => samples.length > 0);
   }
 
   render() {
-    if (this.state.hover) {
-      this.subheadercolor = "white"
-    } else {
-      this.subheadercolor = "red"
-    }
 
     return (
       <List
@@ -131,10 +124,7 @@ class SingleOccupiedSamplePositionsList extends React.Component {
           <ListSubheader
             component="div"
             id="nested-list-subheader"
-            onClick={this.handleClick}
-            // onMouseEnter={this.handleOnMouseEnter}
-            // onMouseLeave={this.onMouseLeave}
-            color={this.subheadercolor}>
+            onClick={this.handleClick}>
             <Badge badgeContent={this.props.samples.length} color="primary">
               {this.props.position}
             </Badge>
@@ -143,10 +133,11 @@ class SingleOccupiedSamplePositionsList extends React.Component {
         <Collapse in={this.state.open} timeout="auto" unmountOnExit>
           {this.props.samples.map((sample) => (
             <ListItem
-              key={sample}
+              key={sample.id}
               disableGutters
             >
-              <ListItemText primary={sample} />
+              {/* <ListItemText primary={sample} /> */}
+              <HoverText defaultText={sample.name} hoverText={sample.id} variant="body2" active={this.props.hoverForId} />
             </ListItem>
           ))}
         </Collapse>
@@ -155,8 +146,9 @@ class SingleOccupiedSamplePositionsList extends React.Component {
   }
 }
 
-function Devices() {
+function Devices({ hoverForId }) {
   const [devices, setDevices] = React.useState([]);
+  const [onlyActive, setOnlyActive] = React.useState(true);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -168,55 +160,77 @@ function Devices() {
     return () => clearInterval(interval);
   }, []);
 
+  const DisplayDeviceRowFilter = (row) => {
+    if (row.status != "IDLE") {
+      return true
+    }
+    for (let samples of Object.values(row.samples)) {
+      if (samples.length > 0) {
+        return true
+      }
+    }
+    return false
+  }
+
+  const FilteredDevices = (onlyActive) => {
+    if (onlyActive) {
+      return devices.filter(DisplayDeviceRowFilter)
+    } else {
+      return devices
+    }
+  }
+
 
   return (
-    <TableContainer style={{ height: "100%" }} component={Paper}>
-      <StyledDevicesDiv>
-        <Typography variant="h4" component="h3">Device View</Typography>
-        <Table stickyHeader aria-label="device table">
-          <TableHead>
-            <TableRow>
-              <TableCell><b>Device Name</b></TableCell>
-              <TableCell align="center"><b>Samples</b></TableCell>
-              <TableCell align="center" width="50%"><b>Device Message</b></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {devices.map((row) => (
-              <TableRow
-                key={row.name}
-                sx={{
-                  '&:last-child td, &:last-child th': { border: 0 },
-                  bgcolor: statusRowColors[row.status] ?? statusRowColors.default,
-                }}
-              >
-                <TableCell component="th" scope="row">
-                  <Typography
-                    variant="body1"
-                    sx={{
-                      color: statusTextColors[row.status] ?? statusTextColors.default,
-                    }}
-                  >
-                    {row.name}
-                  </Typography>
-                  <Typography variant="caption"
-                    sx={{ color: statusSubtextColors[row.status] ?? statusTextColors.default }}
-                  >{row.type}</Typography>
-                </TableCell>
-                {/* <TableCell align="center">{row.type}</TableCell> */}
-                <TableCell align="center" size="small">
-                  <OccupiedSamplePositions samples={row.samples} name={row.name} key={String(row.name + "-samplepositions")} />
-                  {/* {OccupiedSamplePositions(row.name, row.samples)} */}
-                </TableCell>
-                <TableCell align="center" width="50%">
-                  <Typography variant="caption">{row.message}</Typography>
-                </TableCell>
+    <><FormControl component="fieldset" variant="standard" sx={{ padding: "0px 16px" }}>
+      <FormControlLabel
+        control={<Switch checked={onlyActive} onChange={() => (setOnlyActive(!onlyActive))} name="Only show active Devices" />}
+        label="Only show active Devices" />
+    </FormControl><TableContainer style={{ height: "100%" }} component={Paper}>
+        <StyledDevicesDiv>
+          <Table stickyHeader aria-label="device table">
+            <TableHead>
+              <TableRow>
+                <TableCell><b>Device Name</b></TableCell>
+                <TableCell align="center"><b>Samples</b></TableCell>
+                <TableCell align="center" width="50%"><b>Device Message</b></TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </StyledDevicesDiv >
-    </TableContainer >
+            </TableHead>
+            <TableBody>
+              {FilteredDevices(onlyActive).map((row) => (
+                <TableRow
+                  key={row.name}
+                  sx={{
+                    '&:last-child td, &:last-child th': { border: 0 },
+                    bgcolor: statusRowColors[row.status] ?? statusRowColors.default,
+                  }}
+                >
+                  <TableCell component="th" scope="row">
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        color: statusTextColors[row.status] ?? statusTextColors.default,
+                      }}
+                    >
+                      {row.name}
+                    </Typography>
+                    <Typography variant="caption"
+                      sx={{ color: statusSubtextColors[row.status] ?? statusTextColors.default }}
+                    >{row.type}</Typography>
+                  </TableCell>
+                  {/* <TableCell align="center">{row.type}</TableCell> */}
+                  <TableCell align="center" size="small">
+                    <OccupiedSamplePositions samples={row.samples} name={row.name} key={String(row.name + "-samplepositions")} hoverForId={hoverForId} />
+                  </TableCell>
+                  <TableCell align="center" width="50%">
+                    <Typography variant="caption">{row.message}</Typography>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </StyledDevicesDiv>
+      </TableContainer></>
   )
 }
 
