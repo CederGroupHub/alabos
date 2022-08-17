@@ -14,21 +14,32 @@ def get_userinput_status():
     """
     Get all the status in the database
     """
-    user_input_requests = user_input_view.get_all_pending_requests()
-    user_input_requests = [
-        {
-            "id": str(request["_id"]),
-            "prompt": request["prompt"],
-            "task_id": str(request["task_id"]),
-            "experiment_id": str(request["experiment_id"]),
-            "experiment_name": experiment_view.get_experiment(request["experiment_id"])[
+    user_input_requests = {}
+    id_to_name = {}
+    for request in user_input_view.get_all_pending_requests():
+        eid = str(request["experiment_id"])
+        if request["maintenance"]:
+            experiment_name = "Maintenance"
+        else:
+            experiment_name = experiment_view.get_experiment(request["experiment_id"])[
                 "name"
-            ],
-            "options": request["options"],
-        }
-        for request in user_input_requests
-    ]
-    return {"pending_requests": user_input_requests}
+            ]
+        if eid not in user_input_requests:
+            user_input_requests[eid] = []
+            id_to_name[eid] = experiment_name
+
+        user_input_requests[eid].append(
+            {
+                "id": str(request["_id"]),
+                "prompt": request["prompt"],
+                "task_id": str(request["task_id"]),
+                "options": request["options"],
+            }
+        )
+    return {
+        "pending_requests": user_input_requests,
+        "experiment_id_to_name": id_to_name,
+    }
 
 
 @userinput_bp.route("/submit", methods=["POST"])

@@ -28,7 +28,11 @@ class UserInputView:
         self._experiment_view = ExperimentView()
 
     def insert_request(
-        self, task_id: ObjectId, prompt: str, options: List[str]
+        self,
+        task_id: ObjectId,
+        prompt: str,
+        options: List[str],
+        maintenance: bool = False,
     ) -> ObjectId:
         """
         Insert a request into the database.
@@ -48,6 +52,7 @@ class UserInputView:
                 "experiment_id": experiment_id,
                 "options": [str(opt) for opt in options],
                 "status": UserRequestStatus.PENDING.value,
+                "maintenance": maintenance,
             }
         )
         return request_id
@@ -115,7 +120,7 @@ class UserInputView:
 
 
 def request_user_input(
-    task_id: ObjectId, prompt: str, options: List[str]
+    task_id: ObjectId, prompt: str, options: List[str], maintenance: bool = False
 ) -> UserRequestStatus:
     """
     Request user input through the dashboard. Blocks until response is given.
@@ -123,11 +128,12 @@ def request_user_input(
     task_id (ObjectId): task id requesting user input
     prompt (str): prompt to give user
     options (List[str]): response options to give user
+    maintenance (bool): if true, mark this as a request for overall system maintenance
 
     Returns user response as string.
     """
     user_input_view = UserInputView()
     request_id = user_input_view.insert_request(
-        task_id=task_id, prompt=prompt, options=options
+        task_id=task_id, prompt=prompt, options=options, maintenance=maintenance
     )
     return user_input_view.retrieve_user_input(request_id=request_id)

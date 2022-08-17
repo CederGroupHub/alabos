@@ -19,7 +19,10 @@ export function get_pending_userinputrequests() {
     return fetch(PENDINGIDS_USERREQUEST_API, { mode: 'cors' })
         .then(res => res.json())
         .then(result => {
-            return result.pending_requests;
+            var return_values = Object();
+            return_values["pending"] = result.pending_requests;
+            return_values["experiment_id_to_name"] = result.experiment_id_to_name;
+            return return_values;
         }).catch(error => console.warn(error));
 }
 

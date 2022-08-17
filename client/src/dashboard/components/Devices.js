@@ -19,7 +19,6 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useEffect } from 'react';
 import { get_status } from '../../api_routes';
 
-const STATUS_API = process.env.NODE_ENV === "production" ? "/api/status" : "http://localhost:8896/api/status";
 
 const StyledDevicesDiv = styled.div`
   margin: 12px 16px;
@@ -45,6 +44,24 @@ const StyledDevicesDiv = styled.div`
     padding: 4px 8px;
   }
 `;
+
+
+const statusRowColors = {
+  OCCUPIED: '#e8f5e9',
+  ERROR: '#c62828',
+  default: '#ffffff',
+}
+const statusTextColors = {
+  OCCUPIED: "#000000",
+  ERROR: "#ffffff",
+  default: "#000000",
+}
+
+const statusSubtextColors = {
+  OCCUPIED: "#9e9e9e",
+  ERROR: "#ffffff",
+  default: "#9e9e9e",
+}
 
 
 function OccupiedSamplePositions({ device, samples }) {
@@ -94,16 +111,6 @@ class SingleOccupiedSamplePositionsList extends React.Component {
     }));
     // this.samples = Object.entries(this.props.samples).filter(([position, samples]) => samples.length > 0);
   }
-  // handleOnMouseLeave() {
-  //   this.setState({
-  //     hover: false
-  //   });
-  // }
-  // handleOnMouseEnter() {
-  //   this.setState({
-  //     hover: true
-  //   });
-  // }
 
   render() {
     if (this.state.hover) {
@@ -154,7 +161,6 @@ function Devices() {
   useEffect(() => {
     const interval = setInterval(() => {
       get_status().then(data => {
-        console.log(data.devices);
         setDevices(data.devices);
       })
 
@@ -171,32 +177,38 @@ function Devices() {
           <TableHead>
             <TableRow>
               <TableCell><b>Device Name</b></TableCell>
-              <TableCell align="center"><b>Type</b></TableCell>
               <TableCell align="center"><b>Samples</b></TableCell>
-              <TableCell align="center"><b>Status</b></TableCell>
-              <TableCell align="center"><b>Device Message</b></TableCell>
+              <TableCell align="center" width="50%"><b>Device Message</b></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {devices.map((row) => (
               <TableRow
                 key={row.name}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                sx={{
+                  '&:last-child td, &:last-child th': { border: 0 },
+                  bgcolor: statusRowColors[row.status] ?? statusRowColors.default,
+                }}
               >
                 <TableCell component="th" scope="row">
-                  {row.name}
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      color: statusTextColors[row.status] ?? statusTextColors.default,
+                    }}
+                  >
+                    {row.name}
+                  </Typography>
+                  <Typography variant="caption"
+                    sx={{ color: statusSubtextColors[row.status] ?? statusTextColors.default }}
+                  >{row.type}</Typography>
                 </TableCell>
-                <TableCell align="center">{row.type}</TableCell>
-                <TableCell align="center" size="small" width="5%">
+                {/* <TableCell align="center">{row.type}</TableCell> */}
+                <TableCell align="center" size="small">
                   <OccupiedSamplePositions samples={row.samples} name={row.name} key={String(row.name + "-samplepositions")} />
                   {/* {OccupiedSamplePositions(row.name, row.samples)} */}
                 </TableCell>
-                < TableCell align="center" >
-                  <span className={`status status-${row.status.toLowerCase()}`}>
-                    {row.status === "OCCUPIED" || row.status === "IDLE" ? '⬤' : ''} {row.status}
-                  </span>
-                </TableCell>
-                <TableCell align="center" width="20%">
+                <TableCell align="center" width="50%">
                   <Typography variant="caption">{row.message}</Typography>
                 </TableCell>
               </TableRow>

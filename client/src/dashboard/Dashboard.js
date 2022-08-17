@@ -112,7 +112,12 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange }) {
   useEffect(() => {
     const interval = setInterval(() => {
       get_pending_userinputrequests().then(result => {
-        setNumUserInputRequests(result.length);
+        var numRequests = 0;
+        for (let requests of Object.values(result.pending)) {
+          numRequests += requests.length;
+        }
+        console.log(numRequests);
+        setNumUserInputRequests(numRequests);
       })
     }, 1000);
     return () => clearInterval(interval);
