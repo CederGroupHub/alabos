@@ -20,7 +20,10 @@ def import_module_from_path(path: Union[str, Path]):
     try:
         module = importlib.import_module(path.name)
     except AttributeError as exception:
-        exception.args = (exception.args[0] + " Maybe there is some bugs in your definition, please check that.")
+        exception.args = (
+            exception.args[0]
+            + " Maybe there is some bugs in your definition, please check that."
+        )
         raise
     sys.path.pop(0)
     return module
@@ -34,9 +37,11 @@ def load_definition():
 
     config = AlabConfig()
 
-    import_module_from_path(config.path.parent / config["general"]["working_dir"]
-                            if not os.path.isabs(config["general"]["working_dir"])
-                            else Path(config["general"]["definition_dir"]))
+    import_module_from_path(
+        config.path.parent / config["general"]["working_dir"]
+        if not os.path.isabs(config["general"]["working_dir"])
+        else Path(config["general"]["definition_dir"])
+    )
 
 
 def import_device_definitions(file_folder: str, module_name: str):
@@ -54,13 +59,14 @@ def import_device_definitions(file_folder: str, module_name: str):
 
     for path in file_folder_path.iterdir():
         file_name = path.relative_to(file_folder_path)
-        if re.match(r'^[a-zA-Z][a-zA-Z0-9_]*(\.py)?$', file_name.name) is None:
+        if re.match(r"^[a-zA-Z][a-zA-Z0-9_]*(\.py)?$", file_name.name) is None:
             continue
-        device_module = importlib.import_module("." + re.sub(r'(\.py)$', '', path.name), package=module_name)
+        device_module = importlib.import_module(
+            "." + re.sub(r"(\.py)$", "", path.name), package=module_name
+        )
 
         for v in device_module.__dict__.values():
-            if (isinstance(v, BaseDevice)
-                    and v not in get_all_devices().values()):
+            if isinstance(v, BaseDevice) and v not in get_all_devices().values():
                 add_device(v)
 
 
@@ -79,13 +85,17 @@ def import_task_definitions(file_folder: str, module_name: str):
 
     for path in file_folder_path.iterdir():
         file_name = path.relative_to(file_folder_path)
-        if re.match(r'^[a-zA-Z][a-zA-Z0-9_.]*(\.py)?$', file_name.name) is None:
+        if re.match(r"^[a-zA-Z][a-zA-Z0-9_.]*(\.py)?$", file_name.name) is None:
             continue
-        task_module = importlib.import_module("." + re.sub(r'(\.py)$', '', path.name), package=module_name)
+        task_module = importlib.import_module(
+            "." + re.sub(r"(\.py)$", "", path.name), package=module_name
+        )
 
         for v in task_module.__dict__.values():
-            if (isinstance(v, type)
-                    and v is not BaseTask
-                    and issubclass(v, BaseTask)
-                    and v not in get_all_tasks().values()):
+            if (
+                isinstance(v, type)
+                and v is not BaseTask
+                and issubclass(v, BaseTask)
+                and v not in get_all_tasks().values()
+            ):
                 add_task(v)
