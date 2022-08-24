@@ -114,7 +114,7 @@ class DeviceManager:
         self._rpc_queue_name = (
             AlabConfig()["general"]["name"] + DEFAULT_SERVER_QUEUE_SUFFIX
         )
-        self._device_view = DeviceView()
+        self._device_view = DeviceView(connect_to_devices=True)
         self._check_status = _check_status
         self.threads = []
 

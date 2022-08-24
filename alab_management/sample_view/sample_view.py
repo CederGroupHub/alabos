@@ -99,7 +99,7 @@ class SampleView:
                 # if there is only one sample position (sample_position.number == 1)
                 # the name of sample position will be directly used as the sample position's name in the database
                 name = (
-                    f"{sample_pos.name}{SamplePosition.SEPARATOR}{i}"
+                    f"{sample_pos.name}{SamplePosition.SEPARATOR}{i+1}"  # index from 1
                     if sample_pos.number != 1
                     else sample_pos.name
                 )

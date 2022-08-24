@@ -97,5 +97,7 @@ def query_experiment(exp_id: str):
             for task in experiment["tasks"]
         ],
         "progress": progress,
-        "status": experiment["status"] if not error_state else ExperimentStatus.ERROR,
+        "status": experiment["status"]
+        if not error_state
+        else ExperimentStatus.ERROR.value,
     }

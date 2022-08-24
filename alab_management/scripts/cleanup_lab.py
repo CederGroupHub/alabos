@@ -29,7 +29,7 @@ def cleanup_lab(
                 return False
         _GetMongoCollection.init()
         _GetMongoCollection.client.drop_database(config["general"]["name"])  # type: ignore
-    DeviceView().clean_up_device_collection()
+    DeviceView()._clean_up_device_collection()
     SampleView().clean_up_sample_position_collection()
     _GetMongoCollection.get_collection("_lock").drop()
     _GetMongoCollection.get_collection("requests").drop()

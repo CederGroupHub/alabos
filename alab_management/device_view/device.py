@@ -21,7 +21,7 @@ class BaseDevice(ABC):
 
     description: ClassVar[str] = ""
 
-    def __init__(self, name: str):
+    def __init__(self, name: str, *args, **kwargs):
         """
         Initialize a device object, you can set up connection to
         the device in this method. The device will only be initialized
@@ -46,6 +46,8 @@ class BaseDevice(ABC):
 
         self.name = name
         self._device_view = DeviceView()
+        if "description" in kwargs:
+            self.description = kwargs["description"]
 
     @property
     def message(self):
@@ -56,8 +58,31 @@ class BaseDevice(ABC):
         self.set_message(message)
 
     def set_message(self, message: str):
+        """Sets the device message to be displayed on the dashboard.
+
+        We need this method in addition to `@message.setter` because the DeviceWrapper can currently only access methods, not properties.
+        """
         self._message = message
         self._device_view.set_message(device_name=self.name, message=message)
+
+    @abstractmethod
+    def connect(self):
+        """
+        Connect to any devices here. This will be called by alabos to make connections to devices at the appropriate time.
+
+        This method must be defined even if no device connections are required! Just return in this case.
+
+        """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def disconnect(self):
+        """
+        Disconnect from devices here. This will be called by alabos to release connections to devices at the appropriate time.
+
+        This method must be defined even if no device connections are required! Just return in this case.
+        """
+        raise NotImplementedError()
 
     @property
     @abstractmethod

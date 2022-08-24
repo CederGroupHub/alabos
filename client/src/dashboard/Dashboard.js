@@ -182,7 +182,6 @@ function Dashboard() {
   }
 
   const SwitchContent = () => {
-    console.log(hash)
     switch (hash) {
       case "#device":
         return <Devices hoverForId={hoverForId} />;

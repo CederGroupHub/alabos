@@ -16,6 +16,10 @@ from alab_management.sample_view import SampleView, SamplePosition
 _DeviceType = TypeVar("_DeviceType", bound=BaseDevice)  # pylint: disable=invalid-name
 
 
+class DeviceConnectionError(Exception):
+    """Generic error signifying that connection to a device has failed"""
+
+
 @unique
 class DeviceStatus(Enum):
     """
@@ -35,12 +39,39 @@ class DeviceView:
     of a device as well as request ownership of one device
     """
 
-    def __init__(self):
+    def __init__(self, connect_to_devices: bool = False):
+        """Class with methods to interact with devices (status + method execution)
+
+        Args:
+            connect_to_devices (bool, optional): If true, make a connection to all devices (serial, ip, etc.). If False, can still check Device status, but cannot execute methods on devices. Defaults to False.
+        """
         self._device_collection = get_collection("devices")
         self._device_collection.create_index([("name", pymongo.HASHED)])
         self._device_list = get_all_devices()
         self._lock = get_lock(self._device_collection.name)
         self._sample_view = SampleView()
+        self.__connected_to_devices = False
+
+        if connect_to_devices:
+            self.__connect_all_devices()
+
+    def __connect_all_devices(self):
+        for device_name, device in self._device_list.items():
+            try:
+                device.connect()
+            except:
+                raise DeviceConnectionError(f"Could not connect to {device_name}!")
+            print(f"Connected to {device_name}")
+        self.__connected_to_devices = True
+
+    def __disconnect_all_devices(self):
+        for device_name, device in self._device_list.items():
+            try:
+                device.disconnect()
+            except:
+                raise DeviceConnectionError(f"Could not disconnect from {device_name}!")
+            print(f"Disconnected from {device_name}")
+        self.__connected_to_devices = False
 
     def sync_device_status(self):
         """
@@ -94,7 +125,7 @@ class DeviceView:
         """
         return cast(List[Dict[str, Any]], self._device_collection.find())
 
-    def clean_up_device_collection(self):
+    def _clean_up_device_collection(self):
         """
         Clean up the device collection
         """
@@ -323,9 +354,12 @@ class DeviceView:
         """
         Call a callable function (``method``) with ``*args`` and ``**kwargs`` on ``device_name``
         """
-        return self.query_property(device_name=device_name, prop=method)(
-            *args, **kwargs
-        )
+        if not self.__connected_to_devices:
+            raise Exception(
+                "DeviceView cannot execute device commands without first connecting to the devices!"
+            )
+        device_method = self.query_property(device_name=device_name, prop=method)
+        return device_method(*args, **kwargs)
 
     def get_samples_on_device(self, device_name: str):
         """
@@ -352,3 +386,7 @@ class DeviceView:
         self._device_collection.update_one(
             {"name": device_name}, {"$set": {"message": message}}
         )
+
+    def __exit__(self):
+        if self.__connected_to_devices:
+            self.__disconnect_all_devices()
