@@ -367,7 +367,7 @@
 <p>Define the base class of devices</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseDevice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseDevice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>The abstract class of device</p>
 <p>All the devices should be inherited from this class</p>
@@ -383,10 +383,24 @@ the device type, how to set up and so on.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice.connect">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice.connect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect to any devices here. This will be called by alabos to make connections to devices at the appropriate time.</p>
+<p>This method must be defined even if no device connections are required! Just return in this case.</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id0">
 <span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice.disconnect">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">disconnect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice.disconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disconnect from devices here. This will be called by alabos to release connections to devices at the appropriate time.</p>
+<p>This method must be defined even if no device connections are required! Just return in this case.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice.emergent_stop">
@@ -447,7 +461,9 @@ We use <code class="docutils literal notranslate"><span class="pre">name</span><
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice.set_message">
 <span class="sig-name descname"><span class="pre">set_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice.set_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.set_message" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sets the device message to be displayed on the dashboard.</p>
+<p>We need this method in addition to <cite>&#64;message.setter</cite> because the DeviceWrapper can currently only access methods, not properties.</p>
+</dd></dl>
 
 </dd></dl>
 

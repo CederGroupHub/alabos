@@ -460,7 +460,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_rpc_queue_name</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">AlabConfig</span><span class="p">()[</span><span class="s2">&quot;general&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">DEFAULT_SERVER_QUEUE_SUFFIX</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span> <span class="o">=</span> <span class="n">DeviceView</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span> <span class="o">=</span> <span class="n">DeviceView</span><span class="p">(</span><span class="n">connect_to_devices</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_status</span> <span class="o">=</span> <span class="n">_check_status</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">threads</span> <span class="o">=</span> <span class="p">[]</span>
 

@@ -368,7 +368,7 @@
 Here is the code sample. For more, please refer to <a class="reference external" href="https://github.com/idocx/alab_management/tree/master/example/devices">example</a> in the repo .</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseDevice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseDevice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice" title="Permalink to this definition">¶</a></dt>
 <dd><p>The abstract class of device</p>
 <p>All the devices should be inherited from this class</p>
 <dl class="py attribute">
@@ -385,7 +385,7 @@ the device type, how to set up and so on.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.__init__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize a device object, you can set up connection to
 the device in this method. The device will only be initialized
 once in the system. So if your connection to driver need to be

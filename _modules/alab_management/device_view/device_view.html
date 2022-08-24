@@ -362,6 +362,10 @@
 <span class="n">_DeviceType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_DeviceType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">BaseDevice</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
 
 
+<div class="viewcode-block" id="DeviceConnectionError"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceConnectionError">[docs]</a><span class="k">class</span> <span class="nc">DeviceConnectionError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generic error signifying that connection to a device has failed&quot;&quot;&quot;</span></div>
+
+
 <div class="viewcode-block" id="DeviceStatus"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceStatus">[docs]</a><span class="nd">@unique</span>
 <span class="k">class</span> <span class="nc">DeviceStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -381,12 +385,39 @@
 <span class="sd">    of a device as well as request ownership of one device</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connect_to_devices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Class with methods to interact with devices (status + method execution)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            connect_to_devices (bool, optional): If true, make a connection to all devices (serial, ip, etc.). If False, can still check Device status, but cannot execute methods on devices. Defaults to False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;devices&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">create_index</span><span class="p">([(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">HASHED</span><span class="p">)])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_list</span> <span class="o">=</span> <span class="n">get_all_devices</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">get_lock</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span> <span class="o">=</span> <span class="n">SampleView</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__connected_to_devices</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">connect_to_devices</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__connect_all_devices</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__connect_all_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">device_name</span><span class="p">,</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_list</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">device</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">DeviceConnectionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not connect to </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connected to </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__connected_to_devices</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">__disconnect_all_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">device_name</span><span class="p">,</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_list</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">device</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">DeviceConnectionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not disconnect from </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Disconnected from </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__connected_to_devices</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="DeviceView.sync_device_status"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.sync_device_status">[docs]</a>    <span class="k">def</span> <span class="nf">sync_device_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -440,11 +471,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">find</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="DeviceView.clean_up_device_collection"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.clean_up_device_collection">[docs]</a>    <span class="k">def</span> <span class="nf">clean_up_device_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_clean_up_device_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clean up the device collection</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">drop</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">drop</span><span class="p">()</span>
 
 <div class="viewcode-block" id="DeviceView.request_devices"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.request_devices">[docs]</a>    <span class="k">def</span> <span class="nf">request_devices</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -669,9 +700,12 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Call a callable function (``method``) with ``*args`` and ``**kwargs`` on ``device_name``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_property</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="n">method</span><span class="p">)(</span>
-            <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-        <span class="p">)</span></div>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__connected_to_devices</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="s2">&quot;DeviceView cannot execute device commands without first connecting to the devices!&quot;</span>
+            <span class="p">)</span>
+        <span class="n">device_method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_property</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">device_method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DeviceView.get_samples_on_device"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_samples_on_device">[docs]</a>    <span class="k">def</span> <span class="nf">get_samples_on_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -697,7 +731,11 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
             <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">device_name</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">message</span><span class="p">}}</span>
-        <span class="p">)</span></div></div>
+        <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__connected_to_devices</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__disconnect_all_devices</span><span class="p">()</span></div>
 </pre></div>
 
               </div>

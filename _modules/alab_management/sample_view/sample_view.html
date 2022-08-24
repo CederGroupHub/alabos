@@ -445,7 +445,7 @@
                 <span class="c1"># if there is only one sample position (sample_position.number == 1)</span>
                 <span class="c1"># the name of sample position will be directly used as the sample position&#39;s name in the database</span>
                 <span class="n">name</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sample_pos</span><span class="o">.</span><span class="n">name</span><span class="si">}{</span><span class="n">SamplePosition</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="si">}{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sample_pos</span><span class="o">.</span><span class="n">name</span><span class="si">}{</span><span class="n">SamplePosition</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="si">}{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># index from 1</span>
                     <span class="k">if</span> <span class="n">sample_pos</span><span class="o">.</span><span class="n">number</span> <span class="o">!=</span> <span class="mi">1</span>
                     <span class="k">else</span> <span class="n">sample_pos</span><span class="o">.</span><span class="n">name</span>
                 <span class="p">)</span>
