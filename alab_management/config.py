@@ -48,9 +48,13 @@ def froze_config(config_: Dict[str, Any]) -> FrozenDict:
         Convert a list to tuple, a dict to frozen_dict recursively
         """
         if isinstance(collection_or_element, list):
-            return tuple(_froze_collection(element) for element in collection_or_element)
+            return tuple(
+                _froze_collection(element) for element in collection_or_element
+            )
         if isinstance(collection_or_element, dict):
-            return FrozenDict({k: _froze_collection(v) for k, v in collection_or_element.items()})
+            return FrozenDict(
+                {k: _froze_collection(v) for k, v in collection_or_element.items()}
+            )
 
         return collection_or_element
 

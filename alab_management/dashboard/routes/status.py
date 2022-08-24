@@ -29,8 +29,10 @@ def get_all_status():
                     {
                         "id": str(sample_id),
                         "name": sample_view.get_sample(sample_id).name,
-                    } for sample_id in samples
-                ] for position, samples in device_view.get_samples_on_device(
+                    }
+                    for sample_id in samples
+                ]
+                for position, samples in device_view.get_samples_on_device(
                     device["name"]
                 ).items()
             },

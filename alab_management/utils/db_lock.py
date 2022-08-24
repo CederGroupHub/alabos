@@ -57,6 +57,8 @@ class MongoLock:
     def release(self):
         result = self._lock_collection.delete_one({"_id": self._name})
         if result.deleted_count != 1:
-            raise MongoLockReleaseError(f"Fail to release a lock (name={self._name}). "
-                                        f"Are you sure if the key is right?")
+            raise MongoLockReleaseError(
+                f"Fail to release a lock (name={self._name}). "
+                f"Are you sure if the key is right?"
+            )
         self._locked = False

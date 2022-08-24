@@ -7,6 +7,7 @@ class DefaultDevice(BaseDevice):
     """
     Default device definition, refer to https://idocx.github.io/alab_management/device_definition.html
     """
+
     description: ClassVar[str] = "Default device"
 
     def __init__(self, *args, **kwargs):
@@ -18,7 +19,11 @@ class DefaultDevice(BaseDevice):
         Sample positions define the sample positions related to this device
         """
         return [
-            SamplePosition(name="DefaultSamplePosition", number=4, description="Default sample position")
+            SamplePosition(
+                name="DefaultSamplePosition",
+                number=4,
+                description="Default sample position",
+            )
         ]
 
     def emergent_stop(self):

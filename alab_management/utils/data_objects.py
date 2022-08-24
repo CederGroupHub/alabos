@@ -50,10 +50,12 @@ def get_rabbitmq_connection():
     from ..config import AlabConfig
 
     rabbit_mq_config = AlabConfig()["rabbitmq"]
-    _connection = pika.BlockingConnection(parameters=pika.ConnectionParameters(
-        host=rabbit_mq_config.get("host", "localhost"),
-        port=rabbit_mq_config.get("port", 5672)
-    ))
+    _connection = pika.BlockingConnection(
+        parameters=pika.ConnectionParameters(
+            host=rabbit_mq_config.get("host", "localhost"),
+            port=rabbit_mq_config.get("port", 5672),
+        )
+    )
     return _connection
 
 
