@@ -72,7 +72,6 @@ class AlabConfig:
         Load a immutable toml config file from `config_path`
         """
         config_path = os.getenv("ALAB_CONFIG", None)
-
         if config_path is None:
             config_path = "config.toml"
 
