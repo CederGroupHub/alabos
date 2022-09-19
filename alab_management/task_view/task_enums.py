@@ -8,6 +8,7 @@ class TaskPriority(IntEnum):
     Values >= 100 are reserved for urgent/error correcting resource requests.
     """
 
+    SYSTEM = 900
     URGENT = 100
     HIGH = 30
     NORMAL = 20
