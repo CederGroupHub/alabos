@@ -30,8 +30,15 @@ class DeviceStatus(Enum):
     IDLE = auto()
     OCCUPIED = auto()
     ERROR = auto()
-    HOLD = auto()
+    PAUSED = auto()
 
+@unique
+class DevicePauseStatus(Enum):
+    """Pause status of the Device. This is used to pause the device outside of the typical Task queue, like by an operator for maintenance or consumable replacement."""
+
+    RELEASED = auto()
+    REQUESTED = auto()
+    PAUSED = auto()
 
 class DeviceView:
     """
@@ -112,6 +119,7 @@ class DeviceView:
                         for sample_pos in device.sample_positions
                     ],
                     "status": DeviceStatus.IDLE.name,
+                    "pause_status": 
                     "task_id": None,
                     "created_at": datetime.now(),
                     "message": "",
@@ -181,7 +189,7 @@ class DeviceView:
             return idle_devices
 
     def get_available_devices(
-        self, device_str: str, type_or_name: str, task_id: Optional[ObjectId]
+        self, device_str: str, type_or_name: str, task_id: Optional[ObjectId] = None
     ) -> List[Dict[str, Union[str, bool]]]:
         """
         Given device type, it will return all the device with this type.
@@ -267,15 +275,34 @@ class DeviceView:
             for device in self._device_collection.find({"task_id": task_id})
         ]
 
-    def release_device(self, device: Union[BaseDevice, str]):
+    def release_device(self, device_name: str):
         """
         Release a device
+
+        device: name of device to be released
         """
-        self._update_status(
-            device=device,
-            required_status=None,
-            target_status=DeviceStatus.IDLE,
-            task_id=None,
+        device_entry = self.get_device(device_name=device_name.name)
+
+        update_dict = {
+                    "task_id": None,
+                    "last_updated": datetime.now(),
+                }
+
+        if DevicePauseStatus(device_entry["pause_status"]) == DevicePauseStatus.REQUESTED:
+            update_dict.update({
+                "status": DeviceStatus.OCCUPIED.name,
+                "pause_status": DevicePauseStatus.PAUSED.name,
+            })
+        else:
+            update_dict.update({
+                "status": DeviceStatus.IDLE.name,
+            })
+
+        self._device_collection.update_one(
+            {"name": device_name},
+            {
+                "$set": update_dict
+            },
         )
 
     def get_samples_on_device(self, device_name: str):
@@ -331,8 +358,8 @@ class DeviceView:
             and DeviceStatus[device_entry["status"]] not in required_status
         ):
             raise ValueError(
-                f"Device's status ({device_entry['status']}) is "
-                f"not in {[status.name for status in required_status]}"
+                f"Device's current status ({device_entry['status']}) is "
+                f"not in allowed set of statuses {[status.name for status in required_status]}. Cannot change status to {target_status.name}"
             )
 
         self._device_collection.update_one(
@@ -455,6 +482,44 @@ class DeviceView:
                 }
             },
         )
+
+    def pause_device(self, device_name: str):
+        """
+        Request pause for a specific device
+        """
+        self._device_collection.update_one(
+            {"name": device_name},
+            {
+                "$set": {
+                    "pause_status": DevicePauseStatus.REQUESTED.name,
+                    "last_updated": datetime.now(),
+                }
+            },
+        )
+
+    def unpause_device(self, device_name: str):
+        """
+        Unpause a device
+        """
+        with self._lock():
+            device = self.get_device(device_name=device_name)
+            update_dict = {
+                        "pause_status": DevicePauseStatus.RELEASED.name,
+                        "last_updated": datetime.now(),
+                    }
+
+            # if the device isn't already paused, we dont want to change its status.
+            if DevicePauseStatus(device["pause_status"]) == DevicePauseStatus.PAUSED:
+                update_dict.update({
+                    "status": DeviceStatus.IDLE.name,
+                })
+
+            self._device_collection.update_one(
+                {"name": device_name},
+                {
+                    "$set": update_dict
+                },
+            )
 
     def __exit__(self):
         if self.__connected_to_devices:

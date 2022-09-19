@@ -252,7 +252,7 @@ class TaskManager(RequestMixin):
         try to assign the resources to it.
         """
         requests = list(self.get_requests_by_status(RequestStatus.PENDING))
-        # prioritize the oldest requests at the smallest priority value
+        # prioritize the oldest requests at the highest priority value
         requests.sort(key=lambda x: x["submitted_at"])
         requests.sort(key=lambda x: x["priority"], reverse=True)
         for request in requests:
