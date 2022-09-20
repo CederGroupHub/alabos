@@ -19,7 +19,8 @@ import { useEffect } from 'react';
 import { get_status } from '../../api_routes';
 import { HoverText } from '../../utils';
 import { FormControl, FormControlLabel, Switch } from '@mui/material';
-
+import { request_device_pause, release_device_pause } from '../../api_routes';
+import Button from '@mui/material/Button';
 
 const StyledDevicesDiv = styled.div`
   margin: 12px 16px;
@@ -47,22 +48,91 @@ const StyledDevicesDiv = styled.div`
 `;
 
 
-const statusRowColors = {
-  OCCUPIED: '#e8f5e9',
-  ERROR: '#c62828',
-  default: '#ffffff',
-}
-const statusTextColors = {
-  OCCUPIED: "#000000",
-  ERROR: "#ffffff",
-  default: "#000000",
+
+function Row({ device, hoverForId }) {
+  const rowColor = () => {
+    switch (device.status) {
+      case "OCCUPIED":
+        return '#e8f5e9';
+      case "ERROR":
+        return '#c62828';
+      case "PAUSE_REQUESTED":
+        return '#ffe0b2';
+      case "PAUSED":
+        return '#ef6c00';
+      default:
+        return "#ffffff";
+    }
+  }
+
+  const textColor = (task_status) => {
+    switch (task_status) {
+      case "ERROR":
+      case "PAUSED":
+        return '#ffffff';
+      default:
+        return "#000000";
+    }
+  }
+
+  const subtextColor = (task_status) => {
+    switch (task_status) {
+      case "ERROR":
+      case "PAUSED":
+        return '#ffffff';
+      default:
+        return "#9e9e9e";
+    }
+  }
+
+  const PauseButton = ({ pause_state, device_name }) => {
+    switch (pause_state) {
+      case "RELEASED":
+        return <Button variant="contained" color="error" onClick={() => { request_device_pause(device_name) }}>Pause</Button>
+      case "REQUESTED":
+        return <Button variant="contained" color="primary" onClick={() => release_device_pause(device_name)}>Cancel Pause Request</Button>
+      case "PAUSED":
+        return <Button variant="contained" color="primary" onClick={() => release_device_pause(device_name)}>Release</Button>
+    }
+  }
+
+
+
+  return (
+    <TableRow
+      key={device.name}
+      sx={{
+        '&:last-child td, &:last-child th': { border: 0 },
+        bgcolor: rowColor(device.status),
+      }}
+    >
+      <TableCell component="th" scope="row">
+        <Typography
+          variant="body1"
+          sx={{
+            color: textColor(device.status),
+          }}
+        >
+          {device.name}
+        </Typography>
+        <Typography variant="caption"
+          sx={{ color: subtextColor(device.status) }}
+        >{device.type}</Typography>
+      </TableCell>
+      {/* <TableCell align="center">{row.type}</TableCell> */}
+      <TableCell align="center" size="small">
+        <OccupiedSamplePositions samples={device.samples} name={device.name} key={String(device.name + "-samplepositions")} hoverForId={hoverForId} />
+      </TableCell>
+      <TableCell align="center" width="50%">
+        <Typography variant="caption" sx={{ color: textColor(device.status) }}>{device.message}</Typography>
+      </TableCell>
+      <TableCell align="center">
+        <PauseButton pause_state={device.pause_status} device_name={device.name} />
+      </TableCell>
+    </TableRow>
+  );
 }
 
-const statusSubtextColors = {
-  OCCUPIED: "#9e9e9e",
-  ERROR: "#ffffff",
-  default: "#9e9e9e",
-}
 
 
 function OccupiedSamplePositions({ device, samples, hoverForId }) {
@@ -191,41 +261,15 @@ function Devices({ hoverForId }) {
           <Table stickyHeader aria-label="device table">
             <TableHead>
               <TableRow>
-                <TableCell><b>Device Name</b></TableCell>
+                <TableCell><b>Name</b></TableCell>
                 <TableCell align="center"><b>Samples</b></TableCell>
-                <TableCell align="center" width="50%"><b>Device Message</b></TableCell>
+                <TableCell align="center" width="50%"><b>Message</b></TableCell>
+                <TableCell align="center">Pause</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {FilteredDevices(onlyActive).map((row) => (
-                <TableRow
-                  key={row.name}
-                  sx={{
-                    '&:last-child td, &:last-child th': { border: 0 },
-                    bgcolor: statusRowColors[row.status] ?? statusRowColors.default,
-                  }}
-                >
-                  <TableCell component="th" scope="row">
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        color: statusTextColors[row.status] ?? statusTextColors.default,
-                      }}
-                    >
-                      {row.name}
-                    </Typography>
-                    <Typography variant="caption"
-                      sx={{ color: statusSubtextColors[row.status] ?? statusTextColors.default }}
-                    >{row.type}</Typography>
-                  </TableCell>
-                  {/* <TableCell align="center">{row.type}</TableCell> */}
-                  <TableCell align="center" size="small">
-                    <OccupiedSamplePositions samples={row.samples} name={row.name} key={String(row.name + "-samplepositions")} hoverForId={hoverForId} />
-                  </TableCell>
-                  <TableCell align="center" width="50%">
-                    <Typography variant="caption">{row.message}</Typography>
-                  </TableCell>
-                </TableRow>
+              {FilteredDevices(onlyActive).map((device) => (
+                <Row key={device.name} device={device} hoverForId={hoverForId} />
               ))}
             </TableBody>
           </Table>

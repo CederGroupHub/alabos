@@ -21,7 +21,7 @@ from pika.adapters.blocking_connection import BlockingChannel
 from pika.spec import Basic
 
 from .config import AlabConfig
-from .device_view.device_view import DeviceView, DeviceStatus
+from .device_view.device_view import DeviceView, DeviceTaskStatus
 from .utils.data_objects import get_rabbitmq_connection
 from .utils.module_ops import load_definition
 
@@ -204,7 +204,7 @@ class DeviceManager:
         # check if the device is currently occupied by this task
         if self._check_status and (
             device_entry is None
-            or device_entry["status"] != DeviceStatus.OCCUPIED.name
+            or device_entry["status"] != DeviceTaskStatus.OCCUPIED.name
             or device_entry["task_id"] != ObjectId(body["task_id"])
         ):
             raise PermissionError(

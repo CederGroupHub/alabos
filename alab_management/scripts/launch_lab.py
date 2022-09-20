@@ -18,6 +18,8 @@ except RuntimeError:
 def launch_dashboard(host: str, port: int, debug: bool = False):
     from ..dashboard import create_app
 
+    if debug:
+        print("Debug mode is on, the dashboard will be served with CORS enabled!")
     app = create_app(cors=debug)  # if debug enabled, allow cross-origin requests to API
     if debug:
         server = WSGIServer((host, port), app)  # print server's log on the console

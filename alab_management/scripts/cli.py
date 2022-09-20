@@ -6,7 +6,7 @@ import click
 
 from .cleanup_lab import cleanup_lab
 from .init_project import init_project
-from .launch_lab import launch_lab
+from .launch_lab import launch_dashboard, launch_lab
 from .launch_worker import launch_worker
 from .setup_lab import setup_lab
 from .. import __version__
@@ -78,3 +78,14 @@ def cleanup_lab_cli(all_collections: bool):
         click.echo("Done")
     else:
         click.echo("Stopped")
+
+
+@cli.command("launch_dashboard", short_help="Launch the dashboard alone.")
+@click.option(
+    "--host",
+    default="127.0.0.1",
+)
+@click.option("-p", "--port", default="8895", type=int)
+@click.option("--debug", default=False, is_flag=True)
+def launch_dashboard_cli(host, port, debug):
+    launch_dashboard(host, port, debug)

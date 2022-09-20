@@ -11,6 +11,15 @@ from ..lab_views import (
 status_bp = Blueprint("/status", __name__, url_prefix="/api/status")
 
 
+def parse_device_status(task_status: str, pause_status: str) -> str:
+    if pause_status == "PAUSED":
+        return "PAUSED"
+    elif pause_status == "REQUESTED":
+        return "PAUSE_REQUESTED"
+    else:
+        return task_status
+
+
 @status_bp.route("/")
 def get_all_status():
     """
@@ -21,7 +30,9 @@ def get_all_status():
         {
             "name": device["name"],
             "type": device["type"],
-            "status": device["status"],
+            "task_status": device["status"],
+            "pause_status": device["pause_status"],
+            "status": parse_device_status(device["status"], device["pause_status"]),
             "message": device["message"],
             "task": str(device["task_id"]) if device["task_id"] is not None else "null",
             "samples": {
