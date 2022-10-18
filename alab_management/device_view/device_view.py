@@ -116,6 +116,7 @@ class DeviceView:
                     "created_at": datetime.now(),
                     "message": "",
                     "last_updated": datetime.now(),
+                    "attributes": {},
                 }
             )
 
@@ -229,7 +230,7 @@ class DeviceView:
             for device_entry in self._device_collection.find(request_dict)
         ]
 
-    def get_device(self, device_name: str) -> Optional[Dict[str, Any]]:
+    def get_device(self, device_name: str) -> Dict[str, Any]:
         """
         Get device by device name, if not found, raises ``ValueError``
         """
@@ -276,6 +277,19 @@ class DeviceView:
             target_status=DeviceStatus.IDLE,
             task_id=None,
         )
+
+    def get_samples_on_device(self, device_name: str):
+        """
+        Get all samples on a device
+        """
+        device = self.get_device(device_name=device_name)
+        _sample_collection = get_collection("samples")
+
+        samples_per_position = {}
+        for position in device["sample_positions"]:
+            samples = _sample_collection.find({"position": {"$regex": position}})
+            samples_per_position[position] = [sample["_id"] for sample in samples]
+        return samples_per_position
 
     def _update_status(
         self,
@@ -361,19 +375,6 @@ class DeviceView:
         device_method = self.query_property(device_name=device_name, prop=method)
         return device_method(*args, **kwargs)
 
-    def get_samples_on_device(self, device_name: str):
-        """
-        Get all samples on a device
-        """
-        device = self.get_device(device_name=device_name)
-        _sample_collection = get_collection("samples")
-
-        samples_per_position = {}
-        for position in device["sample_positions"]:
-            samples = _sample_collection.find({"position": {"$regex": position}})
-            samples_per_position[position] = [sample["_id"] for sample in samples]
-        return samples_per_position
-
     def set_message(self, device_name: str, message: str):
         """Sets the device message. Message is used to communicate device state with the user dashboard
 
@@ -385,6 +386,74 @@ class DeviceView:
 
         self._device_collection.update_one(
             {"name": device_name}, {"$set": {"message": message}}
+        )
+
+    def get_all_attributes(self, device_name: str):
+        """Returns the device attributes
+
+        Args:
+            device_name (str): name of the device to get the attributes for
+
+        Returns:
+            dict: device attributes
+        """
+        device = self.get_device(device_name=device_name)
+        return device["attributes"]
+
+    def get_attribute(self, device_name: str, attribute: str):
+        """Gets a device attribute. Attributes are used to store device-specific values in the database
+
+        Args:
+            device_name (str): name of the device to get the attribute for
+            attribute (str): attribute to be retrieved
+
+        Returns:
+            Any: attribute value
+        """
+        device = self.get_device(device_name=device_name)
+        if attribute not in device["attributes"]:
+            raise AttributeError(
+                f"Device {device_name} does not have attribute {attribute}"
+            )
+        return device["attributes"][attribute]
+
+    def set_all_attributes(self, device_name: str, attributes: dict):
+        """Sets the device attributes
+
+        Args:
+            device_name (str): name of the device to set the attributes for
+        """
+        device = self.get_device(device_name=device_name)
+
+        self._device_collection.update_one(
+            {"name": device_name},
+            {
+                "$set": {
+                    "attributes": attributes,
+                    "last_updated": datetime.now(),
+                }
+            },
+        )
+
+    def set_attribute(self, device_name: str, attribute: str, value: Any):
+        """Sets a device attribute. Attributes are used to store device-specific values in the database
+
+        Args:
+            device_name (str): name of the device to set the attribute for
+            attribute (str): attribute to be set
+            value (Any): attribute value
+        """
+        attributes = self.get_all_attributes(device_name=device_name)
+        attributes[attribute] = value
+
+        self._device_collection.update_one(
+            {"name": device_name},
+            {
+                "$set": {
+                    "attributes": attributes,
+                    "last_updated": datetime.now(),
+                }
+            },
         )
 
     def __exit__(self):

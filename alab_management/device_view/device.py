@@ -3,9 +3,62 @@ Define the base class of devices
 """
 
 from abc import ABC, abstractmethod
-from typing import List, ClassVar, Dict
+from typing import Any, List, ClassVar, Dict
 
 from alab_management.sample_view.sample import SamplePosition
+
+
+def attribute_in_database(name: str, default_value: Any) -> property:
+    """Property factory to mirror a Device attribute in the ALab database
+
+    Args:
+        name (str): attribute name
+        default_value (Any): default value for the attribute. Note that this value is not used until the first time a property is queried; at this time, if the attribute is not found in the database, it is set to this value.
+
+    Returns:
+        property: class property that handles getting/setting values from the database.
+
+
+    Example usage when defining a new Device:
+
+        .. code-block:: python
+        from alab_management.device_view import BaseDevice, attribute_in_database
+
+        class MyDevice(BaseDevice):
+            my_attribute = attribute_in_database("my_attribute", 0)
+
+            def __init__(self, name: str, **kwargs):
+                super().__init__(name, **kwargs)
+                self.name = name
+                self.my_attribute #initial call to the property, which sets the default value in the database
+
+        ....
+        #first instantiation
+
+        mydevice = MyDevice(name = "mydevice_1")
+        mydevice.my_attribute = 5 #sets the value in the database
+
+        ....
+        #future instantiation
+        mydevice = MyDevice(name = "mydevice_1")
+        mydevice.my_attribute #retrieves value from db and returns 5
+
+
+    """
+
+    def getter(self) -> Any:
+        attributes = self._device_view.get_attributes(device_name=self.name)
+        if name not in attributes:
+            attributes[name] = default_value
+            self._device_view.set_attributes(self.name, attributes=attributes)
+        return attributes[name]
+
+    def setter(self, value: Any) -> None:
+        attributes = self._device_view.get_attributes(device_name=self.name)
+        attributes[name] = value
+        self._device_view.set_attributes(self.name, attributes=attributes)
+
+    return property(getter, setter)
 
 
 class BaseDevice(ABC):
