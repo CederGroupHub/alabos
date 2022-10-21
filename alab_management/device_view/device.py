@@ -47,16 +47,16 @@ def attribute_in_database(name: str, default_value: Any) -> property:
     """
 
     def getter(self) -> Any:
-        attributes = self._device_view.get_attributes(device_name=self.name)
+        attributes = self._device_view.get_all_attributes(device_name=self.name)
         if name not in attributes:
             attributes[name] = default_value
-            self._device_view.set_attributes(self.name, attributes=attributes)
+            self._device_view.set_all_attributes(self.name, attributes=attributes)
         return attributes[name]
 
     def setter(self, value: Any) -> None:
-        attributes = self._device_view.get_attributes(device_name=self.name)
-        attributes[name] = value
-        self._device_view.set_attributes(self.name, attributes=attributes)
+        self._device_view.set_attribute(
+            device_name=self.name, attribute=name, value=value
+        )
 
     return property(getter, setter)
 

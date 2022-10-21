@@ -40,15 +40,15 @@ def get_all_status():
         for device in devices
     ]
 
-    user_input_requests = user_input_view.get_all_pending_requests()
-    user_input_requests = [
-        {
-            "id": str(request["_id"]),
-            "prompt": request["prompt"],
-            "task_id": str(request["task_id"]),
-        }
-        for request in user_input_requests
-    ]
+    # user_input_requests = user_input_view.get_all_pending_requests()
+    # user_input_requests = [
+    #     {
+    #         "id": str(request["_id"]),
+    #         "prompt": request["prompt"],
+    #         "task_id": str(request["task_id"]),
+    #     }
+    #     for request in user_input_requests
+    # ]
 
     experiments = experiment_view.get_experiments_with_status("RUNNING")
     experiments = [
@@ -74,5 +74,5 @@ def get_all_status():
     return {
         "devices": devices,
         "experiments": experiments,
-        "userinputrequests": user_input_requests,
+        # "userinputrequests": user_input_requests,
     }

@@ -40,7 +40,15 @@ def run_task(task_id_str: str):
     logger = DBLogger(task_id=None)
 
     task_id = ObjectId(task_id_str)
-    task_entry = task_view.get_task(task_id, encode=True)
+    try:
+        task_entry = task_view.get_task(task_id, encode=True)
+    except ValueError:
+        print(
+            "No task found with id: {} -- assuming that alabos was aborted without cleanup, and skipping this task.".format(
+                task_id
+            )
+        )
+        return
 
     task_type = task_entry.pop("type")
 
