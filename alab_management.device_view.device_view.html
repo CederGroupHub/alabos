@@ -437,6 +437,43 @@ Device name is a unique identifier for a device</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceView.get_all_attributes">
+<span class="sig-name descname"><span class="pre">get_all_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.get_all_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.get_all_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the device attributes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>device_name</strong> (<em>str</em>) – name of the device to get the attributes for</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>device attributes</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceView.get_attribute">
+<span class="sig-name descname"><span class="pre">get_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.get_attribute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.get_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a device attribute. Attributes are used to store device-specific values in the database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device_name</strong> (<em>str</em>) – name of the device to get the attribute for</p></li>
+<li><p><strong>attribute</strong> (<em>str</em>) – attribute to be retrieved</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>attribute value</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceView.get_available_devices">
 <span class="sig-name descname"><span class="pre">get_available_devices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_or_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.get_available_devices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.get_available_devices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given device type, it will return all the device with this type.</p>
@@ -466,7 +503,7 @@ when __exit__ method is called in the <code class="docutils literal notranslate"
 <dd><p>Get device by device name, if not found, raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -539,6 +576,32 @@ If there is no such property with name <code class="docutils literal notranslate
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>{“device_type_name”</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceView.set_all_attributes">
+<span class="sig-name descname"><span class="pre">set_all_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.set_all_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.set_all_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the device attributes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>device_name</strong> (<em>str</em>) – name of the device to set the attributes for</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceView.set_attribute">
+<span class="sig-name descname"><span class="pre">set_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.set_attribute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.set_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets a device attribute. Attributes are used to store device-specific values in the database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device_name</strong> (<em>str</em>) – name of the device to set the attribute for</p></li>
+<li><p><strong>attribute</strong> (<em>str</em>) – attribute to be set</p></li>
+<li><p><strong>value</strong> (<em>Any</em>) – attribute value</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

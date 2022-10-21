@@ -417,7 +417,7 @@
 <p>Returns the user response, which is one of a list of options</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#alab_management.user_input.UserRequestStatus" title="alab_management.user_input.UserRequestStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserRequestStatus</span></code></a></p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -453,6 +453,11 @@
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="alab_management.user_input.request_maintenance_input">
+<span class="sig-name descname"><span class="pre">request_maintenance_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#request_maintenance_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.request_maintenance_input" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="alab_management.user_input.request_user_input">
 <span class="sig-name descname"><span class="pre">request_user_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maintenance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#request_user_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.request_user_input" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request user input through the dashboard. Blocks until response is given.</p>
@@ -463,7 +468,7 @@ maintenance (bool): if true, mark this as a request for overall system maintenan
 <p>Returns user response as string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#alab_management.user_input.UserRequestStatus" title="alab_management.user_input.UserRequestStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserRequestStatus</span></code></a></p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 </dl>
 </dd></dl>
