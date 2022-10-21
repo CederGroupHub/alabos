@@ -225,7 +225,10 @@ class DeviceView:
             {
                 "$or": [
                     {  # type: ignore
-                        "status": DeviceTaskStatus.IDLE.name,
+                        "$and": [
+                            {"status": DeviceTaskStatus.IDLE.name},
+                            {"pause_status": DevicePauseStatus.RELEASED.name},
+                        ]
                     },
                     {
                         "task_id": task_id,
@@ -291,6 +294,7 @@ class DeviceView:
         update_dict = {
             "task_id": None,
             "last_updated": datetime.now(),
+            "status": DeviceTaskStatus.IDLE.name,
         }
 
         if (
@@ -299,14 +303,7 @@ class DeviceView:
         ):
             update_dict.update(
                 {
-                    "status": DeviceTaskStatus.OCCUPIED.name,
                     "pause_status": DevicePauseStatus.PAUSED.name,
-                }
-            )
-        else:
-            update_dict.update(
-                {
-                    "status": DeviceTaskStatus.IDLE.name,
                 }
             )
 
