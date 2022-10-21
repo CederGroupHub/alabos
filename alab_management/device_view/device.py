@@ -3,7 +3,7 @@ Define the base class of devices
 """
 
 from abc import ABC, abstractmethod
-from typing import List, ClassVar, Dict
+from typing import Any, List, ClassVar, Dict
 
 from alab_management.sample_view.sample import SamplePosition
 
