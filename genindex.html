@@ -622,9 +622,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.device_manager.html#alab_management.device_manager.DeviceMethodCallState">DeviceMethodCallState (class in alab_management.device_manager)</a>
 </li>
+      <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DevicePauseStatus">DevicePauseStatus (class in alab_management.device_view.device_view)</a>
+</li>
       <li><a href="alab_management.device_manager.html#alab_management.device_manager.DevicesClient">DevicesClient (class in alab_management.device_manager)</a>
 </li>
-      <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceStatus">DeviceStatus (class in alab_management.device_view.device_view)</a>
+      <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceTaskStatus">DeviceTaskStatus (class in alab_management.device_view.device_view)</a>
 </li>
       <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView">DeviceView (class in alab_management.device_view.device_view)</a>
 </li>
@@ -646,7 +648,7 @@
 </li>
       <li><a href="alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.encode_task">encode_task() (TaskView method)</a>
 </li>
-      <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceStatus.ERROR">ERROR (DeviceStatus attribute)</a>
+      <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceTaskStatus.ERROR">ERROR (DeviceTaskStatus attribute)</a>
 
       <ul>
         <li><a href="alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentStatus.ERROR">(ExperimentStatus attribute)</a>
@@ -772,15 +774,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.TaskPriority.HIGH">HIGH (TaskPriority attribute)</a>
 </li>
-      <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceStatus.HOLD">HOLD (DeviceStatus attribute)</a>
-</li>
   </ul></td>
 </tr></table>
 
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceStatus.IDLE">IDLE (DeviceStatus attribute)</a>
+      <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceTaskStatus.IDLE">IDLE (DeviceTaskStatus attribute)</a>
 </li>
       <li><a href="alab_management.device_manager.html#alab_management.device_manager.MethodCallStatus.IN_PROGRESS">IN_PROGRESS (MethodCallStatus attribute)</a>
 </li>
@@ -923,7 +923,7 @@
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceStatus.OCCUPIED">OCCUPIED (DeviceStatus attribute)</a>
+      <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceTaskStatus.OCCUPIED">OCCUPIED (DeviceTaskStatus attribute)</a>
 
       <ul>
         <li><a href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SamplePositionStatus.OCCUPIED">(SamplePositionStatus attribute)</a>
@@ -949,8 +949,14 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.task_actor.html#alab_management.task_actor.ParameterError">ParameterError</a>
 </li>
-      <li><a href="alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.TaskStatus.PAUSED">PAUSED (TaskStatus attribute)</a>
+      <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.pause_device">pause_device() (DeviceView method)</a>
 </li>
+      <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DevicePauseStatus.PAUSED">PAUSED (DevicePauseStatus attribute)</a>
+
+      <ul>
+        <li><a href="alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.TaskStatus.PAUSED">(TaskStatus attribute)</a>
+</li>
+      </ul></li>
       <li><a href="alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentStatus.PENDING">PENDING (ExperimentStatus attribute)</a>
 
       <ul>
@@ -987,6 +993,8 @@
 </li>
       <li><a href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.release_sample_position">release_sample_position() (SampleView method)</a>
 </li>
+      <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DevicePauseStatus.RELEASED">RELEASED (DevicePauseStatus attribute)</a>
+</li>
       <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.request_devices">request_devices() (DeviceView method)</a>
 </li>
       <li><a href="alab_management.user_input.html#alab_management.user_input.request_maintenance_input">request_maintenance_input() (in module alab_management.user_input)</a>
@@ -997,6 +1005,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DevicePauseStatus.REQUESTED">REQUESTED (DevicePauseStatus attribute)</a>
+</li>
       <li><a href="alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.TaskStatus.REQUESTING_RESOURCES">REQUESTING_RESOURCES (TaskStatus attribute)</a>
 </li>
       <li><a href="alab_management.user_input.html#alab_management.user_input.UserInputView.retrieve_user_input">retrieve_user_input() (UserInputView method)</a>
@@ -1043,10 +1053,10 @@
 </li>
       <li><a href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView">SampleView (class in alab_management.sample_view.sample_view)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.sample_view.sample.html#alab_management.sample_view.sample.SamplePosition.SEPARATOR">SEPARATOR (SamplePosition attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.set_all_attributes">set_all_attributes() (DeviceView method)</a>
 </li>
       <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.set_attribute">set_attribute() (DeviceView method)</a>
@@ -1064,6 +1074,8 @@
       <li><a href="alab_management.device_manager.html#alab_management.device_manager.MethodCallStatus.SUCCESS">SUCCESS (MethodCallStatus attribute)</a>
 </li>
       <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.sync_device_status">sync_device_status() (DeviceView method)</a>
+</li>
+      <li><a href="alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.TaskPriority.SYSTEM">SYSTEM (TaskPriority attribute)</a>
 </li>
       <li><a href="alab_management.logger.html#alab_management.logger.LoggingType.SYSTEM_LOG">SYSTEM_LOG (LoggingType attribute)</a>
 </li>
@@ -1095,7 +1107,9 @@
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceStatus.UNKNOWN">UNKNOWN (DeviceStatus attribute)</a>
+      <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceTaskStatus.UNKNOWN">UNKNOWN (DeviceTaskStatus attribute)</a>
+</li>
+      <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.unpause_device">unpause_device() (DeviceView method)</a>
 </li>
       <li><a href="alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.update_experiment_status">update_experiment_status() (ExperimentView method)</a>
 </li>

@@ -373,33 +373,50 @@
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceStatus">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DeviceStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceStatus" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="alab_management.device_view.device_view.DevicePauseStatus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DevicePauseStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DevicePauseStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DevicePauseStatus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
-<p>The status of devices</p>
+<p>Pause status of the Device. This is used to pause the device outside of the typical Task queue (like by an operator for maintenance or refilling consumables)</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceStatus.ERROR">
-<span class="sig-name descname"><span class="pre">ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#alab_management.device_view.device_view.DeviceStatus.ERROR" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="alab_management.device_view.device_view.DevicePauseStatus.PAUSED">
+<span class="sig-name descname"><span class="pre">PAUSED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#alab_management.device_view.device_view.DevicePauseStatus.PAUSED" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceStatus.HOLD">
-<span class="sig-name descname"><span class="pre">HOLD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#alab_management.device_view.device_view.DeviceStatus.HOLD" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="alab_management.device_view.device_view.DevicePauseStatus.RELEASED">
+<span class="sig-name descname"><span class="pre">RELEASED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#alab_management.device_view.device_view.DevicePauseStatus.RELEASED" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceStatus.IDLE">
-<span class="sig-name descname"><span class="pre">IDLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#alab_management.device_view.device_view.DeviceStatus.IDLE" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="alab_management.device_view.device_view.DevicePauseStatus.REQUESTED">
+<span class="sig-name descname"><span class="pre">REQUESTED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#alab_management.device_view.device_view.DevicePauseStatus.REQUESTED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceTaskStatus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DeviceTaskStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceTaskStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceTaskStatus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>The Task status of devices. Used by TaskManager to decide whether a Device is available for to execute a Task.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceTaskStatus.ERROR">
+<span class="sig-name descname"><span class="pre">ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#alab_management.device_view.device_view.DeviceTaskStatus.ERROR" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceStatus.OCCUPIED">
-<span class="sig-name descname"><span class="pre">OCCUPIED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#alab_management.device_view.device_view.DeviceStatus.OCCUPIED" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceTaskStatus.IDLE">
+<span class="sig-name descname"><span class="pre">IDLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#alab_management.device_view.device_view.DeviceTaskStatus.IDLE" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceStatus.UNKNOWN">
-<span class="sig-name descname"><span class="pre">UNKNOWN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#alab_management.device_view.device_view.DeviceStatus.UNKNOWN" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceTaskStatus.OCCUPIED">
+<span class="sig-name descname"><span class="pre">OCCUPIED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#alab_management.device_view.device_view.DeviceTaskStatus.OCCUPIED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceTaskStatus.UNKNOWN">
+<span class="sig-name descname"><span class="pre">UNKNOWN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#alab_management.device_view.device_view.DeviceTaskStatus.UNKNOWN" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -475,7 +492,7 @@ Device name is a unique identifier for a device</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceView.get_available_devices">
-<span class="sig-name descname"><span class="pre">get_available_devices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_or_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.get_available_devices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.get_available_devices" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_available_devices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_or_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.get_available_devices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.get_available_devices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given device type, it will return all the device with this type.</p>
 <p>If only_idle set to True, only the idle devices will be returned (or ones have the same task id)</p>
 <dl class="field-list simple">
@@ -531,7 +548,7 @@ when __exit__ method is called in the <code class="docutils literal notranslate"
 <dd><p>Get device status by device name, if not found, raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#alab_management.device_view.device_view.DeviceStatus" title="alab_management.device_view.device_view.DeviceStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceStatus</span></code></a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#alab_management.device_view.device_view.DeviceTaskStatus" title="alab_management.device_view.device_view.DeviceTaskStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceTaskStatus</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -540,6 +557,12 @@ when __exit__ method is called in the <code class="docutils literal notranslate"
 <dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceView.occupy_device">
 <span class="sig-name descname"><span class="pre">occupy_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.occupy_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.occupy_device" title="Permalink to this definition">¶</a></dt>
 <dd><p>Occupy a device with given task id</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceView.pause_device">
+<span class="sig-name descname"><span class="pre">pause_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.pause_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.pause_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request pause for a specific device</p>
 </dd></dl>
 
 <dl class="py method">
@@ -552,8 +575,9 @@ If there is no such property with name <code class="docutils literal notranslate
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceView.release_device">
-<span class="sig-name descname"><span class="pre">release_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.release_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.release_device" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">release_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.release_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.release_device" title="Permalink to this definition">¶</a></dt>
 <dd><p>Release a device</p>
+<p>device: name of device to be released</p>
 </dd></dl>
 
 <dl class="py method">
@@ -626,6 +650,12 @@ If there is no such property with name <code class="docutils literal notranslate
 <dd><p>Sync the device status (usually when the system is set up)</p>
 <p>Some devices may still be running, so it is not usable now. We will set the
 status to <code class="docutils literal notranslate"><span class="pre">OCCUPIED</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceView.unpause_device">
+<span class="sig-name descname"><span class="pre">unpause_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.unpause_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.unpause_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unpause a device</p>
 </dd></dl>
 
 </dd></dl>
