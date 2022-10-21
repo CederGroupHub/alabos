@@ -1,5 +1,5 @@
 import time
-from typing import Any, Dict, List, Optional, cast
+from typing import Any, Dict, List, Optional, Union, cast
 from alab_management.experiment_view.experiment_view import ExperimentView
 from alab_management.utils.data_objects import get_collection
 from enum import Enum
@@ -95,7 +95,7 @@ class UserInputView:
             },
         )
 
-    def retrieve_user_input(self, request_id: ObjectId) -> UserRequestStatus:
+    def retrieve_user_input(self, request_id: ObjectId) -> str:
         """
         Retrive response from user for a given request. Blocks until request is marked as completed.
 
@@ -130,8 +130,11 @@ class UserInputView:
 
 
 def request_user_input(
-    task_id: ObjectId, prompt: str, options: List[str], maintenance: bool = False
-) -> UserRequestStatus:
+    task_id: Union[ObjectId, None],
+    prompt: str,
+    options: List[str],
+    maintenance: bool = False,
+) -> str:
     """
     Request user input through the dashboard. Blocks until response is given.
 
@@ -147,3 +150,7 @@ def request_user_input(
         task_id=task_id, prompt=prompt, options=options, maintenance=maintenance
     )
     return user_input_view.retrieve_user_input(request_id=request_id)
+
+
+def request_maintenance_input(prompt: str, options: List[str]):
+    request_user_input(task_id=None, prompt=prompt, options=options, maintenance=True)
