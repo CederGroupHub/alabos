@@ -153,4 +153,6 @@ def request_user_input(
 
 
 def request_maintenance_input(prompt: str, options: List[str]):
-    return request_user_input(task_id=None, prompt=prompt, options=options, maintenance=True)
+    return request_user_input(
+        task_id=None, prompt=prompt, options=options, maintenance=True
+    )
