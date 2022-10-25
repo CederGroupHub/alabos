@@ -114,9 +114,9 @@ class BaseTask(ABC):
 
     def run_subtask(self, *args, **kwargs):
         """
-        Run a subtask of this current task.
+        Run a subtask of this current task. Returns the result, if any, of the subtask.
         """
-        self.lab_view.run_subtask(*args, **kwargs)
+        return self.lab_view.run_subtask(*args, **kwargs)
 
 
 _task_registry: Dict[str, Type[BaseTask]] = {}

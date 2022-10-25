@@ -8,6 +8,7 @@ from typing import Any, List, ClassVar, Dict
 from alab_management.sample_view.sample import SamplePosition
 
 
+# TODO maybe update along the lines of https://github.com/zeycus/mongo_shelve/blob/master/mongo_shelve/mongo_shelve_class.py
 def attribute_in_database(name: str, default_value: Any) -> property:
     """Property factory to mirror a Device attribute in the ALab database
 

@@ -274,6 +274,7 @@ class LabView:
                     "status": "COMPLETED",
                 },
             )
+        return result
 
     def request_user_input(self, prompt: str, options: List[str]) -> str:
         """
