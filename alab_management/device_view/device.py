@@ -6,60 +6,7 @@ from abc import ABC, abstractmethod
 from typing import Any, List, ClassVar, Dict
 
 from alab_management.sample_view.sample import SamplePosition
-
-
-# TODO maybe update along the lines of https://github.com/zeycus/mongo_shelve/blob/master/mongo_shelve/mongo_shelve_class.py
-def attribute_in_database(name: str, default_value: Any) -> property:
-    """Property factory to mirror a Device attribute in the ALab database
-
-    Args:
-        name (str): attribute name
-        default_value (Any): default value for the attribute. Note that this value is not used until the first time a property is queried; at this time, if the attribute is not found in the database, it is set to this value.
-
-    Returns:
-        property: class property that handles getting/setting values from the database.
-
-
-    Example usage when defining a new Device:
-
-        .. code-block:: python
-        from alab_management.device_view import BaseDevice, attribute_in_database
-
-        class MyDevice(BaseDevice):
-            my_attribute = attribute_in_database("my_attribute", 0)
-
-            def __init__(self, name: str, **kwargs):
-                super().__init__(name, **kwargs)
-                self.name = name
-                self.my_attribute #initial call to the property, which sets the default value in the database
-
-        ....
-        #first instantiation
-
-        mydevice = MyDevice(name = "mydevice_1")
-        mydevice.my_attribute = 5 #sets the value in the database
-
-        ....
-        #future instantiation
-        mydevice = MyDevice(name = "mydevice_1")
-        mydevice.my_attribute #retrieves value from db and returns 5
-
-
-    """
-
-    def getter(self) -> Any:
-        attributes = self._device_view.get_all_attributes(device_name=self.name)
-        if name not in attributes:
-            attributes[name] = default_value
-            self._device_view.set_all_attributes(self.name, attributes=attributes)
-        return attributes[name]
-
-    def setter(self, value: Any) -> None:
-        self._device_view.set_attribute(
-            device_name=self.name, attribute=name, value=value
-        )
-
-    return property(getter, setter)
+from .dbattributes import value_in_database, ListInDatabase, DictInDatabase
 
 
 class BaseDevice(ABC):
@@ -184,6 +131,42 @@ class BaseDevice(ABC):
         Check whether this device is running
         """
         raise NotImplementedError()
+
+    def list_in_database(self, name: str, default_value: list = None) -> ListInDatabase:
+        """
+        Create a list attribute that is stored in the database.
+
+        Args:
+            name: The name of the attribute
+            default_value: The default value of the attribute. if None (default), will default to an empty list.
+
+        Returns:
+            Class instance to access the attribute. Acts like a normal List, but is stored in the database.
+        """
+        return ListInDatabase(
+            device_collection=self._device_view._device_collection,
+            device_name=self.name,
+            attribute_name=name,
+            default_value=default_value,
+        )
+
+    def dict_in_database(self, name: str, default_value: dict = None) -> DictInDatabase:
+        """
+        Create a dict attribute that is stored in the database.
+
+        Args:
+            name: The name of the attribute
+            default_value: The default value of the attribute. if None (default), will default to an empty dict.
+
+        Returns:
+            Class instance to access the attribute. Acts like a normal Dict, but is stored in the database.
+        """
+        return DictInDatabase(
+            device_collection=self._device_view._device_collection,
+            device_name=self.name,
+            attribute_name=name,
+            default_value=default_value,
+        )
 
 
 _device_registry: Dict[str, BaseDevice] = {}
