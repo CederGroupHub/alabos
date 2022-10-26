@@ -3,8 +3,9 @@ from pymongo.collection import Collection
 
 UUID4_PLACEHOLDER = "be8b61ee-48b1-4624-bf7a-2ca31f7c5ef4"
 
+
 def value_in_database(name: str, default_value: Any) -> property:
-    """Property factory to mirror a Device attribute in the ALab database. This must be declared as a Class Variable under a Device subclass of BaseDevice! 
+    """Property factory to mirror a Device attribute in the ALab database. This must be declared as a Class Variable under a Device subclass of BaseDevice!
 
     Args:
         name (str): attribute name
@@ -56,10 +57,9 @@ def value_in_database(name: str, default_value: Any) -> property:
     return property(getter, setter)
 
 
-
 class ListInDatabase:
-    """Class that emulates a list, but stores the list in the device database. Useful for working with Device attributes that are lists, so values persist across alabos sessions. This should be instantiated using `alab_management.device_view.device.BaseDevice.dict_in_database`
-    """
+    """Class that emulates a list, but stores the list in the device database. Useful for working with Device attributes that are lists, so values persist across alabos sessions. This should be instantiated using `alab_management.device_view.device.BaseDevice.dict_in_database`"""
+
     def __init__(
         self,
         device_collection: Collection,
@@ -182,10 +182,16 @@ class ListInDatabase:
         current[x] = val
         self._collection.update_one(self.db_filter, {"$set": {self.db_path: current}})
 
+    def __len__(self):
+        return len(self._value)
+
+    def __contains__(self, x):
+        return x in self._value
+
 
 class DictInDatabase:
-    """Class that emulates a dict, but stores the dict in the device database. Useful for working with Device attributes that are dict, so values persist across alabos sessions. This should be instantiated using `alab_management.device_view.device.BaseDevice.dict_in_database`
-    """
+    """Class that emulates a dict, but stores the dict in the device database. Useful for working with Device attributes that are dict, so values persist across alabos sessions. This should be instantiated using `alab_management.device_view.device.BaseDevice.dict_in_database`"""
+
     def __init__(
         self,
         device_collection: Collection,
@@ -233,19 +239,6 @@ class DictInDatabase:
                 f"Device {self.device_name} does not contain data at {self.db_path}!"
             )
         return value["attributes"][self.attribute_name]
-
-    def _to_str_key(self, x):
-        """MongoDB only accepts string keys. This is a convenience wrapper to allow keys of any format
-
-        Args:
-            x: object to make a key out of
-        """
-        if isinstance(x, str):
-            return x
-        else:
-            return f"{type(x)}{x}"
-    
-    def _from_str_key(self, x):
 
     def clear(self):
         self._collection.update_one(self.db_filter, {"$set": {self.db_path: {}}})
