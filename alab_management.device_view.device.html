@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="alab_management.device_view.device_view module" href="alab_management.device_view.device_view.html" />
-    <link rel="prev" title="alab_management.device_view package" href="alab_management.device_view.html" />
+    <link rel="prev" title="alab_management.device_view.dbattributes module" href="alab_management.device_view.dbattributes.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
     
@@ -148,6 +148,11 @@
        </i>
       </label>
       <ul class="current">
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.device_view.dbattributes.html">
+         alab_management.device_view.dbattributes module
+        </a>
+       </li>
        <li class="toctree-l4 current active">
         <a class="current reference internal" href="#">
          alab_management.device_view.device module
@@ -396,6 +401,26 @@ the device type, how to set up and so on.</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice.dict_in_database">
+<span class="sig-name descname"><span class="pre">dict_in_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice.dict_in_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.dict_in_database" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a dict attribute that is stored in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The name of the attribute</p></li>
+<li><p><strong>default_value</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]) – The default value of the attribute. if None (default), will default to an empty dict.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="alab_management.device_view.dbattributes.html#alab_management.device_view.dbattributes.DictInDatabase" title="alab_management.device_view.dbattributes.DictInDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">DictInDatabase</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Class instance to access the attribute. Acts like a normal Dict, but is stored in the database.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice.disconnect">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">disconnect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice.disconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.disconnect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Disconnect from devices here. This will be called by alabos to release connections to devices at the appropriate time.</p>
@@ -415,6 +440,26 @@ the device type, how to set up and so on.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice.list_in_database">
+<span class="sig-name descname"><span class="pre">list_in_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice.list_in_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.list_in_database" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a list attribute that is stored in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The name of the attribute</p></li>
+<li><p><strong>default_value</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]) – The default value of the attribute. if None (default), will default to an empty list.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="alab_management.device_view.dbattributes.html#alab_management.device_view.dbattributes.ListInDatabase" title="alab_management.device_view.dbattributes.ListInDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">ListInDatabase</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Class instance to access the attribute. Acts like a normal List, but is stored in the database.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -474,49 +519,6 @@ We use <code class="docutils literal notranslate"><span class="pre">name</span><
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="alab_management.device_view.device.attribute_in_database">
-<span class="sig-name descname"><span class="pre">attribute_in_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#attribute_in_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.attribute_in_database" title="Permalink to this definition">¶</a></dt>
-<dd><p>Property factory to mirror a Device attribute in the ALab database</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – attribute name</p></li>
-<li><p><strong>default_value</strong> (<em>Any</em>) – default value for the attribute. Note that this value is not used until the first time a property is queried; at this time, if the attribute is not found in the database, it is set to this value.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>class property that handles getting/setting values from the database.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>property</p>
-</dd>
-</dl>
-<p>Example usage when defining a new Device:</p>
-<blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-<p>from alab_management.device_view import BaseDevice, attribute_in_database</p>
-<dl>
-<dt>class MyDevice(BaseDevice):</dt><dd><p>my_attribute = attribute_in_database(“my_attribute”, 0)</p>
-<dl class="simple">
-<dt>def __init__(self, name: str, <a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs):</dt><dd><p>super().__init__(name, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs)
-self.name = name
-self.my_attribute #initial call to the property, which sets the default value in the database</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p>#first instantiation</p>
-<p>mydevice = MyDevice(name = “mydevice_1”)
-mydevice.my_attribute = 5 #sets the value in the database</p>
-<p>#future instantiation
-mydevice = MyDevice(name = “mydevice_1”)
-mydevice.my_attribute #retrieves value from db and returns 5</p>
-</div></blockquote>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="alab_management.device_view.device.get_all_devices">
 <span class="sig-name descname"><span class="pre">get_all_devices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#get_all_devices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.get_all_devices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all the device names in the device registry</p>
@@ -535,11 +537,11 @@ mydevice.my_attribute #retrieves value from db and returns 5</p>
         
             <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
-    <a class='left-prev' id="prev-link" href="alab_management.device_view.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="alab_management.device_view.dbattributes.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">alab_management.device_view package</p>
+            <p class="prev-next-title">alab_management.device_view.dbattributes module</p>
         </div>
     </a>
     <a class='right-next' id="next-link" href="alab_management.device_view.device_view.html" title="next page">

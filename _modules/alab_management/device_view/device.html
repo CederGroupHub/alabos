@@ -147,6 +147,11 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="../../../alab_management.device_view.dbattributes.html">
+         alab_management.device_view.dbattributes module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="../../../alab_management.device_view.device.html">
          alab_management.device_view.device module
         </a>
@@ -352,60 +357,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Dict</span>
 
 <span class="kn">from</span> <span class="nn">alab_management.sample_view.sample</span> <span class="kn">import</span> <span class="n">SamplePosition</span>
-
-
-<span class="c1"># TODO maybe update along the lines of https://github.com/zeycus/mongo_shelve/blob/master/mongo_shelve/mongo_shelve_class.py</span>
-<div class="viewcode-block" id="attribute_in_database"><a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.attribute_in_database">[docs]</a><span class="k">def</span> <span class="nf">attribute_in_database</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default_value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">property</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Property factory to mirror a Device attribute in the ALab database</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        name (str): attribute name</span>
-<span class="sd">        default_value (Any): default value for the attribute. Note that this value is not used until the first time a property is queried; at this time, if the attribute is not found in the database, it is set to this value.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        property: class property that handles getting/setting values from the database.</span>
-
-
-<span class="sd">    Example usage when defining a new Device:</span>
-
-<span class="sd">        .. code-block:: python</span>
-<span class="sd">        from alab_management.device_view import BaseDevice, attribute_in_database</span>
-
-<span class="sd">        class MyDevice(BaseDevice):</span>
-<span class="sd">            my_attribute = attribute_in_database(&quot;my_attribute&quot;, 0)</span>
-
-<span class="sd">            def __init__(self, name: str, **kwargs):</span>
-<span class="sd">                super().__init__(name, **kwargs)</span>
-<span class="sd">                self.name = name</span>
-<span class="sd">                self.my_attribute #initial call to the property, which sets the default value in the database</span>
-
-<span class="sd">        ....</span>
-<span class="sd">        #first instantiation</span>
-
-<span class="sd">        mydevice = MyDevice(name = &quot;mydevice_1&quot;)</span>
-<span class="sd">        mydevice.my_attribute = 5 #sets the value in the database</span>
-
-<span class="sd">        ....</span>
-<span class="sd">        #future instantiation</span>
-<span class="sd">        mydevice = MyDevice(name = &quot;mydevice_1&quot;)</span>
-<span class="sd">        mydevice.my_attribute #retrieves value from db and returns 5</span>
-
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">getter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="n">attributes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">get_all_attributes</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">attributes</span><span class="p">:</span>
-            <span class="n">attributes</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">default_value</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">set_all_attributes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">attributes</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="nf">setter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span>
-            <span class="n">device_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span>
-        <span class="p">)</span>
-
-    <span class="k">return</span> <span class="nb">property</span><span class="p">(</span><span class="n">getter</span><span class="p">,</span> <span class="n">setter</span><span class="p">)</span></div>
+<span class="kn">from</span> <span class="nn">.dbattributes</span> <span class="kn">import</span> <span class="n">value_in_database</span><span class="p">,</span> <span class="n">ListInDatabase</span><span class="p">,</span> <span class="n">DictInDatabase</span>
 
 
 <div class="viewcode-block" id="BaseDevice"><a class="viewcode-back" href="../../../device_definition.html#alab_management.device_view.device.BaseDevice">[docs]</a><span class="k">class</span> <span class="nc">BaseDevice</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
@@ -529,7 +481,43 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check whether this device is running</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="BaseDevice.list_in_database"><a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.list_in_database">[docs]</a>    <span class="k">def</span> <span class="nf">list_in_database</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default_value</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ListInDatabase</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a list attribute that is stored in the database.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: The name of the attribute</span>
+<span class="sd">            default_value: The default value of the attribute. if None (default), will default to an empty list.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Class instance to access the attribute. Acts like a normal List, but is stored in the database.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ListInDatabase</span><span class="p">(</span>
+            <span class="n">device_collection</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">_device_collection</span><span class="p">,</span>
+            <span class="n">device_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">attribute_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">default_value</span><span class="o">=</span><span class="n">default_value</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseDevice.dict_in_database"><a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.dict_in_database">[docs]</a>    <span class="k">def</span> <span class="nf">dict_in_database</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default_value</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DictInDatabase</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a dict attribute that is stored in the database.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: The name of the attribute</span>
+<span class="sd">            default_value: The default value of the attribute. if None (default), will default to an empty dict.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Class instance to access the attribute. Acts like a normal Dict, but is stored in the database.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">DictInDatabase</span><span class="p">(</span>
+            <span class="n">device_collection</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">_device_collection</span><span class="p">,</span>
+            <span class="n">device_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">attribute_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">default_value</span><span class="o">=</span><span class="n">default_value</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
 
 
 <span class="n">_device_registry</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BaseDevice</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
