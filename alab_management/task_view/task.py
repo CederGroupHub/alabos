@@ -62,6 +62,20 @@ class BaseTask(ABC):
             raise ValueError("Priority should be a positive integer")
         self.lab_view._resource_requester.priority = int(value)
 
+    @property
+    def message(self):
+        return self._message
+
+    @message.setter
+    def message(self, message: str):
+        self.set_message(message)
+
+    def set_message(self, message: str):
+        """Sets the task message to be displayed on the dashboard.
+        """
+        self._message = message
+        self.lab_view._task_view.set_message(task_id=self.task_id, message=message)
+
     @abstractmethod
     def run(self):
         """

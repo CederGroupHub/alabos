@@ -159,7 +159,7 @@ function Row({ experiment_id, hoverForId }) {
                       <TableCell>Name</TableCell>
                       {/* <TableCell>Task ID</TableCell> */}
                       <TableCell>Status</TableCell>
-                      {/* <TableCell>Result</TableCell> */}
+                      <TableCell width="50%">Message</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -172,6 +172,11 @@ function Row({ experiment_id, hoverForId }) {
                         <TableCell>
                           <Typography variant="body" color={taskStatusColor(task.status)}>
                             {task.status}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body">
+                            {task.message}
                           </Typography>
                         </TableCell>
                         {/* <TableCell>{task.result}</TableCell> */}

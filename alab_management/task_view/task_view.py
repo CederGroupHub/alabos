@@ -69,6 +69,7 @@ class TaskView:
                 "next_tasks": next_tasks,
                 "created_at": datetime.now(),
                 "last_updated": datetime.now(),
+                "message": "",
             }
         )
 
@@ -104,9 +105,7 @@ class TaskView:
         )
         return subtask_id
 
-    def get_task(
-        self, task_id: ObjectId, encode: bool = False
-    ) -> Optional[Dict[str, Any]]:
+    def get_task(self, task_id: ObjectId, encode: bool = False) -> Dict[str, Any]:
         """
         Get a task by its task id, which will return all the info stored in the database
 
@@ -352,5 +351,19 @@ class TaskView:
                 "$set": {
                     "last_updated": datetime.now(),
                 },
+            },
+        )
+
+    def set_message(self, task_id: ObjectId, message: str):
+        """
+        Set message for one task. This is displayed on the dashboard.
+        """
+        self._task_collection.update_one(
+            {"_id": task_id},
+            {
+                "$set": {
+                    "message": message,
+                    "last_updated": datetime.now(),
+                }
             },
         )
