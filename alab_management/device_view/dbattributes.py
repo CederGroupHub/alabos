@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Union
 from pymongo.collection import Collection
 
 UUID4_PLACEHOLDER = "be8b61ee-48b1-4624-bf7a-2ca31f7c5ef4"
@@ -65,7 +65,7 @@ class ListInDatabase:
         device_collection: Collection,
         device_name: str,
         attribute_name: str,
-        default_value: list = None,
+        default_value: Union[list, None] = None,
     ):
         self._collection = device_collection
         self.attribute_name = attribute_name
@@ -77,6 +77,12 @@ class ListInDatabase:
                 raise ValueError("Default value for ListInDatabase must be a list!")
             self.default_value = default_value
 
+    def apply_default_value(self):
+        """This is called within `alab_management.scripts.setup_lab()` to ensure that all devices have the correct default values for their attributes. This should not be called manually.
+
+        Raises:
+            ValueError: Device is not found in the database. This should only occur if this function is called out of order (i.e. before the device is created in the db).
+        """
         result = self._collection.find_one(self.db_filter)
         if result is None:
             raise ValueError(
@@ -84,7 +90,7 @@ class ListInDatabase:
             )
         if self.attribute_name not in result["attributes"]:
             self._collection.update_one(
-                self.db_filter, {"$set": {self.db_path: default_value}}
+                self.db_filter, {"$set": {self.db_path: self.default_value}}
             )
 
     @property
@@ -197,7 +203,7 @@ class DictInDatabase:
         device_collection: Collection,
         device_name: str,
         attribute_name: str,
-        default_value: dict = None,
+        default_value: Union[dict, None] = None,
     ):
         self._collection = device_collection
         self.attribute_name = attribute_name
@@ -211,6 +217,22 @@ class DictInDatabase:
                 )
             self.default_value = default_value
 
+        result = self._collection.find_one(self.db_filter)
+        if result is None:
+            raise ValueError(
+                f"A device by the name {self.device_name} was not found in the collection."
+            )
+        if self.attribute_name not in result["attributes"]:
+            self._collection.update_one(
+                self.db_filter, {"$set": {self.db_path: self.default_value}}
+            )
+
+    def apply_default_value(self):
+        """This is called within `alab_management.scripts.setup_lab()` to ensure that all devices have the correct default values for their attributes. This should not be called manually.
+
+        Raises:
+            ValueError: Device is not found in the database. This should only occur if this function is called out of order (i.e. before the device is created in the db).
+        """
         result = self._collection.find_one(self.db_filter)
         if result is None:
             raise ValueError(

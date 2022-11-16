@@ -30,6 +30,7 @@ class TaskView:
         parameters: Dict[str, Any],
         prev_tasks: Optional[Union[ObjectId, List[ObjectId]]] = None,
         next_tasks: Optional[Union[ObjectId, List[ObjectId]]] = None,
+        task_id: Optional[ObjectId] = None,
     ) -> ObjectId:
         """
         Insert a task into the task collection
@@ -59,19 +60,20 @@ class TaskView:
         for related_task_id in prev_tasks + next_tasks:
             self.get_task(task_id=related_task_id)  # will raise error if not found
 
-        result = self._task_collection.insert_one(
-            {
-                "type": task_type,
-                "status": TaskStatus.WAITING.name,
-                "samples": samples,
-                "parameters": parameters,
-                "prev_tasks": prev_tasks,
-                "next_tasks": next_tasks,
-                "created_at": datetime.now(),
-                "last_updated": datetime.now(),
-                "message": "",
-            }
-        )
+        entry = {
+            "type": task_type,
+            "status": TaskStatus.WAITING.name,
+            "samples": samples,
+            "parameters": parameters,
+            "prev_tasks": prev_tasks,
+            "next_tasks": next_tasks,
+            "created_at": datetime.now(),
+            "last_updated": datetime.now(),
+            "message": "",
+        }
+        if isinstance(task_id, ObjectId):
+            entry["_id"] = task_id
+        result = self._task_collection.insert_one(entry)
 
         return cast(ObjectId, result.inserted_id)
 

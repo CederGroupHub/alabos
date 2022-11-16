@@ -7,13 +7,14 @@ done.
 """
 
 import time
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 from .experiment_view.experiment_view import ExperimentStatus, ExperimentView
 from .logger import DBLogger
 from .sample_view import SampleView
 from .task_view import TaskView, TaskStatus
 from .utils.graph_ops import Graph
+from bson import ObjectId
 
 
 class ExperimentManager:
@@ -60,8 +61,8 @@ class ExperimentManager:
             )
 
     def _handle_pending_experiment(self, experiment: Dict[str, Any]):
-        samples = experiment["samples"]
-        tasks = experiment["tasks"]
+        samples: List[Dict[str, Any]] = experiment["samples"]
+        tasks: List[Dict[str, Any]] = experiment["tasks"]
 
         # check if there is any cycle in the graph
         reversed_edges = {i: task["prev_tasks"] for i, task in enumerate(tasks)}
@@ -86,7 +87,9 @@ class ExperimentManager:
 
         # create samples in the sample database
         sample_ids = {
-            sample["name"]: self.sample_view.create_sample(sample["name"])
+            sample["name"]: self.sample_view.create_sample(
+                sample["name"], sample_id=sample.get("sample_id", None)
+            )
             for sample in samples
         }
 
@@ -102,6 +105,7 @@ class ExperimentManager:
                     task_type=task["type"],
                     parameters=task["parameters"],
                     samples=samples,
+                    task_id=task.get("task_id", None),
                 )
             )
 

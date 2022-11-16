@@ -49,6 +49,7 @@ class BaseDevice(ABC):
         self._device_view = DeviceView()
         if "description" in kwargs:
             self.description = kwargs["description"]
+        self._message = ""
 
     @property
     def message(self):
@@ -167,6 +168,15 @@ class BaseDevice(ABC):
             attribute_name=name,
             default_value=default_value,
         )
+
+    def _apply_default_db_values(self):
+        """
+        Apply default values to attributes that are stored in the database.
+        """
+        for attribute_name in dir(self):
+            attribute = getattr(self, attribute_name)
+            if any(isinstance(attribute, t) for t in [ListInDatabase, DictInDatabase]):
+                attribute.apply_default_value()
 
 
 _device_registry: Dict[str, BaseDevice] = {}

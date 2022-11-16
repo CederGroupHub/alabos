@@ -347,7 +347,12 @@ class SampleView:
     #                 operations related to samples                 #
     #################################################################
 
-    def create_sample(self, name: str, position: Optional[str] = None) -> ObjectId:
+    def create_sample(
+        self,
+        name: str,
+        position: Optional[str] = None,
+        sample_id: Optional[ObjectId] = None,
+    ) -> ObjectId:
         """
         Create a sample and return its uid in the database
 
@@ -362,15 +367,21 @@ class SampleView:
                 f"Sample name should not contain '.' or '$'"
             )
 
-        result = self._sample_collection.insert_one(
-            {
-                "name": name,
-                "position": position,
-                "task_id": None,
-                "created_at": datetime.now(),
-                "last_updated": datetime.now(),
-            }
-        )
+        entry = {
+            "name": name,
+            "position": position,
+            "task_id": None,
+            "created_at": datetime.now(),
+            "last_updated": datetime.now(),
+        }
+        if sample_id:
+            if not isinstance(sample_id, ObjectId):
+                raise ValueError(
+                    f"User provided {sample_id} as the sample_id -- this is not a valid ObjectId, so this sample cannot be created in the database!"
+                )
+            entry["_id"] = sample_id
+
+        result = self._sample_collection.insert_one(entry)
 
         return cast(ObjectId, result.inserted_id)
 
