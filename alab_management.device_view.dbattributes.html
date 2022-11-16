@@ -375,6 +375,17 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class that emulates a dict, but stores the dict in the device database. Useful for working with Device attributes that are dict, so values persist across alabos sessions. This should be instantiated using <cite>alab_management.device_view.device.BaseDevice.dict_in_database</cite></p>
 <dl class="py method">
+<dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.apply_default_value">
+<span class="sig-name descname"><span class="pre">apply_default_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.apply_default_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.apply_default_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is called within <cite>alab_management.scripts.setup_lab()</cite> to ensure that all devices have the correct default values for their attributes. This should not be called manually.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – Device is not found in the database. This should only occur if this function is called out of order (i.e. before the device is created in the db).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.clear">
 <span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.clear" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -450,6 +461,17 @@
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.append">
 <span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.append" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.apply_default_value">
+<span class="sig-name descname"><span class="pre">apply_default_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.apply_default_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.apply_default_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is called within <cite>alab_management.scripts.setup_lab()</cite> to ensure that all devices have the correct default values for their attributes. This should not be called manually.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – Device is not found in the database. This should only occur if this function is called out of order (i.e. before the device is created in the db).</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.clear">

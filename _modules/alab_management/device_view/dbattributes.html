@@ -349,7 +349,7 @@
               <div>
                 
   <h1>Source code for alab_management.device_view.dbattributes</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">from</span> <span class="nn">pymongo.collection</span> <span class="kn">import</span> <span class="n">Collection</span>
 
 <span class="n">UUID4_PLACEHOLDER</span> <span class="o">=</span> <span class="s2">&quot;be8b61ee-48b1-4624-bf7a-2ca31f7c5ef4&quot;</span>
@@ -416,7 +416,7 @@
         <span class="n">device_collection</span><span class="p">:</span> <span class="n">Collection</span><span class="p">,</span>
         <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">attribute_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">default_value</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">default_value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span> <span class="o">=</span> <span class="n">device_collection</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">attribute_name</span> <span class="o">=</span> <span class="n">attribute_name</span>
@@ -428,6 +428,12 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Default value for ListInDatabase must be a list!&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">default_value</span> <span class="o">=</span> <span class="n">default_value</span>
 
+<div class="viewcode-block" id="ListInDatabase.apply_default_value"><a class="viewcode-back" href="../../../alab_management.device_view.dbattributes.html#alab_management.device_view.dbattributes.ListInDatabase.apply_default_value">[docs]</a>    <span class="k">def</span> <span class="nf">apply_default_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This is called within `alab_management.scripts.setup_lab()` to ensure that all devices have the correct default values for their attributes. This should not be called manually.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: Device is not found in the database. This should only occur if this function is called out of order (i.e. before the device is created in the db).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -435,8 +441,8 @@
             <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attribute_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;attributes&quot;</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_path</span><span class="p">:</span> <span class="n">default_value</span><span class="p">}}</span>
-            <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_path</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_value</span><span class="p">}}</span>
+            <span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">db_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -548,7 +554,7 @@
         <span class="n">device_collection</span><span class="p">:</span> <span class="n">Collection</span><span class="p">,</span>
         <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">attribute_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">default_value</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">default_value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span> <span class="o">=</span> <span class="n">device_collection</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">attribute_name</span> <span class="o">=</span> <span class="n">attribute_name</span>
@@ -571,6 +577,22 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_path</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_value</span><span class="p">}}</span>
             <span class="p">)</span>
+
+<div class="viewcode-block" id="DictInDatabase.apply_default_value"><a class="viewcode-back" href="../../../alab_management.device_view.dbattributes.html#alab_management.device_view.dbattributes.DictInDatabase.apply_default_value">[docs]</a>    <span class="k">def</span> <span class="nf">apply_default_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This is called within `alab_management.scripts.setup_lab()` to ensure that all devices have the correct default values for their attributes. This should not be called manually.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: Device is not found in the database. This should only occur if this function is called out of order (i.e. before the device is created in the db).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;A device by the name </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> was not found in the collection.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attribute_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;attributes&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_path</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_value</span><span class="p">}}</span>
+            <span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">db_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
