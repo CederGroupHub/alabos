@@ -5,11 +5,12 @@ from abc import ABC, abstractmethod
 from typing import Dict, List, Type, TYPE_CHECKING, Optional, Union
 from bson.objectid import ObjectId
 from alab_management.task_view.task_enums import TaskPriority
-from alab_management.device_view.device import BaseDevice
 from inspect import getfullargspec
 
 if TYPE_CHECKING:
     from alab_management.lab_view import LabView
+    from alab_management.device_view.device import BaseDevice
+
 
 
 class BaseTask(ABC):
@@ -136,7 +137,7 @@ class BaseTask(ABC):
 _task_registry: Dict[str, Type[BaseTask]] = {}
 
 SUPPORTED_SAMPLE_POSITIONS_TYPE = Dict[
-    Union[Type[BaseDevice], str, None], Union[str, List[str]]
+    Union[Type["BaseDevice"], str, None], Union[str, List[str]]
 ]
 _reroute_task_registry: List[
     Dict[str, Union[Type[BaseTask], SUPPORTED_SAMPLE_POSITIONS_TYPE]]

@@ -229,7 +229,7 @@ class SampleView:
         )
         parent_devices = list(set(sp.get("parent_device") for sp in sample_positions))
         if len(parent_devices) == 0:
-            raise ValueError(f'No sample position(s) beginning with: "position"')
+            raise ValueError(f"No sample position(s) beginning with: {position}")
         elif len(parent_devices) > 1:
             raise Exception(
                 f'Multiple parent devices ({parent_devices}) found for sample positions found beginning with: "position". Make a more specific position query that doesn\'t match multiple devices!'

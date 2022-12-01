@@ -217,16 +217,6 @@ class DictInDatabase:
                 )
             self.default_value = default_value
 
-        result = self._collection.find_one(self.db_filter)
-        if result is None:
-            raise ValueError(
-                f"A device by the name {self.device_name} was not found in the collection."
-            )
-        if self.attribute_name not in result["attributes"]:
-            self._collection.update_one(
-                self.db_filter, {"$set": {self.db_path: self.default_value}}
-            )
-
     def apply_default_value(self):
         """This is called within `alab_management.scripts.setup_lab()` to ensure that all devices have the correct default values for their attributes. This should not be called manually.
 
