@@ -56,9 +56,9 @@ def run_task(task_id_str: str):
         task: BaseTask = task_type(
             task_id=task_id,
             lab_view=LabView(task_id=task_id),
-            samples=[
-                sample["sample_id"] for sample in task_entry["samples"]
-            ],  # only the sample ObjectId's are sent
+            # samples=[
+            #     sample["sample_id"] for sample in task_entry["samples"]
+            # ],  # only the sample ObjectId's are sent
             **task_entry["parameters"],
         )
     except Exception as exception:

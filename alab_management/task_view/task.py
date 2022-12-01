@@ -12,7 +12,6 @@ if TYPE_CHECKING:
     from alab_management.device_view.device import BaseDevice
 
 
-
 class BaseTask(ABC):
     """
     The abstract class of task.
@@ -72,8 +71,7 @@ class BaseTask(ABC):
         self.set_message(message)
 
     def set_message(self, message: str):
-        """Sets the task message to be displayed on the dashboard.
-        """
+        """Sets the task message to be displayed on the dashboard."""
         self._message = message
         self.lab_view._task_view.set_message(task_id=self.task_id, message=message)
 
