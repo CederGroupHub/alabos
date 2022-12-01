@@ -351,11 +351,12 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">from</span> <span class="nn">bson.objectid</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 <span class="kn">from</span> <span class="nn">alab_management.task_view.task_enums</span> <span class="kn">import</span> <span class="n">TaskPriority</span>
-<span class="kn">from</span> <span class="nn">alab_management.device_view.device</span> <span class="kn">import</span> <span class="n">BaseDevice</span>
 <span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">getfullargspec</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">alab_management.lab_view</span> <span class="kn">import</span> <span class="n">LabView</span>
+    <span class="kn">from</span> <span class="nn">alab_management.device_view.device</span> <span class="kn">import</span> <span class="n">BaseDevice</span>
+
 
 
 <div class="viewcode-block" id="BaseTask"><a class="viewcode-back" href="../../../task_definition.html#alab_management.task_view.task.BaseTask">[docs]</a><span class="k">class</span> <span class="nc">BaseTask</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
@@ -482,7 +483,7 @@
 <span class="n">_task_registry</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseTask</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
 
 <span class="n">SUPPORTED_SAMPLE_POSITIONS_TYPE</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span>
-    <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">],</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
+    <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="s2">&quot;BaseDevice&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
 <span class="p">]</span>
 <span class="n">_reroute_task_registry</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span>
     <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">BaseTask</span><span class="p">],</span> <span class="n">SUPPORTED_SAMPLE_POSITIONS_TYPE</span><span class="p">]]</span>
