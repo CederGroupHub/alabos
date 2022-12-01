@@ -30,7 +30,7 @@ class UserInputView:
     def insert_request(
         self,
         prompt: str,
-        options: List[str],
+        options: List[Any],
         task_id: Optional[ObjectId] = None,
         maintenance: bool = False,
     ) -> ObjectId:
@@ -132,7 +132,7 @@ class UserInputView:
 def request_user_input(
     task_id: Union[ObjectId, None],
     prompt: str,
-    options: List[str],
+    options: List[Any],
     maintenance: bool = False,
 ) -> str:
     """
@@ -152,7 +152,7 @@ def request_user_input(
     return user_input_view.retrieve_user_input(request_id=request_id)
 
 
-def request_maintenance_input(prompt: str, options: List[str]):
+def request_maintenance_input(prompt: str, options: List[Any]):
     return request_user_input(
         task_id=None, prompt=prompt, options=options, maintenance=True
     )

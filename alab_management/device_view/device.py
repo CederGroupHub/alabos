@@ -7,6 +7,7 @@ from typing import Any, List, ClassVar, Dict
 
 from alab_management.sample_view.sample import SamplePosition
 from .dbattributes import value_in_database, ListInDatabase, DictInDatabase
+from alab_management.user_input import request_maintenance_input
 
 
 class BaseDevice(ABC):
@@ -50,14 +51,6 @@ class BaseDevice(ABC):
         if "description" in kwargs:
             self.description = kwargs["description"]
         self._message = ""
-
-    @property
-    def message(self):
-        return self._message
-
-    @message.setter
-    def message(self, message: str):
-        self.set_message(message)
 
     def set_message(self, message: str):
         """Sets the device message to be displayed on the dashboard.
@@ -177,6 +170,20 @@ class BaseDevice(ABC):
             attribute = getattr(self, attribute_name)
             if any(isinstance(attribute, t) for t in [ListInDatabase, DictInDatabase]):
                 attribute.apply_default_value()
+
+    def request_maintenance(self, prompt: str, options: List[Any]) -> str:
+        """
+        Request maintenance for this device.
+
+        Args:
+            message: The message to display in the maintenance request.
+            options: Response options that an operator can choose from.
+
+        Returns:
+            (str) The response that the operator chose.
+        """
+        full_prompt = f"{self.name}: {prompt}"
+        return request_maintenance_input(prompt=prompt, options=options)
 
 
 _device_registry: Dict[str, BaseDevice] = {}

@@ -111,7 +111,7 @@ class LabView:
             resource_request=resource_request, timeout=timeout, priority=priority
         )
         devices = result["devices"]
-        sample_positions = result["sample_positions"]
+        sample_positions: Dict[Union[str, BaseDevice, None], str] = result["sample_positions"]
         request_id = result["request_id"]
         devices = {
             device_type: self._device_client.create_device_wrapper(device_name)
