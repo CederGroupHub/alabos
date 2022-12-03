@@ -56,6 +56,13 @@ def launch_device_manager():
 
 
 def launch_lab(host, port, debug):
+    from alab_management.device_view import DeviceView
+    dv = DeviceView()
+
+    if len(list(dv.get_all())) == 0:
+        print("No devices found in the database. Please setup the lab using `alabos setup` first!")
+        sys.exit(1)
+        
     dashboard_thread = Thread(target=launch_dashboard, args=(host, port, debug))
     experiment_manager_thread = Thread(target=launch_experiment_manager)
     task_launcher_thread = Thread(target=launch_task_manager)
