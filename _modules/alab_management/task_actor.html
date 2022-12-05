@@ -442,6 +442,10 @@
         <span class="n">result</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
         <span class="n">task_view</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+        <span class="n">formatted_exception</span> <span class="o">=</span> <span class="n">format_exc</span><span class="p">()</span>
+        <span class="n">task_view</span><span class="o">.</span><span class="n">set_message</span><span class="p">(</span>
+            <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="n">formatted_exception</span>
+        <span class="p">)</span>  <span class="c1"># display exception on the dashboard</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">system_log</span><span class="p">(</span>
             <span class="n">level</span><span class="o">=</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span>
             <span class="n">log_data</span><span class="o">=</span><span class="p">{</span>
@@ -450,7 +454,7 @@
                 <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">,</span>
                 <span class="s2">&quot;task_type&quot;</span><span class="p">:</span> <span class="n">task_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
                 <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;traceback&quot;</span><span class="p">:</span> <span class="n">format_exc</span><span class="p">(),</span>
+                <span class="s2">&quot;traceback&quot;</span><span class="p">:</span> <span class="n">formatted_exception</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
         <span class="k">raise</span>
