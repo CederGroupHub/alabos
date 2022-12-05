@@ -96,6 +96,10 @@ def run_task(task_id_str: str):
         result = task.run()
     except Exception:
         task_view.update_status(task_id=task_id, status=TaskStatus.ERROR)
+        formatted_exception = format_exc()
+        task_view.set_message(
+            task_id=task_id, message=formatted_exception
+        )  # display exception on the dashboard
         logger.system_log(
             level="ERROR",
             log_data={
@@ -104,7 +108,7 @@ def run_task(task_id_str: str):
                 "task_id": task_id,
                 "task_type": task_type.__name__,
                 "status": "ERROR",
-                "traceback": format_exc(),
+                "traceback": formatted_exception,
             },
         )
         raise

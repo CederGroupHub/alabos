@@ -48,7 +48,6 @@ const StyledDevicesDiv = styled.div`
 `;
 
 
-
 function Row({ device, hoverForId }) {
   const rowColor = () => {
     switch (device.status) {
@@ -123,13 +122,20 @@ function Row({ device, hoverForId }) {
       <TableCell align="center" size="small">
         <OccupiedSamplePositions samples={device.samples} name={device.name} key={String(device.name + "-samplepositions")} hoverForId={hoverForId} />
       </TableCell>
-      <TableCell align="center" width="50%">
-        <Typography variant="caption" sx={{ color: textColor(device.status) }}>{device.message}</Typography>
+      <TableCell align="left" width="50%" >
+        <Typography variant="caption" sx={{
+          color: textColor(device.status),
+          whiteSpace: "pre-wrap",
+          display: '-webkit-box',
+          overflow: 'auto',
+          WebkitBoxOrient: 'vertical',
+          WebkitLineClamp: 3,
+        }}>{device.message}</Typography>
       </TableCell>
       <TableCell align="center">
         <PauseButton pause_state={device.pause_status} device_name={device.name} />
       </TableCell>
-    </TableRow>
+    </TableRow >
   );
 }
 
