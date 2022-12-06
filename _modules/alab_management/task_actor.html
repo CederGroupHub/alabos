@@ -349,6 +349,7 @@
 <span class="sd">The function will update the status of the task in the database and initiate the task with proper parameters.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">from</span> <span class="nn">traceback</span> <span class="kn">import</span> <span class="n">format_exc</span>
 
 <span class="kn">import</span> <span class="nn">dramatiq</span>
@@ -370,8 +371,8 @@
 
 
 <span class="nd">@dramatiq</span><span class="o">.</span><span class="n">actor</span><span class="p">(</span>
-    <span class="n">max_retries</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">time_limit</span><span class="o">=</span><span class="mi">999999999</span>
-<span class="p">)</span>  <span class="c1"># TODO no time limit -- None is not working, 0 is actually zero</span>
+    <span class="n">max_retries</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">time_limit</span><span class="o">=</span><span class="mi">48</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">1000</span><span class="p">,</span> 
+<span class="p">)</span>  <span class="c1"># TODO time limit is set in ms. currently set to 48 hours</span>
 <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="n">task_id_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Submit a task. In this system, each task is run in an</span>
@@ -388,15 +389,13 @@
     <span class="n">task_id</span> <span class="o">=</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">task_id_str</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">task_entry</span> <span class="o">=</span> <span class="n">task_view</span><span class="o">.</span><span class="n">get_task</span><span class="p">(</span><span class="n">task_id</span><span class="p">,</span> <span class="n">encode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">task_type</span> <span class="o">=</span> <span class="n">task_entry</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="si">}</span><span class="s2">: Worker picked up task </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2"> of type </span><span class="si">{</span><span class="n">task_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span>
-            <span class="s2">&quot;No task found with id: </span><span class="si">{}</span><span class="s2"> -- assuming that alabos was aborted without cleanup, and skipping this task.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">task_id</span>
-            <span class="p">)</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="si">}</span><span class="s2">: No task found with id: </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2"> -- assuming that alabos was aborted without cleanup, and skipping this task.&quot;</span>
         <span class="p">)</span>
         <span class="k">return</span>
-
-    <span class="n">task_type</span> <span class="o">=</span> <span class="n">task_entry</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">task</span><span class="p">:</span> <span class="n">BaseTask</span> <span class="o">=</span> <span class="n">task_type</span><span class="p">(</span>
