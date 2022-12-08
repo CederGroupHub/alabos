@@ -367,7 +367,7 @@
 <p>Define the base class of devices</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseDevice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseDevice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>The abstract class of device</p>
 <p>All the devices should be inherited from this class</p>
@@ -376,11 +376,6 @@
 <span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.description" title="Permalink to this definition">¶</a></dt>
 <dd><p>description of this kind of device, which can include
 the device type, how to set up and so on.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>ClassVar[str]</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -390,15 +385,22 @@ the device type, how to set up and so on.</p>
 <p>This method must be defined even if no device connections are required! Just return in this case.</p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="py property">
 <dt class="sig sig-object py" id="id0">
-<span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<dd><p>A short description of the device. This will be stored in the database + displayed in the dashboard. This must be declared in subclasses of BaseDevice!</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice.dict_in_database">
 <span class="sig-name descname"><span class="pre">dict_in_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice.dict_in_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.dict_in_database" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a dict attribute that is stored in the database.</p>
+<dd><p>Create a dict attribute that is stored in the database.
+Note: nested dicts/lists are not supported!</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -429,6 +431,18 @@ the device type, how to set up and so on.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice.get_message">
+<span class="sig-name descname"><span class="pre">get_message</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice.get_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.get_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the device message to be displayed on the dashboard.</p>
+<p>Note: this method is used instead of python getter/setters because the DeviceWrapper can currently only access methods, not properties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice.is_running">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_running</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice.is_running"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.is_running" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check whether this device is running</p>
@@ -442,7 +456,8 @@ the device type, how to set up and so on.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice.list_in_database">
 <span class="sig-name descname"><span class="pre">list_in_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice.list_in_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.list_in_database" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a list attribute that is stored in the database.</p>
+<dd><p>Create a list attribute that is stored in the database.
+Note: nested dicts/lists are not supported!</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -455,26 +470,6 @@ the device type, how to set up and so on.</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Class instance to access the attribute. Acts like a normal List, but is stored in the database.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice.request_maintenance">
-<span class="sig-name descname"><span class="pre">request_maintenance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice.request_maintenance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.request_maintenance" title="Permalink to this definition">¶</a></dt>
-<dd><p>Request maintenance for this device.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>message</strong> – The message to display in the maintenance request.</p></li>
-<li><p><strong>options</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – Response options that an operator can choose from.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>(str) The response that the operator chose.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -496,12 +491,14 @@ We use <code class="docutils literal notranslate"><span class="pre">name</span><
 <span class="k">def</span> <span class="nf">sample_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">[</span>
         <span class="n">SamplePosition</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.inside&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The position inside the furnace, where the samples are heated&quot;</span>
+            <span class="s2">&quot;inside&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The position inside the furnace, where the samples are heated&quot;</span><span class="p">,</span>
+            <span class="n">number</span><span class="o">=</span><span class="mi">8</span>
         <span class="p">),</span>
         <span class="n">SamplePosition</span><span class="p">(</span>
             <span class="s2">&quot;furnace_table&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Temporary position to transfer samples&quot;</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Temporary position to transfer samples&quot;</span><span class="p">,</span>
+            <span class="n">number</span><span class="o">=</span><span class="mi">16</span>
         <span class="p">)</span>
     <span class="p">]</span>
 </pre></div>
@@ -517,7 +514,7 @@ We use <code class="docutils literal notranslate"><span class="pre">name</span><
 <dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice.set_message">
 <span class="sig-name descname"><span class="pre">set_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice.set_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.set_message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the device message to be displayed on the dashboard.</p>
-<p>We need this method in addition to <cite>&#64;message.setter</cite> because the DeviceWrapper can currently only access methods, not properties.</p>
+<p>Note: this method is used instead of python getter/setters because the DeviceWrapper can currently only access methods, not properties.</p>
 </dd></dl>
 
 </dd></dl>
