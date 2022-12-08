@@ -25,7 +25,8 @@ class ParameterError(Exception):
 
 
 @dramatiq.actor(
-    max_retries=0, time_limit=48*60*60*1000, 
+    max_retries=0,
+    time_limit=48 * 60 * 60 * 1000,
 )  # TODO time limit is set in ms. currently set to 48 hours
 def run_task(task_id_str: str):
     """
@@ -44,7 +45,9 @@ def run_task(task_id_str: str):
     try:
         task_entry = task_view.get_task(task_id, encode=True)
         task_type = task_entry.pop("type")
-        print(f"{datetime.datetime.now()}: Worker picked up task {task_id} of type {task_type.__name__}")
+        print(
+            f"{datetime.datetime.now()}: Worker picked up task {task_id} of type {task_type.__name__}"
+        )
     except ValueError:
         print(
             f"{datetime.datetime.now()}: No task found with id: {task_id} -- assuming that alabos was aborted without cleanup, and skipping this task."
