@@ -66,7 +66,7 @@ class DeviceView:
     def __connect_all_devices(self):
         for device_name, device in self._device_list.items():
             try:
-                device.connect()
+                device._connect_wrapper()
             except:
                 raise DeviceConnectionError(f"Could not connect to {device_name}!")
             print(f"Connected to {device_name}")
@@ -75,7 +75,7 @@ class DeviceView:
     def __disconnect_all_devices(self):
         for device_name, device in self._device_list.items():
             try:
-                device.disconnect()
+                device._disconnect_wrapper()
             except:
                 raise DeviceConnectionError(f"Could not disconnect from {device_name}!")
             print(f"Disconnected from {device_name}")
@@ -421,6 +421,14 @@ class DeviceView:
         self._device_collection.update_one(
             {"name": device_name}, {"$set": {"message": message}}
         )
+
+    def get_message(self, device_name: str):
+        """Gets the current device message. Message is used to communicate device state with the user dashboard
+
+        Args:
+            device_name (str): name of the device to set the message for
+        """
+        return self.get_device(device_name=device_name)["message"]
 
     def get_all_attributes(self, device_name: str):
         """Returns the device attributes

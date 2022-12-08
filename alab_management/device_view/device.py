@@ -3,11 +3,10 @@ Define the base class of devices
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, List, ClassVar, Dict
+from typing import Any, List, ClassVar, Dict, Optional, Union
 
 from alab_management.sample_view.sample import SamplePosition
 from .dbattributes import value_in_database, ListInDatabase, DictInDatabase
-from alab_management.user_input import request_maintenance_input
 
 
 class BaseDevice(ABC):
@@ -21,9 +20,7 @@ class BaseDevice(ABC):
               the device type, how to set up and so on.
     """
 
-    description: ClassVar[str] = ""
-
-    def __init__(self, name: str, *args, **kwargs):
+    def __init__(self, name: str, description: Optional[str] = None, *args, **kwargs):
         """
         Initialize a device object, you can set up connection to
         the device in this method. The device will only be initialized
@@ -44,21 +41,50 @@ class BaseDevice(ABC):
               self.port = port
               self.driver = FurnaceController(address=address, port=port)
         """
+        # override default class description if provided during device instantiation.
+        if description:
+            self.description = description
+        self.name = name
+
+        if not isinstance(self.description, str):
+            raise TypeError("description must be a string")
+
         from alab_management.device_view import DeviceView
 
-        self.name = name
         self._device_view = DeviceView()
-        if "description" in kwargs:
-            self.description = kwargs["description"]
-        self._message = ""
+
+    @property
+    @abstractmethod
+    def description(self) -> str:
+        """
+        A short description of the device. This will be stored in the database + displayed in the dashboard. This must be declared in subclasses of BaseDevice!
+        """
+        pass
 
     def set_message(self, message: str):
         """Sets the device message to be displayed on the dashboard.
 
-        We need this method in addition to `@message.setter` because the DeviceWrapper can currently only access methods, not properties.
+        Note: this method is used instead of python getter/setters because the DeviceWrapper can currently only access methods, not properties.
         """
-        self._message = message
         self._device_view.set_message(device_name=self.name, message=message)
+        self.__message = message
+
+    def get_message(self) -> str:
+        """Returns the device message to be displayed on the dashboard.
+
+        Note: this method is used instead of python getter/setters because the DeviceWrapper can currently only access methods, not properties.
+        """
+        self.__message = self._device_view.get_message(device_name=self.name)
+        return self.__message
+
+    def _connect_wrapper(self):
+        """
+        Connect to the device and execute any backend actions that are only possible when alabos is running + the device is connected.
+
+        Note that device's only connect within `alabos launch`, so ExperimentManager, DeviceManager, and the API are guaranteed to be running when this method is called.
+        """
+        self.connect()
+        self.get_message()  # retrieve the most recent message from the database.
 
     @abstractmethod
     def connect(self):
@@ -69,6 +95,12 @@ class BaseDevice(ABC):
 
         """
         raise NotImplementedError()
+
+    def _disconnect_wrapper(self):
+        """
+        Disconnect from the device and execute any backend actions that are only possible when alabos is running.
+        """
+        self.disconnect()
 
     @abstractmethod
     def disconnect(self):
@@ -100,12 +132,14 @@ class BaseDevice(ABC):
           def sample_positions(self):
               return [
                   SamplePosition(
-                      f"{self.name}.inside",
-                      description="The position inside the furnace, where the samples are heated"
+                      "inside",
+                      description="The position inside the furnace, where the samples are heated",
+                      number=8
                   ),
                   SamplePosition(
                       "furnace_table",
-                      description="Temporary position to transfer samples"
+                      description="Temporary position to transfer samples",
+                      number=16
                   )
               ]
 
@@ -113,7 +147,7 @@ class BaseDevice(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def emergent_stop(self):
+    def emergent_stop(self):  # TODO rename this to emergency stop
         """
         Specify how the device should stop when emergency
         """
@@ -126,9 +160,13 @@ class BaseDevice(ABC):
         """
         raise NotImplementedError()
 
-    def list_in_database(self, name: str, default_value: list = None) -> ListInDatabase:
+    ## methods to store Device values inside the database. Lists and dictionaries are supported.
+    def list_in_database(
+        self, name: str, default_value: Optional[Union[list, None]] = None
+    ) -> ListInDatabase:
         """
         Create a list attribute that is stored in the database.
+        Note: nested dicts/lists are not supported!
 
         Args:
             name: The name of the attribute
@@ -144,9 +182,12 @@ class BaseDevice(ABC):
             default_value=default_value,
         )
 
-    def dict_in_database(self, name: str, default_value: dict = None) -> DictInDatabase:
+    def dict_in_database(
+        self, name: str, default_value: Optional[Union[dict, None]] = None
+    ) -> DictInDatabase:
         """
         Create a dict attribute that is stored in the database.
+        Note: nested dicts/lists are not supported!
 
         Args:
             name: The name of the attribute
@@ -165,25 +206,13 @@ class BaseDevice(ABC):
     def _apply_default_db_values(self):
         """
         Apply default values to attributes that are stored in the database.
+
+        This is called when the device is first added to the database, typically only when alabos is setting up a new lab.
         """
         for attribute_name in dir(self):
             attribute = getattr(self, attribute_name)
             if any(isinstance(attribute, t) for t in [ListInDatabase, DictInDatabase]):
                 attribute.apply_default_value()
-
-    def request_maintenance(self, prompt: str, options: List[Any]) -> str:
-        """
-        Request maintenance for this device.
-
-        Args:
-            message: The message to display in the maintenance request.
-            options: Response options that an operator can choose from.
-
-        Returns:
-            (str) The response that the operator chose.
-        """
-        full_prompt = f"{self.name}: {prompt}"
-        return request_maintenance_input(prompt=prompt, options=options)
 
 
 _device_registry: Dict[str, BaseDevice] = {}
