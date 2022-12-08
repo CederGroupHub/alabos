@@ -212,7 +212,7 @@ class TaskManager(RequestMixin):
         """
         while True:
             self._loop()
-            time.sleep(0.5)
+            time.sleep(2)
 
     def _loop(self):
         self.submit_ready_tasks()
