@@ -17,6 +17,7 @@ from alab_management.device_manager import DevicesClient
 from alab_management.device_view.device import BaseDevice
 from alab_management.experiment_view.experiment_view import ExperimentView
 from alab_management.logger import DBLogger
+from alab_management.sample_view.sample import Sample
 from alab_management.sample_view.sample_view import SampleView, SamplePositionRequest
 from alab_management.task_manager import ResourceRequester
 from alab_management.task_view.task import BaseTask
@@ -65,7 +66,7 @@ class LabView:
 
     def __init__(self, task_id: ObjectId):
         self._task_view = TaskView()
-        self._task_view.get_task(
+        self.__task_entry = self._task_view.get_task(
             task_id=task_id
         )  # will throw error if task_id does not exist
         self._experiment_view = ExperimentView()
@@ -111,7 +112,7 @@ class LabView:
             resource_request=resource_request, timeout=timeout, priority=priority
         )
         devices = result["devices"]
-        sample_positions: Dict[Union[str, BaseDevice, None], str] = result["sample_positions"]
+        sample_positions = result["sample_positions"]
         request_id = result["request_id"]
         devices = {
             device_type: self._device_client.create_device_wrapper(device_name)
@@ -126,17 +127,14 @@ class LabView:
         """
         Get a sample id by name. Looks up sample name->id mapping for the experiment `self.task_id` belongs to.
         """
-        experiment = self._experiment_view.get_experiment_by_task_id(
-            task_id=self.task_id
-        )
-        for sample in experiment["samples"]:
+        for sample in self.__task_entry["samples"]:
             if sample["name"] == sample_name:
                 return sample["sample_id"]
         raise ValueError(
-            f"No sample with name \"{sample_name}\" found in experiment \"{experiment['name']}\""
+            f"No sample with name \"{sample_name}\" found for task \"{self.__task_entry['type']}\""
         )
 
-    def get_sample(self, sample: Union[Type[ObjectId], str]) -> Optional[SampleView]:
+    def get_sample(self, sample: Union[Type[ObjectId], str]) -> Sample:
         """
         Get a sample by either an ObjectId corresponding to sample_id, or as a string corresponding to the sample's name within the experiment., see also
         :py:meth:`get_sample <alab_management.sample_view.sample_view.SampleView.get_sample>`
@@ -163,7 +161,7 @@ class LabView:
             != self._task_id
         ):
             raise ValueError(
-                f"Cannot move sample to a sample position ({position}) without locking it."
+                f"Cannot move sample to the new sample position ({position}) without locking it."
             )
 
         # check if this sample is owned by current task

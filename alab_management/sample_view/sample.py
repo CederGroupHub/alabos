@@ -49,7 +49,7 @@ class SamplePosition:
     def __post_init__(self):
         if self.number < 0:
             raise ValueError(
-                f"The number of sample position ({self.name}) should be >= 0, but get {self.number}"
+                f"{self.number} is an invalid number of sample positions! The number of sample position ({self.name}) must be >= 0."
             )
 
 

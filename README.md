@@ -3,9 +3,9 @@
 ![license](https://img.shields.io/github/license/CederGroupHub/alab_management)
 ![tag](https://img.shields.io/github/v/tag/CederGroupHub/alab_management)
 ![os](https://img.shields.io/badge/OS-win%7Cmac%7Clinux-9cf)
-![python](https://img.shields.io/badge/Python-3.8%7C3.9%7C3.10-purple)
+![python](https://img.shields.io/badge/Python-3.8%7C3.9%7C3.10-blueviolet)
 
-Managing the workflows in the **A**utonomous **lab**.
+Managing the workflows in the **A**utonomous **Lab**.
 
 ## Installation
 ### Prerequisites
