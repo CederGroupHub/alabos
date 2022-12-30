@@ -6,6 +6,7 @@ from abc import ABC, abstractmethod
 from typing import Any, List, ClassVar, Dict, Optional, Union
 
 from alab_management.sample_view.sample import SamplePosition
+from alab_management.user_input import request_maintenance_input
 from .dbattributes import value_in_database, ListInDatabase, DictInDatabase
 
 
@@ -213,6 +214,9 @@ class BaseDevice(ABC):
             attribute = getattr(self, attribute_name)
             if any(isinstance(attribute, t) for t in [ListInDatabase, DictInDatabase]):
                 attribute.apply_default_value()
+
+    def request_maintenance(self, prompt: str, options: List[Any]):
+        return request_maintenance_input(prompt=prompt, options=options)
 
 
 _device_registry: Dict[str, BaseDevice] = {}

@@ -1,6 +1,6 @@
 from typing import ClassVar
 
-from alab_management import BaseDevice, SamplePosition
+from alab_management import BaseDevice, SamplePosition, value_in_database
 
 
 class DefaultDevice(BaseDevice):
@@ -25,6 +25,12 @@ class DefaultDevice(BaseDevice):
                 description="Default sample position",
             )
         ]
+
+    def connect(self):
+        pass
+
+    def disconnect(self):
+        pass
 
     def emergent_stop(self):
         pass

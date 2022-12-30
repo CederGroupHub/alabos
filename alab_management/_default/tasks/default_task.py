@@ -13,9 +13,13 @@ class DefaultTask(BaseTask):
         self.sample = sample
 
     def run(self):
-        with self.lab_view.request_resources(
-            {None: [{"prefix": "DefaultSamplePosition", "number": 2}]}
-        ) as (_, sample_positions):
+        with self.lab_view.request_resources({None: {"DefaultSamplePosition": 1}}) as (
+            _,
+            sample_positions,
+        ):
             self.lab_view.move_sample(
                 self.sample, sample_positions[None]["DefaultSamplePosition"][0]
             )
+
+    def validate(self):
+        return True
