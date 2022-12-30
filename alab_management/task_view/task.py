@@ -2,10 +2,13 @@
 Define the base class of task, which will be used for defining more tasks.
 """
 from abc import ABC, abstractmethod
+import inspect
 from typing import Dict, List, Type, TYPE_CHECKING, Optional, Union
 from bson.objectid import ObjectId
 from alab_management.task_view.task_enums import TaskPriority
 from inspect import getfullargspec
+from alab_management.builders.samplebuilder import SampleBuilder
+from alab_management.builders.experimentbuilder import ExperimentBuilder
 
 if TYPE_CHECKING:
     from alab_management.lab_view import LabView
@@ -21,10 +24,11 @@ class BaseTask(ABC):
 
     def __init__(
         self,
-        task_id: ObjectId,
-        lab_view: "LabView",
-        # samples: List[ObjectId],
+        samples: List[str] = None,
+        task_id: ObjectId = None,
+        lab_view: "LabView" = None,
         priority: Optional[Union[TaskPriority, int]] = TaskPriority.NORMAL,
+        simulation: bool = True,
         *args,
         **kwargs,
     ):
@@ -45,22 +49,44 @@ class BaseTask(ABC):
               self.setpoints = setpoints
               self.samples = [sample_1, sample_2, sample_3, sample_4]
         """
-        self.task_id = task_id
+        self.__simulation = simulation
+
         self.child_task_num: int = 0
-        self.lab_view = lab_view
-        self.logger = self.lab_view.logger
-        self.priority = priority
-        # self.samples = samples
+        self.__samples = samples or []
+        if self.__simulation:
+            current_frame = inspect.currentframe()
+            outer_frames = inspect.getouterframes(current_frame)
+            subclass_init_frame = outer_frames[1].frame
+            self.subclass_kwargs = {
+                key: val
+                for key, val in inspect.getargvalues(subclass_init_frame).locals.items()
+                if key not in ["self", "args", "kwargs", "__class__"]
+            }
+
+        else:
+            self.task_id = task_id
+            self.lab_view = lab_view
+            self.logger = self.lab_view.logger
+            self.priority = priority
+            if not self.validate():
+                raise ValueError("Task validation failed!")
+
+    @property
+    def samples(self) -> List[str]:
+        return self.__samples
 
     @property
     def priority(self) -> int:
+        if self.__simulation:
+            return 0
         return self.lab_view._resource_requester.priority
 
     @priority.setter
     def priority(self, value: Union[int, TaskPriority]):
         if value < 0:
             raise ValueError("Priority should be a positive integer")
-        self.lab_view._resource_requester.priority = int(value)
+        if not self.__simulation:
+            self.lab_view._resource_requester.priority = int(value)
 
     @property
     def message(self):
@@ -73,7 +99,20 @@ class BaseTask(ABC):
     def set_message(self, message: str):
         """Sets the task message to be displayed on the dashboard."""
         self._message = message
-        self.lab_view._task_view.set_message(task_id=self.task_id, message=message)
+        if not self.__simulation:
+            self.lab_view._task_view.set_message(task_id=self.task_id, message=message)
+
+    # @abstractmethod
+    def validate(self) -> bool:
+        """
+        Validate the task. This function will be called before the task is executed. Should return False if the task has values that make it impossible to execute.
+
+        For example, a `Heating` subclass of `BaseTask` might return False if the set temperature is too high for the furnace.
+        """
+        # raise NotImplementedError(
+        #     "The .validate method must be implemented by a subclass of BaseTask"
+        # )
+        return True
 
     @abstractmethod
     def run(self):
@@ -123,13 +162,34 @@ class BaseTask(ABC):
                   })
 
         """
-        raise NotImplementedError()
+        raise NotImplementedError(
+            "The .run_task method must be implemented by the subclass of BaseTask."
+        )
 
     def run_subtask(self, *args, **kwargs):
         """
         Run a subtask of this current task. Returns the result, if any, of the subtask.
         """
         return self.lab_view.run_subtask(*args, **kwargs)
+
+    def add_to(
+        self,
+        samples: Union[SampleBuilder, List[SampleBuilder]],
+    ):
+
+        if isinstance(samples, SampleBuilder):
+            samples = [samples]
+
+        experiment: ExperimentBuilder = samples[0].experiment
+        task_id = str(ObjectId())
+        experiment.add_task(
+            task_id=task_id,
+            task_name=self.__class__.__name__,
+            task_kwargs=self.subclass_kwargs,
+            samples=samples,
+        )
+        for sample in samples:
+            sample.add_task(task_id=task_id)
 
 
 _task_registry: Dict[str, Type[BaseTask]] = {}

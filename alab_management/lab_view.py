@@ -207,7 +207,7 @@ class LabView:
             task_id=task_id, subtask_type=task.__name__, parameters=kwargs
         )
         try:
-            subtask: BaseTask = task(task_id=task_id, lab_view=lab_view, **kwargs)
+            subtask: BaseTask = task(simulation=False, task_id=task_id, lab_view=lab_view, **kwargs)
         except Exception as exception:
             self._task_view.update_subtask_status(
                 task_id=task_id, subtask_id=subtask_id, status=TaskStatus.ERROR
