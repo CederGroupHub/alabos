@@ -56,12 +56,12 @@ def run_task(task_id_str: str):
 
     try:
         task: BaseTask = task_type(
-            simulation=False,
-            task_id=task_id,
-            lab_view=LabView(task_id=task_id),
             samples=[
                 sample["name"] for sample in task_entry["samples"]
             ],  # only the sample names are sent
+            task_id=task_id,
+            lab_view=LabView(task_id=task_id),
+            simulation=False,
             **task_entry["parameters"],
         )
     except Exception as exception:

@@ -185,7 +185,7 @@ class LabView:
         """
         return self._sample_view.get_sample_position_parent_device(position=position)
 
-    def run_subtask(self, task: Union[str, Type[BaseTask]], **kwargs):
+    def run_subtask(self, task: Type[BaseTask], samples: List[str], **kwargs):
         """run a task as a subtask within the task. basically fills in task_id and lab_view for you.
             this command blocks until the subtask is completed.
 
@@ -204,10 +204,19 @@ class LabView:
         lab_view = self
 
         subtask_id = self._task_view.create_subtask(
-            task_id=task_id, subtask_type=task.__name__, parameters=kwargs
+            task_id=task_id,
+            subtask_type=task.__name__,
+            samples=samples,
+            parameters=kwargs,
         )
         try:
-            subtask: BaseTask = task(simulation=False, task_id=task_id, lab_view=lab_view, **kwargs)
+            subtask: BaseTask = task(
+                simulation=False,
+                task_id=task_id,
+                lab_view=lab_view,
+                samples=samples,
+                **kwargs,
+            )
         except Exception as exception:
             self._task_view.update_subtask_status(
                 task_id=task_id, subtask_id=subtask_id, status=TaskStatus.ERROR

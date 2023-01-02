@@ -77,7 +77,9 @@ class TaskView:
 
         return cast(ObjectId, result.inserted_id)
 
-    def create_subtask(self, task_id, subtask_type, parameters: dict):
+    def create_subtask(
+        self, task_id, subtask_type, samples: List[str], parameters: dict
+    ):
         """
         Create a subtask entry for a task.
         """
@@ -89,6 +91,7 @@ class TaskView:
             {
                 "subtask_id": subtask_id,
                 "type": subtask_type,
+                "samples": samples,
                 "status": TaskStatus.INITIATED.name,
                 "parameters": parameters,
                 "created_at": datetime.now(),

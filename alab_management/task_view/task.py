@@ -24,9 +24,9 @@ class BaseTask(ABC):
 
     def __init__(
         self,
-        samples: List[str] = None,
-        task_id: ObjectId = None,
-        lab_view: "LabView" = None,
+        samples: Optional[List[str]] = None,
+        task_id: Optional[ObjectId] = None,
+        lab_view: Optional["LabView"] = None,
         priority: Optional[Union[TaskPriority, int]] = TaskPriority.NORMAL,
         simulation: bool = True,
         *args,
@@ -53,7 +53,7 @@ class BaseTask(ABC):
 
         self.child_task_num: int = 0
         self.__samples = samples or []
-        if self.__simulation:
+        if self.is_simulation:
             current_frame = inspect.currentframe()
             outer_frames = inspect.getouterframes(current_frame)
             subclass_init_frame = outer_frames[1].frame
@@ -64,6 +64,10 @@ class BaseTask(ABC):
             }
 
         else:
+            if (task_id is None) or (lab_view is None) or (samples is None):
+                raise ValueError(
+                    "BaseTask was instantiated with simulation mode off -- task_id, lab_view, and samples must all be provided!"
+                )
             self.task_id = task_id
             self.lab_view = lab_view
             self.logger = self.lab_view.logger
@@ -72,12 +76,16 @@ class BaseTask(ABC):
                 raise ValueError("Task validation failed!")
 
     @property
+    def is_simulation(self) -> bool:
+        return self.__simulation
+
+    @property
     def samples(self) -> List[str]:
         return self.__samples
 
     @property
     def priority(self) -> int:
-        if self.__simulation:
+        if self.is_simulation:
             return 0
         return self.lab_view._resource_requester.priority
 
@@ -88,19 +96,14 @@ class BaseTask(ABC):
         if not self.__simulation:
             self.lab_view._resource_requester.priority = int(value)
 
-    @property
-    def message(self):
-        return self._message
-
-    @message.setter
-    def message(self, message: str):
-        self.set_message(message)
-
     def set_message(self, message: str):
         """Sets the task message to be displayed on the dashboard."""
         self._message = message
         if not self.__simulation:
             self.lab_view._task_view.set_message(task_id=self.task_id, message=message)
+
+    def get_message(self):
+        return self._message
 
     # @abstractmethod
     def validate(self) -> bool:
@@ -163,20 +166,36 @@ class BaseTask(ABC):
 
         """
         raise NotImplementedError(
-            "The .run_task method must be implemented by the subclass of BaseTask."
+            "The .run method must be implemented by the subclass of BaseTask."
         )
 
-    def run_subtask(self, *args, **kwargs):
+    def run_subtask(
+        self,
+        task: Type["BaseTask"],
+        samples: Optional[Union[List[str], str]] = None,
+        **kwargs,
+    ):
         """
         Run a subtask of this current task. Returns the result, if any, of the subtask.
         """
-        return self.lab_view.run_subtask(*args, **kwargs)
+        samples = samples or self.samples
+        if isinstance(samples, str):
+            samples = [samples]
+        return self.lab_view.run_subtask(task=task, samples=samples, **kwargs)
 
     def add_to(
         self,
         samples: Union[SampleBuilder, List[SampleBuilder]],
     ):
+        """Used to add basetask to a SampleBuilder's tasklist during Experiment construction.
 
+        Args:
+            samples (Union[SampleBuilder, List[SampleBuilder]]): One or more SampleBuilder's which will have this task appended to their tasklists.
+        """
+        if not self.__simulation:
+            raise RuntimeError(
+                "Cannot add a live BaseTask instance to a SampleBuilder. BaseTask must be instantiated with `simulation=True` to enable this method."
+            )
         if isinstance(samples, SampleBuilder):
             samples = [samples]
 
