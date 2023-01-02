@@ -132,11 +132,33 @@
     </label>
     <ul>
      <li class="toctree-l3 has-children">
-      <a class="reference internal" href="../../alab_management.device_view.html">
-       alab_management.device_view package
+      <a class="reference internal" href="../../alab_management.builders.html">
+       alab_management.builders package
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
       <label for="toctree-checkbox-3">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.builders.experimentbuilder.html">
+         alab_management.builders.experimentbuilder module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.builders.samplebuilder.html">
+         alab_management.builders.samplebuilder module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../alab_management.device_view.html">
+       alab_management.device_view package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+      <label for="toctree-checkbox-4">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -162,8 +184,8 @@
       <a class="reference internal" href="../../alab_management.experiment_view.html">
        alab_management.experiment_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
-      <label for="toctree-checkbox-4">
+      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+      <label for="toctree-checkbox-5">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -184,8 +206,8 @@
       <a class="reference internal" href="../../alab_management.sample_view.html">
        alab_management.sample_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
-      <label for="toctree-checkbox-5">
+      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+      <label for="toctree-checkbox-6">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -206,8 +228,8 @@
       <a class="reference internal" href="../../alab_management.task_view.html">
        alab_management.task_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
-      <label for="toctree-checkbox-6">
+      <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+      <label for="toctree-checkbox-7">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -379,7 +401,7 @@
 
 
 <div class="viewcode-block" id="froze_config"><a class="viewcode-back" href="../../alab_management.config.html#alab_management.config.froze_config">[docs]</a><span class="k">def</span> <span class="nf">froze_config</span><span class="p">(</span><span class="n">config_</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">FrozenDict</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert the config dict to frozen config</span>
 
 <span class="sd">    Args:</span>
@@ -390,7 +412,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">_froze_collection</span><span class="p">(</span><span class="n">collection_or_element</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert a list to tuple, a dict to frozen_dict recursively</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">collection_or_element</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
@@ -409,12 +431,12 @@
 
 <span class="nd">@singleton</span>
 <span class="k">class</span> <span class="nc">AlabConfig</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class used for storing all the config data</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load a immutable toml config file from `config_path`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">config_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;ALAB_CONFIG&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -441,7 +463,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The absolute path to the config file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path</span>
@@ -462,7 +484,7 @@
         
           By Alab Project Team<br/>
         
-            &copy; Copyright 2022, Alab Project Team.<br/>
+            &copy; Copyright 2023, Alab Project Team.<br/>
       </p>
     </div>
   </footer>

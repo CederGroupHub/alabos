@@ -132,11 +132,33 @@
     </label>
     <ul>
      <li class="toctree-l3 has-children">
-      <a class="reference internal" href="../../../alab_management.device_view.html">
-       alab_management.device_view package
+      <a class="reference internal" href="../../../alab_management.builders.html">
+       alab_management.builders package
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
       <label for="toctree-checkbox-3">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../alab_management.builders.experimentbuilder.html">
+         alab_management.builders.experimentbuilder module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../alab_management.builders.samplebuilder.html">
+         alab_management.builders.samplebuilder module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../../alab_management.device_view.html">
+       alab_management.device_view package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+      <label for="toctree-checkbox-4">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -162,8 +184,8 @@
       <a class="reference internal" href="../../../alab_management.experiment_view.html">
        alab_management.experiment_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
-      <label for="toctree-checkbox-4">
+      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+      <label for="toctree-checkbox-5">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -184,8 +206,8 @@
       <a class="reference internal" href="../../../alab_management.sample_view.html">
        alab_management.sample_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
-      <label for="toctree-checkbox-5">
+      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+      <label for="toctree-checkbox-6">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -206,8 +228,8 @@
       <a class="reference internal" href="../../../alab_management.task_view.html">
        alab_management.task_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
-      <label for="toctree-checkbox-6">
+      <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+      <label for="toctree-checkbox-7">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -362,7 +384,7 @@
 
 
 <div class="viewcode-block" id="SamplePositionRequest"><a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SamplePositionRequest">[docs]</a><span class="k">class</span> <span class="nc">SamplePositionRequest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The class is used to request sample position.</span>
 
 <span class="sd">    You need to specify the prefix of the sample position (will be used to match by `startwith` method) and</span>
@@ -370,7 +392,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="SamplePositionRequest.Config"><a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SamplePositionRequest.Config">[docs]</a>    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;raise error when extra kwargs&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;raise error when extra kwargs&quot;&quot;&quot;</span>
 
         <span class="n">extra</span> <span class="o">=</span> <span class="s2">&quot;forbid&quot;</span></div>
 
@@ -393,7 +415,7 @@
 
 
 <div class="viewcode-block" id="SamplePositionStatus"><a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SamplePositionStatus">[docs]</a><span class="k">class</span> <span class="nc">SamplePositionStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The status of a sample position</span>
 
 <span class="sd">    - ``EMPTY``: the sample position is neither locked nor occupied</span>
@@ -407,7 +429,7 @@
 
 
 <div class="viewcode-block" id="SampleView"><a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView">[docs]</a><span class="k">class</span> <span class="nc">SampleView</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sample view manages the samples and their positions</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -429,7 +451,7 @@
         <span class="n">sample_positions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">SamplePosition</span><span class="p">],</span>
         <span class="n">parent_device_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Insert sample positions info to db, which includes position name and description</span>
 
 <span class="sd">        If one sample position&#39;s name has already appeared in the database,</span>
@@ -471,7 +493,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">new_entry</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SampleView.clean_up_sample_position_collection"><a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.clean_up_sample_position_collection">[docs]</a>    <span class="k">def</span> <span class="nf">clean_up_sample_position_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Drop the sample position collection</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span><span class="o">.</span><span class="n">drop</span><span class="p">()</span></div>
@@ -481,7 +503,7 @@
         <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span>
         <span class="n">sample_positions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">SamplePositionRequest</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Request a list of sample positions, this function will return until all the sample positions are available</span>
 
 <span class="sd">        Args:</span>
@@ -528,7 +550,7 @@
             <span class="k">return</span> <span class="n">available_positions</span></div>
 
 <div class="viewcode-block" id="SampleView.get_sample_position"><a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_sample_position">[docs]</a>    <span class="k">def</span> <span class="nf">get_sample_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the sample position entry in the database</span>
 
 <span class="sd">        if the position is not a valid position (not defined in the database), return None</span>
@@ -538,7 +560,7 @@
 <div class="viewcode-block" id="SampleView.get_sample_position_status"><a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_sample_position_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_sample_position_status</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">SamplePositionStatus</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the status of a sample position</span>
 
 <span class="sd">        If there is a sample in the position, return OCCUPIED;</span>
@@ -567,7 +589,7 @@
         <span class="k">return</span> <span class="n">SamplePositionStatus</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">,</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="SampleView.get_sample_position_parent_device"><a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_sample_position_parent_device">[docs]</a>    <span class="k">def</span> <span class="nf">get_sample_position_parent_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the parent device of a sample position. If no parent device is defined, returns None. If the &quot;position&quot; query is a prefix, will look for a single parent device across all matched positions (ie a query for position=&quot;furnace_1/tray&quot; will properly return &quot;furnace_1&quot; even if &quot;furnace_1/tray/1&quot; and &quot;furnace_1/tray/2&quot; are in the database _as long as &quot;furnace_1&quot; is the parent device of both!_).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sample_positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
@@ -583,7 +605,7 @@
         <span class="k">return</span> <span class="n">parent_devices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="SampleView.is_unoccupied_position"><a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.is_unoccupied_position">[docs]</a>    <span class="k">def</span> <span class="nf">is_unoccupied_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tell if a sample position is unoccupied or not</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span>
@@ -594,7 +616,7 @@
 <div class="viewcode-block" id="SampleView.get_available_sample_position"><a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_available_sample_position">[docs]</a>    <span class="k">def</span> <span class="nf">get_available_sample_position</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">position_prefix</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the position is occupied</span>
 
 <span class="sd">        The structure of returned list is ``{&quot;name&quot;: str, &quot;need_release&quot;: bool}``.</span>
@@ -640,7 +662,7 @@
         <span class="k">return</span> <span class="n">available_sp_names</span></div>
 
 <div class="viewcode-block" id="SampleView.lock_sample_position"><a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.lock_sample_position">[docs]</a>    <span class="k">def</span> <span class="nf">lock_sample_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Lock a sample position</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sample_status</span><span class="p">,</span> <span class="n">current_task_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sample_position_status</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
@@ -663,7 +685,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="SampleView.release_sample_position"><a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.release_sample_position">[docs]</a>    <span class="k">def</span> <span class="nf">release_sample_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unlock a sample position</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sample_position</span><span class="p">(</span><span class="n">position</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -679,7 +701,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="SampleView.get_sample_positions_by_task"><a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_sample_positions_by_task">[docs]</a>    <span class="k">def</span> <span class="nf">get_sample_positions_by_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the list of sample positions that is locked by a task (given task id)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span>
@@ -699,7 +721,7 @@
         <span class="n">position</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sample_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectId</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a sample and return its uid in the database</span>
 
 <span class="sd">        Samples with the same name can exist in the database</span>
@@ -732,7 +754,7 @@
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">ObjectId</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SampleView.get_sample"><a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_sample">[docs]</a>    <span class="k">def</span> <span class="nf">get_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sample</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get a sample by its id</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a sample by its id</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            sample_id (ObjectId): id of the sample within sample collection</span>
@@ -755,7 +777,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="SampleView.update_sample_task_id"><a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.update_sample_task_id">[docs]</a>    <span class="k">def</span> <span class="nf">update_sample_task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update the task id for a sample</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">})</span>
@@ -773,7 +795,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="SampleView.move_sample"><a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.move_sample">[docs]</a>    <span class="k">def</span> <span class="nf">move_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update the sample with new position</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">})</span>
@@ -814,7 +836,7 @@
         
           By Alab Project Team<br/>
         
-            &copy; Copyright 2022, Alab Project Team.<br/>
+            &copy; Copyright 2023, Alab Project Team.<br/>
       </p>
     </div>
   </footer>

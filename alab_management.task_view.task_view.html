@@ -134,11 +134,33 @@
     </label>
     <ul class="current">
      <li class="toctree-l3 has-children">
-      <a class="reference internal" href="alab_management.device_view.html">
-       alab_management.device_view package
+      <a class="reference internal" href="alab_management.builders.html">
+       alab_management.builders package
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
       <label for="toctree-checkbox-3">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.builders.experimentbuilder.html">
+         alab_management.builders.experimentbuilder module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.builders.samplebuilder.html">
+         alab_management.builders.samplebuilder module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="alab_management.device_view.html">
+       alab_management.device_view package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+      <label for="toctree-checkbox-4">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -164,8 +186,8 @@
       <a class="reference internal" href="alab_management.experiment_view.html">
        alab_management.experiment_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
-      <label for="toctree-checkbox-4">
+      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+      <label for="toctree-checkbox-5">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -186,8 +208,8 @@
       <a class="reference internal" href="alab_management.sample_view.html">
        alab_management.sample_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
-      <label for="toctree-checkbox-5">
+      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+      <label for="toctree-checkbox-6">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -208,8 +230,8 @@
       <a class="reference internal" href="alab_management.task_view.html">
        alab_management.task_view package
       </a>
-      <input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
-      <label for="toctree-checkbox-6">
+      <input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+      <label for="toctree-checkbox-7">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -373,7 +395,7 @@ provides some convenience methods to query and manipulate the tasks collection.<
 <p>Task view manages the status, parameters of a task</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskView.create_subtask">
-<span class="sig-name descname"><span class="pre">create_subtask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtask_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.create_subtask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.create_subtask" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">create_subtask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtask_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.create_subtask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.create_subtask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a subtask entry for a task.</p>
 </dd></dl>
 
@@ -600,7 +622,7 @@ which will not overwrite old pre_task and next_tasks</p>
         
           By Alab Project Team<br/>
         
-            &copy; Copyright 2022, Alab Project Team.<br/>
+            &copy; Copyright 2023, Alab Project Team.<br/>
       </p>
     </div>
   </footer>

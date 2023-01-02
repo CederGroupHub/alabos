@@ -132,11 +132,33 @@
     </label>
     <ul>
      <li class="toctree-l3 has-children">
-      <a class="reference internal" href="../../../alab_management.device_view.html">
-       alab_management.device_view package
+      <a class="reference internal" href="../../../alab_management.builders.html">
+       alab_management.builders package
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
       <label for="toctree-checkbox-3">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../alab_management.builders.experimentbuilder.html">
+         alab_management.builders.experimentbuilder module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../alab_management.builders.samplebuilder.html">
+         alab_management.builders.samplebuilder module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../../alab_management.device_view.html">
+       alab_management.device_view package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+      <label for="toctree-checkbox-4">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -162,8 +184,8 @@
       <a class="reference internal" href="../../../alab_management.experiment_view.html">
        alab_management.experiment_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
-      <label for="toctree-checkbox-4">
+      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+      <label for="toctree-checkbox-5">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -184,8 +206,8 @@
       <a class="reference internal" href="../../../alab_management.sample_view.html">
        alab_management.sample_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
-      <label for="toctree-checkbox-5">
+      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+      <label for="toctree-checkbox-6">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -206,8 +228,8 @@
       <a class="reference internal" href="../../../alab_management.task_view.html">
        alab_management.task_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
-      <label for="toctree-checkbox-6">
+      <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+      <label for="toctree-checkbox-7">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -351,7 +373,7 @@
 
 
 <div class="viewcode-block" id="value_in_database"><a class="viewcode-back" href="../../../alab_management.device_view.dbattributes.html#alab_management.device_view.dbattributes.value_in_database">[docs]</a><span class="k">def</span> <span class="nf">value_in_database</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default_value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">property</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Property factory to mirror a Device attribute in the ALab database. This must be declared as a Class Variable under a Device subclass of BaseDevice!</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Property factory to mirror a Device attribute in the ALab database. This must be declared as a Class Variable under a Device subclass of BaseDevice!</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        name (str): attribute name</span>
@@ -404,7 +426,7 @@
 
 
 <div class="viewcode-block" id="ListInDatabase"><a class="viewcode-back" href="../../../alab_management.device_view.dbattributes.html#alab_management.device_view.dbattributes.ListInDatabase">[docs]</a><span class="k">class</span> <span class="nc">ListInDatabase</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Class that emulates a list, but stores the list in the device database. Useful for working with Device attributes that are lists, so values persist across alabos sessions. This should be instantiated using `alab_management.device_view.device.BaseDevice.dict_in_database`&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class that emulates a list, but stores the list in the device database. Useful for working with Device attributes that are lists, so values persist across alabos sessions. This should be instantiated using `alab_management.device_view.device.BaseDevice.dict_in_database`&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -424,7 +446,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">default_value</span> <span class="o">=</span> <span class="n">default_value</span>
 
 <div class="viewcode-block" id="ListInDatabase.apply_default_value"><a class="viewcode-back" href="../../../alab_management.device_view.dbattributes.html#alab_management.device_view.dbattributes.ListInDatabase.apply_default_value">[docs]</a>    <span class="k">def</span> <span class="nf">apply_default_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;This is called within `alab_management.scripts.setup_lab()` to ensure that all devices have the correct default values for their attributes. This should not be called manually.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This is called within `alab_management.scripts.setup_lab()` to ensure that all devices have the correct default values for their attributes. This should not be called manually.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: Device is not found in the database. This should only occur if this function is called out of order (i.e. before the device is created in the db).</span>
@@ -542,7 +564,7 @@
 
 
 <div class="viewcode-block" id="DictInDatabase"><a class="viewcode-back" href="../../../alab_management.device_view.dbattributes.html#alab_management.device_view.dbattributes.DictInDatabase">[docs]</a><span class="k">class</span> <span class="nc">DictInDatabase</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Class that emulates a dict, but stores the dict in the device database. Useful for working with Device attributes that are dict, so values persist across alabos sessions. This should be instantiated using `alab_management.device_view.device.BaseDevice.dict_in_database`&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class that emulates a dict, but stores the dict in the device database. Useful for working with Device attributes that are dict, so values persist across alabos sessions. This should be instantiated using `alab_management.device_view.device.BaseDevice.dict_in_database`&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -564,7 +586,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">default_value</span> <span class="o">=</span> <span class="n">default_value</span>
 
 <div class="viewcode-block" id="DictInDatabase.apply_default_value"><a class="viewcode-back" href="../../../alab_management.device_view.dbattributes.html#alab_management.device_view.dbattributes.DictInDatabase.apply_default_value">[docs]</a>    <span class="k">def</span> <span class="nf">apply_default_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;This is called within `alab_management.scripts.setup_lab()` to ensure that all devices have the correct default values for their attributes. This should not be called manually.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This is called within `alab_management.scripts.setup_lab()` to ensure that all devices have the correct default values for their attributes. This should not be called manually.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: Device is not found in the database. This should only occur if this function is called out of order (i.e. before the device is created in the db).</span>
@@ -672,60 +694,6 @@
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">)</span></div>
-
-
-<span class="c1"># TODO maybe update along the lines of https://github.com/zeycus/mongo_shelve/blob/master/mongo_shelve/mongo_shelve_class.py</span>
-<div class="viewcode-block" id="attribute_in_database"><a class="viewcode-back" href="../../../alab_management.device_view.dbattributes.html#alab_management.device_view.dbattributes.attribute_in_database">[docs]</a><span class="k">def</span> <span class="nf">attribute_in_database</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default_value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">property</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Property factory to mirror a Device attribute in the ALab database</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        name (str): attribute name</span>
-<span class="sd">        default_value (Any): default value for the attribute. Note that this value is not used until the first time a property is queried; at this time, if the attribute is not found in the database, it is set to this value.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        property: class property that handles getting/setting values from the database.</span>
-
-
-<span class="sd">    Example usage when defining a new Device:</span>
-
-<span class="sd">        .. code-block:: python</span>
-<span class="sd">        from alab_management.device_view import BaseDevice, attribute_in_database</span>
-
-<span class="sd">        class MyDevice(BaseDevice):</span>
-<span class="sd">            my_attribute = attribute_in_database(&quot;my_attribute&quot;, 0)</span>
-
-<span class="sd">            def __init__(self, name: str, **kwargs):</span>
-<span class="sd">                super().__init__(name, **kwargs)</span>
-<span class="sd">                self.name = name</span>
-<span class="sd">                self.my_attribute #initial call to the property, which sets the default value in the database</span>
-
-<span class="sd">        ....</span>
-<span class="sd">        #first instantiation</span>
-
-<span class="sd">        mydevice = MyDevice(name = &quot;mydevice_1&quot;)</span>
-<span class="sd">        mydevice.my_attribute = 5 #sets the value in the database</span>
-
-<span class="sd">        ....</span>
-<span class="sd">        #future instantiation</span>
-<span class="sd">        mydevice = MyDevice(name = &quot;mydevice_1&quot;)</span>
-<span class="sd">        mydevice.my_attribute #retrieves value from db and returns 5</span>
-
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">getter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="n">attributes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">get_all_attributes</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">attributes</span><span class="p">:</span>
-            <span class="n">attributes</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">default_value</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">set_all_attributes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">attributes</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="nf">setter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span>
-            <span class="n">device_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span>
-        <span class="p">)</span>
-
-    <span class="k">return</span> <span class="nb">property</span><span class="p">(</span><span class="n">getter</span><span class="p">,</span> <span class="n">setter</span><span class="p">)</span></div>
 </pre></div>
 
               </div>
@@ -743,7 +711,7 @@
         
           By Alab Project Team<br/>
         
-            &copy; Copyright 2022, Alab Project Team.<br/>
+            &copy; Copyright 2023, Alab Project Team.<br/>
       </p>
     </div>
   </footer>

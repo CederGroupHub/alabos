@@ -134,11 +134,33 @@
     </label>
     <ul>
      <li class="toctree-l3 has-children">
-      <a class="reference internal" href="alab_management.device_view.html">
-       alab_management.device_view package
+      <a class="reference internal" href="alab_management.builders.html">
+       alab_management.builders package
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
       <label for="toctree-checkbox-3">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.builders.experimentbuilder.html">
+         alab_management.builders.experimentbuilder module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.builders.samplebuilder.html">
+         alab_management.builders.samplebuilder module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="alab_management.device_view.html">
+       alab_management.device_view package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+      <label for="toctree-checkbox-4">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -164,8 +186,8 @@
       <a class="reference internal" href="alab_management.experiment_view.html">
        alab_management.experiment_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
-      <label for="toctree-checkbox-4">
+      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+      <label for="toctree-checkbox-5">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -186,8 +208,8 @@
       <a class="reference internal" href="alab_management.sample_view.html">
        alab_management.sample_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
-      <label for="toctree-checkbox-5">
+      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+      <label for="toctree-checkbox-6">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -208,8 +230,8 @@
       <a class="reference internal" href="alab_management.task_view.html">
        alab_management.task_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
-      <label for="toctree-checkbox-6">
+      <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+      <label for="toctree-checkbox-7">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -392,30 +414,30 @@
 <div class="section" id="development-environment-setup">
 <h2>Development Environment Setup<a class="headerlink" href="#development-environment-setup" title="Permalink to this headline">¶</a></h2>
 <p>To set up the development environment, we need to first clone the repository and install the required dependencies.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:CederGroupHub/alab_management.git
-<span class="nb">cd</span> alab_management
-pip install -r requirements.txt -r requirements-dev.txt
-pip install -e .
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:CederGroupHub/alab_management.git
+<span class="nb">cd</span><span class="w"> </span>alab_management
+pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt<span class="w"> </span>-r<span class="w"> </span>requirements-dev.txt
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
 </pre></div>
 </div>
 <p>Also, you need to install MongoDB and RabbitMQ for communication purposes, please refer
 to the <a class="reference external" href="installation.html">installation</a> page for more information.</p>
 <p>Apart from these Python dependencies, we also use <a class="reference external" href="https://github.com/microsoft/pyright">pyright</a> for type checking.
 You may install it via npm or yarn</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>npm install -g pyright
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>npm<span class="w"> </span>install<span class="w"> </span>-g<span class="w"> </span>pyright
 <span class="c1"># or</span>
-yarn global add pyright
+yarn<span class="w"> </span>global<span class="w"> </span>add<span class="w"> </span>pyright
 </pre></div>
 </div>
 <div class="section" id="ci-system">
 <h3>CI System<a class="headerlink" href="#ci-system" title="Permalink to this headline">¶</a></h3>
 <p>Currently, we use Github Actions for code unit testing and format checking. Before pushing, you may want to
 run the following commands to make sure that the code is formatted correctly.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> alab_management
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>alab_management
 
 pytest
-pylint alab_management
-flake8 alab_management
+pylint<span class="w"> </span>alab_management
+flake8<span class="w"> </span>alab_management
 pyright
 </pre></div>
 </div>
@@ -459,7 +481,7 @@ we can track the changes in the code easily.</p>
         
           By Alab Project Team<br/>
         
-            &copy; Copyright 2022, Alab Project Team.<br/>
+            &copy; Copyright 2023, Alab Project Team.<br/>
       </p>
     </div>
   </footer>

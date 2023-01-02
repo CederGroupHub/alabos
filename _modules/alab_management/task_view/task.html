@@ -132,11 +132,33 @@
     </label>
     <ul>
      <li class="toctree-l3 has-children">
-      <a class="reference internal" href="../../../alab_management.device_view.html">
-       alab_management.device_view package
+      <a class="reference internal" href="../../../alab_management.builders.html">
+       alab_management.builders package
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
       <label for="toctree-checkbox-3">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../alab_management.builders.experimentbuilder.html">
+         alab_management.builders.experimentbuilder module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../alab_management.builders.samplebuilder.html">
+         alab_management.builders.samplebuilder module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../../alab_management.device_view.html">
+       alab_management.device_view package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+      <label for="toctree-checkbox-4">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -162,8 +184,8 @@
       <a class="reference internal" href="../../../alab_management.experiment_view.html">
        alab_management.experiment_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
-      <label for="toctree-checkbox-4">
+      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+      <label for="toctree-checkbox-5">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -184,8 +206,8 @@
       <a class="reference internal" href="../../../alab_management.sample_view.html">
        alab_management.sample_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
-      <label for="toctree-checkbox-5">
+      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+      <label for="toctree-checkbox-6">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -206,8 +228,8 @@
       <a class="reference internal" href="../../../alab_management.task_view.html">
        alab_management.task_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
-      <label for="toctree-checkbox-6">
+      <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+      <label for="toctree-checkbox-7">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -348,10 +370,13 @@
 <span class="sd">Define the base class of task, which will be used for defining more tasks.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">from</span> <span class="nn">bson.objectid</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 <span class="kn">from</span> <span class="nn">alab_management.task_view.task_enums</span> <span class="kn">import</span> <span class="n">TaskPriority</span>
 <span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">getfullargspec</span>
+<span class="kn">from</span> <span class="nn">alab_management.builders.samplebuilder</span> <span class="kn">import</span> <span class="n">SampleBuilder</span>
+<span class="kn">from</span> <span class="nn">alab_management.builders.experimentbuilder</span> <span class="kn">import</span> <span class="n">ExperimentBuilder</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">alab_management.lab_view</span> <span class="kn">import</span> <span class="n">LabView</span>
@@ -359,7 +384,7 @@
 
 
 <div class="viewcode-block" id="BaseTask"><a class="viewcode-back" href="../../../task_definition.html#alab_management.task_view.task.BaseTask">[docs]</a><span class="k">class</span> <span class="nc">BaseTask</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The abstract class of task.</span>
 
 <span class="sd">    All the tasks should inherit from this class.</span>
@@ -367,14 +392,15 @@
 
 <div class="viewcode-block" id="BaseTask.__init__"><a class="viewcode-back" href="../../../task_definition.html#alab_management.task_view.task.BaseTask.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span>
-        <span class="n">lab_view</span><span class="p">:</span> <span class="s2">&quot;LabView&quot;</span><span class="p">,</span>
-        <span class="c1"># samples: List[ObjectId],</span>
+        <span class="n">samples</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">task_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">lab_view</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;LabView&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">priority</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">TaskPriority</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">TaskPriority</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">,</span>
+        <span class="n">simulation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            task_id: the identifier of task</span>
 <span class="sd">            lab_view: a lab_view corresponding to the task_id</span>
@@ -391,39 +417,77 @@
 <span class="sd">              self.setpoints = setpoints</span>
 <span class="sd">              self.samples = [sample_1, sample_2, sample_3, sample_4]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span> <span class="o">=</span> <span class="n">task_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__simulation</span> <span class="o">=</span> <span class="n">simulation</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">child_task_num</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span> <span class="o">=</span> <span class="n">lab_view</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">logger</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="n">priority</span></div>
-        <span class="c1"># self.samples = samples</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__samples</span> <span class="o">=</span> <span class="n">samples</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_simulation</span><span class="p">:</span>
+            <span class="n">current_frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+            <span class="n">outer_frames</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getouterframes</span><span class="p">(</span><span class="n">current_frame</span><span class="p">)</span>
+            <span class="n">subclass_init_frame</span> <span class="o">=</span> <span class="n">outer_frames</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">frame</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subclass_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">key</span><span class="p">:</span> <span class="n">val</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getargvalues</span><span class="p">(</span><span class="n">subclass_init_frame</span><span class="p">)</span><span class="o">.</span><span class="n">locals</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;self&quot;</span><span class="p">,</span> <span class="s2">&quot;args&quot;</span><span class="p">,</span> <span class="s2">&quot;kwargs&quot;</span><span class="p">,</span> <span class="s2">&quot;__class__&quot;</span><span class="p">]</span>
+            <span class="p">}</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">task_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">lab_view</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">samples</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;BaseTask was instantiated with simulation mode off -- task_id, lab_view, and samples must all be provided!&quot;</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span> <span class="o">=</span> <span class="n">task_id</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span> <span class="o">=</span> <span class="n">lab_view</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">logger</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="n">priority</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Task validation failed!&quot;</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_simulation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__simulation</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">samples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__samples</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">priority</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_simulation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">_resource_requester</span><span class="o">.</span><span class="n">priority</span>
 
     <span class="nd">@priority</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">priority</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">TaskPriority</span><span class="p">]):</span>
         <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Priority should be a positive integer&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">_resource_requester</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_message</span>
-
-    <span class="nd">@message</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__simulation</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">_resource_requester</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BaseTask.set_message"><a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.BaseTask.set_message">[docs]</a>    <span class="k">def</span> <span class="nf">set_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Sets the task message to be displayed on the dashboard.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the task message to be displayed on the dashboard.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_message</span> <span class="o">=</span> <span class="n">message</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">_task_view</span><span class="o">.</span><span class="n">set_message</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__simulation</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">_task_view</span><span class="o">.</span><span class="n">set_message</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseTask.get_message"><a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.BaseTask.get_message">[docs]</a>    <span class="k">def</span> <span class="nf">get_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_message</span></div>
+
+    <span class="c1"># @abstractmethod</span>
+<div class="viewcode-block" id="BaseTask.validate"><a class="viewcode-back" href="../../../task_definition.html#alab_management.task_view.task.BaseTask.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate the task. This function will be called before the task is executed. Should return False if the task has values that make it impossible to execute.</span>
+
+<span class="sd">        For example, a `Heating` subclass of `BaseTask` might return False if the set temperature is too high for the furnace.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># raise NotImplementedError(</span>
+        <span class="c1">#     &quot;The .validate method must be implemented by a subclass of BaseTask&quot;</span>
+        <span class="c1"># )</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="BaseTask.run"><a class="viewcode-back" href="../../../task_definition.html#alab_management.task_view.task.BaseTask.run">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run the task. In this function, you can request lab resources from lab manager and log data to database</span>
 <span class="sd">        with logger.</span>
 
@@ -469,13 +533,50 @@
 <span class="sd">                  })</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;The .run method must be implemented by the subclass of BaseTask.&quot;</span>
+        <span class="p">)</span></div>
 
-<div class="viewcode-block" id="BaseTask.run_subtask"><a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.BaseTask.run_subtask">[docs]</a>    <span class="k">def</span> <span class="nf">run_subtask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="BaseTask.run_subtask"><a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.BaseTask.run_subtask">[docs]</a>    <span class="k">def</span> <span class="nf">run_subtask</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">task</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="s2">&quot;BaseTask&quot;</span><span class="p">],</span>
+        <span class="n">samples</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run a subtask of this current task. Returns the result, if any, of the subtask.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">run_subtask</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+        <span class="n">samples</span> <span class="o">=</span> <span class="n">samples</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">samples</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">run_subtask</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="n">samples</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseTask.add_to"><a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.BaseTask.add_to">[docs]</a>    <span class="k">def</span> <span class="nf">add_to</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">samples</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">SampleBuilder</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">SampleBuilder</span><span class="p">]],</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Used to add basetask to a SampleBuilder&#39;s tasklist during Experiment construction.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            samples (Union[SampleBuilder, List[SampleBuilder]]): One or more SampleBuilder&#39;s which will have this task appended to their tasklists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__simulation</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;Cannot add a live BaseTask instance to a SampleBuilder. BaseTask must be instantiated with `simulation=True` to enable this method.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">SampleBuilder</span><span class="p">):</span>
+            <span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">samples</span><span class="p">]</span>
+
+        <span class="n">experiment</span><span class="p">:</span> <span class="n">ExperimentBuilder</span> <span class="o">=</span> <span class="n">samples</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">experiment</span>
+        <span class="n">task_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ObjectId</span><span class="p">())</span>
+        <span class="n">experiment</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span>
+            <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span>
+            <span class="n">task_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+            <span class="n">task_kwargs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">subclass_kwargs</span><span class="p">,</span>
+            <span class="n">samples</span><span class="o">=</span><span class="n">samples</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">samples</span><span class="p">:</span>
+            <span class="n">sample</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span></div></div>
 
 
 <span class="n">_task_registry</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseTask</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -489,7 +590,7 @@
 
 
 <div class="viewcode-block" id="add_task"><a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.add_task">[docs]</a><span class="k">def</span> <span class="nf">add_task</span><span class="p">(</span><span class="n">task</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseTask</span><span class="p">]):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Register a task</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="vm">__name__</span> <span class="ow">in</span> <span class="n">_task_registry</span><span class="p">:</span>
@@ -498,7 +599,7 @@
 
 
 <div class="viewcode-block" id="get_all_tasks"><a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.get_all_tasks">[docs]</a><span class="k">def</span> <span class="nf">get_all_tasks</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseTask</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get all the tasks in the registry</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_task_registry</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
@@ -509,7 +610,7 @@
     <span class="n">task</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseTask</span><span class="p">],</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Register a reroute task</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="vm">__name__</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_task_registry</span><span class="p">:</span>
@@ -545,7 +646,7 @@
         
           By Alab Project Team<br/>
         
-            &copy; Copyright 2022, Alab Project Team.<br/>
+            &copy; Copyright 2023, Alab Project Team.<br/>
       </p>
     </div>
   </footer>

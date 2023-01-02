@@ -132,11 +132,33 @@
     </label>
     <ul>
      <li class="toctree-l3 has-children">
-      <a class="reference internal" href="../../../alab_management.device_view.html">
-       alab_management.device_view package
+      <a class="reference internal" href="../../../alab_management.builders.html">
+       alab_management.builders package
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
       <label for="toctree-checkbox-3">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../alab_management.builders.experimentbuilder.html">
+         alab_management.builders.experimentbuilder module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../alab_management.builders.samplebuilder.html">
+         alab_management.builders.samplebuilder module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../../alab_management.device_view.html">
+       alab_management.device_view package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+      <label for="toctree-checkbox-4">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -162,8 +184,8 @@
       <a class="reference internal" href="../../../alab_management.experiment_view.html">
        alab_management.experiment_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
-      <label for="toctree-checkbox-4">
+      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+      <label for="toctree-checkbox-5">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -184,8 +206,8 @@
       <a class="reference internal" href="../../../alab_management.sample_view.html">
        alab_management.sample_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
-      <label for="toctree-checkbox-5">
+      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+      <label for="toctree-checkbox-6">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -206,8 +228,8 @@
       <a class="reference internal" href="../../../alab_management.task_view.html">
        alab_management.task_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
-      <label for="toctree-checkbox-6">
+      <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+      <label for="toctree-checkbox-7">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -363,12 +385,12 @@
 
 
 <div class="viewcode-block" id="DeviceConnectionError"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceConnectionError">[docs]</a><span class="k">class</span> <span class="nc">DeviceConnectionError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generic error signifying that connection to a device has failed&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generic error signifying that connection to a device has failed&quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="DeviceTaskStatus"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceTaskStatus">[docs]</a><span class="nd">@unique</span>
 <span class="k">class</span> <span class="nc">DeviceTaskStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The Task status of devices. Used by TaskManager to decide whether a Device is available for to execute a Task.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -380,7 +402,7 @@
 
 <div class="viewcode-block" id="DevicePauseStatus"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DevicePauseStatus">[docs]</a><span class="nd">@unique</span>
 <span class="k">class</span> <span class="nc">DevicePauseStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Pause status of the Device. This is used to pause the device outside of the typical Task queue (like by an operator for maintenance or refilling consumables)&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pause status of the Device. This is used to pause the device outside of the typical Task queue (like by an operator for maintenance or refilling consumables)&quot;&quot;&quot;</span>
 
     <span class="n">RELEASED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">REQUESTED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
@@ -388,13 +410,13 @@
 
 
 <div class="viewcode-block" id="DeviceView"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView">[docs]</a><span class="k">class</span> <span class="nc">DeviceView</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Device view provides API to get/set the status</span>
 <span class="sd">    of a device as well as request ownership of one device</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connect_to_devices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Class with methods to interact with devices (status + method execution)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Class with methods to interact with devices (status + method execution)</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            connect_to_devices (bool, optional): If true, make a connection to all devices (serial, ip, etc.). If False, can still check Device status, but cannot execute methods on devices. Defaults to False.</span>
@@ -428,7 +450,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__connected_to_devices</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="DeviceView.sync_device_status"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.sync_device_status">[docs]</a>    <span class="k">def</span> <span class="nf">sync_device_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sync the device status (usually when the system is set up)</span>
 
 <span class="sd">        Some devices may still be running, so it is not usable now. We will set the</span>
@@ -448,7 +470,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DeviceView.add_devices_to_db"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.add_devices_to_db">[docs]</a>    <span class="k">def</span> <span class="nf">add_devices_to_db</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Insert device definitions to db, which includes devices&#39; name, descriptions, parameters,</span>
 <span class="sd">        type (class name).</span>
 
@@ -480,13 +502,13 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DeviceView.get_all"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_all">[docs]</a>    <span class="k">def</span> <span class="nf">get_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all the devices in the database, used for dashboard</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">find</span><span class="p">())</span></div>
 
     <span class="k">def</span> <span class="nf">_clean_up_device_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clean up the device collection</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">drop</span><span class="p">()</span>
@@ -499,7 +521,7 @@
             <span class="n">Collection</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
         <span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>  <span class="c1"># pylint: disable=unsubscriptable-object</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]]]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Request a list of device, this function will return the name of devices if all the requested device is ready.</span>
 
 <span class="sd">        .. note::</span>
@@ -542,7 +564,7 @@
 <div class="viewcode-block" id="DeviceView.get_available_devices"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_available_devices">[docs]</a>    <span class="k">def</span> <span class="nf">get_available_devices</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">device_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">type_or_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given device type, it will return all the device with this type.</span>
 
 <span class="sd">        If only_idle set to True, only the idle devices will be returned (or ones have the same task id)</span>
@@ -593,7 +615,7 @@
         <span class="p">]</span></div>
 
 <div class="viewcode-block" id="DeviceView.get_device"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_device">[docs]</a>    <span class="k">def</span> <span class="nf">get_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get device by device name, if not found, raises ``ValueError``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">device_entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">device_name</span><span class="p">})</span>
@@ -602,7 +624,7 @@
         <span class="k">return</span> <span class="n">device_entry</span></div>
 
 <div class="viewcode-block" id="DeviceView.get_status"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DeviceTaskStatus</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get device status by device name, if not found, raise ``ValueError``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">device_entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_device</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">)</span>
@@ -610,7 +632,7 @@
         <span class="k">return</span> <span class="n">DeviceTaskStatus</span><span class="p">[</span><span class="n">device_entry</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]]</span></div>
 
 <div class="viewcode-block" id="DeviceView.occupy_device"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.occupy_device">[docs]</a>    <span class="k">def</span> <span class="nf">occupy_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Occupy a device with given task id</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_status</span><span class="p">(</span>
@@ -621,7 +643,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DeviceView.get_devices_by_task"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_devices_by_task">[docs]</a>    <span class="k">def</span> <span class="nf">get_devices_by_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get devices given a task id (regardless of its status!)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span>
@@ -630,7 +652,7 @@
         <span class="p">]</span></div>
 
 <div class="viewcode-block" id="DeviceView.release_device"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.release_device">[docs]</a>    <span class="k">def</span> <span class="nf">release_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Release a device</span>
 
 <span class="sd">        device: name of device to be released</span>
@@ -659,7 +681,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DeviceView.get_samples_on_device"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_samples_on_device">[docs]</a>    <span class="k">def</span> <span class="nf">get_samples_on_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all samples on a device</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_device</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">)</span>
@@ -678,7 +700,7 @@
         <span class="n">target_status</span><span class="p">:</span> <span class="n">DeviceTaskStatus</span><span class="p">,</span>
         <span class="n">task_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">],</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A method that check and update the status of a device</span>
 
 <span class="sd">        If ``task_id`` is the same as the task id in queried sample,</span>
@@ -712,7 +734,7 @@
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Device&#39;s current status (</span><span class="si">{</span><span class="n">device_entry</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">) is &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;not in allowed set of statuses </span><span class="si">{</span><span class="p">[</span><span class="n">status</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">required_status</span><span class="p">]</span><span class="si">}</span><span class="s2">. Cannot change status to </span><span class="si">{</span><span class="n">target_status</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;not in allowed set of statuses </span><span class="si">{</span><span class="p">[</span><span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">required_status</span><span class="p">]</span><span class="si">}</span><span class="s2">. Cannot change status to </span><span class="si">{</span><span class="n">target_status</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
@@ -727,7 +749,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="DeviceView.query_property"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.query_property">[docs]</a>    <span class="k">def</span> <span class="nf">query_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prop</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Query the property value of a device (with ``device_name``) with ``prop``.</span>
 
 <span class="sd">        If there is no such device with name ``device_name``, a ``ValueError`` shall be raised.</span>
@@ -745,7 +767,7 @@
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">prop</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DeviceView.execute_command"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.execute_command">[docs]</a>    <span class="k">def</span> <span class="nf">execute_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Call a callable function (``method``) with ``*args`` and ``**kwargs`` on ``device_name``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__connected_to_devices</span><span class="p">:</span>
@@ -756,7 +778,7 @@
         <span class="k">return</span> <span class="n">device_method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DeviceView.set_message"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.set_message">[docs]</a>    <span class="k">def</span> <span class="nf">set_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Sets the device message. Message is used to communicate device state with the user dashboard</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the device message. Message is used to communicate device state with the user dashboard</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            device_name (str): name of the device to set the message for</span>
@@ -769,7 +791,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DeviceView.get_message"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_message">[docs]</a>    <span class="k">def</span> <span class="nf">get_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Gets the current device message. Message is used to communicate device state with the user dashboard</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets the current device message. Message is used to communicate device state with the user dashboard</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            device_name (str): name of the device to set the message for</span>
@@ -777,7 +799,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_device</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">)[</span><span class="s2">&quot;message&quot;</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="DeviceView.get_all_attributes"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_all_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns the device attributes</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the device attributes</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            device_name (str): name of the device to get the attributes for</span>
@@ -789,7 +811,7 @@
         <span class="k">return</span> <span class="n">device</span><span class="p">[</span><span class="s2">&quot;attributes&quot;</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="DeviceView.get_attribute"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">get_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Gets a device attribute. Attributes are used to store device-specific values in the database</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets a device attribute. Attributes are used to store device-specific values in the database</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            device_name (str): name of the device to get the attribute for</span>
@@ -806,7 +828,7 @@
         <span class="k">return</span> <span class="n">device</span><span class="p">[</span><span class="s2">&quot;attributes&quot;</span><span class="p">][</span><span class="n">attribute</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="DeviceView.set_all_attributes"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.set_all_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">set_all_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Sets the device attributes</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the device attributes</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            device_name (str): name of the device to set the attributes for</span>
@@ -824,7 +846,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DeviceView.set_attribute"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.set_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">set_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Sets a device attribute. Attributes are used to store device-specific values in the database</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets a device attribute. Attributes are used to store device-specific values in the database</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            device_name (str): name of the device to set the attribute for</span>
@@ -845,7 +867,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DeviceView.pause_device"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.pause_device">[docs]</a>    <span class="k">def</span> <span class="nf">pause_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Request pause for a specific device</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># with self._lock():</span>
@@ -866,7 +888,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DeviceView.unpause_device"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.unpause_device">[docs]</a>    <span class="k">def</span> <span class="nf">unpause_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unpause a device</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># with self._lock():</span>
@@ -909,7 +931,7 @@
         
           By Alab Project Team<br/>
         
-            &copy; Copyright 2022, Alab Project Team.<br/>
+            &copy; Copyright 2023, Alab Project Team.<br/>
       </p>
     </div>
   </footer>

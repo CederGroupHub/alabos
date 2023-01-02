@@ -132,11 +132,33 @@
     </label>
     <ul>
      <li class="toctree-l3 has-children">
-      <a class="reference internal" href="../../../alab_management.device_view.html">
-       alab_management.device_view package
+      <a class="reference internal" href="../../../alab_management.builders.html">
+       alab_management.builders package
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
       <label for="toctree-checkbox-3">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../alab_management.builders.experimentbuilder.html">
+         alab_management.builders.experimentbuilder module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../alab_management.builders.samplebuilder.html">
+         alab_management.builders.samplebuilder module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../../alab_management.device_view.html">
+       alab_management.device_view package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+      <label for="toctree-checkbox-4">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -162,8 +184,8 @@
       <a class="reference internal" href="../../../alab_management.experiment_view.html">
        alab_management.experiment_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
-      <label for="toctree-checkbox-4">
+      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+      <label for="toctree-checkbox-5">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -184,8 +206,8 @@
       <a class="reference internal" href="../../../alab_management.sample_view.html">
        alab_management.sample_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
-      <label for="toctree-checkbox-5">
+      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+      <label for="toctree-checkbox-6">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -206,8 +228,8 @@
       <a class="reference internal" href="../../../alab_management.task_view.html">
        alab_management.task_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
-      <label for="toctree-checkbox-6">
+      <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+      <label for="toctree-checkbox-7">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -352,11 +374,12 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">alab_management.sample_view.sample</span> <span class="kn">import</span> <span class="n">SamplePosition</span>
+<span class="kn">from</span> <span class="nn">alab_management.user_input</span> <span class="kn">import</span> <span class="n">request_maintenance_input</span>
 <span class="kn">from</span> <span class="nn">.dbattributes</span> <span class="kn">import</span> <span class="n">value_in_database</span><span class="p">,</span> <span class="n">ListInDatabase</span><span class="p">,</span> <span class="n">DictInDatabase</span>
 
 
 <div class="viewcode-block" id="BaseDevice"><a class="viewcode-back" href="../../../device_definition.html#alab_management.device_view.device.BaseDevice">[docs]</a><span class="k">class</span> <span class="nc">BaseDevice</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The abstract class of device</span>
 
 <span class="sd">    All the devices should be inherited from this class</span>
@@ -367,7 +390,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BaseDevice.__init__"><a class="viewcode-back" href="../../../device_definition.html#alab_management.device_view.device.BaseDevice.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a device object, you can set up connection to</span>
 <span class="sd">        the device in this method. The device will only be initialized</span>
 <span class="sd">        once in the system. So if your connection to driver need to be</span>
@@ -402,13 +425,13 @@
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A short description of the device. This will be stored in the database + displayed in the dashboard. This must be declared in subclasses of BaseDevice!</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="BaseDevice.set_message"><a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.set_message">[docs]</a>    <span class="k">def</span> <span class="nf">set_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Sets the device message to be displayed on the dashboard.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the device message to be displayed on the dashboard.</span>
 
 <span class="sd">        Note: this method is used instead of python getter/setters because the DeviceWrapper can currently only access methods, not properties.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -416,7 +439,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__message</span> <span class="o">=</span> <span class="n">message</span></div>
 
 <div class="viewcode-block" id="BaseDevice.get_message"><a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.get_message">[docs]</a>    <span class="k">def</span> <span class="nf">get_message</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns the device message to be displayed on the dashboard.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the device message to be displayed on the dashboard.</span>
 
 <span class="sd">        Note: this method is used instead of python getter/setters because the DeviceWrapper can currently only access methods, not properties.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -424,7 +447,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__message</span></div>
 
     <span class="k">def</span> <span class="nf">_connect_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Connect to the device and execute any backend actions that are only possible when alabos is running + the device is connected.</span>
 
 <span class="sd">        Note that device&#39;s only connect within `alabos launch`, so ExperimentManager, DeviceManager, and the API are guaranteed to be running when this method is called.</span>
@@ -434,7 +457,7 @@
 
 <div class="viewcode-block" id="BaseDevice.connect"><a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.connect">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Connect to any devices here. This will be called by alabos to make connections to devices at the appropriate time.</span>
 
 <span class="sd">        This method must be defined even if no device connections are required! Just return in this case.</span>
@@ -443,14 +466,14 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_disconnect_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Disconnect from the device and execute any backend actions that are only possible when alabos is running.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
 
 <div class="viewcode-block" id="BaseDevice.disconnect"><a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.disconnect">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Disconnect from devices here. This will be called by alabos to release connections to devices at the appropriate time.</span>
 
 <span class="sd">        This method must be defined even if no device connections are required! Just return in this case.</span>
@@ -460,7 +483,7 @@
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">sample_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SamplePosition</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The sample positions describe the position that can hold a sample. The name of sample</span>
 <span class="sd">        position will be the unique identifier of this sample position. It does not store any</span>
 <span class="sd">        coordinates information about where the position is in the lab. Users need to map the</span>
@@ -494,14 +517,14 @@
 
 <div class="viewcode-block" id="BaseDevice.emergent_stop"><a class="viewcode-back" href="../../../device_definition.html#alab_management.device_view.device.BaseDevice.emergent_stop">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">emergent_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># TODO rename this to emergency stop</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Specify how the device should stop when emergency</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="BaseDevice.is_running"><a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.is_running">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">is_running</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check whether this device is running</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
@@ -510,7 +533,7 @@
 <div class="viewcode-block" id="BaseDevice.list_in_database"><a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.list_in_database">[docs]</a>    <span class="k">def</span> <span class="nf">list_in_database</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default_value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ListInDatabase</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a list attribute that is stored in the database.</span>
 <span class="sd">        Note: nested dicts/lists are not supported!</span>
 
@@ -531,7 +554,7 @@
 <div class="viewcode-block" id="BaseDevice.dict_in_database"><a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.dict_in_database">[docs]</a>    <span class="k">def</span> <span class="nf">dict_in_database</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default_value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DictInDatabase</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a dict attribute that is stored in the database.</span>
 <span class="sd">        Note: nested dicts/lists are not supported!</span>
 
@@ -550,7 +573,7 @@
         <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_apply_default_db_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply default values to attributes that are stored in the database.</span>
 
 <span class="sd">        This is called when the device is first added to the database, typically only when alabos is setting up a new lab.</span>
@@ -558,14 +581,17 @@
         <span class="k">for</span> <span class="n">attribute_name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="n">attribute</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">attribute</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="p">[</span><span class="n">ListInDatabase</span><span class="p">,</span> <span class="n">DictInDatabase</span><span class="p">]):</span>
-                <span class="n">attribute</span><span class="o">.</span><span class="n">apply_default_value</span><span class="p">()</span></div>
+                <span class="n">attribute</span><span class="o">.</span><span class="n">apply_default_value</span><span class="p">()</span>
+
+<div class="viewcode-block" id="BaseDevice.request_maintenance"><a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.request_maintenance">[docs]</a>    <span class="k">def</span> <span class="nf">request_maintenance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]):</span>
+        <span class="k">return</span> <span class="n">request_maintenance_input</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span></div></div>
 
 
 <span class="n">_device_registry</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BaseDevice</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
 
 <div class="viewcode-block" id="add_device"><a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.add_device">[docs]</a><span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">BaseDevice</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Register a device instance</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">_device_registry</span><span class="p">:</span>
@@ -574,7 +600,7 @@
 
 
 <div class="viewcode-block" id="get_all_devices"><a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.get_all_devices">[docs]</a><span class="k">def</span> <span class="nf">get_all_devices</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BaseDevice</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get all the device names in the device registry</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_device_registry</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
@@ -595,7 +621,7 @@
         
           By Alab Project Team<br/>
         
-            &copy; Copyright 2022, Alab Project Team.<br/>
+            &copy; Copyright 2023, Alab Project Team.<br/>
       </p>
     </div>
   </footer>

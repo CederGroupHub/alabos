@@ -132,11 +132,33 @@
     </label>
     <ul>
      <li class="toctree-l3 has-children">
-      <a class="reference internal" href="../../alab_management.device_view.html">
-       alab_management.device_view package
+      <a class="reference internal" href="../../alab_management.builders.html">
+       alab_management.builders package
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
       <label for="toctree-checkbox-3">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.builders.experimentbuilder.html">
+         alab_management.builders.experimentbuilder module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.builders.samplebuilder.html">
+         alab_management.builders.samplebuilder module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../alab_management.device_view.html">
+       alab_management.device_view package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+      <label for="toctree-checkbox-4">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -162,8 +184,8 @@
       <a class="reference internal" href="../../alab_management.experiment_view.html">
        alab_management.experiment_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
-      <label for="toctree-checkbox-4">
+      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+      <label for="toctree-checkbox-5">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -184,8 +206,8 @@
       <a class="reference internal" href="../../alab_management.sample_view.html">
        alab_management.sample_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
-      <label for="toctree-checkbox-5">
+      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+      <label for="toctree-checkbox-6">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -206,8 +228,8 @@
       <a class="reference internal" href="../../alab_management.task_view.html">
        alab_management.task_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
-      <label for="toctree-checkbox-6">
+      <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+      <label for="toctree-checkbox-7">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -364,7 +386,7 @@
 
 
 <div class="viewcode-block" id="ExperimentManager"><a class="viewcode-back" href="../../alab_management.experiment_manager.html#alab_management.experiment_manager.ExperimentManager">[docs]</a><span class="k">class</span> <span class="nc">ExperimentManager</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Experiment manager read experiments from the experiment collection</span>
 <span class="sd">    and submit the experiment to executor and flag the completed experiments</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -376,7 +398,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">DBLogger</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ExperimentManager.run"><a class="viewcode-back" href="../../alab_management.experiment_manager.html#alab_management.experiment_manager.ExperimentManager.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start the event loop</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
@@ -388,7 +410,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">mark_completed_experiments</span><span class="p">()</span>
 
 <div class="viewcode-block" id="ExperimentManager.handle_pending_experiments"><a class="viewcode-back" href="../../alab_management.experiment_manager.html#alab_management.experiment_manager.ExperimentManager.handle_pending_experiments">[docs]</a>    <span class="k">def</span> <span class="nf">handle_pending_experiments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method will scan the database to find out if there are</span>
 <span class="sd">        any pending experiments and submit it to task database</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -480,7 +502,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="ExperimentManager.mark_completed_experiments"><a class="viewcode-back" href="../../alab_management.experiment_manager.html#alab_management.experiment_manager.ExperimentManager.mark_completed_experiments">[docs]</a>    <span class="k">def</span> <span class="nf">mark_completed_experiments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method will scan the database to mark completed experiments in time</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">running_experiments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span><span class="n">get_experiments_with_status</span><span class="p">(</span>
@@ -523,7 +545,7 @@
         
           By Alab Project Team<br/>
         
-            &copy; Copyright 2022, Alab Project Team.<br/>
+            &copy; Copyright 2023, Alab Project Team.<br/>
       </p>
     </div>
   </footer>

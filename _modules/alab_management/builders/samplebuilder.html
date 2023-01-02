@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>alab_management.sample_view.sample &#8212; Alab Management</title>
+    <title>alab_management.builders.samplebuilder &#8212; Alab Management</title>
     
   <link href="../../../_static/css/theme.css" rel="stylesheet">
   <link href="../../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
@@ -365,83 +365,120 @@
         
               <div>
                 
-  <h1>Source code for alab_management.sample_view.sample</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">The definition of the Sample and SamplePosition classes.</span>
-<span class="sd">&quot;&quot;&quot;</span>
-
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-<span class="kn">from</span> <span class="nn">turtle</span> <span class="kn">import</span> <span class="n">pos</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Type</span>
+  <h1>Source code for alab_management.builders.samplebuilder</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BaseModel</span><span class="p">,</span>
+    <span class="n">constr</span><span class="p">,</span>
+    <span class="n">validator</span><span class="p">,</span>
+    <span class="n">Field</span><span class="p">,</span>
+<span class="p">)</span>  <span class="c1"># pylint: disable=no-name-in-module</span>
 
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 
-
-<div class="viewcode-block" id="Sample"><a class="viewcode-back" href="../../../alab_management.sample_view.sample.html#alab_management.sample_view.sample.Sample">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">Sample</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Basic sample object</span>
-
-<span class="sd">    - ``sample_id``: the unique id of a sample in the database</span>
-<span class="sd">    - ``task_id``: the unique id of a task that currently &quot;owns&quot; (is processing) this sample</span>
-<span class="sd">    - ``name``: the name of this sample</span>
-<span class="sd">    - ``position``: current position of the sample in the lab. if None, the sample has not been initialized</span>
-<span class="sd">      in the lab</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span>
-    <span class="n">task_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">position</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></div>
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">alab_management.builders.experimentbuilder</span> <span class="kn">import</span> <span class="n">ExperimentBuilder</span>
 
 
-<div class="viewcode-block" id="SamplePosition"><a class="viewcode-back" href="../../../alab_management.sample_view.sample.html#alab_management.sample_view.sample.SamplePosition">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">SamplePosition</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A sample position in the lab</span>
+<div class="viewcode-block" id="SampleBuilder"><a class="viewcode-back" href="../../../alab_management.builders.samplebuilder.html#alab_management.builders.samplebuilder.SampleBuilder">[docs]</a><span class="k">class</span> <span class="nc">SampleBuilder</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">experiment</span><span class="p">:</span> <span class="s2">&quot;ExperimentBuilder&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># type: ignore</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span> <span class="o">=</span> <span class="n">experiment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ObjectId</span><span class="p">())</span>
 
-<span class="sd">    Sample position is a position in the lab that can hold sample,</span>
-<span class="sd">    it is not a geographic coordinate in the lab, but a defined</span>
-<span class="sd">    position in the lab</span>
+<div class="viewcode-block" id="SampleBuilder.add_task"><a class="viewcode-back" href="../../../alab_management.builders.samplebuilder.html#alab_management.builders.samplebuilder.SampleBuilder.add_task">[docs]</a>    <span class="k">def</span> <span class="nf">add_task</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">task_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">task_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task_id</span><span class="p">)</span></div>
 
-<span class="sd">    - ``name``: the name of this sample position, which is the unique</span>
-<span class="sd">      identifier of a sample position</span>
-<span class="sd">    - ``description``: a string that describes the sample position briefly</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SampleBuilder.to_dict"><a class="viewcode-back" href="../../../alab_management.builders.samplebuilder.html#alab_management.builders.samplebuilder.SampleBuilder.to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">),</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span>
+        <span class="p">}</span></div>
 
-    <span class="n">SEPARATOR</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">hash</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">number</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> is an invalid number of sample positions! The number of sample position (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">) must be &gt;= 0.&quot;</span>
-            <span class="p">)</span></div>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_id</span>
 
-
-<span class="n">_standalone_sample_position_registry</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SamplePosition</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-
-
-<div class="viewcode-block" id="add_standalone_sample_position"><a class="viewcode-back" href="../../../alab_management.sample_view.sample.html#alab_management.sample_view.sample.add_standalone_sample_position">[docs]</a><span class="k">def</span> <span class="nf">add_standalone_sample_position</span><span class="p">(</span><span class="n">position</span><span class="p">:</span> <span class="n">SamplePosition</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Register a device instance</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">SamplePosition</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;The type of position should be SamplePosition, but user provided </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">position</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
-    <span class="k">if</span> <span class="n">position</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">_standalone_sample_position_registry</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Duplicated standalone sample position name </span><span class="si">{</span><span class="n">position</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">_standalone_sample_position_registry</span><span class="p">[</span><span class="n">position</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">position</span></div>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;Sample: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&gt;&quot;</span></div>
 
 
-<div class="viewcode-block" id="get_all_standalone_sample_positions"><a class="viewcode-back" href="../../../alab_management.sample_view.sample.html#alab_management.sample_view.sample.get_all_standalone_sample_positions">[docs]</a><span class="k">def</span> <span class="nf">get_all_standalone_sample_positions</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SamplePosition</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Get all the device names in the device registry</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_standalone_sample_position_registry</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+<span class="c1">### Format checking for API inputs</span>
+
+
+<span class="c1"># class TaskInputFormat(BaseModel):</span>
+<span class="c1">#     id: Optional[Any] = Field(None, alias=&quot;id&quot;)</span>
+<span class="c1">#     type: str</span>
+<span class="c1">#     parameters: Dict[str, Any]</span>
+<span class="c1">#     capacity: int</span>
+<span class="c1">#     prev_tasks: List[str]</span>
+<span class="c1">#     samples: List[Union[str, Any]]</span>
+
+<span class="c1">#     @validator(&quot;id&quot;)</span>
+<span class="c1">#     def must_be_valid_objectid(cls, v):</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             ObjectId(v)</span>
+<span class="c1">#         except:</span>
+<span class="c1">#             raise ValueError(f&quot;Received invalid _id: {v} is not a valid ObjectId!&quot;)</span>
+<span class="c1">#         return v</span>
+
+<span class="c1">#     @validator(&quot;capacity&quot;)</span>
+<span class="c1">#     def must_be_positive(cls, v):</span>
+<span class="c1">#         if v &lt; 0:</span>
+<span class="c1">#             raise ValueError(f&quot;Capacity must be positive, received {v}&quot;)</span>
+<span class="c1">#         return v</span>
+
+<span class="c1">#     @validator(&quot;samples&quot;)</span>
+<span class="c1">#     def samples_must_be_valid_objectid(cls, v):</span>
+<span class="c1">#         for sample_id in v:</span>
+<span class="c1">#             try:</span>
+<span class="c1">#                 ObjectId(sample_id)</span>
+<span class="c1">#             except:</span>
+<span class="c1">#                 raise ValueError(</span>
+<span class="c1">#                     f&quot;Received invalid sample_id: {sample_id} is not a valid ObjectId!&quot;</span>
+<span class="c1">#                 )</span>
+<span class="c1">#         return v</span>
+
+<span class="c1">#     @validator(&quot;prev_tasks&quot;)</span>
+<span class="c1">#     def prevtasks_must_be_valid_objectid(cls, v):</span>
+<span class="c1">#         for task_id in v:</span>
+<span class="c1">#             try:</span>
+<span class="c1">#                 ObjectId(task_id)</span>
+<span class="c1">#             except:</span>
+<span class="c1">#                 raise ValueError(</span>
+<span class="c1">#                     f&quot;Received invalid sample_id: {task_id} is not a valid ObjectId!&quot;</span>
+<span class="c1">#                 )</span>
+<span class="c1">#         return v</span>
+
+
+<span class="c1"># class SampleInputFormat(BaseModel):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     Format check for API for Sample submission. Sample&#39;s must follow this format to be accepted into the batching queue.</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+
+<span class="c1">#     id: Optional[Any] = Field(None, alias=&quot;id&quot;)</span>
+<span class="c1">#     name: constr(regex=r&quot;^[^$.]+$&quot;)  # type: ignore # noqa: F722</span>
+<span class="c1">#     tags: List[str]</span>
+<span class="c1">#     tasks: List[TaskInputFormat]</span>
+<span class="c1">#     metadata: Dict[str, Any]</span>
+
+<span class="c1">#     @validator(&quot;id&quot;)</span>
+<span class="c1">#     def must_be_valid_objectid(cls, v):</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             ObjectId(v)</span>
+<span class="c1">#         except:</span>
+<span class="c1">#             raise ValueError(f&quot;Received invalid _id: {v} is not a valid ObjectId!&quot;)</span>
+<span class="c1">#         return v</span>
 </pre></div>
 
               </div>

@@ -132,11 +132,33 @@
     </label>
     <ul>
      <li class="toctree-l3 has-children">
-      <a class="reference internal" href="../../alab_management.device_view.html">
-       alab_management.device_view package
+      <a class="reference internal" href="../../alab_management.builders.html">
+       alab_management.builders package
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
       <label for="toctree-checkbox-3">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.builders.experimentbuilder.html">
+         alab_management.builders.experimentbuilder module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.builders.samplebuilder.html">
+         alab_management.builders.samplebuilder module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../alab_management.device_view.html">
+       alab_management.device_view package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+      <label for="toctree-checkbox-4">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -162,8 +184,8 @@
       <a class="reference internal" href="../../alab_management.experiment_view.html">
        alab_management.experiment_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
-      <label for="toctree-checkbox-4">
+      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+      <label for="toctree-checkbox-5">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -184,8 +206,8 @@
       <a class="reference internal" href="../../alab_management.sample_view.html">
        alab_management.sample_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
-      <label for="toctree-checkbox-5">
+      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+      <label for="toctree-checkbox-6">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -206,8 +228,8 @@
       <a class="reference internal" href="../../alab_management.task_view.html">
        alab_management.task_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
-      <label for="toctree-checkbox-6">
+      <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+      <label for="toctree-checkbox-7">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -383,7 +405,7 @@
 
 
 <div class="viewcode-block" id="DeviceMethodCallState"><a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DeviceMethodCallState">[docs]</a><span class="k">class</span> <span class="nc">DeviceMethodCallState</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    holds the status of a pending method call to a device</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -393,12 +415,12 @@
 
 
 <div class="viewcode-block" id="DeviceWrapper"><a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DeviceWrapper">[docs]</a><span class="k">class</span> <span class="nc">DeviceWrapper</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A wrapper over the device</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="DeviceWrapper.DeviceMethodWrapper"><a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DeviceWrapper.DeviceMethodWrapper">[docs]</a>    <span class="k">class</span> <span class="nc">DeviceMethodWrapper</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A wrapper over a device method</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -445,13 +467,13 @@
 
 
 <div class="viewcode-block" id="DeviceManager"><a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DeviceManager">[docs]</a><span class="k">class</span> <span class="nc">DeviceManager</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Device manager is basically a rabbitmq-backed RPC server, which receives and</span>
 <span class="sd">    executes commands on the device drivers, as requested by the task process.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_check_status</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            _check_status: Check if the task currently occupied this device when</span>
 <span class="sd">              running commands. (disable it only for test purpose)</span>
@@ -465,7 +487,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">threads</span> <span class="o">=</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="DeviceManager.run"><a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DeviceManager.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start to listen on the device_rpc queue and conduct the command one by one.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">get_rabbitmq_connection</span><span class="p">()</span>
@@ -493,7 +515,7 @@
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Execute a command on the device. Acknowledges completion on rabbitmq channel.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -527,7 +549,7 @@
         <span class="n">props</span><span class="p">:</span> <span class="n">BasicProperties</span><span class="p">,</span>
         <span class="n">_body</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function that handle the command message.</span>
 
 <span class="sd">        The structure of ``_body``:</span>
@@ -575,14 +597,14 @@
 
 
 <div class="viewcode-block" id="DevicesClient"><a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DevicesClient">[docs]</a><span class="k">class</span> <span class="nc">DevicesClient</span><span class="p">:</span>  <span class="c1"># pylint: disable=too-many-instance-attributes</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A rabbitmq-backed RPC client for sending device requests to the Device Manager (server)</span>
 
 <span class="sd">    Use ``create_device_wrapper`` to create Device Wrapper instance.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            task_id: the task id of current task process</span>
 <span class="sd">            timeout: the max time to wait for the server to respond, if</span>
@@ -626,7 +648,7 @@
 <div class="viewcode-block" id="DevicesClient.create_device_wrapper"><a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DevicesClient.create_device_wrapper">[docs]</a>    <span class="k">def</span> <span class="nf">create_device_wrapper</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>  <span class="c1"># pylint: disable=no-self-use</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a wrapper over a device with ``device_name``</span>
 
 <span class="sd">        Args:</span>
@@ -638,7 +660,7 @@
         <span class="k">return</span> <span class="n">DeviceWrapper</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">device_name</span><span class="p">,</span> <span class="n">devices_client</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DevicesClient.call"><a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DevicesClient.call">[docs]</a>    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Call a method inside the device with name ``device_name``. *args, **kwargs will be feeded into</span>
 <span class="sd">        the method directly.</span>
 
@@ -685,7 +707,7 @@
         <span class="n">properties</span><span class="p">:</span> <span class="n">BasicProperties</span><span class="p">,</span>
         <span class="n">_body</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Callback function to handle a returned message from Device Manager</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">body</span> <span class="o">=</span> <span class="n">dill</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">_body</span><span class="p">)</span>
@@ -712,7 +734,7 @@
         
           By Alab Project Team<br/>
         
-            &copy; Copyright 2022, Alab Project Team.<br/>
+            &copy; Copyright 2023, Alab Project Team.<br/>
       </p>
     </div>
   </footer>

@@ -133,12 +133,34 @@
      </i>
     </label>
     <ul class="current">
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="alab_management.builders.html">
+       alab_management.builders package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+      <label for="toctree-checkbox-3">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.builders.experimentbuilder.html">
+         alab_management.builders.experimentbuilder module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.builders.samplebuilder.html">
+         alab_management.builders.samplebuilder module
+        </a>
+       </li>
+      </ul>
+     </li>
      <li class="toctree-l3 current active has-children">
       <a class="reference internal" href="alab_management.device_view.html">
        alab_management.device_view package
       </a>
-      <input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
-      <label for="toctree-checkbox-3">
+      <input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+      <label for="toctree-checkbox-4">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -164,8 +186,8 @@
       <a class="reference internal" href="alab_management.experiment_view.html">
        alab_management.experiment_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
-      <label for="toctree-checkbox-4">
+      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+      <label for="toctree-checkbox-5">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -186,8 +208,8 @@
       <a class="reference internal" href="alab_management.sample_view.html">
        alab_management.sample_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
-      <label for="toctree-checkbox-5">
+      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+      <label for="toctree-checkbox-6">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -208,8 +230,8 @@
       <a class="reference internal" href="alab_management.task_view.html">
        alab_management.task_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
-      <label for="toctree-checkbox-6">
+      <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+      <label for="toctree-checkbox-7">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -531,49 +553,6 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="alab_management.device_view.dbattributes.attribute_in_database">
-<span class="sig-name descname"><span class="pre">attribute_in_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#attribute_in_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.attribute_in_database" title="Permalink to this definition">¶</a></dt>
-<dd><p>Property factory to mirror a Device attribute in the ALab database</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – attribute name</p></li>
-<li><p><strong>default_value</strong> (<em>Any</em>) – default value for the attribute. Note that this value is not used until the first time a property is queried; at this time, if the attribute is not found in the database, it is set to this value.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>class property that handles getting/setting values from the database.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>property</p>
-</dd>
-</dl>
-<p>Example usage when defining a new Device:</p>
-<blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-<p>from alab_management.device_view import BaseDevice, attribute_in_database</p>
-<dl>
-<dt>class MyDevice(BaseDevice):</dt><dd><p>my_attribute = attribute_in_database(“my_attribute”, 0)</p>
-<dl class="simple">
-<dt>def __init__(self, name: str, <a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs):</dt><dd><p>super().__init__(name, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs)
-self.name = name
-self.my_attribute #initial call to the property, which sets the default value in the database</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p>#first instantiation</p>
-<p>mydevice = MyDevice(name = “mydevice_1”)
-mydevice.my_attribute = 5 #sets the value in the database</p>
-<p>#future instantiation
-mydevice = MyDevice(name = “mydevice_1”)
-mydevice.my_attribute #retrieves value from db and returns 5</p>
-</div></blockquote>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.value_in_database">
 <span class="sig-name descname"><span class="pre">value_in_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#value_in_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.value_in_database" title="Permalink to this definition">¶</a></dt>
 <dd><p>Property factory to mirror a Device attribute in the ALab database. This must be declared as a Class Variable under a Device subclass of BaseDevice!</p>
@@ -600,7 +579,7 @@ mydevice.my_attribute #retrieves value from db and returns 5</p>
 <dl>
 <dt>class MyDevice(BaseDevice):</dt><dd><p>my_attribute = attribute_in_database(“my_attribute”, 0)</p>
 <dl class="simple">
-<dt>def __init__(self, name: str, <a href="#id5"><span class="problematic" id="id6">**</span></a>kwargs):</dt><dd><p>super().__init__(name, <a href="#id7"><span class="problematic" id="id8">**</span></a>kwargs)
+<dt>def __init__(self, name: str, <a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs):</dt><dd><p>super().__init__(name, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs)
 self.name = name
 self.my_attribute #initial call to the property, which sets the default value in the database</p>
 </dd>
@@ -648,7 +627,7 @@ mydevice.my_attribute #retrieves value from db and returns 5</p>
         
           By Alab Project Team<br/>
         
-            &copy; Copyright 2022, Alab Project Team.<br/>
+            &copy; Copyright 2023, Alab Project Team.<br/>
       </p>
     </div>
   </footer>

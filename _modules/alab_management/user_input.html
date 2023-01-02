@@ -132,11 +132,33 @@
     </label>
     <ul>
      <li class="toctree-l3 has-children">
-      <a class="reference internal" href="../../alab_management.device_view.html">
-       alab_management.device_view package
+      <a class="reference internal" href="../../alab_management.builders.html">
+       alab_management.builders package
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
       <label for="toctree-checkbox-3">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.builders.experimentbuilder.html">
+         alab_management.builders.experimentbuilder module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.builders.samplebuilder.html">
+         alab_management.builders.samplebuilder module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../alab_management.device_view.html">
+       alab_management.device_view package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+      <label for="toctree-checkbox-4">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -162,8 +184,8 @@
       <a class="reference internal" href="../../alab_management.experiment_view.html">
        alab_management.experiment_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
-      <label for="toctree-checkbox-4">
+      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+      <label for="toctree-checkbox-5">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -184,8 +206,8 @@
       <a class="reference internal" href="../../alab_management.sample_view.html">
        alab_management.sample_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
-      <label for="toctree-checkbox-5">
+      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+      <label for="toctree-checkbox-6">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -206,8 +228,8 @@
       <a class="reference internal" href="../../alab_management.task_view.html">
        alab_management.task_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
-      <label for="toctree-checkbox-6">
+      <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+      <label for="toctree-checkbox-7">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -354,7 +376,7 @@
 
 
 <div class="viewcode-block" id="UserRequestStatus"><a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.UserRequestStatus">[docs]</a><span class="k">class</span> <span class="nc">UserRequestStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Enum for user response.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -364,7 +386,7 @@
 
 
 <div class="viewcode-block" id="UserInputView"><a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.UserInputView">[docs]</a><span class="k">class</span> <span class="nc">UserInputView</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sample view manages the samples and their positions</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -380,7 +402,7 @@
         <span class="n">task_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">maintenance</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectId</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Insert a request into the database.</span>
 
 <span class="sd">        Returns the request ObjectID</span>
@@ -414,7 +436,7 @@
         <span class="k">return</span> <span class="n">request_id</span></div>
 
 <div class="viewcode-block" id="UserInputView.get_request"><a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.UserInputView.get_request">[docs]</a>    <span class="k">def</span> <span class="nf">get_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a request.</span>
 
 <span class="sd">        Returns a request.</span>
@@ -426,7 +448,7 @@
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">request</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="UserInputView.update_request_status"><a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.UserInputView.update_request_status">[docs]</a>    <span class="k">def</span> <span class="nf">update_request_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">note</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update the status of a request.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>  <span class="c1"># will error is request does not exist</span>
@@ -442,7 +464,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="UserInputView.retrieve_user_input"><a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.UserInputView.retrieve_user_input">[docs]</a>    <span class="k">def</span> <span class="nf">retrieve_user_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrive response from user for a given request. Blocks until request is marked as completed.</span>
 
 <span class="sd">        Returns the user response, which is one of a list of options</span>
@@ -457,13 +479,13 @@
         <span class="k">return</span> <span class="n">request</span><span class="p">[</span><span class="s2">&quot;response&quot;</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="UserInputView.clean_up_user_input_collection"><a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.UserInputView.clean_up_user_input_collection">[docs]</a>    <span class="k">def</span> <span class="nf">clean_up_user_input_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Drop the sample position collection</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">drop</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="UserInputView.get_all_pending_requests"><a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.UserInputView.get_all_pending_requests">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_pending_requests</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all pending requests.</span>
 
 <span class="sd">        Returns a list of pending requests.</span>
@@ -481,7 +503,7 @@
     <span class="n">options</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">maintenance</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Request user input through the dashboard. Blocks until response is given.</span>
 
 <span class="sd">    task_id (ObjectId): task id requesting user input</span>
@@ -519,7 +541,7 @@
         
           By Alab Project Team<br/>
         
-            &copy; Copyright 2022, Alab Project Team.<br/>
+            &copy; Copyright 2023, Alab Project Team.<br/>
       </p>
     </div>
   </footer>
