@@ -403,6 +403,16 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.as_normal_dict">
+<span class="sig-name descname"><span class="pre">as_normal_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.as_normal_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.as_normal_dict" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.clear">
 <span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.clear" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -418,8 +428,8 @@
 <dd></dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.db_path">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">db_path</span></span><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.db_path" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.db_projection">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">db_projection</span></span><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.db_projection" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -473,7 +483,7 @@
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ListInDatabase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Class that emulates a list, but stores the list in the device database. Useful for working with Device attributes that are lists, so values persist across alabos sessions. This should be instantiated using <cite>alab_management.device_view.device.BaseDevice.dict_in_database</cite></p>
+<p>Class that emulates a list, but stores the list in the device database. Useful for working with Device attributes that are lists, so values persist across alabos sessions. This should be instantiated using <cite>alab_management.device_view.device.BaseDevice.list_in_database</cite></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.append">
 <span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.append" title="Permalink to this definition">¶</a></dt>
@@ -511,8 +521,8 @@
 <dd></dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.db_path">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">db_path</span></span><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.db_path" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.db_projection">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">db_projection</span></span><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.db_projection" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
