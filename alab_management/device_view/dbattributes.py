@@ -58,7 +58,7 @@ def value_in_database(name: str, default_value: Any) -> property:
 
 
 class ListInDatabase:
-    """Class that emulates a list, but stores the list in the device database. Useful for working with Device attributes that are lists, so values persist across alabos sessions. This should be instantiated using `alab_management.device_view.device.BaseDevice.dict_in_database`"""
+    """Class that emulates a list, but stores the list in the device database. Useful for working with Device attributes that are lists, so values persist across alabos sessions. This should be instantiated using `alab_management.device_view.device.BaseDevice.list_in_database`"""
 
     def __init__(
         self,
@@ -70,12 +70,27 @@ class ListInDatabase:
         self._collection = device_collection
         self.attribute_name = attribute_name
         self.device_name = device_name
-        if default_value is None:
-            self.default_value = []
-        else:
-            if not isinstance(default_value, list):
-                raise ValueError("Default value for ListInDatabase must be a list!")
-            self.default_value = default_value
+        self.default_value = default_value or []
+
+        if not any([isinstance(self.default_value, x) for x in [list, tuple]]):
+            raise ValueError("ListInDatabase must be initialized with a list or tuple!")
+        for val in self.default_value:
+            self._raise_if_invalid_value(val)
+
+    @classmethod
+    def _raise_if_invalid_value(cls, val: Any):
+        """We do not support nesting iterables within ListInDatabase. This is tricky to implement in pymongo so we have opted to not support for now. This function checks for iterabls and raises an error if it finds any.
+
+        Args:
+            val (Any): Value that we would like to store in the ListInDatabase.
+
+        Raises:
+            ValueError: Nested iterables are not supported for a ListInDatabase. Elements within a ListInDatabase must be single values (ie not a dict, list, or tuple). Note that this affects lists nested within DictInDatabase as well!
+        """
+        if any([isinstance(val, x) for x in [dict, list, tuple]]):
+            raise ValueError(
+                "Nested iterables are not supported for a ListInDatabase. Elements within a ListInDatabase must be single values (ie not a dict, list, or tuple). Note that this affects lists nested within DictInDatabase as well!"
+            )
 
     def apply_default_value(self):
         """This is called within `alab_management.scripts.setup_lab()` to ensure that all devices have the correct default values for their attributes. This should not be called manually.
@@ -90,11 +105,11 @@ class ListInDatabase:
             )
         if self.attribute_name not in result["attributes"]:
             self._collection.update_one(
-                self.db_filter, {"$set": {self.db_path: self.default_value}}
+                self.db_filter, {"$set": {self.db_projection: self.default_value}}
             )
 
     @property
-    def db_path(self):
+    def db_projection(self):
         return f"attributes.{self.attribute_name}"
 
     @property
@@ -104,24 +119,35 @@ class ListInDatabase:
     @property
     def _value(self):
         value = self._collection.find_one(
-            {"name": self.device_name}, projection=[self.db_path]
+            {"name": self.device_name}, projection=[self.db_projection]
         )
         if value is None:
             raise ValueError(
-                f"Device {self.device_name} does not contain data at {self.db_path}!"
+                f"Device {self.device_name} does not contain data at {self.db_projection}!"
             )
-        return value["attributes"][self.attribute_name]
+        return_value = value
+        for key in self.db_projection.split("."):
+            return_value = return_value[key]
+
+        # for val in return_value:
+        #     if isinstance(val, dict):
+        #         val = DictInDatabase(self._collection, self.device_name, self.attribute_name, val)
+        #     self._raise_if_invalid_value(val)
+
+        return return_value
 
     def append(self, x):
-        self._collection.update_one(self.db_filter, {"$push": {self.db_path: x}})
+        self._collection.update_one(self.db_filter, {"$push": {self.db_projection: x}})
 
     def extend(self, x):
         current = self._value
         current.extend(x)
-        self._collection.update_one(self.db_filter, {"$set": {self.db_path: current}})
+        self._collection.update_one(
+            self.db_filter, {"$set": {self.db_projection: current}}
+        )
 
     def clear(self):
-        self._collection.update_one(self.db_filter, {"$set": {self.db_path: []}})
+        self._collection.update_one(self.db_filter, {"$set": {self.db_projection: []}})
 
     def copy(self):
         return self._value  # copied by virtue of reading from database
@@ -135,28 +161,38 @@ class ListInDatabase:
     def insert(self, i, x):
         current = self._value
         current.insert(i, x)
-        self._collection.update_one(self.db_filter, {"$set": {self.db_path: current}})
+        self._collection.update_one(
+            self.db_filter, {"$set": {self.db_projection: current}}
+        )
 
     def pop(self, i=-1):
         current = self._value
         result = current.pop(i)
-        self._collection.update_one(self.db_filter, {"$set": {self.db_path: current}})
+        self._collection.update_one(
+            self.db_filter, {"$set": {self.db_projection: current}}
+        )
         return result
 
     def remove(self, x):
         current = self._value
         current.remove(x)
-        self._collection.update_one(self.db_filter, {"$set": {self.db_path: current}})
+        self._collection.update_one(
+            self.db_filter, {"$set": {self.db_projection: current}}
+        )
 
     def reverse(self):
         current = self._value
         current.reverse()
-        self._collection.update_one(self.db_filter, {"$set": {self.db_path: current}})
+        self._collection.update_one(
+            self.db_filter, {"$set": {self.db_projection: current}}
+        )
 
     def sort(self, key=None, reverse=False):
         current = self._value
         current.sort(key, reverse)
-        self._collection.update_one(self.db_filter, {"$set": {self.db_path: current}})
+        self._collection.update_one(
+            self.db_filter, {"$set": {self.db_projection: current}}
+        )
 
     def __repr__(self):
         return str(self._value)
@@ -169,7 +205,7 @@ class ListInDatabase:
 
     def __iadd__(self, x):
         new = self._value + x
-        self._collection.update_one(self.db_filter, {"$set": {self.db_path: new}})
+        self._collection.update_one(self.db_filter, {"$set": {self.db_projection: new}})
         return self
 
     def __mul__(self, x):
@@ -177,16 +213,23 @@ class ListInDatabase:
 
     def __imul__(self, x):
         new = self._value * x
-        self._collection.update_one(self.db_filter, {"$set": {self.db_path: new}})
+        self._collection.update_one(self.db_filter, {"$set": {self.db_projection: new}})
         return self
 
     def __getitem__(self, x):
         return self._value[x]
 
     def __setitem__(self, x, val):
+        self._raise_if_invalid_value(val)
         current = self._value
         current[x] = val
-        self._collection.update_one(self.db_filter, {"$set": {self.db_path: current}})
+        if any(isinstance(val, t) for t in [dict, list, tuple]):
+            raise TypeError(
+                "Elements within a ListInDatabase cannot be iterable. Spefically, values of the ListInDatabase cannot be a dict, list, or tuple!"
+            )
+        self._collection.update_one(
+            self.db_filter, {"$set": {self.db_projection: current}}
+        )
 
     def __len__(self):
         return len(self._value)
@@ -230,11 +273,11 @@ class DictInDatabase:
             )
         if self.attribute_name not in result["attributes"]:
             self._collection.update_one(
-                self.db_filter, {"$set": {self.db_path: self.default_value}}
+                self.db_filter, {"$set": {self.db_projection: self.default_value}}
             )
 
     @property
-    def db_path(self):
+    def db_projection(self):
         return f"attributes.{self.attribute_name}"
 
     @property
@@ -244,19 +287,50 @@ class DictInDatabase:
     @property
     def _value(self):
         value = self._collection.find_one(
-            {"name": self.device_name}, projection=[self.db_path]
+            {"name": self.device_name}, projection=[self.db_projection]
         )
         if value is None:
             raise ValueError(
-                f"Device {self.device_name} does not contain data at {self.db_path}!"
+                f"Device {self.device_name} does not contain data at {self.db_projection}!"
             )
-        return value["attributes"][self.attribute_name]
+        return_value = value
+        for key in self.db_projection.split("."):
+            return_value = return_value[key]
+
+        for key, val in return_value.items():
+            if isinstance(val, dict):
+                return_value[key] = DictInDatabase(
+                    device_collection=self._collection,
+                    device_name=self.device_name,
+                    attribute_name=f"{self.attribute_name}.{key}",
+                    default_value=val,
+                )
+            elif isinstance(val, list):
+                return_value[key] = ListInDatabase(
+                    device_collection=self._collection,
+                    device_name=self.device_name,
+                    attribute_name=f"{self.attribute_name}.{key}",
+                    default_value=val,
+                )
+        return return_value
+
+    def as_normal_dict(self) -> dict:
+        value = self._collection.find_one(
+            {"name": self.device_name}, projection=[self.db_projection]
+        )
+        if value is None:
+            raise ValueError(
+                f"Device {self.device_name} does not contain data at {self.db_projection}!"
+            )
+        for key in self.db_projection.split("."):
+            value = value[key]
+        return value
 
     def clear(self):
-        self._collection.update_one(self.db_filter, {"$set": {self.db_path: {}}})
+        self._collection.update_one(self.db_filter, {"$set": {self.db_projection: {}}})
 
     def copy(self):
-        return self._value  # copied by virtue of reading from database
+        return self.as_normal_dict()  # copied by virtue of reading from database
 
     def fromkeys(self):
         raise NotImplementedError("fromkeys is not implemented for DictInDatabase")
@@ -268,24 +342,28 @@ class DictInDatabase:
         return self._value.items()
 
     def keys(self):
-        return self._value.keys()
+        return self.as_normal_dict().keys()
 
     def values(self):
-        return self._value.values()
+        return self.as_normal_dict().values()
 
     def pop(self, key, default=UUID4_PLACEHOLDER):
-        current = self._value
+        current = self.as_normal_dict()
         result = current.pop(key, default)
         if result == UUID4_PLACEHOLDER:  # only fires if default value was not provided
             raise KeyError(f"{key} was not found in the dictionary!")
 
-        self._collection.update_one(self.db_filter, {"$set": {self.db_path: current}})
+        self._collection.update_one(
+            self.db_filter, {"$set": {self.db_projection: current}}
+        )
         return result
 
     def popitem(self):
         current = self._value
         result = current.popitem()
-        self._collection.update_one(self.db_filter, {"$set": {self.db_path: current}})
+        self._collection.update_one(
+            self.db_filter, {"$set": {self.db_projection: current}}
+        )
         return result
 
     def setdefault(self, key, default=None):
@@ -294,7 +372,9 @@ class DictInDatabase:
     def update(self, *args, **kwargs):
         current = self._value
         current.update(*args, **kwargs)
-        self._collection.update_one(self.db_filter, {"$set": {self.db_path: current}})
+        self._collection.update_one(
+            self.db_filter, {"$set": {self.db_projection: current}}
+        )
 
     def __reversed__(self):
         return reversed(self._value)
@@ -303,26 +383,35 @@ class DictInDatabase:
         return iter(self._value)
 
     def __repr__(self):
-        return str(self._value)
+        return str(self.as_normal_dict())
 
     def __str__(self):
-        return str(self._value)
+        return str(self.as_normal_dict())
 
     def __getitem__(self, x):
         return self._value[x]
 
     def __setitem__(self, x, val):
-        current = self._value
+        # lists/tuples entered as dict values may be returned later as ListInDatabase objects. ListInDatabase does not support nested iterables! So we will raise an error if we detect values that ListInDatabase cannot handle.
+        if any([isinstance(val, t) for t in [tuple, list]]):
+            for _val in val:
+                ListInDatabase._raise_if_invalid_value(_val)
+
+        current = self.as_normal_dict()
         current[x] = val
-        self._collection.update_one(self.db_filter, {"$set": {self.db_path: current}})
+        self._collection.update_one(
+            self.db_filter, {"$set": {self.db_projection: current}}
+        )
 
     def __delitem__(self, x):
-        current = self._value
+        current = self.as_normal_dict()
         del current[x]
-        self._collection.update_one(self.db_filter, {"$set": {self.db_path: current}})
+        self._collection.update_one(
+            self.db_filter, {"$set": {self.db_projection: current}}
+        )
 
     def __contains__(self, x):
-        return x in self._value
+        return x in self.as_normal_dict()
 
     def __len__(self):
-        return len(self._value)
+        return len(self.as_normal_dict())
