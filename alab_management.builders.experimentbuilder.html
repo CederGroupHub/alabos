@@ -390,12 +390,29 @@
 <dt class="sig sig-object py" id="alab_management.builders.experimentbuilder.ExperimentBuilder">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ExperimentBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/builders/experimentbuilder.html#ExperimentBuilder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.builders.experimentbuilder.ExperimentBuilder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>It takes a list of samples and a list of tasks, and returns a dictionary
+that can be used to generate an input file for the <cite>experiment</cite> command</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – The name of the experiment.</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.builders.experimentbuilder.ExperimentBuilder.add_sample">
-<span class="sig-name descname"><span class="pre">add_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/builders/experimentbuilder.html#ExperimentBuilder.add_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.builders.experimentbuilder.ExperimentBuilder.add_sample" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="alab_management.builders.samplebuilder.html#alab_management.builders.samplebuilder.SampleBuilder" title="alab_management.builders.samplebuilder.SampleBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">SampleBuilder</span></code></a></p>
+<span class="sig-name descname"><span class="pre">add_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">metadata</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/builders/experimentbuilder.html#ExperimentBuilder.add_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.builders.experimentbuilder.ExperimentBuilder.add_sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function adds a sample to the experiment</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – The name of the sample. This must be unique within this ExperimentBuilder.</p></li>
+<li><p><strong>**metadata</strong> – Any additional keyword arguments will be attached to this sample as metadata.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="alab_management.builders.samplebuilder.html#alab_management.builders.samplebuilder.SampleBuilder" title="alab_management.builders.samplebuilder.SampleBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">SampleBuilder</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A SampleBuilder object. This can be used to add tasks to the sample.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -419,6 +436,11 @@
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.builders.experimentbuilder.ExperimentBuilder.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/builders/experimentbuilder.html#ExperimentBuilder.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.builders.experimentbuilder.ExperimentBuilder.plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.builders.experimentbuilder.ExperimentBuilder.to_dict">
