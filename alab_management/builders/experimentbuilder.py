@@ -4,16 +4,38 @@ from .samplebuilder import SampleBuilder
 
 
 class ExperimentBuilder:
+    """
+    It takes a list of samples and a list of tasks, and returns a dictionary
+    that can be used to generate an input file for the `experiment` command
+
+    Args:
+      name (str): The name of the experiment.
+    """
+
     def __init__(self, name: str):
+        """
+        Args:
+          name (str): The name of the experiment.
+        """
         self.name = name
         self._samples: List[SampleBuilder] = []
         self._tasks: Dict[str, Dict[str, Any]] = {}
 
-    def add_sample(self, name: str) -> SampleBuilder:
+    def add_sample(self, name: str, **metadata) -> SampleBuilder:
+        """
+        This function adds a sample to the experiment
+
+        Args:
+          name (str): The name of the sample. This must be unique within this ExperimentBuilder.
+          **metadata: Any additional keyword arguments will be attached to this sample as metadata.
+        Returns:
+          A SampleBuilder object. This can be used to add tasks to the sample.
+        """
         if any(name == sample.name for sample in self._samples):
             raise ValueError(f"Sample by name {name} already exists.")
-        sample = SampleBuilder(name, experiment=self)
+        sample = SampleBuilder(name, experiment=self, **metadata)
 
+        # TODO ensure that the metadata is json/bson serializable
         self._samples.append(sample)
         return sample
 
@@ -75,6 +97,45 @@ class ExperimentBuilder:
                 import yaml
 
                 yaml.dump(self.to_dict(), f, default_flow_style=False, indent=2)
+
+    def plot(self, ax=None):
+        import networkx as nx
+        import matplotlib.pyplot as plt
+
+        if ax is None:
+            _, ax = plt.subplots(figsize=(8, 6))
+
+        task_list = self.to_dict()["tasks"]
+
+        unique_tasks = set([task["type"] for task in task_list])
+        color_key = {
+            nodetype: plt.cm.tab10(i) for i, nodetype in enumerate(unique_tasks)
+        }
+        node_colors = []
+        node_labels = {}
+        for task in task_list:
+            node_colors.append(color_key[task["type"]])
+            node_labels[task["_id"]] = f"{task['type']} ({len(task['samples'])})"
+
+        g = nx.DiGraph()
+        for task in task_list:
+            g.add_node(task["_id"], name=task["type"], samples=len(task["samples"]))
+            for prev in task["prev_tasks"]:
+                g.add_edge(task_list[prev]["_id"], task["_id"])
+
+        try:
+            pos = nx.nx_agraph.graphviz_layout(g, prog="dot")
+        except:
+            pos = nx.spring_layout(g)
+
+        nx.draw(
+            g,
+            with_labels=True,
+            node_color=node_colors,
+            labels=node_labels,
+            pos=pos,
+            ax=ax,
+        )
 
     def __repr__(self):
         return f"<ExperimentBuilder: {self.name}>"
