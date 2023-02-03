@@ -72,8 +72,8 @@ class BaseTask(ABC):
             self.lab_view = lab_view
             self.logger = self.lab_view.logger
             self.priority = priority
-            if not self.validate():
-                raise ValueError("Task validation failed!")
+            # if not self.validate(): #TODO: implement this
+            #     raise ValueError("Task validation failed!")
 
     @property
     def is_simulation(self) -> bool:

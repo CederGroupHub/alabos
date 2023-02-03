@@ -15,7 +15,7 @@ def setup_lab():
     from ..device_view import get_all_devices, DeviceView
     from ..sample_view import SampleView
     from ..sample_view.sample import get_all_standalone_sample_positions
-
+    
     load_definition()
     devices = get_all_devices().values()
     DeviceView().add_devices_to_db()

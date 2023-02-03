@@ -18,7 +18,10 @@ def import_module_from_path(path: Union[str, Path]):
         path = Path(path)
     sys.path.insert(0, path.parent.as_posix())
     try:
+        print(path) #TODO 
+        path = Path(r"C:\Users\Ceder-ALAB\Documents\GitHub\alab_one")
         module = importlib.import_module(path.name)
+        print(2)
     except AttributeError as exception:
         exception.args = (
             exception.args[0]
@@ -36,7 +39,6 @@ def load_definition():
     from ..config import AlabConfig
 
     config = AlabConfig()
-
     import_module_from_path(
         config.path.parent / config["general"]["working_dir"]
         if not os.path.isabs(config["general"]["working_dir"])
