@@ -105,6 +105,8 @@ class LabView:
 
         The priority of the request can optionally be specified as a positive integer, which should probably be in the range of 0-40. 20 is the default "NORMAL" priority level. Higher number = higher priority. Numbers >= 100 are reserved for urgent/error correcting requests.
         """
+        priority = priority or self.__task_entry.priority
+        
         self._task_view.update_status(
             task_id=self.task_id, status=TaskStatus.REQUESTING_RESOURCES
         )
