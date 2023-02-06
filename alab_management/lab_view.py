@@ -288,3 +288,26 @@ class LabView:
         Request user input from the user. This function will block until the user inputs something. Returns the value returned by the user.
         """
         return request_user_input(task_id=self.task_id, prompt=prompt, options=options)
+
+    def request_cleanup(self):
+        """
+        Request cleanup of the task. This function will block until the task is cleaned up.
+        """
+        all_reserved_sample_positions = self._sample_view.get_sample_positions_by_task(self.task_id)
+
+        all_samples = self.__task_entry["samples"]
+        all_positions_with_samples = [
+            self._sample_view.get_sample(sample_entry["sample_id"]).position for sample_entry in all_samples
+        ]
+
+        self.request_user_input(
+            prompt="A unrecoverable error has occurred.\n"
+                   f"(1) remove samples on {', '.join(all_positions_with_samples)}\n"
+                   f"(2) remove all other consumables on {', '.join(all_reserved_sample_positions)}\n"
+                   f"The error information is {format_exc()}",
+            options=["OK"]
+        )
+
+        # move the samples out of the lab
+        for sample in all_samples:
+            self.move_sample(sample=sample["sample_id"], position=None)

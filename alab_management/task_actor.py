@@ -54,13 +54,15 @@ def run_task(task_id_str: str):
         )
         return
 
+    lab_view = LabView(task_id=task_id)
+
     try:
         task: BaseTask = task_type(
             samples=[
                 sample["name"] for sample in task_entry["samples"]
             ],  # only the sample names are sent
             task_id=task_id,
-            lab_view=LabView(task_id=task_id),
+            lab_view=lab_view,
             simulation=False,
             **task_entry["parameters"],
         )
@@ -114,6 +116,7 @@ def run_task(task_id_str: str):
                 "traceback": formatted_exception,
             },
         )
+        lab_view.request_cleanup()
         raise
     else:
         task_view.update_status(task_id=task_id, status=TaskStatus.COMPLETED)
