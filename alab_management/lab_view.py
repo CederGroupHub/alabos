@@ -21,7 +21,7 @@ from alab_management.sample_view.sample import Sample
 from alab_management.sample_view.sample_view import SampleView, SamplePositionRequest
 from alab_management.task_manager import ResourceRequester
 from alab_management.task_view.task import BaseTask
-from alab_management.task_view.task_enums import TaskStatus
+from alab_management.task_view.task_enums import TaskPriority, TaskStatus
 from alab_management.task_view.task_view import TaskView
 from alab_management.user_input import request_user_input
 
@@ -76,6 +76,8 @@ class LabView:
         self._device_client = DevicesClient(task_id=task_id, timeout=None)
         self.logger = DBLogger(task_id=task_id)
 
+        self._priority = TaskPriority.NORMAL.value
+
     @property
     def task_id(self) -> ObjectId:
         return self._task_id
@@ -105,7 +107,7 @@ class LabView:
 
         The priority of the request can optionally be specified as a positive integer, which should probably be in the range of 0-40. 20 is the default "NORMAL" priority level. Higher number = higher priority. Numbers >= 100 are reserved for urgent/error correcting requests.
         """
-        priority = priority or self.__task_entry.priority
+        priority = priority or self.priority
         
         self._task_view.update_status(
             task_id=self.task_id, status=TaskStatus.REQUESTING_RESOURCES
@@ -290,3 +292,13 @@ class LabView:
         Request user input from the user. This function will block until the user inputs something. Returns the value returned by the user.
         """
         return request_user_input(task_id=self.task_id, prompt=prompt, options=options)
+
+    @property
+    def priority(self) -> int:
+        return self._priority
+    
+    @priority.setter
+    def priority(self, priority: int):
+        if isinstance(priority, TaskPriority):
+            priority = priority.value
+        self._priority = priority

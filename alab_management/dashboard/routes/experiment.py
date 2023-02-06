@@ -93,7 +93,7 @@ def query_experiment(exp_id: str):
                 "status": task_view.get_status(task["task_id"]).name,
                 "type": task["type"],
                 "message": task_view.get_task(task["task_id"]).get("message", ""),
-                # "result": task_view.get_task(task["task_id"]).get("result", ""),
+                "result": task_view.get_task(task["task_id"]).get("result", ""),
             }
             for task in experiment["tasks"]
         ],

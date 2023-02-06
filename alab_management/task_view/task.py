@@ -72,6 +72,7 @@ class BaseTask(ABC):
             self.lab_view = lab_view
             self.logger = self.lab_view.logger
             self.priority = priority
+            self.lab_view.priority = priority
             # if not self.validate(): #TODO: implement this
             #     raise ValueError("Task validation failed!")
 
