@@ -8,6 +8,7 @@ from enum import Enum, auto
 from typing import Any, Dict, List, Type, Union, Optional, cast
 
 from bson import ObjectId
+import bson
 
 from alab_management.task_view.task import get_all_tasks, BaseTask
 from alab_management.utils.data_objects import get_collection
@@ -205,23 +206,34 @@ class TaskView:
             {"$set": {"subtasks": subtasks}},
         )
 
-    def update_result(self, task_id: ObjectId, task_result: Any):
+    def update_result(
+        self, task_id: ObjectId, task_result: Any, name: Optional[str] = None
+    ):
         """
         Update result to completed job.
 
         Args:
             task_id: the id of task to be updated
             task_result: the result returned by the task (which can be dumped into MongoDB)
+            name: the name of the result to be updated. If ``None``, will update the entire ``result`` field. Otherwise, will update the field ``result.name``.
         """
         result = self.get_task(
             task_id=task_id
         )  # just to confirm that task_id exists in collection
 
+        task_result = bson.BSON.encode(
+            task_result
+        )  # TODO encode to valid bson. we need to ensure this works for at least numpy arrays.
+        if name is not None:
+            update_path = f"result.{name}"
+        else:
+            update_path = "result"
+
         self._task_collection.update_one(
             {"_id": task_id},
             {
                 "$set": {
-                    "result": task_result,
+                    update_path: task_result,
                     "last_updated": datetime.now(),
                 }
             },

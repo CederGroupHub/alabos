@@ -7,9 +7,10 @@ of a sample in the lab.
 from contextlib import contextmanager
 import time
 from traceback import format_exc
-from typing import Type, Dict, List, Optional, Union
+from typing import Any, Type, Dict, List, Optional, Union
 
 from bson import ObjectId
+import bson
 from pydantic import root_validator
 from pydantic.main import BaseModel
 
@@ -108,7 +109,7 @@ class LabView:
         The priority of the request can optionally be specified as a positive integer, which should probably be in the range of 0-40. 20 is the default "NORMAL" priority level. Higher number = higher priority. Numbers >= 100 are reserved for urgent/error correcting requests.
         """
         priority = priority or self.priority
-        
+
         self._task_view.update_status(
             task_id=self.task_id, status=TaskStatus.REQUESTING_RESOURCES
         )
@@ -296,9 +297,21 @@ class LabView:
     @property
     def priority(self) -> int:
         return self._priority
-    
+
     @priority.setter
     def priority(self, priority: int):
         if isinstance(priority, TaskPriority):
             priority = priority.value
         self._priority = priority
+
+    def update_result(self, name: str, value: Any):
+        """
+        Update a result of the task. This result will be saved in the task collection under `results.name` and can be retrieved later.
+
+        Args:
+            name (str): name of the result (ie "diffraction pattern")
+            value (Any): value of the result. This can be any bson-serializable object.
+        """
+        self._task_view.update_result(
+            task_id=self.task_id, name=name, task_result=value
+        )
