@@ -618,12 +618,10 @@ class ResourceRequester(RequestMixin):
         )  # DB_ACCESS_OUTSIDE_VIEW
         _id: ObjectId = cast(ObjectId, result.inserted_id)
 
-        self._waiting[_id] = {"f": f, "device_str_to_request": device_str_to_request}
-
         try:
+            self._waiting[_id] = {"f": f, "device_str_to_request": device_str_to_request}
             result = f.result(timeout=timeout)
-        except TimeoutError:
-            # cancel the task
+        except Exception:  # cancel the task if any exception occurs (e.g. the worker exits)
             self.update_request_status(request_id=_id, status=RequestStatus.CANCELED)
             raise
 
