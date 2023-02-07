@@ -32,7 +32,7 @@ from monty.design_patterns import singleton
 import toml
 
 
-def froze_config(config_: Dict[str, Any]) -> FrozenDict:
+def freeze_config(config_: Dict[str, Any]) -> FrozenDict:
     """
     Convert the config dict to frozen config
 
@@ -40,25 +40,25 @@ def froze_config(config_: Dict[str, Any]) -> FrozenDict:
         config_: the dict of config data
 
     Returns:
-        frozen_config, which is not allowed to modify
+        frozen_config, which can not be modified
     """
 
-    def _froze_collection(collection_or_element):
+    def _frozen_collection(collection_or_element):
         """
         Convert a list to tuple, a dict to frozen_dict recursively
         """
         if isinstance(collection_or_element, list):
             return tuple(
-                _froze_collection(element) for element in collection_or_element
+                _frozen_collection(element) for element in collection_or_element
             )
         if isinstance(collection_or_element, dict):
             return FrozenDict(
-                {k: _froze_collection(v) for k, v in collection_or_element.items()}
+                {k: _frozen_collection(v) for k, v in collection_or_element.items()}
             )
 
         return collection_or_element
 
-    return _froze_collection(config_)
+    return _frozen_collection(config_)
 
 
 @singleton
@@ -75,11 +75,17 @@ class AlabConfig:
         if config_path is None:
             config_path = "config.toml"
 
-        with open(config_path, "r", encoding="utf-8") as f:
-            _config = toml.load(f)
+        try:
+            with open(config_path, "r", encoding="utf-8") as f:
+                _config = toml.load(f)
+        except FileNotFoundError:
+            raise FileNotFoundError(
+                f"Config file was not found at {config_path}."
+                "Please set your computer's environment variable 'ALAB_CONFIG' to the path to the config file. In absence of this environment variable, we assume there is a file named config.toml in the current directory."
+            )
 
         self._path = Path(config_path).absolute()
-        self._config = froze_config(_config)
+        self._config = freeze_config(_config)
 
     def __getitem__(self, item):
         return self._config.__getitem__(item)

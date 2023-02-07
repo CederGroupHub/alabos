@@ -3,12 +3,13 @@ Define the base class of task, which will be used for defining more tasks.
 """
 from abc import ABC, abstractmethod
 import inspect
-from typing import Dict, List, Type, TYPE_CHECKING, Optional, Union
+from typing import Dict, List, Type, TYPE_CHECKING, Optional, Union, Any
 from bson.objectid import ObjectId
 from alab_management.task_view.task_enums import TaskPriority
 from inspect import getfullargspec
 from alab_management.builders.samplebuilder import SampleBuilder
 from alab_management.builders.experimentbuilder import ExperimentBuilder
+from alab_management.utils.data_objects import make_bsonable
 
 if TYPE_CHECKING:
     from alab_management.lab_view import LabView
@@ -72,8 +73,9 @@ class BaseTask(ABC):
             self.lab_view = lab_view
             self.logger = self.lab_view.logger
             self.priority = priority
-            if not self.validate():
-                raise ValueError("Task validation failed!")
+            self.lab_view.priority = priority
+            # if not self.validate(): #TODO: implement this
+            #     raise ValueError("Task validation failed!")
 
     @property
     def is_simulation(self) -> bool:

@@ -59,5 +59,23 @@ def get_rabbitmq_connection():
     return _connection
 
 
+def make_bsonable(obj):
+    """
+    Sanitize the object to make it bsonable. This is a recursive function, it will
+    convert all the objects in the object to bsonable objects.
+    """
+    return obj
+    # TODO clean up data types (e.g. numpy arrays) to make them bsonable (i.e. valid to go in mongodb)
+    if isinstance(obj, dict):
+        return {k: make_bsonable(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [make_bsonable(v) for v in obj]
+    if isinstance(obj, (str, int, float, bool)):
+        return obj
+    if obj is None:
+        return None
+    return str(obj)
+
+
 get_collection = _GetMongoCollection.get_collection
 get_lock = _GetMongoCollection.get_lock

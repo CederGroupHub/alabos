@@ -97,13 +97,18 @@ class DBLogger:
             logging_type=LoggingType.CHARACTERIZATION_RESULT,
         )
 
-    def log_device_signal(self, log_data: Dict[str, Any]):
+    def log_device_signal(self, device_name: str, signal_name: str, signal_value: Any):
         """
         Log the device sensor's signal (e.g. the voltage of batteries, the temperature of furnace)
         """
+
         return self.log(
             level=LoggingLevel.DEBUG,
-            log_data=log_data,
+            log_data={
+                "device_name": device_name,
+                "signal_name": signal_name,
+                "signal_value": signal_value,
+            },
             logging_type=LoggingType.DEVICE_SIGNAL,
         )
 
@@ -131,3 +136,83 @@ class DBLogger:
         return self._logging_collection.find(
             {"level": {"$gte": level}, "created_at": {"$gte": datetime.now() - within}}
         )
+
+    def get_latest_device_signal(
+        self, device_name: str, signal_name: str
+    ) -> Dict[str, Any]:
+        """Get the last device signal log
+
+
+        Args:
+            device_name (str): device_name
+            signal_name (str): signal name
+
+        Returns:
+            Optional[Any]: dictionary with result.
+
+            dict example:
+                {
+                    "device_name": device_name,
+                    "signal_name": signal_name,
+                    "value": signal_value,
+                    "timestamp": timestamp
+                }
+        """
+        result = self._logging_collection.find_one(
+            {
+                "type": LoggingType.DEVICE_SIGNAL.name,
+                "log_data.device_name": device_name,
+                "log_data.signal_name": signal_name,
+            },
+            sort=[("created_at", -1)],
+        )
+        if result is not None:
+            value = result["log_data"]["signal_value"]
+            timestamp = result["created_at"]
+        else:
+            value = None #TODO do we want to raise here instead?
+            timestamp = datetime.now()
+        return {
+            "device_name": device_name,
+            "signal_name": signal_name,
+            "value": value,
+            "timestamp": timestamp,
+        }
+
+    def filter_device_signal(
+        self, device_name: str, signal_name: str, within: timedelta
+    ) -> Dict[str, Any]:
+        """Find device signal log within a range of time (1h/1d or else)
+
+        Args:
+            device_name (str): name of device
+            signal_name (str): name of signal to retrieve
+            within (timedelta): timedelta (how far back) to retrieve
+
+        Returns:
+            Dict[str, Any]: Dictionary containing signal data. Dict form is:
+                {
+                    "device_name": device_name,
+                    "signal_name": signal_name,
+                    "timestamp": [list of timestamps],
+                    "value": [list of signal values]
+                    }
+        """
+        result = self._logging_collection.find(
+            {
+                "type": LoggingType.DEVICE_SIGNAL.name,
+                "log_data.device_name": device_name,
+                "log_data.signal_name": signal_name,
+                "created_at": {"$gte": datetime.now() - within},
+            }
+        )
+        data = {
+            "device_name": device_name,
+            "signal_name": signal_name,
+            "timestamp": [],
+            "value": [],
+        }
+        for entry in result:
+            data["timestamp"].append(entry["created_at"])
+            data["value"].append(entry["log_data"]["signal_value"])
+        return data
