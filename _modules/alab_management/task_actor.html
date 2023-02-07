@@ -422,13 +422,15 @@
         <span class="p">)</span>
         <span class="k">return</span>
 
+    <span class="n">lab_view</span> <span class="o">=</span> <span class="n">LabView</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span>
+
     <span class="k">try</span><span class="p">:</span>
         <span class="n">task</span><span class="p">:</span> <span class="n">BaseTask</span> <span class="o">=</span> <span class="n">task_type</span><span class="p">(</span>
             <span class="n">samples</span><span class="o">=</span><span class="p">[</span>
                 <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;samples&quot;</span><span class="p">]</span>
             <span class="p">],</span>  <span class="c1"># only the sample names are sent</span>
             <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span>
-            <span class="n">lab_view</span><span class="o">=</span><span class="n">LabView</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">),</span>
+            <span class="n">lab_view</span><span class="o">=</span><span class="n">lab_view</span><span class="p">,</span>
             <span class="n">simulation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="o">**</span><span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;parameters&quot;</span><span class="p">],</span>
         <span class="p">)</span>
@@ -482,6 +484,7 @@
                 <span class="s2">&quot;traceback&quot;</span><span class="p">:</span> <span class="n">formatted_exception</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
+        <span class="n">lab_view</span><span class="o">.</span><span class="n">request_cleanup</span><span class="p">()</span>
         <span class="k">raise</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">task_view</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">COMPLETED</span><span class="p">)</span>
