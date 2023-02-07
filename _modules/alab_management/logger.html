@@ -465,13 +465,18 @@
             <span class="n">logging_type</span><span class="o">=</span><span class="n">LoggingType</span><span class="o">.</span><span class="n">CHARACTERIZATION_RESULT</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="DBLogger.log_device_signal"><a class="viewcode-back" href="../../alab_management.logger.html#alab_management.logger.DBLogger.log_device_signal">[docs]</a>    <span class="k">def</span> <span class="nf">log_device_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+<div class="viewcode-block" id="DBLogger.log_device_signal"><a class="viewcode-back" href="../../alab_management.logger.html#alab_management.logger.DBLogger.log_device_signal">[docs]</a>    <span class="k">def</span> <span class="nf">log_device_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">signal_value</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Log the device sensor&#39;s signal (e.g. the voltage of batteries, the temperature of furnace)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
             <span class="n">level</span><span class="o">=</span><span class="n">LoggingLevel</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
-            <span class="n">log_data</span><span class="o">=</span><span class="n">log_data</span><span class="p">,</span>
+            <span class="n">log_data</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;device_name&quot;</span><span class="p">:</span> <span class="n">device_name</span><span class="p">,</span>
+                <span class="s2">&quot;signal_name&quot;</span><span class="p">:</span> <span class="n">signal_name</span><span class="p">,</span>
+                <span class="s2">&quot;signal_value&quot;</span><span class="p">:</span> <span class="n">signal_value</span><span class="p">,</span>
+            <span class="p">},</span>
             <span class="n">logging_type</span><span class="o">=</span><span class="n">LoggingType</span><span class="o">.</span><span class="n">DEVICE_SIGNAL</span><span class="p">,</span>
         <span class="p">)</span></div>
 
@@ -498,7 +503,87 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logging_collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
             <span class="p">{</span><span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$gte&quot;</span><span class="p">:</span> <span class="n">level</span><span class="p">},</span> <span class="s2">&quot;created_at&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$gte&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">within</span><span class="p">}}</span>
-        <span class="p">)</span></div></div>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="DBLogger.get_latest_device_signal"><a class="viewcode-back" href="../../alab_management.logger.html#alab_management.logger.DBLogger.get_latest_device_signal">[docs]</a>    <span class="k">def</span> <span class="nf">get_latest_device_signal</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the last device signal log</span>
+
+
+<span class="sd">        Args:</span>
+<span class="sd">            device_name (str): device_name</span>
+<span class="sd">            signal_name (str): signal name</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Optional[Any]: dictionary with result.</span>
+
+<span class="sd">            dict example:</span>
+<span class="sd">                {</span>
+<span class="sd">                    &quot;device_name&quot;: device_name,</span>
+<span class="sd">                    &quot;signal_name&quot;: signal_name,</span>
+<span class="sd">                    &quot;value&quot;: signal_value,</span>
+<span class="sd">                    &quot;timestamp&quot;: timestamp</span>
+<span class="sd">                }</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logging_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">LoggingType</span><span class="o">.</span><span class="n">DEVICE_SIGNAL</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;log_data.device_name&quot;</span><span class="p">:</span> <span class="n">device_name</span><span class="p">,</span>
+                <span class="s2">&quot;log_data.signal_name&quot;</span><span class="p">:</span> <span class="n">signal_name</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="n">sort</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)],</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;log_data&quot;</span><span class="p">][</span><span class="s2">&quot;signal_value&quot;</span><span class="p">]</span>
+            <span class="n">timestamp</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;created_at&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#TODO do we want to raise here instead?</span>
+            <span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;device_name&quot;</span><span class="p">:</span> <span class="n">device_name</span><span class="p">,</span>
+            <span class="s2">&quot;signal_name&quot;</span><span class="p">:</span> <span class="n">signal_name</span><span class="p">,</span>
+            <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span>
+            <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">timestamp</span><span class="p">,</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="DBLogger.filter_device_signal"><a class="viewcode-back" href="../../alab_management.logger.html#alab_management.logger.DBLogger.filter_device_signal">[docs]</a>    <span class="k">def</span> <span class="nf">filter_device_signal</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">within</span><span class="p">:</span> <span class="n">timedelta</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find device signal log within a range of time (1h/1d or else)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device_name (str): name of device</span>
+<span class="sd">            signal_name (str): name of signal to retrieve</span>
+<span class="sd">            within (timedelta): timedelta (how far back) to retrieve</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[str, Any]: Dictionary containing signal data. Dict form is:</span>
+<span class="sd">                {</span>
+<span class="sd">                    &quot;device_name&quot;: device_name,</span>
+<span class="sd">                    &quot;signal_name&quot;: signal_name,</span>
+<span class="sd">                    &quot;timestamp&quot;: [list of timestamps],</span>
+<span class="sd">                    &quot;value&quot;: [list of signal values]</span>
+<span class="sd">                    }</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logging_collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">LoggingType</span><span class="o">.</span><span class="n">DEVICE_SIGNAL</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;log_data.device_name&quot;</span><span class="p">:</span> <span class="n">device_name</span><span class="p">,</span>
+                <span class="s2">&quot;log_data.signal_name&quot;</span><span class="p">:</span> <span class="n">signal_name</span><span class="p">,</span>
+                <span class="s2">&quot;created_at&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$gte&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">within</span><span class="p">},</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;device_name&quot;</span><span class="p">:</span> <span class="n">device_name</span><span class="p">,</span>
+            <span class="s2">&quot;signal_name&quot;</span><span class="p">:</span> <span class="n">signal_name</span><span class="p">,</span>
+            <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;created_at&quot;</span><span class="p">])</span>
+            <span class="n">data</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;log_data&quot;</span><span class="p">][</span><span class="s2">&quot;signal_value&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">data</span></div></div>
 </pre></div>
 
               </div>
