@@ -221,9 +221,7 @@ class TaskView:
             task_id=task_id
         )  # just to confirm that task_id exists in collection
 
-        task_result = bson.BSON.encode(
-            task_result
-        )  # TODO encode to valid bson. we need to ensure this works for at least numpy arrays.
+        # TODO encode to valid bson. we need to ensure this works for at least numpy arrays.
         if name is not None:
             update_path = f"result.{name}"
         else:
