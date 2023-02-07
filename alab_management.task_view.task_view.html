@@ -522,13 +522,14 @@ if so, mark it as READY</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskView.update_result">
-<span class="sig-name descname"><span class="pre">update_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_result</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.update_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.update_result" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">update_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.update_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.update_result" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update result to completed job.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>task_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the id of task to be updated</p></li>
-<li><p><strong>task_result</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>) – the result returned by the task (which can be dumped into MongoDB)</p></li>
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the name of the result to be updated. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, will update the entire <code class="docutils literal notranslate"><span class="pre">result</span></code> field. Otherwise, will update the field <code class="docutils literal notranslate"><span class="pre">result.name</span></code>.</p></li>
+<li><p><strong>value</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>) – the value to be stored. This must be bson-encodable (ie can be written into MongoDB!)</p></li>
 </ul>
 </dd>
 </dl>
