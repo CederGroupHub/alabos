@@ -207,31 +207,28 @@ class TaskView:
         )
 
     def update_result(
-        self, task_id: ObjectId, task_result: Any, name: Optional[str] = None
+        self, task_id: ObjectId, name: str, value: Any
     ):
         """
         Update result to completed job.
 
         Args:
             task_id: the id of task to be updated
-            task_result: the result returned by the task (which can be dumped into MongoDB)
             name: the name of the result to be updated. If ``None``, will update the entire ``result`` field. Otherwise, will update the field ``result.name``.
+            value: the value to be stored. This must be bson-encodable (ie can be written into MongoDB!)
         """
-        result = self.get_task(
+        _ = self.get_task(
             task_id=task_id
         )  # just to confirm that task_id exists in collection
 
         # TODO encode to valid bson. we need to ensure this works for at least numpy arrays.
-        if name is not None:
-            update_path = f"result.{name}"
-        else:
-            update_path = "result"
+        update_path = f"result.{name}"
 
         self._task_collection.update_one(
             {"_id": task_id},
             {
                 "$set": {
-                    update_path: task_result,
+                    update_path: value,
                     "last_updated": datetime.now(),
                 }
             },

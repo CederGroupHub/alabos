@@ -117,7 +117,10 @@ def run_task(task_id_str: str):
         raise
     else:
         task_view.update_status(task_id=task_id, status=TaskStatus.COMPLETED)
-        task_view.update_result(task_id=task_id, task_result=result)
+        if isinstance(result, dict):
+            #ONLY DICT RESULTS SUPPORTED!
+            for key, value in result.items():
+                task_view.update_result(task_id=task_id, name=key, value=value)
         logger.system_log(
             level="INFO",
             log_data={

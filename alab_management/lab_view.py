@@ -313,5 +313,5 @@ class LabView:
             value (Any): value of the result. This can be any bson-serializable object.
         """
         self._task_view.update_result(
-            task_id=self.task_id, name=name, task_result=value
+            task_id=self.task_id, name=name, value=value
         )
