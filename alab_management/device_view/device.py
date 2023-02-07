@@ -3,11 +3,19 @@ Define the base class of devices
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, List, ClassVar, Dict, Optional, Union
+from typing import Any, Iterable, List, ClassVar, Dict, Optional, Union
+from alab_management.logger import DBLogger, LoggingType
 
 from alab_management.sample_view.sample import SamplePosition
 from alab_management.user_input import request_maintenance_input
 from .dbattributes import value_in_database, ListInDatabase, DictInDatabase
+import datetime
+import time
+import threading
+from queue import PriorityQueue, Empty
+
+
+### Base Device class ###
 
 
 class BaseDevice(ABC):
@@ -53,6 +61,9 @@ class BaseDevice(ABC):
         from alab_management.device_view import DeviceView
 
         self._device_view = DeviceView()
+        self._signalemitter = DeviceSignalEmitter(
+            device=self
+        )  # this will periodically log any device methods that are decorated with @log_signal!
 
     @property
     @abstractmethod
@@ -86,6 +97,7 @@ class BaseDevice(ABC):
         """
         self.connect()
         self.get_message()  # retrieve the most recent message from the database.
+        self._signalemitter.start()  # start the signal emitter thread
 
     @abstractmethod
     def connect(self):
@@ -102,6 +114,7 @@ class BaseDevice(ABC):
         Disconnect from the device and execute any backend actions that are only possible when alabos is running.
         """
         self.disconnect()
+        self._signalemitter.stop()
 
     @abstractmethod
     def disconnect(self):
@@ -217,6 +230,180 @@ class BaseDevice(ABC):
 
     def request_maintenance(self, prompt: str, options: List[Any]):
         return request_maintenance_input(prompt=prompt, options=options)
+
+    def retrieve_signal(
+        self, signal_name: str, within: Optional[datetime.timedelta] = None
+    ):
+        """Retrieve a signal from the database
+
+        Args:
+            signal_name (str): device signal name. This should match the signal_name passed to the `@log_device_signal` decorator
+            within (Optional[datetime.timedelta], optional): timedelta defining how far back to pull logs from (relative to current time). Defaults to None.
+
+        Returns:
+            Dict: Dictionary of signal result. Single value vs lists depends on whether `within` was None or not, respectively. Form is:
+            {
+                "device_name": "device_name",
+                "signal_name": "signal_name",
+                "value": "signal_value" or ["signal_value_1", "signal_value_2", ...]],
+                "timestamp": "timestamp" or ["timestamp_1", "timestamp_2", ...]
+            }
+
+
+        """
+        return self._signalemitter.retrieve_signal(signal_name, within)
+
+
+### DeviceSignalEmitter and related decorator ###
+def log_signal(signal_name: str, interval_seconds: int):
+    """This is a decorator for methods within a `BaseDevice`. Methods decorated with this will be called at the specified interval and the result will be logged to the database under the `signal_name` provided. The intended use is to track process variables (like a furnace temperature, a pressure sensor, etc.) whenever the device is connected to alabos.
+
+    Args:
+        signal_name (str): Name to attribute to this signal
+        interval_seconds (int): Interval at which to log this signal to the database.
+    """
+
+    def wrapper(func):
+        def wrapper_func(self, *args, **kwargs):
+            value = func(self, *args, **kwargs)
+            return value
+
+        wrapper_func.logging_interval_seconds = interval_seconds
+        wrapper_func.signal_name = signal_name
+
+        return wrapper_func
+
+    return wrapper
+
+
+class DeviceSignalEmitter:
+    def __init__(self, device):
+        from alab_management.device_view import DeviceView
+
+        self._device_view = DeviceView()
+        self.dblogger = DBLogger(task_id=None)
+        self.device = device
+        self.is_logging = False
+        self.queue = PriorityQueue()
+
+    def get_methods_to_log(self):
+        methods_to_log = {}
+        for method_name, method in self.device.__class__.__dict__.items():
+            if hasattr(method, "logging_interval_seconds") and callable(method):
+                methods_to_log[method_name] = {
+                    "interval": method.logging_interval_seconds,
+                    "signal_name": method.signal_name,
+                }
+        return methods_to_log
+
+    def _worker(self):
+        def wait_with_option_to_kill(time_to_wait: float):
+            """Waits until the next log is due, or until the logging is stopped. When stopping the logging worker, the worker will complete its current logging task before stopping the worker thread. This may result in long blockages if the logging interval is long. This function will allow the worker to periodically check if it should stop mid-wait to avoid this issue.
+
+            Args:
+                time_to_wait (float): The total time to wait, assuming the logging worker is not stopped.
+            """
+            if time_to_wait < 0:
+                # we are behind schedule, don't wait at all!
+                return
+
+            total_time_to_wait = time_to_wait
+            while total_time_to_wait > 0:
+                if not self.is_logging:
+                    return
+                time_to_wait = min(
+                    total_time_to_wait, 0.2
+                )  # we will wait 0.2 second at a time
+                total_time_to_wait -= time_to_wait
+                time.sleep(time_to_wait)
+
+        if len(self.get_methods_to_log()) == 0:
+            return  # no need to run if we arent logging any methods
+        while True:
+            # we check if logging is active within the loop. This is to allow the logging worker to be stopped mid-wait if necessary. Prevents us blocking a `.stop()` call if stuck waiting to log method on a long interval.
+            try:
+                log_at, method_name, signal_name, interval, count = self.queue.get(
+                    block=False
+                )
+            except Empty:
+                # wait for queue to refill. We shouldn't reach this under normal circumstances
+                time.sleep(1)
+                continue
+            time_until_this_log = (log_at - datetime.datetime.now()).total_seconds()
+            wait_with_option_to_kill(time_until_this_log)
+            if not self.is_logging:
+                break
+            self.log_method_to_db(method_name=method_name, signal_name=signal_name)
+
+            count += 1
+            next_log_at = self._start_time + datetime.timedelta(
+                seconds=interval * count
+            )
+            self.queue.put((next_log_at, method_name, signal_name, interval, count))
+
+    def log_method_to_db(self, method_name, signal_name):
+        method = getattr(self.device, method_name)
+        try:
+            value = method()
+        except:
+            value = "Error reading {method_name} from device {self.device.name}."
+
+        self.dblogger.log_device_signal(
+            device_name=self.device.name,
+            signal_name=signal_name,
+            signal_value=value,
+        )
+
+    def start(self):
+        self.queue = PriorityQueue()
+        for method_name, logging_properties in self.get_methods_to_log().items():
+            # queue items are tuples of the form:
+            # (0. timestamp of next log, 1. method name (to get value from device), 2. signal name (what to call this in the database), 3. interval (seconds), 4. count (how many times this has been logged since starting))
+            self.queue.put(
+                (
+                    datetime.datetime.now()
+                    + datetime.timedelta(seconds=logging_properties["interval"]),
+                    method_name,
+                    logging_properties["signal_name"],
+                    logging_properties["interval"],
+                    1,
+                )
+            )
+        self.is_logging = True
+        self._logging_thread = threading.Thread(target=self._worker)
+        self._start_time = datetime.datetime.now()
+        self._logging_thread.start()
+
+    def stop(self):
+        self.is_logging = False
+        self._logging_thread.join()
+
+    def retrieve_signal(self, signal_name, within: Optional[datetime.timedelta] = None):
+        """Retrieve a signal from the database
+
+        Args:
+            signal_name (str): device signal name. This should match the signal_name passed to the `@log_device_signal` decorator
+            within (Optional[datetime.timedelta], optional): timedelta defining how far back to pull logs from (relative to current time). Defaults to None.
+
+        Returns:
+            Dict: Dictionary of signal result. Single value vs lists depends on whether `within` was None or not, respectively. Form is:
+            {
+                "device_name": "device_name",
+                "signal_name": "signal_name",
+                "value": "signal_value" or ["signal_value_1", "signal_value_2", ...]],
+                "timestamp": "timestamp" or ["timestamp_1", "timestamp_2", ...]
+            }
+
+
+        """
+        if within is None:
+            return self.dblogger.get_latest_device_signal(
+                device_name=self.device.name, signal_name=signal_name
+            )
+        else:
+            return self.dblogger.filter_device_signal(
+                device_name=self.device.name, signal_name=signal_name, within=within
+            )
 
 
 _device_registry: Dict[str, BaseDevice] = {}
