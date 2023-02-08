@@ -187,6 +187,10 @@ class RequestMixin:
             {"status": status.name}
         )  # DB_ACCESS_OUTSIDE_VIEW
 
+    def get_requests_by_task_id(self, task_id: ObjectId):
+        return self._request_collection.find(
+            {"task_id": task_id}
+        )
 
 class TaskManager(RequestMixin):
     """
@@ -617,11 +621,11 @@ class ResourceRequester(RequestMixin):
             }
         )  # DB_ACCESS_OUTSIDE_VIEW
         _id: ObjectId = cast(ObjectId, result.inserted_id)
+        self._waiting[_id] = {"f": f, "device_str_to_request": device_str_to_request}
 
         try:
-            self._waiting[_id] = {"f": f, "device_str_to_request": device_str_to_request}
             result = f.result(timeout=timeout)
-        except Exception:  # cancel the task if any exception occurs (e.g. the worker exits)
+        except TimeoutError:  # cancel the task if timeout
             self.update_request_status(request_id=_id, status=RequestStatus.CANCELED)
             raise
 
@@ -651,6 +655,38 @@ class ResourceRequester(RequestMixin):
         )
 
         return result.modified_count == 1
+
+    def release_all_resources(self) -> bool:
+        """
+        Release all requests by task_id, used for error recovery
+
+        For the requests that are not fulfilled, they will be marked as CANCELED.
+
+        For the rewquest that have been fulfilled, they will be marked as NEED_RELEASE.
+        """
+        self._request_collection.update_many(
+            {
+                "task_id": self.task_id,
+                "status": RequestStatus.FULFILLED.name,
+            },
+            {
+                "$set": {
+                    "status": RequestStatus.NEED_RELEASE.name,
+                }
+            },
+        )   
+
+        self._request_collection.update_many(
+            {
+                "task_id": self.task_id,
+                "status": RequestStatus.PENDING.name,
+            },
+            {
+                "$set": {
+                    "status": RequestStatus.CANCELED.name,
+                }
+            },
+        )
 
     def _check_request_status_loop(self):
         while True:

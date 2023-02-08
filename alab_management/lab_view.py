@@ -338,3 +338,6 @@ class LabView:
         # move the samples out of the lab
         for sample in all_samples:
             self.move_sample(sample=sample["sample_id"], position=None)
+        
+        # release all the resource that has not been fulfilled
+        self._resource_requester.release_all_resources()

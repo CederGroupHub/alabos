@@ -27,6 +27,7 @@ class ParameterError(Exception):
 @dramatiq.actor(
     max_retries=0,
     time_limit=48 * 60 * 60 * 1000,
+    notify_shutdown=True,
 )  # TODO time limit is set in ms. currently set to 48 hours
 def run_task(task_id_str: str):
     """
@@ -77,9 +78,10 @@ def run_task(task_id_str: str):
                 "message": str(exception),
             },
         )
+        lab_view.request_cleanup()
         raise Exception(
             "Failed to create task {} of type {}".format(task_id, str(task_type))
-        )
+        ) from exception
         # raise ParameterError(exception.args[0]) from exception
 
     for sample in task_entry["samples"]:
@@ -99,6 +101,23 @@ def run_task(task_id_str: str):
     try:
         task_view.update_status(task_id=task_id, status=TaskStatus.RUNNING)
         result = task.run()
+    except dramatiq.middleware.threading.Interrupt:
+        task_view.update_status(task_id=task_id, status=TaskStatus.STOPPED)
+        task_view.set_message(
+            task_id=task_id, message="Task was stopped due to the worker shutting down"
+        )  # display exception on the dashboard
+        logger.system_log(
+            level="ERROR",
+            log_data={
+                "logged_by": "TaskActor",
+                "type": "TaskEnd",
+                "task_id": task_id,
+                "task_type": task_type.__name__,
+                "status": "STOPPED",
+                "traceback": "Task was stopped due to the worker shutting down",
+            },
+        )
+        lab_view.request_cleanup()
     except Exception:
         task_view.update_status(task_id=task_id, status=TaskStatus.ERROR)
         formatted_exception = format_exc()
