@@ -395,6 +395,7 @@
 <span class="nd">@dramatiq</span><span class="o">.</span><span class="n">actor</span><span class="p">(</span>
     <span class="n">max_retries</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="n">time_limit</span><span class="o">=</span><span class="mi">48</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="n">notify_shutdown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>  <span class="c1"># TODO time limit is set in ms. currently set to 48 hours</span>
 <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="n">task_id_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -445,9 +446,10 @@
                 <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">exception</span><span class="p">),</span>
             <span class="p">},</span>
         <span class="p">)</span>
+        <span class="n">lab_view</span><span class="o">.</span><span class="n">request_cleanup</span><span class="p">()</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
             <span class="s2">&quot;Failed to create task </span><span class="si">{}</span><span class="s2"> of type </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">task_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">task_type</span><span class="p">))</span>
-        <span class="p">)</span>
+        <span class="p">)</span> <span class="kn">from</span> <span class="nn">exception</span>
         <span class="c1"># raise ParameterError(exception.args[0]) from exception</span>
 
     <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;samples&quot;</span><span class="p">]:</span>
@@ -467,6 +469,23 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="n">task_view</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="k">except</span> <span class="n">dramatiq</span><span class="o">.</span><span class="n">middleware</span><span class="o">.</span><span class="n">threading</span><span class="o">.</span><span class="n">Interrupt</span><span class="p">:</span>
+        <span class="n">task_view</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">STOPPED</span><span class="p">)</span>
+        <span class="n">task_view</span><span class="o">.</span><span class="n">set_message</span><span class="p">(</span>
+            <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Task was stopped due to the worker shutting down&quot;</span>
+        <span class="p">)</span>  <span class="c1"># display exception on the dashboard</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">system_log</span><span class="p">(</span>
+            <span class="n">level</span><span class="o">=</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span>
+            <span class="n">log_data</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;logged_by&quot;</span><span class="p">:</span> <span class="s2">&quot;TaskActor&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;TaskEnd&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">,</span>
+                <span class="s2">&quot;task_type&quot;</span><span class="p">:</span> <span class="n">task_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;STOPPED&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;traceback&quot;</span><span class="p">:</span> <span class="s2">&quot;Task was stopped due to the worker shutting down&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">lab_view</span><span class="o">.</span><span class="n">request_cleanup</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
         <span class="n">task_view</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
         <span class="n">formatted_exception</span> <span class="o">=</span> <span class="n">format_exc</span><span class="p">()</span>
