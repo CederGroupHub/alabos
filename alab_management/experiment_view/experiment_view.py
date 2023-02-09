@@ -19,6 +19,7 @@ class ExperimentStatus(Enum):
     - ``PENDING``: The experiment has not been processed by experiment manager
     - ``RUNNING``: The experiment has been submitted and put in the queue
     - ``COMPLETED``: The experiment has been completed
+    - ``ERROR``: The experiment has failed somewhere
     """
 
     PENDING = auto()

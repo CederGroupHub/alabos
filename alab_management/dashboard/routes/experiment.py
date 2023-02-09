@@ -65,7 +65,7 @@ def get_overview():
 @experiment_bp.route("/<exp_id>", methods=["GET"])
 def query_experiment(exp_id: str):
     """
-    Find an experiment by id
+    Find an experiment by id. This is used by the dashboard to present experiment status.
     """
     try:
         experiment = experiment_view.get_experiment(ObjectId(exp_id))
@@ -75,7 +75,8 @@ def query_experiment(exp_id: str):
         return {"status": "error", "errors": "Cannot find experiment with this exp id"}
 
     progress, error_state = get_experiment_progress(exp_id)
-    return {
+
+    return_dict = {
         "id": str(experiment["_id"]),
         "name": experiment["name"],
         "submitted_at": experiment["submitted_at"],
@@ -87,18 +88,73 @@ def query_experiment(exp_id: str):
             }
             for sample in experiment["samples"]
         ],
-        "tasks": [
-            {
-                "id": str(task["task_id"]),
-                "status": task_view.get_status(task["task_id"]).name,
-                "type": task["type"],
-                "message": task_view.get_task(task["task_id"]).get("message", ""),
-                "result": task_view.get_task(task["task_id"]).get("result", ""),
-            }
-            for task in experiment["tasks"]
-        ],
+        "tasks": [],
         "progress": progress,
-        "status": experiment["status"]
-        if not error_state
-        else ExperimentStatus.ERROR.value,
+        
     }
+
+    return_dict["status"] = experiment["status"] if not error_state else ExperimentStatus.ERROR.value
+
+    for task in experiment["tasks"]:
+        task_entry = task_view.get_task(task["task_id"])
+        return_dict["tasks"].append({
+                "id": str(task["task_id"]),
+                "status": task_entry["status"],
+                "type": task["type"],
+                "message": task_entry.get("message", ""),
+            })
+    return return_dict
+
+@experiment_bp.route("/results/<exp_id>", methods=["GET"])
+def query_experiment_results(exp_id: str):
+    """
+    Find an experiment by id. This is intended for users to retrieve data from an experiment
+    """
+    try:
+        experiment = experiment_view.get_experiment(ObjectId(exp_id))
+    except InvalidId as exception:
+        return {"status": "error", "errors": exception.args[0]}
+    if experiment is None:
+        return {"status": "error", "errors": "Cannot find experiment with this exp id"}
+
+    progress, error_state = get_experiment_progress(exp_id)
+
+    return_dict = {
+        "id": str(experiment["_id"]),
+        "name": experiment["name"],
+        "tags": experiment.get("tags", []),
+        "metadata": experiment.get("metadata", {}),
+        "samples": [],
+        "tasks": [],
+        "status": experiment["status"],
+        "submitted_at": experiment["submitted_at"],
+        "progress": progress,
+        "completed_at": experiment.get("completed_at", None),
+    }
+
+    for sample in experiment["samples"]:
+        # sample_entry = sample_view.get_sample(sample["sample_id"])
+        return_dict["samples"].append({
+            "name": sample["name"],
+            "metadata": {},
+            "tags": [],
+            # "metadata": sample_entry.get("metadata", {}), #TODO sample object doesnt have metadata/tag support yet
+            # "tags": sample_entry.get("tags", []),
+            "id": str(sample["sample_id"]),
+        })
+        
+    for task in experiment["tasks"]:
+        task_entry = task_view.get_task(task["task_id"])
+        return_dict["tasks"].append(
+        {
+                "type": task["type"],
+                "parameters": task["parameters"],
+                "message":task_entry.get("message", ""),
+                "result": task_entry.get("result", {}),
+                "id": str(task["task_id"]),
+                "status": task_entry['status'],
+                "started_at": task_entry.get("started_at", None),
+                "completed_at": task_entry.get("completed_at", None),
+            })
+
+    return return_dict
