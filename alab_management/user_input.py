@@ -5,7 +5,10 @@ from alab_management.utils.data_objects import get_collection
 from enum import Enum
 from bson import ObjectId
 from alab_management.task_view import TaskView
+from alab_management.alarm import Alarm
+from .config import AlabConfig
 
+CONFIG=AlabConfig()
 
 class UserRequestStatus(Enum):
     """
@@ -26,6 +29,7 @@ class UserInputView:
         self._input_collection = get_collection("user_input")
         self._task_view = TaskView()
         self._experiment_view = ExperimentView()
+        self._alarm=Alarm(receivers=AlabConfig()["alarm"]["receivers"],sender_email=AlabConfig()["alarm"]["sender_email"],password=AlabConfig()["alarm"]["password"])
 
     def insert_request(
         self,
@@ -33,6 +37,7 @@ class UserInputView:
         options: List[str],
         task_id: Optional[ObjectId] = None,
         maintenance: bool = False,
+        category: str = "Unknown Category",
     ) -> ObjectId:
         """
         Insert a request into the database.
@@ -65,6 +70,9 @@ class UserInputView:
                 "request_context": context,
             }
         )
+        if maintenance == True:
+            category = "Maintenance"
+        self._alarm.send_email(f"User input requested: {prompt}", category)
         return request_id
 
     def get_request(self, request_id: ObjectId) -> Dict[str, Any]:
@@ -134,6 +142,7 @@ def request_user_input(
     prompt: str,
     options: List[str],
     maintenance: bool = False,
+    category: str = "Unknown Category",
 ) -> str:
     """
     Request user input through the dashboard. Blocks until response is given.
@@ -147,12 +156,12 @@ def request_user_input(
     """
     user_input_view = UserInputView()
     request_id = user_input_view.insert_request(
-        task_id=task_id, prompt=prompt, options=options, maintenance=maintenance
+        task_id=task_id, prompt=prompt, options=options, maintenance=maintenance, category=category
     )
     return user_input_view.retrieve_user_input(request_id=request_id)
 
 
 def request_maintenance_input(prompt: str, options: List[str]):
     return request_user_input(
-        task_id=None, prompt=prompt, options=options, maintenance=True
+        task_id=None, prompt=prompt, options=options, maintenance=True, category="Maintenance"
     )
