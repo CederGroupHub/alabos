@@ -5,11 +5,11 @@ from slack_sdk.errors import SlackApiError
 
 class Alarm(object):
     def __init__(self, 
-    receivers: list=["bernardus_rendy@berkeley.edu"], 
-    sender_email: str="alabmanagement@gmail.com", 
-    password: str="rjuttalfbnvquyek",
-    slack_bot_token: str = "xoxb-53032848964-4821073683568-FYhkwk28JdAMEOwSGn9Gi2Pf",
-    slack_channel: str = "C04PF6C68MR"
+    receivers, 
+    sender_email, 
+    password,
+    slack_bot_token,
+    slack_channel
     ):
         self.sender_email = sender_email
         self.receivers_email = receivers
