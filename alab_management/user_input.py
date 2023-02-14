@@ -29,7 +29,13 @@ class UserInputView:
         self._input_collection = get_collection("user_input")
         self._task_view = TaskView()
         self._experiment_view = ExperimentView()
-        self._alarm=Alarm(receivers=AlabConfig()["alarm"]["receivers"],sender_email=AlabConfig()["alarm"]["sender_email"],password=AlabConfig()["alarm"]["password"])
+        self._alarm=Alarm(
+            receivers=AlabConfig()["alarm"]["receivers"],
+            sender_email=AlabConfig()["alarm"]["sender_email"],
+            password=AlabConfig()["alarm"]["password"],
+            slack_bot_token=AlabConfig()["alarm"]["slack_bot_token"],
+            slack_channel=AlabConfig()["alarm"]["slack_channel"],
+        )
 
     def insert_request(
         self,
@@ -72,7 +78,7 @@ class UserInputView:
         )
         if maintenance == True:
             category = "Maintenance"
-        self._alarm.send_email(f"User input requested: {prompt}", category)
+        self._alarm.alert(f"User input requested: {prompt}", category)
         return request_id
 
     def get_request(self, request_id: ObjectId) -> Dict[str, Any]:
