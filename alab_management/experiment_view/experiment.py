@@ -9,7 +9,7 @@ from bson import ObjectId
 
 
 class _Sample(BaseModel):
-    name: str
+    name: constr(regex=r"^[^$.]+$")  # type: ignore # noqa: F722
     sample_id: Optional[str] = None
 
     @validator("sample_id")
