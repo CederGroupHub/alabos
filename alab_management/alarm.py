@@ -47,6 +47,6 @@ class Alarm(object):
                 channel=self.slack_channel,
                 text=category+": "+message
             )
-            print(response)
+            # print(response)
         except SlackApiError as e:
             print("Error : {}".format(e))
