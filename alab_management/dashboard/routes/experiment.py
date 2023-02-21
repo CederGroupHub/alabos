@@ -161,8 +161,8 @@ def query_experiment_results(exp_id: str):
                 "status": task_entry["status"],
                 "started_at": task_entry.get("started_at", None),
                 "completed_at": task_entry.get("completed_at", None),
-                "samples": task_entry["samples"],
-                "subtasks": task_entry.get("subtasks", []),
+                "samples":[sample["name"] for sample in task_entry["samples"]],
+                # "subtasks": task_entry.get("subtasks", []),
             }
         )
 
