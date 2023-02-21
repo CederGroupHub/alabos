@@ -90,20 +90,24 @@ def query_experiment(exp_id: str):
         ],
         "tasks": [],
         "progress": progress,
-        
     }
 
-    return_dict["status"] = experiment["status"] if not error_state else ExperimentStatus.ERROR.value
+    return_dict["status"] = (
+        experiment["status"] if not error_state else ExperimentStatus.ERROR.value
+    )
 
     for task in experiment["tasks"]:
         task_entry = task_view.get_task(task["task_id"])
-        return_dict["tasks"].append({
+        return_dict["tasks"].append(
+            {
                 "id": str(task["task_id"]),
                 "status": task_entry["status"],
                 "type": task["type"],
                 "message": task_entry.get("message", ""),
-            })
+            }
+        )
     return return_dict
+
 
 @experiment_bp.route("/results/<exp_id>", methods=["GET"])
 def query_experiment_results(exp_id: str):
@@ -134,27 +138,32 @@ def query_experiment_results(exp_id: str):
 
     for sample in experiment["samples"]:
         # sample_entry = sample_view.get_sample(sample["sample_id"])
-        return_dict["samples"].append({
-            "name": sample["name"],
-            "metadata": {},
-            "tags": [],
-            # "metadata": sample_entry.get("metadata", {}), #TODO sample object doesnt have metadata/tag support yet
-            # "tags": sample_entry.get("tags", []),
-            "id": str(sample["sample_id"]),
-        })
-        
+        return_dict["samples"].append(
+            {
+                "name": sample["name"],
+                "metadata": sample.get(
+                    "metadata", {}
+                ),  # TODO sample object doesnt have metadata/tag support yet
+                "tags": sample.get("tags", []),
+                "id": str(sample["sample_id"]),
+            }
+        )
+
     for task in experiment["tasks"]:
         task_entry = task_view.get_task(task["task_id"])
         return_dict["tasks"].append(
-        {
+            {
                 "type": task["type"],
                 "parameters": task["parameters"],
-                "message":task_entry.get("message", ""),
+                "message": task_entry.get("message", ""),
                 "result": task_entry.get("result", {}),
                 "id": str(task["task_id"]),
-                "status": task_entry['status'],
+                "status": task_entry["status"],
                 "started_at": task_entry.get("started_at", None),
                 "completed_at": task_entry.get("completed_at", None),
-            })
+                "samples": task_entry["samples"],
+                "subtasks": task_entry.get("subtasks", []),
+            }
+        )
 
     return return_dict
