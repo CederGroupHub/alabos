@@ -13,12 +13,19 @@ if TYPE_CHECKING:
 
 
 class SampleBuilder:
-    def __init__(self, name: str, experiment: "ExperimentBuilder", **metadata):
+    def __init__(
+        self,
+        name: str,
+        experiment: "ExperimentBuilder",
+        tags: Optional[List[str]] = None,
+        **metadata,
+    ):
         self.name = name
-        self._tasks: List[str] = [] # type: ignore
+        self._tasks: List[str] = []  # type: ignore
         self.experiment = experiment
         self.metadata = metadata
         self._id = str(ObjectId())
+        self.tags = tags or []
 
     def add_task(
         self,
@@ -28,9 +35,22 @@ class SampleBuilder:
             self._tasks.append(task_id)
 
     def to_dict(self) -> Dict[str, Any]:
+        """Return Sample as a dictionary. This looks like:
+
+        {
+            "_id": str(ObjectId),
+            "name": str,
+            "tags": List[str],
+            "metadata": Dict[str, Any],
+        }
+
+        Returns:
+            Dict[str, Any]: sample as a dictionary
+        """
         return {
             "_id": str(self._id),
             "name": self.name,
+            "tags": self.tags,
             "metadata": self.metadata,
         }
 

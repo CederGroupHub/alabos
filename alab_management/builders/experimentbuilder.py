@@ -1,6 +1,7 @@
 from pathlib import Path
-from typing import List, Dict, Any, Literal
+from typing import List, Dict, Any, Literal, Optional
 from .samplebuilder import SampleBuilder
+import matplotlib.pyplot as plt
 
 
 class ExperimentBuilder:
@@ -12,7 +13,7 @@ class ExperimentBuilder:
       name (str): The name of the experiment.
     """
 
-    def __init__(self, name: str):
+    def __init__(self, name: str, tags: Optional[List[str]] = None, **metadata):
         """
         Args:
           name (str): The name of the experiment.
@@ -20,8 +21,12 @@ class ExperimentBuilder:
         self.name = name
         self._samples: List[SampleBuilder] = []
         self._tasks: Dict[str, Dict[str, Any]] = {}
+        self.tags = tags or []
+        self.metadata = metadata
 
-    def add_sample(self, name: str, **metadata) -> SampleBuilder:
+    def add_sample(
+        self, name: str, tags: Optional[List[str]] = None, **metadata
+    ) -> SampleBuilder:
         """
         This function adds a sample to the experiment
 
@@ -33,7 +38,7 @@ class ExperimentBuilder:
         """
         if any(name == sample.name for sample in self._samples):
             raise ValueError(f"Sample by name {name} already exists.")
-        sample = SampleBuilder(name, experiment=self, **metadata)
+        sample = SampleBuilder(name, experiment=self, tags=tags, **metadata)
 
         # TODO ensure that the metadata is json/bson serializable
         self._samples.append(sample)
@@ -81,6 +86,8 @@ class ExperimentBuilder:
 
         return {
             "name": self.name,
+            "tags": self.tags,
+            "metadata": self.metadata,
             "samples": samples,
             "tasks": tasks,
         }

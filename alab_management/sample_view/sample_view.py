@@ -352,6 +352,8 @@ class SampleView:
         name: str,
         position: Optional[str] = None,
         sample_id: Optional[ObjectId] = None,
+        tags: Optional[List[str]] = None,
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> ObjectId:
         """
         Create a sample and return its uid in the database
@@ -369,6 +371,8 @@ class SampleView:
 
         entry = {
             "name": name,
+            "tags": tags or [],
+            "metadata": metadata or {},
             "position": position,
             "task_id": None,
             "created_at": datetime.now(),

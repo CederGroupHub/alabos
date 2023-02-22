@@ -88,7 +88,10 @@ class ExperimentManager:
         # create samples in the sample database
         sample_ids = {
             sample["name"]: self.sample_view.create_sample(
-                sample["name"], sample_id=sample.get("sample_id", None)
+                sample["name"],
+                sample_id=sample.get("sample_id", None),
+                tags=sample.get("tags", []),
+                metadata=sample.get("metadata", {}),
             )
             for sample in samples
         }
