@@ -11,8 +11,8 @@ from bson import ObjectId, BSON
 class _Sample(BaseModel):
     name: constr(regex=r"^[^$.]+$")  # type: ignore # noqa: F722
     sample_id: Optional[str] = None
-    tags: List[str] = []
-    metadata: Dict[str, Any] = {}
+    tags: List[str]
+    metadata: Dict[str, Any]
 
     @validator("sample_id")
     def if_provided_must_be_valid_objectid(cls, v):
@@ -31,6 +31,7 @@ class _Sample(BaseModel):
         """If v is not None, we must confirm that it can be encoded to BSON."""
         try:
             BSON.encode(v)
+            return v
         except:
             raise ValueError(
                 "An experiment received over the API contained a sample with invalid metadata. The metadata was set to {v}, which is not BSON-serializable."
@@ -65,13 +66,15 @@ class InputExperiment(BaseModel):
     name: constr(regex=r"^[^$.]+$")  # type: ignore # noqa: F722
     samples: List[_Sample]
     tasks: List[_Task]
-    tags: List[str] = []
-    metadata: Dict[str, Any] = {}
+    tags: List[str]
+    metadata: Dict[str, Any]
 
     @validator("metadata")
     def must_be_bsonable(cls, v):
         try:
             BSON.encode(v)
+            return v
+
         except:
             raise ValueError(
                 "An experiment received over the API contained invalid metadata. The metadata was set to {v}, which is not BSON-serializable."
