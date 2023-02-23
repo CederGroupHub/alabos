@@ -18,10 +18,14 @@ class Alarm(object):
         self.slack_channel = slack_channel
 
     def alert(self,message,category,platforms=["email","slack"]):
-        if "email" in platforms:
-            self.send_email(message,category)
-        if "slack" in platforms:
-            self.send_slack_notification(message,category)
+        try:
+            if "email" in platforms:
+                self.send_email(message,category)
+            if "slack" in platforms:
+                self.send_slack_notification(message,category)
+        except:
+            if "slack" in platforms:
+                self.send_slack_notification(message,category)
 
     def send_email(self, message, category):
         """
