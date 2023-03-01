@@ -24,5 +24,10 @@ class RobotArm(BaseDevice):
     def is_running(self) -> bool:
         return False
 
+    def connect(self):
+        pass
+
+    def disconnect(self):
+        pass
 
 robot_arm = RobotArm(name="dummy")

@@ -1,4 +1,4 @@
-from typing import cast
+from typing import cast, List
 
 from bson import ObjectId
 
@@ -7,9 +7,9 @@ from ..devices.robot_arm import RobotArm
 
 
 class Moving(BaseTask):
-    def __init__(self, sample: ObjectId, dest: str, *args, **kwargs):
+    def __init__(self, samples: List[ObjectId], dest: str, *args, **kwargs):
         super(Moving, self).__init__(*args, **kwargs)
-        self.sample = sample
+        self.sample = samples[0]
         self.dest = dest
         self.sample_position = self.lab_view.get_sample(sample_id=self.sample).position
 

@@ -3,7 +3,6 @@ The definition of the Sample and SamplePosition classes.
 """
 
 from dataclasses import dataclass, field
-from turtle import pos
 from typing import Optional, ClassVar, Dict, Type
 
 from bson import ObjectId

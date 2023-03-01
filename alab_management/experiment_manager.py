@@ -148,7 +148,8 @@ class ExperimentManager:
 
             # if all the tasks of an experiment have been finished
             if all(
-                self.task_view.get_status(task_id=task_id) is TaskStatus.COMPLETED
+                self.task_view.get_status(task_id=task_id) in {TaskStatus.COMPLETED, TaskStatus.ERROR,
+                                                               TaskStatus.CANCELLED, TaskStatus.STOPPED}
                 for task_id in task_ids
             ):
                 self.experiment_view.update_experiment_status(

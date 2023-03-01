@@ -48,6 +48,11 @@ class Furnace(BaseDevice):
     def get_temperature(self):
         return 300
 
+    def connect(self):
+        pass
+
+    def disconnect(self):
+        pass
 
 furnace_1 = Furnace(name="furnace_1")
 furnace_2 = Furnace(name="furnace_2")

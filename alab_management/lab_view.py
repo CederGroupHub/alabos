@@ -327,6 +327,8 @@ class LabView:
             self._sample_view.get_sample(sample_entry["sample_id"]).position for sample_entry in all_samples
         ]
 
+        all_positions_with_samples = [each for each in all_positions_with_samples if each]
+
         self.request_user_input(
             prompt="A unrecoverable error has occurred.\n"
                    f"(1) remove samples on {', '.join(all_positions_with_samples)}\n"

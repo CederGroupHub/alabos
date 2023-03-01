@@ -9,11 +9,11 @@ from ..devices.furnace import Furnace
 
 
 class Heating(BaseTask):
-    def __init__(self, sample: ObjectId,
+    def __init__(self, samples: List[ObjectId],
                  setpoints: List[Tuple[float, float]], *args, **kwargs):
         super(Heating, self).__init__(*args, **kwargs)
         self.setpoints = setpoints
-        self.sample = sample
+        self.sample = samples[0]
 
     def run(self):
         with self.lab_view.request_resources({Furnace: ["$/inside"]}) as (devices, sample_positions):

@@ -60,19 +60,23 @@ function Row({ experiment_id, hoverForId }) {
         return "error";
       case "COMPLETED":
         return "inherit";
+      case "CANCELLED":
+        return "gray"; 
+      case "CANCELLING":
+        return "gray";
       default:
         return "inherit";
     }
   }
 
   const cancel_task = (task_id) => {
-    fetch(`/api/task/cancel/{task_id}`, {
+    fetch(`/api/task/cancel/${task_id}`, {
       method: 'GET',
     })
   }
 
   const cancel_experiment = (experiment_id) => {
-    fetch(`/api/experiment/cancel/{experiment_id}`, {
+    fetch(`/api/experiment/cancel/${experiment_id}`, {
       method: 'GET',
     })
   }
@@ -178,7 +182,7 @@ function Row({ experiment_id, hoverForId }) {
                       <TableCell>Name</TableCell>
                       <TableCell>Status</TableCell>
                       <TableCell width="50%">Message</TableCell>
-                      {/* <TableCell>Result</TableCell> */}
+                      <TableCell>Cancel Task</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -205,7 +209,7 @@ function Row({ experiment_id, hoverForId }) {
                         </TableCell>
                         <TableCell>
                           <Button 
-                            variant="contained" 
+                            variant="outlined" 
                             color="error"
                             onClick={() => cancel_task(task.id)}
                           >
@@ -237,6 +241,7 @@ function CollapsibleTable({ experiment_ids, hoverForId }) {
             <TableCell align="right"># Samples</TableCell>
             <TableCell align="right">Submitted At</TableCell>
             <TableCell align="right">Progress</TableCell>
+            <TableCell align="right">Cancel Exp</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
