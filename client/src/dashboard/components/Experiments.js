@@ -5,6 +5,11 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -18,8 +23,56 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { HoverText } from '../../utils';
 
+function CancelConfirmDialog({ open, setOpen, type, id }) {
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const cancel_task = (task_id) => {
+    fetch(`/api/task/cancel/${task_id}`, {
+      method: 'GET',
+    })
+  }
+  
+  const cancel_experiment = (experiment_id) => {
+    fetch(`/api/experiment/cancel/${experiment_id}`, {
+      method: 'GET',
+    })
+  }
+
+  const handleCancel = () => {
+    setOpen(false);
+    if (type === "experiment") {
+      cancel_experiment(id);
+    }
+    else if (type === "task") {
+      cancel_task(id);
+    }
+  };
+
+  return (
+    <Dialog open={open} onClose={handleClose}>
+      <DialogTitle>Cancel {type === "experiment" ? "Experiment" : "Task"}</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Are you sure you want to cancel this {type === "experiment" ? "experiment" : "task"} ({id})?
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleCancel}>Yes</Button>
+        <Button onClick={handleClose} autoFocus>
+          No
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
 function Row({ experiment_id, hoverForId }) {
   const [open, setOpen] = React.useState(false);
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [dialogId, setDialogId] = React.useState("");
+  const [dialogType, setDialogType] = React.useState("Task");
   const [status, setStatus] = React.useState(
     { "_id": "", "status": "", "samples": [], "tasks": [], "progress": 50 }
   );
@@ -34,6 +87,12 @@ function Row({ experiment_id, hoverForId }) {
     }, 250);
     return () => clearInterval(interval);
   }, []);
+
+  const handleCancel = (id, type) => {
+    setDialogOpen(true);
+    setDialogId(id);
+    setDialogType(type);
+  };
 
   const progressBarColor = () => {
     switch (status.status) {
@@ -69,20 +128,9 @@ function Row({ experiment_id, hoverForId }) {
     }
   }
 
-  const cancel_task = (task_id) => {
-    fetch(`/api/task/cancel/${task_id}`, {
-      method: 'GET',
-    })
-  }
-
-  const cancel_experiment = (experiment_id) => {
-    fetch(`/api/experiment/cancel/${experiment_id}`, {
-      method: 'GET',
-    })
-  }
-
   return (
     <React.Fragment>
+      <CancelConfirmDialog open={dialogOpen} setOpen={setDialogOpen} type={dialogType} id={dialogId} />
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
         <TableCell>
           <IconButton
@@ -117,7 +165,8 @@ function Row({ experiment_id, hoverForId }) {
           <Button 
             variant="contained" 
             color="error"
-            onClick={() => cancel_experiment(status.id)}
+            disabled={status.status !== "RUNNING"}
+            onClick={() => handleCancel(status.id, "experiment")}
           >
             Cancel Experiment
           </Button>
@@ -211,7 +260,8 @@ function Row({ experiment_id, hoverForId }) {
                           <Button 
                             variant="outlined" 
                             color="error"
-                            onClick={() => cancel_task(task.id)}
+                            disabled={task.status === "COMPLETED" || task.status === "CANCELLED" || task.status === "CANCELLING" || task.status === "ERROR"}
+                            onClick={() => handleCancel(task.id, "task")}
                           >
                             Cancel
                           </Button>

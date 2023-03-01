@@ -67,7 +67,9 @@ class ExperimentView:
             status = ExperimentStatus[status]
         return cast(
             List[Dict[str, Any]],
-            self._experiment_collection.find({"status": status.name}),
+            self._experiment_collection.find({
+                "status": status.name,
+            }),
         )
 
     def get_experiment(self, exp_id: ObjectId) -> Optional[Dict[str, Any]]:
