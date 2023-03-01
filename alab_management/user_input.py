@@ -78,7 +78,7 @@ class UserInputView:
         )
         if maintenance == True:
             category = "Maintenance"
-        self._alarm.alert(f"User input requested: {prompt}", category)
+        # self._alarm.alert(f"User input requested: {prompt}", category)
         return request_id
 
     def get_request(self, request_id: ObjectId) -> Dict[str, Any]:

@@ -11,7 +11,7 @@ from ..devices.furnace import Furnace
 class Heating(BaseTask):
     def __init__(self, samples: List[ObjectId],
                  setpoints: List[Tuple[float, float]], *args, **kwargs):
-        super(Heating, self).__init__(*args, **kwargs)
+        super(Heating, self).__init__(samples=samples, *args, **kwargs)
         self.setpoints = setpoints
         self.sample = samples[0]
 
