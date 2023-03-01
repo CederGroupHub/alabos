@@ -3,6 +3,7 @@ import { get_experiment_status, get_experiment_ids } from '../../api_routes';
 import LinearProgress from '@mui/material/LinearProgress';//
 import * as React from 'react';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import Table from '@mui/material/Table';
@@ -64,6 +65,18 @@ function Row({ experiment_id, hoverForId }) {
     }
   }
 
+  const cancel_task = (task_id) => {
+    fetch(`/api/task/cancel/{task_id}`, {
+      method: 'GET',
+    })
+  }
+
+  const cancel_experiment = (experiment_id) => {
+    fetch(`/api/experiment/cancel/{experiment_id}`, {
+      method: 'GET',
+    })
+  }
+
   return (
     <React.Fragment>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
@@ -90,20 +103,26 @@ function Row({ experiment_id, hoverForId }) {
         </TableCell>
 
 
-
         <TableCell align="right"><Typography variant="body2">{status.submitted_at}</Typography></TableCell>
         <TableCell align="right">
           <LinearProgress variant="determinate" value={Math.round(status.progress * 100)} color={progressBarColor()} />
         </TableCell>
         {/* <TableCell align="right">{row.protein}</TableCell> */}
+
+        <TableCell align="right">
+          <Button 
+            variant="contained" 
+            color="error"
+            onClick={() => cancel_experiment(status.id)}
+          >
+            Cancel Experiment
+          </Button>
+        </TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
-
-
-
 
               <Typography variant="body1" gutterBottom component="div">
                 <IconButton
@@ -183,6 +202,15 @@ function Row({ experiment_id, hoverForId }) {
                           }}>
                             {task.message}
                           </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Button 
+                            variant="contained" 
+                            color="error"
+                            onClick={() => cancel_task(task.id)}
+                          >
+                            Cancel
+                          </Button>
                         </TableCell>
                         {/* <TableCell>{task.result}</TableCell>  */}
                       </TableRow>
