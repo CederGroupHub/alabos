@@ -2,26 +2,26 @@
 TaskLauncher is the core module of the system,
 which actually executes the tasks
 """
-from datetime import datetime
-from functools import partial
-from math import inf
 import time
 from concurrent.futures import Future
+from datetime import datetime
 from enum import Enum, auto
+from functools import partial
+from math import inf
 from threading import Thread
 from traceback import print_exc
 from typing import Union, Dict, Optional, Type, List, Any, cast
-import networkx as nx
 
 import dill
+import networkx as nx
 from bson import ObjectId
+from dramatiq_abort import abort
 from pydantic import BaseModel, root_validator
-from alab_management.logger import DBLogger, LoggingLevel
 
+from alab_management.logger import LoggingLevel
 from alab_management.sample_view.sample import SamplePosition
 from alab_management.task_view.task import BaseTask
 from alab_management.task_view.task_enums import TaskStatus
-
 from .device_view import DeviceView
 from .device_view.device import BaseDevice
 from .sample_view import SampleView
@@ -192,6 +192,7 @@ class RequestMixin:
             {"task_id": task_id}
         )
 
+
 class TaskManager(RequestMixin):
     """
     TaskManager will
@@ -221,6 +222,7 @@ class TaskManager(RequestMixin):
     def _loop(self):
         self.submit_ready_tasks()
         self.handle_released_resources()
+        self.handle_tasks_to_be_cancelled()
         self.handle_requested_resources()
         if not self.__reroute_in_progress:
             self.handle_request_cycles()
@@ -235,7 +237,17 @@ class TaskManager(RequestMixin):
             self.task_view.update_status(
                 task_id=task_entry["task_id"], status=TaskStatus.INITIATED
             )
-            run_task.send(task_id_str=str(task_entry["task_id"]))
+            result = run_task.send(task_id_str=str(task_entry["task_id"]))
+            message_id = result.message_id
+            self.task_view.set_task_actor_id(task_id=task_entry["task_id"], message_id=message_id)
+
+    def handle_tasks_to_be_cancelled(self):
+        tasks_to_be_cancelled = self.task_view.get_tasks_by_status(status=TaskStatus.CANCELLING)
+
+        for task_entry in tasks_to_be_cancelled:
+            message_id = task_entry["task_actor_id"]
+            abort(message_id=message_id)
+            # updating the status from CANCELLING to CANCELLED will be executed in task actor process
 
     def handle_released_resources(self):
         """
@@ -311,7 +323,7 @@ class TaskManager(RequestMixin):
                 for pos in request["sample_positions"]:
                     prefix = pos["prefix"]
                     if not prefix.startswith(
-                        device_prefix
+                            device_prefix
                     ):  # if this is a nested resource request, lets not prepend the device name twice.
                         prefix = device_prefix + prefix
                     parsed_sample_positions_request.append(
@@ -383,7 +395,7 @@ class TaskManager(RequestMixin):
             )
 
     def _occupy_sample_positions(
-        self, sample_positions: Dict[str, List[Dict[str, Any]]], task_id: ObjectId
+            self, sample_positions: Dict[str, List[Dict[str, Any]]], task_id: ObjectId
     ):
         for sample_positions_ in sample_positions.values():
             for sample_position_ in sample_positions_:
@@ -397,7 +409,7 @@ class TaskManager(RequestMixin):
                 self.device_view.release_device(device["name"])
 
     def _release_sample_positions(
-        self, sample_positions: Dict[str, List[Dict[str, Any]]]
+            self, sample_positions: Dict[str, List[Dict[str, Any]]]
     ):
         for sample_positions_ in sample_positions.values():
             for sample_position in sample_positions_:
@@ -434,12 +446,12 @@ class TaskManager(RequestMixin):
                 occupied.append(self.sample_view.get_sample(s["sample_id"]).position)
             for r in request["parsed_sample_positions_request"]:
                 if (
-                    len(
-                        self.sample_view.get_available_sample_position(
-                            task_id=t["task_id"], position_prefix=r["prefix"]
+                        len(
+                            self.sample_view.get_available_sample_position(
+                                task_id=t["task_id"], position_prefix=r["prefix"]
+                            )
                         )
-                    )
-                    < r["number"]
+                        < r["number"]
                 ):
                     blocked.append(
                         r["prefix"]
@@ -452,10 +464,10 @@ class TaskManager(RequestMixin):
                 if i == j:
                     continue
                 if any(
-                    [
-                        occupied in requested_by_task[t0]
-                        for occupied in occupied_by_task[t1]
-                    ]
+                        [
+                            occupied in requested_by_task[t0]
+                            for occupied in occupied_by_task[t1]
+                        ]
                 ):
                     edges.append((t0, t1))
 
@@ -483,9 +495,9 @@ class TaskManager(RequestMixin):
         return positions_to_vacate, occupying_taskid
 
     def _reroute_to_fix_request_cycle(
-        self,
-        task_id: ObjectId,
-        sample_positions: List[str],
+            self,
+            task_id: ObjectId,
+            sample_positions: List[str],
     ):
         from alab_management.lab_view import LabView
 
@@ -542,8 +554,8 @@ class ResourceRequester(RequestMixin):
     """
 
     def __init__(
-        self,
-        task_id: ObjectId,
+            self,
+            task_id: ObjectId,
     ):
         self._request_collection = get_collection("requests")
         self._waiting: Dict[ObjectId, Dict[str, Any]] = {}
@@ -560,10 +572,10 @@ class ResourceRequester(RequestMixin):
         self._thread.start()
 
     def request_resources(
-        self,
-        resource_request: _ResourceRequestDict,
-        timeout: Optional[float] = None,
-        priority: Optional[Union[TaskPriority, int]] = None,
+            self,
+            resource_request: _ResourceRequestDict,
+            timeout: Optional[float] = None,
+            priority: Optional[Union[TaskPriority, int]] = None,
     ) -> Dict[str, Any]:
         """
         Request lab resources. Write the request into the database, and then the task manager will read from the
@@ -674,7 +686,7 @@ class ResourceRequester(RequestMixin):
                     "status": RequestStatus.NEED_RELEASE.name,
                 }
             },
-        )   
+        )
 
         self._request_collection.update_many(
             {
@@ -746,9 +758,9 @@ class ResourceRequester(RequestMixin):
 
     @staticmethod
     def _post_process_requested_resource(
-        devices: Dict[Type[BaseDevice], str],
-        sample_positions: Dict[str, List[str]],
-        resource_request: Dict[str, List[Dict[str, Union[int, str]]]],
+            devices: Dict[Type[BaseDevice], str],
+            sample_positions: Dict[str, List[str]],
+            resource_request: Dict[str, List[Dict[str, Union[int, str]]]],
     ):
         processed_sample_positions: Dict[
             Optional[Type[BaseDevice]], Dict[str, List[str]]
@@ -767,7 +779,7 @@ class ResourceRequester(RequestMixin):
                         f"{devices[device_request]}{SamplePosition.SEPARATOR}"
                     )
                     if not reply_prefix.startswith(
-                        device_prefix
+                            device_prefix
                     ):  # dont extra prepend for nested requests
                         reply_prefix = device_prefix + reply_prefix
                 processed_sample_positions[device_request][prefix] = sample_positions[

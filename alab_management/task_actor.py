@@ -8,6 +8,9 @@ from traceback import format_exc
 
 import dramatiq
 from bson import ObjectId
+from dramatiq import get_broker
+from dramatiq.middleware import Shutdown
+from dramatiq_abort import Abortable, backends, Abort
 
 from alab_management.logger import DBLogger
 from alab_management.sample_view import SampleView
@@ -15,7 +18,11 @@ from alab_management.sample_view import SampleView
 # from alab_management.task_view.task import BaseTask
 # from alab_management.task_view.task_view import TaskView
 from alab_management.task_view import BaseTask, TaskView, TaskStatus
+from alab_management.utils.data_objects import get_collection
 from alab_management.utils.module_ops import load_definition
+
+abortable = Abortable(backend=backends.MongoDBBackend(collection=get_collection("abortable")))
+get_broker().add_middleware(abortable)
 
 
 class ParameterError(Exception):
@@ -101,10 +108,10 @@ def run_task(task_id_str: str):
     try:
         task_view.update_status(task_id=task_id, status=TaskStatus.RUNNING)
         result = task.run()
-    except dramatiq.middleware.threading.Interrupt:
-        task_view.update_status(task_id=task_id, status=TaskStatus.STOPPED)
+    except Abort:
+        task_view.update_status(task_id=task_id, status=TaskStatus.CANCELLED)
         task_view.set_message(
-            task_id=task_id, message="Task was stopped due to the worker shutting down"
+            task_id=task_id, message="Task was cancelled due to the abort signal"
         )  # display exception on the dashboard
         logger.system_log(
             level="ERROR",
@@ -113,8 +120,25 @@ def run_task(task_id_str: str):
                 "type": "TaskEnd",
                 "task_id": task_id,
                 "task_type": task_type.__name__,
-                "status": "STOPPED",
-                "traceback": "Task was stopped due to the worker shutting down",
+                "status": TaskStatus.CANCELLED.name,
+                "traceback": "Task was cancelled due to the abort signal",
+            },
+        )
+        lab_view.request_cleanup()
+    except Shutdown:
+        task_view.update_status(task_id=task_id, status=TaskStatus.STOPPED)
+        task_view.set_message(
+            task_id=task_id, message="Task was cancelled due to the worker shutdown"
+        )  # display exception on the dashboard
+        logger.system_log(
+            level="ERROR",
+            log_data={
+                "logged_by": "TaskActor",
+                "type": "TaskEnd",
+                "task_id": task_id,
+                "task_type": task_type.__name__,
+                "status": TaskStatus.STOPPED.name,
+                "traceback": "Task was cancelled due to the worker shutdown",
             },
         )
         lab_view.request_cleanup()
