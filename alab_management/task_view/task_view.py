@@ -397,3 +397,22 @@ class TaskView:
                 }
             },
         )
+
+    def mark_task_as_cancelling(self, task_id: ObjectId):
+        """
+        Try to cancel a task by marking the task as TaskStatus.CANCELLING
+
+        If the status is not in [READY, INITIATED, WAITING, PAUSED, READY, RUNNING],
+        the request will be ignored and returned.
+
+        The task manager will handle it.
+        """
+        current_status = self.get_status(task_id=task_id)
+
+        if current_status in [TaskStatus.READY, TaskStatus.INITIATED,
+                              TaskStatus.WAITING, TaskStatus.PAUSED,
+                              TaskStatus.READY, TaskStatus.RUNNING]:
+            self.update_status(
+                task_id=ObjectId(task_id),
+                status=TaskStatus.CANCELLING,
+            )

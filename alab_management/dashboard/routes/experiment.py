@@ -161,9 +161,23 @@ def query_experiment_results(exp_id: str):
                 "status": task_entry["status"],
                 "started_at": task_entry.get("started_at", None),
                 "completed_at": task_entry.get("completed_at", None),
-                "samples":[sample["name"] for sample in task_entry["samples"]],
+                "samples": [sample["name"] for sample in task_entry["samples"]],
                 # "subtasks": task_entry.get("subtasks", []),
             }
         )
 
     return return_dict
+
+
+@experiment_bp.route("/cancel/<exp_id>", methods=["GET"])
+def cancel_experiment(exp_id: str):
+    try:
+        exp_id = ObjectId(exp_id)
+        tasks = experiment_view.get_experiment(exp_id)["tasks"]
+
+        for task in tasks:
+            task_view.mark_task_as_cancelling(task["task_id"])
+    except Exception as e:
+        return {"status": "error", "reason": e.args[0]}, 400
+    else:
+        return {"status": "success"}

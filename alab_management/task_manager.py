@@ -245,9 +245,15 @@ class TaskManager(RequestMixin):
         tasks_to_be_cancelled = self.task_view.get_tasks_by_status(status=TaskStatus.CANCELLING)
 
         for task_entry in tasks_to_be_cancelled:
-            message_id = task_entry["task_actor_id"]
-            abort(message_id=message_id)
-            # updating the status from CANCELLING to CANCELLED will be executed in task actor process
+            message_id = task_entry.get("task_actor_id", None)
+            if message_id is not None:
+                abort(message_id=message_id)
+                # updating the status from CANCELLING to CANCELLED will be executed in task actor process
+            else:
+                self.task_view.update_status(
+                    task_id=task_entry["task_id"],
+                    status=TaskStatus.CANCELLED,
+                )
 
     def handle_released_resources(self):
         """

@@ -3,6 +3,7 @@ from .experiment import experiment_bp
 from .status import status_bp
 from .user_input import userinput_bp
 from .pause import pause_bp
+from .task import task_bp
 
 
 def init_app(app):
@@ -14,3 +15,4 @@ def init_app(app):
     app.register_blueprint(status_bp)
     app.register_blueprint(userinput_bp)
     app.register_blueprint(pause_bp)
+    app.register_blueprint(task_bp)
