@@ -92,6 +92,10 @@ class Alarm(object):
             send_email(Exception, "Emergency")
             send_email(Exception, "Warning, program continues")
         """
+        if "Traceback (most recent call last):" in message:
+            category = "Error"
+            # Automatically format to code block
+            message=format_message_to_codeblock(message)
         self.message = f"Subject: {category}\n\n{message}"
         with smtplib.SMTP("smtp.gmail.com", 587) as server:
             server.ehlo()
