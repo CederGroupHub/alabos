@@ -293,7 +293,7 @@ class LabView:
         Request user input from the user. This function will block until the user inputs something. Returns the value returned by the user.
         """
         return request_user_input(task_id=self.task_id, prompt=prompt, options=options)
-        
+
     @property
     def priority(self) -> int:
         return self._priority
@@ -309,37 +309,40 @@ class LabView:
         Update a result of the task. This result will be saved in the task collection under `results.name` and can be retrieved later.
 
         Args:
-            name (str): name of the result (ie "diffraction pattern")
-            value (Any): value of the result. This can be any bson-serializable object.
+            name (str): name of the result (ie "diffraction pattern"). This will be used as the key in the results dictionary.
+            value (Any): value of the result. This can be a numpy array, a set, or any other bson-serializable object (most standard Python types).
         """
-        self._task_view.update_result(
-            task_id=self.task_id, name=name, value=value
-        )
+        self._task_view.update_result(task_id=self.task_id, name=name, value=value)
 
     def request_cleanup(self):
         """
         Request cleanup of the task. This function will block until the task is cleaned up.
         """
-        all_reserved_sample_positions = self._sample_view.get_sample_positions_by_task(self.task_id)
+        all_reserved_sample_positions = self._sample_view.get_sample_positions_by_task(
+            self.task_id
+        )
 
         all_samples = self.__task_entry["samples"]
         all_positions_with_samples = [
-            self._sample_view.get_sample(sample_entry["sample_id"]).position for sample_entry in all_samples
+            self._sample_view.get_sample(sample_entry["sample_id"]).position
+            for sample_entry in all_samples
         ]
 
-        all_positions_with_samples = [each for each in all_positions_with_samples if each]
+        all_positions_with_samples = [
+            each for each in all_positions_with_samples if each
+        ]
 
         self.request_user_input(
             prompt="A unrecoverable error has occurred.\n"
-                   f"(1) remove samples on {', '.join(all_positions_with_samples)}\n"
-                   f"(2) remove all other consumables on {', '.join(all_reserved_sample_positions)}\n"
-                   f"The error information is {format_exc()}",
-            options=["OK"]
+            f"(1) remove samples on {', '.join(all_positions_with_samples)}\n"
+            f"(2) remove all other consumables on {', '.join(all_reserved_sample_positions)}\n"
+            f"The error information is {format_exc()}",
+            options=["OK"],
         )
 
         # move the samples out of the lab
         for sample in all_samples:
             self.move_sample(sample=sample["sample_id"], position=None)
-        
+
         # release all the resource that has not been fulfilled
         self._resource_requester.release_all_resources()

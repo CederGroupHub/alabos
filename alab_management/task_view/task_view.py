@@ -9,9 +9,10 @@ from typing import Any, Dict, List, Type, Union, Optional, cast
 
 from bson import ObjectId
 import bson
+import numpy as np
 
 from alab_management.task_view.task import get_all_tasks, BaseTask
-from alab_management.utils.data_objects import get_collection
+from alab_management.utils.data_objects import get_collection, make_bsonable
 from alab_management.task_view.task_enums import TaskStatus
 
 
@@ -207,7 +208,7 @@ class TaskView:
         )
 
     def update_result(
-        self, task_id: ObjectId, name: str, value: Any
+        self, task_id: ObjectId, name: Optional[str] = None, value: Any = None
     ):
         """
         Update result to completed job.
@@ -221,14 +222,19 @@ class TaskView:
             task_id=task_id
         )  # just to confirm that task_id exists in collection
 
-        # TODO encode to valid bson. we need to ensure this works for at least numpy arrays.
-        update_path = f"result.{name}"
+        if value is None:
+            raise ValueError("Must provide a value to update result with!")
+
+        if name is None:
+            update_path = "result"
+        else:
+            update_path = f"result.{name}"
 
         self._task_collection.update_one(
             {"_id": task_id},
             {
                 "$set": {
-                    update_path: value,
+                    update_path: make_bsonable(value),
                     "last_updated": datetime.now(),
                 }
             },
@@ -409,9 +415,14 @@ class TaskView:
         """
         current_status = self.get_status(task_id=task_id)
 
-        if current_status in [TaskStatus.READY, TaskStatus.INITIATED,
-                              TaskStatus.WAITING, TaskStatus.PAUSED,
-                              TaskStatus.READY, TaskStatus.RUNNING]:
+        if current_status in [
+            TaskStatus.READY,
+            TaskStatus.INITIATED,
+            TaskStatus.WAITING,
+            TaskStatus.PAUSED,
+            TaskStatus.READY,
+            TaskStatus.RUNNING,
+        ]:
             self.update_status(
                 task_id=ObjectId(task_id),
                 status=TaskStatus.CANCELLING,

@@ -9,7 +9,6 @@ from alab_management.task_view.task_enums import TaskPriority
 from inspect import getfullargspec
 from alab_management.builders.samplebuilder import SampleBuilder
 from alab_management.builders.experimentbuilder import ExperimentBuilder
-from alab_management.utils.data_objects import make_bsonable
 
 if TYPE_CHECKING:
     from alab_management.lab_view import LabView

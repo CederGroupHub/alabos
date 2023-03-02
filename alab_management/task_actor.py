@@ -21,7 +21,9 @@ from alab_management.task_view import BaseTask, TaskView, TaskStatus
 from alab_management.utils.data_objects import get_collection
 from alab_management.utils.module_ops import load_definition
 
-abortable = Abortable(backend=backends.MongoDBBackend(collection=get_collection("abortable")))
+abortable = Abortable(
+    backend=backends.MongoDBBackend(collection=get_collection("abortable"))
+)
 get_broker().add_middleware(abortable)
 
 
@@ -163,10 +165,15 @@ def run_task(task_id_str: str):
         raise
     else:
         task_view.update_status(task_id=task_id, status=TaskStatus.COMPLETED)
-        if isinstance(result, dict):
-            #ONLY DICT RESULTS SUPPORTED!
+        if result is None:
+            pass
+        elif isinstance(result, dict):
             for key, value in result.items():
+                #we do this per item to avoid overwriting existing results. Its possible that some results were uploaded mid-task under different keys using lab_view.update_result()
                 task_view.update_result(task_id=task_id, name=key, value=value)
+        else:
+            task_view.update_result(task_id=task_id, name=None, value=result) #put result directly in the result field, no nesting.
+            
         logger.system_log(
             level="INFO",
             log_data={

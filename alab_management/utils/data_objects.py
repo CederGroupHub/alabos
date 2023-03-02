@@ -3,12 +3,14 @@ A convenient wrapper for MongoClient. We can get a database object by calling ``
 """
 
 from typing import Optional
+import numpy as np
 
 import pika
 import pymongo
 from pymongo import collection, database
 
 from .db_lock import MongoLock
+from bson import ObjectId
 
 
 class _GetMongoCollection:
@@ -64,17 +66,22 @@ def make_bsonable(obj):
     Sanitize the object to make it bsonable. This is a recursive function, it will
     convert all the objects in the object to bsonable objects.
     """
-    return obj
-    # TODO clean up data types (e.g. numpy arrays) to make them bsonable (i.e. valid to go in mongodb)
     if isinstance(obj, dict):
-        return {k: make_bsonable(v) for k, v in obj.items()}
-    if isinstance(obj, (list, tuple)):
-        return [make_bsonable(v) for v in obj]
-    if isinstance(obj, (str, int, float, bool)):
-        return obj
-    if obj is None:
-        return None
-    return str(obj)
+        obj = {str(key): make_bsonable(value) for key, value in obj.items()}
+    elif isinstance(obj, list):
+        for i in range(len(obj)):
+            obj[i] = make_bsonable(obj[i])
+    elif isinstance(obj, set):
+        obj = list(obj)
+    elif isinstance(obj, np.ndarray):
+        obj = obj.tolist()
+    elif isinstance(obj, str):
+        try:
+            obj = ObjectId(obj)
+        except:
+            pass
+
+    return obj
 
 
 get_collection = _GetMongoCollection.get_collection
