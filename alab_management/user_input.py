@@ -29,13 +29,18 @@ class UserInputView:
         self._input_collection = get_collection("user_input")
         self._task_view = TaskView()
         self._experiment_view = ExperimentView()
-        self._alarm=Alarm(
-            receivers=AlabConfig()["alarm"]["receivers"],
-            sender_email=AlabConfig()["alarm"]["sender_email"],
-            password=AlabConfig()["alarm"]["password"],
-            slack_bot_token=AlabConfig()["alarm"]["slack_bot_token"],
-            slack_channel=AlabConfig()["alarm"]["slack_channel"],
-        )
+        self._alarm=Alarm()
+        if AlabConfig()["alarm"]["email_receivers"] is not " ":
+            self._alarm.setup_email(
+                email_receivers=AlabConfig()["alarm"]["email_receivers"],
+                email_sender=AlabConfig()["alarm"]["email_sender"],
+                email_password=AlabConfig()["alarm"]["email_password"],
+            )
+        if AlabConfig()["alarm"]["slack_bot_token"] is not " ":
+            self._alarm.setup_slackbot(
+                slack_bot_token=AlabConfig()["alarm"]["slack_bot_token"],
+                slack_channel=AlabConfig()["alarm"]["slack_channel"],
+            )
 
     def insert_request(
         self,
