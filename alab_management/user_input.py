@@ -30,7 +30,7 @@ class UserInputView:
         self._task_view = TaskView()
         self._experiment_view = ExperimentView()
         self._alarm=Alarm()
-        if AlabConfig()["alarm"]["email_receivers"] != " ":
+        if AlabConfig()["alarm"]["email_receivers"] != ():
             self._alarm.setup_email(
                 email_receivers=AlabConfig()["alarm"]["email_receivers"],
                 email_sender=AlabConfig()["alarm"]["email_sender"],
