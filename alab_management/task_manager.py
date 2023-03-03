@@ -576,7 +576,7 @@ class ResourceRequester(RequestMixin):
 
         super().__init__()
         self._thread = Thread(target=self._check_request_status_loop)
-        self._thread.daemon = True
+        self._thread.daemon = False
         self._thread.start()
 
     def request_resources(

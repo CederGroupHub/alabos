@@ -460,6 +460,7 @@ class TaskView:
             TaskStatus.READY,
             TaskStatus.INITIATED,
             TaskStatus.WAITING,
+            TaskStatus.REQUESTING_RESOURCES,
             TaskStatus.PAUSED,
             TaskStatus.READY,
             TaskStatus.RUNNING,
