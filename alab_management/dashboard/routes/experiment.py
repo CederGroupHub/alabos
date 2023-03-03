@@ -59,8 +59,14 @@ def get_overview():
     experiment_ids = []
     for status in [ExperimentStatus.RUNNING, ExperimentStatus.COMPLETED]:
         experiments = experiment_view.get_experiments_with_status(status)
-        experiment_ids.extend([str(exp["_id"]) for exp in experiments
-                               if datetime.now() - exp.get("completed_at", datetime.now()) <= timedelta(days=1)])
+        experiment_ids.extend(
+            [
+                str(exp["_id"])
+                for exp in experiments
+                if datetime.now() - exp.get("completed_at", datetime.now())
+                <= timedelta(days=1)
+            ]
+        )
 
     return {"status": "success", "experiment_ids": experiment_ids}
 

@@ -8,7 +8,8 @@ from alab_management.task_view import TaskView
 from alab_management.alarm import Alarm
 from .config import AlabConfig
 
-CONFIG=AlabConfig()
+CONFIG = AlabConfig()
+
 
 class UserRequestStatus(Enum):
     """
@@ -29,7 +30,7 @@ class UserInputView:
         self._input_collection = get_collection("user_input")
         self._task_view = TaskView()
         self._experiment_view = ExperimentView()
-        self._alarm=Alarm()
+        self._alarm = Alarm()
         if AlabConfig()["alarm"]["email_receivers"] != ():
             self._alarm.setup_email(
                 email_receivers=AlabConfig()["alarm"]["email_receivers"],
@@ -167,12 +168,20 @@ def request_user_input(
     """
     user_input_view = UserInputView()
     request_id = user_input_view.insert_request(
-        task_id=task_id, prompt=prompt, options=options, maintenance=maintenance, category=category
+        task_id=task_id,
+        prompt=prompt,
+        options=options,
+        maintenance=maintenance,
+        category=category,
     )
     return user_input_view.retrieve_user_input(request_id=request_id)
 
 
 def request_maintenance_input(prompt: str, options: List[str]):
     return request_user_input(
-        task_id=None, prompt=prompt, options=options, maintenance=True, category="Maintenance"
+        task_id=None,
+        prompt=prompt,
+        options=options,
+        maintenance=True,
+        category="Maintenance",
     )

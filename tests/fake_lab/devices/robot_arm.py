@@ -11,7 +11,7 @@ class RobotArm(BaseDevice):
         return [
             SamplePosition(
                 "{name}/sample_holder".format(name=self.name),
-                description="The position that can hold the sample"
+                description="The position that can hold the sample",
             ),
         ]
 
@@ -29,5 +29,6 @@ class RobotArm(BaseDevice):
 
     def disconnect(self):
         pass
+
 
 robot_arm = RobotArm(name="dummy")

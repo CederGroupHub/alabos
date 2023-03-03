@@ -17,17 +17,16 @@ class Furnace(BaseDevice):
         return [
             SamplePosition(
                 "{name}/inside".format(name=self.name),
-                description="The position inside the furnace, where the samples are heated"
+                description="The position inside the furnace, where the samples are heated",
             ),
             SamplePosition(
-                "furnace_table",
-                description="Temporary position to transfer samples"
+                "furnace_table", description="Temporary position to transfer samples"
             ),
             SamplePosition(
                 "furnace_temp",
                 number=4,
                 description="Test positions",
-            )
+            ),
         ]
 
     def emergent_stop(self):
@@ -53,6 +52,7 @@ class Furnace(BaseDevice):
 
     def disconnect(self):
         pass
+
 
 furnace_1 = Furnace(name="furnace_1")
 furnace_2 = Furnace(name="furnace_2")

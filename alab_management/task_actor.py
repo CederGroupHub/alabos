@@ -169,11 +169,13 @@ def run_task(task_id_str: str):
             pass
         elif isinstance(result, dict):
             for key, value in result.items():
-                #we do this per item to avoid overwriting existing results. Its possible that some results were uploaded mid-task under different keys using lab_view.update_result()
+                # we do this per item to avoid overwriting existing results. Its possible that some results were uploaded mid-task under different keys using lab_view.update_result()
                 task_view.update_result(task_id=task_id, name=key, value=value)
         else:
-            task_view.update_result(task_id=task_id, name=None, value=result) #put result directly in the result field, no nesting.
-            
+            task_view.update_result(
+                task_id=task_id, name=None, value=result
+            )  # put result directly in the result field, no nesting.
+
         logger.system_log(
             level="INFO",
             log_data={

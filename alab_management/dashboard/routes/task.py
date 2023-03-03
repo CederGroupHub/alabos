@@ -18,8 +18,6 @@ def cancel_task(task_id: str):
         task_id: ObjectId = ObjectId(task_id)
         task_view.mark_task_as_cancelling(task_id)
 
-        return {
-            "status": "success"
-        }
+        return {"status": "success"}
     except Exception as exception:
         return {"status": "error", "errors": exception.args[0]}, 400

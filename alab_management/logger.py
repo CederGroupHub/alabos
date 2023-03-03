@@ -170,7 +170,7 @@ class DBLogger:
             value = result["log_data"]["signal_value"]
             timestamp = result["created_at"]
         else:
-            value = None #TODO do we want to raise here instead?
+            value = None  # TODO do we want to raise here instead?
             timestamp = datetime.now()
         return {
             "device_name": device_name,
