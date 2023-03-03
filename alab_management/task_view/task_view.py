@@ -197,21 +197,27 @@ class TaskView:
                         for entry in next_task["samples"]
                         if entry["sample_id"] not in samples_in_this_task
                     ]
-                    self._task_collection.update_one(
-                        {"_id": next_task_id},
-                        {
-                            "$pull": {
-                                "prev_tasks": task_id,
+                    if len(samples_to_remain_in_downstream_task) == 0:
+                        # This is probably impossible (if we have 0 samples remaining,this task should exclusive depends on the cancelled task and have been caught above), but just in case...
+                        self.update_status(
+                            task_id=next_task_id, status=TaskStatus.CANCELLED
+                        )
+                    else:
+                        self._task_collection.update_one(
+                            {"_id": next_task_id},
+                            {
+                                "$pull": {
+                                    "prev_tasks": task_id,
+                                },
+                                "$set": {
+                                    "samples": samples_to_remain_in_downstream_task,
+                                    "last_updated": datetime.now(),
+                                },
                             },
-                            "$set": {
-                                "samples": samples_to_remain_in_downstream_task,
-                                "last_updated": datetime.now(),
-                            },
-                        },
-                    )
-                    self.try_to_mark_task_ready(
-                        task_id=next_task_id
-                    )  # in case it was only waiting on task we just cancelled
+                        )
+                        self.try_to_mark_task_ready(
+                            task_id=next_task_id
+                        )  # in case it was only waiting on task we just cancelled
 
     def update_subtask_status(
         self, task_id: ObjectId, subtask_id: ObjectId, status: TaskStatus
