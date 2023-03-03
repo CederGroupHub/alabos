@@ -12,7 +12,7 @@ import bson
 import numpy as np
 
 from alab_management.task_view.task import get_all_tasks, BaseTask
-from alab_management.utils.data_objects import get_collection, make_bsonable
+from alab_management.utils.data_objects import get_collection, make_bsonable, get_lock
 from alab_management.task_view.task_enums import TaskStatus
 
 
@@ -23,6 +23,7 @@ class TaskView:
 
     def __init__(self):
         self._task_collection = get_collection("tasks")
+        self._lock = get_lock("tasks")
         self._tasks_definition: Dict[str, Type[BaseTask]] = get_all_tasks()
 
     def create_task(
@@ -177,6 +178,40 @@ class TaskView:
             # try to figure out tasks that is READY
             for next_task_id in task["next_tasks"]:
                 self.try_to_mark_task_ready(task_id=next_task_id)
+
+        if status is TaskStatus.CANCELLED:
+            # any downstream tasks should be:
+            # 1. cancelled if they depend _only on this task_
+            # 2. made independent of this task. This includes removing affected samples from the downstream task
+            samples_in_this_task = [s["sample_id"] for s in task["samples"]]
+            for next_task_id in task["next_tasks"]:
+                next_task = self.get_task(task_id=next_task_id, encode=False)
+                if len(next_task["prev_tasks"]) == 1:
+                    self.update_status(
+                        task_id=next_task_id, status=TaskStatus.CANCELLED
+                    )
+                else:
+                    # drop any samples that were lost in the cancelled task
+                    samples_to_remain_in_downstream_task = [
+                        entry
+                        for entry in next_task["samples"]
+                        if entry["sample_id"] not in samples_in_this_task
+                    ]
+                    self._task_collection.update_one(
+                        {"_id": next_task_id},
+                        {
+                            "$pull": {
+                                "prev_tasks": task_id,
+                            },
+                            "$set": {
+                                "samples": samples_to_remain_in_downstream_task,
+                                "last_updated": datetime.now(),
+                            },
+                        },
+                    )
+                    self.try_to_mark_task_ready(
+                        task_id=next_task_id
+                    )  # in case it was only waiting on task we just cancelled
 
     def update_subtask_status(
         self, task_id: ObjectId, subtask_id: ObjectId, status: TaskStatus
