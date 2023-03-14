@@ -330,22 +330,13 @@ class TaskManager(RequestMixin):
 
                 for pos in request["sample_positions"]:
                     prefix = pos["prefix"]
-                    if not prefix.startswith(
-                        device_prefix
-                    ):  # if this is a nested resource request, lets not prepend the device name twice.
+                    # if this is a nested resource request, lets not prepend the device name twice.
+                    if not prefix.startswith(device_prefix):
+
                         prefix = device_prefix + prefix
                     parsed_sample_positions_request.append(
                         SamplePositionRequest(prefix=prefix, number=pos["number"])
                     )
-                # parsed_sample_positions_request.extend(
-                #     [
-                #         SamplePositionRequest(
-                #             prefix=f"{device_prefix}{pos['prefix']}",
-                #             number=pos["number"],
-                #         )
-                #         for pos in request["sample_positions"]
-                #     ]
-                # )
 
             self._request_collection.update_one(
                 {"_id": request_entry["_id"]},
