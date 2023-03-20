@@ -35,9 +35,9 @@ class ParameterError(Exception):
 
 @dramatiq.actor(
     max_retries=0,
-    time_limit=48 * 60 * 60 * 1000,
+    time_limit=30 * 24 * 60 * 60 * 1000,
     notify_shutdown=True,
-)  # TODO time limit is set in ms. currently set to 48 hours
+)  # TODO time limit is set in ms. currently set to 30 days
 def run_task(task_id_str: str):
     """
     Submit a task. In this system, each task is run in an

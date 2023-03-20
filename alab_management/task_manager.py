@@ -222,6 +222,7 @@ class TaskManager(RequestMixin):
         self.handle_released_resources()
         self.handle_tasks_to_be_cancelled()
         self.handle_requested_resources()
+
         if not self.__reroute_in_progress:
             self.handle_request_cycles()
 
