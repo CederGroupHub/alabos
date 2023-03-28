@@ -263,8 +263,8 @@ class TaskView:
             task_id=task_id
         )  # just to confirm that task_id exists in collection
 
-        if value is None:
-            raise ValueError("Must provide a value to update result with!")
+        # if value is None:
+        #     raise ValueError("Must provide a value to update result with!")
 
         if name is None:
             update_path = "result"
