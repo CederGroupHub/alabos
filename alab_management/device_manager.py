@@ -144,6 +144,7 @@ class DeviceManager:
         props,
         device,
         method,
+        task_id,
         *args,
         **kwargs,
     ):
@@ -166,6 +167,21 @@ class DeviceManager:
             channel.basic_ack(delivery_tag=cast(int, delivery_tag))
 
         try:
+            device_entry: Optional[Dict[str, Any]] = self._device_view.get_device(
+                device
+            )
+
+            # check if the device is currently occupied by this task
+            if self._check_status and (
+                    device_entry is None
+                    or device_entry["status"] != DeviceTaskStatus.OCCUPIED.name
+                    or device_entry["task_id"] != ObjectId(task_id)
+            ):
+                raise PermissionError(
+                    f"Currently the task ({task_id}) "
+                    f"does not occupy this device: {device}, which is currently occupied by task {task_id}"
+                )
+
             result = self._device_view.execute_command(device, method, *args, **kwargs)
             response = {"status": "success", "result": result}
         except Exception as e:
@@ -197,20 +213,6 @@ class DeviceManager:
           }
         """
         body: Dict[str, Any] = dill.loads(_body)
-        device_entry: Optional[Dict[str, Any]] = self._device_view.get_device(
-            body["device"]
-        )
-
-        # check if the device is currently occupied by this task
-        if self._check_status and (
-            device_entry is None
-            or device_entry["status"] != DeviceTaskStatus.OCCUPIED.name
-            or device_entry["task_id"] != ObjectId(body["task_id"])
-        ):
-            raise PermissionError(
-                f"Currently the task ({body['task_id']}) "
-                f"does not occupy this device: {body['device']}, which is currently occupied by task {device_entry['task_id']}"
-            )
 
         thread = Thread(
             target=self._execute_command_wrapper,
@@ -220,6 +222,7 @@ class DeviceManager:
                 props,
                 body["device"],
                 body["method"],
+                body["task_id"],
                 *body["args"],
             ),
             kwargs=body["kwargs"],
