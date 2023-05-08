@@ -469,3 +469,9 @@ class TaskView:
                 task_id=ObjectId(task_id),
                 status=TaskStatus.CANCELLING,
             )
+
+    def exists(self, task_id: Union[ObjectId, str]) -> bool:
+        """
+        Check if a task id exists
+        """
+        return self._task_collection.count_documents({"_id": ObjectId(task_id)}) > 0

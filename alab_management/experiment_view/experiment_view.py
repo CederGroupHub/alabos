@@ -10,6 +10,8 @@ from bson import ObjectId
 
 from .experiment import InputExperiment
 from ..utils.data_objects import get_collection
+from alab_management.sample_view import SampleView
+from alab_management.task_view import TaskView
 
 
 class ExperimentStatus(Enum):
@@ -35,6 +37,8 @@ class ExperimentView:
 
     def __init__(self):
         self._experiment_collection = get_collection("experiment")
+        self.sample_view = SampleView()
+        self.task_view = TaskView()
 
     def create_experiment(self, experiment: InputExperiment) -> ObjectId:
         """
@@ -46,7 +50,26 @@ class ExperimentView:
             experiment: the required format of experiment, see also
               :py:class:`InputExperiment <alab_management.experiment_view.experiment.InputExperiment>`
         """
-        # format of experiment dict is checked in api endpoint upstream of this method
+        # NOTE: format of experiment dict is checked in api endpoint upstream of this method
+
+        # confirm that no task/sample id's already exist in the database. This is possible when users manually set these id's
+        for sample in experiment.samples:
+            if sample.sample_id is None:
+                continue  # ALabOS will assign a sample id, this is always safe
+            if self.sample_view.exists(sample_id=sample.sample_id):
+                raise ValueError(
+                    f"Sample id {sample.sample_id} already exists in the database! Please use another id. This experiment was not submitted."
+                )
+
+        for task in experiment.tasks:
+            if task.task_id is None:
+                continue
+            if self.task_view.exists(task_id=task.task_id):
+                raise ValueError(
+                    f"Task id {task.task_id} already exists in the database! Please use another id. This experiment was not submitted."
+                )
+
+        # all good, lets submit the experiment into ALabOS!
         result = self._experiment_collection.insert_one(
             {
                 **experiment.dict(),

@@ -11,6 +11,9 @@ from pymongo import collection, database
 
 from .db_lock import MongoLock
 from bson import ObjectId
+import json
+from enum import Enum
+from datetime import datetime
 
 
 class _GetMongoCollection:
@@ -82,6 +85,30 @@ def make_bsonable(obj):
             pass
 
     return obj
+
+
+class ALabJSONEncoder(json.JSONEncoder):
+    def default(self, z):
+        if isinstance(z, ObjectId):
+            return str(z)
+        elif isinstance(z, np.ndarray):
+            return z.tolist()
+        elif isinstance(z, np.int64):
+            return int(z)
+        elif isinstance(z, np.float64):
+            return float(z)
+        elif isinstance(z, Enum):
+            return z.value
+        elif isinstance(z, datetime):
+            return z.isoformat()
+        else:
+            return super().default(z)
+
+
+def make_jsonable(obj):
+    """Converts a Python object to a JSON serializable object. Handles some typical ALab types (ObjectId, Enums, Numpy arrays, etc.) that are not JSON serializable by default. This is mostly used in API calls."""
+
+    return json.loads(ALabJSONEncoder().encode(obj))
 
 
 get_collection = _GetMongoCollection.get_collection

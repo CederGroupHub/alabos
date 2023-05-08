@@ -455,3 +455,14 @@ class SampleView:
                 }
             },
         )
+
+    def exists(self, sample_id: Union[ObjectId, str]) -> bool:
+        """Check if a sample exists in the database
+
+        Args:
+            sample_id (ObjectId): id of the sample within sample collection
+
+        Returns:
+            bool: True if sample exists in the database
+        """
+        return self._sample_collection.count_documents({"_id": ObjectId(sample_id)}) > 0

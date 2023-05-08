@@ -9,6 +9,7 @@ from alab_management.experiment_view.experiment import InputExperiment
 from alab_management.experiment_view.experiment_view import ExperimentStatus
 from alab_management.task_view.task_enums import TaskStatus
 from ..lab_views import experiment_view, sample_view, task_view
+from alab_management.utils.data_objects import make_jsonable
 
 experiment_bp = Blueprint("/experiment", __name__, url_prefix="/api/experiment")
 
@@ -175,7 +176,7 @@ def query_experiment_results(exp_id: str):
             }
         )
 
-    return return_dict
+    return make_jsonable(return_dict)
 
 
 @experiment_bp.route("/cancel/<exp_id>", methods=["GET"])

@@ -99,6 +99,12 @@ class AlabConfig:
     def __hash__(self):  # type: ignore
         return self._config.__hash__()
 
+    def get(self, item, default=None):
+        return self._config.get(item, default)
+
+    def __contains__(self, item):
+        return self._config.__contains__(item)
+
     @property
     def path(self) -> Path:
         """
