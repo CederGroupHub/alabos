@@ -44,7 +44,11 @@ def get_experiment_progress(exp_id: str):
     error = False
     for task in experiment["tasks"]:
         task_status = task_view.get_status(task_id=task["task_id"])
-        if task_status == TaskStatus.COMPLETED:
+        if task_status in [
+            TaskStatus.COMPLETED,
+            TaskStatus.ERROR,
+            TaskStatus.CANCELLED,
+        ]:
             completed_task_count += 1
         if task_status == TaskStatus.ERROR:
             error = True
