@@ -33,7 +33,7 @@ function CancelConfirmDialog({ open, setOpen, type, id }) {
       method: 'GET',
     })
   }
-  
+
   const cancel_experiment = (experiment_id) => {
     fetch(`/api/experiment/cancel/${experiment_id}`, {
       method: 'GET',
@@ -74,19 +74,27 @@ function Row({ experiment_id, hoverForId }) {
   const [dialogId, setDialogId] = React.useState("");
   const [dialogType, setDialogType] = React.useState("Task");
   const [status, setStatus] = React.useState(
-    { "_id": "", "status": "", "samples": [], "tasks": [], "progress": 50 }
+    { "_id": "", "status": "", "samples": [], "tasks": [], "progress": 0 }
   );
   const [taskOpen, setTaskOpen] = React.useState(false);
   const [sampleOpen, setSampleOpen] = React.useState(false);
 
   useEffect(() => {
+    get_experiment_status(experiment_id).then(status => {
+      setStatus(status);
+    })
+    if (status.progress === 1.0) {
+      return;
+    }
+    const refreshPeriod = open ? 1000 : 30000; //refresh every second if open, every 30 seconds if closed
+
     const interval = setInterval(() => {
       get_experiment_status(experiment_id).then(status => {
         setStatus(status);
       })
-    }, 250);
+    }, refreshPeriod);
     return () => clearInterval(interval);
-  }, []);
+  }, [status.progress, open]);
 
   const handleCancel = (id, type) => {
     setDialogOpen(true);
@@ -120,7 +128,7 @@ function Row({ experiment_id, hoverForId }) {
       case "COMPLETED":
         return "inherit";
       case "CANCELLED":
-        return "gray"; 
+        return "gray";
       case "CANCELLING":
         return "gray";
       default:
@@ -162,8 +170,8 @@ function Row({ experiment_id, hoverForId }) {
         {/* <TableCell align="right">{row.protein}</TableCell> */}
 
         <TableCell align="right">
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
             color="error"
             disabled={status.status !== "RUNNING"}
             onClick={() => handleCancel(status.id, "experiment")}
@@ -257,8 +265,8 @@ function Row({ experiment_id, hoverForId }) {
                           </Typography>
                         </TableCell>
                         <TableCell>
-                          <Button 
-                            variant="outlined" 
+                          <Button
+                            variant="outlined"
                             color="error"
                             disabled={task.status === "COMPLETED" || task.status === "CANCELLED" || task.status === "CANCELLING" || task.status === "ERROR"}
                             onClick={() => handleCancel(task.id, "task")}
@@ -309,11 +317,14 @@ function Experiments({ hoverForId }) {
 
 
   useEffect(() => {
+    get_experiment_ids().then(ids => {
+      setExperimentIds(ids);
+    })
     const interval = setInterval(() => {
       get_experiment_ids().then(ids => {
         setExperimentIds(ids);
       })
-    }, 250);
+    }, 10000);
     return () => clearInterval(interval);
   }, []);
 

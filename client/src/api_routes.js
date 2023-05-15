@@ -1,7 +1,7 @@
 
 // General
 
-const URL = "http://localhost:8896";
+const URL = "http://localhost:8895";
 const STATUS_API = process.env.NODE_ENV === "production" ? "/api/status" : URL + "/api/status";
 console.log(STATUS_API);
 export async function get_status() {

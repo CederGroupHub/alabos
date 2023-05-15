@@ -118,7 +118,7 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange }) {
         }
         setNumUserInputRequests(numRequests);
       })
-    }, 1000);
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
 

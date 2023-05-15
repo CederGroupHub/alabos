@@ -227,6 +227,10 @@ function Devices({ hoverForId }) {
   const [onlyActive, setOnlyActive] = React.useState(true);
 
   useEffect(() => {
+    get_status().then(data => {
+      setDevices(data.devices);
+    })
+
     const interval = setInterval(() => {
       get_status().then(data => {
         setDevices(data.devices);
