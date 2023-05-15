@@ -23,6 +23,8 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { HoverText } from '../../utils';
 
+const timezoneOffset = (new Date()).getTimezoneOffset();
+
 function CancelConfirmDialog({ open, setOpen, type, id }) {
   const handleClose = () => {
     setOpen(false);
@@ -136,6 +138,12 @@ function Row({ experiment_id, hoverForId }) {
     }
   }
 
+  function timestampInLocale(timestamp_string) {
+    const localTime = new Date(timestamp_string);
+    localTime.setMinutes(localTime.getMinutes() + timezoneOffset);
+    return `${localTime.toLocaleString()}`
+  }
+
   return (
     <React.Fragment>
       <CancelConfirmDialog open={dialogOpen} setOpen={setDialogOpen} type={dialogType} id={dialogId} />
@@ -163,7 +171,7 @@ function Row({ experiment_id, hoverForId }) {
         </TableCell>
 
 
-        <TableCell align="right"><Typography variant="body2">{status.submitted_at}</Typography></TableCell>
+        <TableCell align="right"><Typography variant="body2">{timestampInLocale(status.submitted_at)}</Typography></TableCell>
         <TableCell align="right">
           <LinearProgress variant="determinate" value={Math.round(status.progress * 100)} color={progressBarColor()} />
         </TableCell>
@@ -314,7 +322,6 @@ function CollapsibleTable({ experiment_ids, hoverForId }) {
 
 function Experiments({ hoverForId }) {
   const [experimentIds, setExperimentIds] = React.useState([]);
-
 
   useEffect(() => {
     get_experiment_ids().then(ids => {

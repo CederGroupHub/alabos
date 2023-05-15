@@ -173,9 +173,9 @@ class DeviceManager:
 
             # check if the device is currently occupied by this task
             if self._check_status and (
-                    device_entry is None
-                    or device_entry["status"] != DeviceTaskStatus.OCCUPIED.name
-                    or device_entry["task_id"] != ObjectId(task_id)
+                device_entry is None
+                or device_entry["status"] != DeviceTaskStatus.OCCUPIED.name
+                or device_entry["task_id"] != ObjectId(task_id)
             ):
                 raise PermissionError(
                     f"Currently the task ({task_id}) "

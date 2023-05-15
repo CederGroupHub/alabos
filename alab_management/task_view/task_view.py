@@ -179,7 +179,7 @@ class TaskView:
             for next_task_id in task["next_tasks"]:
                 self.try_to_mark_task_ready(task_id=next_task_id)
 
-        if status is TaskStatus.CANCELLED:
+        if status in [TaskStatus.CANCELLED, TaskStatus.ERROR]:
             # any downstream tasks should be:
             # 1. cancelled if they depend _only on this task_
             # 2. made independent of this task. This includes removing affected samples from the downstream task
@@ -189,6 +189,10 @@ class TaskView:
                 if len(next_task["prev_tasks"]) == 1:
                     self.update_status(
                         task_id=next_task_id, status=TaskStatus.CANCELLED
+                    )
+                    self.set_message(
+                        task_id=next_task_id,
+                        message="Cancelled due to an upstream task being cancelled or throwing an error.",
                     )
                 else:
                     # drop any samples that were lost in the cancelled task
