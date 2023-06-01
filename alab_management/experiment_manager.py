@@ -9,11 +9,12 @@ done.
 import time
 from typing import Dict, Any, List
 
-from .experiment_view.experiment_view import ExperimentStatus, ExperimentView
+from .experiment_view import ExperimentStatus, ExperimentView, CompletedExperimentView
 from .logger import DBLogger
 from .sample_view import SampleView
 from .task_view import TaskView, TaskStatus
 from .utils.graph_ops import Graph
+from .config import AlabConfig
 from bson import ObjectId
 
 
@@ -28,6 +29,13 @@ class ExperimentManager:
         self.task_view = TaskView()
         self.sample_view = SampleView()
         self.logger = DBLogger(task_id=None)
+
+        config = AlabConfig()
+        self.__copy_to_completed_db = (
+            "mongodb_completed" in config
+        )  # if this is not defined in the config, assume it this feature is not being used.
+        if self.__copy_to_completed_db:
+            self.completed_experiment_view = CompletedExperimentView()
 
     def run(self):
         """
@@ -169,3 +177,17 @@ class ExperimentManager:
                     },
                 )
                 print(f"Experiment ({experiment['_id']}) completed.")
+
+                if self.__copy_to_completed_db:
+                    self.completed_experiment_view.save_experiment(experiment["_id"])
+                    print(
+                        f"Experiment ({experiment['_id']}) and associated samples/tasks were copied to the completed db."
+                    )
+                    self.logger.system_log(
+                        level="DEBUG",
+                        log_data={
+                            "logged_by": self.__class__.__name__,
+                            "type": "ExperimentSavedToCompletedDB",
+                            "exp_id": experiment["_id"],
+                        },
+                    )

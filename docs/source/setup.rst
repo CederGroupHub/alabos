@@ -57,19 +57,25 @@ A default configuration may look like this. Usually, it is just okay to
   # the working dir specifies where the device and task definitions can be loaded
   # by default, the working directory should just be the directory where the config
   # file stores
-  working_dir = "."
+  name = "ALab" #the name of the lab. This will also set the name of the MongoDB database
+  working_dir = "." #the working directory of the lab code
+  # parent_package = ""  #optional. This is used if the config/devices/tasks files are not in the root folder of the python package. This should point to the parent package of the config file (ie if devices/tasks are in a submodule of the "my_alab" package like "my_alab/system", this should be "my_alab.system")
 
-  [db]
-  # this section specify how to connect to the database, you can specify the host
-  # and port of database, and the name of database that we will use. If your database
+  [mongodb]
+  # this section specify how to connect to the "working" database, you can specify the host
+  # and port of database. If your database
   # needs authentication, you will also need to  provide username and password
   host = 'localhost'
   port = 27017
-  name = 'Alab'
   username = ''
   password = ''
 
-
+  [mongodb_completed]
+  # this section specify how to connect to the "completed" database, which is a parallel database that stores the results for completed experiments. This is formatted the same as the previous section
+  host = 'localhost'
+  port = 27017
+  username = ''
+  password = ''
 What's next
 ------------------
 

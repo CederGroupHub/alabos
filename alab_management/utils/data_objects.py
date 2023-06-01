@@ -14,9 +14,33 @@ from bson import ObjectId
 import json
 from enum import Enum
 from datetime import datetime
+from abc import ABC, abstractmethod
 
 
-class _GetMongoCollection:
+class _BaseGetMongoCollection(ABC):
+    @classmethod
+    @abstractmethod
+    def init(cls):
+        raise NotImplementedError
+
+    @classmethod
+    def get_collection(cls, name: str) -> collection.Collection:
+        """
+        Get collection by name
+        """
+        if cls.client is None:
+            cls.init()
+
+        return cls.db[name]  # type: ignore # pylint: disable=unsubscriptable-object
+
+    @classmethod
+    def get_lock(cls, name: str) -> MongoLock:
+        if cls.db_lock is None:
+            cls.db_lock = MongoLock(collection=cls.get_collection("_lock"), name=name)
+        return cls.db_lock
+
+
+class _GetMongoCollection(_BaseGetMongoCollection):
     client: Optional[pymongo.MongoClient] = None
     db: Optional[database.Database] = None
     db_lock: Optional[MongoLock] = None
@@ -34,21 +58,29 @@ class _GetMongoCollection:
         )
         cls.db = cls.client[AlabConfig()["general"]["name"]]  # type: ignore # pylint: disable=unsubscriptable-object
 
-    @classmethod
-    def get_collection(cls, name: str) -> collection.Collection:
-        """
-        Get collection by name
-        """
-        if cls.client is None:
-            cls.init()
 
-        return cls.db[name]  # type: ignore # pylint: disable=unsubscriptable-object
+class _GetCompletedMongoCollection(_BaseGetMongoCollection):
+    client: Optional[pymongo.MongoClient] = None
+    db: Optional[database.Database] = None
+    db_lock: Optional[MongoLock] = None
 
     @classmethod
-    def get_lock(cls, name: str) -> MongoLock:
-        if cls.db_lock is None:
-            cls.db_lock = MongoLock(collection=cls.get_collection("_lock"), name=name)
-        return cls.db_lock
+    def init(cls):
+        from ..config import AlabConfig
+
+        ALAB_CONFIG = AlabConfig()
+        if "mongodb_completed" not in ALAB_CONFIG:
+            raise ValueError(
+                "Cannot use the completed database feature until that database info is set. Please specify the mongodb_completed configuration in the config file!"
+            )
+        db_config = ALAB_CONFIG["mongodb_completed"]
+        cls.client = pymongo.MongoClient(
+            host=db_config.get("host", None),
+            port=db_config.get("port", None),
+            username=db_config.get("username", ""),
+            password=db_config.get("password", ""),
+        )
+        cls.db = cls.client[AlabConfig()["general"]["name"] + "(completed)"]  # type: ignore # pylint: disable=unsubscriptable-object
 
 
 def get_rabbitmq_connection():
@@ -113,3 +145,6 @@ def make_jsonable(obj):
 
 get_collection = _GetMongoCollection.get_collection
 get_lock = _GetMongoCollection.get_lock
+
+get_completed_collection = _GetCompletedMongoCollection.get_collection
+get_completed_lock = _GetCompletedMongoCollection.get_lock

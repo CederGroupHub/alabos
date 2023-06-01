@@ -89,3 +89,13 @@ def cleanup_lab_cli(all_collections: bool):
 @click.option("--debug", default=False, is_flag=True)
 def launch_dashboard_cli(host, port, debug):
     launch_dashboard(host, port, debug)
+
+
+@cli.command(
+    "copy_completed_experiments",
+    short_help='Copy completed experiments from working database to completed database. Note that "mongodb_completed" must be specified in the config file.',
+)
+def copy_completed_experiments_cli():
+    from alab_management.experiment_view import CompletedExperimentView
+
+    CompletedExperimentView().save_all()
