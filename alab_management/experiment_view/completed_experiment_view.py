@@ -60,9 +60,11 @@ class CompletedExperimentView:
 
     def save_all(self):
         """
-        Saves all experiments in the working database to the completed database.
+        Saves all completed experiments in the working database to the completed database.
         """
-        for experiment_dict in self._working_experiment_collection.find():
+        for experiment_dict in self._working_experiment_collection.find(
+            {"status": "COMPLETED"}
+        ):
             try:
                 self.save_experiment(experiment_dict["_id"])
             except:
