@@ -63,7 +63,7 @@ def run_task(task_id_str: str):
         print(
             f"{datetime.datetime.now()}: Worker picked up task {task_id} of type {task_Class.__name__}"
         )
-    except ValueError:
+    except:
         print(
             f"{datetime.datetime.now()}: No task found with id: {task_id} -- assuming that alabos was aborted without cleanup, and skipping this task."
         )
