@@ -22,11 +22,11 @@ def get_userinput_status():
             eid = "Maintenance"
             if "task_id" not in request["request_context"]:
                 task_id = "This request came directly from a device, no task_id."
-                task_type = "DeviceRequest"
+                task_name = "DeviceRequest"
             else:
                 task_id = str(request["request_context"]["task_id"])
-                task_type = task_view.get_task(request["request_context"]["task_id"])[
-                    "type"
+                task_name = task_view.get_task(request["request_context"]["task_id"])[
+                    "name"
                 ]
         else:
             eid = str(request["request_context"]["experiment_id"])
@@ -34,8 +34,8 @@ def get_userinput_status():
                 request["request_context"]["experiment_id"]
             )["name"]
             task_id = str(request["request_context"]["task_id"])
-            task_type = task_view.get_task(request["request_context"]["task_id"])[
-                "type"
+            task_name = task_view.get_task(request["request_context"]["task_id"])[
+                "name"
             ]
 
         if eid not in user_input_requests:
@@ -48,7 +48,7 @@ def get_userinput_status():
                 "prompt": request["prompt"],
                 "task": {
                     "id": task_id,
-                    "type": task_type,
+                    "name": task_name,
                 },
                 "options": request["options"],
             }

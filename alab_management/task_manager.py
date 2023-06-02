@@ -333,7 +333,6 @@ class TaskManager(RequestMixin):
                     prefix = pos["prefix"]
                     # if this is a nested resource request, lets not prepend the device name twice.
                     if not prefix.startswith(device_prefix):
-
                         prefix = device_prefix + prefix
                     parsed_sample_positions_request.append(
                         SamplePositionRequest(prefix=prefix, number=pos["number"])
@@ -483,7 +482,7 @@ class TaskManager(RequestMixin):
 
         # get the highest priority task in the cycle. We will unblock this task.
         highest_priority = -inf
-        for (_blocking_taskid, _occupying_taskid) in cycle:
+        for _blocking_taskid, _occupying_taskid in cycle:
             priority = task_priority[_blocking_taskid]
             if priority > highest_priority:
                 highest_priority = priority
@@ -526,7 +525,7 @@ class TaskManager(RequestMixin):
                     "logged_by": "TaskManager",
                     "type": "Reroute",
                     "reroute_task": {
-                        "task_type": reroute_Task.func.__name__,
+                        "task_name": reroute_Task.func.__name__,
                         "kwargs": reroute_Task.keywords,
                     },
                     "reroute_target": {

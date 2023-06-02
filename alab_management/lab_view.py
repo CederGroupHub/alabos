@@ -195,7 +195,7 @@ class LabView:
             this command blocks until the subtask is completed.
 
         Args:
-            task_type (Union[str, type[BaseTask]]): name or class of Task to run.
+            task (Union[str, type[BaseTask]]): name or class of Task to run.
             **kwargs: will be passed to the Task method via the parameters entry in task collection.
         """
         if not issubclass(task, BaseTask):
@@ -210,7 +210,7 @@ class LabView:
 
         subtask_id = self._task_view.create_subtask(
             task_id=task_id,
-            subtask_type=task.__name__,
+            name=task.__name__,
             samples=samples,
             parameters=kwargs,
         )
@@ -230,10 +230,12 @@ class LabView:
                 task_id=task_id, subtask_id=subtask_id, result=str(exception)
             )
             raise Exception(
-                "Failed to create subtask of type {} within task {} of type {}".format(
+                "Failed to create subtask {} within task {} ({})".format(
                     task,
                     task_id,
-                    self._task_view.get_task(task_id=task_id, encode=True)["type"],
+                    self._task_view.get_task(task_id=task_id, encode=True)[
+                        "class_object"
+                    ],
                 )
             )
         self.logger.system_log(
@@ -242,7 +244,7 @@ class LabView:
                 "logged_by": "TaskActor",
                 "type": "SubTaskStart",
                 "task_id": task_id,
-                "subtask_type": task.__name__,
+                "subtask_name": task.__name__,
             },
         )
         try:
@@ -263,7 +265,7 @@ class LabView:
                     "logged_by": "TaskActor",
                     "type": "SubTaskEnd",
                     "task_id": task_id,
-                    "subtask_type": task.__name__,
+                    "subtask_name": task.__name__,
                     "status": "ERROR",
                     "traceback": format_exc(),
                 },
@@ -282,7 +284,7 @@ class LabView:
                     "logged_by": "TaskActor",
                     "type": "SubTaskEnd",
                     "task_id": task_id,
-                    "subtask_type": task.__name__,
+                    "subtask_name": task.__name__,
                     "status": "COMPLETED",
                 },
             )

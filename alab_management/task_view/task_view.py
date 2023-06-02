@@ -28,7 +28,7 @@ class TaskView:
 
     def create_task(
         self,
-        task_type: str,
+        name: str,
         samples: List[ObjectId],
         parameters: Dict[str, Any],
         prev_tasks: Optional[Union[ObjectId, List[ObjectId]]] = None,
@@ -39,7 +39,7 @@ class TaskView:
         Insert a task into the task collection
 
         Args:
-            task_type: the type of task, which should be a type name of class inherited from
+            name: the name of task, which should be a class name inherited from
               :py:class:`BaseTask <alab_management.task_view.task.BaseTask>`
             samples: the samples that this task will handle, which will be passed to Task object
               the same as parameters.
@@ -52,8 +52,8 @@ class TaskView:
         Returns:
             the assigned id for this task
         """
-        if task_type not in self._tasks_definition:
-            raise ValueError(f"Unsupported task type: {task_type}")
+        if name not in self._tasks_definition:
+            raise ValueError(f"Unsupported task: {name}")
 
         prev_tasks = prev_tasks or []
         prev_tasks = prev_tasks if isinstance(prev_tasks, list) else [prev_tasks]
@@ -64,7 +64,7 @@ class TaskView:
             self.get_task(task_id=related_task_id)  # will raise error if not found
 
         entry = {
-            "type": task_type,
+            "name": name,
             "status": TaskStatus.WAITING.name,
             "samples": samples,
             "parameters": parameters,
@@ -80,9 +80,7 @@ class TaskView:
 
         return cast(ObjectId, result.inserted_id)
 
-    def create_subtask(
-        self, task_id, subtask_type, samples: List[str], parameters: dict
-    ):
+    def create_subtask(self, task_id, name, samples: List[str], parameters: dict):
         """
         Create a subtask entry for a task.
         """
@@ -93,7 +91,7 @@ class TaskView:
         subtasks.append(
             {
                 "subtask_id": subtask_id,
-                "type": subtask_type,
+                "name": name,
                 "samples": samples,
                 "status": TaskStatus.INITIATED.name,
                 "parameters": parameters,
@@ -365,13 +363,13 @@ class TaskView:
         Rename _id to task_id
         Translate task's type into corresponding python class.
         """
-        operation_type: Type[BaseTask] = self._tasks_definition[task_entry["type"]]
+        task_class_object: Type[BaseTask] = self._tasks_definition[task_entry["name"]]
         task_entry["task_id"] = task_entry.pop(
             "_id"
         )  # change the key name of `_id` to `task_id`
         return {
             **task_entry,
-            "type": operation_type,
+            "class_object": task_class_object,
         }
 
     def update_task_dependency(
