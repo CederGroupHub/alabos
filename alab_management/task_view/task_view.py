@@ -190,6 +190,10 @@ class TaskView:
             # try to figure out tasks that is READY
             for next_task_id in task["next_tasks"]:
                 self.try_to_mark_task_ready(task_id=next_task_id)
+            self._task_collection.update_one(
+                {"_id": task_id},
+                {"$unset": {"task_actor_id": ""}},
+            )
 
         if status in [TaskStatus.CANCELLED, TaskStatus.ERROR]:
             # any downstream tasks should be:
@@ -234,6 +238,10 @@ class TaskView:
                         self.try_to_mark_task_ready(
                             task_id=next_task_id
                         )  # in case it was only waiting on task we just cancelled
+            self._task_collection.update_one(
+                {"_id": task_id},
+                {"$unset": {"task_actor_id": ""}},
+            )
 
     def update_subtask_status(
         self, task_id: ObjectId, subtask_id: ObjectId, status: TaskStatus
