@@ -66,12 +66,13 @@ def run_task(task_id_str: str):
         return
 
     try:
+        print(task_view._tasks_definition)
         task_entry = task_view.get_task(task_id, encode=True)
-        task_type = task_entry.pop("type")
+        task_Class = task_entry.pop("class_object")
         print(
-            f"{datetime.datetime.now()}: Worker picked up task {task_id} of type {task_type.__name__}"
+            f"{datetime.datetime.now()}: Worker picked up task {task_id} of type {task_Class.__name__}"
         )
-    except ValueError:
+    except:
         print(
             f"{datetime.datetime.now()}: No task found with id: {task_id} -- assuming that alabos was aborted without cleanup, and skipping this task."
         )
@@ -80,7 +81,7 @@ def run_task(task_id_str: str):
     lab_view = LabView(task_id=task_id)
 
     try:
-        task: BaseTask = task_type(
+        task: BaseTask = task_Class(
             samples=[
                 sample["name"] for sample in task_entry["samples"]
             ],  # only the sample names are sent
@@ -96,13 +97,13 @@ def run_task(task_id_str: str):
                 "logged_by": "TaskActor",
                 "type": "TaskDefinition",
                 "task_id": task_id,
-                "task_type": task_type.__name__,
+                "task_name": task_Class.__name__,
                 "message": str(exception),
             },
         )
         lab_view.request_cleanup()
         raise Exception(
-            f"Failed to create task {task_id} of type {task_type!s}"
+            "Failed to create task {} of type {}".format(task_id, str(task_Class))
         ) from exception
         # raise ParameterError(exception.args[0]) from exception
 
@@ -113,13 +114,14 @@ def run_task(task_id_str: str):
             sample_view.update_sample_task_id(
                 task_id=task_id, sample_id=sample["sample_id"]
             )
+
         logger.system_log(
             level="INFO",
             log_data={
                 "logged_by": "TaskActor",
                 "type": "TaskStart",
                 "task_id": task_id,
-                "task_type": task_type.__name__,
+                "task_name": task_Class.__name__,
             },
         )
         result = task.run()
@@ -134,7 +136,7 @@ def run_task(task_id_str: str):
                 "logged_by": "TaskActor",
                 "type": "TaskEnd",
                 "task_id": task_id,
-                "task_type": task_type.__name__,
+                "task_name": task_Class.__name__,
                 "status": TaskStatus.CANCELLED.name,
                 "traceback": "Task was cancelled due to the abort signal",
             },
@@ -151,7 +153,7 @@ def run_task(task_id_str: str):
                 "logged_by": "TaskActor",
                 "type": "TaskEnd",
                 "task_id": task_id,
-                "task_type": task_type.__name__,
+                "task_name": task_Class.__name__,
                 "status": TaskStatus.STOPPED.name,
                 "traceback": "Task was cancelled due to the worker shutdown",
             },
@@ -169,7 +171,7 @@ def run_task(task_id_str: str):
                 "logged_by": "TaskActor",
                 "type": "TaskEnd",
                 "task_id": task_id,
-                "task_type": task_type.__name__,
+                "task_name": task_Class.__name__,
                 "status": "ERROR",
                 "traceback": formatted_exception,
             },
@@ -195,7 +197,7 @@ def run_task(task_id_str: str):
                 "logged_by": "TaskActor",
                 "type": "TaskEnd",
                 "task_id": task_id,
-                "task_type": task_type.__name__,
+                "task_name": task_Class.__name__,
                 "status": "COMPLETED",
             },
         )

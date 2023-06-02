@@ -120,7 +120,7 @@ class ExperimentManager:
             ]
             task_ids.append(
                 self.task_view.create_task(
-                    task_type=task["type"],
+                    name=task["type"],
                     parameters=task["parameters"],
                     samples=samples,
                     task_id=task.get("task_id", None),

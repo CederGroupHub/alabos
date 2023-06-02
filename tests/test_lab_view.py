@@ -52,7 +52,7 @@ class TestLabView(TestCase):
 
         task_id = self.task_view.create_task(
             **{
-                "task_type": "Heating",
+                "task_name": "Heating",
                 "samples": {"sample": ObjectId()},
                 "parameters": {"setpoints": [[10, 600]]},
             }
@@ -102,7 +102,7 @@ class TestLabView(TestCase):
     def test_request_resources_empty(self):
         task_id = self.task_view.create_task(
             **{
-                "task_type": "Heating",
+                "task_name": "Heating",
                 "samples": {"sample": ObjectId()},
                 "parameters": {"setpoints": [[10, 600]]},
             }

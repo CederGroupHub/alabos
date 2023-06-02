@@ -20,7 +20,7 @@ class TestTaskView(TestCase):
 
     def test_create_task(self):
         task_dict = {
-            "task_type": "Heating",
+            "task_name": "Heating",
             "samples": [{"name": "sample1", "sample_id": ObjectId()}],
             "parameters": {"setpoints": [[10, 600]]},
         }
@@ -28,7 +28,7 @@ class TestTaskView(TestCase):
         task_dict_ = task_dict.copy()
         task_id = self.task_view.create_task(**task_dict_)
         task = self.task_view.get_task(task_id)
-        self.assertEqual(task_dict_["task_type"], task["type"])
+        self.assertEqual(task_dict_["task_name"], task["name"])
         self.assertListEqual(task_dict_["samples"], task["samples"])
         self.assertDictEqual(task_dict_["parameters"], task["parameters"])
         self.assertEqual([], task["next_tasks"])
@@ -56,7 +56,7 @@ class TestTaskView(TestCase):
 
         # test non exist task type
         task_dict_ = task_dict.copy()
-        task_dict_["task_type"] = "NOT A TASK TYPE"
+        task_dict_["task_name"] = "NOT A TASK TYPE"
         with self.assertRaises(ValueError):
             self.task_view.create_task(**task_dict_)
 
@@ -66,7 +66,7 @@ class TestTaskView(TestCase):
 
     def test_update_status(self):
         task_dict = {
-            "task_type": "Heating",
+            "task_name": "Heating",
             "samples": [{"name": "sample1", "sample_id": ObjectId()}],
             "parameters": {"setpoints": [[10, 600]]},
         }
@@ -91,7 +91,7 @@ class TestTaskView(TestCase):
 
     def test_get_ready_tasks(self):
         task_dict = {
-            "task_type": "Heating",
+            "task_name": "Heating",
             "samples": [{"name": "sample1", "sample_id": ObjectId()}],
             "parameters": {"setpoints": [[10, 600]]},
         }
@@ -109,12 +109,12 @@ class TestTaskView(TestCase):
             {task_id_1, task_id_2}, set(task["task_id"] for task in ready_tasks)
         )
         self.assertListEqual(
-            ["Heating"] * 2, [task["type"].__name__ for task in ready_tasks]
+            ["Heating"] * 2, [task["class_object"].__name__ for task in ready_tasks]
         )
 
     def test_update_task_dependency(self):
         task_dict = {
-            "task_type": "Heating",
+            "task_name": "Heating",
             "samples": [{"name": "sample1", "sample_id": ObjectId()}],
             "parameters": {"setpoints": [[10, 600]]},
         }

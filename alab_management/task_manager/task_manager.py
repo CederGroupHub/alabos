@@ -509,7 +509,7 @@ class TaskManager(RequestMixin):
                     "logged_by": "TaskManager",
                     "type": "Reroute",
                     "reroute_task": {
-                        "task_type": reroute_Task.func.__name__,
+                        "task_name": reroute_Task.func.__name__,
                         "kwargs": reroute_Task.keywords,
                     },
                     "reroute_target": {
