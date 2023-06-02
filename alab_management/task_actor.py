@@ -50,7 +50,6 @@ def run_task(task_id_str: str):
     logger = DBLogger(task_id=None)
 
     task_id = ObjectId(task_id_str)
-    print("starting")
     try:
         print(task_view._tasks_definition)
         task_entry = task_view.get_task(task_id, encode=True)
@@ -58,7 +57,7 @@ def run_task(task_id_str: str):
         print(
             f"{datetime.datetime.now()}: Worker picked up task {task_id} of type {task_Class.__name__}"
         )
-    except:
+    except ValueError:
         print(
             f"{datetime.datetime.now()}: No task found with id: {task_id} -- assuming that alabos was aborted without cleanup, and skipping this task."
         )
