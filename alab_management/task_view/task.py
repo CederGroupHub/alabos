@@ -211,7 +211,6 @@ class BaseTask(ABC):
         for sample in samples:
             sample.add_task(task_id=task_id)
 
-
 _task_registry: Dict[str, Type[BaseTask]] = {}
 
 SUPPORTED_SAMPLE_POSITIONS_TYPE = Dict[

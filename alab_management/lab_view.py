@@ -346,3 +346,29 @@ class LabView:
 
         # release all the resource that has not been fulfilled
         self._resource_requester.release_all_resources()
+
+    def get_previous_tasks(self) -> List[Dict[str, Any]]:
+        """
+        Get the list of previous tasks that have been run in the current session.
+
+        Returns:
+            List[Dict[str, Any]]: list of previous tasks.
+        """
+        previous_tasks = [
+            self._task_view.get_task(task_id=task_id)
+            for task_id in self.__task_entry["prev_tasks"]
+        ]
+        return previous_tasks
+
+    def get_next_tasks(self) -> List[Dict[str, Any]]:
+        """
+        Get the list of next tasks that have been run in the current session.
+
+        Returns:
+            List[Dict[str, Any]]: list of next tasks.
+        """
+        next_tasks = [
+            self._task_view.get_task(task_id=task_id)
+            for task_id in self.__task_entry["next_tasks"]
+        ]
+        return next_tasks
