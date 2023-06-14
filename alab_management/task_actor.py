@@ -52,6 +52,12 @@ def run_task(task_id_str: str):
     logger = DBLogger(task_id=None)
 
     task_id = ObjectId(task_id_str)
+    if task_view.get_status(task_id) != TaskStatus.INITIATED:
+        print(
+            "Task status is not INITIATED; this implies the task has already been picked up by a previous task actor. No action is taken."
+        )
+        return
+
     try:
         task_entry = task_view.get_task(task_id, encode=True)
         task_type = task_entry.pop("type")
