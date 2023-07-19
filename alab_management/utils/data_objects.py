@@ -92,6 +92,7 @@ def get_rabbitmq_connection():
             host=rabbit_mq_config.get("host", "localhost"),
             port=rabbit_mq_config.get("port", 5672),
             heartbeat=600,
+            blocked_connection_timeout=300,
         )
     )
     return _connection
