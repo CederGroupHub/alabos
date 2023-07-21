@@ -99,3 +99,18 @@ def copy_completed_experiments_cli():
     from alab_management.experiment_view import CompletedExperimentView
 
     CompletedExperimentView().save_all()
+
+
+@cli.command(
+    "launch_summary_dashboard",
+    short_help="Launch the summary dashboard, which provides statistics on the state of the lab and its tasks.",
+)
+@click.option(
+    "--host",
+    default="0.0.0.0",
+)
+@click.option("-p", "--port", default="8900", type=int)
+def launch_summary_dashboard(host, port):
+    from alab_management.dashboard.plotly import launch
+
+    launch(host=host, port=port)
