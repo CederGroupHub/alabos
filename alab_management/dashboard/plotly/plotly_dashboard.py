@@ -2,7 +2,7 @@ from dash import Dash, html, dcc, callback, Output, Input
 import plotly.express as px
 import dash_mantine_components as dmc
 import pandas as pd
-from data_interface import get_samples, get_tasks
+from .data_interface import get_samples, get_tasks
 from datetime import datetime, timedelta
 
 app = Dash(__name__)
