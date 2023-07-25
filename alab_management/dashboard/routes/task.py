@@ -21,3 +21,15 @@ def cancel_task(task_id: str):
         return {"status": "success"}
     except Exception as exception:
         return {"status": "error", "errors": exception.args[0]}, 400
+
+
+@task_bp.route("/<task_id>", methods=["GET"])
+def get_task(task_id: str):
+    try:
+        task_id: ObjectId = ObjectId(task_id)
+        task_data = task_view.get_task(task_id)
+
+        return {"status": "success", "data": task_data}
+
+    except Exception as exception:
+        return {"status": "error", "errors": exception.args[0]}, 400

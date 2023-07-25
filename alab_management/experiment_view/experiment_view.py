@@ -12,6 +12,9 @@ from .experiment import InputExperiment
 from ..utils.data_objects import get_collection
 from alab_management.sample_view import SampleView
 from alab_management.task_view import TaskView
+from .completed_experiment_view import CompletedExperimentView
+
+completed_experiment_view = CompletedExperimentView()
 
 
 class ExperimentStatus(Enum):
@@ -103,7 +106,16 @@ class ExperimentView:
         """
         experiment = self._experiment_collection.find_one({"_id": exp_id})
         if experiment is None:
+            try:
+                experiment = completed_experiment_view.get_experiment(
+                    experiment_id=exp_id
+                )
+            except ValueError:
+                experiment = None  # could not find in completed database either
+
+        if experiment is None:
             raise ValueError(f"Cannot find an experiment with id: {exp_id}")
+
         return experiment
 
     def update_experiment_status(self, exp_id: ObjectId, status: ExperimentStatus):

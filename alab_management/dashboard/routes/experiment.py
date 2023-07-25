@@ -151,13 +151,10 @@ def query_experiment_results(exp_id: str):
     }
 
     for sample in experiment["samples"]:
-        # sample_entry = sample_view.get_sample(sample["sample_id"])
         return_dict["samples"].append(
             {
                 "name": sample["name"],
-                "metadata": sample.get(
-                    "metadata", {}
-                ),  # TODO sample object doesnt have metadata/tag support yet
+                "metadata": sample.get("metadata", {}),
                 "tags": sample.get("tags", []),
                 "id": str(sample["sample_id"]),
             }

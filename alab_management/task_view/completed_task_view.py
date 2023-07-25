@@ -2,7 +2,6 @@ from typing import cast, Union
 from bson import ObjectId
 
 from ..utils.data_objects import get_collection, get_completed_collection
-from .task_view import TaskView
 
 
 class CompletedTaskView:
@@ -46,3 +45,15 @@ class CompletedTaskView:
             self._completed_task_collection.count_documents({"_id": ObjectId(task_id)})
             > 0
         )
+
+    def get_task(self, task_id: ObjectId):
+        """
+        Get a task from the database
+        """
+        task_dict = self._completed_task_collection.find_one({"_id": ObjectId(task_id)})
+        if task_dict is None:
+            raise ValueError(
+                f"Task with id {task_id} does not exist in the completed task database!"
+            )
+
+        return task_dict
