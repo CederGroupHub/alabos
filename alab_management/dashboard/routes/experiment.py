@@ -40,6 +40,9 @@ def get_experiment_progress(exp_id: str):
     except ValueError as exception:
         return {"status": "error", "errors": exception.args[0]}
 
+    if experiment is None:
+        return {"status": "error", "errors": "Cannot find experiment with this exp id"}
+
     completed_task_count = 0
     error = False
     for task in experiment["tasks"]:
