@@ -10,7 +10,6 @@ from bson import ObjectId
 
 
 from ..utils.data_objects import get_collection, get_completed_collection
-from .experiment_view import ExperimentView
 from alab_management.sample_view import SampleView, CompletedSampleView
 from alab_management.task_view import TaskView, CompletedTaskView
 
@@ -85,3 +84,21 @@ class CompletedExperimentView:
             )
             > 0
         )
+
+    def get_experiment(self, experiment_id: Union[ObjectId, str]) -> Dict[str, Any]:
+        """Get an experiment from the completed experiment collection
+
+        Args:
+            experiment_id (ObjectId): id of the experiment within completed experiment collection
+
+        Returns:
+            Dict[str, Any]: experiment dict
+        """
+        experiment_dict = self._completed_experiment_collection.find_one(
+            {"_id": ObjectId(experiment_id)}
+        )
+
+        if experiment_dict is None:
+            raise ValueError(f"Experiment with id {experiment_id} does not exist!")
+
+        return experiment_dict

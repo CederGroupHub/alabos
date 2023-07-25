@@ -14,6 +14,9 @@ import numpy as np
 from alab_management.task_view.task import get_all_tasks, BaseTask
 from alab_management.utils.data_objects import get_collection, make_bsonable, get_lock
 from alab_management.task_view.task_enums import TaskStatus
+from .completed_task_view import CompletedTaskView
+
+completed_task_view = CompletedTaskView()
 
 
 class TaskView:
@@ -120,8 +123,17 @@ class TaskView:
             encode: whether to encode the task using ``self.encode_task`` method
         """
         result = self._task_collection.find_one({"_id": task_id})
+
+        if result is None:
+            # try to get a completed task entry
+            try:
+                result = completed_task_view.get_task(task_id=task_id)
+            except ValueError:
+                result = None  # couldn't find it here either
+
         if result is None:
             raise ValueError(f"No task exists with provided task id: {task_id}")
+
         if encode:
             result = self.encode_task(result)
         return result
