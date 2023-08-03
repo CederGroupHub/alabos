@@ -5,6 +5,7 @@ from ..lab_views import (
     task_view,
 )
 from ...task_view import TaskStatus
+from alab_management.utils.data_objects import make_jsonable
 
 task_bp = Blueprint("/task", __name__, url_prefix="/api/task")
 
@@ -29,7 +30,7 @@ def get_task(task_id: str):
         task_id: ObjectId = ObjectId(task_id)
         task_data = task_view.get_task(task_id)
 
-        return {"status": "success", "data": task_data}
+        return {"status": "success", "data": make_jsonable(task_data)}
 
     except Exception as exception:
         return {"status": "error", "errors": exception.args[0]}, 400
