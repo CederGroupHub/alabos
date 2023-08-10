@@ -8,6 +8,7 @@ import re
 import sys
 from pathlib import Path
 from typing import Optional, Union
+from copy import copy
 
 
 def import_module_from_path(
@@ -40,12 +41,14 @@ def load_definition():
     config = AlabConfig()
     working_dir = config["general"]["working_dir"]
     parent_package = config["general"].get("parent_package", None)
-    if os.path.isabs(working_dir):
-        working_dir = Path(working_dir)
-    else:
-        working_dir = config.path.parent / working_dir
 
-    import_module_from_path(working_dir, parent_package)
+    dir_to_import_from = copy(working_dir)
+    if os.path.isabs(dir_to_import_from):
+        dir_to_import_from = Path(dir_to_import_from)
+    else:
+        dir_to_import_from = config.path.parent / dir_to_import_from
+
+    import_module_from_path(dir_to_import_from, parent_package)
 
 
 # def import_device_definitions(file_folder: str, module_name: str):
