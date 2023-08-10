@@ -52,6 +52,8 @@ def parse_reroute_tasks() -> Dict[str, Type[BaseTask]]:
     from alab_management.device_view.device import _device_registry
     from alab_management.sample_view import SampleView
 
+    # return []
+
     load_definition()
 
     routes: Dict[str, BaseTask] = {}  # sample_position: Task
@@ -119,8 +121,6 @@ class TaskManager(RequestMixin):
         """
         Start the loop
         """
-        self._clean_up_tasks_from_previous_runs()
-
         while True:
             self._loop()
             time.sleep(2)
@@ -151,14 +151,16 @@ class TaskManager(RequestMixin):
             f"""
               Found {len(tasks_to_cancel)} dangling tasks leftover from previous alabos workers. These tasks were in an unknown state (RUNNING or CANCELLING) when the alabos workers were stopped. 
               
-              We will now cancel them and remove their physical components from the lab. We will go through each task one by one. A user request will appear on the alabos dashboard for each task. Please acknowledge each request to remove the samples from the lab. Once all tasks have been addressed, the alabos workers will begin to process new tasks. Thanks!
+              We will now cancel them and remove their physical components from the lab. We will go through each task one by one. A user request will appear on the alabos dashboard for each task. Please acknowledge each request to remove the samples from the lab. Once all tasks have been addressed, the alabos workers will begin to process new tasks. Lets begin:
               """
         )
         for i, task_entry in enumerate(tasks_to_cancel):
-            task_id = task_entry["_id"]
-            task_name = task_entry["type"]
+            task_id = task_entry["task_id"]
+            task_class = task_entry["type"]
+            task_name = task_class.__name__
+
             print(
-                f"({i+1}/{len(tasks_to_cancel)}) please clean up the {task_name} task on the ALabOS dashboard."
+                f"\n({i+1}/{len(tasks_to_cancel)}) please clean up task {task_name} ({task_id}) using the ALabOS dashboard..."
             )
 
             # puts a user request on the dashboard to remove all samples in this task from the physical lab, blocks until request is acknowledged. There may be a duplicate request on the dashboard if the task was already cancelled before the taskmanager was restarted. Acknowledging both should be fine.
@@ -166,6 +168,9 @@ class TaskManager(RequestMixin):
 
             # mark task as successfully cancelled
             self.task_view.update_status(task_id=task_id, status=TaskStatus.CANCELLED)
+            print("\t Task cancelled successfully.")
+
+        print("Cleanup is done, nice job. Lets get back to work!")
 
     def submit_ready_tasks(self):
         """

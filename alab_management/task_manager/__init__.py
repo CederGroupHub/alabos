@@ -1,2 +1,2 @@
-from .resource_requester import ResourceRequester
-from .task_manager import TaskManager
+## vv DO NOT IMPORT TaskManager here! Causes circular import issues.
+# from .task_manager.task_manager import TaskManager
