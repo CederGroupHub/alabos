@@ -38,7 +38,7 @@ def launch_experiment_manager():
 
 
 def launch_task_manager():
-    from ..task_manager import TaskManager
+    from ..task_manager.task_manager import TaskManager
     from ..utils.module_ops import load_definition
 
     load_definition()

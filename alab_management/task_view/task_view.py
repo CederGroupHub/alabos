@@ -122,6 +122,8 @@ class TaskView:
             task_id: the task_id of interest. If not found, will return ``None``
             encode: whether to encode the task using ``self.encode_task`` method
         """
+        task_id = ObjectId(task_id)
+
         result = self._task_collection.find_one({"_id": task_id})
 
         if result is None:
