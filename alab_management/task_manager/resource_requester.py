@@ -23,8 +23,10 @@ from .enums import RequestStatus, _EXTRA_REQUEST
 
 _SampleRequestDict = Dict[str, int]
 _ResourceRequestDict = Dict[
-    Optional[Union[Type[BaseDevice], str]], _SampleRequestDict
+    Optional[Union[Type[BaseDevice], str]], List[_SampleRequestDict]
 ]  # the raw request sent by task process
+
+
 
 
 class ResourcesRequest(BaseModel):

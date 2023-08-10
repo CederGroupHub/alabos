@@ -24,6 +24,9 @@ from alab_management.task_view.task_enums import TaskStatus
 from alab_management.utils.data_objects import get_collection
 from alab_management.utils.module_ops import load_definition
 from alab_management.device_view.device_view import DeviceView
+from alab_management.device_view.device import BaseDevice
+from alab_management.lab_view import LabView
+
 
 from .enums import _EXTRA_REQUEST, RequestStatus
 from .resource_requester import (
@@ -47,6 +50,8 @@ def parse_reroute_tasks() -> Dict[str, Type[BaseTask]]:
     from alab_management.device_view.device import _device_registry
     from alab_management.sample_view import SampleView
     from alab_management.task_view.task import _reroute_task_registry
+
+    # return []
 
     # return []
 
