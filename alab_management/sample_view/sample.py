@@ -3,7 +3,7 @@ The definition of the Sample and SamplePosition classes.
 """
 
 from dataclasses import dataclass, field
-from typing import Optional, ClassVar, Dict, Type
+from typing import Any, List, Optional, ClassVar, Dict, Type
 
 from bson import ObjectId
 
@@ -24,6 +24,8 @@ class Sample:
     task_id: Optional[ObjectId]
     name: str
     position: Optional[str]
+    metadata: Optional[Dict[str, Any]] = field(default_factory=dict)
+    tags: Optional[List[str]] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
