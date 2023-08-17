@@ -410,6 +410,8 @@ class SampleView:
             name=result["name"],
             position=result["position"],
             task_id=result["task_id"],
+            metadata=result.get("metadata", {}),
+            tags=result.get("tags", []),
         )
 
     def update_sample_task_id(self, sample_id: ObjectId, task_id: Optional[ObjectId]):
