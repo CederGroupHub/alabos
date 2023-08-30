@@ -346,13 +346,6 @@ class BaseTask(ABC):
         for sample in samples:
             sample.add_task(task_id=task_id)
 
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "type": self.__class__.__name__,
-            "labgraph_type": self.labgraph_type,
-            "parameters": self.subclass_kwargs,
-        }
-
 
 _task_registry: Dict[str, Type[BaseTask]] = {}
 
