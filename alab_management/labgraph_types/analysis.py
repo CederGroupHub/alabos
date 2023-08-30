@@ -2,12 +2,18 @@ from abc import abstractmethod
 from ..task_view import BaseTask, TaskPriority
 from typing import Optional, List, Union, TYPE_CHECKING
 from bson import ObjectId
+from labgraph import Analysis, AnalysisMethod
 
 if TYPE_CHECKING:
     from alab_management.lab_view import LabView
 
+placeholder_actor = AnalysisMethod(
+    name="Placeholder before execution", description="Placeholder before execution"
+)
+placeholder_actor.save()
 
-class BaseAnalysis(BaseTask):
+
+class BaseAnalysis(BaseTask, Analysis):
     def __init__(
         self,
         samples: Optional[List[str]] = None,
@@ -18,7 +24,8 @@ class BaseAnalysis(BaseTask):
         *args,
         **kwargs,
     ):
-        super().__init__(
+        BaseTask.__init__(
+            self,
             samples=samples,
             task_id=task_id,
             lab_view=lab_view,
@@ -28,40 +35,23 @@ class BaseAnalysis(BaseTask):
             **kwargs,
         )
 
-    def get_previous_measurements(
-        self, name: Optional[str] = None
-    ) -> List[Optional[dict]]:
-        """Get measurement(s) immediately upstream of this analysis. If name is specified, only return measurements with that name.
+        Analysis.__init__(
+            self,
+            name=self.__class__.__name__,
+            analysis_method=placeholder_actor,
+            description="An Analysis Task defined in ALabOS",  # TODO add description
+            *args,
+            **kwargs,
+        )
 
-        Args:
-            name (Optional[str], optional): Name of the measurement task. Defaults to None, in which case all measurements immediately upstream of this analysis are returned.
+    def to_dict(self):
+        d = BaseTask.to_dict(self)
+        d.update(Analysis.to_dict(self))
+        return d
 
-        Returns:
-            List[Optional[dict]]: Dictionary entries of the measurement tasks. Note the task results will be nested under the "result" key.
-        """
-
-        upstream_tasks = self.lab_view.get_previous_tasks()
-
-        return [
-            task
-            for task in upstream_tasks
-            if task["type"] == "Measurement" and (name is None or task["name"] == name)
-        ]
-
-    def get_previous_analyses(self, name: Optional[str] = None) -> List[Optional[dict]]:
-        """Get analysis(es) immediately upstream of this analysis. If name is specified, only return analyses with that name.
-
-        Args:
-            name (Optional[str], optional): Name of the analysis task. Defaults to None, in which case all analyses immediately upstream of this analysis are returned.
-
-        Returns:
-            List[Optional[dict]]: Dictionary entries of the analysis tasks. Note the task results will be nested under the "result" key.
-        """
-
-        upstream_tasks = self.lab_view.get_previous_tasks()
-
-        return [
-            task
-            for task in upstream_tasks
-            if task["type"] == "Analysis" and (name is None or task["name"] == name)
-        ]
+    # def to_dict(self):
+    #     return {
+    #         "type": self.__class__.__name__,
+    #         "labgraph_type": "Analysis",
+    #         "parameters": self.subclass_kwargs,
+    #     }

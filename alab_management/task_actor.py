@@ -66,7 +66,6 @@ def run_task(task_id_str: str):
         return
 
     try:
-        print(task_view._tasks_definition)
         task_entry = task_view.get_task(task_id, encode=True)
         task_Class = task_entry.pop("class_object")
         print(
