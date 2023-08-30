@@ -10,8 +10,12 @@ import pymongo
 from bson import ObjectId
 
 from .device import BaseDevice, get_all_devices
-from ..utils.data_objects import get_collection, get_lock
+
+from ..utils.data_objects import get_collection
 from alab_management.sample_view import SampleView, SamplePosition
+from labgraph import ActorView, Actor
+from labgraph.views.base import NotFoundInDatabaseError
+from labgraph.utils.data_objects import get_lock as get_labgraph_lock
 
 _DeviceType = TypeVar("_DeviceType", bound=BaseDevice)  # pylint: disable=invalid-name
 
@@ -53,10 +57,14 @@ class DeviceView:
         Args:
             connect_to_devices (bool, optional): If true, make a connection to all devices (serial, ip, etc.). If False, can still check Device status, but cannot execute methods on devices. Defaults to False.
         """
-        self._device_collection = get_collection("devices")
-        self._device_collection.create_index([("name", pymongo.HASHED)])
+
+        self.actor_view = ActorView()
+
+        self._device_collection = self.actor_view._collection
+        # self._device_collection = get_collection("devices")
+        # self._device_collection.create_index([("name", pymongo.HASHED)])
         self._device_list = get_all_devices()
-        self._lock = get_lock(self._device_collection.name)
+        self._lock = get_labgraph_lock(self._device_collection.name)
         self._sample_view = SampleView()
         self.__connected_to_devices = False
 
@@ -110,34 +118,63 @@ class DeviceView:
         Device name is a unique identifier for a device
         """
         for device in self._device_list.values():
-            if self._device_collection.find_one({"name": device.name}) is not None:
+            try:
+                actor = self.actor_view.get_by_name(device.name)
                 raise NameError(
                     f"Duplicated device name {device.name}, did you cleanup the database?"
                 )
-            self._device_collection.insert_one(
-                {
-                    "name": device.name,
-                    "description": device.description,
-                    "type": device.__class__.__name__,
-                    "sample_positions": [
+            except NotFoundInDatabaseError:
+                pass  # this is good, device does not yet exist in the database
+
+            self.actor_view.add(
+                Actor(
+                    name=device.name,
+                    description=device.description,
+                    tags=["device"],
+                    type=device.__class__.__name__,
+                    sample_positions=[
                         f"{device.name}{SamplePosition.SEPARATOR}{sample_pos.name}"
                         for sample_pos in device.sample_positions
                     ],
-                    "status": DeviceTaskStatus.IDLE.name,
-                    "pause_status": DevicePauseStatus.RELEASED.name,
-                    "task_id": None,
-                    "created_at": datetime.now(),
-                    "message": "",
-                    "last_updated": datetime.now(),
-                    "attributes": {},
-                }
+                    status=DeviceTaskStatus.IDLE.name,
+                    pause_status=DevicePauseStatus.RELEASED.name,
+                    task_id=None,
+                    created_at=datetime.now(),
+                    message="",
+                    last_updated=datetime.now(),
+                    attributes={},
+                )
             )
+            # if self._device_collection.find_one({"name": device.name}) is not None:
+            #     raise NameError(
+            #         f"Duplicated device name {device.name}, did you cleanup the database?"
+            #     )
+            # self._device_collection.insert_one(
+            #     {
+            #         "name": device.name,
+            #         "description": device.description,
+            #         "type": device.__class__.__name__,
+            #         "sample_positions": [
+            #             f"{device.name}{SamplePosition.SEPARATOR}{sample_pos.name}"
+            #             for sample_pos in device.sample_positions
+            #         ],
+            #         "status": DeviceTaskStatus.IDLE.name,
+            #         "pause_status": DevicePauseStatus.RELEASED.name,
+            #         "task_id": None,
+            #         "created_at": datetime.now(),
+            #         "message": "",
+            #         "last_updated": datetime.now(),
+            #         "attributes": {},
+            #     }
+            # )
 
     def get_all(self) -> List[Dict[str, Any]]:
         """
         Get all the devices in the database, used for dashboard
         """
-        return cast(List[Dict[str, Any]], self._device_collection.find())
+        devices = self.actor_view.get_by_tags(["device"])
+        return [device.to_dict() for device in devices]
+        # return cast(List[Dict[str, Any]], self._device_collection.find())
 
     def _clean_up_device_collection(self):
         """
@@ -211,14 +248,18 @@ class DeviceView:
             The entry need_release indicates whether a device needs to be released
             when __exit__ method is called in the ``DevicesLock``.
         """
-        if type_or_name == "type":
-            request_dict = {
-                "type": device_str,
-            }
-        elif type_or_name == "name":
-            request_dict = {"name": device_str}
 
-        if self._device_collection.find_one(request_dict) is None:
+        request_dict = {
+            "tags": {"$in": ["device"]},
+        }
+
+        if type_or_name == "type":
+            request_dict["type"] = device_str
+        else:
+            # implies type_or_name == "name":
+            request_dict["name"] = device_str
+
+        if self.actor_view._collection.find_one(request_dict) is None:
             raise ValueError(f"No such device of {type_or_name} {device_str}")
 
         request_dict.update(
@@ -243,14 +284,16 @@ class DeviceView:
                 "need_release": device_entry["task_id"]
                 != task_id,  # if device already held by this task, don't release with this request. Will be released by the older request.
             }
-            for device_entry in self._device_collection.find(request_dict)
+            for device_entry in self.actor_view._collection.find(request_dict)
         ]
 
     def get_device(self, device_name: str) -> Dict[str, Any]:
         """
         Get device by device name, if not found, raises ``ValueError``
         """
-        device_entry = self._device_collection.find_one({"name": device_name})
+        device_entry = self.actor_view._collection.find_one(
+            {"tags": {"$in": ["device"]}, "name": device_name}
+        )
         if device_entry is None:
             raise ValueError(f"Cannot find device with name: {device_name}")
         return device_entry
@@ -280,7 +323,9 @@ class DeviceView:
         """
         return [
             self._device_list[device["name"]]
-            for device in self._device_collection.find({"task_id": task_id})
+            for device in self.actor_view._collection.find(
+                {"tags": {"$in": ["device"]}, "task_id": task_id}
+            )
         ]
 
     def release_device(self, device_name: str):
@@ -307,8 +352,8 @@ class DeviceView:
                 }
             )
 
-        self._device_collection.update_one(
-            {"name": device_name},
+        self.actor_view._collection.update_one(
+            {"tags": {"$in": ["device"]}, "name": device_name},
             {"$set": update_dict},
         )
 
@@ -343,7 +388,9 @@ class DeviceView:
         else:
             device_name = device
 
-        device_entry = self._device_collection.find_one({"name": device_name})
+        device_entry = self.actor_view._collection.find_one(
+            {"tags": {"$in": ["device"]}, "name": device_name}
+        )
 
         if device_entry is None:
             raise ValueError(
@@ -370,7 +417,7 @@ class DeviceView:
             )
 
         self._device_collection.update_one(
-            {"name": device_name},
+            {"_id": device_entry["_id"]},
             {
                 "$set": {
                     "status": target_status.name,
@@ -419,7 +466,7 @@ class DeviceView:
         device = self.get_device(device_name=device_name)
 
         self._device_collection.update_one(
-            {"name": device_name}, {"$set": {"message": message}}
+            {"_id": device["_id"]}, {"$set": {"message": message}}
         )
 
     def get_message(self, device_name: str):
@@ -468,7 +515,7 @@ class DeviceView:
         device = self.get_device(device_name=device_name)
 
         self._device_collection.update_one(
-            {"name": device_name},
+            {"_id": device["_id"]},
             {
                 "$set": {
                     "attributes": attributes,
@@ -489,7 +536,7 @@ class DeviceView:
         attributes[attribute] = value
 
         self._device_collection.update_one(
-            {"name": device_name},
+            {"tags": {"$in": ["device"]}, "name": device_name},
             {
                 "$set": {
                     "attributes": attributes,
@@ -510,7 +557,7 @@ class DeviceView:
             new_pause_status = DevicePauseStatus.REQUESTED.name
 
         self._device_collection.update_one(
-            {"name": device_name},
+            {"_id": device["_id"]},
             {
                 "$set": {
                     "pause_status": new_pause_status,
@@ -539,7 +586,7 @@ class DeviceView:
             )
 
         self._device_collection.update_one(
-            {"name": device_name},
+            {"_id": device["_id"]},
             {"$set": update_dict},
         )
 

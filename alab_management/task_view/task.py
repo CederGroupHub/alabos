@@ -9,6 +9,7 @@ from alab_management.task_view.task_enums import TaskPriority
 from inspect import getfullargspec
 from alab_management.builders.samplebuilder import SampleBuilder
 from alab_management.builders.experimentbuilder import ExperimentBuilder
+from warnings import warn
 
 if TYPE_CHECKING:
     from alab_management.lab_view import LabView
@@ -48,8 +49,9 @@ class BaseTask(ABC):
         lab_view: Optional["LabView"] = None,
         priority: Optional[Union[TaskPriority, int]] = TaskPriority.NORMAL,
         simulation: bool = True,
+        no_parameters: bool = False,
         *args,
-        **kwargs,
+        **subclass_kwargs,
     ):
         """
         Args:
@@ -74,14 +76,19 @@ class BaseTask(ABC):
         if self.is_simulation:
             task_id = task_id or ObjectId()  # if None, generate an ID now
             self.task_id = task_id
-            current_frame = inspect.currentframe()
-            outer_frames = inspect.getouterframes(current_frame)
-            subclass_init_frame = outer_frames[1].frame
-            self.subclass_kwargs = {
-                key: val
-                for key, val in inspect.getargvalues(subclass_init_frame).locals.items()
-                if key not in ["self", "args", "kwargs", "__class__"]
-            }
+            # current_frame = inspect.currentframe()
+            # outer_frames = inspect.getouterframes(current_frame)
+            # subclass_init_frame = outer_frames[2].frame
+            # self.subclass_kwargs = {
+            #     key: val
+            #     for key, val in inspect.getargvalues(subclass_init_frame).locals.items()
+            #     if key not in ["self", "args", "kwargs", "__class__"]
+            # }
+            self.subclass_kwargs = subclass_kwargs
+            if len(subclass_kwargs) == 0 and not no_parameters:
+                warn(
+                    "BaseTask was instantiated with no subclass parameters were provided; this probably means you defined your Task incorrectly. Make sure all parameters are passed to the BaseTask constructor as keyword arguments, as they must be tracked for batching. If there are no parameters for your task, you can pass `no_parameters = True` to the BaseTask constructor to suppress this warning."
+                )
 
         else:
             if (task_id is None) or (lab_view is None) or (samples is None):
@@ -321,6 +328,14 @@ class BaseTask(ABC):
         )
         for sample in samples:
             sample.add_task(task_id=task_id)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "type": self.__class__.__name__,
+            "labgraph_type": None,
+            "parameters": self.subclass_kwargs,
+        }
+
 
 _task_registry: Dict[str, Type[BaseTask]] = {}
 
