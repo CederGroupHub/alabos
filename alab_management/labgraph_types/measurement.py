@@ -41,10 +41,10 @@ class BaseMeasurement(BaseTask, Measurement):
             parameters=kwargs,
         )
 
-    def to_dict(self):
-        d = BaseTask.to_dict(self)
-        d.update(Measurement.to_dict(self))
-        return d
+    # def to_dict(self):
+    #     d = BaseTask.to_dict(self)
+    #     d.update(Measurement.to_dict(self))
+    #     return d
 
     def __eq__(self, other):
         try:

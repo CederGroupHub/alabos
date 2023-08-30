@@ -62,10 +62,10 @@ class BaseAction(BaseTask, Action):
     # def create_materials(self) -> List[Material]:
     #     return []  # TODO
 
-    def to_dict(self):
-        d = BaseTask.to_dict(self)
-        d.update(Action.to_dict(self))
-        return d
+    # def to_dict(self):
+    #     d = BaseTask.to_dict(self)
+    #     d.update(Action.to_dict(self))
+    #     return d
 
     def __eq__(self, other):
         try:

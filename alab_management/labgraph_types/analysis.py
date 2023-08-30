@@ -39,10 +39,10 @@ class BaseAnalysis(BaseTask, Analysis):
             parameters=kwargs,
         )
 
-    def to_dict(self):
-        d = BaseTask.to_dict(self)
-        d.update(Analysis.to_dict(self))
-        return d
+    # def to_dict(self):
+    #     d = BaseTask.to_dict(self)
+    #     d.update(Analysis.to_dict(self))
+    #     return d
 
     def __eq__(self, other):
         try:
