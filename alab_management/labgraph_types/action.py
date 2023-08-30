@@ -32,17 +32,17 @@ class BaseAction(BaseTask, Action):
             lab_view=lab_view,
             priority=priority,
             simulation=simulation,
-            *args,
-            **kwargs,
+            labgraph_type="Action",
         )
 
         Action.__init__(
             self,
             name=self.__class__.__name__,
             actor=placeholder_actor,
-            description="An Action Task defined in ALabOS",  # TODO add description
-            *args,
-            **kwargs,
+            parameters=kwargs,
+            # description="An Action Task defined in ALabOS",  # TODO add description
+            # *args,
+            # **kwargs,
         )
 
     # def get_ingredients(self) -> List[Ingredient]:
@@ -67,9 +67,13 @@ class BaseAction(BaseTask, Action):
     # def create_materials(self) -> List[Material]:
     #     return []  # TODO
 
-    # def to_dict(self):
-    #     return {
-    #         "type": self.__class__.__name__,
-    #         "labgraph_type": "Action",
-    #         "parameters": self.subclass_kwargs,
-    #     }
+    def to_dict(self):
+        d = BaseTask.to_dict(self)
+        d.update(Action.to_dict(self))
+        return d
+
+    def __eq__(self, other):
+        try:
+            return self.to_dict() == other.to_dict()
+        except:
+            return False

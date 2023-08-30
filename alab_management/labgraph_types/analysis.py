@@ -31,17 +31,16 @@ class BaseAnalysis(BaseTask, Analysis):
             lab_view=lab_view,
             priority=priority,
             simulation=simulation,
-            *args,
-            **kwargs,
+            labgraph_type="Analysis",
+            # *args,
+            # **kwargs,
         )
 
         Analysis.__init__(
             self,
             name=self.__class__.__name__,
             analysis_method=placeholder_actor,
-            description="An Analysis Task defined in ALabOS",  # TODO add description
-            *args,
-            **kwargs,
+            parameters=kwargs,
         )
 
     def to_dict(self):
@@ -49,9 +48,8 @@ class BaseAnalysis(BaseTask, Analysis):
         d.update(Analysis.to_dict(self))
         return d
 
-    # def to_dict(self):
-    #     return {
-    #         "type": self.__class__.__name__,
-    #         "labgraph_type": "Analysis",
-    #         "parameters": self.subclass_kwargs,
-    #     }
+    def __eq__(self, other):
+        try:
+            return self.to_dict() == other.to_dict()
+        except:
+            return False
