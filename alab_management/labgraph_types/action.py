@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from ..task_view import BaseTask, TaskPriority, TaskView
+from ..task_view import BaseTask, TaskPriority, TaskStatus
 from typing import Optional, List, Union, TYPE_CHECKING
 from bson import ObjectId
 from labgraph import Ingredient, WholeIngredient, Material, Action, Actor
@@ -35,6 +35,7 @@ class BaseAction(BaseTask, Action):
             name=self.__class__.__name__,
             actor=placeholder_actor,
             parameters=kwargs,
+            status=TaskStatus.PLANNED.name
             # description="An Action Task defined in ALabOS",  # TODO add description
             # *args,
             # **kwargs,

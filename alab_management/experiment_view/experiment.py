@@ -44,6 +44,7 @@ class _Task(BaseModel):
     prev_tasks: List[int]
     samples: List[str]
     task_id: Optional[str] = None
+    labgraph_node_type: Optional[str] = None
 
     @validator("task_id")
     def if_provided_must_be_valid_objectid(cls, v):
@@ -55,6 +56,15 @@ class _Task(BaseModel):
         except:
             raise ValueError(
                 "An experiment received over the API contained a task with an invalid task_id. The task_id was set to {v}, which is not a valid ObjectId."
+            )
+
+    @validator("labgraph_node_type")
+    def if_provided_must_be_valid_node_type(cls, v):
+        if v is None:
+            return
+        if v not in ["Analysis", "Measurement", "Action"]:
+            raise ValueError(
+                "An experiment received over the API contained a task with an invalid labgraph_node_type. The labgraph_node_type was set to {v}, which is not a valid node type (Action, Measurement, Analysis, or None for tasks not logged to Labgraph)."
             )
 
 

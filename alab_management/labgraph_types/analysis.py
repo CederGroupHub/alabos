@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from ..task_view import BaseTask, TaskPriority
+from ..task_view import BaseTask, TaskPriority, TaskStatus
 from typing import Optional, List, Union, TYPE_CHECKING
 from bson import ObjectId
 from labgraph import Analysis
@@ -37,6 +37,7 @@ class BaseAnalysis(BaseTask, Analysis):
             name=self.__class__.__name__,
             actor=placeholder_actor,
             parameters=kwargs,
+            status=TaskStatus.PLANNED.name,
         )
 
     # def to_dict(self):

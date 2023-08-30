@@ -19,6 +19,7 @@ class TaskStatus(Enum):
     """
     The status of one task
 
+    - ``PLANNED``: the task has been created, but is not yet running in ALabOS
     - ``WAITING``: the task cannot start yet, waiting for preceding tasks to finish
     - ``INITIATED``: the task has been sent to task actor, but not yet running
     - ``PAUSED``: the task is paused by user
@@ -32,6 +33,7 @@ class TaskStatus(Enum):
     - ``CANCELLED``: the task has been cancelled and stopped.
     """
 
+    PLANNED = auto()
     WAITING = auto()
     INITIATED = auto()
     PAUSED = auto()

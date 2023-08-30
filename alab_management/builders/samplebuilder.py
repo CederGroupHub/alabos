@@ -6,74 +6,118 @@ if TYPE_CHECKING:
     from alab_management.builders.experimentbuilder import ExperimentBuilder
 
 
-class SampleBuilder:
-    """
-    This class is used to build a sample. Each sample has a name, tags, and metadata. Each sample also
-    has a list of tasks which are binded to it. Each sample is a node in a directed graph of tasks.
-    Each task has a list of samples which are binded to it. Each sample also has a list of tags and
-    metadata. The tags and metadata are used to filter the samples and tasks. The tags and metadata are
-    also used to group the samples and tasks.
-    """
+from alab_management import BaseTask, BaseAction, BaseAnalysis, BaseMeasurement
+from labgraph import Sample as LabgraphSample, Material, Measurement, Analysis,
+from labgraph.data.nodes import UnspecifiedAmountIngredient
 
-    def __init__(
-        self,
-        name: str,
-        experiment: "ExperimentBuilder",
-        tags: Optional[List[str]] = None,
-        **metadata,
-    ):
-        self.name = name
-        self._tasks: List[str] = []  # type: ignore
-        self.experiment = experiment
-        self.metadata = metadata
-        self._id = str(ObjectId())
-        self.tags = tags or []
+from typing import List
 
-    def add_task(
-        self,
-        task_id: str,
-    ) -> None:
-        """
-        This function adds a task to the sample. You should use this function only for special cases which
-        are not handled by the `add_sample` function.
-        Args:
-            task_id (str): The object id of the task in mongodb
-        Returns:
-            None.
-        """
-        if task_id not in self._tasks:
-            self._tasks.append(task_id)
+class SampleBuilder(LabgraphSample):
+    def __init__(self, name:str, *args, **kwargs):
+        self.current_material = None
+        super().__init__(name=name, *args, **kwargs)
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Return Sample as a dictionary. This looks like:
+    def add_action(self, task: BaseAction, input_materials: List[Material] = None, generated_materials: List[Material] = None):
+        if input_materials:
+            for material in input_materials:
+                task.add_ingredient(UnspecifiedAmountIngredient(material))
+        elif self.current_material:
+            task.add_ingredient(UnspecifiedAmountIngredient(material = self.current_material))
 
-        {
-            "_id": str(ObjectId),
-            "name": str,
-            "tags": List[str],
-            "metadata": Dict[str, Any],
-        }
+        if generated_materials:
+            for material in generated_materials:
+                task.add_generated_material(material)
+                self.add_node(material)
+            self.current_material = generated_materials[0]
+        else:
+            generated_material = task.make_generic_generated_material()
+            self.add_node(generated_material)
+            self.current_material = generated_material
 
-        Returns
-        -------
-            Dict[str, Any]: sample as a dictionary
-        """
-        return {
-            "_id": str(self._id),
-            "name": self.name,
-            "tags": self.tags,
-            "metadata": self.metadata,
-        }
+        self.add_node(task)
+        return task
 
-    @property
-    def tasks(self):
-        return self._tasks
 
-    def __eq__(self, other):
-        return self._id == other._id
+    def add_measurement(self, task: BaseMeasurement, input_material: Material = None):
+        material = None
+        
+        if input_material:
+            if input_material not in self.nodes:
+                raise ValueError(f"The input material must be a node in the labgraph sample! We do not yet contain ({input_material})")
+            material = input_material
+        elif self.current_material:
+            material = self.current_material
+        else:
+            raise ValueError("No material has been generated in this sample yet. To add a measurement, you either specify the input material or first add an action that generates a material!")
 
-    def __repr__(self):
-        return f"<Sample: {self.name}>"
+        task.material = material
+        self.add_node(task)
+        return task
+
+    def add_analysis(self, task: BaseAnalysis, input_measurements: List[Measurement] = None, input_analyses: List[Analysis] = None):
+        if not input_measurements and not input_analyses:
+            raise ValueError("You must specify either input measurements or input analyses!")
+        
+        for measurement in input_measurements or []:
+            task.add_measurement(measurement)
+        for analysis in input_analyses or []:
+            task.add_upstream_analysis(analysis)
+
+        self.add_node(task)
+
+        return task
+
+# class SampleBuilder:
+#     def __init__(
+#         self,
+#         name: str,
+#         experiment: "ExperimentBuilder",
+#         tags: Optional[List[str]] = None,
+#         **metadata,
+#     ):
+#         self.name = name
+#         self._tasks: List[str] = []  # type: ignore
+#         self.experiment = experiment
+#         self.metadata = metadata
+#         self._id = str(ObjectId())
+#         self.tags = tags or []
+
+#     def add_task(
+#         self,
+#         task_id: str,
+#     ) -> None:
+#         if task_id not in self._tasks:
+#             self._tasks.append(task_id)
+
+#     def to_dict(self) -> Dict[str, Any]:
+#         """Return Sample as a dictionary. This looks like:
+
+#         {
+#             "_id": str(ObjectId),
+#             "name": str,
+#             "tags": List[str],
+#             "metadata": Dict[str, Any],
+#         }
+
+#         Returns:
+#             Dict[str, Any]: sample as a dictionary
+#         """
+#         return {
+#             "_id": str(self._id),
+#             "name": self.name,
+#             "tags": self.tags,
+#             "metadata": self.metadata,
+#         }
+
+#     @property
+#     def tasks(self):
+#         return self._tasks
+
+#     def __eq__(self, other):
+#         return self._id == other._id
+
+#     def __repr__(self):
+#         return f"<Sample: {self.name}>"
 
 
 # ## Format checking for API inputs

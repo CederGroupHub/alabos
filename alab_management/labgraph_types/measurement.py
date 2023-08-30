@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from ..task_view import BaseTask, TaskPriority
+from ..task_view import BaseTask, TaskPriority, TaskStatus
 from typing import Optional, List, Union, TYPE_CHECKING
 from bson import ObjectId
 from labgraph import Measurement, Actor
@@ -39,6 +39,7 @@ class BaseMeasurement(BaseTask, Measurement):
             # parameters=self.subclass_kwargs,
             # *args,
             parameters=kwargs,
+            status=TaskStatus.PLANNED.name,
         )
 
     # def to_dict(self):
