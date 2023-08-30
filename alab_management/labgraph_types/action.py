@@ -3,15 +3,10 @@ from ..task_view import BaseTask, TaskPriority, TaskView
 from typing import Optional, List, Union, TYPE_CHECKING
 from bson import ObjectId
 from labgraph import Ingredient, WholeIngredient, Material, Action, Actor
+from .placeholders import placeholder_actor
 
 if TYPE_CHECKING:
     from alab_management.lab_view import LabView
-
-
-placeholder_actor = Actor(
-    name="Placeholder before execution", description="Placeholder before execution"
-)
-placeholder_actor.save()
 
 
 class BaseAction(BaseTask, Action):

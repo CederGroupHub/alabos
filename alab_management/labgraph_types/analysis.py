@@ -2,15 +2,11 @@ from abc import abstractmethod
 from ..task_view import BaseTask, TaskPriority
 from typing import Optional, List, Union, TYPE_CHECKING
 from bson import ObjectId
-from labgraph import Analysis, AnalysisMethod
+from labgraph import Analysis
+from .placeholders import placeholder_actor
 
 if TYPE_CHECKING:
     from alab_management.lab_view import LabView
-
-placeholder_actor = AnalysisMethod(
-    name="Placeholder before execution", description="Placeholder before execution"
-)
-placeholder_actor.save()
 
 
 class BaseAnalysis(BaseTask, Analysis):
@@ -39,7 +35,7 @@ class BaseAnalysis(BaseTask, Analysis):
         Analysis.__init__(
             self,
             name=self.__class__.__name__,
-            analysis_method=placeholder_actor,
+            actor=placeholder_actor,
             parameters=kwargs,
         )
 
