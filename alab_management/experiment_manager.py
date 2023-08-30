@@ -72,7 +72,7 @@ class ExperimentManager:
         samples: List[Dict[str, Any]] = experiment["samples"]
         tasks: List[Dict[str, Any]] = experiment["tasks"]
 
-        # check if there is any cycle in the graph
+        # check if there is any cycle in the graph #TODO already covered in Labgraph, marked for removal
         reversed_edges = {i: task["prev_tasks"] for i, task in enumerate(tasks)}
         task_graph = Graph(
             list(range(len(tasks))),
@@ -117,6 +117,7 @@ class ExperimentManager:
                     parameters=task["parameters"],
                     samples=samples,
                     task_id=task.get("task_id", None),
+                    labgraph_node_type=task["labgraph_node_type"],
                 )
             )
 

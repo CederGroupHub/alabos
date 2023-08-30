@@ -2,7 +2,7 @@ from abc import abstractmethod
 from ..task_view import BaseTask, TaskPriority, TaskStatus
 from typing import Optional, List, Union, TYPE_CHECKING
 from bson import ObjectId
-from labgraph import Ingredient, WholeIngredient, Material, Action, Actor
+from labgraph import Action
 from .placeholders import placeholder_actor
 
 if TYPE_CHECKING:
@@ -41,6 +41,8 @@ class BaseAction(BaseTask, Action):
             # **kwargs,
         )
 
+        self._id = self.task_id  # sync with BaseTask
+
     # def get_ingredients(self) -> List[Ingredient]:
     #     upstream_tasks = self.lab_view.get_previous_tasks()
     #     if len(upstream_tasks) == 0:
@@ -62,11 +64,6 @@ class BaseAction(BaseTask, Action):
 
     # def create_materials(self) -> List[Material]:
     #     return []  # TODO
-
-    # def to_dict(self):
-    #     d = BaseTask.to_dict(self)
-    #     d.update(Action.to_dict(self))
-    #     return d
 
     def __eq__(self, other):
         try:

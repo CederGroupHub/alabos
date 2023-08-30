@@ -80,7 +80,7 @@ class ExperimentBuilder:
             "metadata": self.contents,
             "samples": samples,
             "tasks": tasks,
-            "_id": self._id,
+            "_id": str(self._id),
         }
 
 

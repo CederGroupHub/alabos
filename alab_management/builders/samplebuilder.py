@@ -1,34 +1,31 @@
 from typing import Any, List, Dict, TYPE_CHECKING, Optional, Set, Union
-from pydantic import (
-    BaseModel,
-    constr,
-    validator,
-    Field,
-)  # pylint: disable=no-name-in-module
-
-from bson import ObjectId
-
-if TYPE_CHECKING:
-    from alab_management.builders.experimentbuilder import ExperimentBuilder
 
 
-from alab_management import BaseTask, BaseAction, BaseAnalysis, BaseMeasurement
-from labgraph import Sample as LabgraphSample, Material, Measurement, Analysis,
+from alab_management.labgraph_types import BaseAction, BaseAnalysis, BaseMeasurement
+from labgraph import Sample as LabgraphSample, Material, Measurement, Analysis
 from labgraph.data.nodes import UnspecifiedAmountIngredient
 
 from typing import List
 
+
 class SampleBuilder(LabgraphSample):
-    def __init__(self, name:str, *args, **kwargs):
+    def __init__(self, name: str, *args, **kwargs):
         self.current_material = None
         super().__init__(name=name, *args, **kwargs)
 
-    def add_action(self, task: BaseAction, input_materials: List[Material] = None, generated_materials: List[Material] = None):
+    def add_action(
+        self,
+        task: BaseAction,
+        input_materials: List[Material] = None,
+        generated_materials: List[Material] = None,
+    ):
         if input_materials:
             for material in input_materials:
                 task.add_ingredient(UnspecifiedAmountIngredient(material))
         elif self.current_material:
-            task.add_ingredient(UnspecifiedAmountIngredient(material = self.current_material))
+            task.add_ingredient(
+                UnspecifiedAmountIngredient(material=self.current_material)
+            )
 
         if generated_materials:
             for material in generated_materials:
@@ -43,27 +40,37 @@ class SampleBuilder(LabgraphSample):
         self.add_node(task)
         return task
 
-
     def add_measurement(self, task: BaseMeasurement, input_material: Material = None):
         material = None
-        
+
         if input_material:
             if input_material not in self.nodes:
-                raise ValueError(f"The input material must be a node in the labgraph sample! We do not yet contain ({input_material})")
+                raise ValueError(
+                    f"The input material must be a node in the labgraph sample! We do not yet contain ({input_material})"
+                )
             material = input_material
         elif self.current_material:
             material = self.current_material
         else:
-            raise ValueError("No material has been generated in this sample yet. To add a measurement, you either specify the input material or first add an action that generates a material!")
+            raise ValueError(
+                "No material has been generated in this sample yet. To add a measurement, you either specify the input material or first add an action that generates a material!"
+            )
 
         task.material = material
         self.add_node(task)
         return task
 
-    def add_analysis(self, task: BaseAnalysis, input_measurements: List[Measurement] = None, input_analyses: List[Analysis] = None):
+    def add_analysis(
+        self,
+        task: BaseAnalysis,
+        input_measurements: List[Measurement] = None,
+        input_analyses: List[Analysis] = None,
+    ):
         if not input_measurements and not input_analyses:
-            raise ValueError("You must specify either input measurements or input analyses!")
-        
+            raise ValueError(
+                "You must specify either input measurements or input analyses!"
+            )
+
         for measurement in input_measurements or []:
             task.add_measurement(measurement)
         for analysis in input_analyses or []:
@@ -72,6 +79,7 @@ class SampleBuilder(LabgraphSample):
         self.add_node(task)
 
         return task
+
 
 # class SampleBuilder:
 #     def __init__(
