@@ -3,7 +3,7 @@ Define the base class of task, which will be used for defining more tasks.
 """
 from abc import ABC, abstractmethod
 import inspect
-from typing import Dict, List, Type, TYPE_CHECKING, Optional, Union, Any
+from typing import Dict, List, Type, TYPE_CHECKING, Optional, Union, Any, Literal
 from bson.objectid import ObjectId
 from alab_management.task_view.task_enums import TaskPriority
 from inspect import getfullargspec
@@ -50,6 +50,7 @@ class BaseTask(ABC):
         priority: Optional[Union[TaskPriority, int]] = TaskPriority.NORMAL,
         simulation: bool = True,
         no_parameters: bool = False,
+        labgraph_type: Literal["Action", "Analysis", "Measurement", None] = None,
         *args,
         **subclass_kwargs,
     ):
@@ -71,7 +72,7 @@ class BaseTask(ABC):
               self.samples = [sample_1, sample_2, sample_3, sample_4]
         """
         self.__simulation = simulation
-
+        self.labgraph_type = labgraph_type
         self.__samples = samples or []
         if self.is_simulation:
             task_id = task_id or ObjectId()  # if None, generate an ID now
@@ -332,7 +333,7 @@ class BaseTask(ABC):
     def to_dict(self) -> Dict[str, Any]:
         return {
             "type": self.__class__.__name__,
-            "labgraph_type": None,
+            "labgraph_type": self.labgraph_type,
             "parameters": self.subclass_kwargs,
         }
 

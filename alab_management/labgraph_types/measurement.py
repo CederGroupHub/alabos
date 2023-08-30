@@ -31,22 +31,27 @@ class BaseMeasurement(BaseTask, Measurement):
             lab_view=lab_view,
             priority=priority,
             simulation=simulation,
-            *args,
-            **kwargs,
+            labgraph_type="Measurement",
+            # *args,
+            # **kwargs,
         )
 
         Measurement.__init__(
             self,
             name=self.__class__.__name__,
-            description="A Measurement Task defined in ALabOS",  # TODO add description
             actor=placeholder_actor,
-            *args,
-            **kwargs,
+            # parameters=self.subclass_kwargs,
+            # *args,
+            parameters=kwargs,
         )
 
-    # def to_dict(self):
-    #     return {
-    #         "type": self.__class__.__name__,
-    #         "labgraph_type": "Measurement",
-    #         "parameters": self.subclass_kwargs,
-    #     }
+    def to_dict(self):
+        d = BaseTask.to_dict(self)
+        d.update(Measurement.to_dict(self))
+        return d
+
+    def __eq__(self, other):
+        try:
+            return self.to_dict() == other.to_dict()
+        except:
+            return False
