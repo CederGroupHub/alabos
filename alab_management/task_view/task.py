@@ -7,8 +7,6 @@ from typing import Dict, List, Type, TYPE_CHECKING, Optional, Union, Any, Litera
 from bson.objectid import ObjectId
 from alab_management.task_view.task_enums import TaskPriority
 from inspect import getfullargspec
-from alab_management.builders.samplebuilder import SampleBuilder
-from alab_management.builders.experimentbuilder import ExperimentBuilder
 from warnings import warn
 
 if TYPE_CHECKING:
@@ -318,33 +316,6 @@ class BaseTask(ABC):
         if isinstance(samples, str):
             samples = [samples]
         return self.lab_view.run_subtask(task=task, samples=samples, **kwargs)
-
-    def add_to(
-        self,
-        samples: Union[SampleBuilder, List[SampleBuilder]],
-    ):
-        """Used to add basetask to a SampleBuilder's tasklist during Experiment construction.
-
-        Args:
-            samples (Union[SampleBuilder, List[SampleBuilder]]): One or more SampleBuilder's which will have this task appended to their tasklists.
-        """
-        if not self.__simulation:
-            raise RuntimeError(
-                "Cannot add a live BaseTask instance to a SampleBuilder. BaseTask must be instantiated with `simulation=True` to enable this method."
-            )
-        if isinstance(samples, SampleBuilder):
-            samples = [samples]
-
-        experiment: ExperimentBuilder = samples[0].experiment
-        task_id = str(ObjectId())
-        experiment.add_task(
-            task_id=task_id,
-            task_name=self.__class__.__name__,
-            task_kwargs=self.subclass_kwargs,
-            samples=samples,
-        )
-        for sample in samples:
-            sample.add_task(task_id=task_id)
 
 
 _task_registry: Dict[str, Type[BaseTask]] = {}

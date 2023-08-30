@@ -42,10 +42,7 @@ class BaseMeasurement(BaseTask, Measurement):
             status=TaskStatus.PLANNED.name,
         )
 
-    # def to_dict(self):
-    #     d = BaseTask.to_dict(self)
-    #     d.update(Measurement.to_dict(self))
-    #     return d
+        self._id = self.task_id  # sync with BaseTask
 
     def __eq__(self, other):
         try:

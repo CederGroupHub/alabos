@@ -40,10 +40,7 @@ class BaseAnalysis(BaseTask, Analysis):
             status=TaskStatus.PLANNED.name,
         )
 
-    # def to_dict(self):
-    #     d = BaseTask.to_dict(self)
-    #     d.update(Analysis.to_dict(self))
-    #     return d
+        self._id = self.task_id  # sync with BaseTask
 
     def __eq__(self, other):
         try:
