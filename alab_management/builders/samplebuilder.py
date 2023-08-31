@@ -15,15 +15,25 @@ from typing import List
 
 
 class SampleBuilder(LabgraphSample):
-    def __init__(self, name: str, *args, **kwargs):
+    def __init__(
+        self,
+        name: str,
+        description: str,
+        tags: Optional[List[str]] = None,
+        *args,
+        **kwargs,
+    ):
         self.current_material = None
-        super().__init__(name=name, *args, **kwargs)
+
+        super().__init__(
+            name=name, description=description, tags=tags or [], *args, **kwargs
+        )
 
     def add_action(
         self,
         task: BaseAction,
-        input_materials: List[Material] = None,
-        generated_materials: List[Material] = None,
+        input_materials: Optional[List[Material]] = None,
+        generated_materials: Optional[List[Material]] = None,
     ):
         if input_materials:
             for material in input_materials:
@@ -46,7 +56,9 @@ class SampleBuilder(LabgraphSample):
         self.add_node(task)
         return task
 
-    def add_measurement(self, task: BaseMeasurement, input_material: Material = None):
+    def add_measurement(
+        self, task: BaseMeasurement, input_material: Optional[Material] = None
+    ):
         material = None
 
         if input_material:
@@ -69,8 +81,8 @@ class SampleBuilder(LabgraphSample):
     def add_analysis(
         self,
         task: BaseAnalysis,
-        input_measurements: List[Measurement] = None,
-        input_analyses: List[Analysis] = None,
+        input_measurements: Optional[List[Measurement]] = None,
+        input_analyses: Optional[List[Analysis]] = None,
     ):
         if not input_measurements and not input_analyses:
             raise ValueError(
