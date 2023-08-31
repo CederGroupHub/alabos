@@ -10,7 +10,6 @@ Managing the workflows in the **A**utonomous **Lab**.
 ## Installation
 ### Prerequisites
 You must have access to at least one [MongoDB database](https://www.mongodb.com/) (locally or remotely).
-
 To install MongoDB locally, refer to [this](https://docs.mongodb.com/manual/installation/).
 
 You also need to install `Rabbitmq`.
