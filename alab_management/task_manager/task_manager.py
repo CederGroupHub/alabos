@@ -280,7 +280,13 @@ class TaskManager(RequestMixin):
         try:
             resource_request = request_entry["request"]
             task_id = request_entry["task_id"]
-
+            
+            task_status = self.task_view.get_task_status(task_id=task_id)
+            if task_status != TaskStatus.REQUESTING_RESOURCES:
+                # this implies the Task has been cancelled or errored somewhere else in the chain -- we should not allocate any resources to the broken Task.
+                self.update_request_status(request_id=resource_request["_id"], status=RequestStatus.CANCELED)
+                return
+                
             devices = self.device_view.request_devices(
                 task_id=task_id,
                 device_names_str=[
