@@ -76,9 +76,9 @@ def launch_lab(host, port, debug):
     ) = task_launcher_thread.daemon = device_manager_thread.daemon = True
 
     dashboard_thread.start()
+    device_manager_thread.start()
     experiment_manager_thread.start()
     task_launcher_thread.start()
-    device_manager_thread.start()
 
     while True:
         time.sleep(1)

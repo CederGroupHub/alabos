@@ -273,6 +273,14 @@ class DeviceView:
             target_status=DeviceTaskStatus.OCCUPIED,
             task_id=task_id,
         )
+        self.logger.system_log(
+            level="DEBUG",
+            log_data={
+                "logged_by": self.__class__.__name__,
+                "type": "OccupyingDevice",
+                "device_name": device.name if isinstance(device, BaseDevice) else device,
+            },
+        )
 
     def get_devices_by_task(self, task_id: Optional[ObjectId]) -> List[BaseDevice]:
         """
@@ -307,6 +315,14 @@ class DeviceView:
                 }
             )
 
+        self.logger.system_log(
+            level="DEBUG",
+            log_data={
+                "logged_by": self.__class__.__name__,
+                "type": "ReleasingDevice",
+                "device_name": device_name,
+            },
+        )
         self._device_collection.update_one(
             {"name": device_name},
             {"$set": update_dict},

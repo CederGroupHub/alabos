@@ -239,7 +239,7 @@ class ResourceRequester(RequestMixin):
 
         For the requests that are not fulfilled, they will be marked as CANCELED.
 
-        For the rewquest that have been fulfilled, they will be marked as NEED_RELEASE.
+        For the request that have been fulfilled, they will be marked as NEED_RELEASE.
         """
         self._request_collection.update_many(
             {

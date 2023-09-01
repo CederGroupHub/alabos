@@ -41,6 +41,13 @@ class ExperimentManager:
         """
         Start the event loop
         """
+        self.logger.system_log(
+            level="DEBUG",
+            log_data={
+                "logged_by": self.__class__.__name__,
+                "type": "ExperimentManagerStarted",
+            },
+        )
         while True:
             self._loop()
             time.sleep(2)

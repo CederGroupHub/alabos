@@ -121,6 +121,13 @@ class TaskManager(RequestMixin):
         """
         Start the loop
         """
+        self.logger.system_log(
+            level="DEBUG",
+            log_data={
+                "logged_by": self.__class__.__name__,
+                "type": "TaskManagerStarted",
+            },
+        )
         while True:
             self._loop()
             time.sleep(2)
@@ -140,9 +147,19 @@ class TaskManager(RequestMixin):
         This typically occurs if the taskmanager was exited using SIGTERM (ctrl-c), in which case some tasks may still be in the RUNNING or CANCELLING state. These will be set to CANCELLED now.
         """
 
-        tasks_to_cancel = self.task_view.get_tasks_by_status(TaskStatus.RUNNING)
-        tasks_to_cancel += self.task_view.get_tasks_by_status(TaskStatus.CANCELLING)
+        statuses_to_cancel = [TaskStatus.RUNNING, TaskStatus.CANCELLING, TaskStatus.REQUESTING_RESOURCES]
+        tasks_to_cancel = []
+        for status in statuses_to_cancel:
+            tasks_to_cancel += self.task_view.get_tasks_by_status(status)
+        
+        statuses_to_restart = [TaskStatus.INITIATED] 
+        tasks_to_restart = []
+        for status in statuses_to_restart:
+            tasks_to_restart += self.task_view.get_tasks_by_status(status)
 
+        for task in tasks_to_restart:
+            self.task_view.update_status(task_id=task["task_id"], status=TaskStatus.READY)
+ 
         if len(tasks_to_cancel) == 0:
             print("No dangling tasks found from previous alabos workers. Nice!")
             return
@@ -179,6 +196,14 @@ class TaskManager(RequestMixin):
         """
         ready_task_entries = self.task_view.get_ready_tasks()
         for task_entry in ready_task_entries:
+            self.logger.system_log(
+            level="DEBUG",
+            log_data={
+                "logged_by": self.__class__.__name__,
+                "type": "SendingTaskToActor",
+                "task_id": task_entry["task_id"],
+            },
+        )
             self.task_view.update_status(
                 task_id=task_entry["task_id"], status=TaskStatus.INITIATED
             )
@@ -194,6 +219,15 @@ class TaskManager(RequestMixin):
         )
 
         for task_entry in tasks_to_be_cancelled:
+            self.logger.system_log(
+            level="DEBUG",
+            log_data={
+                "logged_by": self.__class__.__name__,
+                "type": "CancellingTask",
+                "task_id": task_entry["task_id"],
+                "task_actor_id": task_entry.get("task_actor_id", None),
+            },
+        )
             message_id = task_entry.get("task_actor_id", None)
             if message_id is not None:
                 abort(message_id=message_id)

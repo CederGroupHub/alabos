@@ -97,22 +97,23 @@ def run_task(task_id_str: str):
         ) from exception
         # raise ParameterError(exception.args[0]) from exception
 
-    for sample in task_entry["samples"]:
-        sample_view.update_sample_task_id(
-            task_id=task_id, sample_id=sample["sample_id"]
-        )
 
-    logger.system_log(
-        level="INFO",
-        log_data={
-            "logged_by": "TaskActor",
-            "type": "TaskStart",
-            "task_id": task_id,
-            "task_type": task_type.__name__,
-        },
-    )
     try:
-        task_view.update_status(task_id=task_id, status=TaskStatus.RUNNING)
+        task_view.update_status(task_id=task_id, status=TaskStatus.RUNNING)   
+        
+        for sample in task_entry["samples"]:
+            sample_view.update_sample_task_id(
+                task_id=task_id, sample_id=sample["sample_id"]
+            )
+        logger.system_log(
+            level="INFO",
+            log_data={
+                "logged_by": "TaskActor",
+                "type": "TaskStart",
+                "task_id": task_id,
+                "task_type": task_type.__name__,
+            },
+        )
         result = task.run()
     except Abort:
         task_view.update_status(task_id=task_id, status=TaskStatus.CANCELLED)
