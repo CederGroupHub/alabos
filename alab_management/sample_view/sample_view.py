@@ -12,7 +12,9 @@ from bson import ObjectId
 from pydantic import BaseModel, conint
 
 from .sample import Sample, SamplePosition
-from ..utils.data_objects import get_collection, get_lock
+from ..utils.data_objects import get_collection, get_lock, get_labgraph_mongodb
+from labgraph import Sample as LabgraphSample
+from labgraph.views import SampleView as LabgraphSampleView
 
 
 class SamplePositionRequest(BaseModel):
@@ -60,13 +62,13 @@ class SamplePositionStatus(Enum):
     LOCKED = auto()
 
 
-class SampleView:
+class SampleView(LabgraphSampleView):
     """
     Sample view manages the samples and their positions
     """
 
     def __init__(self):
-        self._sample_collection = get_collection("samples")
+        super().__init__(labgraph_mongodb_instance=get_labgraph_mongodb())
         self._sample_positions_collection = get_collection("sample_positions")
         self._sample_positions_collection.create_index(
             [
@@ -347,49 +349,7 @@ class SampleView:
     #                 operations related to samples                 #
     #################################################################
 
-    def create_sample(
-        self,
-        name: str,
-        position: Optional[str] = None,
-        sample_id: Optional[ObjectId] = None,
-        tags: Optional[List[str]] = None,
-        metadata: Optional[Dict[str, Any]] = None,
-    ) -> ObjectId:
-        """
-        Create a sample and return its uid in the database
-
-        Samples with the same name can exist in the database
-        """
-        if position is not None and not self.is_unoccupied_position(position):
-            raise ValueError(f"Requested position ({position}) is not EMPTY.")
-
-        if re.search(r"[.$]", name) is not None:
-            raise ValueError(
-                f"Unsupported sample name: {name}. "
-                f"Sample name should not contain '.' or '$'"
-            )
-
-        entry = {
-            "name": name,
-            "tags": tags or [],
-            "metadata": metadata or {},
-            "position": position,
-            "task_id": None,
-            "created_at": datetime.now(),
-            "last_updated": datetime.now(),
-        }
-        if sample_id:
-            if not isinstance(sample_id, ObjectId):
-                raise ValueError(
-                    f"User provided {sample_id} as the sample_id -- this is not a valid ObjectId, so this sample cannot be created in the database!"
-                )
-            entry["_id"] = sample_id
-
-        result = self._sample_collection.insert_one(entry)
-
-        return cast(ObjectId, result.inserted_id)
-
-    def get_sample(self, sample_id: ObjectId) -> Sample:
+    def get_sample(self, sample_id: ObjectId) -> LabgraphSample:
         """Get a sample by its id
 
         Args:
@@ -401,46 +361,38 @@ class SampleView:
         Returns:
             Sample: Sample object for given id
         """
-        result = self._sample_collection.find_one({"_id": sample_id})
-        if result is None:
-            raise ValueError("No sample found with id: {}".format(sample_id))
-
-        return Sample(
-            sample_id=result["_id"],
-            name=result["name"],
-            position=result["position"],
-            task_id=result["task_id"],
-            metadata=result.get("metadata", {}),
-            tags=result.get("tags", []),
-        )
+        return self.get(id=sample_id)
 
     def update_sample_task_id(self, sample_id: ObjectId, task_id: Optional[ObjectId]):
         """
         Update the task id for a sample
         """
-        result = self._sample_collection.find_one({"_id": sample_id})
-        if result is None:
-            raise ValueError(f"Cannot find sample with id: {sample_id}")
-
-        self._sample_collection.update_one(
-            {"_id": sample_id},
-            {
-                "$set": {
-                    "task_id": task_id,
-                    "last_updated": datetime.now(),
-                }
-            },
-        )
+        sample = self.get_sample(sample_id)
+        sample["task_id"] = task_id
+        self.update(sample)
+        # self._sample_collection.update_one(
+        #     {"_id": sample_id},
+        #     {
+        #         "$set": {
+        #             "task_id": task_id,
+        #             "last_updated": datetime.now(),
+        #         }
+        #     },
+        # )
 
     def move_sample(self, sample_id: ObjectId, position: Optional[str]):
         """
         Update the sample with new position
         """
-        result = self._sample_collection.find_one({"_id": sample_id})
-        if result is None:
-            raise ValueError(f"Cannot find sample with id: {sample_id}")
 
-        if result["position"] == position:
+        # result = self._sample_collection.find_one({"_id": sample_id})
+        # if result is None:
+        #     raise ValueError(f"Cannot find sample with id: {sample_id}")
+        sample = self.get_sample(sample_id)
+
+        # if result["position"] == position:
+        #     return
+        if sample["position"] == position:
             return
 
         if position is not None and not self.is_unoccupied_position(position):
@@ -448,15 +400,17 @@ class SampleView:
                 f"Requested position ({position}) is not EMPTY or LOCKED by other task."
             )
 
-        self._sample_collection.update_one(
-            {"_id": sample_id},
-            {
-                "$set": {
-                    "position": position,
-                    "last_updated": datetime.now(),
-                }
-            },
-        )
+        sample["position"] = position
+        self.update(sample)
+        # self._sample_collection.update_one(
+        #     {"_id": sample_id},
+        #     {
+        #         "$set": {
+        #             "position": position,
+        #             "last_updated": datetime.now(),
+        #         }
+        #     },
+        # )
 
     def exists(self, sample_id: Union[ObjectId, str]) -> bool:
         """Check if a sample exists in the database
@@ -467,4 +421,5 @@ class SampleView:
         Returns:
             bool: True if sample exists in the database
         """
-        return self._sample_collection.count_documents({"_id": ObjectId(sample_id)}) > 0
+        #     return self._sample_collection.count_documents({"_id": ObjectId(sample_id)}) > 0
+        return self._exists(id=sample_id)

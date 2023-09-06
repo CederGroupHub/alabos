@@ -15,6 +15,7 @@ import json
 from enum import Enum
 from datetime import datetime
 from abc import ABC, abstractmethod
+from labgraph.utils import LabgraphMongoDB
 
 
 class _BaseGetMongoCollection(ABC):
@@ -57,6 +58,19 @@ class _GetMongoCollection(_BaseGetMongoCollection):
             password=db_config.get("password", ""),
         )
         cls.db = cls.client[AlabConfig()["general"]["name"]]  # type: ignore # pylint: disable=unsubscriptable-object
+
+
+def get_labgraph_mongodb():
+    from ..config import AlabConfig
+
+    db_config = AlabConfig()["mongodb"]
+    return LabgraphMongoDB(
+        host=db_config.get("host", None),
+        port=db_config.get("port", None),
+        db_name=AlabConfig()["general"]["name"],
+        username=db_config.get("username", ""),
+        password=db_config.get("password", ""),
+    )
 
 
 class _GetCompletedMongoCollection(_BaseGetMongoCollection):

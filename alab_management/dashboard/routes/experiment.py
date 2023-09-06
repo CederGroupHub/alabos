@@ -21,7 +21,8 @@ def submit_new_experiment():
     """
     data = request.get_json(force=True)  # type: ignore
     try:
-        experiment = InputExperiment(**data)  # type: ignore
+        # experiment = InputExperiment(**data)  # type: ignore #TODO validation
+        experiment = data
         exp_id = experiment_view.create_experiment(experiment)
     except ValidationError as exception:
         return {"status": "error", "errors": exception.errors()}, 400
@@ -67,14 +68,22 @@ def get_overview():
     experiment_ids = []
     for status in [ExperimentStatus.RUNNING, ExperimentStatus.COMPLETED]:
         experiments = experiment_view.get_experiments_with_status(status)
-        experiment_ids.extend(
-            [
-                str(exp["_id"])
-                for exp in experiments
-                if datetime.now() - exp.get("completed_at", datetime.now())
-                <= timedelta(days=1)
-            ]
-        )
+
+        for exp in experiments:
+            if "completed_at" in exp:
+                if datetime.now() - exp["completed_at"] >= timedelta(days=7):
+                    continue  # dont show experiments older than one week
+
+            experiment_ids.append(str(exp.id))
+
+        # experiment_ids.extend(
+        #     [
+        #         str(exp.id)
+        #         for exp in experiments
+        #         if datetime.now() - exp.get("completed_at", datetime.now())
+        #         <= timedelta(days=1)
+        #     ]
+        # )
 
     return {"status": "success", "experiment_ids": experiment_ids}
 
@@ -94,14 +103,14 @@ def query_experiment(exp_id: str):
     progress, error_state = get_experiment_progress(exp_id)
 
     return_dict = {
-        "id": str(experiment["_id"]),
-        "name": experiment["name"],
-        "submitted_at": experiment["submitted_at"],
+        "id": str(experiment.id),
+        "name": experiment.name,
+        "submitted_at": experiment.created_at,
         "samples": [
             {
                 "name": sample["name"],
                 "id": str(sample["sample_id"]),
-                "position": sample_view.get_sample(sample["sample_id"]).position,
+                "position": sample_view.get_sample(sample["sample_id"])["position"],
             }
             for sample in experiment["samples"]
         ],
@@ -119,7 +128,7 @@ def query_experiment(exp_id: str):
             {
                 "id": str(task["task_id"]),
                 "status": task_entry["status"],
-                "type": task["type"],
+                "type": task["name"],
                 "message": task_entry.get("message", ""),
             }
         )
