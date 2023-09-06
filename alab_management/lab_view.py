@@ -328,7 +328,7 @@ class LabView:
 
         all_samples = self.__task_entry["samples"]
         all_positions_with_samples = [
-            self._sample_view.get_sample(sample_entry["sample_id"]).position
+            self.get_sample(sample_entry["sample_id"])["position"]
             for sample_entry in all_samples
         ]
 

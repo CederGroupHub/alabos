@@ -213,7 +213,7 @@ class SampleView(LabgraphSampleView):
         if sample_position is None:
             raise ValueError(f"Invalid sample position: {position}")
 
-        sample = self._sample_collection.find_one({"position": position})
+        sample = self._collection.find_one({"contents.position": position})
         if sample is not None:
             return SamplePositionStatus.OCCUPIED, sample["task_id"]
 

@@ -196,7 +196,15 @@ class TaskView:
 
         if status is TaskStatus.COMPLETED:
             # try to figure out tasks that is READY
-            for next_task_id in task["next_tasks"]:
+            next_tasks = [
+                task["_id"]
+                for task in self._task_collection.find(
+                    {
+                        "prev_tasks": {"$in": [task_id]},
+                    }
+                )
+            ]
+            for next_task_id in next_tasks:
                 self.try_to_mark_task_ready(task_id=next_task_id)
             self._task_collection.update_one(
                 {"_id": task_id},
