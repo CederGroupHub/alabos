@@ -12,11 +12,10 @@ from alab_management.utils.data_objects import get_collection, get_lock
 
 from .device import BaseDevice, get_all_devices
 
-from ..utils.data_objects import get_collection
+from ..utils.data_objects import get_collection, get_lock
 from alab_management.sample_view import SampleView, SamplePosition
 from labgraph import ActorView, Actor
 from labgraph.views.base import NotFoundInDatabaseError
-from labgraph.utils.data_objects import get_lock as get_labgraph_lock
 
 _DeviceType = TypeVar("_DeviceType", bound=BaseDevice)  # pylint: disable=invalid-name
 
@@ -65,7 +64,7 @@ class DeviceView:
         # self._device_collection = get_collection("devices")
         # self._device_collection.create_index([("name", pymongo.HASHED)])
         self._device_list = get_all_devices()
-        self._lock = get_labgraph_lock(self._device_collection.name)
+        self._lock = get_lock(self._device_collection.name)
         self._sample_view = SampleView()
         self.__connected_to_devices = False
 

@@ -15,6 +15,8 @@ from alab_management.task_view.task import get_all_tasks, BaseTask
 from alab_management.utils.data_objects import get_collection, make_bsonable, get_lock
 from alab_management.task_view.task_enums import TaskStatus
 from .completed_task_view import CompletedTaskView
+from labgraph.data.nodes import BaseNode
+from labgraph import Action, Analysis, Measurement, Material
 
 completed_task_view = CompletedTaskView()
 
@@ -26,6 +28,7 @@ class TaskView:
 
     def __init__(self):
         self._task_collection = get_collection("tasks")
+
         self._lock = get_lock("tasks")
         self._tasks_definition: Dict[str, Type[BaseTask]] = get_all_tasks()
 
@@ -38,6 +41,7 @@ class TaskView:
         next_tasks: Optional[Union[ObjectId, List[ObjectId]]] = None,
         task_id: Optional[ObjectId] = None,
         labgraph_node_type: Optional[str] = None,
+        **extras,
     ) -> ObjectId:
         """
         Insert a task into the task collection
@@ -118,7 +122,7 @@ class TaskView:
         )
         return subtask_id
 
-    def get_task(self, task_id: ObjectId, encode: bool = False) -> Dict[str, Any]:
+    def get_task(self, task_id: ObjectId, encode: bool = False) -> BaseNode:
         """
         Get a task by its task id, which will return all the info stored in the database
 
@@ -127,7 +131,6 @@ class TaskView:
             encode: whether to encode the task using ``self.encode_task`` method
         """
         task_id = ObjectId(task_id)
-
         result = self._task_collection.find_one({"_id": task_id})
 
         if result is None:
@@ -174,6 +177,7 @@ class TaskView:
             task_id: the id of task to be updated
             status: the new status of the task
         """
+        task_id = ObjectId(task_id)
         task = self.get_task(task_id=task_id, encode=False)
 
         update_dict = {
