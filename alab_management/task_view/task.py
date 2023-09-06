@@ -13,6 +13,12 @@ if TYPE_CHECKING:
     from alab_management.lab_view import LabView
     from alab_management.device_view.device import BaseDevice
 
+from labgraph import Actor, ActorView
+from labgraph.errors import NotFoundInDatabaseError
+from alab_management.utils.data_objects import get_labgraph_mongodb
+from inspect import getfile
+from difflib import Differ
+
 
 class ResultPointer:
     def __init__(self, task_id: ObjectId, key: str):
@@ -312,13 +318,40 @@ _reroute_task_registry: List[
 ] = []
 
 
+actor_view = ActorView(labgraph_mongodb_instance=get_labgraph_mongodb())
+
+
 def add_task(task: Type[BaseTask]):
     """
     Register a task
     """
     if task.__name__ in _task_registry:
-        raise KeyError(f"Duplicated operation name {task.__name__}")
+        raise KeyError(f"Duplicated task name {task.__name__}")
     _task_registry[task.__name__] = task
+
+    # version update
+    filepath = getfile(task)
+    with open(filepath, "r") as f:
+        code_str = f.readlines()
+
+    try:
+        actor = actor_view.get_by_name(task.__name__)[0]
+    except NotFoundInDatabaseError:
+        actor = Actor(
+            name=task.__name__,
+            description="A task definition within ALabOS. This was added when calling the `add_task` function in initial lab setup.",
+            tags=["ALabOS", "task_definition"],
+            code=code_str,
+        )
+        actor_view.add(actor)
+
+    if actor["code"] != code_str:
+        actor.new_version(
+            description="Automated version update due to changes in the .py file containing this task definition.",
+            code_diff=list(Differ().compare(actor["code"], code_str)),
+        )
+        actor["code"] = code_str
+        actor_view.update(actor)
 
 
 def get_all_tasks() -> Dict[str, Type[BaseTask]]:

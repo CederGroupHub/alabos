@@ -25,6 +25,7 @@ from alab_management.task_view.task import BaseTask
 from alab_management.task_view.task_enums import TaskPriority, TaskStatus
 from alab_management.task_view.task_view import TaskView
 from alab_management.user_input import request_user_input
+from labgraph import Material
 
 
 class DeviceRunningException(Exception):

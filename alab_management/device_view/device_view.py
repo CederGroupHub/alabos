@@ -126,7 +126,7 @@ class DeviceView:
                 Actor(
                     name=device.name,
                     description=device.description,
-                    tags=["device"],
+                    tags=["ALabOS", "device"],
                     type=device.__class__.__name__,
                     sample_positions=[
                         f"{device.name}{SamplePosition.SEPARATOR}{sample_pos.name}"
