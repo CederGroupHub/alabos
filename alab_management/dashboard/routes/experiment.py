@@ -114,7 +114,7 @@ def query_experiment(exp_id: str):
     )
 
     for task in experiment["tasks"]:
-        task_entry = task_view.get_task(task["task_id"])
+        task_entry = task_view.get_task_node(task["task_id"])
         return_dict["tasks"].append(
             {
                 "id": str(task["task_id"]),
@@ -164,7 +164,7 @@ def query_experiment_results(exp_id: str):
         )
 
     for task in experiment["tasks"]:
-        task_entry = task_view.get_task(task["task_id"])
+        task_entry = task_view.get_task_node(task["task_id"])
         return_dict["tasks"].append(
             {
                 "type": task["type"],

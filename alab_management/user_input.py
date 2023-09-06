@@ -61,7 +61,7 @@ class UserInputView:
         if task_id is None and not maintenance:
             raise ValueError("task_id is required for non-maintenance requests!")
         if task_id is not None:
-            self._task_view.get_task(
+            self._task_view.get_task_node(
                 task_id=task_id
             )  # will throw error if task id does not exist
             experiment_id = self._experiment_view.get_experiment_by_task_id(task_id)[

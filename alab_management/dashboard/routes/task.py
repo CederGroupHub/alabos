@@ -28,7 +28,7 @@ def cancel_task(task_id: str):
 def get_task(task_id: str):
     try:
         task_id: ObjectId = ObjectId(task_id)
-        task_data = task_view.get_task(task_id)
+        task_data = task_view.get_task_node(task_id)
 
         return {"status": "success", "data": make_jsonable(task_data)}
 

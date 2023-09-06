@@ -67,7 +67,7 @@ class LabView:
 
     def __init__(self, task_id: ObjectId):
         self._task_view = TaskView()
-        self.__task_entry = self._task_view.get_task(
+        self.__task_entry = self._task_view.get_task_node(
             task_id=task_id
         )  # will throw error if task_id does not exist
         self._experiment_view = ExperimentView()
@@ -233,7 +233,7 @@ class LabView:
                 "Failed to create subtask {} within task {} ({})".format(
                     task,
                     task_id,
-                    self._task_view.get_task(task_id=task_id, encode=True)[
+                    self._task_view.get_task_node(task_id=task_id, encode=True)[
                         "class_object"
                     ],
                 )
@@ -357,7 +357,7 @@ class LabView:
             List[Dict[str, Any]]: list of previous tasks.
         """
         previous_tasks = [
-            self._task_view.get_task(task_id=task_id)
+            self._task_view.get_task_node(task_id=task_id)
             for task_id in self.__task_entry["prev_tasks"]
         ]
         return previous_tasks
@@ -370,7 +370,7 @@ class LabView:
             List[Dict[str, Any]]: list of next tasks.
         """
         next_tasks = [
-            self._task_view.get_task(task_id=task_id)
+            self._task_view.get_task_node(task_id=task_id)
             for task_id in self.__task_entry["next_tasks"]
         ]
         return next_tasks

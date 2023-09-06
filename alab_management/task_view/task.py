@@ -205,7 +205,7 @@ class BaseTask(ABC):
                     f"Invalid pointer: {pointer}. This value was expected to be a pointer to an existing task result, but an explicit value was passed instead! If you want to allow explicit values, set allow_explicit_value=True."
                 )
 
-        reference_task = self.lab_view._task_view.get_task(task_id=pointer.task_id)
+        reference_task = self.lab_view._task_view.get_task_node(task_id=pointer.task_id)
         return reference_task["result"][pointer.key]
 
     @priority.setter
