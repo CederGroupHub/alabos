@@ -173,28 +173,29 @@ class ExperimentManager:
                 for task_id in task_ids
             ):
                 self.experiment_view.update_experiment_status(
-                    exp_id=experiment["_id"], status=ExperimentStatus.COMPLETED
+                    exp_id=experiment.id, status=ExperimentStatus.COMPLETED
                 )
                 self.logger.system_log(
                     level="DEBUG",
                     log_data={
                         "logged_by": self.__class__.__name__,
                         "type": "ExperimentCompleted",
-                        "exp_id": experiment["_id"],
+                        "exp_id": experiment.id,
                     },
                 )
-                print(f"Experiment ({experiment['_id']}) completed.")
+                print(f"Experiment ({experiment.id}) completed.")
 
                 if self.__copy_to_completed_db:
-                    self.completed_experiment_view.save_experiment(experiment["_id"])
-                    print(
-                        f"Experiment ({experiment['_id']}) and associated samples/tasks were copied to the completed db."
-                    )
-                    self.logger.system_log(
-                        level="DEBUG",
-                        log_data={
-                            "logged_by": self.__class__.__name__,
-                            "type": "ExperimentSavedToCompletedDB",
-                            "exp_id": experiment["_id"],
-                        },
-                    )
+                    pass
+                    # self.completed_experiment_view.save_experiment(experiment.id)
+                    # print(
+                    #     f"Experiment ({experiment.id}) and associated samples/tasks were copied to the completed db."
+                    # )
+                    # self.logger.system_log(
+                    #     level="DEBUG",
+                    #     log_data={
+                    #         "logged_by": self.__class__.__name__,
+                    #         "type": "ExperimentSavedToCompletedDB",
+                    #         "exp_id": experiment.id,
+                    #     },
+                    # )

@@ -462,9 +462,10 @@ class TaskManager(RequestMixin):
                 )
             reroute_Task: BaseTask = _reroute_registry[fix_position]
 
-            sample_to_move = self.sample_view._sample_collection.find_one(
-                {"position": fix_position}
+            sample_to_move = self.sample_view.filter_one(
+                {"contents.position": fix_position}
             )  # DB_ACCESS_OUTSIDE_VIEW
+
             lab_view.logger.system_log(
                 level=LoggingLevel.INFO,
                 log_data={
@@ -476,7 +477,7 @@ class TaskManager(RequestMixin):
                     },
                     "reroute_target": {
                         "task_id": task_id,
-                        "sample_id": sample_to_move["_id"],
+                        "sample_id": sample_to_move.id,
                         "sample_position": fix_position,
                     },
                 },
@@ -485,6 +486,6 @@ class TaskManager(RequestMixin):
                 task_id=task_id,
                 lab_view=lab_view,
                 priority=TaskPriority.HIGH,
-                sample=sample_to_move["_id"],
+                sample=sample_to_move.id,
             ).run()
         self.__reroute_in_progress = False
