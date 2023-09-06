@@ -9,13 +9,14 @@ from typing import List, Any, Dict, Optional, cast, Union
 from bson import ObjectId
 
 from .experiment import InputExperiment
-from ..utils.data_objects import get_collection
+from ..utils.data_objects import get_collection, get_labgraph_mongodb
 from alab_management.sample_view import SampleView
 
 from alab_management.task_view import TaskView
 from .completed_experiment_view import CompletedExperimentView
 from labgraph import Sample as LabgraphSample
 from labgraph.errors import NotFoundInDatabaseError
+
 
 completed_experiment_view = CompletedExperimentView()
 
@@ -75,10 +76,12 @@ class ExperimentView:
         sample_name_to_id = {}
         for sample_dict in experiment["samples"]:
             sample_dict["node_contents"] = experiment["node_contents"]
-            sample = LabgraphSample.from_dict(sample_dict)
+            sample = LabgraphSample.from_dict(
+                sample_dict, labgraph_mongodb_instance=get_labgraph_mongodb()
+            )
             sample["experiment_info"] = {
                 "name": experiment["name"],
-                "experiment_id": experiment["_id"],
+                "experiment_id": ObjectId(experiment["_id"]),
                 "description": experiment["description"],
             }
             sample["position"] = None
@@ -104,7 +107,6 @@ class ExperimentView:
             ]
             task["task_id"] = ObjectId(task["task_id"])
             self.task_view.create_task(**task)
-
         now = datetime.now()
         exp_id = self._experiment_collection.insert_one(
             {
@@ -120,7 +122,6 @@ class ExperimentView:
                 "updated_at": now,
             }
         )
-
         return cast(ObjectId, exp_id.inserted_id)
 
     def get_experiments_with_status(
