@@ -66,8 +66,8 @@ def run_task(task_id_str: str):
         return
 
     try:
-        task_entry = task_view.get_task(task_id)
-        task_Class = task_view.encode_task(task_entry)
+        task_node = task_view.get_task_node(task_id)
+        task_Class = task_view.encode_task(task_node.name)
         print(
             f"{datetime.datetime.now()}: Worker picked up task {task_id} of type {task_Class.__name__}"
         )
@@ -83,12 +83,12 @@ def run_task(task_id_str: str):
         task: BaseTask = task_Class(
             # samples=task_entry["samples"],  # only sample names are sent
             samples=[
-                sample["name"] for sample in task_entry["samples"]
+                sample["name"] for sample in task_node["samples"]
             ],  # only the sample names are sent
             task_id=task_id,
             lab_view=lab_view,
             simulation=False,
-            **task_entry["parameters"],
+            **task_node["parameters"],
         )
     except Exception as exception:
         logger.system_log(
@@ -106,11 +106,11 @@ def run_task(task_id_str: str):
             "Failed to create task {} of type {}".format(task_id, str(task_Class))
         ) from exception
         # raise ParameterError(exception.args[0]) from exception
-
+    
     try:
         task_view.update_status(task_id=task_id, status=TaskStatus.RUNNING)
 
-        for sample in task_entry["samples"]:
+        for sample in task_node["samples"]:
             sample_view.update_sample_task_id(
                 task_id=task_id, sample_id=sample["sample_id"]
             )
@@ -202,7 +202,7 @@ def run_task(task_id_str: str):
             },
         )
     finally:
-        for sample in task_entry["samples"]:
+        for sample in task_node["samples"]:
             sample_view.update_sample_task_id(
                 task_id=None, sample_id=sample["sample_id"]
             )

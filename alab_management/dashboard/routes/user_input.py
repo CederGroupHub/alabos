@@ -24,16 +24,16 @@ def get_userinput_status():
                 task_name = "DeviceRequest"
             else:
                 task_id = str(request["request_context"]["task_id"])
-                task_name = task_view.get_task(request["request_context"]["task_id"])[
-                    "name"
-                ]
+                task_name = task_view.get_task_node(
+                    request["request_context"]["task_id"]
+                )["name"]
         else:
             eid = str(request["request_context"]["experiment_id"])
             experiment_name = experiment_view.get_experiment(
                 request["request_context"]["experiment_id"]
             )["name"]
             task_id = str(request["request_context"]["task_id"])
-            task_name = task_view.get_task(request["request_context"]["task_id"])[
+            task_name = task_view.get_task_node(request["request_context"]["task_id"])[
                 "name"
             ]
 

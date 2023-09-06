@@ -11,6 +11,7 @@ from bson import ObjectId
 from .experiment import InputExperiment
 from ..utils.data_objects import get_collection
 from alab_management.sample_view import SampleView
+
 from alab_management.task_view import TaskView
 from .completed_experiment_view import CompletedExperimentView
 from labgraph import Sample as LabgraphSample
@@ -93,7 +94,6 @@ class ExperimentView:
 
         self.sample_view.add_many_samples(sample_objects)
         for task in experiment["tasks"]:
-            print(task["task_id"])
             task["prev_tasks"] = [
                 ObjectId(experiment["tasks"][idx]["task_id"])
                 for idx in task["prev_tasks"]
@@ -102,6 +102,7 @@ class ExperimentView:
                 {"name": sample_name, "sample_id": sample_name_to_id[sample_name]}
                 for sample_name in task["samples"]
             ]
+            task["task_id"] = ObjectId(task["task_id"])
             self.task_view.create_task(**task)
 
         now = datetime.now()
