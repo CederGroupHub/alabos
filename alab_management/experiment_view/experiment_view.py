@@ -61,8 +61,16 @@ class ExperimentView:
         # create samples in Labgraph
         # create experiment in database
 
+        sample_name_to_id = {
+            sample["name"]: ObjectId(sample["_id"]) for sample in experiment["samples"]
+        }
+
         for task in experiment["tasks"]:
             task["task_id"] = ObjectId(task["task_id"])
+            task["samples"] = [
+                {"sample_id": sample_name_to_id[sample_name], "name": sample_name}
+                for sample_name in task["samples"]
+            ]
 
         umbrella_sample = LabgraphSample.from_dict(experiment)
         if self.sample_view.exists(umbrella_sample.id):

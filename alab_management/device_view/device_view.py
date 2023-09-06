@@ -58,10 +58,7 @@ class DeviceView:
         """
 
         self.actor_view = ActorView()
-
         self._device_collection = self.actor_view._collection
-        # self._device_collection = get_collection("devices")
-        # self._device_collection.create_index([("name", pymongo.HASHED)])
         self._device_list = get_all_devices()
         self._lock = get_lock(self._device_collection.name)
         self._sample_view = SampleView()
@@ -365,8 +362,10 @@ class DeviceView:
 
         samples_per_position = {}
         for position in device["sample_positions"]:
-            samples = _sample_collection.find({"position": {"$regex": position}})
-            samples_per_position[position] = [sample["_id"] for sample in samples]
+            samples = _sample_collection.find(
+                {"contents.position": {"$regex": position}}
+            )
+            samples_per_position[position] = [str(sample["_id"]) for sample in samples]
         return samples_per_position
 
     def _update_status(
@@ -464,6 +463,7 @@ class DeviceView:
         """
         device = self.get_device(device_name=device_name)
 
+        device["message_history"]
         self._device_collection.update_one(
             {"_id": device["_id"]}, {"$set": {"message": message}}
         )
