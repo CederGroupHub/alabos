@@ -68,16 +68,7 @@ def get_overview():
                 if datetime.now() - exp["completed_at"] >= timedelta(days=7):
                     continue  # dont show experiments older than one week
 
-            experiment_ids.append(str(exp.id))
-
-        # experiment_ids.extend(
-        #     [
-        #         str(exp.id)
-        #         for exp in experiments
-        #         if datetime.now() - exp.get("completed_at", datetime.now())
-        #         <= timedelta(days=1)
-        #     ]
-        # )
+            experiment_ids.append(str(exp["_id"]))
 
     return {"status": "success", "experiment_ids": experiment_ids}
 
@@ -95,9 +86,9 @@ def query_experiment(exp_id: str):
     progress, error_state = get_experiment_progress(exp_id)
 
     return_dict = {
-        "id": str(experiment.id),
-        "name": experiment.name,
-        "submitted_at": experiment.created_at,
+        "id": str(experiment["_id"]),
+        "name": experiment["name"],
+        "submitted_at": experiment["created_at"],
         "samples": [
             {
                 "name": sample["name"],

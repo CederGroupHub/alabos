@@ -62,7 +62,7 @@ def get_all_status():
     experiments = experiment_view.get_experiments_with_status("RUNNING")
     experiments = [
         {
-            "id": experiment.id,
+            "id": experiment["_id"],
             "name": experiment.name,
             "samples": experiment["samples"],
             "tasks": [

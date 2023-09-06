@@ -209,12 +209,12 @@ class TaskManager(RequestMixin):
                 },
             )
             self.task_view.update_status(
-                task_id=task_entry["task_id"], status=TaskStatus.INITIATED
+                task_id=task_entry["_id"], status=TaskStatus.INITIATED
             )
-            result = run_task.send(task_id_str=str(task_entry["task_id"]))
+            result = run_task.send(task_id_str=str(task_entry["_id"]))
             message_id = result.message_id
             self.task_view.set_task_actor_id(
-                task_id=task_entry["task_id"], message_id=message_id
+                task_id=task_entry["_id"], message_id=message_id
             )
 
     def handle_tasks_to_be_cancelled(self):

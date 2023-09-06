@@ -41,6 +41,7 @@ class ExperimentView:
     """
 
     def __init__(self):
+        self._experiment_collection = get_collection("experiments")
         self.sample_view = SampleView()
         self.task_view = TaskView()
 
@@ -56,28 +57,6 @@ class ExperimentView:
         """
         # NOTE: format of experiment dict is checked in api endpoint upstream of this method
 
-        # confirm that no task/sample id's already exist in the database. This is possible when users manually set these id's
-        # add tasks to Labgraph
-        # create samples in Labgraph
-        # create experiment in database
-
-        sample_name_to_id = {
-            sample["name"]: ObjectId(sample["_id"]) for sample in experiment["samples"]
-        }
-
-        for task in experiment["tasks"]:
-            task["task_id"] = ObjectId(task["task_id"])
-            task["samples"] = [
-                {"sample_id": sample_name_to_id[sample_name], "name": sample_name}
-                for sample_name in task["samples"]
-            ]
-
-        umbrella_sample = LabgraphSample.from_dict(experiment)
-        if self.sample_view.exists(umbrella_sample.id):
-            raise ValueError(
-                f"Experiment id {umbrella_sample.id} already exists in the database! Please use another id. This experiment was not submitted."
-            )
-
         if any(
             self.sample_view.exists(sample["_id"]) for sample in experiment["samples"]
         ):
@@ -85,73 +64,121 @@ class ExperimentView:
                 f"Sample id already exists in the database! Please use another id. This experiment was not submitted."
             )
 
-        umbrella_sample.tags.append("role::experiment")
-        umbrella_sample["tasks"] = experiment["tasks"]
-        umbrella_sample["samples"] = [
-            {"sample_id": ObjectId(s["_id"]), "name": s["name"]}
-            for s in experiment["samples"]
-        ]
-        umbrella_sample["status"]: ExperimentStatus = ExperimentStatus.PENDING.name
-        exp_id = self.sample_view.add(umbrella_sample)
+        if self._experiment_collection.count_documents({"_id": experiment["_id"]}) > 0:
+            raise ValueError(
+                f"Experiment id already exists in the database! Please use another id. This experiment was not submitted."
+            )
 
+        sample_objects = []
+        sample_list = []
+        sample_name_to_id = {}
         for sample_dict in experiment["samples"]:
             sample_dict["node_contents"] = experiment["node_contents"]
             sample = LabgraphSample.from_dict(sample_dict)
-            sample.tags.append("role::sample")
+            sample["experiment_info"] = {
+                "name": experiment["name"],
+                "experiment_id": experiment["_id"],
+                "description": experiment["description"],
+            }
             sample["position"] = None
             sample["task_id"] = None
-            self.sample_view.add(sample)
+            sample_objects.append(sample)
+            sample_list.append(
+                {
+                    "sample_id": sample.id,
+                    "name": sample.name,
+                }
+            )
+            sample_name_to_id[sample.name] = sample.id
 
+        self.sample_view.add_many_samples(sample_objects)
         for task in experiment["tasks"]:
-            task["task_id"] = ObjectId(task["task_id"])
-            # replace list index with objectid
+            print(task["task_id"])
             task["prev_tasks"] = [
-                experiment["tasks"][i]["task_id"] for i in task["prev_tasks"]
+                ObjectId(experiment["tasks"][idx]["task_id"])
+                for idx in task["prev_tasks"]
+            ]
+            task["samples"] = [
+                {"name": sample_name, "sample_id": sample_name_to_id[sample_name]}
+                for sample_name in task["samples"]
             ]
             self.task_view.create_task(**task)
 
-        return cast(ObjectId, exp_id)
+        now = datetime.now()
+        exp_id = self._experiment_collection.insert_one(
+            {
+                "_id": ObjectId(experiment["_id"]),
+                "name": experiment["name"],
+                "description": experiment["description"],
+                "tags": experiment["tags"],
+                "tasks": experiment["tasks"],
+                "samples": sample_list,
+                "metadata": experiment["contents"],
+                "status": ExperimentStatus.PENDING.name,
+                "created_at": now,
+                "updated_at": now,
+            }
+        )
+
+        return cast(ObjectId, exp_id.inserted_id)
 
     def get_experiments_with_status(
         self, status: Union[str, ExperimentStatus]
-    ) -> List[LabgraphSample]:
+    ) -> Dict[str, Any]:
         """
         Filter experiments by its status
         """
         if isinstance(status, str):
             status = ExperimentStatus[status]
 
-        return self.sample_view.filter(
-            {
-                "tags": {"$in": ["role::experiment"]},
-                "contents.status": status.name,
-            }
+        return cast(
+            List[Dict[str, Any]],
+            self._experiment_collection.find(
+                {
+                    "status": status.name,
+                }
+            ),
         )
-        # return cast(
-        #     List[Dict[str, Any]],
-        #     self._experiment_collection.find(
-        #         {
-        #             "status": status.name,
-        #         }
-        #     ),
-        # )
 
-    def get_experiment(self, exp_id: ObjectId) -> LabgraphSample:
+    def get_experiment(self, exp_id: ObjectId) -> Dict[str, Any]:
         """
         Get an experiment by its id
         """
-        experiment = self.sample_view.get(exp_id)
+        experiment = self._experiment_collection.find_one({"_id": ObjectId(exp_id)})
         return experiment
+
+    def start_experiment_for_the_first_time(self, exp_id: ObjectId):
+        """
+        Start an experiment for the first time. This method will update the status of
+        the experiment to ``RUNNING`` and set the ``started_at`` field to the current time.
+
+        This is made distinct from `self.update_experiment_status` in case we later implement experiment PAUSE/RUNNING.
+        """
+        self._experiment_collection.update_one(
+            {"_id": ObjectId(exp_id)},
+            {
+                "$set": {
+                    "status": ExperimentStatus.RUNNING.name,
+                    "started_at": datetime.now(),
+                }
+            },
+        )
 
     def update_experiment_status(self, exp_id: ObjectId, status: ExperimentStatus):
         """
         Update the status of an experiment
         """
-        experiment = self.get_experiment(exp_id=exp_id)
-        experiment["status"] = status.name
+        update_dict = {
+            "status": status.name,
+            "updated_at": datetime.now(),
+        }
+
         if status == ExperimentStatus.COMPLETED:
-            experiment["completed_at"] = datetime.now()
-        self.sample_view.update(experiment)
+            update_dict["completed_at"] = datetime.now()
+
+        self._experiment_collection.update_one(
+            {"_id": ObjectId(exp_id)}, {"$set": update_dict}
+        )
 
     def update_sample_task_id(
         self, exp_id, sample_ids: List[ObjectId], task_ids: List[ObjectId]
@@ -190,21 +217,16 @@ class ExperimentView:
         #     },
         # )
 
-    def get_experiment_by_task_id(self, task_id: ObjectId) -> LabgraphSample:
+    def get_experiment_by_task_id(self, task_id: ObjectId) -> Dict[str, Any]:
         """
         Get an experiment that contains a task with the given task_id
         """
-        try:
-            experiment = self.sample_view.filter(
-                {
-                    "tags": {"$in": ["role::experiment"]},
-                    "contents.tasks.task_id": task_id,
-                }
-            )[0]
-        except NotFoundInDatabaseError:
+        result = self._experiment_collection.find_one(
+            {"tasks.task_id": ObjectId(task_id)}
+        )
+        if result is None:
             raise ValueError(f"Cannot find experiment containing task_id: {task_id}")
-        # experiment = self._experiment_collection.find_one({"tasks.task_id": task_id})
-        return experiment
+        return result
 
     def get_experiment_by_sample_id(
         self, sample_id: ObjectId
@@ -212,10 +234,11 @@ class ExperimentView:
         """
         Get an experiment that contains a sample with the given sample_id
         """
-        experiment = self.sample_view.find_one(
-            {
-                "tags": {"$in": ["role::experiment"]},
-                "contents.samples.sample_id": sample_id,
-            }
+        result = self._experiment_collection.find_one(
+            {"samples.sample_id": ObjectId(sample_id)}
         )
-        return experiment
+        if result is None:
+            raise ValueError(
+                f"Cannot find experiment containing sample_id: {sample_id}"
+            )
+        return result

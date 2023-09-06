@@ -12,7 +12,7 @@ from alab_management.utils.data_objects import get_collection, get_lock
 
 from .device import BaseDevice, get_all_devices
 
-from ..utils.data_objects import get_collection, get_lock
+from ..utils.data_objects import get_collection, get_labgraph_mongodb, get_lock
 from alab_management.sample_view import SampleView, SamplePosition
 from labgraph import ActorView, Actor
 from labgraph.views.base import NotFoundInDatabaseError
@@ -58,7 +58,7 @@ class DeviceView:
               methods on devices. Defaults to False.
         """
 
-        self.actor_view = ActorView()
+        self.actor_view = ActorView(labgraph_mongodb_instance=get_labgraph_mongodb())
         self._device_collection = self.actor_view._collection
         self._device_list = get_all_devices()
         self._lock = get_lock(self._device_collection.name)
@@ -477,7 +477,6 @@ class DeviceView:
         """
         device = self.get_device(device_name=device_name)
 
-        device["message_history"]
         self._device_collection.update_one(
             {"_id": device["_id"]}, {"$set": {"message": message}}
         )

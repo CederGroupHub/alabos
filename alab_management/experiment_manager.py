@@ -72,13 +72,13 @@ class ExperimentManager:
                 log_data={
                     "logged_by": self.__class__.__name__,
                     "type": "ExperimentStarted",
-                    "exp_id": experiment.id,
+                    "exp_id": experiment["_id"],
                 },
             )
 
-    def _handle_pending_experiment(self, experiment: Sample):
-        # samples: List[Dict[str, Any]] = experiment["samples"]
-        # tasks: List[Dict[str, Any]] = experiment["tasks"]
+    def _handle_pending_experiment(self, experiment: dict):
+        samples: List[Dict[str, Any]] = experiment["samples"]
+        tasks: List[Dict[str, Any]] = experiment["tasks"]
 
         # # check if there is any cycle in the graph #TODO already covered in Labgraph, marked for removal
         # reversed_edges = {i: task["prev_tasks"] for i, task in enumerate(tasks)}
@@ -146,16 +146,9 @@ class ExperimentManager:
         for task in experiment["tasks"]:
             self.task_view.try_to_mark_task_ready(task["task_id"])
 
-        # write back the assign task & sample ids
-        # self.experiment_view.update_sample_task_id(
-        #     exp_id=experiment["_id"],
-        #     sample_ids=list(sample_ids.values()),
-        #     task_ids=task_ids,
-        # )
-
         # update the status of experiment to RUNNING (have handled by experiment manager)
-        self.experiment_view.update_experiment_status(
-            exp_id=experiment.id, status=ExperimentStatus.RUNNING
+        self.experiment_view.start_experiment_for_the_first_time(
+            exp_id=experiment["_id"]
         )
 
     def mark_completed_experiments(self):
@@ -180,29 +173,31 @@ class ExperimentManager:
                 for task_id in task_ids
             ):
                 self.experiment_view.update_experiment_status(
-                    exp_id=experiment.id, status=ExperimentStatus.COMPLETED
+                    exp_id=experiment["_id"], status=ExperimentStatus.COMPLETED
                 )
                 self.logger.system_log(
                     level="DEBUG",
                     log_data={
                         "logged_by": self.__class__.__name__,
                         "type": "ExperimentCompleted",
-                        "exp_id": experiment.id,
+                        "exp_id": experiment["_id"],
                     },
                 )
-                print(f"Experiment ({experiment.id}) completed.")
+                print(
+                    f"Experiment ({experiment['_id']}: {experiment['name']}) completed."
+                )
 
                 if self.__copy_to_completed_db:
                     pass
-                    # self.completed_experiment_view.save_experiment(experiment.id)
+                    # self.completed_experiment_view.save_experiment(experiment["_id"])
                     # print(
-                    #     f"Experiment ({experiment.id}) and associated samples/tasks were copied to the completed db."
+                    #     f"Experiment ({experiment["_id"]}) and associated samples/tasks were copied to the completed db."
                     # )
                     # self.logger.system_log(
                     #     level="DEBUG",
                     #     log_data={
                     #         "logged_by": self.__class__.__name__,
                     #         "type": "ExperimentSavedToCompletedDB",
-                    #         "exp_id": experiment.id,
+                    #         "exp_id": experiment["_id"],
                     #     },
                     # )
