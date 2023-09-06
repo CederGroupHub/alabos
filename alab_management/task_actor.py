@@ -57,8 +57,8 @@ def run_task(task_id_str: str):
         return
 
     try:
-        task_entry = task_view.get_task(task_id, encode=True)
-        task_Class = task_entry.pop("class_object")
+        task_entry = task_view.get_task(task_id)
+        task_Class = task_view.encode_task(task_entry)
         print(
             f"{datetime.datetime.now()}: Worker picked up task {task_id} of type {task_Class.__name__}"
         )
@@ -72,6 +72,7 @@ def run_task(task_id_str: str):
 
     try:
         task: BaseTask = task_Class(
+            # samples=task_entry["samples"],  # only sample names are sent
             samples=[
                 sample["name"] for sample in task_entry["samples"]
             ],  # only the sample names are sent

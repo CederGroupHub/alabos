@@ -361,7 +361,7 @@ class SampleView(LabgraphSampleView):
         Returns:
             Sample: Sample object for given id
         """
-        return self.get(id=sample_id)
+        return self.get_by_id(id=sample_id)
 
     def update_sample_task_id(self, sample_id: ObjectId, task_id: Optional[ObjectId]):
         """
