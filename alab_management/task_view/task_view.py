@@ -16,8 +16,11 @@ from alab_management.utils.data_objects import (
     get_lock,
 )
 from alab_management.task_view.task_enums import TaskStatus
+from alab_management.labgraph_types.placeholders import (
+    PLACEHOLDER_ACTOR_FOR_TASKS_THAT_HAVENT_RUN_YET,
+)
 from .completed_task_view import CompletedTaskView
-from labgraph.data.nodes import BaseNode
+from labgraph.data.nodes import BaseNode, BaseNodeWithActor
 from labgraph.views.base import BaseNodeView
 from labgraph import Action, Analysis, Measurement, Material, views
 from labgraph.errors import NotFoundInDatabaseError
@@ -171,7 +174,7 @@ class TaskView:
         # )
         return subtask_id
 
-    def get_task_node(self, task_id: ObjectId) -> BaseNode:
+    def get_task_node(self, task_id: ObjectId) -> BaseNodeWithActor:
         """
         Get a task by its task id, which will return all the info stored in the database
 
@@ -251,7 +254,7 @@ class TaskView:
             for next_task_id in self.get_next_task_ids(task_id):
                 self.try_to_mark_task_ready(task_id=next_task_id)
             self._task_collection.update_one(
-                {"_id": task_id}, {"$unset": {"task_actor_id":1}}
+                {"_id": task_id}, {"$unset": {"task_actor_id": 1}}
             )
             self._labgraph_view.update_node(node)
 
@@ -301,8 +304,24 @@ class TaskView:
                             task_id=next_task_id
                         )  # in case it was only waiting on task we just cancelled
             self._task_collection.update_one(
-                {"_id": task_id}, {"$unset": {"task_actor_id":1}}
+                {"_id": task_id}, {"$unset": {"task_actor_id": 1}}
             )
+
+    def add_actor_to_task(self, task_id: ObjectId, actor_name: str):
+        """
+        Add a task actor to the database
+        """
+        actor_view = views.ActorView(labgraph_mongodb_instance=get_labgraph_mongodb())
+        actor = actor_view.get_by_name(name=actor_name)[0]
+
+        task_node = self.get_task_node(task_id=task_id)
+
+        task_node.add_actor(actor=actor)
+        if PLACEHOLDER_ACTOR_FOR_TASKS_THAT_HAVENT_RUN_YET in task_node.actor:
+            task_node.remove_actor(
+                actor=PLACEHOLDER_ACTOR_FOR_TASKS_THAT_HAVENT_RUN_YET
+            )
+        self._labgraph_view.update_node(task_node)
 
     def update_subtask_status(
         self, task_id: ObjectId, subtask_id: ObjectId, status: TaskStatus

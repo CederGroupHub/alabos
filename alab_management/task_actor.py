@@ -124,6 +124,7 @@ def run_task(task_id_str: str):
                 "task_name": task_Class.__name__,
             },
         )
+        task_view.add_actor_to_task(task_id=task_id, actor_name=task_node.name)
         result = task.run()
     except Abort:
         task_view.update_status(task_id=task_id, status=TaskStatus.CANCELLED)
