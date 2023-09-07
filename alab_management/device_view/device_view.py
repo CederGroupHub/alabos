@@ -3,6 +3,8 @@
 from datetime import datetime
 from enum import Enum, auto, unique
 from typing import Any, Collection, Dict, List, Optional, TypeVar, Union, cast
+from difflib import Differ
+from inspect import getfile
 
 import pymongo
 from bson import ObjectId
@@ -69,7 +71,25 @@ class DeviceView:
             self.__connect_all_devices()
 
     def __connect_all_devices(self):
+        def put_code_updates_in_labgraph(device_name: str, device: BaseDevice):
+            actor: Actor = self.actor_view.get_by_name(device_name)[0]
+            filepath = getfile(device.__class__)
+            with open(filepath, "r") as f:
+                code_str = f.readlines()
+            if "code" in actor:
+                if code_str == actor["code"]:
+                    return  # no need to update
+                print(f"\tUpdating code for {device_name}")
+                actor.new_version(
+                    description="Automated version update due to changes in the .py file containing this device definition.",
+                    code_diff=list(Differ().compare(actor["code"], code_str)),
+                )
+
+            actor["code"] = code_str
+            self.actor_view.update(actor)
+
         for device_name, device in self._device_list.items():
+            put_code_updates_in_labgraph(device_name, device)
             try:
                 device._connect_wrapper()
             except Exception as e:
@@ -119,16 +139,23 @@ class DeviceView:
         Device name is a unique identifier for a device
         """
         for device in self._device_list.values():
+            actor = None
             try:
-                actor = self.actor_view.get_by_name(device.name)
-                raise NameError(
-                    f"Duplicated device name {device.name}, did you cleanup the database?"
-                )
+                actor: Actor = self.actor_view.get_by_name(device.name)[0]
+                if "task_id" in actor:  # implies actor is active in ALabOS
+                    raise NameError(
+                        f"Duplicated device name {device.name}, did you cleanup the database?"
+                    )
+                # if we got here, this is a leftover actor from a previous ALabOS setup. We can update this to make it active again
             except NotFoundInDatabaseError:
                 pass  # this is good, device does not yet exist in the database
 
-            self.actor_view.add(
-                Actor(
+            filepath = getfile(device.__class__)
+            with open(filepath, "r") as f:
+                code_str = f.readlines()
+
+            if actor is None:
+                actor = Actor(
                     name=device.name,
                     description=device.description,
                     tags=["ALabOS", "device"],
@@ -144,8 +171,25 @@ class DeviceView:
                     message="",
                     last_updated=datetime.now(),
                     attributes={},
+                    code=code_str,
                 )
-            )
+            else:
+                actor.description = device.description
+                actor["sample_positions"] = [
+                    f"{device.name}{SamplePosition.SEPARATOR}{sample_pos.name}"
+                    for sample_pos in device.sample_positions
+                ]
+                actor["status"] = DeviceTaskStatus.IDLE.name
+                actor["pause_status"] = DevicePauseStatus.RELEASED.name
+                actor["task_id"] = None
+                actor["message"] = ""
+                actor["attributes"] = {}
+                actor["code"] = code_str
+                actor.new_version(
+                    description="This device was re-included into an ALabOS configuration."
+                )
+
+            self.actor_view.add(actor, if_already_in_db="update")
             # if self._device_collection.find_one({"name": device.name}) is not None:
             #     raise NameError(
             #         f"Duplicated device name {device.name}, did you cleanup the database?"
@@ -178,8 +222,19 @@ class DeviceView:
         # return cast(List[Dict[str, Any]], self._device_collection.find())
 
     def _clean_up_device_collection(self):
-        """Clean up the device collection."""
-        self._device_collection.drop()
+        """
+        Clean up the device collection
+        """
+        for actor in self.actor_view.get_by_tags(["device", "ALabOS"]):
+            for key in ["pause_status", "task_id", "message", "attributes"]:
+                actor.pop(key, None)
+            actor[
+                "status"
+            ] = "This device is no longer in use by the current AlabOS session. We deleted the task_id, pause_status, message, and attributes fields to prevent confusion."
+            actor.new_version(
+                description="This device is now removed from an ALabOS configuration. We leave it here for historical purposes to support nodes in the LabGraph."
+            )
+            self.actor_view.update(actor)
 
     def request_devices(
         self,
