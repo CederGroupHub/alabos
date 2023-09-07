@@ -120,10 +120,15 @@ class LabView:
         devices = result["devices"]
         sample_positions = result["sample_positions"]
         request_id = result["request_id"]
+        for device_name in devices.values():
+            self._task_view.add_actor_to_task(
+                task_id=self.task_id, actor_name=device_name
+            )
         devices = {
             device_type: self._device_client.create_device_wrapper(device_name)
             for device_type, device_name in devices.items()
         }  # type: ignore
+
         self._task_view.update_status(task_id=self.task_id, status=TaskStatus.RUNNING)
         yield devices, sample_positions
 

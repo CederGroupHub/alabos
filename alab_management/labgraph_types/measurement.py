@@ -3,7 +3,7 @@ from ..task_view import BaseTask, TaskPriority, TaskStatus
 from typing import Optional, List, Union, TYPE_CHECKING
 from bson import ObjectId
 from labgraph import Measurement, Actor
-from .placeholders import placeholder_actor
+from .placeholders import PLACEHOLDER_ACTOR_FOR_TASKS_THAT_HAVENT_RUN_YET
 
 if TYPE_CHECKING:
     from alab_management.lab_view import LabView
@@ -35,7 +35,7 @@ class BaseMeasurement(BaseTask, Measurement):
         Measurement.__init__(
             self,
             name=self.__class__.__name__,
-            actor=placeholder_actor,
+            actor=PLACEHOLDER_ACTOR_FOR_TASKS_THAT_HAVENT_RUN_YET,
             # parameters=self.subclass_kwargs,
             # *args,
             parameters=kwargs,

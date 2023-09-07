@@ -1,7 +1,9 @@
 from typing import Any, List, Dict, TYPE_CHECKING, Optional, Set, Union
 
 
-from alab_management.labgraph_types import BaseAction, BaseAnalysis, BaseMeasurement
+from alab_management.labgraph_types.action import BaseAction
+from alab_management.labgraph_types.analysis import BaseAnalysis
+from alab_management.labgraph_types.measurement import BaseMeasurement
 from labgraph import Sample as LabgraphSample, Material, Measurement, Analysis
 from labgraph.data.nodes import UnspecifiedAmountIngredient
 
