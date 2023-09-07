@@ -251,7 +251,7 @@ class TaskView:
             for next_task_id in self.get_next_task_ids(task_id):
                 self.try_to_mark_task_ready(task_id=next_task_id)
             self._task_collection.update_one(
-                {"_id": task_id}, {"$pull": "task_actor_id"}
+                {"_id": task_id}, {"$unset": {"task_actor_id":1}}
             )
             self._labgraph_view.update_node(node)
 
@@ -301,7 +301,7 @@ class TaskView:
                             task_id=next_task_id
                         )  # in case it was only waiting on task we just cancelled
             self._task_collection.update_one(
-                {"_id": task_id}, {"$pull": "task_actor_id"}
+                {"_id": task_id}, {"$unset": {"task_actor_id":1}}
             )
 
     def update_subtask_status(

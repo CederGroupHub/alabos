@@ -5,9 +5,13 @@ from .samplebuilder import SampleBuilder
 
 
 from typing import Optional, List
-from labgraph import Material, Sample as LabgraphSample
-from labgraph.utils.plot import plot_multiple_samples
+from labgraph import Action, Measurement, Analysis, Material, Sample as LabgraphSample
+from labgraph.utils.plot import plot_graph
 from bson import ObjectId
+import networkx as nx
+import itertools as itt
+from labgraph.data.nodes import BaseNode
+from .batching import batch_graphs
 
 
 class ExperimentBuilder:
@@ -19,7 +23,7 @@ class ExperimentBuilder:
       name (str): The name of the experiment.
     """
 
-    def __init__(self, name: str, description: str, tags: Optional[List[str]] = None, **contents):
+    def __init__(self, name: str, description: str, tags: Optional[List[str]] = None, autobatching: bool = False, **contents):
         """
         Args:
           name (str): The name of the experiment.
@@ -34,7 +38,7 @@ class ExperimentBuilder:
 
         self.contents = contents
         self.description = description
-        self.samples = []
+        self._samples = []
         self._id = ObjectId()
 
     def add_sample(
@@ -48,7 +52,11 @@ class ExperimentBuilder:
           name (str): The name of the sample. This must be unique within this ExperimentBuilder.
           tags (List[str]): A list of tags to attach to the sample.
           **metadata: Any additional keyword arguments will be attached to this sample as metadata.
-
+        self.autobatching = autobatching
+        self.__graph_memo = {
+            "graph": None,
+            "tasks_during_last_build": [],
+        }
         Returns
         -------
           A SampleBuilder object. This can be used to add tasks to the sample.
@@ -60,6 +68,10 @@ class ExperimentBuilder:
         # TODO ensure that the metadata is json/bson serializable
         self._samples.append(sample)
         return sample
+
+    def plot(self, ax=None):
+        plot_graph(self.graph, ax=ax)
+
 
     def add_task(
         self,
@@ -113,6 +125,110 @@ class ExperimentBuilder:
 
         return umbrella_sample
 
+    @property
+    def graph(self) -> nx.DiGraph:
+        """Represent this batch + samples as a directed graph.
+
+        Returns:
+            nx.DiGraph: Graph representation of this batch and its samples
+        """
+
+        def is_prebatched(graphs) -> bool:
+            """Check if any tasks are already batched to some extent. We do not support autobatching if tasks are already partially batched.
+
+            Args:
+                graphs (List[nx.DiGraph]): Labgraphs of each sample
+
+            Returns:
+                bool: True if some samples contain the same Task nodes already
+            """
+            task_nodes_per_graph = [
+                set(
+                    node_id
+                    for node_id, contents in graph.nodes(data=True)
+                    if contents["type"] != "Material"
+                )
+                for graph in graphs
+            ]
+            for taskset1, taskset2 in itt.combinations(task_nodes_per_graph, 2):
+                if taskset1.intersection(taskset2):
+                    return True
+            return False
+
+        def build_sample_graph_with_params(sample) -> nx.DiGraph:
+            graph = sample.graph
+            for node in sample.nodes:
+                node: BaseNode
+                graph.nodes[node.id]["samples"] = [sample.id]
+                if "parameters" in node:
+                    graph.nodes[node.id]["contents"]["parameters"] = node["parameters"]
+                    graph.nodes[node.id]["BaseTask"] = node
+
+            return graph
+
+        graphs = [build_sample_graph_with_params(sample) for sample in self._samples]
+
+        if self.autobatching:
+            if is_prebatched(graphs):
+                raise ValueError(
+                    "Cannot autobatch if some samples are already prebatched (ie they share the same Task nodes as defined by the user)."
+                )
+            graphs = self.__build_graph(graphs)
+
+        if len(graphs) == 0:
+            return nx.DiGraph()
+        total_graph = graphs[0]
+        for g in graphs[1:]:
+            total_graph = nx.compose(total_graph, g)
+        return total_graph
+
+    @property
+    def samples(self) -> List[LabgraphSample]:
+        if not self.autobatching:
+            return self._samples
+        nodes = []
+        key = {
+            "Action": Action,
+            "Analysis": Analysis,
+            "Material": Material,
+            "Measurement": Measurement,
+        }
+        for node_id in self.graph.nodes:
+            entry = self.graph.nodes[node_id]
+            entry.pop("BaseTask", None)
+            NodeClass = key[entry["type"]]
+            nodes.append(NodeClass.from_dict(entry))
+
+        batched_samples = [
+            LabgraphSample(
+                name=s.name,
+                description=s.description,
+                nodes=[n for n in nodes if s.id in n["samples"]],
+                tags=s.tags,
+                **s._contents,
+            )
+            for s in self._samples
+        ]
+        return batched_samples
+
+    def __build_graph(self, graphs: List[nx.DiGraph]) -> nx.DiGraph:
+        """A memoization wrapper around batch_graphs(). This function is called by the self.graph property, and will only recompute the graph if the tasks have changed."""
+        hash_str = ""
+        for graph in graphs:
+            for node_id, data in graph.nodes(data=True):
+                if data["type"] != "Material":
+                    hash_str += str(node_id)
+
+        task_hash = hash(hash_str)
+        if (self.__graph_memo["graph"] is None) or (
+            task_hash != self.__graph_memo["task_hash"]
+        ):
+            # first build or tasks changed
+            self.__graph_memo["graph"] = batch_graphs(graphs)
+            self.__graph_memo["task_hash"] = task_hash
+
+        return self.__graph_memo["graph"]
+
     def to_dict(self) -> dict:
         samples = []
         tasks = []
@@ -136,7 +252,7 @@ class ExperimentBuilder:
                     k: task_entry[k] for k in ["task_id", "name", "parameters"]
                 }
                 task_entry["samples"] = []
-                task_entry["labgraph_node_type"] = node.labgraph_type
+                task_entry["labgraph_node_type"] = node.labgraph_node_type
 
                 task_entry["prev_tasks"] = set()
                 if node.id not in task_ids:
@@ -184,53 +300,53 @@ class ExperimentBuilder:
             if fmt == "json":
                 import json
 
-    def plot(self, ax=None) -> None:
-        """
-        This function plots the directed graph of tasks.
-        Args:
-            ax (matplotlib.axes.Axes): The axes on which to plot the graph.
+    # def plot(self, ax=None) -> None:
+    #     """
+    #     This function plots the directed graph of tasks.
+    #     Args:
+    #         ax (matplotlib.axes.Axes): The axes on which to plot the graph.
 
-        Returns
-        -------
-            None.
-        """
-        import networkx as nx
-        import matplotlib.pyplot as plt
+    #     Returns
+    #     -------
+    #         None.
+    #     """
+    #     import networkx as nx
+    #     import matplotlib.pyplot as plt
 
-        if ax is None:
-            _, ax = plt.subplots(figsize=(8, 6))
+    #     if ax is None:
+    #         _, ax = plt.subplots(figsize=(8, 6))
 
-        task_list = self.to_dict()["tasks"]
+    #     task_list = self.to_dict()["tasks"]
 
-        unique_tasks = set([task["type"] for task in task_list])
-        color_key = {
-            nodetype: plt.cm.tab10(i) for i, nodetype in enumerate(unique_tasks)
-        }
-        node_colors = []
-        node_labels = {}
-        for task in task_list:
-            node_colors.append(color_key[task["type"]])
-            node_labels[task["_id"]] = f"{task['type']} ({len(task['samples'])})"
+    #     unique_tasks = set([task["type"] for task in task_list])
+    #     color_key = {
+    #         nodetype: plt.cm.tab10(i) for i, nodetype in enumerate(unique_tasks)
+    #     }
+    #     node_colors = []
+    #     node_labels = {}
+    #     for task in task_list:
+    #         node_colors.append(color_key[task["type"]])
+    #         node_labels[task["_id"]] = f"{task['type']} ({len(task['samples'])})"
 
-        g = nx.DiGraph()
-        for task in task_list:
-            g.add_node(task["_id"], name=task["type"], samples=len(task["samples"]))
-            for prev in task["prev_tasks"]:
-                g.add_edge(task_list[prev]["_id"], task["_id"])
+    #     g = nx.DiGraph()
+    #     for task in task_list:
+    #         g.add_node(task["_id"], name=task["type"], samples=len(task["samples"]))
+    #         for prev in task["prev_tasks"]:
+    #             g.add_edge(task_list[prev]["_id"], task["_id"])
 
-        try:
-            pos = nx.nx_agraph.graphviz_layout(g, prog="dot")
-        except:
-            pos = nx.spring_layout(g)
+    #     try:
+    #         pos = nx.nx_agraph.graphviz_layout(g, prog="dot")
+    #     except:
+    #         pos = nx.spring_layout(g)
 
-        nx.draw(
-            g,
-            with_labels=True,
-            node_color=node_colors,
-            labels=node_labels,
-            pos=pos,
-            ax=ax,
-        )
+    #     nx.draw(
+    #         g,
+    #         with_labels=True,
+    #         node_color=node_colors,
+    #         labels=node_labels,
+    #         pos=pos,
+    #         ax=ax,
+    #     )
 
     def __repr__(self):
         return f"<ExperimentBuilder: {self.name}>"

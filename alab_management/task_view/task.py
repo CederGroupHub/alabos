@@ -46,6 +46,9 @@ class BaseTask(ABC):
     All the tasks should inherit from this class.
     """
 
+    BATCH_CAPACITY = 1  # default to no batching
+    BATCH_SEQUENCE = 999  # lowest priority is batched first
+
     def __init__(
         self,
         samples: Optional[List[Union[str, ObjectId]]] = None,
@@ -322,6 +325,32 @@ class BaseTask(ABC):
         if isinstance(samples, str):
             samples = [samples]
         return self.lab_view.run_subtask(task=task, samples=samples, **kwargs)
+
+    def _batch_merge_allowed_wrapper(self, other: "BaseTask"):
+        """This function does some default logic for batching before considering the task contents"""
+
+        if not isinstance(other, self.__class__):
+            return False  # can only compare the same task
+        return self.batch_merge_allowed(other=other)
+
+    def batch_merge_allowed(self, other: "BaseTask") -> bool:
+        """Determine whether this task can be merged with another task of the same type!
+
+        Args:
+            other (BaseTask): Another task of the same type to try merging with
+
+        Returns:
+            bool: True if these tasks can be merged, otherwise False
+        """
+        return False
+
+    def batch_merge_priority(self, other: "BaseTask") -> float:
+        """Function evaluated to decide how similar two tasks are (Higher value = more similar). We will sort nodes by similarity to prioritize merges between similar nodes. Defaults to None, implies that nodes are equally similar."""
+        return 0
+
+    def batch_merge_parameters(self, other: "BaseTask") -> dict:
+        """Function evaluated to decide how to merge parameters from two tasks. Should return keyword arguments to be passed to the constructor of the merged task."""
+        raise NotImplementedError
 
 
 _task_registry: Dict[str, Type[BaseTask]] = {}

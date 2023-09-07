@@ -41,6 +41,7 @@ class BaseAction(BaseTask, Action):
             # **kwargs,
         )
 
+        self["batch_capacity"] = self.BATCH_CAPACITY
         self._id = self.task_id  # sync with BaseTask
 
     # def get_ingredients(self) -> List[Ingredient]:
