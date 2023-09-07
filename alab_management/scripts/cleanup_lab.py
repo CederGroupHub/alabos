@@ -28,7 +28,8 @@ def cleanup_lab(
             if y != "y":
                 return False
         _GetMongoCollection.init()
-        _GetMongoCollection.client.drop_database(config["general"]["name"])  # type: ignore
+        for alabos_collection in ["abortable", "experiments", "tasks"]:
+            _GetMongoCollection.get_collection(alabos_collection).drop()
     DeviceView()._clean_up_device_collection()
     SampleView().clean_up_sample_position_collection()
     _GetMongoCollection.get_collection("_lock").drop()
