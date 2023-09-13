@@ -1,0 +1,145 @@
+[build-system]
+requires = ["setuptools >= 42", "versioningit ~= 1.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "alab_management"
+description = " Alab Workflow Management is aimed at providing a configurable and sharable platform for autonomous synthesis, just like what ROS has done for robotics."
+readme = "README.md"
+keywords = ["high-throughput experiments", "workflow", "autonomous synthesis"]
+license = { text = "modified BSD" }
+authors = [{ name = "Yuxing Fei", email = "yuxingfei@berkeley.edu" }, { name = "Bernardus Rendy", email = "brendy@lbl.gov" }, { name = "Rishi Kumar", email = "rekumar@lbl.gov" } ]
+dynamic = ["version"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: System Administrators",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Topic :: Database :: Front-Ends",
+    "Topic :: Other/Nonlisted Topic",
+    "Topic :: Scientific/Engineering",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "toml~=0.10.1",
+    "pymongo>=3.11.2",
+    "flask>=1.1.2",
+    "pydantic~=1.10.4",
+    "click>=7.1.2",
+    "gevent>=21.8.0",
+    "monty>=2021.8.17",
+    "dramatiq[rabbitmq]>=1.12.3",
+    "requests>=2.26.0",
+    "pika>=1.2.0",
+    "dill>=0.3.4",
+    "networkx>=2.6",
+    "plotly>=5.9.0",
+    "dash>=2.7.0",
+    "dash_mantine_components>=0.12.1",
+    "numpy>=1.21.2",
+    "matplotlib>=3.4.3",
+    "dramatiq-abort @ git+https://github.com/idocx/dramatiq-abort"
+]
+
+[project.optional-dependencies]
+docs = [
+    "autodoc_pydantic==1.9.0",
+    "furo==2023.8.19",
+    "ipython==8.15.0",
+    "myst_parser==2.0.0",
+    "nbsphinx==0.9.3",
+    "sphinx-copybutton==0.5.2",
+    "sphinx==7.2.5",
+]
+dev = [
+    "pre-commit>=2.12.1",
+    "sphinx >= 3.2.1",
+    "sphinx_book_theme == 0.1.7",
+    "recommonmark ~= 0.7.1",
+    "sphinx-autodoc-typehints >= 1.12.0",
+    "pytest >= 6.2.5",
+    "pytest_reraise >= 2.1.1",
+    "pylint >= 2.11.1",
+    "flake8 ~= 4.0.1",
+    "pytest-env ~= 0.6.2",
+    "requests >= 2.26.0",
+    "flake8-bugbear >= 21.11.29",
+    "flake8-docstrings >= 1.6.0"
+]
+tests = ["pytest-cov==4.1.0", "pytest==7.4.1", "moto==4.2.2"]
+vis = ["matplotlib", "pydot"]
+
+[project.urls]
+homepage = "https://alab-management.readthedocs.io/en/latest/"
+repository = "https://github.com/CederGroupHub/alab_management/"
+documentation = "https://alab-management.readthedocs.io/en/latest/"
+#changelog = ""
+
+[tool.versioningit.vcs]
+method = "git"
+default-tag = "0.0.1"
+
+[tool.flake8]
+max-line-length = 88
+max-doc-length = 88
+select = "C, E, F, W, B"
+extend-ignore = "E203, W503, E501, F401, RST21"
+min-python-version = "3.8.0"
+docstring-convention = "numpy"
+rst-roles = "class, func, ref, obj"
+
+[tool.mypy]
+ignore_missing_imports = true
+no_strict_optional = true
+
+[tool.coverage.run]
+include = ["src/*"]
+parallel = true
+branch = true
+
+[tool.coverage.paths]
+source = ["src/"]
+
+[tool.coverage.report]
+skip_covered = true
+show_missing = true
+exclude_lines = [
+    '^\s*@overload( |$)',
+    '^\s*assert False(,|$)',
+    'if TYPE_CHECKING:',
+    'if typing.TYPE_CHECKING:',
+]
+
+[tool.ruff]
+target-version = "py38"
+ignore-init-module-imports = true
+select = [
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "D",   # pydocstyle
+    "E",   # pycodestyle
+    "F",   # pyflakes
+    "I",   # isort
+    "PLE", # pylint error
+    "PLW", # pylint warning
+    "Q",   # flake8-quotes
+    "RUF", # Ruff-specific rules
+    "SIM", # flake8-simplify
+    "TID", # tidy imports
+    "UP",  # pyupgrade
+    "W",   # pycodestyle
+    "YTT", # flake8-2020
+]
+ignore = ["B028", "PLW0603", "RUF013"]
+pydocstyle.convention = "numpy"
+isort.known-first-party = ["jobflow"]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+"**/tests/*" = ["D"]
