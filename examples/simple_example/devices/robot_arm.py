@@ -1,7 +1,7 @@
 from typing import ClassVar
 import time
 
-from alab_control.robot_arm_ur5e import URRobot
+from alab_control.robot_arm_ur5e import BaseURRobot
 
 from alab_management import BaseDevice, SamplePosition
 
