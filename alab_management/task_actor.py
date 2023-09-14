@@ -10,12 +10,11 @@ import dramatiq
 from bson import ObjectId
 from dramatiq import get_broker
 from dramatiq.middleware import Shutdown
-from dramatiq_abort import Abortable, backends, Abort
+from dramatiq_abort import Abort, Abortable, backends
 
 from alab_management.logger import DBLogger
 from alab_management.sample_view import SampleView
-
-from alab_management.task_view import BaseTask, TaskView, TaskStatus
+from alab_management.task_view import BaseTask, TaskStatus, TaskView
 from alab_management.utils.data_objects import get_collection
 from alab_management.utils.module_ops import load_definition
 
@@ -26,9 +25,7 @@ get_broker().add_middleware(abortable)
 
 
 class ParameterError(Exception):
-    """
-    The exception raised when parameters of a task is wrong
-    """
+    """The exception raised when parameters of a task is wrong."""
 
 
 @dramatiq.actor(
@@ -93,14 +90,13 @@ def run_task(task_id_str: str):
         )
         lab_view.request_cleanup()
         raise Exception(
-            "Failed to create task {} of type {}".format(task_id, str(task_type))
+            f"Failed to create task {task_id} of type {task_type!s}"
         ) from exception
         # raise ParameterError(exception.args[0]) from exception
 
-
     try:
-        task_view.update_status(task_id=task_id, status=TaskStatus.RUNNING)   
-        
+        task_view.update_status(task_id=task_id, status=TaskStatus.RUNNING)
+
         for sample in task_entry["samples"]:
             sample_view.update_sample_task_id(
                 task_id=task_id, sample_id=sample["sample_id"]

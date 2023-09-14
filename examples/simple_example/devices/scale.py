@@ -15,10 +15,7 @@ class Scale(BaseDevice):
     @property
     def sample_positions(self):
         return [
-            SamplePosition(
-                f"{self.name}/inside",
-                description="Where we weigh things"
-            ),
+            SamplePosition(f"{self.name}/inside", description="Where we weigh things"),
         ]
 
     def emergent_stop(self):
