@@ -14,7 +14,8 @@ def append_task(
     """Used to add basetask to a SampleBuilder's tasklist during Experiment construction.
 
     Args:
-        samples (Union[SampleBuilder, List[SampleBuilder]]): One or more SampleBuilder's which will have this task appended to their tasklists.
+        samples (Union[SampleBuilder, List[SampleBuilder]]): One or more SampleBuilder's which will
+        have this task appended to their tasklists.
     """
     if not task.is_simulation:
         raise RuntimeError(
