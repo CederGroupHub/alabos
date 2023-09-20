@@ -7,13 +7,14 @@ from traceback import print_exc
 from bson import ObjectId
 from pydantic import ValidationError
 
-from alab_management.device_view import DeviceView, DeviceStatus
+from alab_management.device_view import DeviceView, DeviceTaskStatus
 from alab_management.device_view.device import get_all_devices
 from alab_management.sample_view import SampleView
 from alab_management.sample_view.sample_view import SamplePositionStatus
 from alab_management.scripts.cleanup_lab import cleanup_lab
 from alab_management.scripts.setup_lab import setup_lab
-from alab_management.task_manager import ResourceRequester, TaskManager
+from alab_management.task_manager.task_manager import TaskManager
+from alab_management.task_manager.resource_requester import ResourceRequester
 
 
 def launch_task_manager():

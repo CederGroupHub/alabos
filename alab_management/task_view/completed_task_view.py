@@ -11,7 +11,8 @@ class CompletedTaskView:
 
     def save_task(self, task_id: ObjectId):
         """
-        Saves a task dictionary to the completed database. This should be copying a task from the working database to the completed database.
+        Saves a task dictionary to the completed database. This should be copying a task from
+        the working database to the completed database.
         """
         # if self.exists(task_id):
         #     raise ValueError(
@@ -33,13 +34,15 @@ class CompletedTaskView:
             result = self._completed_task_collection.insert_one(task_dict)
 
     def exists(self, task_id: Union[ObjectId, str]) -> bool:
-        """Check if a task exists in the database
+        """
+        Check if a task exists in the database
 
         Args:
-            task_id (ObjectId): id of the task within task collection
+            task_id (Union[ObjectId, str]): id of the task within task collection.
+              If a string is passed, it will be converted to ObjectId
 
         Returns:
-            bool: True if task exists in the database
+            True if task exists in the database
         """
         return (
             self._completed_task_collection.count_documents({"_id": ObjectId(task_id)})
