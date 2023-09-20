@@ -193,6 +193,11 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.experiment_view.completed_experiment_view.html">
+         alab_management.experiment_view.completed_experiment_view module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="alab_management.experiment_view.experiment.html">
          alab_management.experiment_view.experiment module
         </a>
@@ -215,6 +220,11 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.sample_view.completed_sample_view.html">
+         alab_management.sample_view.completed_sample_view module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="alab_management.sample_view.sample.html">
          alab_management.sample_view.sample module
         </a>
@@ -227,8 +237,8 @@
       </ul>
      </li>
      <li class="toctree-l3 has-children">
-      <a class="reference internal" href="alab_management.task_view.html">
-       alab_management.task_view package
+      <a class="reference internal" href="alab_management.task_manager.html">
+       alab_management.task_manager package
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
       <label for="toctree-checkbox-7">
@@ -236,6 +246,38 @@
        </i>
       </label>
       <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.enums.html">
+         alab_management.task_manager.enums module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.resource_requester.html">
+         alab_management.task_manager.resource_requester module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.task_manager.html">
+         alab_management.task_manager.task_manager module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="alab_management.task_view.html">
+       alab_management.task_view package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+      <label for="toctree-checkbox-8">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_view.completed_task_view.html">
+         alab_management.task_view.completed_task_view module
+        </a>
+       </li>
        <li class="toctree-l4">
         <a class="reference internal" href="alab_management.task_view.task.html">
          alab_management.task_view.task module
@@ -252,6 +294,11 @@
         </a>
        </li>
       </ul>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="alab_management.alarm.html">
+       alab_management.alarm module
+      </a>
      </li>
      <li class="toctree-l3">
       <a class="reference internal" href="alab_management.config.html">
@@ -281,11 +328,6 @@
      <li class="toctree-l3">
       <a class="reference internal" href="alab_management.task_actor.html">
        alab_management.task_actor module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.task_manager.html">
-       alab_management.task_manager module
       </a>
      </li>
      <li class="toctree-l3">
@@ -394,10 +436,38 @@
 <p>The abstract class of device</p>
 <p>All the devices should be inherited from this class</p>
 <dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>the name of device, which is the unique identifier of this device</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice.description">
 <span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.description" title="Permalink to this definition">¶</a></dt>
 <dd><p>description of this kind of device, which can include
 the device type, how to set up and so on.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Optional[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice.args">
+<span class="sig-name descname"><span class="pre">args</span></span><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.args" title="Permalink to this definition">¶</a></dt>
+<dd><p>arguments that will be passed to the device class</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice.kwargs">
+<span class="sig-name descname"><span class="pre">kwargs</span></span><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.kwargs" title="Permalink to this definition">¶</a></dt>
+<dd><p>keyword arguments that will be passed to the device class</p>
 </dd></dl>
 
 <dl class="py method">
@@ -579,15 +649,31 @@ We use <code class="docutils literal notranslate"><span class="pre">name</span><
 <dt class="sig sig-object py" id="alab_management.device_view.device.DeviceSignalEmitter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DeviceSignalEmitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#DeviceSignalEmitter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.DeviceSignalEmitter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class is responsible for periodically logging device signals to the database.
+It is intended to be used as a singleton, and should be instantiated once per device.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.device.DeviceSignalEmitter.get_methods_to_log">
 <span class="sig-name descname"><span class="pre">get_methods_to_log</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#DeviceSignalEmitter.get_methods_to_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.DeviceSignalEmitter.get_methods_to_log" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Collected all the methods that are decorated with <cite>&#64;log_signal</cite> and return a dictionary of the form:</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.device.DeviceSignalEmitter.log_method_to_db">
 <span class="sig-name descname"><span class="pre">log_method_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#DeviceSignalEmitter.log_method_to_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.DeviceSignalEmitter.log_method_to_db" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Logs a method to the database. This is called by the worker thread.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the name of the method to call on the device</p></li>
+<li><p><strong>signal_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the name of the signal to log to the database</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Exceptions:</dt><dd><p>Any exceptions raised by the method call will be caught and raised directly.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.device.DeviceSignalEmitter.retrieve_signal">
@@ -596,19 +682,27 @@ We use <code class="docutils literal notranslate"><span class="pre">name</span><
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>signal_name</strong> (<em>str</em>) – device signal name. This should match the signal_name passed to the <cite>&#64;log_device_signal</cite> decorator</p></li>
-<li><p><strong>within</strong> (<em>Optional</em><em>[</em><em>datetime.timedelta</em><em>]</em><em>, </em><em>optional</em>) – timedelta defining how far back to pull logs from (relative to current time). Defaults to None.</p></li>
+<li><p><strong>signal_name</strong> (<em>str</em>) – device signal name. This should match the signal_name
+passed to the <cite>&#64;log_device_signal</cite> decorator</p></li>
+<li><p><strong>within</strong> (<em>Optional</em><em>[</em><em>datetime.timedelta</em><em>]</em>) – timedelta defining
+how far back to pull logs from (relative to current time). Defaults to None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p>Dictionary of signal result. Single value vs lists depends on whether <cite>within</cite> was None or not, respectively. Form is:
-{</p>
-<blockquote>
-<div><p>”device_name”: “device_name”,
+<dd class="field-even"><p><dl class="simple">
+<dt>Dictionary of signal result. Single value vs lists depends on whether <code class="docutils literal notranslate"><span class="pre">within</span></code></dt><dd><p>was None or not, respectively. Form is:</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>{</dt><dd><p>“device_name”: “device_name”,
 “signal_name”: “signal_name”,
 “value”: “signal_value” or [“signal_value_1”, “signal_value_2”, …]],
 “timestamp”: “timestamp” or [“timestamp_1”, “timestamp_2”, …]</p>
-</div></blockquote>
+</dd>
+</dl>
 <p>}</p>
 </p>
 </dd>
@@ -621,28 +715,38 @@ We use <code class="docutils literal notranslate"><span class="pre">name</span><
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.device.DeviceSignalEmitter.start">
 <span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#DeviceSignalEmitter.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.DeviceSignalEmitter.start" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Start the logging worker thread. This will start logging all
+methods decorated with <cite>&#64;log_signal</cite> to the database.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.device.DeviceSignalEmitter.stop">
 <span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#DeviceSignalEmitter.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.DeviceSignalEmitter.stop" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Stop the logging worker thread. This will stop logging all.</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="alab_management.device_view.device.add_device">
 <span class="sig-name descname"><span class="pre">add_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#add_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.add_device" title="Permalink to this definition">¶</a></dt>
-<dd><p>Register a device instance</p>
+<dd><p>Register a device instance. It is stored in a global dictionary.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="alab_management.device_view.device.get_all_devices">
 <span class="sig-name descname"><span class="pre">get_all_devices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#get_all_devices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.get_all_devices" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get all the device names in the device registry</p>
+<dd><p>Get all the device names in the device registry. This is a shallow copy of the registry.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <a class="reference internal" href="device_definition.html#alab_management.device_view.device.BaseDevice" title="alab_management.device_view.device.BaseDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDevice</span></code></a>]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A dictionary of all the devices in the registry. The keys are the device names,</dt><dd><p>and the values are the device instances.</p>
+</dd>
+</dl>
+</p>
 </dd>
 </dl>
 </dd></dl>

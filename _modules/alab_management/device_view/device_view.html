@@ -191,6 +191,11 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="../../../alab_management.experiment_view.completed_experiment_view.html">
+         alab_management.experiment_view.completed_experiment_view module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="../../../alab_management.experiment_view.experiment.html">
          alab_management.experiment_view.experiment module
         </a>
@@ -213,6 +218,11 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="../../../alab_management.sample_view.completed_sample_view.html">
+         alab_management.sample_view.completed_sample_view module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="../../../alab_management.sample_view.sample.html">
          alab_management.sample_view.sample module
         </a>
@@ -225,8 +235,8 @@
       </ul>
      </li>
      <li class="toctree-l3 has-children">
-      <a class="reference internal" href="../../../alab_management.task_view.html">
-       alab_management.task_view package
+      <a class="reference internal" href="../../../alab_management.task_manager.html">
+       alab_management.task_manager package
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
       <label for="toctree-checkbox-7">
@@ -234,6 +244,38 @@
        </i>
       </label>
       <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../alab_management.task_manager.enums.html">
+         alab_management.task_manager.enums module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../alab_management.task_manager.resource_requester.html">
+         alab_management.task_manager.resource_requester module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../alab_management.task_manager.task_manager.html">
+         alab_management.task_manager.task_manager module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../../alab_management.task_view.html">
+       alab_management.task_view package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+      <label for="toctree-checkbox-8">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../alab_management.task_view.completed_task_view.html">
+         alab_management.task_view.completed_task_view module
+        </a>
+       </li>
        <li class="toctree-l4">
         <a class="reference internal" href="../../../alab_management.task_view.task.html">
          alab_management.task_view.task module
@@ -250,6 +292,11 @@
         </a>
        </li>
       </ul>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../alab_management.alarm.html">
+       alab_management.alarm module
+      </a>
      </li>
      <li class="toctree-l3">
       <a class="reference internal" href="../../../alab_management.config.html">
@@ -279,11 +326,6 @@
      <li class="toctree-l3">
       <a class="reference internal" href="../../../alab_management.task_actor.html">
        alab_management.task_actor module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../alab_management.task_manager.html">
-       alab_management.task_manager module
       </a>
      </li>
      <li class="toctree-l3">
@@ -402,7 +444,10 @@
 
 <div class="viewcode-block" id="DevicePauseStatus"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DevicePauseStatus">[docs]</a><span class="nd">@unique</span>
 <span class="k">class</span> <span class="nc">DevicePauseStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pause status of the Device. This is used to pause the device outside of the typical Task queue (like by an operator for maintenance or refilling consumables)&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Pause status of the Device. This is used to pause the device outside the typical</span>
+<span class="sd">    Task queue (like by an operator for maintenance or refilling consumables)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">RELEASED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">REQUESTED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
@@ -419,7 +464,9 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Class with methods to interact with devices (status + method execution)</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            connect_to_devices (bool, optional): If true, make a connection to all devices (serial, ip, etc.). If False, can still check Device status, but cannot execute methods on devices. Defaults to False.</span>
+<span class="sd">            connect_to_devices (Optional[bool]): If true, make a connection to all devices</span>
+<span class="sd">              (serial, ip, etc.). If False, can still check Device status, but cannot execute</span>
+<span class="sd">              methods on devices. Defaults to False.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;devices&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">create_index</span><span class="p">([(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">HASHED</span><span class="p">)])</span>
@@ -435,8 +482,8 @@
         <span class="k">for</span> <span class="n">device_name</span><span class="p">,</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_list</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">device</span><span class="o">.</span><span class="n">_connect_wrapper</span><span class="p">()</span>
-            <span class="k">except</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">DeviceConnectionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not connect to </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">DeviceConnectionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not connect to </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connected to </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__connected_to_devices</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -444,8 +491,8 @@
         <span class="k">for</span> <span class="n">device_name</span><span class="p">,</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_list</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">device</span><span class="o">.</span><span class="n">_disconnect_wrapper</span><span class="p">()</span>
-            <span class="k">except</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">DeviceConnectionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not disconnect from </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span> <span class="p">:</span>
+                <span class="k">raise</span> <span class="n">DeviceConnectionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not disconnect from </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Disconnected from </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__connected_to_devices</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -516,10 +563,10 @@
 <div class="viewcode-block" id="DeviceView.request_devices"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.request_devices">[docs]</a>    <span class="k">def</span> <span class="nf">request_devices</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span>
-        <span class="n">device_names_str</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Collection</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">device_names_str</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Collection</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">device_types_str</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
             <span class="n">Collection</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>  <span class="c1"># pylint: disable=unsubscriptable-object</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=unsubscriptable-object</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Request a list of device, this function will return the name of devices if all the requested device is ready.</span>
@@ -528,12 +575,21 @@
 <span class="sd">            There should be no duplicated devices in the ``device_type``, or a ``ValueError`` shall be raised</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            task_id: the id of task that requests these devices</span>
-<span class="sd">            device_types_str: the requested device types</span>
+<span class="sd">            task_id (ObjectId): the id of task that requests these devices</span>
+<span class="sd">            device_names_str (Optional[Collection[str]]): the requested</span>
+<span class="sd">              device names. If None, no device name is requested</span>
+<span class="sd">            device_types_str (Optional[Collection[str]]): the requested</span>
+<span class="sd">              device types. If None, no device type is requested</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            {&quot;device_type_name&quot;: {&quot;name&quot;: device_name, &quot;need_release&quot;: need_release (bool)}} or None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">device_names_str</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">device_names_str</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">device_types_str</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">device_types_str</span> <span class="o">=</span> <span class="p">[]</span>
+
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">device_types_str</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">device_types_str</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;Currently we do not allow duplicated device types in one request.&quot;</span>
@@ -570,8 +626,9 @@
 <span class="sd">        If only_idle set to True, only the idle devices will be returned (or ones have the same task id)</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            device_type_str: the type of device</span>
-<span class="sd">            type_or_name: &quot;type&quot; or &quot;name&quot; to specify whether searching for a type of device by Type(BaseDevice), or for a specific device by name</span>
+<span class="sd">            device_str (str): the type of device</span>
+<span class="sd">            type_or_name: &quot;type&quot; or &quot;name&quot; to specify whether searching for a type of device by</span>
+<span class="sd">              Type(BaseDevice), or for a specific device by name</span>
 <span class="sd">            task_id: the id of task that requests this device</span>
 
 <span class="sd">        Returns:</span>
@@ -585,6 +642,8 @@
             <span class="p">}</span>
         <span class="k">elif</span> <span class="n">type_or_name</span> <span class="o">==</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span>
             <span class="n">request_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">device_str</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown type_or_name: </span><span class="si">{</span><span class="n">type_or_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">request_dict</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No such device of </span><span class="si">{</span><span class="n">type_or_name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">device_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -608,8 +667,9 @@
         <span class="k">return</span> <span class="p">[</span>
             <span class="p">{</span>
                 <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">device_entry</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
-                <span class="s2">&quot;need_release&quot;</span><span class="p">:</span> <span class="n">device_entry</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span>
-                <span class="o">!=</span> <span class="n">task_id</span><span class="p">,</span>  <span class="c1"># if device already held by this task, don&#39;t release with this request. Will be released by the older request.</span>
+                <span class="c1"># if device already held by this task, don&#39;t release with</span>
+                <span class="c1"># this request. Will be released by the older request.</span>
+                <span class="s2">&quot;need_release&quot;</span><span class="p">:</span> <span class="n">device_entry</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">task_id</span><span class="p">,</span>
             <span class="p">}</span>
             <span class="k">for</span> <span class="n">device_entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">request_dict</span><span class="p">)</span>
         <span class="p">]</span></div>
@@ -734,7 +794,8 @@
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Device&#39;s current status (</span><span class="si">{</span><span class="n">device_entry</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">) is &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;not in allowed set of statuses </span><span class="si">{</span><span class="p">[</span><span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">required_status</span><span class="p">]</span><span class="si">}</span><span class="s2">. Cannot change status to </span><span class="si">{</span><span class="n">target_status</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;not in allowed set of statuses </span><span class="si">{</span><span class="p">[</span><span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">required_status</span><span class="p">]</span><span class="si">}</span><span class="s2">. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Cannot change status to </span><span class="si">{</span><span class="n">target_status</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
@@ -784,8 +845,6 @@
 <span class="sd">            device_name (str): name of the device to set the message for</span>
 <span class="sd">            message (str): message to be set</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_device</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
             <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">device_name</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">message</span><span class="p">}}</span>
         <span class="p">)</span></div>

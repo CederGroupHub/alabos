@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="alab_management.sample_view.sample_view module" href="alab_management.sample_view.sample_view.html" />
-    <link rel="prev" title="alab_management.sample_view package" href="alab_management.sample_view.html" />
+    <link rel="prev" title="alab_management.sample_view.completed_sample_view module" href="alab_management.sample_view.completed_sample_view.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
     
@@ -193,6 +193,11 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.experiment_view.completed_experiment_view.html">
+         alab_management.experiment_view.completed_experiment_view module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="alab_management.experiment_view.experiment.html">
          alab_management.experiment_view.experiment module
         </a>
@@ -214,6 +219,11 @@
        </i>
       </label>
       <ul class="current">
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.sample_view.completed_sample_view.html">
+         alab_management.sample_view.completed_sample_view module
+        </a>
+       </li>
        <li class="toctree-l4 current active">
         <a class="current reference internal" href="#">
          alab_management.sample_view.sample module
@@ -227,8 +237,8 @@
       </ul>
      </li>
      <li class="toctree-l3 has-children">
-      <a class="reference internal" href="alab_management.task_view.html">
-       alab_management.task_view package
+      <a class="reference internal" href="alab_management.task_manager.html">
+       alab_management.task_manager package
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
       <label for="toctree-checkbox-7">
@@ -236,6 +246,38 @@
        </i>
       </label>
       <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.enums.html">
+         alab_management.task_manager.enums module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.resource_requester.html">
+         alab_management.task_manager.resource_requester module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.task_manager.html">
+         alab_management.task_manager.task_manager module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="alab_management.task_view.html">
+       alab_management.task_view package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+      <label for="toctree-checkbox-8">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_view.completed_task_view.html">
+         alab_management.task_view.completed_task_view module
+        </a>
+       </li>
        <li class="toctree-l4">
         <a class="reference internal" href="alab_management.task_view.task.html">
          alab_management.task_view.task module
@@ -252,6 +294,11 @@
         </a>
        </li>
       </ul>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="alab_management.alarm.html">
+       alab_management.alarm module
+      </a>
      </li>
      <li class="toctree-l3">
       <a class="reference internal" href="alab_management.config.html">
@@ -281,11 +328,6 @@
      <li class="toctree-l3">
       <a class="reference internal" href="alab_management.task_actor.html">
        alab_management.task_actor module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.task_manager.html">
-       alab_management.task_manager module
       </a>
      </li>
      <li class="toctree-l3">
@@ -389,7 +431,7 @@
 <p>The definition of the Sample and SamplePosition classes.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="alab_management.sample_view.sample.Sample">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample.html#Sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.sample.Sample" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample.html#Sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.sample.Sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Basic sample object</p>
 <ul class="simple">
@@ -399,6 +441,11 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">position</span></code>: current position of the sample in the lab. if None, the sample has not been initialized
 in the lab</p></li>
 </ul>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.sample_view.sample.Sample.metadata">
+<span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#alab_management.sample_view.sample.Sample.metadata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="alab_management.sample_view.sample.Sample.name">
 <span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#alab_management.sample_view.sample.Sample.name" title="Permalink to this definition">¶</a></dt>
@@ -412,6 +459,11 @@ in the lab</p></li>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="alab_management.sample_view.sample.Sample.sample_id">
 <span class="sig-name descname"><span class="pre">sample_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bson.objectid.ObjectId</span></em><a class="headerlink" href="#alab_management.sample_view.sample.Sample.sample_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.sample_view.sample.Sample.tags">
+<span class="sig-name descname"><span class="pre">tags</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#alab_management.sample_view.sample.Sample.tags" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -481,11 +533,11 @@ identifier of a sample position</p></li>
         
             <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
-    <a class='left-prev' id="prev-link" href="alab_management.sample_view.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="alab_management.sample_view.completed_sample_view.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">alab_management.sample_view package</p>
+            <p class="prev-next-title">alab_management.sample_view.completed_sample_view module</p>
         </div>
     </a>
     <a class='right-next' id="next-link" href="alab_management.sample_view.sample_view.html" title="next page">

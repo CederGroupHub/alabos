@@ -193,6 +193,11 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.experiment_view.completed_experiment_view.html">
+         alab_management.experiment_view.completed_experiment_view module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="alab_management.experiment_view.experiment.html">
          alab_management.experiment_view.experiment module
         </a>
@@ -215,6 +220,11 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.sample_view.completed_sample_view.html">
+         alab_management.sample_view.completed_sample_view module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="alab_management.sample_view.sample.html">
          alab_management.sample_view.sample module
         </a>
@@ -226,16 +236,48 @@
        </li>
       </ul>
      </li>
-     <li class="toctree-l3 current active has-children">
-      <a class="reference internal" href="alab_management.task_view.html">
-       alab_management.task_view package
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="alab_management.task_manager.html">
+       alab_management.task_manager package
       </a>
-      <input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+      <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
       <label for="toctree-checkbox-7">
        <i class="fas fa-chevron-down">
        </i>
       </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.enums.html">
+         alab_management.task_manager.enums module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.resource_requester.html">
+         alab_management.task_manager.resource_requester module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.task_manager.html">
+         alab_management.task_manager.task_manager module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 current active has-children">
+      <a class="reference internal" href="alab_management.task_view.html">
+       alab_management.task_view package
+      </a>
+      <input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+      <label for="toctree-checkbox-8">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
       <ul class="current">
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_view.completed_task_view.html">
+         alab_management.task_view.completed_task_view module
+        </a>
+       </li>
        <li class="toctree-l4">
         <a class="reference internal" href="alab_management.task_view.task.html">
          alab_management.task_view.task module
@@ -252,6 +294,11 @@
         </a>
        </li>
       </ul>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="alab_management.alarm.html">
+       alab_management.alarm module
+      </a>
      </li>
      <li class="toctree-l3">
       <a class="reference internal" href="alab_management.config.html">
@@ -281,11 +328,6 @@
      <li class="toctree-l3">
       <a class="reference internal" href="alab_management.task_actor.html">
        alab_management.task_actor module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.task_manager.html">
-       alab_management.task_manager module
       </a>
      </li>
      <li class="toctree-l3">
@@ -428,13 +470,25 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">WAITING</span></code>: the task cannot start yet, waiting for preceding tasks to finish</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">INITIATED</span></code>: the task has been sent to task actor, but not yet running</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">PAUSED</span></code>: the task is paused by user</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">STOPPED</span></code>: the task has been stopped by user</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">STOPPED</span></code>: the task has been stopped due to the system shutdown</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">READY</span></code>: the task is ready to submit</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">REQUESTING_RESOURCES</span></code>: the task is requesting resources</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">RUNNING</span></code>: the task is currently running</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ERROR</span></code>: the task encountered some errors during execution</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">COMPLETED</span></code>: the task is completed</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CANCELLING</span></code>: a cancelling request has been submitted</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CANCELLED</span></code>: the task has been cancelled and stopped.</p></li>
 </ul>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.task_view.task_enums.TaskStatus.CANCELLED">
+<span class="sig-name descname"><span class="pre">CANCELLED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">11</span></em><a class="headerlink" href="#alab_management.task_view.task_enums.TaskStatus.CANCELLED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.task_view.task_enums.TaskStatus.CANCELLING">
+<span class="sig-name descname"><span class="pre">CANCELLING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#alab_management.task_view.task_enums.TaskStatus.CANCELLING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="alab_management.task_view.task_enums.TaskStatus.COMPLETED">
 <span class="sig-name descname"><span class="pre">COMPLETED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9</span></em><a class="headerlink" href="#alab_management.task_view.task_enums.TaskStatus.COMPLETED" title="Permalink to this definition">¶</a></dt>

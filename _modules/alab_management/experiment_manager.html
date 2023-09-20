@@ -191,6 +191,11 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.experiment_view.completed_experiment_view.html">
+         alab_management.experiment_view.completed_experiment_view module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="../../alab_management.experiment_view.experiment.html">
          alab_management.experiment_view.experiment module
         </a>
@@ -213,6 +218,11 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.sample_view.completed_sample_view.html">
+         alab_management.sample_view.completed_sample_view module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="../../alab_management.sample_view.sample.html">
          alab_management.sample_view.sample module
         </a>
@@ -225,8 +235,8 @@
       </ul>
      </li>
      <li class="toctree-l3 has-children">
-      <a class="reference internal" href="../../alab_management.task_view.html">
-       alab_management.task_view package
+      <a class="reference internal" href="../../alab_management.task_manager.html">
+       alab_management.task_manager package
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
       <label for="toctree-checkbox-7">
@@ -234,6 +244,38 @@
        </i>
       </label>
       <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.task_manager.enums.html">
+         alab_management.task_manager.enums module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.task_manager.resource_requester.html">
+         alab_management.task_manager.resource_requester module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.task_manager.task_manager.html">
+         alab_management.task_manager.task_manager module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../alab_management.task_view.html">
+       alab_management.task_view package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+      <label for="toctree-checkbox-8">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.task_view.completed_task_view.html">
+         alab_management.task_view.completed_task_view module
+        </a>
+       </li>
        <li class="toctree-l4">
         <a class="reference internal" href="../../alab_management.task_view.task.html">
          alab_management.task_view.task module
@@ -250,6 +292,11 @@
         </a>
        </li>
       </ul>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../alab_management.alarm.html">
+       alab_management.alarm module
+      </a>
      </li>
      <li class="toctree-l3">
       <a class="reference internal" href="../../alab_management.config.html">
@@ -279,11 +326,6 @@
      <li class="toctree-l3">
       <a class="reference internal" href="../../alab_management.task_actor.html">
        alab_management.task_actor module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../alab_management.task_manager.html">
-       alab_management.task_manager module
       </a>
      </li>
      <li class="toctree-l3">
@@ -377,11 +419,12 @@
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span>
 
-<span class="kn">from</span> <span class="nn">.experiment_view.experiment_view</span> <span class="kn">import</span> <span class="n">ExperimentStatus</span><span class="p">,</span> <span class="n">ExperimentView</span>
+<span class="kn">from</span> <span class="nn">.experiment_view</span> <span class="kn">import</span> <span class="n">ExperimentStatus</span><span class="p">,</span> <span class="n">ExperimentView</span><span class="p">,</span> <span class="n">CompletedExperimentView</span>
 <span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="n">DBLogger</span>
 <span class="kn">from</span> <span class="nn">.sample_view</span> <span class="kn">import</span> <span class="n">SampleView</span>
 <span class="kn">from</span> <span class="nn">.task_view</span> <span class="kn">import</span> <span class="n">TaskView</span><span class="p">,</span> <span class="n">TaskStatus</span>
 <span class="kn">from</span> <span class="nn">.utils.graph_ops</span> <span class="kn">import</span> <span class="n">Graph</span>
+<span class="kn">from</span> <span class="nn">.config</span> <span class="kn">import</span> <span class="n">AlabConfig</span>
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 
 
@@ -397,10 +440,24 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sample_view</span> <span class="o">=</span> <span class="n">SampleView</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">DBLogger</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
+        <span class="n">config</span> <span class="o">=</span> <span class="n">AlabConfig</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__copy_to_completed_db</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;mongodb_completed&quot;</span> <span class="ow">in</span> <span class="n">config</span>
+        <span class="p">)</span>  <span class="c1"># if this is not defined in the config, assume it this feature is not being used.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__copy_to_completed_db</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">completed_experiment_view</span> <span class="o">=</span> <span class="n">CompletedExperimentView</span><span class="p">()</span>
+
 <div class="viewcode-block" id="ExperimentManager.run"><a class="viewcode-back" href="../../alab_management.experiment_manager.html#alab_management.experiment_manager.ExperimentManager.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start the event loop</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">system_log</span><span class="p">(</span>
+            <span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
+            <span class="n">log_data</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;logged_by&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;ExperimentManagerStarted&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">()</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span></div>
@@ -456,7 +513,10 @@
         <span class="c1"># create samples in the sample database</span>
         <span class="n">sample_ids</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_view</span><span class="o">.</span><span class="n">create_sample</span><span class="p">(</span>
-                <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">sample_id</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sample_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                <span class="n">sample_id</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sample_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                <span class="n">tags</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">,</span> <span class="p">[]),</span>
+                <span class="n">metadata</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;metadata&quot;</span><span class="p">,</span> <span class="p">{}),</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">samples</span>
         <span class="p">}</span>
@@ -513,7 +573,13 @@
 
             <span class="c1"># if all the tasks of an experiment have been finished</span>
             <span class="k">if</span> <span class="nb">all</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span> <span class="ow">is</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">COMPLETED</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span>
+                <span class="ow">in</span> <span class="p">{</span>
+                    <span class="n">TaskStatus</span><span class="o">.</span><span class="n">COMPLETED</span><span class="p">,</span>
+                    <span class="n">TaskStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span>
+                    <span class="n">TaskStatus</span><span class="o">.</span><span class="n">CANCELLED</span><span class="p">,</span>
+                    <span class="n">TaskStatus</span><span class="o">.</span><span class="n">STOPPED</span><span class="p">,</span>
+                <span class="p">}</span>
                 <span class="k">for</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="n">task_ids</span>
             <span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span><span class="n">update_experiment_status</span><span class="p">(</span>
@@ -527,7 +593,21 @@
                         <span class="s2">&quot;exp_id&quot;</span><span class="p">:</span> <span class="n">experiment</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span>
                     <span class="p">},</span>
                 <span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Experiment (</span><span class="si">{</span><span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">) completed.&quot;</span><span class="p">)</span></div></div>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Experiment (</span><span class="si">{</span><span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">) completed.&quot;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__copy_to_completed_db</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">completed_experiment_view</span><span class="o">.</span><span class="n">save_experiment</span><span class="p">(</span><span class="n">experiment</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">])</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Experiment (</span><span class="si">{</span><span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">) and associated samples/tasks were copied to the completed db.&quot;</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">system_log</span><span class="p">(</span>
+                        <span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
+                        <span class="n">log_data</span><span class="o">=</span><span class="p">{</span>
+                            <span class="s2">&quot;logged_by&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;ExperimentSavedToCompletedDB&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;exp_id&quot;</span><span class="p">:</span> <span class="n">experiment</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span>
+                        <span class="p">},</span>
+                    <span class="p">)</span></div></div>
 </pre></div>
 
               </div>

@@ -35,7 +35,7 @@
     <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="alab_management.config module" href="alab_management.config.html" />
+    <link rel="next" title="alab_management.alarm module" href="alab_management.alarm.html" />
     <link rel="prev" title="alab_management.task_view.task_enums module" href="alab_management.task_view.task_enums.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
@@ -193,6 +193,11 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.experiment_view.completed_experiment_view.html">
+         alab_management.experiment_view.completed_experiment_view module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="alab_management.experiment_view.experiment.html">
          alab_management.experiment_view.experiment module
         </a>
@@ -215,6 +220,11 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.sample_view.completed_sample_view.html">
+         alab_management.sample_view.completed_sample_view module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="alab_management.sample_view.sample.html">
          alab_management.sample_view.sample module
         </a>
@@ -226,16 +236,48 @@
        </li>
       </ul>
      </li>
-     <li class="toctree-l3 current active has-children">
-      <a class="reference internal" href="alab_management.task_view.html">
-       alab_management.task_view package
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="alab_management.task_manager.html">
+       alab_management.task_manager package
       </a>
-      <input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+      <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
       <label for="toctree-checkbox-7">
        <i class="fas fa-chevron-down">
        </i>
       </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.enums.html">
+         alab_management.task_manager.enums module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.resource_requester.html">
+         alab_management.task_manager.resource_requester module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.task_manager.html">
+         alab_management.task_manager.task_manager module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 current active has-children">
+      <a class="reference internal" href="alab_management.task_view.html">
+       alab_management.task_view package
+      </a>
+      <input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+      <label for="toctree-checkbox-8">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
       <ul class="current">
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_view.completed_task_view.html">
+         alab_management.task_view.completed_task_view module
+        </a>
+       </li>
        <li class="toctree-l4">
         <a class="reference internal" href="alab_management.task_view.task.html">
          alab_management.task_view.task module
@@ -252,6 +294,11 @@
         </a>
        </li>
       </ul>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="alab_management.alarm.html">
+       alab_management.alarm module
+      </a>
      </li>
      <li class="toctree-l3">
       <a class="reference internal" href="alab_management.config.html">
@@ -281,11 +328,6 @@
      <li class="toctree-l3">
       <a class="reference internal" href="alab_management.task_actor.html">
        alab_management.task_actor module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.task_manager.html">
-       alab_management.task_manager module
       </a>
      </li>
      <li class="toctree-l3">
@@ -439,6 +481,17 @@ Translate task’s type into corresponding python class.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskView.exists">
+<span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a task id exists</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskView.get_ready_tasks">
 <span class="sig-name descname"><span class="pre">get_ready_tasks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.get_ready_tasks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.get_ready_tasks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a list of ready tasks</p>
@@ -508,9 +561,32 @@ Translate task’s type into corresponding python class.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskView.mark_task_as_cancelling">
+<span class="sig-name descname"><span class="pre">mark_task_as_cancelling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.mark_task_as_cancelling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.mark_task_as_cancelling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Try to cancel a task by marking the task as TaskStatus.CANCELLING</p>
+<p>If the status is not in [READY, INITIATED, WAITING, PAUSED, READY, RUNNING],
+the request will be ignored and returned.</p>
+<p>The task manager will handle it.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskView.set_message">
 <span class="sig-name descname"><span class="pre">set_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.set_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.set_message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set message for one task. This is displayed on the dashboard.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskView.set_task_actor_id">
+<span class="sig-name descname"><span class="pre">set_task_actor_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.set_task_actor_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.set_task_actor_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set task actor id for the task when it is submitted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>task_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the task id of the task</p></li>
+<li><p><strong>message_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a uid generated by dramatiq (message_id)</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -522,14 +598,14 @@ if so, mark it as READY</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskView.update_result">
-<span class="sig-name descname"><span class="pre">update_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.update_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.update_result" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">update_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.update_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.update_result" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update result to completed job.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>task_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the id of task to be updated</p></li>
-<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the name of the result to be updated. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, will update the entire <code class="docutils literal notranslate"><span class="pre">result</span></code> field. Otherwise, will update the field <code class="docutils literal notranslate"><span class="pre">result.name</span></code>.</p></li>
-<li><p><strong>value</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>) – the value to be stored. This must be bson-encodable (ie can be written into MongoDB!)</p></li>
+<li><p><strong>name</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the name of the result to be updated. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, will update the entire <code class="docutils literal notranslate"><span class="pre">result</span></code> field. Otherwise, will update the field <code class="docutils literal notranslate"><span class="pre">result.name</span></code>.</p></li>
+<li><p><strong>value</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – the value to be stored. This must be bson-encodable (ie can be written into MongoDB!)</p></li>
 </ul>
 </dd>
 </dl>
@@ -606,10 +682,10 @@ which will not overwrite old pre_task and next_tasks</p>
             <p class="prev-next-title">alab_management.task_view.task_enums module</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="alab_management.config.html" title="next page">
+    <a class='right-next' id="next-link" href="alab_management.alarm.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">alab_management.config module</p>
+        <p class="prev-next-title">alab_management.alarm module</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>

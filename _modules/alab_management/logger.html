@@ -191,6 +191,11 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.experiment_view.completed_experiment_view.html">
+         alab_management.experiment_view.completed_experiment_view module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="../../alab_management.experiment_view.experiment.html">
          alab_management.experiment_view.experiment module
         </a>
@@ -213,6 +218,11 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.sample_view.completed_sample_view.html">
+         alab_management.sample_view.completed_sample_view module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="../../alab_management.sample_view.sample.html">
          alab_management.sample_view.sample module
         </a>
@@ -225,8 +235,8 @@
       </ul>
      </li>
      <li class="toctree-l3 has-children">
-      <a class="reference internal" href="../../alab_management.task_view.html">
-       alab_management.task_view package
+      <a class="reference internal" href="../../alab_management.task_manager.html">
+       alab_management.task_manager package
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
       <label for="toctree-checkbox-7">
@@ -234,6 +244,38 @@
        </i>
       </label>
       <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.task_manager.enums.html">
+         alab_management.task_manager.enums module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.task_manager.resource_requester.html">
+         alab_management.task_manager.resource_requester module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.task_manager.task_manager.html">
+         alab_management.task_manager.task_manager module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../alab_management.task_view.html">
+       alab_management.task_view package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+      <label for="toctree-checkbox-8">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.task_view.completed_task_view.html">
+         alab_management.task_view.completed_task_view module
+        </a>
+       </li>
        <li class="toctree-l4">
         <a class="reference internal" href="../../alab_management.task_view.task.html">
          alab_management.task_view.task module
@@ -250,6 +292,11 @@
         </a>
        </li>
       </ul>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../alab_management.alarm.html">
+       alab_management.alarm module
+      </a>
      </li>
      <li class="toctree-l3">
       <a class="reference internal" href="../../alab_management.config.html">
@@ -279,11 +326,6 @@
      <li class="toctree-l3">
       <a class="reference internal" href="../../alab_management.task_actor.html">
        alab_management.task_actor module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../alab_management.task_manager.html">
-       alab_management.task_manager module
       </a>
      </li>
      <li class="toctree-l3">
@@ -538,7 +580,7 @@
             <span class="n">value</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;log_data&quot;</span><span class="p">][</span><span class="s2">&quot;signal_value&quot;</span><span class="p">]</span>
             <span class="n">timestamp</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;created_at&quot;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#TODO do we want to raise here instead?</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># TODO do we want to raise here instead?</span>
             <span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;device_name&quot;</span><span class="p">:</span> <span class="n">device_name</span><span class="p">,</span>

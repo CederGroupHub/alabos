@@ -35,7 +35,7 @@
     <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="alab_management.task_manager module" href="alab_management.task_manager.html" />
+    <link rel="prev" title="alab_management.task_actor module" href="alab_management.task_actor.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
     
@@ -192,6 +192,11 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.experiment_view.completed_experiment_view.html">
+         alab_management.experiment_view.completed_experiment_view module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="alab_management.experiment_view.experiment.html">
          alab_management.experiment_view.experiment module
         </a>
@@ -214,6 +219,11 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.sample_view.completed_sample_view.html">
+         alab_management.sample_view.completed_sample_view module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="alab_management.sample_view.sample.html">
          alab_management.sample_view.sample module
         </a>
@@ -226,8 +236,8 @@
       </ul>
      </li>
      <li class="toctree-l3 has-children">
-      <a class="reference internal" href="alab_management.task_view.html">
-       alab_management.task_view package
+      <a class="reference internal" href="alab_management.task_manager.html">
+       alab_management.task_manager package
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
       <label for="toctree-checkbox-7">
@@ -235,6 +245,38 @@
        </i>
       </label>
       <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.enums.html">
+         alab_management.task_manager.enums module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.resource_requester.html">
+         alab_management.task_manager.resource_requester module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.task_manager.html">
+         alab_management.task_manager.task_manager module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="alab_management.task_view.html">
+       alab_management.task_view package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+      <label for="toctree-checkbox-8">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_view.completed_task_view.html">
+         alab_management.task_view.completed_task_view module
+        </a>
+       </li>
        <li class="toctree-l4">
         <a class="reference internal" href="alab_management.task_view.task.html">
          alab_management.task_view.task module
@@ -251,6 +293,11 @@
         </a>
        </li>
       </ul>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="alab_management.alarm.html">
+       alab_management.alarm module
+      </a>
      </li>
      <li class="toctree-l3">
       <a class="reference internal" href="alab_management.config.html">
@@ -280,11 +327,6 @@
      <li class="toctree-l3">
       <a class="reference internal" href="alab_management.task_actor.html">
        alab_management.task_actor module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.task_manager.html">
-       alab_management.task_manager module
       </a>
      </li>
      <li class="toctree-l3 current active">
@@ -422,7 +464,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.user_input.UserInputView.insert_request">
-<span class="sig-name descname"><span class="pre">insert_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maintenance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#UserInputView.insert_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.UserInputView.insert_request" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">insert_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maintenance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Unknown</span> <span class="pre">Category'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#UserInputView.insert_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.UserInputView.insert_request" title="Permalink to this definition">¶</a></dt>
 <dd><p>Insert a request into the database.</p>
 <p>Returns the request ObjectID</p>
 <dl class="field-list simple">
@@ -481,7 +523,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="alab_management.user_input.request_user_input">
-<span class="sig-name descname"><span class="pre">request_user_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maintenance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#request_user_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.request_user_input" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">request_user_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maintenance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Unknown</span> <span class="pre">Category'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#request_user_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.request_user_input" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request user input through the dashboard. Blocks until response is given.</p>
 <p>task_id (ObjectId): task id requesting user input
 prompt (str): prompt to give user
@@ -503,11 +545,11 @@ maintenance (bool): if true, mark this as a request for overall system maintenan
         
             <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
-    <a class='left-prev' id="prev-link" href="alab_management.task_manager.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="alab_management.task_actor.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">alab_management.task_manager module</p>
+            <p class="prev-next-title">alab_management.task_actor module</p>
         </div>
     </a>
 </div>

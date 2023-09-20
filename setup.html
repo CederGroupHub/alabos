@@ -193,6 +193,11 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.experiment_view.completed_experiment_view.html">
+         alab_management.experiment_view.completed_experiment_view module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="alab_management.experiment_view.experiment.html">
          alab_management.experiment_view.experiment module
         </a>
@@ -215,6 +220,11 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.sample_view.completed_sample_view.html">
+         alab_management.sample_view.completed_sample_view module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="alab_management.sample_view.sample.html">
          alab_management.sample_view.sample module
         </a>
@@ -227,8 +237,8 @@
       </ul>
      </li>
      <li class="toctree-l3 has-children">
-      <a class="reference internal" href="alab_management.task_view.html">
-       alab_management.task_view package
+      <a class="reference internal" href="alab_management.task_manager.html">
+       alab_management.task_manager package
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
       <label for="toctree-checkbox-7">
@@ -236,6 +246,38 @@
        </i>
       </label>
       <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.enums.html">
+         alab_management.task_manager.enums module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.resource_requester.html">
+         alab_management.task_manager.resource_requester module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.task_manager.html">
+         alab_management.task_manager.task_manager module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="alab_management.task_view.html">
+       alab_management.task_view package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+      <label for="toctree-checkbox-8">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_view.completed_task_view.html">
+         alab_management.task_view.completed_task_view module
+        </a>
+       </li>
        <li class="toctree-l4">
         <a class="reference internal" href="alab_management.task_view.task.html">
          alab_management.task_view.task module
@@ -252,6 +294,11 @@
         </a>
        </li>
       </ul>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="alab_management.alarm.html">
+       alab_management.alarm module
+      </a>
      </li>
      <li class="toctree-l3">
       <a class="reference internal" href="alab_management.config.html">
@@ -281,11 +328,6 @@
      <li class="toctree-l3">
       <a class="reference internal" href="alab_management.task_actor.html">
        alab_management.task_actor module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.task_manager.html">
-       alab_management.task_manager module
       </a>
      </li>
      <li class="toctree-l3">
@@ -459,15 +501,23 @@ connection and some general configurations.</p>
 <span class="c1"># the working dir specifies where the device and task definitions can be loaded</span>
 <span class="c1"># by default, the working directory should just be the directory where the config</span>
 <span class="c1"># file stores</span>
-<span class="n">working_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;.&quot;</span>
+<span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ALab&quot;</span><span class="w"> </span><span class="c1">#the name of the lab. This will also set the name of the MongoDB database</span>
+<span class="n">working_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;.&quot;</span><span class="w"> </span><span class="c1">#the working directory of the lab code</span>
+<span class="c1"># parent_package = &quot;&quot;  #optional. This is used if the config/devices/tasks files are not in the root folder of the python package. This should point to the parent package of the config file (ie if devices/tasks are in a submodule of the &quot;my_alab&quot; package like &quot;my_alab/system&quot;, this should be &quot;my_alab.system&quot;)</span>
 
-<span class="k">[db]</span>
-<span class="c1"># this section specify how to connect to the database, you can specify the host</span>
-<span class="c1"># and port of database, and the name of database that we will use. If your database</span>
+<span class="k">[mongodb]</span>
+<span class="c1"># this section specify how to connect to the &quot;working&quot; database, you can specify the host</span>
+<span class="c1"># and port of database. If your database</span>
 <span class="c1"># needs authentication, you will also need to  provide username and password</span>
 <span class="n">host</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;localhost&#39;</span>
 <span class="n">port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">27017</span>
-<span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;Alab&#39;</span>
+<span class="n">username</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;&#39;</span>
+<span class="n">password</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;&#39;</span>
+
+<span class="k">[mongodb_completed]</span>
+<span class="c1"># this section specify how to connect to the &quot;completed&quot; database, which is a parallel database that stores the results for completed experiments. This is formatted the same as the previous section</span>
+<span class="n">host</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;localhost&#39;</span>
+<span class="n">port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">27017</span>
 <span class="n">username</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;&#39;</span>
 <span class="n">password</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;&#39;</span>
 </pre></div>

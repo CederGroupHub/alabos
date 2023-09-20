@@ -193,6 +193,11 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.experiment_view.completed_experiment_view.html">
+         alab_management.experiment_view.completed_experiment_view module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="alab_management.experiment_view.experiment.html">
          alab_management.experiment_view.experiment module
         </a>
@@ -215,6 +220,11 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.sample_view.completed_sample_view.html">
+         alab_management.sample_view.completed_sample_view module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="alab_management.sample_view.sample.html">
          alab_management.sample_view.sample module
         </a>
@@ -227,8 +237,8 @@
       </ul>
      </li>
      <li class="toctree-l3 has-children">
-      <a class="reference internal" href="alab_management.task_view.html">
-       alab_management.task_view package
+      <a class="reference internal" href="alab_management.task_manager.html">
+       alab_management.task_manager package
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
       <label for="toctree-checkbox-7">
@@ -236,6 +246,38 @@
        </i>
       </label>
       <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.enums.html">
+         alab_management.task_manager.enums module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.resource_requester.html">
+         alab_management.task_manager.resource_requester module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.task_manager.html">
+         alab_management.task_manager.task_manager module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="alab_management.task_view.html">
+       alab_management.task_view package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+      <label for="toctree-checkbox-8">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_view.completed_task_view.html">
+         alab_management.task_view.completed_task_view module
+        </a>
+       </li>
        <li class="toctree-l4">
         <a class="reference internal" href="alab_management.task_view.task.html">
          alab_management.task_view.task module
@@ -252,6 +294,11 @@
         </a>
        </li>
       </ul>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="alab_management.alarm.html">
+       alab_management.alarm module
+      </a>
      </li>
      <li class="toctree-l3">
       <a class="reference internal" href="alab_management.config.html">
@@ -281,11 +328,6 @@
      <li class="toctree-l3">
       <a class="reference internal" href="alab_management.task_actor.html">
        alab_management.task_actor module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.task_manager.html">
-       alab_management.task_manager module
       </a>
      </li>
      <li class="toctree-l3">
@@ -398,7 +440,8 @@
 <dt class="sig sig-object py" id="alab_management.device_view.device_view.DevicePauseStatus">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DevicePauseStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DevicePauseStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DevicePauseStatus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
-<p>Pause status of the Device. This is used to pause the device outside of the typical Task queue (like by an operator for maintenance or refilling consumables)</p>
+<p>Pause status of the Device. This is used to pause the device outside the typical
+Task queue (like by an operator for maintenance or refilling consumables)</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="alab_management.device_view.device_view.DevicePauseStatus.PAUSED">
 <span class="sig-name descname"><span class="pre">PAUSED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#alab_management.device_view.device_view.DevicePauseStatus.PAUSED" title="Permalink to this definition">¶</a></dt>
@@ -520,8 +563,9 @@ Device name is a unique identifier for a device</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>device_type_str</strong> – the type of device</p></li>
-<li><p><strong>type_or_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – “type” or “name” to specify whether searching for a type of device by Type(BaseDevice), or for a specific device by name</p></li>
+<li><p><strong>device_str</strong> (<em>str</em>) – the type of device</p></li>
+<li><p><strong>type_or_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – “type” or “name” to specify whether searching for a type of device by
+Type(BaseDevice), or for a specific device by name</p></li>
 <li><p><strong>task_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>]) – the id of task that requests this device</p></li>
 </ul>
 </dd>
@@ -615,7 +659,7 @@ If there is no such property with name <code class="docutils literal notranslate
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceView.request_devices">
-<span class="sig-name descname"><span class="pre">request_devices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_names_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_types_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.request_devices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.request_devices" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">request_devices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_names_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_types_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.request_devices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.request_devices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request a list of device, this function will return the name of devices if all the requested device is ready.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -624,8 +668,11 @@ If there is no such property with name <code class="docutils literal notranslate
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>task_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the id of task that requests these devices</p></li>
-<li><p><strong>device_types_str</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – the requested device types</p></li>
+<li><p><strong>task_id</strong> (<em>ObjectId</em>) – the id of task that requests these devices</p></li>
+<li><p><strong>device_names_str</strong> (<em>Optional</em><em>[</em><em>Collection</em><em>[</em><em>str</em><em>]</em><em>]</em>) – the requested
+device names. If None, no device name is requested</p></li>
+<li><p><strong>device_types_str</strong> (<em>Optional</em><em>[</em><em>Collection</em><em>[</em><em>str</em><em>]</em><em>]</em>) – the requested
+device types. If None, no device type is requested</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

@@ -193,6 +193,11 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.experiment_view.completed_experiment_view.html">
+         alab_management.experiment_view.completed_experiment_view module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="alab_management.experiment_view.experiment.html">
          alab_management.experiment_view.experiment module
         </a>
@@ -215,6 +220,11 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.sample_view.completed_sample_view.html">
+         alab_management.sample_view.completed_sample_view module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="alab_management.sample_view.sample.html">
          alab_management.sample_view.sample module
         </a>
@@ -227,8 +237,8 @@
       </ul>
      </li>
      <li class="toctree-l3 has-children">
-      <a class="reference internal" href="alab_management.task_view.html">
-       alab_management.task_view package
+      <a class="reference internal" href="alab_management.task_manager.html">
+       alab_management.task_manager package
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
       <label for="toctree-checkbox-7">
@@ -236,6 +246,38 @@
        </i>
       </label>
       <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.enums.html">
+         alab_management.task_manager.enums module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.resource_requester.html">
+         alab_management.task_manager.resource_requester module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.task_manager.html">
+         alab_management.task_manager.task_manager module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="alab_management.task_view.html">
+       alab_management.task_view package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+      <label for="toctree-checkbox-8">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_view.completed_task_view.html">
+         alab_management.task_view.completed_task_view module
+        </a>
+       </li>
        <li class="toctree-l4">
         <a class="reference internal" href="alab_management.task_view.task.html">
          alab_management.task_view.task module
@@ -252,6 +294,11 @@
         </a>
        </li>
       </ul>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="alab_management.alarm.html">
+       alab_management.alarm module
+      </a>
      </li>
      <li class="toctree-l3">
       <a class="reference internal" href="alab_management.config.html">
@@ -281,11 +328,6 @@
      <li class="toctree-l3">
       <a class="reference internal" href="alab_management.task_actor.html">
        alab_management.task_actor module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.task_manager.html">
-       alab_management.task_manager module
       </a>
      </li>
      <li class="toctree-l3">
@@ -384,8 +426,170 @@
         
               <div>
                 
-  <div class="section" id="alab-management-lab-view-module">
-<h1>alab_management.lab_view module<a class="headerlink" href="#alab-management-lab-view-module" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-alab_management.lab_view">
+<span id="alab-management-lab-view-module"></span><h1>alab_management.lab_view module<a class="headerlink" href="#module-alab_management.lab_view" title="Permalink to this headline">¶</a></h1>
+<p>Each task process will have a <code class="docutils literal notranslate"><span class="pre">LabView</span></code> instance, through which it can request
+the lab resources (devices and sample positions). It can also update the position
+of a sample in the lab.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="alab_management.lab_view.DeviceRunningException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DeviceRunningException</span></span><a class="reference internal" href="_modules/alab_management/lab_view.html#DeviceRunningException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_view.DeviceRunningException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raise when a task try to release a device that is still running</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="alab_management.lab_view.LabView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LabView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_view.html#LabView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_view.LabView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>LabView is a wrapper over device view and sample view.
+A task can get access to that to request resources, query sample and
+update sample positions.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.lab_view.LabView.get_locked_sample_positions">
+<span class="sig-name descname"><span class="pre">get_locked_sample_positions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_view.html#LabView.get_locked_sample_positions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_view.LabView.get_locked_sample_positions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of sample positions that are occupied by this task</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.lab_view.LabView.get_sample">
+<span class="sig-name descname"><span class="pre">get_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_view.html#LabView.get_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_view.LabView.get_sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a sample by either an ObjectId corresponding to sample_id, or as a string corresponding to the sample’s name within the experiment., see also
+<a class="reference internal" href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_sample" title="alab_management.sample_view.sample_view.SampleView.get_sample"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_sample</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="alab_management.sample_view.sample.html#alab_management.sample_view.sample.Sample" title="alab_management.sample_view.sample.Sample"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sample</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.lab_view.LabView.get_sample_position_parent_device">
+<span class="sig-name descname"><span class="pre">get_sample_position_parent_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_view.html#LabView.get_sample_position_parent_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_view.LabView.get_sample_position_parent_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the name of the device that owns the sample position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.lab_view.LabView.move_sample">
+<span class="sig-name descname"><span class="pre">move_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_view.html#LabView.move_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_view.LabView.move_sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move a sample to a new position. <cite>sample</cite> can be given as either an ObjectId corresponding to sample_id, or as a string corresponding to the sample’s name within the experiment.</p>
+<p>see also:
+<a class="reference internal" href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.move_sample" title="alab_management.sample_view.sample_view.SampleView.move_sample"><code class="xref py py-meth docutils literal notranslate"><span class="pre">move_sample</span></code></a></p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="alab_management.lab_view.LabView.priority">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">priority</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#alab_management.lab_view.LabView.priority" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.lab_view.LabView.request_cleanup">
+<span class="sig-name descname"><span class="pre">request_cleanup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_view.html#LabView.request_cleanup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_view.LabView.request_cleanup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request cleanup of the task. This function will block until the task is cleaned up.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.lab_view.LabView.request_resources">
+<span class="sig-name descname"><span class="pre">request_resources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource_request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_view.html#LabView.request_resources"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_view.LabView.request_resources" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request devices and sample positions. This function is a context manager, which should be used in
+a with statement to ensure all the devices are released when the task is done.</p>
+<dl class="simple">
+<dt>resource_request format is:</dt><dd><p>{device: {position: number, …}, …}</p>
+</dd>
+</dl>
+<p>device can be a name of a specific device (str), a type of device, or None. If device is a type, the resource request will look for any available device of that type. If device is None, the resource request will look for sample positions that do not belong to a device.
+position is the name of a sample position that should be reserved on the device, and number is the number of such positions that should be reserved. If the device is required but no positions are required, this can be left as an empty dictionary.</p>
+<p>Examples:</p>
+<p>{TubeFurnace: {“tray”: 4}, “arm1”: {}} will find the first available TubeFurnace device, then reserve 4 sample positions of “{tubefurnacename}/tray/{tray_index}” on that device. It will also find the device named “arm1”.</p>
+<p>The priority of the request can optionally be specified as a positive integer, which should probably be in the range of 0-40. 20 is the default “NORMAL” priority level. Higher number = higher priority. Numbers &gt;= 100 are reserved for urgent/error correcting requests.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.lab_view.LabView.request_user_input">
+<span class="sig-name descname"><span class="pre">request_user_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_view.html#LabView.request_user_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_view.LabView.request_user_input" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request user input from the user. This function will block until the user inputs something. Returns the value returned by the user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.lab_view.LabView.run_subtask">
+<span class="sig-name descname"><span class="pre">run_subtask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_view.html#LabView.run_subtask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_view.LabView.run_subtask" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>run a task as a subtask within the task. basically fills in task_id and lab_view for you.</dt><dd><p>this command blocks until the subtask is completed.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>task_type</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>type</em><em>[</em><a class="reference internal" href="task_definition.html#alab_management.task_view.task.BaseTask" title="alab_management.task_view.task.BaseTask"><em>BaseTask</em></a><em>]</em><em>]</em>) – name or class of Task to run.</p></li>
+<li><p><strong>**kwargs</strong> – will be passed to the Task method via the parameters entry in task collection.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="alab_management.lab_view.LabView.task_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">task_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bson.objectid.ObjectId</span></em><a class="headerlink" href="#alab_management.lab_view.LabView.task_id" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.lab_view.LabView.update_result">
+<span class="sig-name descname"><span class="pre">update_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_view.html#LabView.update_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_view.LabView.update_result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update a result of the task. This result will be saved in the task collection under <cite>results.name</cite> and can be retrieved later.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name of the result (ie “diffraction pattern”). This will be used as the key in the results dictionary.</p></li>
+<li><p><strong>value</strong> (<em>Any</em>) – value of the result. This can be a numpy array, a set, or any other bson-serializable object (most standard Python types).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="alab_management.lab_view.ResourcesRequest">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ResourcesRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_view.html#ResourcesRequest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_view.ResourcesRequest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.main.BaseModel</span></code></p>
+<p>This class is used to validate the resource request. Each request should have a format of
+[DeviceType: List of SamplePositionRequest]</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SamplePositionRequest" title="alab_management.sample_view.sample_view.SamplePositionRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplePositionRequest</span></code></a></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.lab_view.ResourcesRequest.preprocess">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">preprocess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_view.html#ResourcesRequest.preprocess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_view.ResourcesRequest.preprocess" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 
 

@@ -1,0 +1,616 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>alab_management.alarm &#8212; Alab Management</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../../index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="../../_static/logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">Alab Management</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../index.html">
+   Overview
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Quickstart
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../installation.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../setup.html">
+   Setup definition folder
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../device_definition.html">
+   Defining new devices
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../task_definition.html">
+   Defining new tasks
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../development.html">
+   Development
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../modules.html">
+   API Docs
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../alab_management.html">
+     alab_management package
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+    <label for="toctree-checkbox-2">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../alab_management.builders.html">
+       alab_management.builders package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+      <label for="toctree-checkbox-3">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.builders.experimentbuilder.html">
+         alab_management.builders.experimentbuilder module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.builders.samplebuilder.html">
+         alab_management.builders.samplebuilder module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../alab_management.device_view.html">
+       alab_management.device_view package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+      <label for="toctree-checkbox-4">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.device_view.dbattributes.html">
+         alab_management.device_view.dbattributes module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.device_view.device.html">
+         alab_management.device_view.device module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.device_view.device_view.html">
+         alab_management.device_view.device_view module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../alab_management.experiment_view.html">
+       alab_management.experiment_view package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+      <label for="toctree-checkbox-5">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.experiment_view.completed_experiment_view.html">
+         alab_management.experiment_view.completed_experiment_view module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.experiment_view.experiment.html">
+         alab_management.experiment_view.experiment module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.experiment_view.experiment_view.html">
+         alab_management.experiment_view.experiment_view module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../alab_management.sample_view.html">
+       alab_management.sample_view package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+      <label for="toctree-checkbox-6">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.sample_view.completed_sample_view.html">
+         alab_management.sample_view.completed_sample_view module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.sample_view.sample.html">
+         alab_management.sample_view.sample module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.sample_view.sample_view.html">
+         alab_management.sample_view.sample_view module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../alab_management.task_manager.html">
+       alab_management.task_manager package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+      <label for="toctree-checkbox-7">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.task_manager.enums.html">
+         alab_management.task_manager.enums module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.task_manager.resource_requester.html">
+         alab_management.task_manager.resource_requester module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.task_manager.task_manager.html">
+         alab_management.task_manager.task_manager module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../alab_management.task_view.html">
+       alab_management.task_view package
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+      <label for="toctree-checkbox-8">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.task_view.completed_task_view.html">
+         alab_management.task_view.completed_task_view module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.task_view.task.html">
+         alab_management.task_view.task module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.task_view.task_enums.html">
+         alab_management.task_view.task_enums module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../alab_management.task_view.task_view.html">
+         alab_management.task_view.task_view module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../alab_management.alarm.html">
+       alab_management.alarm module
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../alab_management.config.html">
+       alab_management.config module
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../alab_management.device_manager.html">
+       alab_management.device_manager module
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../alab_management.experiment_manager.html">
+       alab_management.experiment_manager module
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../alab_management.lab_view.html">
+       alab_management.lab_view module
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../alab_management.logger.html">
+       alab_management.logger module
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../alab_management.task_actor.html">
+       alab_management.task_actor module
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../alab_management.user_input.html">
+       alab_management.user_input module
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/idocx/alab_management"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        
+        
+    </div>
+</div>
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <h1>Source code for alab_management.alarm</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">smtplib</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">slack_sdk</span> <span class="kn">import</span> <span class="n">WebClient</span>
+<span class="kn">from</span> <span class="nn">slack_sdk.errors</span> <span class="kn">import</span> <span class="n">SlackApiError</span>
+
+<div class="viewcode-block" id="format_message_to_codeblock"><a class="viewcode-back" href="../../alab_management.alarm.html#alab_management.alarm.format_message_to_codeblock">[docs]</a><span class="k">def</span> <span class="nf">format_message_to_codeblock</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function takes a message and formats it as a code block.</span>
+<span class="sd">    It is used to format tracebacks as code blocks in Slack.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        message: The message to format (String). This is usually a traceback.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        formatted_message: The formatted message. This will be formatted into code block in slack if the message contains traceback, </span>
+<span class="sd">          otherwise it will be the original message.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check if &quot;Traceback (most recent call last):&quot; is in the message</span>
+    <span class="c1"># Split the message into lines</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Find the index of the line that starts with &quot;Traceback (most recent call last):&quot;</span>
+    <span class="n">traceback_index</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">i</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;Traceback (most recent call last):&quot;</span> <span class="ow">in</span> <span class="n">line</span>
+        <span class="p">),</span>
+        <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">traceback_index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Extract the traceback and the lines that follow it</span>
+        <span class="n">traceback_lines</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">traceback_index</span><span class="p">:]</span>
+
+        <span class="c1"># Join the traceback lines into a single string</span>
+        <span class="n">traceback_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">traceback_lines</span><span class="p">)</span>
+
+        <span class="c1"># Format the traceback as a code block</span>
+        <span class="n">traceback_code</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;```</span><span class="si">{</span><span class="n">traceback_str</span><span class="si">}</span><span class="se">\n</span><span class="s2">```&quot;</span>
+
+        <span class="c1"># Replace the original traceback lines with the formatted code block</span>
+        <span class="n">lines</span><span class="p">[</span><span class="n">traceback_index</span><span class="p">:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">traceback_code</span><span class="p">]</span>
+
+        <span class="c1"># Join the lines back into a single string</span>
+        <span class="n">formatted_message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">formatted_message</span> <span class="o">=</span> <span class="n">message</span>
+    <span class="k">return</span> <span class="n">formatted_message</span></div>
+
+<div class="viewcode-block" id="Alarm"><a class="viewcode-back" href="../../alab_management.alarm.html#alab_management.alarm.Alarm">[docs]</a><span class="k">class</span> <span class="nc">Alarm</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class to send alerts to the user via email or slack.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">email_receivers</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">email_sender</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">email_password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">slack_bot_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">slack_channel_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            email_receivers: A list of email addresses to send the alert to.</span>
+<span class="sd">            email_sender: The email address to send the alert from.</span>
+<span class="sd">            email_password: The password for the email address to send the alert from.</span>
+<span class="sd">            slack_bot_token: The slack bot token to send the alert from.</span>
+<span class="sd">            slack_channel_id: The slack channel id to send the alert to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">email_alert</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slack_alert</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">email_receivers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">setup_email</span><span class="p">(</span><span class="n">email_sender</span><span class="p">,</span> <span class="n">email_receivers</span><span class="p">,</span> <span class="n">email_password</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">email_alert</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Email setup failed, please recheck config file&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">slack_bot_token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">setup_slackbot</span><span class="p">(</span><span class="n">slack_bot_token</span><span class="p">,</span> <span class="n">slack_channel_id</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">slack_alert</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Slackbot setup failed, please recheck config file&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">platforms</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_alert</span><span class="p">,</span> <span class="s2">&quot;slack&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">slack_alert</span><span class="p">}</span>
+
+<div class="viewcode-block" id="Alarm.setup_email"><a class="viewcode-back" href="../../alab_management.alarm.html#alab_management.alarm.Alarm.setup_email">[docs]</a>    <span class="k">def</span> <span class="nf">setup_email</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email_receivers</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">email_sender</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">email_password</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Try to setup email notification (called in __init__)</span>
+<span class="sd">        Args:</span>
+<span class="sd">            email_receivers: A list of email addresses to send the alert to.</span>
+<span class="sd">            email_sender: The email address to send the alert from.</span>
+<span class="sd">            email_password: The password for the email address to send the alert from.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">email_receivers</span> <span class="o">=</span> <span class="n">email_receivers</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">email_sender</span> <span class="o">=</span> <span class="n">email_sender</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">email_password</span> <span class="o">=</span> <span class="n">email_password</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">email_alert</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">platforms</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_alert</span><span class="p">,</span> <span class="s2">&quot;slack&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">slack_alert</span><span class="p">}</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Email setup failed, please recheck config file&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Alarm.setup_slackbot"><a class="viewcode-back" href="../../alab_management.alarm.html#alab_management.alarm.Alarm.setup_slackbot">[docs]</a>    <span class="k">def</span> <span class="nf">setup_slackbot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slack_bot_token</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slack_channel_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Try to setup slackbot notification (called in __init__)</span>
+<span class="sd">        Args:</span>
+<span class="sd">            slack_bot_token: The token from slackbot app</span>
+<span class="sd">            slack_channel_id: The slack channel id where the slackbot app is deployed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">slack_bot_token</span> <span class="o">=</span> <span class="n">slack_bot_token</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">slack_channel_id</span> <span class="o">=</span> <span class="n">slack_channel_id</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">slack_alert</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">platforms</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_alert</span><span class="p">,</span> <span class="s2">&quot;slack&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">slack_alert</span><span class="p">}</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Slackbot setup failed, please recheck config file&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Alarm.alert"><a class="viewcode-back" href="../../alab_management.alarm.html#alab_management.alarm.Alarm.alert">[docs]</a>    <span class="k">def</span> <span class="nf">alert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">category</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Try to alert user in all platform in format of &quot;Category: Message&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            message: The message to print in the platform</span>
+<span class="sd">            category: The category of the message</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">platforms</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">send_email</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">platforms</span><span class="p">[</span><span class="s2">&quot;slack&quot;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">send_slack_notification</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">platforms</span><span class="p">[</span><span class="s2">&quot;slack&quot;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">send_slack_notification</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Alarm.send_email"><a class="viewcode-back" href="../../alab_management.alarm.html#alab_management.alarm.Alarm.send_email">[docs]</a>    <span class="k">def</span> <span class="nf">send_email</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sends an email to the receiver email address with the exception and category.</span>
+<span class="sd">        Category is the type of exception that occured.</span>
+<span class="sd">        Automatically use &quot;Error&quot; as category if the message contains traceback.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            message: The message to print in the email</span>
+<span class="sd">            category: The category of the message</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;Traceback (most recent call last):&quot;</span> <span class="ow">in</span> <span class="n">message</span><span class="p">:</span>
+            <span class="n">category</span> <span class="o">=</span> <span class="s2">&quot;Error&quot;</span>
+            <span class="c1"># Automatically format to code block</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="n">format_message_to_codeblock</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Subject: </span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="se">\n\n</span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">with</span> <span class="n">smtplib</span><span class="o">.</span><span class="n">SMTP</span><span class="p">(</span><span class="s2">&quot;smtp.gmail.com&quot;</span><span class="p">,</span> <span class="mi">587</span><span class="p">)</span> <span class="k">as</span> <span class="n">server</span><span class="p">:</span>
+            <span class="n">server</span><span class="o">.</span><span class="n">ehlo</span><span class="p">()</span>
+            <span class="n">server</span><span class="o">.</span><span class="n">starttls</span><span class="p">()</span>
+            <span class="n">server</span><span class="o">.</span><span class="n">ehlo</span><span class="p">()</span>
+            <span class="n">server</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">email_sender</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_password</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">receiver</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_receivers</span><span class="p">:</span>
+                <span class="n">server</span><span class="o">.</span><span class="n">sendmail</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">email_sender</span><span class="p">,</span> <span class="n">receiver</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Alarm.send_slack_notification"><a class="viewcode-back" href="../../alab_management.alarm.html#alab_management.alarm.Alarm.send_slack_notification">[docs]</a>    <span class="k">def</span> <span class="nf">send_slack_notification</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sends a slack messsage to the receiver email address with the exception and category.</span>
+<span class="sd">        Category is the type of exception that occured.</span>
+<span class="sd">        Automatically use &quot;Error&quot; as category if the message contains traceback.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            message: The message to print in the email</span>
+<span class="sd">            category: The category of the message</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;Traceback (most recent call last):&quot;</span> <span class="ow">in</span> <span class="n">message</span><span class="p">:</span>
+            <span class="n">category</span> <span class="o">=</span> <span class="s2">&quot;Error&quot;</span>
+            <span class="c1"># Automatically format to code block</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="n">format_message_to_codeblock</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">client</span> <span class="o">=</span> <span class="n">WebClient</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">slack_bot_token</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">chat_postMessage</span><span class="p">(</span>
+                <span class="n">channel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">slack_channel_id</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">category</span> <span class="o">+</span> <span class="s2">&quot;: &quot;</span> <span class="o">+</span> <span class="n">message</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="n">SlackApiError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div></div>
+</pre></div>
+
+              </div>
+              
+        
+            <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+        
+        </div>
+    </div>
+    <footer class="footer">
+    <div class="container">
+      <p>
+        
+          By Alab Project Team<br/>
+        
+            &copy; Copyright 2023, Alab Project Team.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+
+  </body>
+</html>

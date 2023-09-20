@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="alab_management.task_view.task_enums module" href="alab_management.task_view.task_enums.html" />
-    <link rel="prev" title="alab_management.task_view package" href="alab_management.task_view.html" />
+    <link rel="prev" title="alab_management.task_view.completed_task_view module" href="alab_management.task_view.completed_task_view.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
     
@@ -193,6 +193,11 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.experiment_view.completed_experiment_view.html">
+         alab_management.experiment_view.completed_experiment_view module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="alab_management.experiment_view.experiment.html">
          alab_management.experiment_view.experiment module
         </a>
@@ -215,6 +220,11 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.sample_view.completed_sample_view.html">
+         alab_management.sample_view.completed_sample_view module
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="alab_management.sample_view.sample.html">
          alab_management.sample_view.sample module
         </a>
@@ -226,16 +236,48 @@
        </li>
       </ul>
      </li>
-     <li class="toctree-l3 current active has-children">
-      <a class="reference internal" href="alab_management.task_view.html">
-       alab_management.task_view package
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="alab_management.task_manager.html">
+       alab_management.task_manager package
       </a>
-      <input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+      <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
       <label for="toctree-checkbox-7">
        <i class="fas fa-chevron-down">
        </i>
       </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.enums.html">
+         alab_management.task_manager.enums module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.resource_requester.html">
+         alab_management.task_manager.resource_requester module
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_manager.task_manager.html">
+         alab_management.task_manager.task_manager module
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 current active has-children">
+      <a class="reference internal" href="alab_management.task_view.html">
+       alab_management.task_view package
+      </a>
+      <input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+      <label for="toctree-checkbox-8">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
       <ul class="current">
+       <li class="toctree-l4">
+        <a class="reference internal" href="alab_management.task_view.completed_task_view.html">
+         alab_management.task_view.completed_task_view module
+        </a>
+       </li>
        <li class="toctree-l4 current active">
         <a class="current reference internal" href="#">
          alab_management.task_view.task module
@@ -252,6 +294,11 @@
         </a>
        </li>
       </ul>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="alab_management.alarm.html">
+       alab_management.alarm module
+      </a>
      </li>
      <li class="toctree-l3">
       <a class="reference internal" href="alab_management.config.html">
@@ -281,11 +328,6 @@
      <li class="toctree-l3">
       <a class="reference internal" href="alab_management.task_actor.html">
        alab_management.task_actor module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.task_manager.html">
-       alab_management.task_manager module
       </a>
      </li>
      <li class="toctree-l3">
@@ -405,9 +447,58 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="alab_management.task_view.task.BaseTask.export_result">
+<span class="sig-name descname"><span class="pre">export_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask.export_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask.export_result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a reference to a result generated by this Task. This
+result can then be imported by another task. This is useful in
+cases where tasks are chained together. For instance, the
+diffraction results from a “PowderDiffraction” task could be
+exported, then imported by a “RietveldRefinement” analysis task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – The name of the result.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The value of the result.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="alab_management.task_view.task.BaseTask.get_message">
 <span class="sig-name descname"><span class="pre">get_message</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask.get_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask.get_message" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.task_view.task.BaseTask.import_result">
+<span class="sig-name descname"><span class="pre">import_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pointer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_explicit_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask.import_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask.import_result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Imports a result from another task. This is useful in cases where
+tasks are chained together. For instance, the diffraction results from a
+<code class="docutils literal notranslate"><span class="pre">PowderDiffraction</span></code> task could be exported, then imported by a “RietveldRefinement”
+analysis task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pointer</strong> (<em>Union</em><em>[</em><a class="reference internal" href="#alab_management.task_view.task.ResultPointer" title="alab_management.task_view.task.ResultPointer"><em>ResultPointer</em></a><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>]</em>) – Either a ResultPointer object
+or a dictionary with the same format as a ResultPointer.</p></li>
+<li><p><strong>allow_explicit_value</strong> (<em>bool</em><em>, </em><em>optional</em>) – If true, users can pass values here instead
+of pointers. If False, only ResultPointers are valid. Defaults to False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If allow_explicit_value is False and the user passes a value instead of a pointer.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The value of the result.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="alab_management.task_view.task.BaseTask.is_simulation">
@@ -425,6 +516,40 @@
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="alab_management.task_view.task.BaseTask.result_specification">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">result_specification</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#alab_management.task_view.task.BaseTask.result_specification" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dictionary describing the results to be generated by this task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>NotImplementedError</strong> – The subclass must implement this method.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>A dictionary with key:type pairs describing the type of data contained under each result key.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">return</span> <span class="p">{</span>
+<span class="go">        &quot;temperature&quot;: float,</span>
+<span class="go">        &quot;pressure&quot;: float</span>
+<span class="go">        }</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">return</span> <span class="p">{</span>
+<span class="go">        &quot;twotheta&quot;: List[float],</span>
+<span class="go">        &quot;counts&quot;: List[float]</span>
+<span class="go">        }</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">return</span> <span class="p">{}</span> <span class="c1">#no results associated with this task.</span>
+</pre></div>
+</div>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[str, Any]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -495,16 +620,50 @@ and sample positions will be released automatically.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="alab_management.task_view.task.BaseTask.update_result">
+<span class="sig-name descname"><span class="pre">update_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask.update_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask.update_result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attach a result to the task. This will be saved in the database and
+can be accessed later. Subsequent calls to this function with the same
+key will overwrite the previous value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – The name of the result.</p></li>
+<li><p><strong>value</strong> (<em>Any</em>) – The value of the result.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="alab_management.task_view.task.BaseTask.validate">
 <span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask.validate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validate the task. This function will be called before the task is executed. Should return False if the task has values that make it impossible to execute.</p>
-<p>For example, a <cite>Heating</cite> subclass of <cite>BaseTask</cite> might return False if the set temperature is too high for the furnace.</p>
+<dd><p>Validate the task. This function will be called before the task is executed.
+Should return False if the task has values that make it impossible to execute.</p>
+<p>For example, a <code class="docutils literal notranslate"><span class="pre">Heating</span></code> subclass of <cite>BaseTask</cite> might return False if the
+set temperature is too high for the furnace.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
 </dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="alab_management.task_view.task.ResultPointer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ResultPointer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#ResultPointer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.ResultPointer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.task_view.task.ResultPointer.from_json">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#ResultPointer.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.ResultPointer.from_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.task_view.task.ResultPointer.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#ResultPointer.to_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.ResultPointer.to_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -539,11 +698,11 @@ and sample positions will be released automatically.</p>
         
             <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
-    <a class='left-prev' id="prev-link" href="alab_management.task_view.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="alab_management.task_view.completed_task_view.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">alab_management.task_view package</p>
+            <p class="prev-next-title">alab_management.task_view.completed_task_view module</p>
         </div>
     </a>
     <a class='right-next' id="next-link" href="alab_management.task_view.task_enums.html" title="next page">
