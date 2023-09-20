@@ -49,7 +49,7 @@ def parse_reroute_tasks() -> Dict[str, Type[BaseTask]]:
         _type_: _description_
     """
     from alab_management.task_view.task import _reroute_task_registry
-    from alab_management.device_view.device import _device_registry
+    from alab_management.device_view.device import get_all_devices
     from alab_management.sample_view import SampleView
 
     # return []
@@ -71,7 +71,7 @@ def parse_reroute_tasks() -> Dict[str, Type[BaseTask]]:
             elif issubclass(device_identifier, BaseDevice):
                 devices = [
                     name
-                    for name, device_instance in _device_registry.items()
+                    for name, device_instance in get_all_devices().items()
                     if isinstance(device_instance, device_identifier)
                 ]  # all devices of this type
             else:
