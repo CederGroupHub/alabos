@@ -3,6 +3,7 @@ import os
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
+
 def format_message_to_codeblock(message: str) -> str:
     """
     This function takes a message and formats it as a code block.
@@ -10,7 +11,7 @@ def format_message_to_codeblock(message: str) -> str:
     Args:
         message: The message to format (String). This is usually a traceback.
     Returns:
-        formatted_message: The formatted message. This will be formatted into code block in slack if the message contains traceback, 
+        formatted_message: The formatted message. This will be formatted into code block in slack if the message contains traceback,
           otherwise it will be the original message.
     """
     # Check if "Traceback (most recent call last):" is in the message
@@ -47,10 +48,12 @@ def format_message_to_codeblock(message: str) -> str:
         formatted_message = message
     return formatted_message
 
+
 class Alarm:
     """
     A class to send alerts to the user via email or slack.
     """
+
     def __init__(
         self,
         email_receivers: list = None,
@@ -83,7 +86,9 @@ class Alarm:
                 print("Slackbot setup failed, please recheck config file")
         self.platforms = {"email": self.email_alert, "slack": self.slack_alert}
 
-    def setup_email(self, email_receivers: list, email_sender: str, email_password: str):
+    def setup_email(
+        self, email_receivers: list, email_sender: str, email_password: str
+    ):
         """
         Try to setup email notification (called in __init__)
         Args:
@@ -134,7 +139,7 @@ class Alarm:
     def send_email(self, message, category):
         """
         Sends an email to the receiver email address with the exception and category.
-        Category is the type of exception that occured.
+        Category is the type of exception that occurred.
         Automatically use "Error" as category if the message contains traceback.
         Args:
             message: The message to print in the email
@@ -155,8 +160,8 @@ class Alarm:
 
     def send_slack_notification(self, message, category):
         """
-        Sends a slack messsage to the receiver email address with the exception and category.
-        Category is the type of exception that occured.
+        Sends a slack message to the receiver email address with the exception and category.
+        Category is the type of exception that occurred.
         Automatically use "Error" as category if the message contains traceback.
         Args:
             message: The message to print in the email
