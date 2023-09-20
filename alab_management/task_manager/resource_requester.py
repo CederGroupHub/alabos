@@ -136,6 +136,12 @@ class ResourceRequester(RequestMixin):
         self._thread.daemon = False
         self._thread.start()
 
+        self._stop = False
+
+    def __close__(self):
+        self._stop = True
+        self._thread.join()
+
     def request_resources(
         self,
         resource_request: _ResourceRequestDict,
@@ -266,7 +272,7 @@ class ResourceRequester(RequestMixin):
         )
 
     def _check_request_status_loop(self):
-        while True:
+        while not self._stop:
             try:
                 for request_id in self._waiting.copy().keys():
                     status = self.get_request(request_id=request_id, projection=["status"])["status"]  # type: ignore
