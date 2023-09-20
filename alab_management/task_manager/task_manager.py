@@ -46,6 +46,7 @@ def parse_reroute_tasks() -> Dict[str, Type[BaseTask]]:
     -------
         _type_: _description_
     """
+    from alab_management.task_view.task import _reroute_task_registry
     from alab_management.device_view.device import _device_registry
     from alab_management.sample_view import SampleView
     from alab_management.task_view.task import _reroute_task_registry
@@ -69,7 +70,7 @@ def parse_reroute_tasks() -> Dict[str, Type[BaseTask]]:
             elif issubclass(device_identifier, BaseDevice):
                 devices = [
                     name
-                    for name, device_instance in _device_registry.items()
+                    for name, device_instance in get_all_devices().items()
                     if isinstance(device_instance, device_identifier)
                 ]  # all devices of this type
             else:
@@ -403,7 +404,7 @@ class TaskManager(RequestMixin):
                     self.sample_view.release_sample_position(sample_position["name"])
 
     def _check_for_request_cycle(self):
-        """Check if there is a cycle in the request graph. (ie tasks occupy sample positions required by one another, no requests can be fufilled). If found, use a reroute task to fix the cycle. This function will only trigger if a reroute task has been defined using `add_reroute`."""
+        """Check if there is a cycle in the request graph. (ie tasks occupy sample positions required by one another, no requests can be fulfilled). If found, use a reroute task to fix the cycle. This function will only trigger if a reroute task has been defined using `add_reroute`."""
         tasks = self.task_view.get_tasks_by_status(TaskStatus.REQUESTING_RESOURCES)
 
         if len(tasks) < 2:

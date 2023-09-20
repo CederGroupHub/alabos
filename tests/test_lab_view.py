@@ -11,7 +11,7 @@ from alab_management.lab_view import LabView
 from alab_management.sample_view import SampleView
 from alab_management.scripts.cleanup_lab import cleanup_lab
 from alab_management.scripts.setup_lab import setup_lab
-from alab_management.task_manager import TaskManager
+from alab_management.task_manager.task_manager import TaskManager
 from alab_management.task_view import TaskView
 
 

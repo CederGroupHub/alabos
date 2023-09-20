@@ -31,7 +31,7 @@ class DeviceTaskStatus(Enum):
 
 @unique
 class DevicePauseStatus(Enum):
-    """Pause status of the Device. This is used to pause the device outside of the typical Task queue (like by an operator for maintenance or refilling consumables)."""
+    """Pause status of the Device. This is used to pause the device outside of the typical Task queue (like by an operator for maintenance or refilling consumables)"""
 
     RELEASED = auto()
     REQUESTED = auto()
@@ -48,7 +48,9 @@ class DeviceView:
         """Class with methods to interact with devices (status + method execution).
 
         Args:
-            connect_to_devices (bool, optional): If true, make a connection to all devices (serial, ip, etc.). If False, can still check Device status, but cannot execute methods on devices. Defaults to False.
+            connect_to_devices (Optional[bool]): If true, make a connection to all devices
+              (serial, ip, etc.). If False, can still check Device status, but cannot execute
+              methods on devices. Defaults to False.
         """
         self._device_collection = get_collection("devices")
         self._device_collection.create_index([("name", pymongo.HASHED)])
@@ -64,8 +66,10 @@ class DeviceView:
         for device_name, device in self._device_list.items():
             try:
                 device._connect_wrapper()
-            except:
-                raise DeviceConnectionError(f"Could not connect to {device_name}!")
+            except Exception as e:
+                raise DeviceConnectionError(
+                    f"Could not connect to {device_name}!"
+                ) from e
             print(f"Connected to {device_name}")
         self.__connected_to_devices = True
 
@@ -73,8 +77,10 @@ class DeviceView:
         for device_name, device in self._device_list.items():
             try:
                 device._disconnect_wrapper()
-            except:
-                raise DeviceConnectionError(f"Could not disconnect from {device_name}!")
+            except Exception as e:
+                raise DeviceConnectionError(
+                    f"Could not disconnect from {device_name}!"
+                ) from e
             print(f"Disconnected from {device_name}")
         self.__connected_to_devices = False
 
@@ -141,10 +147,10 @@ class DeviceView:
     def request_devices(
         self,
         task_id: ObjectId,
-        device_names_str: Optional[Collection[str]] = [],
+        device_names_str: Optional[Collection[str]] = None,
         device_types_str: Optional[
             Collection[str]
-        ] = [],  # pylint: disable=unsubscriptable-object
+        ] = None,  # pylint: disable=unsubscriptable-object
     ) -> Optional[Dict[str, Dict[str, Union[str, bool]]]]:
         """
         Request a list of device, this function will return the name of devices if all the requested device is ready.
@@ -153,13 +159,22 @@ class DeviceView:
             There should be no duplicated devices in the ``device_type``, or a ``ValueError`` shall be raised
 
         Args:
-            task_id: the id of task that requests these devices
-            device_types_str: the requested device types
+            task_id (ObjectId): the id of task that requests these devices
+            device_names_str (Optional[Collection[str]]): the requested
+              device names. If None, no device name is requested
+            device_types_str (Optional[Collection[str]]): the requested
+              device types. If None, no device type is requested
 
         Returns
         -------
             {"device_type_name": {"name": device_name, "need_release": need_release (bool)}} or None
         """
+        if device_names_str is None:
+            device_names_str = []
+
+        if device_types_str is None:
+            device_types_str = []
+
         if len(device_types_str) != len(set(device_types_str)):
             raise ValueError(
                 "Currently we do not allow duplicated device types in one request."
@@ -196,8 +211,9 @@ class DeviceView:
         If only_idle set to True, only the idle devices will be returned (or ones have the same task id)
 
         Args:
-            device_type_str: the type of device
-            type_or_name: "type" or "name" to specify whether searching for a type of device by Type(BaseDevice), or for a specific device by name
+            device_str (str): the type of device
+            type_or_name: "type" or "name" to specify whether searching for a type of device by
+              Type(BaseDevice), or for a specific device by name
             task_id: the id of task that requests this device
 
         Returns
@@ -212,6 +228,8 @@ class DeviceView:
             }
         elif type_or_name == "name":
             request_dict = {"name": device_str}
+        else:
+            raise ValueError(f"Unknown type_or_name: {type_or_name}")
 
         if self._device_collection.find_one(request_dict) is None:
             raise ValueError(f"No such device of {type_or_name} {device_str}")
@@ -235,8 +253,9 @@ class DeviceView:
         return [
             {
                 "name": device_entry["name"],
-                "need_release": device_entry["task_id"]
-                != task_id,  # if device already held by this task, don't release with this request. Will be released by the older request.
+                # if device already held by this task, don't release with
+                # this request. Will be released by the older request.
+                "need_release": device_entry["task_id"] != task_id,
             }
             for device_entry in self._device_collection.find(request_dict)
         ]
@@ -304,14 +323,6 @@ class DeviceView:
                 }
             )
 
-        self.logger.system_log(
-            level="DEBUG",
-            log_data={
-                "logged_by": self.__class__.__name__,
-                "type": "ReleasingDevice",
-                "device_name": device_name,
-            },
-        )
         self._device_collection.update_one(
             {"name": device_name},
             {"$set": update_dict},
@@ -366,7 +377,8 @@ class DeviceView:
         ):
             raise ValueError(
                 f"Device's current status ({device_entry['status']}) is "
-                f"not in allowed set of statuses {[status.name for status in required_status]}. Cannot change status to {target_status.name}"
+                f"not in allowed set of statuses {[status.name for status in required_status]}. "
+                f"Cannot change status to {target_status.name}"
             )
 
         self._device_collection.update_one(
@@ -414,7 +426,7 @@ class DeviceView:
             device_name (str): name of the device to set the message for
             message (str): message to be set
         """
-        self.get_device(device_name=device_name)
+        device = self.get_device(device_name=device_name)
 
         self._device_collection.update_one(
             {"name": device_name}, {"$set": {"message": message}}

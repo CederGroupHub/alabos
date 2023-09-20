@@ -3,6 +3,7 @@ Define the base class of devices
 """
 
 from abc import ABC, abstractmethod
+from traceback import format_exc
 from typing import Any, Iterable, List, ClassVar, Dict, Optional, Union
 from alab_management.logger import DBLogger, LoggingType
 
@@ -25,8 +26,11 @@ class BaseDevice(ABC):
     All the devices should be inherited from this class
 
     Attributes:
-        description: description of this kind of device, which can include
+        name (str): the name of device, which is the unique identifier of this device
+        description (Optional[str]): description of this kind of device, which can include
               the device type, how to set up and so on.
+        args: arguments that will be passed to the device class
+        kwargs: keyword arguments that will be passed to the device class
     """
 
     def __init__(self, name: str, description: Optional[str] = None, *args, **kwargs):
@@ -52,7 +56,8 @@ class BaseDevice(ABC):
         """
         # override default class description if provided during device instantiation.
         if description:
-            self.description = description
+            self.description = description  # TODO: change this
+
         self.name = name
 
         if not isinstance(self.description, str):
@@ -277,28 +282,54 @@ def log_signal(signal_name: str, interval_seconds: int):
 
 
 class DeviceSignalEmitter:
-    def __init__(self, device):
+    """
+    This class is responsible for periodically logging device signals to the database.
+    It is intended to be used as a singleton, and should be instantiated once per device.
+    """
+    def __init__(self, device: BaseDevice):
         from alab_management.device_view import DeviceView
 
-        self._device_view = DeviceView()
+        self._device_view: DeviceView = DeviceView()
         self.dblogger = DBLogger(task_id=None)
         self.device = device
         self.is_logging = False
         self.queue = PriorityQueue()
 
+        self._logging_thread: Optional[threading.Thread] = None
+        self._start_time: Optional[datetime.datetime] = None
+
     def get_methods_to_log(self):
+        """
+        Collected all the methods that are decorated with `@log_signal` and return a dictionary of the form:
+
+        .. code-block::
+            {
+                <method_name>: {
+                    "interval": <interval_seconds>,
+                    "signal_name": <signal_name>
+                }
+            }
+        """
         methods_to_log = {}
         for method_name, method in self.device.__class__.__dict__.items():
             if hasattr(method, "logging_interval_seconds") and callable(method):
                 methods_to_log[method_name] = {
                     "interval": method.logging_interval_seconds,
-                    "signal_name": method.signal_name,
+                    "signal_name": method.signal_name,  # noqa
                 }
         return methods_to_log
 
     def _worker(self):
+        """
+        This is the worker thread that will periodically log device signals to the database.
+        """
         def wait_with_option_to_kill(time_to_wait: float):
-            """Waits until the next log is due, or until the logging is stopped. When stopping the logging worker, the worker will complete its current logging task before stopping the worker thread. This may result in long blockages if the logging interval is long. This function will allow the worker to periodically check if it should stop mid-wait to avoid this issue.
+            """
+            Waits until the next log is due, or until the logging is stopped. When stopping
+            the logging worker, the worker will complete its current logging task before
+            stopping the worker thread. This may result in long blockages if the logging
+            interval is long. This function will allow the worker to periodically check if
+            it should stop mid-wait to avoid this issue.
 
             Args:
                 time_to_wait (float): The total time to wait, assuming the logging worker is not stopped.
@@ -318,9 +349,12 @@ class DeviceSignalEmitter:
                 time.sleep(time_to_wait)
 
         if len(self.get_methods_to_log()) == 0:
-            return  # no need to run if we arent logging any methods
+            return  # no need to run if we aren't logging any methods
+
         while True:
-            # we check if logging is active within the loop. This is to allow the logging worker to be stopped mid-wait if necessary. Prevents us blocking a `.stop()` call if stuck waiting to log method on a long interval.
+            # we check if logging is active within the loop. This is to allow the logging worker
+            # to be stopped mid-wait if necessary. Prevents us blocking a `.stop()` call if stuck
+            # waiting to log method on a long interval.
             try:
                 log_at, method_name, signal_name, interval, count = self.queue.get(
                     block=False
@@ -341,12 +375,24 @@ class DeviceSignalEmitter:
             )
             self.queue.put((next_log_at, method_name, signal_name, interval, count))
 
-    def log_method_to_db(self, method_name, signal_name):
+    def log_method_to_db(self, method_name: str, signal_name: str):
+        """
+        Logs a method to the database. This is called by the worker thread.
+
+        Args:
+            method_name: the name of the method to call on the device
+            signal_name: the name of the signal to log to the database
+
+        Exceptions:
+            Any exceptions raised by the method call will be caught and raised directly.
+        """
         method = getattr(self.device, method_name)
         try:
             value = method()
-        except:
-            value = "Error reading {method_name} from device {self.device.name}."
+        except Exception:
+            value = f"Error reading {method_name} from device {self.device.name}." \
+                    f"The error message is: " \
+                    f"{format_exc()}"
 
         self.dblogger.log_device_signal(
             device_name=self.device.name,
@@ -355,10 +401,20 @@ class DeviceSignalEmitter:
         )
 
     def start(self):
+        """
+        Start the logging worker thread. This will start logging all
+        methods decorated with `@log_signal` to the database.
+        """
         self.queue = PriorityQueue()
         for method_name, logging_properties in self.get_methods_to_log().items():
             # queue items are tuples of the form:
-            # (0. timestamp of next log, 1. method name (to get value from device), 2. signal name (what to call this in the database), 3. interval (seconds), 4. count (how many times this has been logged since starting))
+            # tuple(
+            #      0. timestamp of next log,
+            #      1. method name (to get value from device),
+            #      2. signal name (what to call this in the database),
+            #      3. interval (seconds),
+            #      4. count (how many times this has been logged since starting)
+            #  )
             self.queue.put(
                 (
                     datetime.datetime.now()
@@ -372,9 +428,13 @@ class DeviceSignalEmitter:
         self.is_logging = True
         self._logging_thread = threading.Thread(target=self._worker)
         self._start_time = datetime.datetime.now()
+
         self._logging_thread.start()
 
     def stop(self):
+        """
+        Stop the logging worker thread. This will stop logging all.
+        """
         self.is_logging = False
         self._logging_thread.join()
 
@@ -382,19 +442,22 @@ class DeviceSignalEmitter:
         """Retrieve a signal from the database
 
         Args:
-            signal_name (str): device signal name. This should match the signal_name passed to the `@log_device_signal` decorator
-            within (Optional[datetime.timedelta], optional): timedelta defining how far back to pull logs from (relative to current time). Defaults to None.
+            signal_name (str): device signal name. This should match the signal_name
+              passed to the `@log_device_signal` decorator
+            within (Optional[datetime.timedelta]): timedelta defining
+              how far back to pull logs from (relative to current time). Defaults to None.
 
         Returns:
-            Dict: Dictionary of signal result. Single value vs lists depends on whether `within` was None or not, respectively. Form is:
+            Dict: Dictionary of signal result. Single value vs lists depends on whether ``within``
+              was None or not, respectively. Form is:
+
+            .. code-block::
             {
                 "device_name": "device_name",
                 "signal_name": "signal_name",
                 "value": "signal_value" or ["signal_value_1", "signal_value_2", ...]],
                 "timestamp": "timestamp" or ["timestamp_1", "timestamp_2", ...]
             }
-
-
         """
         if within is None:
             return self.dblogger.get_latest_device_signal(
@@ -411,7 +474,7 @@ _device_registry: Dict[str, BaseDevice] = {}
 
 def add_device(device: BaseDevice):
     """
-    Register a device instance
+    Register a device instance. It is stored in a global dictionary.
     """
     if device.name in _device_registry:
         raise KeyError(f"Duplicated device name {device.name}")
@@ -420,6 +483,10 @@ def add_device(device: BaseDevice):
 
 def get_all_devices() -> Dict[str, BaseDevice]:
     """
-    Get all the device names in the device registry
+    Get all the device names in the device registry. This is a shallow copy of the registry.
+
+    Returns:
+        A dictionary of all the devices in the registry. The keys are the device names,
+          and the values are the device instances.
     """
     return _device_registry.copy()
