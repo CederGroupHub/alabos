@@ -153,13 +153,13 @@ class BaseDevice(ABC):
                   SamplePosition(
                       "inside",
                       description="The position inside the furnace, where the samples are heated",
-                      number=8
+                      number=8,
                   ),
                   SamplePosition(
                       "furnace_table",
                       description="Temporary position to transfer samples",
-                      number=16
-                  )
+                      number=16,
+                  ),
               ]
 
         """
@@ -286,6 +286,7 @@ class DeviceSignalEmitter:
     This class is responsible for periodically logging device signals to the database.
     It is intended to be used as a singleton, and should be instantiated once per device.
     """
+
     def __init__(self, device: BaseDevice):
         from alab_management.device_view import DeviceView
 
@@ -323,6 +324,7 @@ class DeviceSignalEmitter:
         """
         This is the worker thread that will periodically log device signals to the database.
         """
+
         def wait_with_option_to_kill(time_to_wait: float):
             """
             Waits until the next log is due, or until the logging is stopped. When stopping
@@ -390,9 +392,11 @@ class DeviceSignalEmitter:
         try:
             value = method()
         except Exception:
-            value = f"Error reading {method_name} from device {self.device.name}." \
-                    f"The error message is: " \
-                    f"{format_exc()}"
+            value = (
+                f"Error reading {method_name} from device {self.device.name}."
+                f"The error message is: "
+                f"{format_exc()}"
+            )
 
         self.dblogger.log_device_signal(
             device_name=self.device.name,
