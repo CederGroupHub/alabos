@@ -26,7 +26,7 @@ class TestDeviceManager(TestCase):
         setup_lab()
         self.devices_client = DevicesClient(task_id=ObjectId(), timeout=5)
         self.process = Process(target=launch_device_manager)
-        self.process.daemon = True
+        self.process.daemon = False
         self.process.start()
         time.sleep(1.5)
 
