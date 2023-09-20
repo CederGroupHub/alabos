@@ -29,6 +29,3 @@ class RobotArm(BaseDevice):
 
     def disconnect(self):
         pass
-
-
-robot_arm = RobotArm(name="dummy")

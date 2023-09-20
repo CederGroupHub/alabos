@@ -274,6 +274,7 @@ class TaskManager(RequestMixin):
                     "sample_positions": positions_to_reroute,
                 },
             )
+            thread.daemon = False
             thread.start()
 
     def _handle_requested_resources(self, request_entry: Dict[str, Any]):

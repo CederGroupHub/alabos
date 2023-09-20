@@ -52,9 +52,3 @@ class Furnace(BaseDevice):
 
     def disconnect(self):
         pass
-
-
-furnace_1 = Furnace(name="furnace_1")
-furnace_2 = Furnace(name="furnace_2")
-furnace_3 = Furnace(name="furnace_3")
-furnace_4 = Furnace(name="furnace_4")

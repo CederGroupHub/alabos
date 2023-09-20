@@ -1,3 +1,4 @@
+import sys
 import time
 import unittest
 from multiprocessing import Process
@@ -61,7 +62,7 @@ class TestTaskManager(unittest.TestCase):
             result,
         )
         self.assertEqual(
-            self.device_view.get_status("furnace_1"), DeviceStatus.OCCUPIED
+            self.device_view.get_status("furnace_1"), DeviceTaskStatus.OCCUPIED
         )
         self.assertEqual(
             self.sample_view.get_sample_position_status("furnace_1/inside"),
@@ -69,7 +70,7 @@ class TestTaskManager(unittest.TestCase):
         )
         self.resource_requester.release_resources(_id)
         time.sleep(1)
-        self.assertEqual(self.device_view.get_status("furnace_1"), DeviceStatus.IDLE)
+        self.assertEqual(self.device_view.get_status("furnace_1"), DeviceTaskStatus.IDLE)
         self.assertEqual(
             self.sample_view.get_sample_position_status("furnace_1/inside"),
             (SamplePositionStatus.EMPTY, None),
@@ -88,7 +89,7 @@ class TestTaskManager(unittest.TestCase):
             result,
         )
         self.assertEqual(
-            self.device_view.get_status("furnace_1"), DeviceStatus.OCCUPIED
+            self.device_view.get_status("furnace_1"), DeviceTaskStatus.OCCUPIED
         )
         self.assertEqual(
             self.sample_view.get_sample_position_status("furnace_1/inside"),
@@ -96,7 +97,7 @@ class TestTaskManager(unittest.TestCase):
         )
         self.resource_requester.release_resources(_id)
         time.sleep(1)
-        self.assertEqual(self.device_view.get_status("furnace_1"), DeviceStatus.IDLE)
+        self.assertEqual(self.device_view.get_status("furnace_1"), DeviceTaskStatus.IDLE)
         self.assertEqual(
             self.sample_view.get_sample_position_status("furnace_1/inside"),
             (SamplePositionStatus.EMPTY, None),
