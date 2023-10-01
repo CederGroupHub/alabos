@@ -74,7 +74,7 @@ class TestDeviceView(TestCase):
         self.assertEqual("OCCUPIED", self.device_view.get_status(device_name).name)
         self.assertEqual(task_id, self.device_view.get_device(device_name)["task_id"])
         self.device_view.occupy_device(device=device_name, task_id=task_id)
-        self.device_view.release_device(device=device_name)
+        self.device_view.release_device(device_name=device_name)
         self.assertEqual("IDLE", self.device_view.get_status(device_name).name)
         self.assertEqual(None, self.device_view.get_device(device_name)["task_id"])
 
@@ -85,7 +85,7 @@ class TestDeviceView(TestCase):
         self.assertEqual("IDLE", self.device_view.get_status(device_name).name)
 
         # if we release it twice, no error should be raised
-        self.device_view.release_device(device=device_name)
+        self.device_view.release_device(device_name=device_name)
         self.assertEqual("IDLE", self.device_view.get_status(device_name).name)
 
     def test_occupied_device_twice(self):
@@ -112,7 +112,7 @@ class TestDeviceView(TestCase):
         )
         task_id = ObjectId()
 
-        devices = self.device_view.request_devices(task_id, device_types)
+        devices = self.device_view.request_devices(task_id, device_names_str=device_types)
         occupy_devices(devices, device_view=self.device_view, task_id=task_id)
         self.assertFalse(devices is None)
         for device_type, device in devices.items():
@@ -143,10 +143,10 @@ class TestDeviceView(TestCase):
         task_id = ObjectId()
         task_id_2 = ObjectId()
 
-        devices = self.device_view.request_devices(task_id, device_types)
+        devices = self.device_view.request_devices(task_id, device_types_str=device_types)
         self.assertFalse(devices is None)
         occupy_devices(devices, device_view=self.device_view, task_id=task_id)
-        self.assertIs(None, self.device_view.request_devices(task_id_2, device_types))
+        self.assertIs(None, self.device_view.request_devices(task_id_2, device_types_str=device_types))
         release_devices(devices, device_view=self.device_view)
 
     def test_request_device_twice(self):

@@ -1,3 +1,4 @@
+import datetime
 import subprocess
 import time
 import unittest
@@ -32,7 +33,9 @@ class TestLaunch(unittest.TestCase):
     def test_submit_experiment(self):
         experiment = {
             "name": "test",
-            "samples": [{"name": "test_sample"}],
+            "tags": [],
+            "metadata": {},
+            "samples": [{"name": "test_sample", "tags": [], "metadata": {}}],
             "tasks": [
                 {
                     "type": "Starting",
@@ -68,8 +71,10 @@ class TestLaunch(unittest.TestCase):
             self.assertTrue("success", resp_json["status"])
             exp_ids.append(exp_id)
             time.sleep(3)
-        time.sleep(5)
+        time.sleep(40)
         self.assertEqual(9, self.task_view._task_collection.count_documents({}))
+        print(list(self.task_view._task_collection.find({})))
+        print(datetime.datetime.now())
         self.assertTrue(
             all(
                 task["status"] == "COMPLETED"

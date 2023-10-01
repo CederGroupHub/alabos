@@ -23,7 +23,7 @@ from .enums import RequestStatus, _EXTRA_REQUEST
 
 _SampleRequestDict = Dict[str, int]
 _ResourceRequestDict = Dict[
-    Optional[Union[Type[BaseDevice], str]], List[_SampleRequestDict]
+    Optional[Union[Type[BaseDevice], str]], _SampleRequestDict
 ]  # the raw request sent by task process
 
 
@@ -132,15 +132,16 @@ class ResourceRequester(RequestMixin):
         )  # will usually be overwritten by BaseTask instantiation.
 
         super().__init__()
-        self._thread = Thread(target=self._check_request_status_loop)
-        self._thread.daemon = False
-        self._thread.start()
-
         self._stop = False
+        self._thread = Thread(target=self._check_request_status_loop, name="CheckRequestStatus")
+        self._thread.daemon = True
+        self._thread.start()
 
     def __close__(self):
         self._stop = True
         self._thread.join()
+
+    __del__ = __close__
 
     def request_resources(
         self,
@@ -211,7 +212,6 @@ class ResourceRequester(RequestMixin):
         except TimeoutError:  # cancel the task if timeout
             self.update_request_status(request_id=_id, status=RequestStatus.CANCELED)
             raise
-
         return {
             **self._post_process_requested_resource(
                 devices=result["devices"],
@@ -239,7 +239,7 @@ class ResourceRequester(RequestMixin):
 
         return result.modified_count == 1
 
-    def release_all_resources(self) -> bool:
+    def release_all_resources(self):
         """
         Release all requests by task_id, used for error recovery
 

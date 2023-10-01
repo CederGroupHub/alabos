@@ -18,5 +18,5 @@ class Starting(BaseTask):
             sample_positions,
         ):
             self.lab_view.move_sample(self.sample, sample_positions[None][self.dest][0])
-            time.sleep(15)
+            time.sleep(5)
         return self.task_id

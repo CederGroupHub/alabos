@@ -28,22 +28,20 @@ class Heating(BaseTask):
             furnace = devices[Furnace]
             inside_furnace = sample_positions[Furnace]["inside"][0]
 
-            moving_task = Moving(
+            self.lab_view.run_subtask(
+                Moving,
                 sample=self.sample,
-                task_id=self.task_id,
+                samples=[self.sample],
                 dest=inside_furnace,
-                lab_view=self.lab_view,
             )
-            moving_task.run()
 
             furnace.run_program(self.setpoints)
 
             while furnace.is_running():
                 self.logger.log_device_signal(
-                    {
-                        "device": furnace.name,
-                        "temperature": furnace.get_temperature(),
-                    }
+                    device_name=furnace.name,
+                    signal_name="Temperature",
+                    signal_value=furnace.get_temperature(),
                 )
                 time.sleep(1)
         return self.task_id

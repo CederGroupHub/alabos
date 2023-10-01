@@ -16,16 +16,8 @@ class Furnace(BaseDevice):
     def sample_positions(self):
         return [
             SamplePosition(
-                "{name}/inside".format(name=self.name),
+                "inside",
                 description="The position inside the furnace, where the samples are heated",
-            ),
-            SamplePosition(
-                "furnace_table", description="Temporary position to transfer samples"
-            ),
-            SamplePosition(
-                "furnace_temp",
-                number=4,
-                description="Test positions",
             ),
         ]
 

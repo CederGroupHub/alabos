@@ -43,7 +43,7 @@ class BaseTask(ABC):
 
     def __init__(
         self,
-        samples: Optional[List[str]] = None,
+        samples: Optional[List[Union[str, ObjectId]]] = None,
         task_id: Optional[ObjectId] = None,
         lab_view: Optional["LabView"] = None,
         priority: Optional[Union[TaskPriority, int]] = TaskPriority.NORMAL,
