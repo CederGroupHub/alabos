@@ -599,7 +599,7 @@
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">():</span>  <span class="c1"># pylint: disable=not-callable</span>
             <span class="k">for</span> <span class="n">device_name</span> <span class="ow">in</span> <span class="n">device_names_str</span><span class="p">:</span>
                 <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_available_devices</span><span class="p">(</span>
-                    <span class="n">device_str</span><span class="o">=</span><span class="n">device_name</span><span class="p">,</span> <span class="n">type_or_name</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span>
+                    <span class="n">device_str</span><span class="o">=</span><span class="n">device_name</span><span class="p">,</span> <span class="n">type_or_name</span><span class="o">=</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span>
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
                     <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># cannot meet all requirement, return None</span>
