@@ -190,7 +190,9 @@ class LabView:
         """
         return self._sample_view.get_sample_position_parent_device(position=position)
 
-    def run_subtask(self, task: Type[BaseTask], samples: List[Union[ObjectId, str]], **kwargs):
+    def run_subtask(
+        self, task: Type[BaseTask], samples: List[Union[ObjectId, str]], **kwargs
+    ):
         """run a task as a subtask within the task. basically fills in task_id and lab_view for you.
             this command blocks until the subtask is completed.
 
