@@ -131,7 +131,7 @@ class Alarm:
             if self.platforms["slack"]:
                 self.send_slack_notification(message, category)
 
-    def send_email(self, message, category):
+    def send_email(self, message: str, category: str):
         """
         Sends an email to the receiver email address with the exception and category.
         Category is the type of exception that occured.
@@ -153,7 +153,7 @@ class Alarm:
             for receiver in self.email_receivers:
                 server.sendmail(self.email_sender, receiver, self.message)
 
-    def send_slack_notification(self, message, category):
+    def send_slack_notification(self, message: str, category: str):
         """
         Sends a slack messsage to the receiver email address with the exception and category.
         Category is the type of exception that occured.
