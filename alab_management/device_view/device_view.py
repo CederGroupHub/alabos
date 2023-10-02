@@ -184,7 +184,7 @@ class DeviceView:
         with self._lock():  # pylint: disable=not-callable
             for device_name in device_names_str:
                 result = self.get_available_devices(
-                    device_str=device_name, type_or_name="name", task_id=task_id
+                    device_str=device_name, type_or_name="type", task_id=task_id
                 )
                 if not result:
                     return None  # cannot meet all requirement, return None

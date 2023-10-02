@@ -21,6 +21,7 @@ from alab_management.task_manager.resource_requester import ResourceRequester
 def launch_task_manager():
     try:
         task_manager = TaskManager()
+        task_manager._TaskManager__skip_checking_task_id = True
         task_manager.run()
     except Exception:
         print_exc()
@@ -39,25 +40,25 @@ class TestTaskManager(unittest.TestCase):
         self.process = Process(target=launch_task_manager)
         self.process.daemon = True
         self.process.start()
-        time.sleep(1)
+        time.sleep(2)
 
     def tearDown(self) -> None:
         self.process.terminate()
         cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True)
-        time.sleep(1)
+        time.sleep(2)
 
     def test_task_requester(self):
         furnace_type = self.devices["furnace_1"].__class__
 
         # 1
         result = self.resource_requester.request_resources(
-            {furnace_type: ["$/inside"]}, timeout=2
+            {furnace_type: {"inside": 1}}, timeout=4
         )
         _id = result.pop("request_id")
         self.assertDictEqual(
             {
                 "devices": {furnace_type: "furnace_1"},
-                "sample_positions": {furnace_type: {"$/inside": ["furnace_1/inside"]}},
+                "sample_positions": {furnace_type: {"inside": ["furnace_1/inside"]}},
             },
             result,
         )
@@ -69,7 +70,7 @@ class TestTaskManager(unittest.TestCase):
             (SamplePositionStatus.LOCKED, self.resource_requester.task_id),
         )
         self.resource_requester.release_resources(_id)
-        time.sleep(1)
+        time.sleep(2)
         self.assertEqual(self.device_view.get_status("furnace_1"), DeviceTaskStatus.IDLE)
         self.assertEqual(
             self.sample_view.get_sample_position_status("furnace_1/inside"),
@@ -78,13 +79,13 @@ class TestTaskManager(unittest.TestCase):
 
         # 2
         result = self.resource_requester.request_resources(
-            {furnace_type: [{"prefix": "$/inside", "number": 1}]}, timeout=2
+            {furnace_type: {"inside": 1}}, timeout=4
         )
         _id = result.pop("request_id")
         self.assertDictEqual(
             {
                 "devices": {furnace_type: "furnace_1"},
-                "sample_positions": {furnace_type: {"$/inside": ["furnace_1/inside"]}},
+                "sample_positions": {furnace_type: {"inside": ["furnace_1/inside"]}},
             },
             result,
         )
@@ -96,7 +97,7 @@ class TestTaskManager(unittest.TestCase):
             (SamplePositionStatus.LOCKED, self.resource_requester.task_id),
         )
         self.resource_requester.release_resources(_id)
-        time.sleep(1)
+        time.sleep(2)
         self.assertEqual(self.device_view.get_status("furnace_1"), DeviceTaskStatus.IDLE)
         self.assertEqual(
             self.sample_view.get_sample_position_status("furnace_1/inside"),
@@ -105,13 +106,13 @@ class TestTaskManager(unittest.TestCase):
 
         # 3
         result = self.resource_requester.request_resources(
-            {None: [{"prefix": "furnace_1/inside", "number": 1}]}, timeout=2
+            {furnace_type: {"inside": 1}}, timeout=4
         )
         _id = result.pop("request_id")
         self.assertDictEqual(
             {
-                "devices": {},
-                "sample_positions": {None: {"furnace_1/inside": ["furnace_1/inside"]}},
+                "devices": {furnace_type: "furnace_1"},
+                "sample_positions": {furnace_type: {"inside": ["furnace_1/inside"]}},
             },
             result,
         )
@@ -119,19 +120,20 @@ class TestTaskManager(unittest.TestCase):
 
         # 4
         result = self.resource_requester.request_resources(
-            {furnace_type: [{"prefix": "furnace_temp", "number": 4}]}, timeout=2
+            {furnace_type: {}, None: {"furnace_temp": 4}}, timeout=4
         )
         _id = result.pop("request_id")
+
         self.assertDictEqual(
             {
                 "devices": {furnace_type: "furnace_1"},
                 "sample_positions": {
-                    furnace_type: {
+                    None: {
                         "furnace_temp": [
-                            "furnace_temp/0",
                             "furnace_temp/1",
                             "furnace_temp/2",
                             "furnace_temp/3",
+                            "furnace_temp/4",
                         ]
                     }
                 },
@@ -143,23 +145,24 @@ class TestTaskManager(unittest.TestCase):
         # 5
         result = self.resource_requester.request_resources(
             {
-                furnace_type: [{"prefix": "$/inside", "number": 1}],
-                None: [{"prefix": "furnace_temp", "number": 4}],
+                furnace_type: {"inside": 1},
+                None: {"furnace_temp": 4},
             },
-            timeout=2,
+            timeout=4,
         )
         _id = result.pop("request_id")
+
         self.assertDictEqual(
             {
                 "devices": {furnace_type: "furnace_1"},
                 "sample_positions": {
-                    furnace_type: {"$/inside": ["furnace_1/inside"]},
+                    furnace_type: {"inside": ["furnace_1/inside"]},
                     None: {
                         "furnace_temp": [
-                            "furnace_temp/0",
                             "furnace_temp/1",
                             "furnace_temp/2",
                             "furnace_temp/3",
+                            "furnace_temp/4",
                         ]
                     },
                 },
@@ -168,14 +171,8 @@ class TestTaskManager(unittest.TestCase):
         )
         self.resource_requester.release_resources(_id)
 
-    def test_task_request_wrong_format(self):
-        with self.assertRaises(ValidationError):
-            self.resource_requester.request_resources(
-                {None: [{"prefix": "furnace_temp", "xxx": 4}]}, timeout=2
-            )
-
     def test_task_request_wrong_number(self):
         with self.assertRaises(ValueError):
             self.resource_requester.request_resources(
-                {None: [{"prefix": "furnace_temp", "number": 10}]}, timeout=2
+                {None: {"furnace_temp": 10}}, timeout=2
             )

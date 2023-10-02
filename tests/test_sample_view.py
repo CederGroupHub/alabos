@@ -83,8 +83,8 @@ class TestSampleView(TestCase):
 
     def test_get_sample(self):
         # try to get a non-exist sample
-        sample = self.sample_view.get_sample(sample_id=ObjectId())
-        self.assertIs(None, sample)
+        with self.assertRaises(ValueError):
+            self.sample_view.get_sample(sample_id=ObjectId())
 
     def test_move_sample(self):
         sample_id = self.sample_view.create_sample("test", position=None)
@@ -238,15 +238,15 @@ class TestSampleView(TestCase):
             )
             self.assertEqual(
                 "LOCKED",
-                self.sample_view.get_sample_position_status("furnace_temp/0")[0].name,
+                self.sample_view.get_sample_position_status("furnace_temp/1")[0].name,
             )
             with self.request_sample_positions(
-                ["furnace_table", "furnace_temp/0"], task_id
+                ["furnace_table", "furnace_temp/1"], task_id
             ) as sample_positions_:
                 self.assertDictEqual(
                     {
                         "furnace_table": ["furnace_table"],
-                        "furnace_temp/0": ["furnace_temp/0"],
+                        "furnace_temp/1": ["furnace_temp/1"],
                     },
                     sample_positions_,
                 )

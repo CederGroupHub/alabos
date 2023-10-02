@@ -139,7 +139,7 @@ class LabView:
             f"No sample with name \"{sample_name}\" found for task \"{self.__task_entry['type']}\""
         )
 
-    def get_sample(self, sample: Union[Type[ObjectId], str]) -> Sample:
+    def get_sample(self, sample: Union[ObjectId, str]) -> Sample:
         """
         Get a sample by either an ObjectId corresponding to sample_id, or as a string corresponding to the sample's name within the experiment., see also
         :py:meth:`get_sample <alab_management.sample_view.sample_view.SampleView.get_sample>`
@@ -152,7 +152,7 @@ class LabView:
             raise TypeError("sample must be a sample name (str) or id (ObjectId)")
         return self._sample_view.get_sample(sample_id=sample_id)
 
-    def move_sample(self, sample: Union[Type[ObjectId], str], position: Optional[str]):
+    def move_sample(self, sample: Union[ObjectId, str], position: Optional[str]):
         """
         Move a sample to a new position. `sample` can be given as either an ObjectId corresponding to sample_id, or as a string corresponding to the sample's name within the experiment.
 
@@ -190,7 +190,7 @@ class LabView:
         """
         return self._sample_view.get_sample_position_parent_device(position=position)
 
-    def run_subtask(self, task: Type[BaseTask], samples: List[str], **kwargs):
+    def run_subtask(self, task: Type[BaseTask], samples: List[Union[ObjectId, str]], **kwargs):
         """run a task as a subtask within the task. basically fills in task_id and lab_view for you.
             this command blocks until the subtask is completed.
 

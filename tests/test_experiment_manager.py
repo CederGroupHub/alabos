@@ -20,7 +20,10 @@ class TestExperimentManager(TestCase):
         exp_template = InputExperiment(
             **{
                 "name": "test",
-                "samples": [{"name": "test_sample"}, {"name": "test_sample_2"}],
+                "tags": ["test"],
+                "metadata": {"test": "test"},
+                "samples": [{"name": "test_sample", "metadata": {}, "tags": []},
+                            {"name": "test_sample_2", "metadata": {}, "tags": []}],
                 "tasks": [
                     {
                         "type": "Heating",
@@ -99,7 +102,10 @@ class TestExperimentManager(TestCase):
         exp_template = InputExperiment(
             **{
                 "name": "test",
-                "samples": [{"name": "test_sample"}, {"name": "test_sample_2"}],
+                "tags": ["test"],
+                "metadata": {"test": "test"},
+                "samples": [{"name": "test_sample", "metadata": {}, "tags": []},
+                            {"name": "test_sample_2", "metadata": {}, "tags": []}],
                 "tasks": [
                     {
                         "type": "Heating",

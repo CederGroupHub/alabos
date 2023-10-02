@@ -41,7 +41,7 @@ class UserInputView:
         if "slack_bot_token" in alarm_config:
             self._alarm.setup_slackbot(
                 slack_bot_token=alarm_config["slack_bot_token"],
-                slack_channel=alarm_config["slack_channel"],
+                slack_channel_id=alarm_config["slack_channel"],
             )
 
     def insert_request(

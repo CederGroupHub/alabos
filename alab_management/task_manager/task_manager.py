@@ -14,11 +14,7 @@ import networkx as nx
 from bson import ObjectId
 from dramatiq_abort import abort
 
-from alab_management.device_view import DeviceView
-from alab_management.device_view.device import BaseDevice
-from alab_management.lab_view import LabView
-from alab_management.logger import LoggingLevel
-from alab_management.sample_view import SampleView
+from alab_management.logger import LoggingLevel, DBLogger
 from alab_management.sample_view.sample import SamplePosition
 from alab_management.sample_view.sample_view import SamplePositionRequest
 from alab_management.task_actor import run_task
@@ -113,18 +109,18 @@ class TaskManager(RequestMixin):
         self.device_view = DeviceView()
         self._request_collection = get_collection("requests")
         self.__reroute_in_progress = False
+
+        self.__skip_checking_task_id = False
+
+        self.logger = DBLogger(task_id=None)
         super().__init__()
         time.sleep(1)  # allow some time for other modules to launch
 
     def run(self):
-        """Start the loop."""
-        self.logger.system_log(
-            level="DEBUG",
-            log_data={
-                "logged_by": self.__class__.__name__,
-                "type": "TaskManagerStarted",
-            },
-        )
+        """
+        Start the loop
+        """
+
         while True:
             self._loop()
             time.sleep(2)
@@ -282,13 +278,15 @@ class TaskManager(RequestMixin):
             resource_request = request_entry["request"]
             task_id = request_entry["task_id"]
 
-            task_status = self.task_view.get_task_status(task_id=task_id)
-            if task_status != TaskStatus.REQUESTING_RESOURCES:
-                # this implies the Task has been cancelled or errored somewhere else in the chain -- we should not allocate any resources to the broken Task.
-                self.update_request_status(
-                    request_id=resource_request["_id"], status=RequestStatus.CANCELED
-                )
-                return
+            if not self.__skip_checking_task_id:
+                task_status = self.task_view.get_status(task_id=task_id)
+                if task_status != TaskStatus.REQUESTING_RESOURCES:
+                    # this implies the Task has been cancelled or errored somewhere else in the chain -- we should not allocate any resources to the broken Task.
+                    self.update_request_status(
+                        request_id=resource_request["_id"],
+                        status=RequestStatus.CANCELED,
+                    )
+                    return
 
             devices = self.device_view.request_devices(
                 task_id=task_id,

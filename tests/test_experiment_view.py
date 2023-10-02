@@ -27,7 +27,9 @@ class TestExperimentView(TestCase):
         exp_template = InputExperiment(
             **{
                 "name": "test",
-                "samples": [{"name": "test_sample"}],
+                "tags": [],
+                "metadata": {},
+                "samples": [{"name": "test_sample", "tags": [], "metadata": {}}],
                 "tasks": [
                     {
                         "type": "Heating",
@@ -48,17 +50,22 @@ class TestExperimentView(TestCase):
         exp_dict["_id"] = exp_id
         exp_dict["status"] = "PENDING"
 
+        exp.pop("submitted_at")
+
         self.assertDictEqual(exp_dict, exp)
 
     def test_get_experiment(self):
         # try non exist exp id
-        self.assertIs(None, self.experiment_view.get_experiment(ObjectId()))
+        with self.assertRaises(ValueError):
+            self.experiment_view.get_experiment(ObjectId())
 
     def test_update_experiment_with_status(self):
         exp_template = InputExperiment(
             **{
                 "name": "test",
-                "samples": [{"name": "test_sample"}],
+                "tags": [],
+                "metadata": {},
+                "samples": [{"name": "test_sample", "tags": [], "metadata": {}}],
                 "tasks": [
                     {
                         "type": "Heating",
@@ -93,7 +100,9 @@ class TestExperimentView(TestCase):
         exp_template = InputExperiment(
             **{
                 "name": "test",
-                "samples": [{"name": "test_sample"}],
+                "tags": [],
+                "metadata": {},
+                "samples": [{"name": "test_sample", "tags": [], "metadata": {}}],
                 "tasks": [
                     {
                         "type": "Heating",
@@ -158,7 +167,9 @@ class TestExperimentView(TestCase):
         exp_template = InputExperiment(
             **{
                 "name": "test",
-                "samples": [{"name": "test_sample"}],
+                "tags": [],
+                "metadata": {},
+                "samples": [{"name": "test_sample", "tags": [], "metadata": {}}],
                 "tasks": [
                     {
                         "type": "Heating",
