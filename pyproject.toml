@@ -104,6 +104,16 @@ repository = "https://github.com/CederGroupHub/alab_management/"
 documentation = "https://alab-management.readthedocs.io/en/latest/"
 #changelog = ""
 
+[project.scripts]
+alabos = "alab_management.scripts.cli:cli"
+
+[tool.setuptools.package-data]
+alabos = ["py.typed"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+exclude = ["tests", "tests.*"]
+
 [tool.versioningit.vcs]
 method = "git"
 default-tag = "0.0.1"
