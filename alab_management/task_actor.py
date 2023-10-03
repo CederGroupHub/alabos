@@ -23,12 +23,14 @@ abortable = Abortable(
 )
 get_broker().add_middleware(abortable)
 """
-This allows the task to be aborted. 
+This allows the task to be aborted.
 The abort signal is sent by the user, and the task will be aborted at the next checkpoint.
 """
 
+
 class ParameterError(Exception):
     """The exception raised when parameters of a task is wrong."""
+
 
 @dramatiq.actor(
     max_retries=0,
