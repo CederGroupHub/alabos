@@ -1,19 +1,18 @@
 from bson import ObjectId
-from bson.errors import InvalidId
 from flask import Blueprint, request
-from pydantic import ValidationError
 
-from alab_management.user_input import UserRequestStatus
-from ..lab_views import user_input_view, experiment_view, task_view
+from alab_management.dashboard.lab_views import (
+    experiment_view,
+    task_view,
+    user_input_view,
+)
 
 userinput_bp = Blueprint("/userinput", __name__, url_prefix="/api/userinput")
 
 
 @userinput_bp.route("/pending", methods=["GET"])
 def get_userinput_status():
-    """
-    Get all the status in the database
-    """
+    """Get all the status in the database."""
     user_input_requests = {}
     id_to_name = {}
     for request in user_input_view.get_all_pending_requests():
@@ -61,9 +60,7 @@ def get_userinput_status():
 
 @userinput_bp.route("/submit", methods=["POST"])
 def submit_user_input():
-    """
-    Update status of user input request
-    """
+    """Update status of user input request."""
     data = request.get_json(force=True)  # type: ignore
     # return {"dummy": "dummy"}
     try:
@@ -84,9 +81,7 @@ def submit_user_input():
 
 @userinput_bp.route("/<request_id>", methods=["GET"])
 def query_user_input(request_id: str):
-    """
-    Find an user input request by idresponse
-    """
+    """Find an user input request by idresponse."""
     try:
         user_input_request = user_input_view.get_request(
             request_id=ObjectId(request_id)

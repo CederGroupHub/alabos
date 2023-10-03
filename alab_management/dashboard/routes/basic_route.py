@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import cast
+
 from flask import Blueprint, send_from_directory
 
 modules = Blueprint(

@@ -1,11 +1,10 @@
 from flask import Blueprint
 
-from ..lab_views import (
+from alab_management.dashboard.lab_views import (
     device_view,
     experiment_view,
-    task_view,
-    user_input_view,
     sample_view,
+    task_view,
 )
 
 status_bp = Blueprint("/status", __name__, url_prefix="/api/status")
@@ -22,9 +21,7 @@ def parse_device_status(task_status: str, pause_status: str) -> str:
 
 @status_bp.route("/")
 def get_all_status():
-    """
-    Get all the status in the database
-    """
+    """Get all the status in the database."""
     devices = device_view.get_all()
     devices = [
         {
