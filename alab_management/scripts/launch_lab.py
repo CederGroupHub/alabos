@@ -1,7 +1,6 @@
-"""
-The script to launch task_view and executor, which are the core of the system.
-"""
+"""The script to launch task_view and executor, which are the core of the system."""
 
+import contextlib
 import multiprocessing
 import sys
 import time
@@ -9,14 +8,12 @@ from threading import Thread
 
 from gevent.pywsgi import WSGIServer
 
-try:
+with contextlib.suppress(RuntimeError):
     multiprocessing.set_start_method("spawn")
-except RuntimeError:
-    pass
 
 
 def launch_dashboard(host: str, port: int, debug: bool = False):
-    from ..dashboard import create_app
+    from alab_management.dashboard import create_app
 
     if debug:
         print("Debug mode is on, the dashboard will be served with CORS enabled!")
@@ -29,8 +26,8 @@ def launch_dashboard(host: str, port: int, debug: bool = False):
 
 
 def launch_experiment_manager():
-    from ..experiment_manager import ExperimentManager
-    from ..utils.module_ops import load_definition
+    from alab_management.experiment_manager import ExperimentManager
+    from alab_management.utils.module_ops import load_definition
 
     load_definition()
     experiment_manager = ExperimentManager()
@@ -38,8 +35,8 @@ def launch_experiment_manager():
 
 
 def launch_task_manager():
-    from ..task_manager.task_manager import TaskManager
-    from ..utils.module_ops import load_definition
+    from alab_management.task_manager.task_manager import TaskManager
+    from alab_management.utils.module_ops import load_definition
 
     load_definition()
     task_launcher = TaskManager()
@@ -47,8 +44,8 @@ def launch_task_manager():
 
 
 def launch_device_manager():
-    from ..device_manager import DeviceManager
-    from ..utils.module_ops import load_definition
+    from alab_management.device_manager import DeviceManager
+    from alab_management.utils.module_ops import load_definition
 
     load_definition()
     device_manager = DeviceManager()

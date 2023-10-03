@@ -1,5 +1,3 @@
-"""
-CLI related functions
-"""
+"""CLI related functions."""
 
 from .cli import cli

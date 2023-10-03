@@ -1,27 +1,26 @@
-"""
-Useful CLI tools for the alab_management package.
-"""
+"""Useful CLI tools for the alab_management package."""
 import click
+
+from alab_management import __version__
 
 from .cleanup_lab import cleanup_lab
 from .init_project import init_project
 from .launch_lab import launch_dashboard, launch_lab
 from .launch_worker import launch_worker
 from .setup_lab import setup_lab
-from .. import __version__
 
-CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
+CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
 
 
 @click.group("cli", context_settings=CONTEXT_SETTINGS)
 def cli():
-    """Managing workflow in Alab"""
+    """Managing workflow in Alab."""
     click.echo(
         rf"""       _    _       _         ___  ____
-      / \  | | __ _| |__     / _ \/ ___| 
-     / _ \ | |/ _` | '_ \   | | | \___ \ 
+      / \  | | __ _| |__     / _ \/ ___|
+     / _ \ | |/ _` | '_ \   | | | \___ \
     / ___ \| | (_| | |_) |  | |_| |___) |
-   /_/   \_\_|\__,_|_.__/    \___/|____/      
+   /_/   \_\_|\__,_|_.__/    \___/|____/
 
 ----  Alab OS v{__version__} -- Alab Project Team  ----
     """
@@ -59,11 +58,11 @@ def launch_lab_cli(host, port, debug):
 @cli.command(
     "launch_worker",
     short_help="Launch Dramatiq worker in current folder",
-    context_settings=dict(
-        ignore_unknown_options=True,
-        allow_extra_args=True,
-        help_option_names=[],
-    ),
+    context_settings={
+        "ignore_unknown_options": True,
+        "allow_extra_args": True,
+        "help_option_names": [],
+    },
 )
 @click.pass_context
 def launch_worker_cli(ctx):

@@ -1,6 +1,4 @@
-"""
-Create an empty project.
-"""
+"""Create an empty project."""
 
 from pathlib import Path
 
@@ -8,9 +6,7 @@ from monty import shutil
 
 
 def init_project():
-    """
-    Initialize a new project with default definitions (../_default)
-    """
+    """Initialize a new project with default definitions (../_default)."""
     default_project_folder = (Path(__file__).parent / ".." / "_default").absolute()
     working_dir = Path.cwd()
     if any(working_dir.iterdir()):
