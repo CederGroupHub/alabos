@@ -16,13 +16,14 @@ from dramatiq_abort import abort
 
 from alab_management.logger import LoggingLevel, DBLogger
 from alab_management.sample_view.sample import SamplePosition
-from alab_management.sample_view.sample_view import SamplePositionRequest
+from alab_management.sample_view.sample_view import SamplePositionRequest, SampleView
 from alab_management.task_actor import run_task
 from alab_management.task_view import TaskPriority, TaskView
 from alab_management.task_view.task import BaseTask
 from alab_management.task_view.task_enums import TaskStatus
 from alab_management.utils.data_objects import get_collection
 from alab_management.utils.module_ops import load_definition
+from alab_management.device_view.device_view import DeviceView
 
 from .enums import _EXTRA_REQUEST, RequestStatus
 from .resource_requester import (
