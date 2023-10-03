@@ -274,22 +274,14 @@ class DeviceView:
         return DeviceTaskStatus[device_entry["status"]]
 
     def occupy_device(self, device: Union[BaseDevice, str], task_id: ObjectId):
-        """Occupy a device with given task id."""
+        """
+        Occupy a device with given task id
+        """
         self._update_status(
             device=device,
             required_status=DeviceTaskStatus.IDLE,
             target_status=DeviceTaskStatus.OCCUPIED,
             task_id=task_id,
-        )
-        self.logger.system_log(
-            level="DEBUG",
-            log_data={
-                "logged_by": self.__class__.__name__,
-                "type": "OccupyingDevice",
-                "device_name": device.name
-                if isinstance(device, BaseDevice)
-                else device,
-            },
         )
 
     def get_devices_by_task(self, task_id: Optional[ObjectId]) -> List[BaseDevice]:
