@@ -113,7 +113,9 @@ def update_task_table(date_range):
     filtered_task_df = task_df[
         (task_df.started_at >= date_range[0]) & (task_df.started_at <= date_range[1])
     ]
-    return [dmc.Text("Tasks", align="center", size="lg"),] + [
+    return [
+        dmc.Text("Tasks", align="center", size="lg"),
+    ] + [
         build_task_row(task_type, filtered_task_df)
         for task_type in filtered_task_df.type.unique()
     ]
