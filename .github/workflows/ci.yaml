@@ -46,6 +46,8 @@ jobs:
           npm install -g pyright
       - name: Pytest
         run: pytest
+      - name: Ruff
+        run: ruff check .
       - name: Flake8
         run: flake8 alab_management
       - name: Pylint
