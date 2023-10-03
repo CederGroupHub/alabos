@@ -22,11 +22,13 @@ abortable = Abortable(
     backend=backends.MongoDBBackend(collection=get_collection("abortable"))
 )
 get_broker().add_middleware(abortable)
-
+"""
+This allows the task to be aborted. 
+The abort signal is sent by the user, and the task will be aborted at the next checkpoint.
+"""
 
 class ParameterError(Exception):
     """The exception raised when parameters of a task is wrong."""
-
 
 @dramatiq.actor(
     max_retries=0,
@@ -37,7 +39,15 @@ def run_task(task_id_str: str):
     """
     Submit a task. In this system, each task is run in an
     independent process, which will try to acquire device and
-    process samples.
+    process samples. This will change the status of the task under the specified id into "RUNNING".
+    If the task is not in the "INITIATED" state, it has been picked up by task actor beforehand, and no action is taken.
+    If an Abort (exception) signal is sent, the task status will be changed to "CANCELLED".
+    If a Shutdown (exception) signal is sent, the task status will be changed to "STOPPED".
+    If any other exception is raised, the task status will be changed to "ERROR".
+    If there is no exception raised, once the task is completed, the status will be changed to "COMPLETED".
+    Sample task id will be set to None after the task is completed.
+    Args:
+        task_id_str: The id of the task to run
     """
     from .lab_view import LabView  # pylint: disable=cyclic-import
 
