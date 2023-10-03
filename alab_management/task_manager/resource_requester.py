@@ -1,25 +1,25 @@
 """
 TaskLauncher is the core module of the system,
-which actually executes the tasks.
+which actually executes the tasks
 """
 import time
 from concurrent.futures import Future
 from datetime import datetime
 from threading import Thread
 from traceback import print_exc
-from typing import Any, Dict, List, Optional, Type, Union, cast
+from typing import Union, Dict, Optional, Type, List, Any, cast
 
 import dill
 from bson import ObjectId
 from pydantic import BaseModel, root_validator
 
-from alab_management.device_view.device import BaseDevice
 from alab_management.sample_view.sample import SamplePosition
-from alab_management.sample_view.sample_view import SamplePositionRequest
-from alab_management.task_view import TaskPriority
-from alab_management.utils.data_objects import get_collection
 
-from .enums import _EXTRA_REQUEST, RequestStatus
+from ..device_view.device import BaseDevice
+from ..sample_view.sample_view import SamplePositionRequest
+from ..task_view import TaskView, TaskPriority
+from ..utils.data_objects import get_collection
+from .enums import RequestStatus, _EXTRA_REQUEST
 
 _SampleRequestDict = Dict[str, int]
 _ResourceRequestDict = Dict[
@@ -45,10 +45,9 @@ class ResourcesRequest(BaseModel):
             ]
         },
         ...
-    ].
+    ]
 
-    See Also
-    --------
+    See Also:
         :py:class:`SamplePositionRequest <alab_management.sample_view.sample_view.SamplePositionRequest>`
     """
 
@@ -83,7 +82,9 @@ class ResourcesRequest(BaseModel):
 
 
 class RequestMixin:
-    """Simple wrapper for the request collection."""
+    """
+    Simple wrapper for the request collection
+    """
 
     def __init__(self):
         self._request_collection = get_collection("requests")
@@ -152,6 +153,7 @@ class ResourceRequester(RequestMixin):
         Request lab resources. Write the request into the database, and then the task manager will read from the
         database and assign the resources.
         """
+
         f = Future()
         if priority is None:
             priority = self.priority
@@ -220,7 +222,9 @@ class ResourceRequester(RequestMixin):
         }
 
     def release_resources(self, request_id: ObjectId) -> bool:
-        """Release a request by request_id."""
+        """
+        Release a request by request_id
+        """
         result = self._request_collection.update_one(
             {
                 "_id": request_id,
@@ -237,7 +241,7 @@ class ResourceRequester(RequestMixin):
 
     def release_all_resources(self):
         """
-        Release all requests by task_id, used for error recovery.
+        Release all requests by task_id, used for error recovery
 
         For the requests that are not fulfilled, they will be marked as CANCELED.
 
@@ -270,7 +274,7 @@ class ResourceRequester(RequestMixin):
     def _check_request_status_loop(self):
         while not self._stop:
             try:
-                for request_id in self._waiting.copy():
+                for request_id in self._waiting.copy().keys():
                     status = self.get_request(request_id=request_id, projection=["status"])["status"]  # type: ignore
                     if status == RequestStatus.FULFILLED.name:
                         self._handle_fulfilled_request(request_id=request_id)

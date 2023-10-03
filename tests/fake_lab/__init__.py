@@ -16,15 +16,19 @@ add_device(Furnace(name="furnace_3"))
 add_device(Furnace(name="furnace_4"))
 add_device(RobotArm(name="dummy"))
 
-add_standalone_sample_position(SamplePosition(
-    "furnace_table", description="Temporary position to transfer samples"
-))
+add_standalone_sample_position(
+    SamplePosition(
+        "furnace_table", description="Temporary position to transfer samples"
+    )
+)
 
-add_standalone_sample_position(SamplePosition(
-    "furnace_temp",
-    number=4,
-    description="Test positions",
-))
+add_standalone_sample_position(
+    SamplePosition(
+        "furnace_temp",
+        number=4,
+        description="Test positions",
+    )
+)
 
 add_task(Starting)
 add_task(Moving)

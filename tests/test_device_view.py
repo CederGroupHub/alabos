@@ -112,7 +112,9 @@ class TestDeviceView(TestCase):
         )
         task_id = ObjectId()
 
-        devices = self.device_view.request_devices(task_id, device_names_str=device_types)
+        devices = self.device_view.request_devices(
+            task_id, device_names_str=device_types
+        )
         occupy_devices(devices, device_view=self.device_view, task_id=task_id)
         self.assertFalse(devices is None)
         for device_type, device in devices.items():
@@ -143,10 +145,15 @@ class TestDeviceView(TestCase):
         task_id = ObjectId()
         task_id_2 = ObjectId()
 
-        devices = self.device_view.request_devices(task_id, device_types_str=device_types)
+        devices = self.device_view.request_devices(
+            task_id, device_types_str=device_types
+        )
         self.assertFalse(devices is None)
         occupy_devices(devices, device_view=self.device_view, task_id=task_id)
-        self.assertIs(None, self.device_view.request_devices(task_id_2, device_types_str=device_types))
+        self.assertIs(
+            None,
+            self.device_view.request_devices(task_id_2, device_types_str=device_types),
+        )
         release_devices(devices, device_view=self.device_view)
 
     def test_request_device_twice(self):
