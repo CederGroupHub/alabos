@@ -1,18 +1,17 @@
-"""
-A wrapper over the ``samples`` and ``sample_positions`` collections.
-"""
+"""A wrapper over the ``samples`` and ``sample_positions`` collections."""
 
 import re
 from datetime import datetime
 from enum import Enum, auto
-from typing import Optional, List, Dict, Any, Tuple, cast, Union
+from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
 import pymongo
 from bson import ObjectId
 from pydantic import BaseModel, conint
 
+from alab_management.utils.data_objects import get_collection, get_lock
+
 from .sample import Sample, SamplePosition
-from ..utils.data_objects import get_collection, get_lock
 
 
 class SamplePositionRequest(BaseModel):
@@ -24,7 +23,7 @@ class SamplePositionRequest(BaseModel):
     """
 
     class Config:
-        """raise error when extra kwargs"""
+        """raise error when extra kwargs."""
 
         extra = "forbid"
 
@@ -48,7 +47,7 @@ class SamplePositionRequest(BaseModel):
 
 class SamplePositionStatus(Enum):
     """
-    The status of a sample position
+    The status of a sample position.
 
     - ``EMPTY``: the sample position is neither locked nor occupied
     - ``OCCUPIED``: there is a sample in the sample position
@@ -61,9 +60,7 @@ class SamplePositionStatus(Enum):
 
 
 class SampleView:
-    """
-    Sample view manages the samples and their positions
-    """
+    """Sample view manages the samples and their positions."""
 
     def __init__(self):
         self._sample_collection = get_collection("samples")
@@ -84,7 +81,7 @@ class SampleView:
         parent_device_name: Optional[str] = None,
     ):
         """
-        Insert sample positions info to db, which includes position name and description
+        Insert sample positions info to db, which includes position name and description.
 
         If one sample position's name has already appeared in the database,
         we will just skip it.
@@ -125,9 +122,7 @@ class SampleView:
                     self._sample_positions_collection.insert_one(new_entry)
 
     def clean_up_sample_position_collection(self):
-        """
-        Drop the sample position collection
-        """
+        """Drop the sample position collection."""
         self._sample_positions_collection.drop()
 
     def request_sample_positions(
@@ -136,7 +131,7 @@ class SampleView:
         sample_positions: List[Union[SamplePositionRequest, str, Dict[str, Any]]],
     ) -> Optional[Dict[str, List[Dict[str, Any]]]]:
         """
-        Request a list of sample positions, this function will return until all the sample positions are available
+        Request a list of sample positions, this function will return until all the sample positions are available.
 
         Args:
             task_id: the task id that requests these resources
@@ -152,7 +147,7 @@ class SampleView:
         ]
 
         if len(sample_positions_request) != len(
-            set(sample_position.prefix for sample_position in sample_positions_request)
+            {sample_position.prefix for sample_position in sample_positions_request}
         ):
             raise ValueError("Duplicated sample_positions in one request.")
 
@@ -183,7 +178,7 @@ class SampleView:
 
     def get_sample_position(self, position: str) -> Optional[Dict[str, Any]]:
         """
-        Get the sample position entry in the database
+        Get the sample position entry in the database.
 
         if the position is not a valid position (not defined in the database), return None
         """
@@ -193,7 +188,7 @@ class SampleView:
         self, position: str
     ) -> Tuple[SamplePositionStatus, Optional[ObjectId]]:
         """
-        Get the status of a sample position
+        Get the status of a sample position.
 
         If there is a sample in the position, return OCCUPIED;
         else if the sample position is locked by a task, return LOCKED;
@@ -202,7 +197,8 @@ class SampleView:
         Args:
             position: the name of the sample position
 
-        Returns:
+        Returns
+        -------
             if the position is occupied by a sample, return OCCUPIED and the task id of the sample
             if the position is locked by a task, return LOCKED and the task id
             else, return EMPTY and None
@@ -221,13 +217,11 @@ class SampleView:
         return SamplePositionStatus.EMPTY, None
 
     def get_sample_position_parent_device(self, position: str) -> Optional[str]:
-        """
-        Get the parent device of a sample position. If no parent device is defined, returns None. If the "position" query is a prefix, will look for a single parent device across all matched positions (ie a query for position="furnace_1/tray" will properly return "furnace_1" even if "furnace_1/tray/1" and "furnace_1/tray/2" are in the database _as long as "furnace_1" is the parent device of both!_).
-        """
+        """Get the parent device of a sample position. If no parent device is defined, returns None. If the "position" query is a prefix, will look for a single parent device across all matched positions (ie a query for position="furnace_1/tray" will properly return "furnace_1" even if "furnace_1/tray/1" and "furnace_1/tray/2" are in the database _as long as "furnace_1" is the parent device of both!_)."""
         sample_positions = self._sample_positions_collection.find(
             {"name": {"$regex": f"^{position}"}}
         )
-        parent_devices = list(set(sp.get("parent_device") for sp in sample_positions))
+        parent_devices = list({sp.get("parent_device") for sp in sample_positions})
         if len(parent_devices) == 0:
             raise ValueError(f"No sample position(s) beginning with: {position}")
         elif len(parent_devices) > 1:
@@ -237,19 +231,17 @@ class SampleView:
         return parent_devices[0]
 
     def is_unoccupied_position(self, position: str) -> bool:
-        """
-        Tell if a sample position is unoccupied or not
-        """
+        """Tell if a sample position is unoccupied or not."""
         return (
-            not self.get_sample_position_status(position)[0]
-            is SamplePositionStatus.OCCUPIED
+            self.get_sample_position_status(position)[0]
+            is not SamplePositionStatus.OCCUPIED
         )
 
     def get_available_sample_position(
         self, task_id: ObjectId, position_prefix: str
     ) -> List[Dict[str, Union[str, bool]]]:
         """
-        Check if the position is occupied
+        Check if the position is occupied.
 
         The structure of returned list is ``{"name": str, "need_release": bool}``.
         The entry need_release indicates whether a sample position needs to be released
@@ -294,9 +286,7 @@ class SampleView:
         return available_sp_names
 
     def lock_sample_position(self, task_id: ObjectId, position: str):
-        """
-        Lock a sample position
-        """
+        """Lock a sample position."""
         sample_status, current_task_id = self.get_sample_position_status(position)
 
         if current_task_id != task_id:
@@ -317,9 +307,7 @@ class SampleView:
         )
 
     def release_sample_position(self, position: str):
-        """
-        Unlock a sample position
-        """
+        """Unlock a sample position."""
         if self.get_sample_position(position) is None:
             raise ValueError(f"Invalid sample position: {position}")
 
@@ -333,9 +321,7 @@ class SampleView:
         )
 
     def get_sample_positions_by_task(self, task_id: Optional[ObjectId]) -> List[str]:
-        """
-        Get the list of sample positions that is locked by a task (given task id)
-        """
+        """Get the list of sample positions that is locked by a task (given task id)."""
         return [
             sample_position["name"]
             for sample_position in self._sample_positions_collection.find(
@@ -356,7 +342,7 @@ class SampleView:
         metadata: Optional[Dict[str, Any]] = None,
     ) -> ObjectId:
         """
-        Create a sample and return its uid in the database
+        Create a sample and return its uid in the database.
 
         Samples with the same name can exist in the database
         """
@@ -390,20 +376,22 @@ class SampleView:
         return cast(ObjectId, result.inserted_id)
 
     def get_sample(self, sample_id: ObjectId) -> Sample:
-        """Get a sample by its id
+        """Get a sample by its id.
 
         Args:
             sample_id (ObjectId): id of the sample within sample collection
 
-        Raises:
+        Raises
+        ------
             ValueError: no sample found with given id
 
-        Returns:
+        Returns
+        -------
             Sample: Sample object for given id
         """
         result = self._sample_collection.find_one({"_id": sample_id})
         if result is None:
-            raise ValueError("No sample found with id: {}".format(sample_id))
+            raise ValueError(f"No sample found with id: {sample_id}")
 
         return Sample(
             sample_id=result["_id"],
@@ -415,9 +403,7 @@ class SampleView:
         )
 
     def update_sample_task_id(self, sample_id: ObjectId, task_id: Optional[ObjectId]):
-        """
-        Update the task id for a sample
-        """
+        """Update the task id for a sample."""
         result = self._sample_collection.find_one({"_id": sample_id})
         if result is None:
             raise ValueError(f"Cannot find sample with id: {sample_id}")
@@ -433,9 +419,7 @@ class SampleView:
         )
 
     def move_sample(self, sample_id: ObjectId, position: Optional[str]):
-        """
-        Update the sample with new position
-        """
+        """Update the sample with new position."""
         result = self._sample_collection.find_one({"_id": sample_id})
         if result is None:
             raise ValueError(f"Cannot find sample with id: {sample_id}")
@@ -459,12 +443,13 @@ class SampleView:
         )
 
     def exists(self, sample_id: Union[ObjectId, str]) -> bool:
-        """Check if a sample exists in the database
+        """Check if a sample exists in the database.
 
         Args:
             sample_id (ObjectId): id of the sample within sample collection
 
-        Returns:
+        Returns
+        -------
             bool: True if sample exists in the database
         """
         return self._sample_collection.count_documents({"_id": ObjectId(sample_id)}) > 0
