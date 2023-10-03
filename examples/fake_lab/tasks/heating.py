@@ -4,9 +4,8 @@ from typing import List, Tuple
 from bson import ObjectId
 
 from alab_management import BaseTask
-from ..devices.furnace import Furnace
-
 from .moving import Moving
+from ..devices.furnace import Furnace
 
 
 class Heating(BaseTask):
@@ -15,9 +14,9 @@ class Heating(BaseTask):
         samples: List[ObjectId],
         setpoints: List[Tuple[float, float]],
         *args,
-        **kwargs,
+        **kwargs
     ):
-        super().__init__(samples=samples, *args, **kwargs)
+        super(Heating, self).__init__(samples=samples, *args, **kwargs)
         self.setpoints = setpoints
         self.sample = samples[0]
 

@@ -8,7 +8,7 @@ To initiate a project, you only need to run following command in the target fold
 
 .. code-block:: sh
 
-  python -m alabos init
+  alabos init
 
 
 .. note::
