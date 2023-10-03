@@ -26,8 +26,9 @@ Install from source code
 
   git clone https://github.com/CederGroupHub/alab_management
   cd alab_management
-  pip install -r requirements.txt
   pip install -e .
+  brew install rabbitmq
+  brew services start rabbitmq
 
 
 What's next
