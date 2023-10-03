@@ -1,10 +1,4 @@
-from typing import Any, List, Dict, TYPE_CHECKING, Optional, Set, Union
-from pydantic import (
-    BaseModel,
-    constr,
-    validator,
-    Field,
-)  # pylint: disable=no-name-in-module
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from bson import ObjectId
 
@@ -45,7 +39,7 @@ class SampleBuilder:
         Args:
             task_id (str): The object id of the task in mongodb
         Returns:
-            None
+            None.
         """
         if task_id not in self._tasks:
             self._tasks.append(task_id)
@@ -60,7 +54,8 @@ class SampleBuilder:
             "metadata": Dict[str, Any],
         }
 
-        Returns:
+        Returns
+        -------
             Dict[str, Any]: sample as a dictionary
         """
         return {
@@ -135,7 +130,7 @@ class SampleBuilder:
 #     """
 
 #     id: Optional[Any] = Field(None, alias="id")
-#     name: constr(regex=r"^[^$.]+$")  # type: ignore # noqa: F722
+#     name: constr(regex=r"^[^$.]+$")  # type: ignore
 #     tags: List[str]
 #     tasks: List[TaskInputFormat]
 #     metadata: Dict[str, Any]

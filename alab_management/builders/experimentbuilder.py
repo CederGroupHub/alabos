@@ -1,13 +1,13 @@
 from pathlib import Path
-from typing import List, Dict, Any, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional
+
 from .samplebuilder import SampleBuilder
-import matplotlib.pyplot as plt
 
 
 class ExperimentBuilder:
     """
     It takes a list of samples and a list of tasks, and returns a dictionary
-    that can be used to generate an input file for the `experiment` to run
+    that can be used to generate an input file for the `experiment` to run.
 
     Args:
       name (str): The name of the experiment.
@@ -36,7 +36,9 @@ class ExperimentBuilder:
           name (str): The name of the sample. This must be unique within this ExperimentBuilder.
           tags (List[str]): A list of tags to attach to the sample.
           **metadata: Any additional keyword arguments will be attached to this sample as metadata.
-        Returns:
+
+        Returns
+        -------
           A SampleBuilder object. This can be used to add tasks to the sample.
         """
         if any(name == sample.name for sample in self._samples):
@@ -63,7 +65,9 @@ class ExperimentBuilder:
             task_name (str): The name of the task.
             task_kwargs (Dict[str, Any]): Any additional keyword arguments will be attached to this sample as metadata.
             samples (List[SampleBuilder]): A list of samples to which this task is binded to.
-        Returns:
+
+        Returns
+        -------
             None
         """
         if task_id in self._tasks:
@@ -124,8 +128,10 @@ class ExperimentBuilder:
         Args:
             filename (str): The name of the file to be generated.
             fmt (Literal["json", "yaml"]): The format of the file to be generated.
-        Returns:
-            None
+
+        Returns
+        -------
+            None.
         """
         with Path(filename).open("w", encoding="utf-8") as f:
             if fmt == "json":
@@ -142,18 +148,20 @@ class ExperimentBuilder:
         This function plots the directed graph of tasks.
         Args:
             ax (matplotlib.axes.Axes): The axes on which to plot the graph.
-        Returns:
-            None
+
+        Returns
+        -------
+            None.
         """
-        import networkx as nx
         import matplotlib.pyplot as plt
+        import networkx as nx
 
         if ax is None:
             _, ax = plt.subplots(figsize=(8, 6))
 
         task_list = self.to_dict()["tasks"]
 
-        unique_tasks = set([task["type"] for task in task_list])
+        unique_tasks = {task["type"] for task in task_list}
         color_key = {
             nodetype: plt.cm.tab10(i) for i, nodetype in enumerate(unique_tasks)
         }
