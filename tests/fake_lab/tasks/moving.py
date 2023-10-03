@@ -1,14 +1,14 @@
-from typing import cast, List
+from typing import List, cast
 
 from bson import ObjectId
 
 from alab_management.task_view.task import BaseTask
-from ..devices.robot_arm import RobotArm
+from tests.fake_lab.devices.robot_arm import RobotArm
 
 
 class Moving(BaseTask):
     def __init__(self, samples: List[ObjectId], dest: str, *args, **kwargs):
-        super(Moving, self).__init__(samples=samples, *args, **kwargs)
+        super().__init__(samples=samples, *args, **kwargs)
         self.sample = samples[0]
         self.dest = dest
         self.sample_position = self.lab_view.get_sample(sample=self.sample).position

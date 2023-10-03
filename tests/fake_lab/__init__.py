@@ -1,14 +1,16 @@
-from alab_management import add_device
-from alab_management import add_task
+from alab_management import (
+    SamplePosition,
+    add_device,
+    add_standalone_sample_position,
+    add_task,
+)
+
 from .devices.furnace import Furnace
 from .devices.robot_arm import RobotArm
 from .tasks.ending import Ending
 from .tasks.heating import Heating
 from .tasks.moving import Moving
 from .tasks.starting import Starting
-
-from alab_management import add_standalone_sample_position
-from alab_management import SamplePosition
 
 add_device(Furnace(name="furnace_1"))
 add_device(Furnace(name="furnace_2"))
