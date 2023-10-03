@@ -365,10 +365,11 @@ class TestSampleView(TestCase):
                     )
 
         # try when requesting sample positions more than we have in the lab
-        with self.assertRaises(ValueError), self.request_sample_positions(
-            [{"prefix": "furnace_temp", "number": 5}], task_id
-        ):
-            pass
+        with self.assertRaises(ValueError):
+            with self.request_sample_positions(
+                [{"prefix": "furnace_temp", "number": 5}], task_id
+            ):
+                pass
 
     def test_request_multiple_sample_positions_multiple_tasks(self):
         task_id_1 = ObjectId()

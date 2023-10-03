@@ -3,9 +3,9 @@ from unittest import TestCase
 from bson import ObjectId
 
 from alab_management.experiment_view import (
-    ExperimentStatus,
     ExperimentView,
     InputExperiment,
+    ExperimentStatus,
 )
 from alab_management.scripts.cleanup_lab import cleanup_lab
 from alab_management.scripts.setup_lab import setup_lab

@@ -106,7 +106,7 @@ class TestTaskView(TestCase):
         ready_tasks = self.task_view.get_ready_tasks()
 
         self.assertSetEqual(
-            {task_id_1, task_id_2}, {task["task_id"] for task in ready_tasks}
+            {task_id_1, task_id_2}, set(task["task_id"] for task in ready_tasks)
         )
         self.assertListEqual(
             ["Heating"] * 2, [task["type"].__name__ for task in ready_tasks]

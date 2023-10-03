@@ -4,7 +4,7 @@ from typing import List, Tuple
 from bson import ObjectId
 
 from alab_management import BaseTask
-from tests.fake_lab.devices.furnace import Furnace
+from ..devices.furnace import Furnace
 
 from .moving import Moving
 
