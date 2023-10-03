@@ -37,7 +37,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
           cache-dependency-path: |
-            **/requirements.txt
       - name: Set up environment
         run: |
           pip install --quiet .
