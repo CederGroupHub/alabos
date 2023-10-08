@@ -8,7 +8,7 @@ from alab_management.task_view.task import BaseTask
 
 class Starting(BaseTask):
     def __init__(self, samples: List[ObjectId], dest: str, *args, **kwargs):
-        super(Starting, self).__init__(samples=samples, *args, **kwargs)
+        super().__init__(samples=samples, *args, **kwargs)
         self.sample = samples[0]
         self.dest = dest
 

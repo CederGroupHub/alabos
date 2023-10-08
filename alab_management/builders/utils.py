@@ -1,7 +1,9 @@
-from typing import Union, List, TYPE_CHECKING
-from .samplebuilder import SampleBuilder
-from .experimentbuilder import ExperimentBuilder
+from typing import TYPE_CHECKING, List, Union
+
 from bson import ObjectId
+
+from .experimentbuilder import ExperimentBuilder
+from .samplebuilder import SampleBuilder
 
 if TYPE_CHECKING:
     from alab_management import BaseTask
@@ -14,7 +16,8 @@ def append_task(
     """Used to add basetask to a SampleBuilder's tasklist during Experiment construction.
 
     Args:
-        samples (Union[SampleBuilder, List[SampleBuilder]]): One or more SampleBuilder's which will have this task appended to their tasklists.
+        samples (Union[SampleBuilder, List[SampleBuilder]]): One or more SampleBuilder's which will
+        have this task appended to their tasklists.
     """
     if not task.is_simulation:
         raise RuntimeError(
@@ -23,7 +26,7 @@ def append_task(
     if isinstance(samples, SampleBuilder):
         samples = [samples]
 
-    if len(set([sample.experiment for sample in samples])) != 1:
+    if len({sample.experiment for sample in samples}) != 1:
         raise ValueError("All samples must be from the same experiment to add a task.")
     experiment: ExperimentBuilder = samples[0].experiment
 

@@ -1,30 +1,27 @@
-"""
-Wrapper over the ``devices`` collection.
-"""
+"""Wrapper over the ``devices`` collection."""
 
 from datetime import datetime
-from enum import unique, Enum, auto
-from typing import List, Optional, Union, Dict, Any, Collection, cast, TypeVar
+from enum import Enum, auto, unique
+from typing import Any, Collection, Dict, List, Optional, TypeVar, Union, cast
 
 import pymongo
 from bson import ObjectId
 
+from alab_management.sample_view import SamplePosition, SampleView
+from alab_management.utils.data_objects import get_collection, get_lock
+
 from .device import BaseDevice, get_all_devices
-from ..utils.data_objects import get_collection, get_lock
-from alab_management.sample_view import SampleView, SamplePosition
 
 _DeviceType = TypeVar("_DeviceType", bound=BaseDevice)  # pylint: disable=invalid-name
 
 
 class DeviceConnectionError(Exception):
-    """Generic error signifying that connection to a device has failed"""
+    """Generic error signifying that connection to a device has failed."""
 
 
 @unique
 class DeviceTaskStatus(Enum):
-    """
-    The Task status of devices. Used by TaskManager to decide whether a Device is available for to execute a Task.
-    """
+    """The Task status of devices. Used by TaskManager to decide whether a Device is available for to execute a Task."""
 
     UNKNOWN = auto()
     IDLE = auto()
@@ -34,10 +31,7 @@ class DeviceTaskStatus(Enum):
 
 @unique
 class DevicePauseStatus(Enum):
-    """
-    Pause status of the Device. This is used to pause the device outside the typical
-    Task queue (like by an operator for maintenance or refilling consumables)
-    """
+    """Pause status of the Device. This is used to pause the device outside of the typical Task queue (like by an operator for maintenance or refilling consumables)"""
 
     RELEASED = auto()
     REQUESTED = auto()
@@ -47,11 +41,11 @@ class DevicePauseStatus(Enum):
 class DeviceView:
     """
     Device view provides API to get/set the status
-    of a device as well as request ownership of one device
+    of a device as well as request ownership of one device.
     """
 
     def __init__(self, connect_to_devices: bool = False):
-        """Class with methods to interact with devices (status + method execution)
+        """Class with methods to interact with devices (status + method execution).
 
         Args:
             connect_to_devices (Optional[bool]): If true, make a connection to all devices
@@ -73,7 +67,9 @@ class DeviceView:
             try:
                 device._connect_wrapper()
             except Exception as e:
-                raise DeviceConnectionError(f"Could not connect to {device_name}!") from e
+                raise DeviceConnectionError(
+                    f"Could not connect to {device_name}!"
+                ) from e
             print(f"Connected to {device_name}")
         self.__connected_to_devices = True
 
@@ -81,14 +77,16 @@ class DeviceView:
         for device_name, device in self._device_list.items():
             try:
                 device._disconnect_wrapper()
-            except Exception as e :
-                raise DeviceConnectionError(f"Could not disconnect from {device_name}!") from e
+            except Exception as e:
+                raise DeviceConnectionError(
+                    f"Could not disconnect from {device_name}!"
+                ) from e
             print(f"Disconnected from {device_name}")
         self.__connected_to_devices = False
 
     def sync_device_status(self):
         """
-        Sync the device status (usually when the system is set up)
+        Sync the device status (usually when the system is set up).
 
         Some devices may still be running, so it is not usable now. We will set the
         status to ``OCCUPIED``
@@ -139,15 +137,11 @@ class DeviceView:
             )
 
     def get_all(self) -> List[Dict[str, Any]]:
-        """
-        Get all the devices in the database, used for dashboard
-        """
+        """Get all the devices in the database, used for dashboard."""
         return cast(List[Dict[str, Any]], self._device_collection.find())
 
     def _clean_up_device_collection(self):
-        """
-        Clean up the device collection
-        """
+        """Clean up the device collection."""
         self._device_collection.drop()
 
     def request_devices(
@@ -171,7 +165,8 @@ class DeviceView:
             device_types_str (Optional[Collection[str]]): the requested
               device types. If None, no device type is requested
 
-        Returns:
+        Returns
+        -------
             {"device_type_name": {"name": device_name, "need_release": need_release (bool)}} or None
         """
         if device_names_str is None:
@@ -221,7 +216,8 @@ class DeviceView:
               Type(BaseDevice), or for a specific device by name
             task_id: the id of task that requests this device
 
-        Returns:
+        Returns
+        -------
             [{"name": device_name, "need_release": bool}]
             The entry need_release indicates whether a device needs to be released
             when __exit__ method is called in the ``DevicesLock``.
@@ -265,18 +261,14 @@ class DeviceView:
         ]
 
     def get_device(self, device_name: str) -> Dict[str, Any]:
-        """
-        Get device by device name, if not found, raises ``ValueError``
-        """
+        """Get device by device name, if not found, raises ``ValueError``."""
         device_entry = self._device_collection.find_one({"name": device_name})
         if device_entry is None:
             raise ValueError(f"Cannot find device with name: {device_name}")
         return device_entry
 
     def get_status(self, device_name: str) -> DeviceTaskStatus:
-        """
-        Get device status by device name, if not found, raise ``ValueError``
-        """
+        """Get device status by device name, if not found, raise ``ValueError``."""
         device_entry = self.get_device(device_name=device_name)
 
         return DeviceTaskStatus[device_entry["status"]]
@@ -293,9 +285,7 @@ class DeviceView:
         )
 
     def get_devices_by_task(self, task_id: Optional[ObjectId]) -> List[BaseDevice]:
-        """
-        Get devices given a task id (regardless of its status!)
-        """
+        """Get devices given a task id (regardless of its status!)."""
         return [
             self._device_list[device["name"]]
             for device in self._device_collection.find({"task_id": task_id})
@@ -303,7 +293,7 @@ class DeviceView:
 
     def release_device(self, device_name: str):
         """
-        Release a device
+        Release a device.
 
         device: name of device to be released
         """
@@ -331,9 +321,7 @@ class DeviceView:
         )
 
     def get_samples_on_device(self, device_name: str):
-        """
-        Get all samples on a device
-        """
+        """Get all samples on a device."""
         device = self.get_device(device_name=device_name)
         _sample_collection = get_collection("samples")
 
@@ -351,15 +339,12 @@ class DeviceView:
         task_id: Optional[ObjectId],
     ):
         """
-        A method that check and update the status of a device
+        A method that check and update the status of a device.
 
         If ``task_id`` is the same as the task id in queried sample,
         we will just skip the status check specified by ``required_status``
         """
-        if isinstance(device, BaseDevice):
-            device_name = device.name
-        else:
-            device_name = device
+        device_name = device.name if isinstance(device, BaseDevice) else device
 
         device_entry = self._device_collection.find_one({"name": device_name})
 
@@ -418,9 +403,7 @@ class DeviceView:
         return getattr(device, prop)
 
     def execute_command(self, device_name: str, method: str, *args, **kwargs):
-        """
-        Call a callable function (``method``) with ``*args`` and ``**kwargs`` on ``device_name``
-        """
+        """Call a callable function (``method``) with ``*args`` and ``**kwargs`` on ``device_name``."""
         if not self.__connected_to_devices:
             raise Exception(
                 "DeviceView cannot execute device commands without first connecting to the devices!"
@@ -429,18 +412,20 @@ class DeviceView:
         return device_method(*args, **kwargs)
 
     def set_message(self, device_name: str, message: str):
-        """Sets the device message. Message is used to communicate device state with the user dashboard
+        """Sets the device message. Message is used to communicate device state with the user dashboard.
 
         Args:
             device_name (str): name of the device to set the message for
             message (str): message to be set
         """
+        device = self.get_device(device_name=device_name)
+
         self._device_collection.update_one(
             {"name": device_name}, {"$set": {"message": message}}
         )
 
     def get_message(self, device_name: str):
-        """Gets the current device message. Message is used to communicate device state with the user dashboard
+        """Gets the current device message. Message is used to communicate device state with the user dashboard.
 
         Args:
             device_name (str): name of the device to set the message for
@@ -448,25 +433,27 @@ class DeviceView:
         return self.get_device(device_name=device_name)["message"]
 
     def get_all_attributes(self, device_name: str):
-        """Returns the device attributes
+        """Returns the device attributes.
 
         Args:
             device_name (str): name of the device to get the attributes for
 
-        Returns:
+        Returns
+        -------
             dict: device attributes
         """
         device = self.get_device(device_name=device_name)
         return device["attributes"]
 
     def get_attribute(self, device_name: str, attribute: str):
-        """Gets a device attribute. Attributes are used to store device-specific values in the database
+        """Gets a device attribute. Attributes are used to store device-specific values in the database.
 
         Args:
             device_name (str): name of the device to get the attribute for
             attribute (str): attribute to be retrieved
 
-        Returns:
+        Returns
+        -------
             Any: attribute value
         """
         device = self.get_device(device_name=device_name)
@@ -477,12 +464,12 @@ class DeviceView:
         return device["attributes"][attribute]
 
     def set_all_attributes(self, device_name: str, attributes: dict):
-        """Sets the device attributes
+        """Sets the device attributes.
 
         Args:
             device_name (str): name of the device to set the attributes for
         """
-        device = self.get_device(device_name=device_name)
+        self.get_device(device_name=device_name)
 
         self._device_collection.update_one(
             {"name": device_name},
@@ -495,7 +482,7 @@ class DeviceView:
         )
 
     def set_attribute(self, device_name: str, attribute: str, value: Any):
-        """Sets a device attribute. Attributes are used to store device-specific values in the database
+        """Sets a device attribute. Attributes are used to store device-specific values in the database.
 
         Args:
             device_name (str): name of the device to set the attribute for
@@ -516,9 +503,7 @@ class DeviceView:
         )
 
     def pause_device(self, device_name: str):
-        """
-        Request pause for a specific device
-        """
+        """Request pause for a specific device."""
         # with self._lock():
         device = self.get_device(device_name=device_name)
         if device["status"] == DeviceTaskStatus.IDLE.name:
@@ -537,9 +522,7 @@ class DeviceView:
         )
 
     def unpause_device(self, device_name: str):
-        """
-        Unpause a device
-        """
+        """Unpause a device."""
         # with self._lock():
         device = self.get_device(device_name=device_name)
         update_dict = {

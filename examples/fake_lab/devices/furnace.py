@@ -1,4 +1,3 @@
-import random
 from threading import Timer
 from typing import ClassVar
 
@@ -9,7 +8,7 @@ class Furnace(BaseDevice):
     description: ClassVar[str] = "Fake furnace"
 
     def __init__(self, *args, **kwargs):
-        super(Furnace, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._is_running = False
 
     @property

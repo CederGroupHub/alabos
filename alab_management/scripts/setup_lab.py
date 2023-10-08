@@ -1,20 +1,15 @@
 """
 Generate device, sample position, task definitions from user defined files (task & device)
-and write them to MongoDB, which will make it easier to query
+and write them to MongoDB, which will make it easier to query.
 """
 
 
-from alab_management.sample_view.sample import SamplePosition
-
-
 def setup_lab():
-    """
-    Cleanup the db and then import all the definitions and set up the db
-    """
-    from ..utils.module_ops import load_definition
-    from ..device_view import get_all_devices, DeviceView
-    from ..sample_view import SampleView
-    from ..sample_view.sample import get_all_standalone_sample_positions
+    """Cleanup the db and then import all the definitions and set up the db."""
+    from alab_management.device_view import DeviceView, get_all_devices
+    from alab_management.sample_view import SampleView
+    from alab_management.sample_view.sample import get_all_standalone_sample_positions
+    from alab_management.utils.module_ops import load_definition
 
     load_definition()
     devices = get_all_devices().values()

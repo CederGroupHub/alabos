@@ -1,8 +1,7 @@
-from alab_management.experiment_view import ExperimentView, CompletedExperimentView
-from alab_management.sample_view import SampleView, CompletedSampleView
-from alab_management.task_view import TaskView, CompletedTaskView
-from alab_management.device_view import DeviceView
 import pandas as pd
+
+from alab_management.sample_view import CompletedSampleView, SampleView
+from alab_management.task_view import CompletedTaskView, TaskView
 
 
 def get_samples() -> pd.DataFrame:

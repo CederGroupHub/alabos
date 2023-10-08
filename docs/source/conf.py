@@ -17,19 +17,21 @@ from pathlib import Path
 
 from sphinx.builders.html import StandaloneHTMLBuilder
 
-sys.path.insert(0, os.path.abspath('../../'))
+sys.path.insert(0, os.path.abspath("../../"))
 
-os.environ["ALAB_CONFIG"] = (Path(__file__).parent / ".." / ".." /
-                             "alab_management" / "_default" / "config.toml").as_posix()
+os.environ["ALAB_CONFIG"] = (
+    Path(__file__).parent / ".." / ".." / "alab_management" / "_default" / "config.toml"
+).as_posix()
 
 # -- Project information -----------------------------------------------------
 
-project = 'Alab Management System'
-copyright = f'{date.today().year}, Alab Project Team'
-author = 'Alab Project Team'
+project = "Alab Management System"
+copyright = f"{date.today().year}, Alab Project Team"
+author = "Alab Project Team"
 
 # The full version, including alpha/beta/rc tags
 from alab_management import __version__
+
 release = __version__
 
 # -- General configuration ---------------------------------------------------
@@ -38,26 +40,25 @@ release = __version__
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.doctest',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.todo',
-    'sphinx.ext.coverage',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.ifconfig',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages',
-    'recommonmark',
-    'sphinx_autodoc_typehints'
-
+    "sphinx.ext.autodoc",
+    "sphinx.ext.doctest",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.todo",
+    "sphinx.ext.coverage",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.ifconfig",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.githubpages",
+    "recommonmark",
+    "sphinx_autodoc_typehints",
 ]
 
 add_module_names = False
 typehints_fully_qualified = False
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -69,7 +70,7 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_book_theme'
+html_theme = "sphinx_book_theme"
 
 html_theme_options = {
     "repository_url": "https://github.com/idocx/alab_management",
@@ -84,45 +85,52 @@ html_title = "Alab Management"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ["_static"]
 html_css_files = ["custom.css"]
 
 StandaloneHTMLBuilder.supported_image_types = [
-    'image/svg+xml',
-    'image/gif',
-    'image/png',
-    'image/jpeg'
+    "image/svg+xml",
+    "image/gif",
+    "image/png",
+    "image/jpeg",
 ]
 
 
 def run_apidoc(_):
     from pathlib import Path
-    
+
     ignore_paths = [
         "alab_management/*dashboard*",
-        "alab_management/*scripts*", 
+        "alab_management/*scripts*",
         "alab_management/*utils*",
     ]
 
-    ignore_paths = [(Path(__file__).parent.parent.parent / p).absolute().as_posix() for p in ignore_paths]
+    ignore_paths = [
+        (Path(__file__).parent.parent.parent / p).absolute().as_posix()
+        for p in ignore_paths
+    ]
 
     argv = [
         "-f",
         "-e",
-        "-o", Path(__file__).parent.as_posix(),
+        "-o",
+        Path(__file__).parent.as_posix(),
         (Path(__file__).parent.parent.parent / "alab_management").absolute().as_posix(),
-    ] + ignore_paths
+        *ignore_paths,
+    ]
 
     try:
         # Sphinx 1.7+
         from sphinx.ext import apidoc
+
         apidoc.main(argv)
     except ImportError:
         # Sphinx 1.6 (and earlier)
         from sphinx import apidoc
+
         argv.insert(0, apidoc.__file__)
         apidoc.main(argv)
 
 
 def setup(app):
-    app.connect('builder-inited', run_apidoc)
+    app.connect("builder-inited", run_apidoc)

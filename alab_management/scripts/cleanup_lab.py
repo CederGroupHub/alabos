@@ -1,5 +1,5 @@
 """
-To remove all the device, sample position definition from database
+To remove all the device, sample position definition from database.
 
 If ``-a`` is true, the whole database (including the data recorded) shall
 be deleted.
@@ -9,13 +9,11 @@ be deleted.
 def cleanup_lab(
     all_collections: bool = False, _force_i_know_its_dangerous: bool = False
 ):
-    """
-    Drop device, sample_position collection from MongoDB
-    """
-    from ..config import AlabConfig
-    from ..utils.data_objects import _GetMongoCollection
-    from ..device_view.device_view import DeviceView
-    from ..sample_view.sample_view import SampleView
+    """Drop device, sample_position collection from MongoDB."""
+    from alab_management.config import AlabConfig
+    from alab_management.device_view.device_view import DeviceView
+    from alab_management.sample_view.sample_view import SampleView
+    from alab_management.utils.data_objects import _GetMongoCollection
 
     config = AlabConfig()
     if all_collections:

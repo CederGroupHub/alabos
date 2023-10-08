@@ -1,13 +1,13 @@
 from pathlib import Path
-from typing import List, Dict, Any, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional
+
 from .samplebuilder import SampleBuilder
-import matplotlib.pyplot as plt
 
 
 class ExperimentBuilder:
     """
     It takes a list of samples and a list of tasks, and returns a dictionary
-    that can be used to generate an input file for the `experiment` command
+    that can be used to generate an input file for the `experiment` to run.
 
     Args:
       name (str): The name of the experiment.
@@ -17,6 +17,7 @@ class ExperimentBuilder:
         """
         Args:
           name (str): The name of the experiment.
+          tags (List[str]): A list of tags to attach to the experiment.
         """
         self.name = name
         self._samples: List[SampleBuilder] = []
@@ -28,12 +29,16 @@ class ExperimentBuilder:
         self, name: str, tags: Optional[List[str]] = None, **metadata
     ) -> SampleBuilder:
         """
-        This function adds a sample to the experiment
+        This function adds a sample to the batch. Each sample already has multiple tasks binded to it. Each
+        batch is a directed graph of tasks.
 
         Args:
           name (str): The name of the sample. This must be unique within this ExperimentBuilder.
+          tags (List[str]): A list of tags to attach to the sample.
           **metadata: Any additional keyword arguments will be attached to this sample as metadata.
-        Returns:
+
+        Returns
+        -------
           A SampleBuilder object. This can be used to add tasks to the sample.
         """
         if any(name == sample.name for sample in self._samples):
@@ -51,6 +56,20 @@ class ExperimentBuilder:
         task_kwargs: Dict[str, Any],
         samples: List[SampleBuilder],
     ) -> None:
+        """
+        This function adds a task to the sample. You should use this function only for special cases which
+        are not handled by the `add_sample` function.
+
+        Args:
+            task_id (str): The object id of the task in mongodb
+            task_name (str): The name of the task.
+            task_kwargs (Dict[str, Any]): Any additional keyword arguments will be attached to this sample as metadata.
+            samples (List[SampleBuilder]): A list of samples to which this task is binded to.
+
+        Returns
+        -------
+            None
+        """
         if task_id in self._tasks:
             return
         self._tasks[task_id] = {
@@ -59,7 +78,16 @@ class ExperimentBuilder:
             "samples": [sample.name for sample in samples],
         }
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        This function returns a dictionary that can be used to generate an input file for the `experiment`
+        to run.
+        Args:
+            None
+        Returns:
+            A dictionary that can be used to generate an input file for the `experiment` to run.
+
+        """
         samples = []
         tasks = []
         task_ids = {}
@@ -95,6 +123,16 @@ class ExperimentBuilder:
     def generate_input_file(
         self, filename: str, fmt: Literal["json", "yaml"] = "json"
     ) -> None:
+        """
+        This function generates an input file for the `experiment` command.
+        Args:
+            filename (str): The name of the file to be generated.
+            fmt (Literal["json", "yaml"]): The format of the file to be generated.
+
+        Returns
+        -------
+            None.
+        """
         with Path(filename).open("w", encoding="utf-8") as f:
             if fmt == "json":
                 import json
@@ -105,16 +143,25 @@ class ExperimentBuilder:
 
                 yaml.dump(self.to_dict(), f, default_flow_style=False, indent=2)
 
-    def plot(self, ax=None):
-        import networkx as nx
+    def plot(self, ax=None) -> None:
+        """
+        This function plots the directed graph of tasks.
+        Args:
+            ax (matplotlib.axes.Axes): The axes on which to plot the graph.
+
+        Returns
+        -------
+            None.
+        """
         import matplotlib.pyplot as plt
+        import networkx as nx
 
         if ax is None:
             _, ax = plt.subplots(figsize=(8, 6))
 
         task_list = self.to_dict()["tasks"]
 
-        unique_tasks = set([task["type"] for task in task_list])
+        unique_tasks = {task["type"] for task in task_list}
         color_key = {
             nodetype: plt.cm.tab10(i) for i, nodetype in enumerate(unique_tasks)
         }

@@ -22,8 +22,10 @@ class TestExperimentManager(TestCase):
                 "name": "test",
                 "tags": ["test"],
                 "metadata": {"test": "test"},
-                "samples": [{"name": "test_sample", "metadata": {}, "tags": []},
-                            {"name": "test_sample_2", "metadata": {}, "tags": []}],
+                "samples": [
+                    {"name": "test_sample", "metadata": {}, "tags": []},
+                    {"name": "test_sample_2", "metadata": {}, "tags": []},
+                ],
                 "tasks": [
                     {
                         "type": "Heating",
@@ -104,8 +106,10 @@ class TestExperimentManager(TestCase):
                 "name": "test",
                 "tags": ["test"],
                 "metadata": {"test": "test"},
-                "samples": [{"name": "test_sample", "metadata": {}, "tags": []},
-                            {"name": "test_sample_2", "metadata": {}, "tags": []}],
+                "samples": [
+                    {"name": "test_sample", "metadata": {}, "tags": []},
+                    {"name": "test_sample_2", "metadata": {}, "tags": []},
+                ],
                 "tasks": [
                     {
                         "type": "Heating",

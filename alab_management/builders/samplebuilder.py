@@ -1,10 +1,4 @@
-from typing import Any, List, Dict, TYPE_CHECKING, Optional, Set, Union
-from pydantic import (
-    BaseModel,
-    constr,
-    validator,
-    Field,
-)  # pylint: disable=no-name-in-module
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from bson import ObjectId
 
@@ -13,6 +7,14 @@ if TYPE_CHECKING:
 
 
 class SampleBuilder:
+    """
+    This class is used to build a sample. Each sample has a name, tags, and metadata. Each sample also
+    has a list of tasks which are binded to it. Each sample is a node in a directed graph of tasks.
+    Each task has a list of samples which are binded to it. Each sample also has a list of tags and
+    metadata. The tags and metadata are used to filter the samples and tasks. The tags and metadata are
+    also used to group the samples and tasks.
+    """
+
     def __init__(
         self,
         name: str,
@@ -31,6 +33,14 @@ class SampleBuilder:
         self,
         task_id: str,
     ) -> None:
+        """
+        This function adds a task to the sample. You should use this function only for special cases which
+        are not handled by the `add_sample` function.
+        Args:
+            task_id (str): The object id of the task in mongodb
+        Returns:
+            None.
+        """
         if task_id not in self._tasks:
             self._tasks.append(task_id)
 
@@ -44,7 +54,8 @@ class SampleBuilder:
             "metadata": Dict[str, Any],
         }
 
-        Returns:
+        Returns
+        -------
             Dict[str, Any]: sample as a dictionary
         """
         return {
@@ -65,7 +76,7 @@ class SampleBuilder:
         return f"<Sample: {self.name}>"
 
 
-### Format checking for API inputs
+# ## Format checking for API inputs
 
 
 # class TaskInputFormat(BaseModel):
@@ -119,7 +130,7 @@ class SampleBuilder:
 #     """
 
 #     id: Optional[Any] = Field(None, alias="id")
-#     name: constr(regex=r"^[^$.]+$")  # type: ignore # noqa: F722
+#     name: constr(regex=r"^[^$.]+$")  # type: ignore
 #     tags: List[str]
 #     tasks: List[TaskInputFormat]
 #     metadata: Dict[str, Any]

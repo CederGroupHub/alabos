@@ -71,7 +71,9 @@ class TestTaskManager(unittest.TestCase):
         )
         self.resource_requester.release_resources(_id)
         time.sleep(2)
-        self.assertEqual(self.device_view.get_status("furnace_1"), DeviceTaskStatus.IDLE)
+        self.assertEqual(
+            self.device_view.get_status("furnace_1"), DeviceTaskStatus.IDLE
+        )
         self.assertEqual(
             self.sample_view.get_sample_position_status("furnace_1/inside"),
             (SamplePositionStatus.EMPTY, None),
@@ -98,7 +100,9 @@ class TestTaskManager(unittest.TestCase):
         )
         self.resource_requester.release_resources(_id)
         time.sleep(2)
-        self.assertEqual(self.device_view.get_status("furnace_1"), DeviceTaskStatus.IDLE)
+        self.assertEqual(
+            self.device_view.get_status("furnace_1"), DeviceTaskStatus.IDLE
+        )
         self.assertEqual(
             self.sample_view.get_sample_position_status("furnace_1/inside"),
             (SamplePositionStatus.EMPTY, None),

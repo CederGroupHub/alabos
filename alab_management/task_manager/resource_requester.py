@@ -27,8 +27,6 @@ _ResourceRequestDict = Dict[
 ]  # the raw request sent by task process
 
 
-
-
 class ResourcesRequest(BaseModel):
     """
     This class is used to validate the resource request. Each request should have a format of
@@ -133,7 +131,9 @@ class ResourceRequester(RequestMixin):
 
         super().__init__()
         self._stop = False
-        self._thread = Thread(target=self._check_request_status_loop, name="CheckRequestStatus")
+        self._thread = Thread(
+            target=self._check_request_status_loop, name="CheckRequestStatus"
+        )
         self._thread.daemon = True
         self._thread.start()
 

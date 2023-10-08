@@ -5,10 +5,10 @@ from bson.errors import InvalidId
 from flask import Blueprint, request
 from pydantic import ValidationError
 
+from alab_management.dashboard.lab_views import experiment_view, sample_view, task_view
 from alab_management.experiment_view.experiment import InputExperiment
 from alab_management.experiment_view.experiment_view import ExperimentStatus
 from alab_management.task_view.task_enums import TaskStatus
-from ..lab_views import experiment_view, sample_view, task_view
 from alab_management.utils.data_objects import make_jsonable
 
 experiment_bp = Blueprint("/experiment", __name__, url_prefix="/api/experiment")
@@ -16,9 +16,7 @@ experiment_bp = Blueprint("/experiment", __name__, url_prefix="/api/experiment")
 
 @experiment_bp.route("/submit", methods=["POST"])
 def submit_new_experiment():
-    """
-    Submit a new experiment to the system
-    """
+    """Submit a new experiment to the system."""
     data = request.get_json(force=True)  # type: ignore
     try:
         experiment = InputExperiment(**data)  # type: ignore
@@ -32,9 +30,7 @@ def submit_new_experiment():
 
 
 def get_experiment_progress(exp_id: str):
-    """
-    Get the progress of an experiment
-    """
+    """Get the progress of an experiment."""
     try:
         experiment = experiment_view.get_experiment(ObjectId(exp_id))
     except ValueError as exception:
@@ -61,9 +57,7 @@ def get_experiment_progress(exp_id: str):
 
 @experiment_bp.route("/get_all_ids", methods=["GET"])
 def get_overview():
-    """
-    get id for all experiments that are running or completed
-    """
+    """Get id for all experiments that are running or completed."""
     experiment_ids = []
     for status in [ExperimentStatus.RUNNING, ExperimentStatus.COMPLETED]:
         experiments = experiment_view.get_experiments_with_status(status)
@@ -81,9 +75,7 @@ def get_overview():
 
 @experiment_bp.route("/<exp_id>", methods=["GET"])
 def query_experiment(exp_id: str):
-    """
-    Find an experiment by id. This is used by the dashboard to present experiment status.
-    """
+    """Find an experiment by id. This is used by the dashboard to present experiment status."""
     try:
         experiment = experiment_view.get_experiment(ObjectId(exp_id))
     except InvalidId as exception:
@@ -128,9 +120,7 @@ def query_experiment(exp_id: str):
 
 @experiment_bp.route("/results/<exp_id>", methods=["GET"])
 def query_experiment_results(exp_id: str):
-    """
-    Find an experiment by id. This is intended for users to retrieve data from an experiment
-    """
+    """Find an experiment by id. This is intended for users to retrieve data from an experiment."""
     try:
         experiment = experiment_view.get_experiment(ObjectId(exp_id))
     except InvalidId as exception:

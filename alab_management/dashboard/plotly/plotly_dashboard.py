@@ -1,9 +1,11 @@
-from dash import Dash, html, dcc, callback, Output, Input
-import plotly.express as px
+from datetime import datetime, timedelta
+
 import dash_mantine_components as dmc
 import pandas as pd
+import plotly.express as px
+from dash import Dash, Input, Output, callback, dcc, html
+
 from .data_interface import get_samples, get_tasks
-from datetime import datetime, timedelta
 
 app = Dash(__name__)
 
@@ -24,7 +26,7 @@ def build_task_row(task_type: str, task_df: pd.DataFrame = task_df):
         height=100,
     )
     fig.update_layout(
-        margin=dict(l=0, r=0, t=0, b=0),
+        margin={"l": 0, "r": 0, "t": 0, "b": 0},
         xaxis_title="",
         yaxis_title="",
     )
@@ -44,7 +46,7 @@ def build_task_row(task_type: str, task_df: pd.DataFrame = task_df):
         },
     )
     pie.update_layout(
-        margin=dict(l=0, r=0, t=0, b=0),
+        margin={"l": 0, "r": 0, "t": 0, "b": 0},
         showlegend=False,
     )
 
@@ -113,9 +115,7 @@ def update_task_table(date_range):
     filtered_task_df = task_df[
         (task_df.started_at >= date_range[0]) & (task_df.started_at <= date_range[1])
     ]
-    return [
-        dmc.Text("Tasks", align="center", size="lg"),
-    ] + [
+    return [dmc.Text("Tasks", align="center", size="lg"),] + [
         build_task_row(task_type, filtered_task_df)
         for task_type in filtered_task_df.type.unique()
     ]
