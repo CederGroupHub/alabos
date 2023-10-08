@@ -26,9 +26,7 @@ class TestDeviceView(TestCase):
         setup_lab()
         self.device_view = DeviceView()
         self.device_list = self.device_view._device_list
-        self.device_names = [
-            device_name for device_name in self.device_view._device_list
-        ]
+        self.device_names = list(self.device_view._device_list)
 
     def tearDown(self):
         cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True)

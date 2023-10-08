@@ -1,22 +1,17 @@
-"""
-This file contains the functions to load python modules from a path.
-"""
+"""This file contains the functions to load python modules from a path."""
 
 import importlib
 import os.path
-import re
 import sys
+from copy import copy
 from pathlib import Path
 from typing import Optional, Union
-from copy import copy
 
 
 def import_module_from_path(
     path: Union[str, Path], parent_package: Optional[str] = None
 ):
-    """
-    Import a module by its path
-    """
+    """Import a module by its path."""
     if not isinstance(path, Path):
         path = Path(path)
     sys.path.insert(0, path.parent.as_posix())
@@ -33,9 +28,7 @@ def import_module_from_path(
 
 
 def load_definition():
-    """
-    Load device and task definitions from file (specified in config file)
-    """
+    """Load device and task definitions from file (specified in config file)."""
     from alab_management.config import AlabConfig
 
     config = AlabConfig()

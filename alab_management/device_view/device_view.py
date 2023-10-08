@@ -31,7 +31,9 @@ class DeviceTaskStatus(Enum):
 
 @unique
 class DevicePauseStatus(Enum):
-    """Pause status of the Device. This is used to pause the device outside of the typical Task queue (like by an operator for maintenance or refilling consumables)"""
+    """Pause status of the Device. This is used to pause the device outside of the typical Task queue (like by an
+    operator for maintenance or refilling consumables).
+    """
 
     RELEASED = auto()
     REQUESTED = auto()
@@ -274,9 +276,7 @@ class DeviceView:
         return DeviceTaskStatus[device_entry["status"]]
 
     def occupy_device(self, device: Union[BaseDevice, str], task_id: ObjectId):
-        """
-        Occupy a device with given task id
-        """
+        """Occupy a device with given task id."""
         self._update_status(
             device=device,
             required_status=DeviceTaskStatus.IDLE,
@@ -418,7 +418,7 @@ class DeviceView:
             device_name (str): name of the device to set the message for
             message (str): message to be set
         """
-        device = self.get_device(device_name=device_name)
+        self.get_device(device_name=device_name)
 
         self._device_collection.update_one(
             {"name": device_name}, {"$set": {"message": message}}
@@ -543,6 +543,7 @@ class DeviceView:
             {"$set": update_dict},
         )
 
-    def __exit__(self):
+    def __exit__(self, exc_type, exc_value, traceback):
+        """Disconnect from all devices when exiting the context manager."""
         if self.__connected_to_devices:
             self.__disconnect_all_devices()

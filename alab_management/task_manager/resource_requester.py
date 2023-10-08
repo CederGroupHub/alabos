@@ -1,25 +1,25 @@
 """
 TaskLauncher is the core module of the system,
-which actually executes the tasks
+which actually executes the tasks.
 """
 import time
 from concurrent.futures import Future
 from datetime import datetime
 from threading import Thread
 from traceback import print_exc
-from typing import Union, Dict, Optional, Type, List, Any, cast
+from typing import Any, Dict, List, Optional, Type, Union, cast
 
 import dill
 from bson import ObjectId
 from pydantic import BaseModel, root_validator
 
+from alab_management.device_view.device import BaseDevice
 from alab_management.sample_view.sample import SamplePosition
+from alab_management.sample_view.sample_view import SamplePositionRequest
+from alab_management.task_view import TaskPriority
+from alab_management.utils.data_objects import get_collection
 
-from ..device_view.device import BaseDevice
-from ..sample_view.sample_view import SamplePositionRequest
-from ..task_view import TaskView, TaskPriority
-from ..utils.data_objects import get_collection
-from .enums import RequestStatus, _EXTRA_REQUEST
+from .enums import _EXTRA_REQUEST, RequestStatus
 
 _SampleRequestDict = Dict[str, int]
 _ResourceRequestDict = Dict[
@@ -45,9 +45,10 @@ class ResourcesRequest(BaseModel):
             ]
         },
         ...
-    ]
+    ].
 
-    See Also:
+    See Also
+    --------
         :py:class:`SamplePositionRequest <alab_management.sample_view.sample_view.SamplePositionRequest>`
     """
 
@@ -56,7 +57,8 @@ class ResourcesRequest(BaseModel):
     ]  # type: ignore
 
     @root_validator(pre=True, allow_reuse=True)
-    def preprocess(cls, values):  # pylint: disable=no-self-use,no-self-argument
+    def preprocess(cls, values):
+        """Preprocess the request."""
         values = values["__root__"]
 
         new_values = []
@@ -82,29 +84,31 @@ class ResourcesRequest(BaseModel):
 
 
 class RequestMixin:
-    """
-    Simple wrapper for the request collection
-    """
+    """Simple wrapper for the request collection."""
 
     def __init__(self):
         self._request_collection = get_collection("requests")
 
     def update_request_status(self, request_id: ObjectId, status: RequestStatus):
+        """Update the status of a request by request_id."""
         return self._request_collection.update_one(
             {"_id": request_id}, {"$set": {"status": status.name}}
         )
 
     def get_request(self, request_id: ObjectId, **kwargs):
+        """Get a request by request_id."""
         return self._request_collection.find_one(
             {"_id": request_id}, **kwargs
         )  # DB_ACCESS_OUTSIDE_VIEW
 
     def get_requests_by_status(self, status: RequestStatus):
+        """Get all requests by status."""
         return self._request_collection.find(
             {"status": status.name}
         )  # DB_ACCESS_OUTSIDE_VIEW
 
     def get_requests_by_task_id(self, task_id: ObjectId):
+        """Get all requests by task_id."""
         return self._request_collection.find({"task_id": task_id})
 
 
@@ -138,6 +142,7 @@ class ResourceRequester(RequestMixin):
         self._thread.start()
 
     def __close__(self):
+        """Close the thread."""
         self._stop = True
         self._thread.join()
 
@@ -150,10 +155,11 @@ class ResourceRequester(RequestMixin):
         priority: Optional[Union[TaskPriority, int]] = None,
     ) -> Dict[str, Any]:
         """
-        Request lab resources. Write the request into the database, and then the task manager will read from the
+        Request lab resources.
+
+        Write the request into the database, and then the task manager will read from the
         database and assign the resources.
         """
-
         f = Future()
         if priority is None:
             priority = self.priority
@@ -222,9 +228,7 @@ class ResourceRequester(RequestMixin):
         }
 
     def release_resources(self, request_id: ObjectId) -> bool:
-        """
-        Release a request by request_id
-        """
+        """Release a request by request_id."""
         result = self._request_collection.update_one(
             {
                 "_id": request_id,
@@ -241,7 +245,7 @@ class ResourceRequester(RequestMixin):
 
     def release_all_resources(self):
         """
-        Release all requests by task_id, used for error recovery
+        Release all requests by task_id, used for error recovery.
 
         For the requests that are not fulfilled, they will be marked as CANCELED.
 
@@ -274,7 +278,7 @@ class ResourceRequester(RequestMixin):
     def _check_request_status_loop(self):
         while not self._stop:
             try:
-                for request_id in self._waiting.copy().keys():
+                for request_id in self._waiting.copy():
                     status = self.get_request(request_id=request_id, projection=["status"])["status"]  # type: ignore
                     if status == RequestStatus.FULFILLED.name:
                         self._handle_fulfilled_request(request_id=request_id)

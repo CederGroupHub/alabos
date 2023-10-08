@@ -1,16 +1,15 @@
 """
 Each task process will have a ``LabView`` instance, through which it can request
-the lab resources (devices and sample positions). It can also update the position
-of a sample in the lab.
+the lab resources (devices and sample positions).
+
+It can also update the position of a sample in the lab.
 """
 
 from contextlib import contextmanager
-import time
 from traceback import format_exc
-from typing import Any, Type, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Type, Union
 
 from bson import ObjectId
-import bson
 from pydantic import root_validator
 from pydantic.main import BaseModel
 
@@ -19,7 +18,7 @@ from alab_management.device_view.device import BaseDevice
 from alab_management.experiment_view.experiment_view import ExperimentView
 from alab_management.logger import DBLogger
 from alab_management.sample_view.sample import Sample
-from alab_management.sample_view.sample_view import SampleView, SamplePositionRequest
+from alab_management.sample_view.sample_view import SamplePositionRequest, SampleView
 from alab_management.task_manager.resource_requester import ResourceRequester
 from alab_management.task_view.task import BaseTask
 from alab_management.task_view.task_enums import TaskPriority, TaskStatus
@@ -28,24 +27,24 @@ from alab_management.user_input import request_user_input
 
 
 class DeviceRunningException(Exception):
-    """
-    Raise when a task try to release a device that is still running
-    """
+    """Raise when a task try to release a device that is still running."""
 
 
 class ResourcesRequest(BaseModel):
     """
     This class is used to validate the resource request. Each request should have a format of
-    [DeviceType: List of SamplePositionRequest]
+    [DeviceType: List of SamplePositionRequest].
 
-    See Also:
+    See Also
+    --------
         :py:class:`SamplePositionRequest <alab_management.sample_view.sample_view.SamplePositionRequest>`
     """
 
     __root__: Dict[Optional[Type[BaseDevice]], List[SamplePositionRequest]]  # type: ignore
 
     @root_validator(pre=True, allow_reuse=True)
-    def preprocess(cls, values):  # pylint: disable=no-self-use,no-self-argument
+    def preprocess(cls, values):
+        """Preprocess the request to make sure the request is in the correct format."""
         values = values["__root__"]
         # if the sample position request is string, we will automatically add a number attribute = 1.
         values = {
@@ -81,6 +80,7 @@ class LabView:
 
     @property
     def task_id(self) -> ObjectId:
+        """Get the task id of the current task."""
         return self._task_id
 
     @contextmanager
@@ -96,17 +96,21 @@ class LabView:
         Request devices and sample positions. This function is a context manager, which should be used in
         a with statement to ensure all the devices are released when the task is done.
 
-        resource_request format is:
-            {device: {position: number, ...}, ...}
-        device can be a name of a specific device (str), a type of device, or None. If device is a type, the resource request will look for any available device of that type. If device is None, the resource request will look for sample positions that do not belong to a device.
-        position is the name of a sample position that should be reserved on the device, and number is the number of such positions that should be reserved. If the device is required but no positions are required, this can be left as an empty dictionary.
+        resource_request format is: {device: {position: number, ...}, ...} device can be a name of a specific device
+        (str), a type of device, or None. If device is a type, the resource request will look for any available
+        device of that type. If device is None, the resource request will look for sample positions that do not
+        belong to a device. position is the name of a sample position that should be reserved on the device,
+        and number is the number of such positions that should be reserved. If the device is required but no
+        positions are required, this can be left as an empty dictionary.
 
-        Examples:
+        Examples -------- {TubeFurnace: {"tray": 4}, "arm1": {}} will find the first available TubeFurnace device,
+        then reserve 4 sample positions of "{tubefurnacename}/tray/{tray_index}" on that device. It will also find
+        the device named "arm1".
 
-        {TubeFurnace: {"tray": 4}, "arm1": {}} will find the first available TubeFurnace device, then reserve 4 sample positions of "{tubefurnacename}/tray/{tray_index}" on that device. It will also find the device named "arm1".
 
-
-        The priority of the request can optionally be specified as a positive integer, which should probably be in the range of 0-40. 20 is the default "NORMAL" priority level. Higher number = higher priority. Numbers >= 100 are reserved for urgent/error correcting requests.
+        The priority of the request can optionally be specified as a positive integer, which should probably be in
+        the range of 0-40. 20 is the default "NORMAL" priority level. Higher number = higher priority. Numbers >= 100
+        are reserved for urgent/error correcting requests.
         """
         priority = priority or self.priority
 
@@ -130,7 +134,9 @@ class LabView:
 
     def _sample_name_to_id(self, sample_name: str) -> ObjectId:
         """
-        Get a sample id by name. Looks up sample name->id mapping for the experiment `self.task_id` belongs to.
+        Get a sample id by name.
+
+        Looks up sample name->id mapping for the experiment `self.task_id` belongs to.
         """
         for sample in self.__task_entry["samples"]:
             if sample["name"] == sample_name:
@@ -141,8 +147,9 @@ class LabView:
 
     def get_sample(self, sample: Union[ObjectId, str]) -> Sample:
         """
-        Get a sample by either an ObjectId corresponding to sample_id, or as a string corresponding to the sample's name within the experiment., see also
-        :py:meth:`get_sample <alab_management.sample_view.sample_view.SampleView.get_sample>`
+        Get a sample by either an ObjectId corresponding to sample_id, or as a string corresponding to the sample's
+        name within the experiment., see also :py:meth:`get_sample
+        <alab_management.sample_view.sample_view.SampleView.get_sample>`.
         """
         if isinstance(sample, str):
             sample_id = self._sample_name_to_id(sample)
@@ -154,9 +161,11 @@ class LabView:
 
     def move_sample(self, sample: Union[ObjectId, str], position: Optional[str]):
         """
-        Move a sample to a new position. `sample` can be given as either an ObjectId corresponding to sample_id, or as a string corresponding to the sample's name within the experiment.
+        Move a sample to a new position. `sample` can be given as either an ObjectId corresponding to sample_id,
+        or as a string corresponding to the sample's name within the experiment.
 
-        see also:
+        See Also
+        --------
         :py:meth:`move_sample <alab_management.sample_view.sample_view.SampleView.move_sample>`
         """
         # check if this sample position is locked by current task
@@ -179,21 +188,17 @@ class LabView:
         )
 
     def get_locked_sample_positions(self) -> List[str]:
-        """
-        Get a list of sample positions that are occupied by this task
-        """
+        """Get a list of sample positions that are occupied by this task."""
         return self._sample_view.get_sample_positions_by_task(task_id=self._task_id)
 
     def get_sample_position_parent_device(self, position: str) -> Optional[str]:
-        """
-        Get the name of the device that owns the sample position.
-        """
+        """Get the name of the device that owns the sample position."""
         return self._sample_view.get_sample_position_parent_device(position=position)
 
     def run_subtask(
         self, task: Type[BaseTask], samples: List[Union[ObjectId, str]], **kwargs
     ):
-        """run a task as a subtask within the task. basically fills in task_id and lab_view for you.
+        """Run a task as a subtask within the task. basically fills in task_id and lab_view for you.
             this command blocks until the subtask is completed.
 
         Args:
@@ -224,12 +229,12 @@ class LabView:
                 samples=samples,
                 **kwargs,
             )
-        except Exception as exception:
+        except Exception as exc:
             self._task_view.update_subtask_status(
                 task_id=task_id, subtask_id=subtask_id, status=TaskStatus.ERROR
             )
             self._task_view.update_subtask_result(
-                task_id=task_id, subtask_id=subtask_id, result=str(exception)
+                task_id=task_id, subtask_id=subtask_id, result=str(exc)
             )
             raise Exception(
                 "Failed to create subtask of type {} within task {} of type {}".format(
@@ -237,7 +242,7 @@ class LabView:
                     task_id,
                     self._task_view.get_task(task_id=task_id, encode=True)["type"],
                 )
-            )
+            ) from exc
         self.logger.system_log(
             level="INFO",
             log_data={
@@ -291,13 +296,14 @@ class LabView:
         return result
 
     def request_user_input(self, prompt: str, options: List[str]) -> str:
-        """
-        Request user input from the user. This function will block until the user inputs something. Returns the value returned by the user.
+        """Request user input from the user. This function will block until the user inputs something. Returns the
+        value returned by the user.
         """
         return request_user_input(task_id=self.task_id, prompt=prompt, options=options)
 
     @property
     def priority(self) -> int:
+        """Get the priority of the task."""
         return self._priority
 
     @priority.setter
@@ -308,18 +314,17 @@ class LabView:
 
     def update_result(self, name: str, value: Any):
         """
-        Update a result of the task. This result will be saved in the task collection under `results.name` and can be retrieved later.
+        Update a result of the task. This result will be saved in the task collection under `results.name` and can be
+        retrieved later.
 
-        Args:
-            name (str): name of the result (ie "diffraction pattern"). This will be used as the key in the results dictionary.
-            value (Any): value of the result. This can be a numpy array, a set, or any other bson-serializable object (most standard Python types).
+        Args: name (str): name of the result (ie "diffraction pattern"). This will be used as the key in the results
+        dictionary. value (Any): value of the result. This can be a numpy array, a set, or any other
+        bson-serializable object (most standard Python types).
         """
         self._task_view.update_result(task_id=self.task_id, name=name, value=value)
 
     def request_cleanup(self):
-        """
-        Request cleanup of the task. This function will block until the task is cleaned up.
-        """
+        """Request cleanup of the task. This function will block until the task is cleaned up."""
         all_reserved_sample_positions = self._sample_view.get_sample_positions_by_task(
             self.task_id
         )

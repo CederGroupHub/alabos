@@ -1,3 +1,5 @@
+"""Build the sample object."""
+
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from bson import ObjectId
@@ -8,7 +10,9 @@ if TYPE_CHECKING:
 
 class SampleBuilder:
     """
-    This class is used to build a sample. Each sample has a name, tags, and metadata. Each sample also
+    Build a sample.
+
+    Each sample has a name, tags, and metadata. Each sample also
     has a list of tasks which are binded to it. Each sample is a node in a directed graph of tasks.
     Each task has a list of samples which are binded to it. Each sample also has a list of tags and
     metadata. The tags and metadata are used to filter the samples and tasks. The tags and metadata are
@@ -34,8 +38,9 @@ class SampleBuilder:
         task_id: str,
     ) -> None:
         """
-        This function adds a task to the sample. You should use this function only for special cases which
+        Add a task to the sample. You should use this function only for special cases which
         are not handled by the `add_sample` function.
+
         Args:
             task_id (str): The object id of the task in mongodb
         Returns:
@@ -45,8 +50,9 @@ class SampleBuilder:
             self._tasks.append(task_id)
 
     def to_dict(self) -> Dict[str, Any]:
-        """Return Sample as a dictionary. This looks like:
+        """Return Sample as a dictionary.
 
+        This looks like:
         {
             "_id": str(ObjectId),
             "name": str,
@@ -67,12 +73,15 @@ class SampleBuilder:
 
     @property
     def tasks(self):
+        """Return the tasks binded to this sample."""
         return self._tasks
 
     def __eq__(self, other):
+        """Check if two samples are equal."""
         return self._id == other._id
 
     def __repr__(self):
+        """Return a string representation of the sample."""
         return f"<Sample: {self.name}>"
 
 

@@ -29,6 +29,7 @@ def cli():
 
 @cli.command("init", short_help="Init definition folder with default configuration")
 def init_cli():
+    """Init definition folder with default configuration."""
     if init_project():
         click.echo("Done")
     else:
@@ -37,6 +38,7 @@ def init_cli():
 
 @cli.command("setup", short_help="Read and write definitions to database")
 def setup_lab_cli():
+    """Read and write definitions to database."""
     if setup_lab():
         click.echo("Done")
     else:
@@ -51,6 +53,7 @@ def setup_lab_cli():
 @click.option("-p", "--port", default="8895", type=int)
 @click.option("--debug", default=False, is_flag=True)
 def launch_lab_cli(host, port, debug):
+    """Start to run the lab."""
     click.echo(f"The dashboard will be served on http://{host}:{port}")
     launch_lab(host, port, debug)
 
@@ -66,12 +69,14 @@ def launch_lab_cli(host, port, debug):
 )
 @click.pass_context
 def launch_worker_cli(ctx):
+    """Launch Dramatiq worker in current folder."""
     launch_worker(ctx.args)
 
 
 @cli.command("clean", short_help="Clean up the database")
 @click.option("-a", "--all-collections", is_flag=True, default=False)
 def cleanup_lab_cli(all_collections: bool):
+    """Clean up the database."""
     if cleanup_lab(all_collections):
         click.echo("Done")
     else:
@@ -86,14 +91,19 @@ def cleanup_lab_cli(all_collections: bool):
 @click.option("-p", "--port", default="8895", type=int)
 @click.option("--debug", default=False, is_flag=True)
 def launch_dashboard_cli(host, port, debug):
+    """Launch the dashboard alone."""
     launch_dashboard(host, port, debug)
 
 
 @cli.command(
     "copy_completed_experiments",
-    short_help='Copy completed experiments from working database to completed database. Note that "mongodb_completed" must be specified in the config file.',
+    short_help='Copy completed experiments from working database to completed database. Note that "mongodb_completed" '
+               'must be specified in the config file.',
 )
 def copy_completed_experiments_cli():
+    """Copy completed experiments from working database to completed database. Note that "mongodb_completed" must be
+    specified in the config file.
+    """
     from alab_management.experiment_view import CompletedExperimentView
 
     CompletedExperimentView().save_all()
@@ -109,6 +119,7 @@ def copy_completed_experiments_cli():
 )
 @click.option("-p", "--port", default="8900", type=int)
 def launch_summary_dashboard(host, port):
+    """Launch the summary dashboard, which provides statistics on the state of the lab and its tasks."""
     from alab_management.dashboard.plotly import launch
 
     launch(host=host, port=port)

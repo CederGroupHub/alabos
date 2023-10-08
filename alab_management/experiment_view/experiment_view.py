@@ -1,25 +1,24 @@
-"""
-A wrapper over the ``experiment`` class.
-"""
+"""A wrapper over the ``experiment`` class."""
 
 from datetime import datetime
 from enum import Enum, auto
-from typing import List, Any, Dict, Optional, cast, Union
+from typing import Any, Dict, List, Optional, Union, cast
 
 from bson import ObjectId
 
-from .experiment import InputExperiment
-from ..utils.data_objects import get_collection
 from alab_management.sample_view import SampleView
 from alab_management.task_view import TaskView
+from alab_management.utils.data_objects import get_collection
+
 from .completed_experiment_view import CompletedExperimentView
+from .experiment import InputExperiment
 
 completed_experiment_view = CompletedExperimentView()
 
 
 class ExperimentStatus(Enum):
     """
-    The status of experiment
+    The status of experiment.
 
     - ``PENDING``: The experiment has not been processed by experiment manager
     - ``RUNNING``: The experiment has been submitted and put in the queue
@@ -34,9 +33,7 @@ class ExperimentStatus(Enum):
 
 
 class ExperimentView:
-    """
-    Experiment view manages the experiment status, which is a collection of tasks and samples
-    """
+    """Experiment view manages the experiment status, which is a collection of tasks and samples."""
 
     def __init__(self):
         self._experiment_collection = get_collection("experiment")
@@ -47,7 +44,7 @@ class ExperimentView:
         """
         Create an experiment in the database
         which is intended for raw experiment inserted by users. The
-        lab manager will add sample id and task id for the samples and tasks
+        lab manager will add sample id and task id for the samples and tasks.
 
         Args:
             experiment: the required format of experiment, see also
@@ -55,13 +52,15 @@ class ExperimentView:
         """
         # NOTE: format of experiment dict is checked in api endpoint upstream of this method
 
-        # confirm that no task/sample id's already exist in the database. This is possible when users manually set these id's
+        # confirm that no task/sample id's already exist in the database. This is possible when users manually set
+        # these id's
         for sample in experiment.samples:
             if sample.sample_id is None:
                 continue  # ALabOS will assign a sample id, this is always safe
             if self.sample_view.exists(sample_id=sample.sample_id):
                 raise ValueError(
-                    f"Sample id {sample.sample_id} already exists in the database! Please use another id. This experiment was not submitted."
+                    f"Sample id {sample.sample_id} already exists in the database! Please use another id. This "
+                    f"experiment was not submitted."
                 )
 
         for task in experiment.tasks:
@@ -69,7 +68,8 @@ class ExperimentView:
                 continue
             if self.task_view.exists(task_id=task.task_id):
                 raise ValueError(
-                    f"Task id {task.task_id} already exists in the database! Please use another id. This experiment was not submitted."
+                    f"Task id {task.task_id} already exists in the database! Please use another id. This experiment "
+                    f"was not submitted."
                 )
 
         # all good, lets submit the experiment into ALabOS!
@@ -86,9 +86,7 @@ class ExperimentView:
     def get_experiments_with_status(
         self, status: Union[str, ExperimentStatus]
     ) -> List[Dict[str, Any]]:
-        """
-        Filter experiments by its status
-        """
+        """Filter experiments by its status."""
         if isinstance(status, str):
             status = ExperimentStatus[status]
         return cast(
@@ -101,9 +99,7 @@ class ExperimentView:
         )
 
     def get_experiment(self, exp_id: ObjectId) -> Optional[Dict[str, Any]]:
-        """
-        Get an experiment by its id
-        """
+        """Get an experiment by its id."""
         experiment = self._experiment_collection.find_one({"_id": exp_id})
         if experiment is None:
             try:
@@ -119,10 +115,8 @@ class ExperimentView:
         return experiment
 
     def update_experiment_status(self, exp_id: ObjectId, status: ExperimentStatus):
-        """
-        Update the status of an experiment
-        """
-        experiment = self.get_experiment(exp_id=exp_id)
+        """Update the status of an experiment."""
+        self.get_experiment(exp_id=exp_id)
 
         update_dict = {"status": status.name}
         if status == ExperimentStatus.COMPLETED:
@@ -136,7 +130,7 @@ class ExperimentView:
         self, exp_id, sample_ids: List[ObjectId], task_ids: List[ObjectId]
     ):
         """
-        At the creation of experiment, the id of samples and tasks has not been assigned
+        At the creation of experiment, the id of samples and tasks has not been assigned.
 
         Later, we will use this method to assign sample & task id (done by
         :py:class:`LabView <alab_management.lab_view.LabView>`)
@@ -169,9 +163,7 @@ class ExperimentView:
         )
 
     def get_experiment_by_task_id(self, task_id: ObjectId) -> Optional[Dict[str, Any]]:
-        """
-        Get an experiment that contains a task with the given task_id
-        """
+        """Get an experiment that contains a task with the given task_id."""
         experiment = self._experiment_collection.find_one({"tasks.task_id": task_id})
         if experiment is None:
             raise ValueError(f"Cannot find experiment containing task_id: {task_id}")
@@ -180,9 +172,7 @@ class ExperimentView:
     def get_experiment_by_sample_id(
         self, sample_id: ObjectId
     ) -> Optional[Dict[str, Any]]:
-        """
-        Get an experiment that contains a sample with the given sample_id
-        """
+        """Get an experiment that contains a sample with the given sample_id."""
         experiment = self._experiment_collection.find_one(
             {"samples.sample_id": sample_id}
         )

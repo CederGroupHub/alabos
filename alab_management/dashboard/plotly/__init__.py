@@ -1,3 +1,5 @@
+"""Plotly dashboard for ALAB management."""
+
 from .plotly_dashboard import app
 
 

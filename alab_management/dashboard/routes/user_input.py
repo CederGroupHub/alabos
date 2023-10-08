@@ -15,25 +15,25 @@ def get_userinput_status():
     """Get all the status in the database."""
     user_input_requests = {}
     id_to_name = {}
-    for request in user_input_view.get_all_pending_requests():
-        if request["request_context"]["maintenance"]:
+    for request_ in user_input_view.get_all_pending_requests():
+        if request_["request_context"]["maintenance"]:
             experiment_name = "Maintenance"
             eid = "Maintenance"
-            if "task_id" not in request["request_context"]:
+            if "task_id" not in request_["request_context"]:
                 task_id = "This request came directly from a device, no task_id."
                 task_type = "DeviceRequest"
             else:
-                task_id = str(request["request_context"]["task_id"])
-                task_type = task_view.get_task(request["request_context"]["task_id"])[
+                task_id = str(request_["request_context"]["task_id"])
+                task_type = task_view.get_task(request_["request_context"]["task_id"])[
                     "type"
                 ]
         else:
-            eid = str(request["request_context"]["experiment_id"])
+            eid = str(request_["request_context"]["experiment_id"])
             experiment_name = experiment_view.get_experiment(
-                request["request_context"]["experiment_id"]
+                request_["request_context"]["experiment_id"]
             )["name"]
-            task_id = str(request["request_context"]["task_id"])
-            task_type = task_view.get_task(request["request_context"]["task_id"])[
+            task_id = str(request_["request_context"]["task_id"])
+            task_type = task_view.get_task(request_["request_context"]["task_id"])[
                 "type"
             ]
 
@@ -43,13 +43,13 @@ def get_userinput_status():
 
         user_input_requests[eid].append(
             {
-                "id": str(request["_id"]),
-                "prompt": request["prompt"],
+                "id": str(request_["_id"]),
+                "prompt": request_["prompt"],
                 "task": {
                     "id": task_id,
                     "type": task_type,
                 },
-                "options": request["options"],
+                "options": request_["options"],
             }
         )
     return {

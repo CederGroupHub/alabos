@@ -1,3 +1,5 @@
+"""This module contains utility functions for the builders module."""
+
 from typing import TYPE_CHECKING, List, Union
 
 from bson import ObjectId
@@ -13,7 +15,8 @@ def append_task(
     task: "BaseTask",
     samples: Union[SampleBuilder, List[SampleBuilder]],
 ):
-    """Used to add basetask to a SampleBuilder's tasklist during Experiment construction.
+    """
+    Used to add basetask to a SampleBuilder's tasklist during Experiment construction.
 
     Args:
         samples (Union[SampleBuilder, List[SampleBuilder]]): One or more SampleBuilder's which will
@@ -21,7 +24,8 @@ def append_task(
     """
     if not task.is_simulation:
         raise RuntimeError(
-            "Cannot add a live BaseTask instance to a SampleBuilder. BaseTask must be instantiated with `simulation=True` to enable this method."
+            "Cannot add a live BaseTask instance to a SampleBuilder. BaseTask must be instantiated with "
+            "`simulation=True` to enable this method."
         )
     if isinstance(samples, SampleBuilder):
         samples = [samples]

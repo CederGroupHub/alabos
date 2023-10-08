@@ -1,3 +1,5 @@
+"""This file contains a helper object to manage resources and update sample positions."""
+
 from alab_management.device_view import DeviceView
 from alab_management.experiment_view import ExperimentView
 from alab_management.sample_view import SampleView

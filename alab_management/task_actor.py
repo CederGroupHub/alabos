@@ -49,7 +49,7 @@ def run_task(task_id_str: str):
     If there is no exception raised, once the task is completed, the status will be changed to "COMPLETED".
     Sample task id will be set to None after the task is completed.
     Args:
-        task_id_str: The id of the task to run
+        task_id_str: The id of the task to run.
     """
     from .lab_view import LabView  # pylint: disable=cyclic-import
 
@@ -61,7 +61,8 @@ def run_task(task_id_str: str):
     task_id = ObjectId(task_id_str)
     if task_view.get_status(task_id) != TaskStatus.INITIATED:
         print(
-            "Task status is not INITIATED; this implies the task has already been picked up by a previous task actor. No action is taken."
+            "Task status is not INITIATED; this implies the task has already been picked up by a previous task actor. "
+            "No action is taken."
         )
         return
 
@@ -73,7 +74,8 @@ def run_task(task_id_str: str):
         )
     except ValueError:
         print(
-            f"{datetime.datetime.now()}: No task found with id: {task_id} -- assuming that alabos was aborted without cleanup, and skipping this task."
+            f"{datetime.datetime.now()}: No task found with id: {task_id} -- assuming that alabos was aborted without "
+            f"cleanup, and skipping this task."
         )
         return
 
@@ -182,7 +184,8 @@ def run_task(task_id_str: str):
             pass
         elif isinstance(result, dict):
             for key, value in result.items():
-                # we do this per item to avoid overwriting existing results. Its possible that some results were uploaded mid-task under different keys using lab_view.update_result()
+                # we do this per item to avoid overwriting existing results. Its possible that some results were
+                # uploaded mid-task under different keys using lab_view.update_result()
                 task_view.update_result(task_id=task_id, name=key, value=value)
         else:
             task_view.update_result(
