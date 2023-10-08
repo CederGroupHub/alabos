@@ -1,14 +1,13 @@
-
 <!DOCTYPE html>
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>alab_management.builders.experimentbuilder module &#8212; Alab Management</title>
     
-  <link href="_static/css/theme.css" rel="stylesheet">
-  <link href="_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+  <link rel="stylesheet" href="_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
     
   <link rel="stylesheet"
@@ -20,34 +19,34 @@
 
     
       
+  <link rel="stylesheet"
+    href="_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="_static/vendor/lato_latin-ext/1.44.1/index.css">
 
     
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-book-theme.40e2e510f6b7d1648584402491bb10fe.css?v=a123c646" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=32297c5f" />
     
-  <link rel="preload" as="script" href="_static/js/index.be7d3bbb2ef33a8344ce.js">
+  <link rel="preload" as="script" href="_static/js/index.d3f166471bb80abb5163.js">
 
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=c5b77fbd"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js?v=dbd2e957"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="alab_management.builders.samplebuilder module" href="alab_management.builders.samplebuilder.html" />
     <link rel="prev" title="alab_management.builders package" href="alab_management.builders.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en">
-    
 
-    <!-- Google Analytics -->
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+
+
+
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
-    
-    <div class="container-fluid" id="banner"></div>
-
     
 
     <div class="container-xl">
@@ -56,36 +55,32 @@
 <div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
     
         <div class="navbar-brand-box">
-    <a class="navbar-brand text-wrap" href="index.html">
-      
-        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
-        
-      
-      
-      <img src="_static/logo.png" class="logo" alt="logo">
-      
-      
-      <h1 class="site-logo" id="site-title">Alab Management</h1>
-      
-    </a>
+<a class="navbar-brand text-wrap" href="index.html">
+  
+  
+  <h1 class="site-logo" id="site-title">Alab Management</h1>
+  
+</a>
 </div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
-    <div class="bd-toc-item active">
-        <ul class="nav bd-sidenav">
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <ul class="nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="index.html">
    Overview
   </a>
  </li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
+<p class="caption collapsible-parent" role="heading">
  <span class="caption-text">
   Quickstart
  </span>
+ <i class="fas fa-chevron-down">
+ </i>
 </p>
-<ul class="nav bd-sidenav">
+<ul class="collapse-ul nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="installation.html">
    Installation
@@ -107,42 +102,27 @@
   </a>
  </li>
 </ul>
-<ul class="current nav bd-sidenav">
+<ul class="current nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="development.html">
    Development
   </a>
  </li>
- <li class="toctree-l1 current active has-children">
+ <li class="toctree-l1 current active collapsible-parent">
   <a class="reference internal" href="modules.html">
    API Docs
   </a>
-  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
-  <label for="toctree-checkbox-1">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul class="current">
-   <li class="toctree-l2 current active has-children">
+  <ul class="current collapse-ul">
+   <li class="toctree-l2 current active collapsible-parent">
     <a class="reference internal" href="alab_management.html">
      alab_management package
     </a>
-    <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
-    <label for="toctree-checkbox-2">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul class="current">
-     <li class="toctree-l3 current active has-children">
+    <ul class="current collapse-ul">
+     <li class="toctree-l3 current active collapsible-parent">
       <a class="reference internal" href="alab_management.builders.html">
        alab_management.builders package
       </a>
-      <input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
-      <label for="toctree-checkbox-3">
-       <i class="fas fa-chevron-down">
-       </i>
-      </label>
-      <ul class="current">
+      <ul class="current collapse-ul">
        <li class="toctree-l4 current active">
         <a class="current reference internal" href="#">
          alab_management.builders.experimentbuilder module
@@ -154,17 +134,14 @@
         </a>
        </li>
       </ul>
+      <i class="fas fa-chevron-down">
+      </i>
      </li>
-     <li class="toctree-l3 has-children">
+     <li class="toctree-l3 collapsible-parent">
       <a class="reference internal" href="alab_management.device_view.html">
        alab_management.device_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
-      <label for="toctree-checkbox-4">
-       <i class="fas fa-chevron-down">
-       </i>
-      </label>
-      <ul>
+      <ul class="collapse-ul">
        <li class="toctree-l4">
         <a class="reference internal" href="alab_management.device_view.dbattributes.html">
          alab_management.device_view.dbattributes module
@@ -181,17 +158,14 @@
         </a>
        </li>
       </ul>
+      <i class="fas fa-chevron-down">
+      </i>
      </li>
-     <li class="toctree-l3 has-children">
+     <li class="toctree-l3 collapsible-parent">
       <a class="reference internal" href="alab_management.experiment_view.html">
        alab_management.experiment_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
-      <label for="toctree-checkbox-5">
-       <i class="fas fa-chevron-down">
-       </i>
-      </label>
-      <ul>
+      <ul class="collapse-ul">
        <li class="toctree-l4">
         <a class="reference internal" href="alab_management.experiment_view.completed_experiment_view.html">
          alab_management.experiment_view.completed_experiment_view module
@@ -208,17 +182,14 @@
         </a>
        </li>
       </ul>
+      <i class="fas fa-chevron-down">
+      </i>
      </li>
-     <li class="toctree-l3 has-children">
+     <li class="toctree-l3 collapsible-parent">
       <a class="reference internal" href="alab_management.sample_view.html">
        alab_management.sample_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
-      <label for="toctree-checkbox-6">
-       <i class="fas fa-chevron-down">
-       </i>
-      </label>
-      <ul>
+      <ul class="collapse-ul">
        <li class="toctree-l4">
         <a class="reference internal" href="alab_management.sample_view.completed_sample_view.html">
          alab_management.sample_view.completed_sample_view module
@@ -235,17 +206,14 @@
         </a>
        </li>
       </ul>
+      <i class="fas fa-chevron-down">
+      </i>
      </li>
-     <li class="toctree-l3 has-children">
+     <li class="toctree-l3 collapsible-parent">
       <a class="reference internal" href="alab_management.task_manager.html">
        alab_management.task_manager package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
-      <label for="toctree-checkbox-7">
-       <i class="fas fa-chevron-down">
-       </i>
-      </label>
-      <ul>
+      <ul class="collapse-ul">
        <li class="toctree-l4">
         <a class="reference internal" href="alab_management.task_manager.enums.html">
          alab_management.task_manager.enums module
@@ -262,17 +230,14 @@
         </a>
        </li>
       </ul>
+      <i class="fas fa-chevron-down">
+      </i>
      </li>
-     <li class="toctree-l3 has-children">
+     <li class="toctree-l3 collapsible-parent">
       <a class="reference internal" href="alab_management.task_view.html">
        alab_management.task_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
-      <label for="toctree-checkbox-8">
-       <i class="fas fa-chevron-down">
-       </i>
-      </label>
-      <ul>
+      <ul class="collapse-ul">
        <li class="toctree-l4">
         <a class="reference internal" href="alab_management.task_view.completed_task_view.html">
          alab_management.task_view.completed_task_view module
@@ -294,6 +259,8 @@
         </a>
        </li>
       </ul>
+      <i class="fas fa-chevron-down">
+      </i>
      </li>
      <li class="toctree-l3">
       <a class="reference internal" href="alab_management.alarm.html">
@@ -336,12 +303,15 @@
       </a>
      </li>
     </ul>
+    <i class="fas fa-chevron-down">
+    </i>
    </li>
   </ul>
+  <i class="fas fa-chevron-down">
+  </i>
  </li>
 </ul>
 
-    </div>
 </nav> <!-- To handle the deprecated key -->
 
 <div class="navbar_extra_footer">
@@ -357,21 +327,21 @@
           
 <main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
     
-    <div class="topbar container-xl fixed-top">
-    <div class="topbar-contents row">
-        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
-        <div class="col pl-md-4 topbar-main">
-            
-            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-                <i class="fas fa-bars"></i>
-                <i class="fas fa-arrow-left"></i>
-                <i class="fas fa-arrow-up"></i>
-            </button>
-            
-            
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
             class="fas fa-download"></i></button>
@@ -389,7 +359,7 @@
     </div>
 </div>
 
-            <!-- Source interaction buttons -->
+        <!-- Source interaction buttons -->
 
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
@@ -404,21 +374,85 @@
     </div>
 </div>
 
-            <!-- Full screen (wrap in <a> to have style consistency -->
 
-<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-        title="Fullscreen mode"><i
-            class="fas fa-expand"></i></button></a>
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
 
-            <!-- Launch buttons -->
+        <!-- Launch buttons -->
 
+    </div>
+
+    <!-- Table of contents -->
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+        
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i> Contents
         </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#alab_management.builders.experimentbuilder.ExperimentBuilder">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     ExperimentBuilder
+    </span>
+   </code>
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#alab_management.builders.experimentbuilder.ExperimentBuilder.add_sample">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       ExperimentBuilder.add_sample()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#alab_management.builders.experimentbuilder.ExperimentBuilder.add_task">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       ExperimentBuilder.add_task()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#alab_management.builders.experimentbuilder.ExperimentBuilder.generate_input_file">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       ExperimentBuilder.generate_input_file()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#alab_management.builders.experimentbuilder.ExperimentBuilder.plot">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       ExperimentBuilder.plot()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#alab_management.builders.experimentbuilder.ExperimentBuilder.to_dict">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       ExperimentBuilder.to_dict()
+      </span>
+     </code>
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
 
-        <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show">
-            
-        </div>
+        </nav>
+        
     </div>
 </div>
     <div id="main-content" class="row">
@@ -426,34 +460,36 @@
         
               <div>
                 
-  <div class="section" id="module-alab_management.builders.experimentbuilder">
-<span id="alab-management-builders-experimentbuilder-module"></span><h1>alab_management.builders.experimentbuilder module<a class="headerlink" href="#module-alab_management.builders.experimentbuilder" title="Permalink to this headline">¶</a></h1>
+  <section id="module-alab_management.builders.experimentbuilder">
+<span id="alab-management-builders-experimentbuilder-module"></span><h1>alab_management.builders.experimentbuilder module<a class="headerlink" href="#module-alab_management.builders.experimentbuilder" title="Permalink to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="alab_management.builders.experimentbuilder.ExperimentBuilder">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ExperimentBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">metadata</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/builders/experimentbuilder.html#ExperimentBuilder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.builders.experimentbuilder.ExperimentBuilder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>It takes a list of samples and a list of tasks, and returns a dictionary
-that can be used to generate an input file for the <cite>experiment</cite> command</p>
+that can be used to generate an input file for the <cite>experiment</cite> to run.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – The name of the experiment.</p>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.builders.experimentbuilder.ExperimentBuilder.add_sample">
 <span class="sig-name descname"><span class="pre">add_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">metadata</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/builders/experimentbuilder.html#ExperimentBuilder.add_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.builders.experimentbuilder.ExperimentBuilder.add_sample" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function adds a sample to the experiment</p>
+<dd><p>This function adds a sample to the batch. Each sample already has multiple tasks binded to it. Each
+batch is a directed graph of tasks.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em>) – The name of the sample. This must be unique within this ExperimentBuilder.</p></li>
+<li><p><strong>tags</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – A list of tags to attach to the sample.</p></li>
 <li><p><strong>**metadata</strong> – Any additional keyword arguments will be attached to this sample as metadata.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="alab_management.builders.samplebuilder.html#alab_management.builders.samplebuilder.SampleBuilder" title="alab_management.builders.samplebuilder.SampleBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">SampleBuilder</span></code></a></p>
 </dd>
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A SampleBuilder object. This can be used to add tasks to the sample.</p>
 </dd>
 </dl>
@@ -462,9 +498,22 @@ that can be used to generate an input file for the <cite>experiment</cite> comma
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.builders.experimentbuilder.ExperimentBuilder.add_task">
 <span class="sig-name descname"><span class="pre">add_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_kwargs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/builders/experimentbuilder.html#ExperimentBuilder.add_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.builders.experimentbuilder.ExperimentBuilder.add_task" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd><p>This function adds a task to the sample. You should use this function only for special cases which
+are not handled by the <cite>add_sample</cite> function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>task_id</strong> (<em>str</em>) – The object id of the task in mongodb</p></li>
+<li><p><strong>task_name</strong> (<em>str</em>) – The name of the task.</p></li>
+<li><p><strong>task_kwargs</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – Any additional keyword arguments will be attached to this sample as metadata.</p></li>
+<li><p><strong>samples</strong> (<em>List</em><em>[</em><a class="reference internal" href="alab_management.builders.samplebuilder.html#alab_management.builders.samplebuilder.SampleBuilder" title="alab_management.builders.samplebuilder.SampleBuilder"><em>SampleBuilder</em></a><em>]</em>) – A list of samples to which this task is binded to.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -472,9 +521,19 @@ that can be used to generate an input file for the <cite>experiment</cite> comma
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.builders.experimentbuilder.ExperimentBuilder.generate_input_file">
 <span class="sig-name descname"><span class="pre">generate_input_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/builders/experimentbuilder.html#ExperimentBuilder.generate_input_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.builders.experimentbuilder.ExperimentBuilder.generate_input_file" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dd><p>This function generates an input file for the <cite>experiment</cite> command.
+:type filename: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param filename: The name of the file to be generated.
+:type filename: str
+:type fmt: <code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'json'</span></code>, <code class="docutils literal notranslate"><span class="pre">'yaml'</span></code>]
+:param fmt: The format of the file to be generated.
+:type fmt: Literal[“json”, “yaml”]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -482,42 +541,54 @@ that can be used to generate an input file for the <cite>experiment</cite> comma
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.builders.experimentbuilder.ExperimentBuilder.plot">
 <span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/builders/experimentbuilder.html#ExperimentBuilder.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.builders.experimentbuilder.ExperimentBuilder.plot" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This function plots the directed graph of tasks.
+:type ax: 
+:param ax: The axes on which to plot the graph.
+:type ax: matplotlib.axes.Axes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.builders.experimentbuilder.ExperimentBuilder.to_dict">
 <span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/builders/experimentbuilder.html#ExperimentBuilder.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.builders.experimentbuilder.ExperimentBuilder.to_dict" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This function returns a dictionary that can be used to generate an input file for the <cite>experiment</cite>
+to run.
+:param None:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary that can be used to generate an input file for the <cite>experiment</cite> to run.</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
-</div>
+</section>
 
 
               </div>
               
-        
-            <!-- Previous / next buttons -->
-<div class='prev-next-area'> 
-    <a class='left-prev' id="prev-link" href="alab_management.builders.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">alab_management.builders package</p>
-        </div>
-    </a>
-    <a class='right-next' id="next-link" href="alab_management.builders.samplebuilder.html" title="next page">
-    <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">alab_management.builders.samplebuilder module</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
-    </a>
-</div>
-        
         </div>
     </div>
-    <footer class="footer">
+    
+    
+    <div class='prev-next-bottom'>
+        
+    <a class='left-prev' id="prev-link" href="alab_management.builders.html" title="previous page">alab_management.builders package</a>
+    <a class='right-next' id="next-link" href="alab_management.builders.samplebuilder.html" title="next page">alab_management.builders.samplebuilder module</a>
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
     <div class="container">
       <p>
         
@@ -532,8 +603,11 @@ that can be used to generate an input file for the <cite>experiment</cite> comma
 
       </div>
     </div>
-  
-  <script src="_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
 
+    
+  <script src="_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    
   </body>
 </html>

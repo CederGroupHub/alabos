@@ -1,14 +1,13 @@
-
 <!DOCTYPE html>
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>alab_management.task_view.task_view module &#8212; Alab Management</title>
     
-  <link href="_static/css/theme.css" rel="stylesheet">
-  <link href="_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+  <link rel="stylesheet" href="_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
     
   <link rel="stylesheet"
@@ -20,34 +19,34 @@
 
     
       
+  <link rel="stylesheet"
+    href="_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="_static/vendor/lato_latin-ext/1.44.1/index.css">
 
     
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-book-theme.40e2e510f6b7d1648584402491bb10fe.css?v=a123c646" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=32297c5f" />
     
-  <link rel="preload" as="script" href="_static/js/index.be7d3bbb2ef33a8344ce.js">
+  <link rel="preload" as="script" href="_static/js/index.d3f166471bb80abb5163.js">
 
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=c5b77fbd"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js?v=dbd2e957"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="alab_management.alarm module" href="alab_management.alarm.html" />
     <link rel="prev" title="alab_management.task_view.task_enums module" href="alab_management.task_view.task_enums.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en">
-    
 
-    <!-- Google Analytics -->
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+
+
+
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
-    
-    <div class="container-fluid" id="banner"></div>
-
     
 
     <div class="container-xl">
@@ -56,36 +55,32 @@
 <div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
     
         <div class="navbar-brand-box">
-    <a class="navbar-brand text-wrap" href="index.html">
-      
-        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
-        
-      
-      
-      <img src="_static/logo.png" class="logo" alt="logo">
-      
-      
-      <h1 class="site-logo" id="site-title">Alab Management</h1>
-      
-    </a>
+<a class="navbar-brand text-wrap" href="index.html">
+  
+  
+  <h1 class="site-logo" id="site-title">Alab Management</h1>
+  
+</a>
 </div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
-    <div class="bd-toc-item active">
-        <ul class="nav bd-sidenav">
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <ul class="nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="index.html">
    Overview
   </a>
  </li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
+<p class="caption collapsible-parent" role="heading">
  <span class="caption-text">
   Quickstart
  </span>
+ <i class="fas fa-chevron-down">
+ </i>
 </p>
-<ul class="nav bd-sidenav">
+<ul class="collapse-ul nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="installation.html">
    Installation
@@ -107,42 +102,27 @@
   </a>
  </li>
 </ul>
-<ul class="current nav bd-sidenav">
+<ul class="current nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="development.html">
    Development
   </a>
  </li>
- <li class="toctree-l1 current active has-children">
+ <li class="toctree-l1 current active collapsible-parent">
   <a class="reference internal" href="modules.html">
    API Docs
   </a>
-  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
-  <label for="toctree-checkbox-1">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul class="current">
-   <li class="toctree-l2 current active has-children">
+  <ul class="current collapse-ul">
+   <li class="toctree-l2 current active collapsible-parent">
     <a class="reference internal" href="alab_management.html">
      alab_management package
     </a>
-    <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
-    <label for="toctree-checkbox-2">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul class="current">
-     <li class="toctree-l3 has-children">
+    <ul class="current collapse-ul">
+     <li class="toctree-l3 collapsible-parent">
       <a class="reference internal" href="alab_management.builders.html">
        alab_management.builders package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
-      <label for="toctree-checkbox-3">
-       <i class="fas fa-chevron-down">
-       </i>
-      </label>
-      <ul>
+      <ul class="collapse-ul">
        <li class="toctree-l4">
         <a class="reference internal" href="alab_management.builders.experimentbuilder.html">
          alab_management.builders.experimentbuilder module
@@ -154,17 +134,14 @@
         </a>
        </li>
       </ul>
+      <i class="fas fa-chevron-down">
+      </i>
      </li>
-     <li class="toctree-l3 has-children">
+     <li class="toctree-l3 collapsible-parent">
       <a class="reference internal" href="alab_management.device_view.html">
        alab_management.device_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
-      <label for="toctree-checkbox-4">
-       <i class="fas fa-chevron-down">
-       </i>
-      </label>
-      <ul>
+      <ul class="collapse-ul">
        <li class="toctree-l4">
         <a class="reference internal" href="alab_management.device_view.dbattributes.html">
          alab_management.device_view.dbattributes module
@@ -181,17 +158,14 @@
         </a>
        </li>
       </ul>
+      <i class="fas fa-chevron-down">
+      </i>
      </li>
-     <li class="toctree-l3 has-children">
+     <li class="toctree-l3 collapsible-parent">
       <a class="reference internal" href="alab_management.experiment_view.html">
        alab_management.experiment_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
-      <label for="toctree-checkbox-5">
-       <i class="fas fa-chevron-down">
-       </i>
-      </label>
-      <ul>
+      <ul class="collapse-ul">
        <li class="toctree-l4">
         <a class="reference internal" href="alab_management.experiment_view.completed_experiment_view.html">
          alab_management.experiment_view.completed_experiment_view module
@@ -208,17 +182,14 @@
         </a>
        </li>
       </ul>
+      <i class="fas fa-chevron-down">
+      </i>
      </li>
-     <li class="toctree-l3 has-children">
+     <li class="toctree-l3 collapsible-parent">
       <a class="reference internal" href="alab_management.sample_view.html">
        alab_management.sample_view package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
-      <label for="toctree-checkbox-6">
-       <i class="fas fa-chevron-down">
-       </i>
-      </label>
-      <ul>
+      <ul class="collapse-ul">
        <li class="toctree-l4">
         <a class="reference internal" href="alab_management.sample_view.completed_sample_view.html">
          alab_management.sample_view.completed_sample_view module
@@ -235,17 +206,14 @@
         </a>
        </li>
       </ul>
+      <i class="fas fa-chevron-down">
+      </i>
      </li>
-     <li class="toctree-l3 has-children">
+     <li class="toctree-l3 collapsible-parent">
       <a class="reference internal" href="alab_management.task_manager.html">
        alab_management.task_manager package
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
-      <label for="toctree-checkbox-7">
-       <i class="fas fa-chevron-down">
-       </i>
-      </label>
-      <ul>
+      <ul class="collapse-ul">
        <li class="toctree-l4">
         <a class="reference internal" href="alab_management.task_manager.enums.html">
          alab_management.task_manager.enums module
@@ -262,17 +230,14 @@
         </a>
        </li>
       </ul>
+      <i class="fas fa-chevron-down">
+      </i>
      </li>
-     <li class="toctree-l3 current active has-children">
+     <li class="toctree-l3 current active collapsible-parent">
       <a class="reference internal" href="alab_management.task_view.html">
        alab_management.task_view package
       </a>
-      <input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
-      <label for="toctree-checkbox-8">
-       <i class="fas fa-chevron-down">
-       </i>
-      </label>
-      <ul class="current">
+      <ul class="current collapse-ul">
        <li class="toctree-l4">
         <a class="reference internal" href="alab_management.task_view.completed_task_view.html">
          alab_management.task_view.completed_task_view module
@@ -294,6 +259,8 @@
         </a>
        </li>
       </ul>
+      <i class="fas fa-chevron-down">
+      </i>
      </li>
      <li class="toctree-l3">
       <a class="reference internal" href="alab_management.alarm.html">
@@ -336,12 +303,15 @@
       </a>
      </li>
     </ul>
+    <i class="fas fa-chevron-down">
+    </i>
    </li>
   </ul>
+  <i class="fas fa-chevron-down">
+  </i>
  </li>
 </ul>
 
-    </div>
 </nav> <!-- To handle the deprecated key -->
 
 <div class="navbar_extra_footer">
@@ -357,21 +327,21 @@
           
 <main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
     
-    <div class="topbar container-xl fixed-top">
-    <div class="topbar-contents row">
-        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
-        <div class="col pl-md-4 topbar-main">
-            
-            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-                <i class="fas fa-bars"></i>
-                <i class="fas fa-arrow-left"></i>
-                <i class="fas fa-arrow-up"></i>
-            </button>
-            
-            
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
             class="fas fa-download"></i></button>
@@ -389,7 +359,7 @@
     </div>
 </div>
 
-            <!-- Source interaction buttons -->
+        <!-- Source interaction buttons -->
 
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
@@ -404,21 +374,202 @@
     </div>
 </div>
 
-            <!-- Full screen (wrap in <a> to have style consistency -->
 
-<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-        title="Fullscreen mode"><i
-            class="fas fa-expand"></i></button></a>
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
 
-            <!-- Launch buttons -->
+        <!-- Launch buttons -->
 
+    </div>
+
+    <!-- Table of contents -->
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+        
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i> Contents
         </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     TaskView
+    </span>
+   </code>
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.create_subtask">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       TaskView.create_subtask()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.create_task">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       TaskView.create_task()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.encode_task">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       TaskView.encode_task()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.exists">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       TaskView.exists()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.get_ready_tasks">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       TaskView.get_ready_tasks()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.get_status">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       TaskView.get_status()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.get_task">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       TaskView.get_task()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.get_task_with_sample">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       TaskView.get_task_with_sample()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.get_tasks_by_status">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       TaskView.get_tasks_by_status()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.mark_task_as_cancelling">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       TaskView.mark_task_as_cancelling()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.set_message">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       TaskView.set_message()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.set_task_actor_id">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       TaskView.set_task_actor_id()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.try_to_mark_task_ready">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       TaskView.try_to_mark_task_ready()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.update_result">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       TaskView.update_result()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.update_status">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       TaskView.update_status()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.update_subtask_result">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       TaskView.update_subtask_result()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.update_subtask_status">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       TaskView.update_subtask_status()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.update_task_dependency">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       TaskView.update_task_dependency()
+      </span>
+     </code>
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
 
-        <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show">
-            
-        </div>
+        </nav>
+        
     </div>
 </div>
     <div id="main-content" class="row">
@@ -426,8 +577,8 @@
         
               <div>
                 
-  <div class="section" id="module-alab_management.task_view.task_view">
-<span id="alab-management-task-view-task-view-module"></span><h1>alab_management.task_view.task_view module<a class="headerlink" href="#module-alab_management.task_view.task_view" title="Permalink to this headline">¶</a></h1>
+  <section id="module-alab_management.task_view.task_view">
+<span id="alab-management-task-view-task-view-module"></span><h1>alab_management.task_view.task_view module<a class="headerlink" href="#module-alab_management.task_view.task_view" title="Permalink to this heading">¶</a></h1>
 <p>Tasks view is a convienent wrapper over the <code class="docutils literal notranslate"><span class="pre">tasks</span></code> collection in the database. It
 provides some convenience methods to query and manipulate the tasks collection.</p>
 <dl class="py class">
@@ -446,7 +597,7 @@ provides some convenience methods to query and manipulate the tasks collection.<
 <span class="sig-name descname"><span class="pre">create_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prev_tasks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">next_tasks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.create_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.create_task" title="Permalink to this definition">¶</a></dt>
 <dd><p>Insert a task into the task collection</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>task_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the type of task, which should be a type name of class inherited from
 <a class="reference internal" href="task_definition.html#alab_management.task_view.task.BaseTask" title="alab_management.task_view.task.BaseTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTask</span></code></a></p></li>
@@ -459,10 +610,10 @@ the same as parameters.</p></li>
 (which cannot start until this task finishes)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code></p>
 </dd>
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>the assigned id for this task</p>
 </dd>
 </dl>
@@ -474,7 +625,7 @@ the same as parameters.</p></li>
 <dd><p>Rename _id to task_id
 Translate task’s type into corresponding python class.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</p>
 </dd>
 </dl>
@@ -485,7 +636,7 @@ Translate task’s type into corresponding python class.</p>
 <span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.exists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if a task id exists</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
@@ -496,11 +647,11 @@ Translate task’s type into corresponding python class.</p>
 <span class="sig-name descname"><span class="pre">get_ready_tasks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.get_ready_tasks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.get_ready_tasks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a list of ready tasks</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>{“task_id”: <code class="docutils literal notranslate"><span class="pre">ObjectId</span></code>,
 “type”: <a class="reference internal" href="task_definition.html#alab_management.task_view.task.BaseTask" title="alab_management.task_view.task.BaseTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTask</span></code></a>}</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>List of task entry</p>
 </dd>
 </dl>
@@ -511,7 +662,7 @@ Translate task’s type into corresponding python class.</p>
 <span class="sig-name descname"><span class="pre">get_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.get_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.get_status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the status of a task</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.TaskStatus" title="alab_management.task_view.task_enums.TaskStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskStatus</span></code></a></p>
 </dd>
 </dl>
@@ -522,13 +673,13 @@ Translate task’s type into corresponding python class.</p>
 <span class="sig-name descname"><span class="pre">get_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.get_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.get_task" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a task by its task id, which will return all the info stored in the database</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>task_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the task_id of interest. If not found, will return <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 <li><p><strong>encode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – whether to encode the task using <code class="docutils literal notranslate"><span class="pre">self.encode_task</span></code> method</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</p>
 </dd>
 </dl>
@@ -539,7 +690,7 @@ Translate task’s type into corresponding python class.</p>
 <span class="sig-name descname"><span class="pre">get_task_with_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.get_task_with_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.get_task_with_sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a task that contains the sample with the provided id</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</p>
 </dd>
 </dl>
@@ -550,11 +701,11 @@ Translate task’s type into corresponding python class.</p>
 <span class="sig-name descname"><span class="pre">get_tasks_by_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.get_tasks_by_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.get_tasks_by_status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a list of tasks with given status</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>{“task_id”: <code class="docutils literal notranslate"><span class="pre">ObjectId</span></code>,
 “type”: <a class="reference internal" href="task_definition.html#alab_management.task_view.task.BaseTask" title="alab_management.task_view.task.BaseTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTask</span></code></a>}</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>List of task entry</p>
 </dd>
 </dl>
@@ -580,7 +731,7 @@ the request will be ignored and returned.</p>
 <span class="sig-name descname"><span class="pre">set_task_actor_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.set_task_actor_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.set_task_actor_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set task actor id for the task when it is submitted.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>task_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the task id of the task</p></li>
 <li><p><strong>message_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a uid generated by dramatiq (message_id)</p></li>
@@ -601,7 +752,7 @@ if so, mark it as READY</p>
 <span class="sig-name descname"><span class="pre">update_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.update_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.update_result" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update result to completed job.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>task_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the id of task to be updated</p></li>
 <li><p><strong>name</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the name of the result to be updated. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, will update the entire <code class="docutils literal notranslate"><span class="pre">result</span></code> field. Otherwise, will update the field <code class="docutils literal notranslate"><span class="pre">result.name</span></code>.</p></li>
@@ -619,7 +770,7 @@ if so, mark it as READY</p>
 mark its next tasks to <code class="docutils literal notranslate"><span class="pre">READY</span></code>, if all of its previous
 tasks are completed.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>task_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the id of task to be updated</p></li>
 <li><p><strong>status</strong> (<a class="reference internal" href="alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.TaskStatus" title="alab_management.task_view.task_enums.TaskStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskStatus</span></code></a>) – the new status of the task</p></li>
@@ -633,7 +784,7 @@ tasks are completed.</p>
 <span class="sig-name descname"><span class="pre">update_subtask_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtask_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.update_subtask_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.update_subtask_result" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update result of completed subtask within task job.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>task_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the id of task to be updated</p></li>
 <li><p><strong>subtask_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the id of subtask within task to be updated</p></li>
@@ -655,7 +806,7 @@ tasks are completed.</p>
 <dd><p>Add prev tasks and next tasks to one task entry,
 which will not overwrite old pre_task and next_tasks</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>task_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>) – the id of task to be updated</p></li>
 <li><p><strong>prev_tasks</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – one or a list of ids of <code class="docutils literal notranslate"><span class="pre">prev_tasks</span></code></p></li>
@@ -667,33 +818,22 @@ which will not overwrite old pre_task and next_tasks</p>
 
 </dd></dl>
 
-</div>
+</section>
 
 
               </div>
               
-        
-            <!-- Previous / next buttons -->
-<div class='prev-next-area'> 
-    <a class='left-prev' id="prev-link" href="alab_management.task_view.task_enums.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">alab_management.task_view.task_enums module</p>
-        </div>
-    </a>
-    <a class='right-next' id="next-link" href="alab_management.alarm.html" title="next page">
-    <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">alab_management.alarm module</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
-    </a>
-</div>
-        
         </div>
     </div>
-    <footer class="footer">
+    
+    
+    <div class='prev-next-bottom'>
+        
+    <a class='left-prev' id="prev-link" href="alab_management.task_view.task_enums.html" title="previous page">alab_management.task_view.task_enums module</a>
+    <a class='right-next' id="next-link" href="alab_management.alarm.html" title="next page">alab_management.alarm module</a>
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
     <div class="container">
       <p>
         
@@ -708,8 +848,11 @@ which will not overwrite old pre_task and next_tasks</p>
 
       </div>
     </div>
-  
-  <script src="_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
 
+    
+  <script src="_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    
   </body>
 </html>
