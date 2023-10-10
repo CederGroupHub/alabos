@@ -409,6 +409,11 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#only-for-mac-os-additional-installation-for-rabbitmq">
+   (Only for Mac OS) Additional installation for RabbitMQ
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#what-s-next">
    What’s next
   </a>
@@ -442,8 +447,16 @@
 <h2>Install from source code<a class="headerlink" href="#install-from-source-code" title="Permalink to this heading">¶</a></h2>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/CederGroupHub/alab_management
 <span class="nb">cd</span><span class="w"> </span>alab_management
-pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
 pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+brew<span class="w"> </span>install<span class="w"> </span>rabbitmq
+brew<span class="w"> </span>services<span class="w"> </span>start<span class="w"> </span>rabbitmq
+</pre></div>
+</div>
+</section>
+<section id="only-for-mac-os-additional-installation-for-rabbitmq">
+<h2>(Only for Mac OS) Additional installation for RabbitMQ<a class="headerlink" href="#only-for-mac-os-additional-installation-for-rabbitmq" title="Permalink to this heading">¶</a></h2>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>rabbitmq
+brew<span class="w"> </span>services<span class="w"> </span>start<span class="w"> </span>rabbitmq
 </pre></div>
 </div>
 </section>
