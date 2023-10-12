@@ -31,16 +31,12 @@ class SamplePositionRequest(BaseModel):
     number: conint(ge=0) = 1  # type: ignore
 
     @classmethod
-    def from_str(
-        cls, sample_position_prefix: str
-    ) -> "SamplePositionRequest":
+    def from_str(cls, sample_position_prefix: str) -> "SamplePositionRequest":
         """Create a ``SamplePositionRequest`` from a string."""
         return cls(prefix=sample_position_prefix)
 
     @classmethod
-    def from_py_type(
-        cls, sample_position: Union[str, Dict[str, Any]]
-    ):
+    def from_py_type(cls, sample_position: Union[str, Dict[str, Any]]):
         """Create a ``SamplePositionRequest`` from a string or a dict."""
         if isinstance(sample_position, str):
             return cls.from_str(sample_position_prefix=sample_position)
@@ -235,7 +231,7 @@ class SampleView:
             raise ValueError(f"No sample position(s) beginning with: {position}")
         elif len(parent_devices) > 1:
             raise Exception(
-                f'Multiple parent devices ({parent_devices}) found for sample positions found beginning with: '
+                f"Multiple parent devices ({parent_devices}) found for sample positions found beginning with: "
                 f'"position". Make a more specific position query that doesn\'t match multiple devices!'
             )
         return parent_devices[0]
@@ -243,7 +239,8 @@ class SampleView:
     def is_unoccupied_position(self, position: str) -> bool:
         """Tell if a sample position is unoccupied or not."""
         return (
-            self.get_sample_position_status(position)[0] is not SamplePositionStatus.OCCUPIED
+            self.get_sample_position_status(position)[0]
+            is not SamplePositionStatus.OCCUPIED
         )
 
     def get_available_sample_position(

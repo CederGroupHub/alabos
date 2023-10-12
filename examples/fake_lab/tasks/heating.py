@@ -15,7 +15,7 @@ class Heating(BaseTask):
         samples: List[ObjectId],
         setpoints: List[Tuple[float, float]],
         *args,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(samples=samples, *args, **kwargs)
         self.setpoints = setpoints

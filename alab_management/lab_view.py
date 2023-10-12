@@ -198,11 +198,14 @@ class LabView:
     def run_subtask(
         self, task: Type[BaseTask], samples: List[Union[ObjectId, str]], **kwargs
     ):
-        """Run a task as a subtask within the task. basically fills in task_id and lab_view for you.
-            this command blocks until the subtask is completed.
+        """Run a task as a subtask within the task.
+
+        basically fills in task_id and lab_view for you.
+        this command blocks until the subtask is completed.
 
         Args:
             task_type (Union[str, type[BaseTask]]): name or class of Task to run.
+            samples (List[Union[ObjectId, str]]): list of sample names or ids to pass to the task.
             **kwargs: will be passed to the Task method via the parameters entry in task collection.
         """
         if not issubclass(task, BaseTask):

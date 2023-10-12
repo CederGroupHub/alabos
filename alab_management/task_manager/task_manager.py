@@ -89,7 +89,7 @@ def parse_reroute_tasks() -> Dict[str, Type[BaseTask]]:
                     if device is not None:
                         position = f"{device}{SamplePosition.SEPARATOR}{position}"  # noqa: PLW2901
                     for found_position in sample_view._sample_positions_collection.find(
-                            {"name": {"$regex": position}}
+                        {"name": {"$regex": position}}
                     ):  # DB_ACCESS_OUTSIDE_VIEW
                         routes[found_position["name"]] = route_task
     return routes
@@ -402,7 +402,7 @@ class TaskManager(RequestMixin):
             )
 
     def _occupy_sample_positions(
-            self, sample_positions: Dict[str, List[Dict[str, Any]]], task_id: ObjectId
+        self, sample_positions: Dict[str, List[Dict[str, Any]]], task_id: ObjectId
     ):
         for sample_positions_ in sample_positions.values():
             for sample_position_ in sample_positions_:
@@ -416,7 +416,7 @@ class TaskManager(RequestMixin):
                 self.device_view.release_device(device["name"])
 
     def _release_sample_positions(
-            self, sample_positions: Dict[str, List[Dict[str, Any]]]
+        self, sample_positions: Dict[str, List[Dict[str, Any]]]
     ):
         for sample_positions_ in sample_positions.values():
             for sample_position in sample_positions_:
@@ -458,12 +458,12 @@ class TaskManager(RequestMixin):
                 occupied.append(self.sample_view.get_sample(s["sample_id"]).position)
             for r in request["parsed_sample_positions_request"]:
                 if (
-                        len(
-                            self.sample_view.get_available_sample_position(
-                                task_id=t["task_id"], position_prefix=r["prefix"]
-                            )
+                    len(
+                        self.sample_view.get_available_sample_position(
+                            task_id=t["task_id"], position_prefix=r["prefix"]
                         )
-                        < r["number"]
+                    )
+                    < r["number"]
                 ):
                     blocked.append(
                         r["prefix"]
@@ -477,8 +477,8 @@ class TaskManager(RequestMixin):
                 if i == j:
                     continue
                 if any(
-                        occupied in requested_by_task[t0]
-                        for occupied in occupied_by_task[t1]
+                    occupied in requested_by_task[t0]
+                    for occupied in occupied_by_task[t1]
                 ):
                     edges.append((t0, t1))
 
@@ -506,9 +506,9 @@ class TaskManager(RequestMixin):
         return positions_to_vacate, occupying_taskid
 
     def _reroute_to_fix_request_cycle(
-            self,
-            task_id: ObjectId,
-            sample_positions: List[str],
+        self,
+        task_id: ObjectId,
+        sample_positions: List[str],
     ):
         from alab_management.lab_view import LabView
 
@@ -524,7 +524,7 @@ class TaskManager(RequestMixin):
             if fix_position not in _reroute_registry:
                 raise ValueError(
                     f'No reroute task defined to move sample out from sample_position "{fix_position}". Please add a '
-                    f'reroute task using `add_reroute`'
+                    f"reroute task using `add_reroute`"
                 )
             reroute_Task: BaseTask = _reroute_registry[fix_position]
 

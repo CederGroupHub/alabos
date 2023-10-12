@@ -46,14 +46,14 @@ class BaseTask(ABC):
     """
 
     def __init__(
-            self,
-            samples: Optional[List[Union[str, ObjectId]]] = None,
-            task_id: Optional[ObjectId] = None,
-            lab_view: Optional["LabView"] = None,
-            priority: Optional[Union[TaskPriority, int]] = TaskPriority.NORMAL,
-            simulation: bool = True,
-            *args,
-            **kwargs,
+        self,
+        samples: Optional[List[Union[str, ObjectId]]] = None,
+        task_id: Optional[ObjectId] = None,
+        lab_view: Optional["LabView"] = None,
+        priority: Optional[Union[TaskPriority, int]] = TaskPriority.NORMAL,
+        simulation: bool = True,
+        *args,
+        **kwargs,
     ):
         """
         Args:
@@ -65,9 +65,16 @@ class BaseTask(ABC):
 
         .. code-block:: python
 
-          def __init__(self, sample_1: ObjectId, sample_2: Optional[ObjectId],
-                       sample_3: Optional[ObjectId], sample_4: Optional[ObjectId],
-                        setpoints: List[Tuple[float, float]], *args, **kwargs):
+          def __init__(
+              self,
+              sample_1: ObjectId,
+              sample_2: Optional[ObjectId],
+              sample_3: Optional[ObjectId],
+              sample_4: Optional[ObjectId],
+              setpoints: List[Tuple[float, float]],
+              *args,
+              **kwargs
+          ):
               super(Heating, self).__init__(*args, **kwargs)
               self.setpoints = setpoints
               self.samples = [sample_1, sample_2, sample_3, sample_4]
@@ -188,9 +195,9 @@ class BaseTask(ABC):
         return ResultPointer(task_id=self.task_id, key=key).to_json()
 
     def import_result(
-            self,
-            pointer: Union[ResultPointer, Dict[str, Any]],
-            allow_explicit_value: bool = False,
+        self,
+        pointer: Union[ResultPointer, Dict[str, Any]],
+        allow_explicit_value: bool = False,
     ) -> Any:
         """
         Imports a result from another task. This is useful in cases where
@@ -282,7 +289,9 @@ class BaseTask(ABC):
           # request devices and sample positions from lab manager. The `$` represents
           # the name of assigned devices in the sample positions we try to request,
           # 4 is the number of sample positions.
-          with self.lab_view.request_resources({Furnace: [("$.inside", 4)]}) as devices_and_positions:
+          with self.lab_view.request_resources(
+              {Furnace: [("$.inside", 4)]}
+          ) as devices_and_positions:
               devices, sample_positions = devices_and_positions
               furnace = devices[Furnace]
               inside_furnace = sample_positions[Furnace]["$.inside"]
@@ -290,11 +299,13 @@ class BaseTask(ABC):
               for sample in self.samples:
                   # in a task, we can call other tasks, which will share the same
                   # task id, requested devices and sample positions.
-                  moving_task = Moving(sample=sample,
-                                       task_id=self.task_id,
-                                       dest=inside_furnace[0],
-                                       lab_view=self.lab_view,
-                                       logger=self.logger)
+                  moving_task = Moving(
+                      sample=sample,
+                      task_id=self.task_id,
+                      dest=inside_furnace[0],
+                      lab_view=self.lab_view,
+                      logger=self.logger,
+                  )
                   moving_task.run()
 
               # send command to device
@@ -302,10 +313,12 @@ class BaseTask(ABC):
 
               while furnace.is_running():
                   # log the device data, which is current temperature of the furnace
-                  self.logger.log_device_signal({
-                      "device": furnace.name,
-                      "temperature": furnace.get_temperature(),
-                  })
+                  self.logger.log_device_signal(
+                      {
+                          "device": furnace.name,
+                          "temperature": furnace.get_temperature(),
+                      }
+                  )
 
         """
         raise NotImplementedError(
@@ -313,10 +326,10 @@ class BaseTask(ABC):
         )
 
     def run_subtask(
-            self,
-            task: Type["BaseTask"],
-            samples: Optional[Union[List[str], str]] = None,
-            **kwargs,
+        self,
+        task: Type["BaseTask"],
+        samples: Optional[Union[List[str], str]] = None,
+        **kwargs,
     ):
         """Run a subtask of this current task. Returns the result, if any, of the subtask."""
         samples = samples or self.samples
@@ -325,8 +338,8 @@ class BaseTask(ABC):
         return self.lab_view.run_subtask(task=task, samples=samples, **kwargs)
 
     def add_to(
-            self,
-            samples: Union[SampleBuilder, List[SampleBuilder]],
+        self,
+        samples: Union[SampleBuilder, List[SampleBuilder]],
     ):
         """Used to add basetask to a SampleBuilder's tasklist during Experiment construction.
 
@@ -376,9 +389,9 @@ def get_all_tasks() -> Dict[str, Type[BaseTask]]:
 
 
 def add_reroute_task(
-        supported_sample_positions: SUPPORTED_SAMPLE_POSITIONS_TYPE,
-        task: Type[BaseTask],
-        **kwargs,
+    supported_sample_positions: SUPPORTED_SAMPLE_POSITIONS_TYPE,
+    task: Type[BaseTask],
+    **kwargs,
 ):
     """Register a reroute task."""
     if task.__name__ not in _task_registry:

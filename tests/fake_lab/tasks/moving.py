@@ -16,7 +16,7 @@ class Moving(BaseTask):
 
     def run(self):
         with self.lab_view.request_resources(
-                {RobotArm: {}, None: {self.dest: 1, self.sample_position: 1}}
+            {RobotArm: {}, None: {self.dest: 1, self.sample_position: 1}}
         ) as (devices, sample_positions):
             robot_arm = cast(RobotArm, devices[RobotArm])
             robot_arm.run_program(

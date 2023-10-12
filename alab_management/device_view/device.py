@@ -180,7 +180,7 @@ class BaseDevice(ABC):
 
     # methods to store Device values inside the database. Lists and dictionaries are supported.
     def list_in_database(
-            self, name: str, default_value: Optional[Union[list, None]] = None
+        self, name: str, default_value: Optional[Union[list, None]] = None
     ) -> ListInDatabase:
         """
         Create a list attribute that is stored in the database.
@@ -202,7 +202,7 @@ class BaseDevice(ABC):
         )
 
     def dict_in_database(
-            self, name: str, default_value: Optional[Union[dict, None]] = None
+        self, name: str, default_value: Optional[Union[dict, None]] = None
     ) -> DictInDatabase:
         """
         Create a dict attribute that is stored in the database.
@@ -247,7 +247,7 @@ class BaseDevice(ABC):
         return request_maintenance_input(prompt=prompt, options=options)
 
     def retrieve_signal(
-            self, signal_name: str, within: Optional[datetime.timedelta] = None
+        self, signal_name: str, within: Optional[datetime.timedelta] = None
     ):
         """Retrieve a signal from the database.
 

@@ -98,7 +98,7 @@ def launch_dashboard_cli(host, port, debug):
 @cli.command(
     "copy_completed_experiments",
     short_help='Copy completed experiments from working database to completed database. Note that "mongodb_completed" '
-               'must be specified in the config file.',
+    "must be specified in the config file.",
 )
 def copy_completed_experiments_cli():
     """Copy completed experiments from working database to completed database. Note that "mongodb_completed" must be

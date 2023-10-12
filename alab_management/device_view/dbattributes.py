@@ -67,11 +67,11 @@ class ListInDatabase:
     """
 
     def __init__(
-            self,
-            device_collection: Collection,
-            device_name: str,
-            attribute_name: str,
-            default_value: Union[list, None] = None,
+        self,
+        device_collection: Collection,
+        device_name: str,
+        attribute_name: str,
+        default_value: Union[list, None] = None,
     ):
         self._collection = device_collection
         self.attribute_name = attribute_name
@@ -257,7 +257,7 @@ class ListInDatabase:
         current[x] = val
         if any(isinstance(val, t) for t in [dict, list, tuple]):
             raise TypeError(
-                "Elements within a ListInDatabase cannot be iterable. Spefically, values of the ListInDatabase cannot "
+                "Elements within a ListInDatabase cannot be iterable. Specifically, values of the ListInDatabase cannot "
                 "be a dict, list, or tuple!"
             )
         self._collection.update_one(
@@ -280,11 +280,11 @@ class DictInDatabase:
     """
 
     def __init__(
-            self,
-            device_collection: Collection,
-            device_name: str,
-            attribute_name: str,
-            default_value: Union[dict, None] = None,
+        self,
+        device_collection: Collection,
+        device_name: str,
+        attribute_name: str,
+        default_value: Union[dict, None] = None,
     ):
         self._collection = device_collection
         self.attribute_name = attribute_name
