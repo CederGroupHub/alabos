@@ -444,11 +444,13 @@
                 
   <section id="module-alab_management.builders.samplebuilder">
 <span id="alab-management-builders-samplebuilder-module"></span><h1>alab_management.builders.samplebuilder module<a class="headerlink" href="#module-alab_management.builders.samplebuilder" title="Permalink to this heading">¶</a></h1>
+<p>Build the sample object.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="alab_management.builders.samplebuilder.SampleBuilder">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SampleBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">metadata</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#alab_management.builders.samplebuilder.SampleBuilder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This class is used to build a sample. Each sample has a name, tags, and metadata. Each sample also
+<p>Build a sample.</p>
+<p>Each sample has a name, tags, and metadata. Each sample also
 has a list of tasks which are binded to it. Each sample is a node in a directed graph of tasks.
 Each task has a list of samples which are binded to it. Each sample also has a list of tags and
 metadata. The tags and metadata are used to filter the samples and tasks. The tags and metadata are
@@ -456,17 +458,17 @@ also used to group the samples and tasks.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.builders.samplebuilder.SampleBuilder.add_task">
 <span class="sig-name descname"><span class="pre">add_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#alab_management.builders.samplebuilder.SampleBuilder.add_task" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function adds a task to the sample. You should use this function only for special cases which
-are not handled by the <cite>add_sample</cite> function.
-:type task_id: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param task_id: The object id of the task in mongodb
-:type task_id: str</p>
+<dd><p>Add a task to the sample. You should use this function only for special cases which
+are not handled by the <cite>add_sample</cite> function.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>task_id</strong> (<em>str</em>) – The object id of the task in mongodb</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None.</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -474,19 +476,21 @@ are not handled by the <cite>add_sample</cite> function.
 <dl class="py property">
 <dt class="sig sig-object py" id="alab_management.builders.samplebuilder.SampleBuilder.tasks">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tasks</span></span><a class="headerlink" href="#alab_management.builders.samplebuilder.SampleBuilder.tasks" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return the tasks binded to this sample.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.builders.samplebuilder.SampleBuilder.to_dict">
 <span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#alab_management.builders.samplebuilder.SampleBuilder.to_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return Sample as a dictionary. This looks like:</p>
-<dl class="simple">
-<dt>{</dt><dd><p>“_id”: str(ObjectId),
+<dd><p>Return Sample as a dictionary.</p>
+<p>This looks like:
+{</p>
+<blockquote>
+<div><p>“_id”: str(ObjectId),
 “name”: str,
 “tags”: List[str],
 “metadata”: Dict[str, Any],</p>
-</dd>
-</dl>
+</div></blockquote>
 <p>}</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>

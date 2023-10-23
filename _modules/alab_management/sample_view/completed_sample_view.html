@@ -376,21 +376,28 @@
               <div>
                 
   <h1>Source code for alab_management.sample_view.completed_sample_view</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">cast</span><span class="p">,</span> <span class="n">Union</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains the CompletedSampleView class, which is responsible for</span>
+<span class="sd">saving samples to the completed database.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 
-<span class="kn">from</span> <span class="nn">..utils.data_objects</span> <span class="kn">import</span> <span class="n">get_collection</span><span class="p">,</span> <span class="n">get_completed_collection</span>
-<span class="kn">from</span> <span class="nn">.sample_view</span> <span class="kn">import</span> <span class="n">SampleView</span>
+<span class="kn">from</span> <span class="nn">alab_management.utils.data_objects</span> <span class="kn">import</span> <span class="n">get_collection</span><span class="p">,</span> <span class="n">get_completed_collection</span>
 
 
 <div class="viewcode-block" id="CompletedSampleView"><a class="viewcode-back" href="../../../alab_management.sample_view.completed_sample_view.html#alab_management.sample_view.completed_sample_view.CompletedSampleView">[docs]</a><span class="k">class</span> <span class="nc">CompletedSampleView</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sample view manages the sample status, which is a collection of tasks.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_working_sample_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;samples&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_completed_sample_collection</span> <span class="o">=</span> <span class="n">get_completed_collection</span><span class="p">(</span><span class="s2">&quot;samples&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CompletedSampleView.save_sample"><a class="viewcode-back" href="../../../alab_management.sample_view.completed_sample_view.html#alab_management.sample_view.completed_sample_view.CompletedSampleView.save_sample">[docs]</a>    <span class="k">def</span> <span class="nf">save_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Saves a sample dictionary to the completed database. This should be copying a sample from the working database to the completed database.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Saves a sample dictionary to the completed database. This should be copying a sample from the working</span>
+<span class="sd">        database to the completed database.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># if self.exists(sample_id):</span>
         <span class="c1">#     raise ValueError(</span>
@@ -405,21 +412,22 @@
                 <span class="sa">f</span><span class="s2">&quot;Sample with id </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2"> does not exist in the database!&quot;</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">sample_id</span><span class="p">):</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_completed_sample_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_completed_sample_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
                 <span class="nb">filter</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">sample_id</span><span class="p">)},</span>
                 <span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="n">sample_dict</span><span class="p">},</span>
                 <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_completed_sample_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">sample_dict</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_completed_sample_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">sample_dict</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CompletedSampleView.exists"><a class="viewcode-back" href="../../../alab_management.sample_view.completed_sample_view.html#alab_management.sample_view.completed_sample_view.CompletedSampleView.exists">[docs]</a>    <span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if a sample exists in the database</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if a sample exists in the database.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            sample_id (ObjectId): id of the sample within sample collection</span>
 
-<span class="sd">        Returns:</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
 <span class="sd">            bool: True if sample exists in the database</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span>

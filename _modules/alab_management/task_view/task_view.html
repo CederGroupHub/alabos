@@ -382,25 +382,21 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
-<span class="kn">import</span> <span class="nn">bson</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">alab_management.task_view.task</span> <span class="kn">import</span> <span class="n">get_all_tasks</span><span class="p">,</span> <span class="n">BaseTask</span>
-<span class="kn">from</span> <span class="nn">alab_management.utils.data_objects</span> <span class="kn">import</span> <span class="n">get_collection</span><span class="p">,</span> <span class="n">make_bsonable</span><span class="p">,</span> <span class="n">get_lock</span>
+<span class="kn">from</span> <span class="nn">alab_management.task_view.task</span> <span class="kn">import</span> <span class="n">BaseTask</span><span class="p">,</span> <span class="n">get_all_tasks</span>
 <span class="kn">from</span> <span class="nn">alab_management.task_view.task_enums</span> <span class="kn">import</span> <span class="n">TaskStatus</span>
+<span class="kn">from</span> <span class="nn">alab_management.utils.data_objects</span> <span class="kn">import</span> <span class="n">get_collection</span><span class="p">,</span> <span class="n">get_lock</span><span class="p">,</span> <span class="n">make_bsonable</span>
+
 <span class="kn">from</span> <span class="nn">.completed_task_view</span> <span class="kn">import</span> <span class="n">CompletedTaskView</span>
 
 <span class="n">completed_task_view</span> <span class="o">=</span> <span class="n">CompletedTaskView</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="TaskView"><a class="viewcode-back" href="../../../alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView">[docs]</a><span class="k">class</span> <span class="nc">TaskView</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Task view manages the status, parameters of a task</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Task view manages the status, parameters of a task.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_task_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;tasks&quot;</span><span class="p">)</span>
@@ -417,7 +413,7 @@
         <span class="n">task_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectId</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Insert a task into the task collection</span>
+<span class="sd">        Insert a task into the task collection.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            task_type: the type of task, which should be a type name of class inherited from</span>
@@ -430,7 +426,8 @@
 <span class="sd">            next_tasks: one or a list of ObjectId that refer to next tasks of this task</span>
 <span class="sd">              (which cannot start until this task finishes)</span>
 
-<span class="sd">        Returns:</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
 <span class="sd">            the assigned id for this task</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">task_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks_definition</span><span class="p">:</span>
@@ -464,9 +461,7 @@
 <div class="viewcode-block" id="TaskView.create_subtask"><a class="viewcode-back" href="../../../alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.create_subtask">[docs]</a>    <span class="k">def</span> <span class="nf">create_subtask</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">,</span> <span class="n">subtask_type</span><span class="p">,</span> <span class="n">samples</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create a subtask entry for a task.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a subtask entry for a task.&quot;&quot;&quot;</span>
         <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_task</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span>
         <span class="n">subtask_id</span> <span class="o">=</span> <span class="n">ObjectId</span><span class="p">()</span>
 
@@ -496,7 +491,7 @@
 
 <div class="viewcode-block" id="TaskView.get_task"><a class="viewcode-back" href="../../../alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.get_task">[docs]</a>    <span class="k">def</span> <span class="nf">get_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">encode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get a task by its task id, which will return all the info stored in the database</span>
+<span class="sd">        Get a task by its task id, which will return all the info stored in the database.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            task_id: the task_id of interest. If not found, will return ``None``</span>
@@ -521,9 +516,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="TaskView.get_task_with_sample"><a class="viewcode-back" href="../../../alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.get_task_with_sample">[docs]</a>    <span class="k">def</span> <span class="nf">get_task_with_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get a task that contains the sample with the provided id</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a task that contains the sample with the provided id.&quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_collection</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;samples.sample_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -532,15 +525,13 @@
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TaskView.get_status"><a class="viewcode-back" href="../../../alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.get_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TaskStatus</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the status of a task</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the status of a task.&quot;&quot;&quot;</span>
         <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_task</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">TaskStatus</span><span class="p">[</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]]</span></div>
 
 <div class="viewcode-block" id="TaskView.update_status"><a class="viewcode-back" href="../../../alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.update_status">[docs]</a>    <span class="k">def</span> <span class="nf">update_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">TaskStatus</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Update the status of one task</span>
+<span class="sd">        Update the status of one task.</span>
 
 <span class="sd">        If the status is ``COMPLETED``, we will also try to</span>
 <span class="sd">        mark its next tasks to ``READY``, if all of its previous</span>
@@ -594,7 +585,8 @@
                         <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;sample_id&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">samples_in_this_task</span>
                     <span class="p">]</span>
                     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">samples_to_remain_in_downstream_task</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                        <span class="c1"># This is probably impossible (if we have 0 samples remaining,this task should exclusive depends on the cancelled task and have been caught above), but just in case...</span>
+                        <span class="c1"># This is probably impossible (if we have 0 samples remaining,this task should exclusive</span>
+                        <span class="c1"># depends on the cancelled task and have been caught above), but just in case...</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span>
                             <span class="n">task_id</span><span class="o">=</span><span class="n">next_task_id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">CANCELLED</span>
                         <span class="p">)</span>
@@ -618,9 +610,7 @@
 <div class="viewcode-block" id="TaskView.update_subtask_status"><a class="viewcode-back" href="../../../alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.update_subtask_status">[docs]</a>    <span class="k">def</span> <span class="nf">update_subtask_status</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">subtask_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">TaskStatus</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Update the status of a subtask</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the status of a subtask.&quot;&quot;&quot;</span>
         <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_task</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">encode</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">subtasks</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;subtasks&quot;</span><span class="p">,</span> <span class="p">[])</span>
         <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
@@ -650,10 +640,9 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update result to completed job.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            task_id: the id of task to be updated</span>
-<span class="sd">            name: the name of the result to be updated. If ``None``, will update the entire ``result`` field. Otherwise, will update the field ``result.name``.</span>
-<span class="sd">            value: the value to be stored. This must be bson-encodable (ie can be written into MongoDB!)</span>
+<span class="sd">        Args: task_id: the id of task to be updated name: the name of the result to be updated. If ``None``,</span>
+<span class="sd">        will update the entire ``result`` field. Otherwise, will update the field ``result.name``. value: the value</span>
+<span class="sd">        to be stored. This must be bson-encodable (ie can be written into MongoDB!)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_task</span><span class="p">(</span>
             <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span>
@@ -662,10 +651,7 @@
         <span class="c1"># if value is None:</span>
         <span class="c1">#     raise ValueError(&quot;Must provide a value to update result with!&quot;)</span>
 
-        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">update_path</span> <span class="o">=</span> <span class="s2">&quot;result&quot;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">update_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;result.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">update_path</span> <span class="o">=</span> <span class="s2">&quot;result&quot;</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;result.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_task_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
             <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">},</span>
@@ -716,7 +702,7 @@
 <div class="viewcode-block" id="TaskView.try_to_mark_task_ready"><a class="viewcode-back" href="../../../alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.try_to_mark_task_ready">[docs]</a>    <span class="k">def</span> <span class="nf">try_to_mark_task_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if one task&#39;s parent tasks are all completed,</span>
-<span class="sd">        if so, mark it as READY</span>
+<span class="sd">        if so, mark it as READY.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_task</span><span class="p">(</span><span class="n">task_id</span><span class="p">)</span>
 
@@ -729,9 +715,10 @@
 
 <div class="viewcode-block" id="TaskView.get_ready_tasks"><a class="viewcode-back" href="../../../alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.get_ready_tasks">[docs]</a>    <span class="k">def</span> <span class="nf">get_ready_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return a list of ready tasks</span>
+<span class="sd">        Return a list of ready tasks.</span>
 
-<span class="sd">        Returns:</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
 <span class="sd">            List of task entry: {&quot;task_id&quot;: ``ObjectId``,</span>
 <span class="sd">            &quot;type&quot;: :py:class:`BaseTask &lt;alab_management.task_view.task.BaseTask&gt;`}</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -739,9 +726,10 @@
 
 <div class="viewcode-block" id="TaskView.get_tasks_by_status"><a class="viewcode-back" href="../../../alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.get_tasks_by_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_tasks_by_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">TaskStatus</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return a list of tasks with given status</span>
+<span class="sd">        Return a list of tasks with given status.</span>
 
-<span class="sd">        Returns:</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
 <span class="sd">            List of task entry: {&quot;task_id&quot;: ``ObjectId``,</span>
 <span class="sd">            &quot;type&quot;: :py:class:`BaseTask &lt;alab_management.task_view.task.BaseTask&gt;`}</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -774,14 +762,14 @@
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add prev tasks and next tasks to one task entry,</span>
-<span class="sd">        which will not overwrite old pre_task and next_tasks</span>
+<span class="sd">        which will not overwrite old pre_task and next_tasks.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            task_id: the id of task to be updated</span>
 <span class="sd">            prev_tasks: one or a list of ids of ``prev_tasks``</span>
 <span class="sd">            next_tasks: one or a list of ids of ``next_tasks``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_task</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">encode</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_task</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">encode</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="n">prev_tasks</span> <span class="o">=</span> <span class="n">prev_tasks</span> <span class="k">if</span> <span class="n">prev_tasks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="n">prev_tasks</span> <span class="o">=</span> <span class="n">prev_tasks</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prev_tasks</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">prev_tasks</span><span class="p">]</span>
@@ -810,9 +798,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TaskView.set_message"><a class="viewcode-back" href="../../../alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.set_message">[docs]</a>    <span class="k">def</span> <span class="nf">set_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Set message for one task. This is displayed on the dashboard.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set message for one task. This is displayed on the dashboard.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_task_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
             <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">},</span>
             <span class="p">{</span>
@@ -843,7 +829,7 @@
 
 <div class="viewcode-block" id="TaskView.mark_task_as_cancelling"><a class="viewcode-back" href="../../../alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.mark_task_as_cancelling">[docs]</a>    <span class="k">def</span> <span class="nf">mark_task_as_cancelling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Try to cancel a task by marking the task as TaskStatus.CANCELLING</span>
+<span class="sd">        Try to cancel a task by marking the task as TaskStatus.CANCELLING.</span>
 
 <span class="sd">        If the status is not in [READY, INITIATED, WAITING, PAUSED, READY, RUNNING],</span>
 <span class="sd">        the request will be ignored and returned.</span>
@@ -867,9 +853,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TaskView.exists"><a class="viewcode-back" href="../../../alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.exists">[docs]</a>    <span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Check if a task id exists</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if a task id exists.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_collection</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">task_id</span><span class="p">)})</span> <span class="o">&gt;</span> <span class="mi">0</span></div></div>
 </pre></div>
 

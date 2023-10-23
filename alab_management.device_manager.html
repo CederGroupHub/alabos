@@ -598,7 +598,7 @@
                 
   <section id="module-alab_management.device_manager">
 <span id="alab-management-device-manager-module"></span><h1>alab_management.device_manager module<a class="headerlink" href="#module-alab_management.device_manager" title="Permalink to this heading">¶</a></h1>
-<p>This module is adapted from <a class="reference external" href="https://github.com/Mause/rpc">https://github.com/Mause/rpc</a></p>
+<p>This module is adapted from <a class="reference external" href="https://github.com/Mause/rpc">https://github.com/Mause/rpc</a>.</p>
 <p>The task process can only get access to a wrapper over the real device object. The wrapper will
 redirect all the method calls to the real device object via RabbitMQ. The real device object is in
 DeviceManager class, which will handle all the request to run certain methods on the real device.</p>
@@ -636,7 +636,7 @@ executes commands on the device drivers, as requested by the task process.</p>
 <dt class="sig sig-object py" id="alab_management.device_manager.DeviceMethodCallState">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DeviceMethodCallState</span></span><a class="reference internal" href="_modules/alab_management/device_manager.html#DeviceMethodCallState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_manager.DeviceMethodCallState" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>holds the status of a pending method call to a device</p>
+<p>holds the status of a pending method call to a device.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="alab_management.device_manager.DeviceMethodCallState.future">
 <span class="sig-name descname"><span class="pre">future</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></em><a class="headerlink" href="#alab_management.device_manager.DeviceMethodCallState.future" title="Permalink to this definition">¶</a></dt>
@@ -658,23 +658,25 @@ executes commands on the device drivers, as requested by the task process.</p>
 <dt class="sig sig-object py" id="alab_management.device_manager.DeviceWrapper">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DeviceWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">devices_client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_manager.html#DeviceWrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_manager.DeviceWrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A wrapper over the device</p>
+<p>A wrapper over the device.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="alab_management.device_manager.DeviceWrapper.DeviceMethodWrapper">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DeviceMethodWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_handler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_manager.html#DeviceWrapper.DeviceMethodWrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_manager.DeviceWrapper.DeviceMethodWrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A wrapper over a device method</p>
+<p>A wrapper over a device method.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="alab_management.device_manager.DeviceWrapper.DeviceMethodWrapper.method">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">method</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#alab_management.device_manager.DeviceWrapper.DeviceMethodWrapper.method" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>The name of the method.</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="alab_management.device_manager.DeviceWrapper.name">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#alab_management.device_manager.DeviceWrapper.name" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>The name of the device.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -682,7 +684,7 @@ executes commands on the device drivers, as requested by the task process.</p>
 <dt class="sig sig-object py" id="alab_management.device_manager.DevicesClient">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DevicesClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_manager.html#DevicesClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_manager.DevicesClient" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A rabbitmq-backed RPC client for sending device requests to the Device Manager (server)</p>
+<p>A rabbitmq-backed RPC client for sending device requests to the Device Manager (server).</p>
 <p>Use <code class="docutils literal notranslate"><span class="pre">create_device_wrapper</span></code> to create Device Wrapper instance.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_manager.DevicesClient.call">
@@ -710,7 +712,7 @@ the method directly.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_manager.DevicesClient.create_device_wrapper">
 <span class="sig-name descname"><span class="pre">create_device_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_manager.html#DevicesClient.create_device_wrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_manager.DevicesClient.create_device_wrapper" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a wrapper over a device with <code class="docutils literal notranslate"><span class="pre">device_name</span></code></p>
+<dd><p>Create a wrapper over a device with <code class="docutils literal notranslate"><span class="pre">device_name</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>device_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the name of device to be wrapped</p>
@@ -727,7 +729,7 @@ the method directly.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_manager.DevicesClient.on_message">
 <span class="sig-name descname"><span class="pre">on_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">properties</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_body</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_manager.html#DevicesClient.on_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_manager.DevicesClient.on_message" title="Permalink to this definition">¶</a></dt>
-<dd><p>Callback function to handle a returned message from Device Manager</p>
+<dd><p>Callback function to handle a returned message from Device Manager.</p>
 </dd></dl>
 
 </dd></dl>
@@ -736,7 +738,7 @@ the method directly.</p>
 <dt class="sig sig-object py" id="alab_management.device_manager.MethodCallStatus">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MethodCallStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_manager.html#MethodCallStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_manager.MethodCallStatus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
-<p>An enumeration.</p>
+<p>The status of a method call.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="alab_management.device_manager.MethodCallStatus.FAILURE">
 <span class="sig-name descname"><span class="pre">FAILURE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#alab_management.device_manager.MethodCallStatus.FAILURE" title="Permalink to this definition">¶</a></dt>

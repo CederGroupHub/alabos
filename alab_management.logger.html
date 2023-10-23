@@ -619,16 +619,16 @@
                 
   <section id="module-alab_management.logger">
 <span id="alab-management-logger-module"></span><h1>alab_management.logger module<a class="headerlink" href="#module-alab_management.logger" title="Permalink to this heading">¶</a></h1>
-<p>Logger module takes charge of recording information, warnings and errors during executing tasks</p>
+<p>Logger module takes charge of recording information, warnings and errors during executing tasks.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="alab_management.logger.DBLogger">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DBLogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#DBLogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.logger.DBLogger" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A custom logger that wrote data to database, where we predefined some log pattern</p>
+<p>A custom logger that wrote data to database, where we predefined some log pattern.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.logger.DBLogger.filter_device_signal">
 <span class="sig-name descname"><span class="pre">filter_device_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">within</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#DBLogger.filter_device_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.logger.DBLogger.filter_device_signal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find device signal log within a range of time (1h/1d or else)</p>
+<dd><p>Find device signal log within a range of time (1h/1d or else).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -637,9 +637,12 @@
 <li><p><strong>within</strong> (<em>timedelta</em>) – timedelta (how far back) to retrieve</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>Dictionary containing signal data. Dict form is:</dt><dd><dl class="simple">
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>Dict[str, Any]: Dictionary containing signal data. Dict form is:</dt><dd><dl class="simple">
 <dt>{</dt><dd><p>“device_name”: device_name,
 “signal_name”: signal_name,
 “timestamp”: [list of timestamps],
@@ -651,16 +654,13 @@
 </dl>
 </p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Dict[str, Any]</p>
-</dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.logger.DBLogger.filter_log">
 <span class="sig-name descname"><span class="pre">filter_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">within</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#DBLogger.filter_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.logger.DBLogger.filter_log" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find log within a range of time (1h/1d or else) higher than certain level</p>
+<dd><p>Find log within a range of time (1h/1d or else) higher than certain level.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</p>
@@ -671,7 +671,7 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.logger.DBLogger.get_latest_device_signal">
 <span class="sig-name descname"><span class="pre">get_latest_device_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#DBLogger.get_latest_device_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.logger.DBLogger.get_latest_device_signal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the last device signal log</p>
+<dd><p>Get the last device signal log.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -679,8 +679,11 @@
 <li><p><strong>signal_name</strong> (<em>str</em>) – signal name</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><p>dictionary with result.</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p>Optional[Any]: dictionary with result.</p>
 <dl>
 <dt>dict example:</dt><dd><dl class="simple">
 <dt>{</dt><dd><p>“device_name”: device_name,
@@ -694,25 +697,23 @@
 </dl>
 </p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Optional[Any]</p>
-</dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.logger.DBLogger.log">
 <span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logging_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">LoggingType.OTHER</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#DBLogger.log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.logger.DBLogger.log" title="Permalink to this definition">¶</a></dt>
-<dd><p>Basic log function
-:type level: <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <a class="reference internal" href="#alab_management.logger.LoggingLevel" title="alab_management.logger.LoggingLevel"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoggingLevel</span></code></a>]
-:param level: the level of this log, which can be string, int or <a class="reference internal" href="#alab_management.logger.LoggingLevel" title="alab_management.logger.LoggingLevel"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoggingLevel</span></code></a>
-:type log_data: <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]
-:param log_data: the data to be logged
-:type logging_type: <a class="reference internal" href="#alab_management.logger.LoggingType" title="alab_management.logger.LoggingType"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoggingType</span></code></a>
-:param logging_type: the type of logging</p>
+<dd><p>Basic log function.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>level</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <a class="reference internal" href="#alab_management.logger.LoggingLevel" title="alab_management.logger.LoggingLevel"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoggingLevel</span></code></a>]) – the level of this log, which can be string, int or <a class="reference internal" href="#alab_management.logger.LoggingLevel" title="alab_management.logger.LoggingLevel"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoggingLevel</span></code></a></p></li>
+<li><p><strong>log_data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – the data to be logged</p></li>
+<li><p><strong>logging_type</strong> (<a class="reference internal" href="#alab_management.logger.LoggingType" title="alab_management.logger.LoggingType"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoggingType</span></code></a>) – the type of logging.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -720,25 +721,25 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.logger.DBLogger.log_amount">
 <span class="sig-name descname"><span class="pre">log_amount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#DBLogger.log_amount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.logger.DBLogger.log_amount" title="Permalink to this definition">¶</a></dt>
-<dd><p>Log the amount of samples and chemicals (e.g. weight)</p>
+<dd><p>Log the amount of samples and chemicals (e.g. weight).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.logger.DBLogger.log_characterization_result">
 <span class="sig-name descname"><span class="pre">log_characterization_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#DBLogger.log_characterization_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.logger.DBLogger.log_characterization_result" title="Permalink to this definition">¶</a></dt>
-<dd><p>Log the characterization result (e.g. XRD pattern)</p>
+<dd><p>Log the characterization result (e.g. XRD pattern).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.logger.DBLogger.log_device_signal">
 <span class="sig-name descname"><span class="pre">log_device_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#DBLogger.log_device_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.logger.DBLogger.log_device_signal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Log the device sensor’s signal (e.g. the voltage of batteries, the temperature of furnace)</p>
+<dd><p>Log the device sensor’s signal (e.g. the voltage of batteries, the temperature of furnace).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.logger.DBLogger.system_log">
 <span class="sig-name descname"><span class="pre">system_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#DBLogger.system_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.logger.DBLogger.system_log" title="Permalink to this definition">¶</a></dt>
-<dd><p>Log that comes from the workflow system</p>
+<dd><p>Log that comes from the workflow system.</p>
 </dd></dl>
 
 </dd></dl>
@@ -747,7 +748,7 @@
 <dt class="sig sig-object py" id="alab_management.logger.LoggingLevel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LoggingLevel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#LoggingLevel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.logger.LoggingLevel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
-<p>Different level log</p>
+<p>Different level log.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="alab_management.logger.LoggingLevel.CRITICAL">
 <span class="sig-name descname"><span class="pre">CRITICAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50</span></em><a class="headerlink" href="#alab_management.logger.LoggingLevel.CRITICAL" title="Permalink to this definition">¶</a></dt>
@@ -789,7 +790,7 @@
 <dt class="sig sig-object py" id="alab_management.logger.LoggingType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LoggingType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/logger.html#LoggingType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.logger.LoggingType" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
-<p>Different types of log</p>
+<p>Different types of log.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="alab_management.logger.LoggingType.CHARACTERIZATION_RESULT">
 <span class="sig-name descname"><span class="pre">CHARACTERIZATION_RESULT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#alab_management.logger.LoggingType.CHARACTERIZATION_RESULT" title="Permalink to this definition">¶</a></dt>

@@ -378,26 +378,26 @@
   <h1>Source code for alab_management.task_manager.resource_requester</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">TaskLauncher is the core module of the system,</span>
-<span class="sd">which actually executes the tasks</span>
+<span class="sd">which actually executes the tasks.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="kn">import</span> <span class="n">Future</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Thread</span>
 <span class="kn">from</span> <span class="nn">traceback</span> <span class="kn">import</span> <span class="n">print_exc</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">import</span> <span class="nn">dill</span>
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">root_validator</span>
 
+<span class="kn">from</span> <span class="nn">alab_management.device_view.device</span> <span class="kn">import</span> <span class="n">BaseDevice</span>
 <span class="kn">from</span> <span class="nn">alab_management.sample_view.sample</span> <span class="kn">import</span> <span class="n">SamplePosition</span>
+<span class="kn">from</span> <span class="nn">alab_management.sample_view.sample_view</span> <span class="kn">import</span> <span class="n">SamplePositionRequest</span>
+<span class="kn">from</span> <span class="nn">alab_management.task_view</span> <span class="kn">import</span> <span class="n">TaskPriority</span>
+<span class="kn">from</span> <span class="nn">alab_management.utils.data_objects</span> <span class="kn">import</span> <span class="n">get_collection</span>
 
-<span class="kn">from</span> <span class="nn">..device_view.device</span> <span class="kn">import</span> <span class="n">BaseDevice</span>
-<span class="kn">from</span> <span class="nn">..sample_view.sample_view</span> <span class="kn">import</span> <span class="n">SamplePositionRequest</span>
-<span class="kn">from</span> <span class="nn">..task_view</span> <span class="kn">import</span> <span class="n">TaskView</span><span class="p">,</span> <span class="n">TaskPriority</span>
-<span class="kn">from</span> <span class="nn">..utils.data_objects</span> <span class="kn">import</span> <span class="n">get_collection</span>
-<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">RequestStatus</span><span class="p">,</span> <span class="n">_EXTRA_REQUEST</span>
+<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">_EXTRA_REQUEST</span><span class="p">,</span> <span class="n">RequestStatus</span>
 
 <span class="n">_SampleRequestDict</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
 <span class="n">_ResourceRequestDict</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span>
@@ -423,9 +423,10 @@
 <span class="sd">            ]</span>
 <span class="sd">        },</span>
 <span class="sd">        ...</span>
-<span class="sd">    ]</span>
+<span class="sd">    ].</span>
 
-<span class="sd">    See Also:</span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
 <span class="sd">        :py:class:`SamplePositionRequest &lt;alab_management.sample_view.sample_view.SamplePositionRequest&gt;`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -434,7 +435,8 @@
     <span class="p">]</span>  <span class="c1"># type: ignore</span>
 
 <div class="viewcode-block" id="ResourcesRequest.preprocess"><a class="viewcode-back" href="../../../alab_management.task_manager.resource_requester.html#alab_management.task_manager.resource_requester.ResourcesRequest.preprocess">[docs]</a>    <span class="nd">@root_validator</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>  <span class="c1"># pylint: disable=no-self-use,no-self-argument</span>
+    <span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Preprocess the request.&quot;&quot;&quot;</span>
         <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;__root__&quot;</span><span class="p">]</span>
 
         <span class="n">new_values</span> <span class="o">=</span> <span class="p">[]</span>
@@ -460,29 +462,31 @@
 
 
 <div class="viewcode-block" id="RequestMixin"><a class="viewcode-back" href="../../../alab_management.task_manager.resource_requester.html#alab_management.task_manager.resource_requester.RequestMixin">[docs]</a><span class="k">class</span> <span class="nc">RequestMixin</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Simple wrapper for the request collection</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simple wrapper for the request collection.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;requests&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="RequestMixin.update_request_status"><a class="viewcode-back" href="../../../alab_management.task_manager.resource_requester.html#alab_management.task_manager.resource_requester.RequestMixin.update_request_status">[docs]</a>    <span class="k">def</span> <span class="nf">update_request_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the status of a request by request_id.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
             <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="p">}}</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="RequestMixin.get_request"><a class="viewcode-back" href="../../../alab_management.task_manager.resource_requester.html#alab_management.task_manager.resource_requester.RequestMixin.get_request">[docs]</a>    <span class="k">def</span> <span class="nf">get_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a request by request_id.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span>
             <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">},</span> <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>  <span class="c1"># DB_ACCESS_OUTSIDE_VIEW</span></div>
 
 <div class="viewcode-block" id="RequestMixin.get_requests_by_status"><a class="viewcode-back" href="../../../alab_management.task_manager.resource_requester.html#alab_management.task_manager.resource_requester.RequestMixin.get_requests_by_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_requests_by_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all requests by status.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
             <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
         <span class="p">)</span>  <span class="c1"># DB_ACCESS_OUTSIDE_VIEW</span></div>
 
 <div class="viewcode-block" id="RequestMixin.get_requests_by_task_id"><a class="viewcode-back" href="../../../alab_management.task_manager.resource_requester.html#alab_management.task_manager.resource_requester.RequestMixin.get_requests_by_task_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_requests_by_task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all requests by task_id.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">})</span></div></div>
 
 
@@ -516,6 +520,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">__close__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the thread.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stop</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
 
@@ -528,10 +533,11 @@
         <span class="n">priority</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">TaskPriority</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Request lab resources. Write the request into the database, and then the task manager will read from the</span>
+<span class="sd">        Request lab resources.</span>
+
+<span class="sd">        Write the request into the database, and then the task manager will read from the</span>
 <span class="sd">        database and assign the resources.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="n">f</span> <span class="o">=</span> <span class="n">Future</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">priority</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">priority</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">priority</span>
@@ -600,9 +606,7 @@
         <span class="p">}</span></div>
 
 <div class="viewcode-block" id="ResourceRequester.release_resources"><a class="viewcode-back" href="../../../alab_management.task_manager.resource_requester.html#alab_management.task_manager.resource_requester.ResourceRequester.release_resources">[docs]</a>    <span class="k">def</span> <span class="nf">release_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Release a request by request_id</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Release a request by request_id.&quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
             <span class="p">{</span>
                 <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">,</span>
@@ -619,7 +623,7 @@
 
 <div class="viewcode-block" id="ResourceRequester.release_all_resources"><a class="viewcode-back" href="../../../alab_management.task_manager.resource_requester.html#alab_management.task_manager.resource_requester.ResourceRequester.release_all_resources">[docs]</a>    <span class="k">def</span> <span class="nf">release_all_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Release all requests by task_id, used for error recovery</span>
+<span class="sd">        Release all requests by task_id, used for error recovery.</span>
 
 <span class="sd">        For the requests that are not fulfilled, they will be marked as CANCELED.</span>
 
@@ -652,7 +656,7 @@
     <span class="k">def</span> <span class="nf">_check_request_status_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stop</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">request_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">request_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="o">.</span><span class="n">copy</span><span class="p">():</span>
                     <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">request_id</span><span class="o">=</span><span class="n">request_id</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">])[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
                     <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">FULFILLED</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_handle_fulfilled_request</span><span class="p">(</span><span class="n">request_id</span><span class="o">=</span><span class="n">request_id</span><span class="p">)</span>

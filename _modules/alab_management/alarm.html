@@ -376,21 +376,24 @@
               <div>
                 
   <h1>Source code for alab_management.alarm</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">smtplib</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="sd">&quot;&quot;&quot;The module to send alerts to the user via email or slack.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">smtplib</span>
+
 <span class="kn">from</span> <span class="nn">slack_sdk</span> <span class="kn">import</span> <span class="n">WebClient</span>
 <span class="kn">from</span> <span class="nn">slack_sdk.errors</span> <span class="kn">import</span> <span class="n">SlackApiError</span>
 
 
 <div class="viewcode-block" id="format_message_to_codeblock"><a class="viewcode-back" href="../../alab_management.alarm.html#alab_management.alarm.format_message_to_codeblock">[docs]</a><span class="k">def</span> <span class="nf">format_message_to_codeblock</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function takes a message and formats it as a code block.</span>
+<span class="sd">    The function takes a message and formats it as a code block.</span>
 <span class="sd">    It is used to format tracebacks as code blocks in Slack.</span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        message: The message to format (String). This is usually a traceback.</span>
-<span class="sd">    Returns:</span>
-<span class="sd">        formatted_message: The formatted message. This will be formatted into code block in slack if the message contains traceback,</span>
-<span class="sd">          otherwise it will be the original message.</span>
+
+<span class="sd">    Returns ------- formatted_message: The formatted message. This will be formatted into code block in slack if the</span>
+<span class="sd">    message contains traceback, otherwise it will be the original message.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Check if &quot;Traceback (most recent call last):&quot; is in the message</span>
     <span class="c1"># Split the message into lines</span>
@@ -428,17 +431,15 @@
 
 
 <div class="viewcode-block" id="Alarm"><a class="viewcode-back" href="../../alab_management.alarm.html#alab_management.alarm.Alarm">[docs]</a><span class="k">class</span> <span class="nc">Alarm</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A class to send alerts to the user via email or slack.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class to send alerts to the user via email or slack.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">email_receivers</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">email_sender</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">email_password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">slack_bot_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">slack_channel_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">email_receivers</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">email_sender</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">email_password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">slack_bot_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">slack_channel_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
@@ -454,21 +455,22 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">setup_email</span><span class="p">(</span><span class="n">email_sender</span><span class="p">,</span> <span class="n">email_receivers</span><span class="p">,</span> <span class="n">email_password</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">email_alert</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">except</span><span class="p">:</span>
+            <span class="k">except</span><span class="p">:</span>  <span class="c1"># noqa: E722</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Email setup failed, please recheck config file&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">slack_bot_token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">setup_slackbot</span><span class="p">(</span><span class="n">slack_bot_token</span><span class="p">,</span> <span class="n">slack_channel_id</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">slack_alert</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">except</span><span class="p">:</span>
+            <span class="k">except</span><span class="p">:</span>  <span class="c1"># noqa: E722</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Slackbot setup failed, please recheck config file&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">platforms</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_alert</span><span class="p">,</span> <span class="s2">&quot;slack&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">slack_alert</span><span class="p">}</span>
 
 <div class="viewcode-block" id="Alarm.setup_email"><a class="viewcode-back" href="../../alab_management.alarm.html#alab_management.alarm.Alarm.setup_email">[docs]</a>    <span class="k">def</span> <span class="nf">setup_email</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">email_receivers</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">email_sender</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">email_password</span><span class="p">:</span> <span class="nb">str</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">email_receivers</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">email_sender</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">email_password</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Try to setup email notification (called in __init__)</span>
+<span class="sd">        Try to setup email notification (called in __init__).</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            email_receivers: A list of email addresses to send the alert to.</span>
 <span class="sd">            email_sender: The email address to send the alert from.</span>
@@ -480,48 +482,51 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">email_password</span> <span class="o">=</span> <span class="n">email_password</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">email_alert</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">platforms</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_alert</span><span class="p">,</span> <span class="s2">&quot;slack&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">slack_alert</span><span class="p">}</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span><span class="p">:</span>  <span class="c1"># noqa: E722</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Email setup failed, please recheck config file&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Alarm.setup_slackbot"><a class="viewcode-back" href="../../alab_management.alarm.html#alab_management.alarm.Alarm.setup_slackbot">[docs]</a>    <span class="k">def</span> <span class="nf">setup_slackbot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slack_bot_token</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slack_channel_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Try to setup slackbot notification (called in __init__)</span>
+<span class="sd">        Try to setup slackbot notification (called in __init__).</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            slack_bot_token: The token from slackbot app</span>
-<span class="sd">            slack_channel_id: The slack channel id where the slackbot app is deployed</span>
+<span class="sd">            slack_channel_id: The slack channel id where the slackbot app is deployed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">slack_bot_token</span> <span class="o">=</span> <span class="n">slack_bot_token</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">slack_channel_id</span> <span class="o">=</span> <span class="n">slack_channel_id</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">slack_alert</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">platforms</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_alert</span><span class="p">,</span> <span class="s2">&quot;slack&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">slack_alert</span><span class="p">}</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span><span class="p">:</span>  <span class="c1"># noqa: E722</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Slackbot setup failed, please recheck config file&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Alarm.alert"><a class="viewcode-back" href="../../alab_management.alarm.html#alab_management.alarm.Alarm.alert">[docs]</a>    <span class="k">def</span> <span class="nf">alert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">category</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Try to alert user in all platform in format of &quot;Category: Message&quot;</span>
+<span class="sd">        Try to alert user in all platform in format of &quot;Category: Message&quot;.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            message: The message to print in the platform</span>
-<span class="sd">            category: The category of the message</span>
+<span class="sd">            category: The category of the message.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">platforms</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">send_email</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">platforms</span><span class="p">[</span><span class="s2">&quot;slack&quot;</span><span class="p">]:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">send_slack_notification</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span><span class="p">:</span>  <span class="c1"># noqa: E722</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">platforms</span><span class="p">[</span><span class="s2">&quot;slack&quot;</span><span class="p">]:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">send_slack_notification</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Alarm.send_email"><a class="viewcode-back" href="../../alab_management.alarm.html#alab_management.alarm.Alarm.send_email">[docs]</a>    <span class="k">def</span> <span class="nf">send_email</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">category</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Sends an email to the receiver email address with the exception and category.</span>
+<span class="sd">        Send an email to the receiver email address with the exception and category.</span>
 <span class="sd">        Category is the type of exception that occurred.</span>
 <span class="sd">        Automatically use &quot;Error&quot; as category if the message contains traceback.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            message: The message to print in the email</span>
-<span class="sd">            category: The category of the message</span>
+<span class="sd">            category: The category of the message.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;Traceback (most recent call last):&quot;</span> <span class="ow">in</span> <span class="n">message</span><span class="p">:</span>
             <span class="n">category</span> <span class="o">=</span> <span class="s2">&quot;Error&quot;</span>
@@ -538,12 +543,13 @@
 
 <div class="viewcode-block" id="Alarm.send_slack_notification"><a class="viewcode-back" href="../../alab_management.alarm.html#alab_management.alarm.Alarm.send_slack_notification">[docs]</a>    <span class="k">def</span> <span class="nf">send_slack_notification</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">category</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Sends a slack message to the receiver email address with the exception and category.</span>
+<span class="sd">        Send a slack message to the receiver email address with the exception and category.</span>
 <span class="sd">        Category is the type of exception that occurred.</span>
 <span class="sd">        Automatically use &quot;Error&quot; as category if the message contains traceback.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            message: The message to print in the email</span>
-<span class="sd">            category: The category of the message</span>
+<span class="sd">            category: The category of the message.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;Traceback (most recent call last):&quot;</span> <span class="ow">in</span> <span class="n">message</span><span class="p">:</span>
             <span class="n">category</span> <span class="o">=</span> <span class="s2">&quot;Error&quot;</span>
@@ -551,11 +557,11 @@
             <span class="n">message</span> <span class="o">=</span> <span class="n">format_message_to_codeblock</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">client</span> <span class="o">=</span> <span class="n">WebClient</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">slack_bot_token</span><span class="p">)</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">chat_postMessage</span><span class="p">(</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">chat_postMessage</span><span class="p">(</span>
                 <span class="n">channel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">slack_channel_id</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">category</span> <span class="o">+</span> <span class="s2">&quot;: &quot;</span> <span class="o">+</span> <span class="n">message</span>
             <span class="p">)</span>
         <span class="k">except</span> <span class="n">SlackApiError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div></div>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error : </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div></div>
 </pre></div>
 
               </div>

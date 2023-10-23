@@ -376,13 +376,11 @@
               <div>
                 
   <h1>Source code for alab_management.logger</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Logger module takes charge of recording information, warnings and errors during executing tasks</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;Logger module takes charge of recording information, warnings and errors during executing tasks.&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span><span class="p">,</span> <span class="n">unique</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 
@@ -391,9 +389,7 @@
 
 <div class="viewcode-block" id="LoggingType"><a class="viewcode-back" href="../../alab_management.logger.html#alab_management.logger.LoggingType">[docs]</a><span class="nd">@unique</span>
 <span class="k">class</span> <span class="nc">LoggingType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Different types of log</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Different types of log.&quot;&quot;&quot;</span>
 
     <span class="n">DEVICE_SIGNAL</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">SAMPLE_AMOUNT</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
@@ -403,9 +399,7 @@
 
 
 <div class="viewcode-block" id="LoggingLevel"><a class="viewcode-back" href="../../alab_management.logger.html#alab_management.logger.LoggingLevel">[docs]</a><span class="k">class</span> <span class="nc">LoggingLevel</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Different level log</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Different level log.&quot;&quot;&quot;</span>
 
     <span class="n">CRITICAL</span> <span class="o">=</span> <span class="mi">50</span>
     <span class="n">FATAL</span> <span class="o">=</span> <span class="n">CRITICAL</span>
@@ -417,9 +411,7 @@
 
 
 <div class="viewcode-block" id="DBLogger"><a class="viewcode-back" href="../../alab_management.logger.html#alab_management.logger.DBLogger">[docs]</a><span class="k">class</span> <span class="nc">DBLogger</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A custom logger that wrote data to database, where we predefined some log pattern</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A custom logger that wrote data to database, where we predefined some log pattern.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span> <span class="o">=</span> <span class="n">task_id</span>
@@ -432,11 +424,12 @@
         <span class="n">logging_type</span><span class="p">:</span> <span class="n">LoggingType</span> <span class="o">=</span> <span class="n">LoggingType</span><span class="o">.</span><span class="n">OTHER</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectId</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Basic log function</span>
+<span class="sd">        Basic log function.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            level: the level of this log, which can be string, int or :py:class:`LoggingLevel &lt;LoggingLevel&gt;`</span>
 <span class="sd">            log_data: the data to be logged</span>
-<span class="sd">            logging_type: the type of logging</span>
+<span class="sd">            logging_type: the type of logging.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">level</span> <span class="o">=</span> <span class="n">LoggingLevel</span><span class="p">[</span><span class="n">level</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
@@ -456,9 +449,7 @@
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">ObjectId</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DBLogger.log_amount"><a class="viewcode-back" href="../../alab_management.logger.html#alab_management.logger.DBLogger.log_amount">[docs]</a>    <span class="k">def</span> <span class="nf">log_amount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Log the amount of samples and chemicals (e.g. weight)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Log the amount of samples and chemicals (e.g. weight).&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
             <span class="n">level</span><span class="o">=</span><span class="n">LoggingLevel</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
             <span class="n">log_data</span><span class="o">=</span><span class="n">log_data</span><span class="p">,</span>
@@ -466,9 +457,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DBLogger.log_characterization_result"><a class="viewcode-back" href="../../alab_management.logger.html#alab_management.logger.DBLogger.log_characterization_result">[docs]</a>    <span class="k">def</span> <span class="nf">log_characterization_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Log the characterization result (e.g. XRD pattern)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Log the characterization result (e.g. XRD pattern).&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
             <span class="n">level</span><span class="o">=</span><span class="n">LoggingLevel</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
             <span class="n">log_data</span><span class="o">=</span><span class="n">log_data</span><span class="p">,</span>
@@ -476,10 +465,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DBLogger.log_device_signal"><a class="viewcode-back" href="../../alab_management.logger.html#alab_management.logger.DBLogger.log_device_signal">[docs]</a>    <span class="k">def</span> <span class="nf">log_device_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">signal_value</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Log the device sensor&#39;s signal (e.g. the voltage of batteries, the temperature of furnace)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Log the device sensor&#39;s signal (e.g. the voltage of batteries, the temperature of furnace).&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
             <span class="n">level</span><span class="o">=</span><span class="n">LoggingLevel</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
             <span class="n">log_data</span><span class="o">=</span><span class="p">{</span>
@@ -493,9 +479,7 @@
 <div class="viewcode-block" id="DBLogger.system_log"><a class="viewcode-back" href="../../alab_management.logger.html#alab_management.logger.DBLogger.system_log">[docs]</a>    <span class="k">def</span> <span class="nf">system_log</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">LoggingLevel</span><span class="p">],</span> <span class="n">log_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Log that comes from the workflow system</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Log that comes from the workflow system.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
             <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">,</span> <span class="n">log_data</span><span class="o">=</span><span class="n">log_data</span><span class="p">,</span> <span class="n">logging_type</span><span class="o">=</span><span class="n">LoggingType</span><span class="o">.</span><span class="n">SYSTEM_LOG</span>
         <span class="p">)</span></div>
@@ -503,9 +487,7 @@
 <div class="viewcode-block" id="DBLogger.filter_log"><a class="viewcode-back" href="../../alab_management.logger.html#alab_management.logger.DBLogger.filter_log">[docs]</a>    <span class="k">def</span> <span class="nf">filter_log</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">LoggingLevel</span><span class="p">],</span> <span class="n">within</span><span class="p">:</span> <span class="n">timedelta</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Find log within a range of time (1h/1d or else) higher than certain level</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find log within a range of time (1h/1d or else) higher than certain level.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">level</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">LoggingLevel</span><span class="p">[</span><span class="n">level</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">LoggingLevel</span><span class="p">):</span>
@@ -518,14 +500,14 @@
 <div class="viewcode-block" id="DBLogger.get_latest_device_signal"><a class="viewcode-back" href="../../alab_management.logger.html#alab_management.logger.DBLogger.get_latest_device_signal">[docs]</a>    <span class="k">def</span> <span class="nf">get_latest_device_signal</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the last device signal log</span>
-
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the last device signal log.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            device_name (str): device_name</span>
 <span class="sd">            signal_name (str): signal name</span>
 
-<span class="sd">        Returns:</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
 <span class="sd">            Optional[Any]: dictionary with result.</span>
 
 <span class="sd">            dict example:</span>
@@ -560,14 +542,15 @@
 <div class="viewcode-block" id="DBLogger.filter_device_signal"><a class="viewcode-back" href="../../alab_management.logger.html#alab_management.logger.DBLogger.filter_device_signal">[docs]</a>    <span class="k">def</span> <span class="nf">filter_device_signal</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">within</span><span class="p">:</span> <span class="n">timedelta</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find device signal log within a range of time (1h/1d or else)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find device signal log within a range of time (1h/1d or else).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            device_name (str): name of device</span>
 <span class="sd">            signal_name (str): name of signal to retrieve</span>
 <span class="sd">            within (timedelta): timedelta (how far back) to retrieve</span>
 
-<span class="sd">        Returns:</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
 <span class="sd">            Dict[str, Any]: Dictionary containing signal data. Dict form is:</span>
 <span class="sd">                {</span>
 <span class="sd">                    &quot;device_name&quot;: device_name,</span>

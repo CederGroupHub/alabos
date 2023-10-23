@@ -444,14 +444,17 @@
                 
   <section id="module-alab_management.task_view.completed_task_view">
 <span id="alab-management-task-view-completed-task-view-module"></span><h1>alab_management.task_view.completed_task_view module<a class="headerlink" href="#module-alab_management.task_view.completed_task_view" title="Permalink to this heading">¶</a></h1>
+<p>This module contains the CompletedTaskView class, which is used to interact with the
+completed task database.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="alab_management.task_view.completed_task_view.CompletedTaskView">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CompletedTaskView</span></span><a class="reference internal" href="_modules/alab_management/task_view/completed_task_view.html#CompletedTaskView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.completed_task_view.CompletedTaskView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class is used to interact with the completed task database.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.task_view.completed_task_view.CompletedTaskView.exists">
 <span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/completed_task_view.html#CompletedTaskView.exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.completed_task_view.CompletedTaskView.exists" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if a task exists in the database</p>
+<dd><p>Check if a task exists in the database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>task_id</strong> (<em>Union</em><em>[</em><em>ObjectId</em><em>, </em><em>str</em><em>]</em>) – id of the task within task collection.
@@ -469,7 +472,7 @@ If a string is passed, it will be converted to ObjectId</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.task_view.completed_task_view.CompletedTaskView.get_task">
 <span class="sig-name descname"><span class="pre">get_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/completed_task_view.html#CompletedTaskView.get_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.completed_task_view.CompletedTaskView.get_task" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a task from the database</p>
+<dd><p>Get a task from the database.</p>
 </dd></dl>
 
 <dl class="py method">

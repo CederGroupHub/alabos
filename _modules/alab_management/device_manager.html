@@ -377,18 +377,18 @@
                 
   <h1>Source code for alab_management.device_manager</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">This module is adapted from https://github.com/Mause/rpc</span>
+<span class="sd">This module is adapted from https://github.com/Mause/rpc.</span>
 
 <span class="sd">The task process can only get access to a wrapper over the real device object. The wrapper will</span>
 <span class="sd">redirect all the method calls to the real device object via RabbitMQ. The real device object is in</span>
 <span class="sd">DeviceManager class, which will handle all the request to run certain methods on the real device.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="kn">import</span> <span class="n">Future</span><span class="p">,</span> <span class="n">ThreadPoolExecutor</span>
+<span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="kn">import</span> <span class="n">Future</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 <span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Thread</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">NoReturn</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">NoReturn</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">cast</span>
 <span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">uuid4</span>
 
 <span class="kn">import</span> <span class="nn">dill</span>
@@ -399,7 +399,7 @@
 <span class="kn">from</span> <span class="nn">pika.spec</span> <span class="kn">import</span> <span class="n">Basic</span>
 
 <span class="kn">from</span> <span class="nn">.config</span> <span class="kn">import</span> <span class="n">AlabConfig</span>
-<span class="kn">from</span> <span class="nn">.device_view.device_view</span> <span class="kn">import</span> <span class="n">DeviceView</span><span class="p">,</span> <span class="n">DeviceTaskStatus</span>
+<span class="kn">from</span> <span class="nn">.device_view.device_view</span> <span class="kn">import</span> <span class="n">DeviceTaskStatus</span><span class="p">,</span> <span class="n">DeviceView</span>
 <span class="kn">from</span> <span class="nn">.utils.data_objects</span> <span class="kn">import</span> <span class="n">get_rabbitmq_connection</span>
 <span class="kn">from</span> <span class="nn">.utils.module_ops</span> <span class="kn">import</span> <span class="n">load_definition</span>
 
@@ -408,6 +408,8 @@
 
 
 <div class="viewcode-block" id="MethodCallStatus"><a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.MethodCallStatus">[docs]</a><span class="k">class</span> <span class="nc">MethodCallStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The status of a method call.&quot;&quot;&quot;</span>
+
     <span class="n">PENDING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">IN_PROGRESS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">SUCCESS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
@@ -415,9 +417,7 @@
 
 
 <div class="viewcode-block" id="DeviceMethodCallState"><a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DeviceMethodCallState">[docs]</a><span class="k">class</span> <span class="nc">DeviceMethodCallState</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    holds the status of a pending method call to a device</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;holds the status of a pending method call to a device.&quot;&quot;&quot;</span>
 
     <span class="n">status</span><span class="p">:</span> <span class="n">MethodCallStatus</span>
     <span class="n">future</span><span class="p">:</span> <span class="n">Future</span>
@@ -425,14 +425,10 @@
 
 
 <div class="viewcode-block" id="DeviceWrapper"><a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DeviceWrapper">[docs]</a><span class="k">class</span> <span class="nc">DeviceWrapper</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A wrapper over the device</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A wrapper over the device.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="DeviceWrapper.DeviceMethodWrapper"><a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DeviceWrapper.DeviceMethodWrapper">[docs]</a>    <span class="k">class</span> <span class="nc">DeviceMethodWrapper</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        A wrapper over a device method</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A wrapper over a device method.&quot;&quot;&quot;</span>
 
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method_handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_device_name</span> <span class="o">=</span> <span class="n">device_name</span>
@@ -441,15 +437,19 @@
 
         <span class="nd">@property</span>
         <span class="k">def</span> <span class="nf">method</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;The name of the method.&quot;&quot;&quot;</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_method</span>
 
         <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Call the method.&quot;&quot;&quot;</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_method_handler</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Return the representation of the method.&quot;&quot;&quot;</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;method </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_device_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_method</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
         <span class="k">def</span> <span class="nf">_raise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>  <span class="c1"># pylint: disable=no-self-use</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Raise an error.&quot;&quot;&quot;</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
                 <span class="s2">&quot;This is a class method, you cannot use it as an attribute.&quot;</span>
             <span class="p">)</span>
@@ -466,9 +466,11 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The name of the device.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
 
     <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the method.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">DeviceMethodWrapper</span><span class="p">(</span>
             <span class="n">device_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
@@ -486,7 +488,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            _check_status: Check if the task currently occupied this device when</span>
-<span class="sd">              running commands. (disable it only for test purpose)</span>
+<span class="sd">              running commands. (disable it only for test purpose).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">load_definition</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rpc_queue_name</span> <span class="o">=</span> <span class="p">(</span>
@@ -497,9 +499,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">threads</span> <span class="o">=</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="DeviceManager.run"><a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DeviceManager.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Start to listen on the device_rpc queue and conduct the command one by one.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start to listen on the device_rpc queue and conduct the command one by one.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">get_rabbitmq_connection</span><span class="p">()</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">channel</span><span class="p">()</span> <span class="k">as</span> <span class="n">channel</span><span class="p">:</span>
             <span class="n">channel</span><span class="o">.</span><span class="n">queue_declare</span><span class="p">(</span>
@@ -526,9 +526,7 @@
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Execute a command on the device. Acknowledges completion on rabbitmq channel.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute a command on the device. Acknowledges completion on rabbitmq channel.&quot;&quot;&quot;</span>
 
         <span class="k">def</span> <span class="nf">callback_publish</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">delivery_tag</span><span class="p">,</span> <span class="n">props</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">props</span><span class="o">.</span><span class="n">reply_to</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -611,7 +609,7 @@
 
 <div class="viewcode-block" id="DevicesClient"><a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DevicesClient">[docs]</a><span class="k">class</span> <span class="nc">DevicesClient</span><span class="p">:</span>  <span class="c1"># pylint: disable=too-many-instance-attributes</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A rabbitmq-backed RPC client for sending device requests to the Device Manager (server)</span>
+<span class="sd">    A rabbitmq-backed RPC client for sending device requests to the Device Manager (server).</span>
 
 <span class="sd">    Use ``create_device_wrapper`` to create Device Wrapper instance.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -622,16 +620,15 @@
 <span class="sd">            task_id: the task id of current task process</span>
 <span class="sd">            timeout: the max time to wait for the server to respond, if</span>
 <span class="sd">              the time exceed the max time, a :py:class:`TimeoutError &lt;concurrent.futures._base.TimeoutError&gt;`</span>
-<span class="sd">              shall be raised</span>
+<span class="sd">              shall be raised.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="n">task_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;task_id cannot be None!&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_rpc_queue_name</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">AlabConfig</span><span class="p">()[</span><span class="s2">&quot;general&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">DEFAULT_SERVER_QUEUE_SUFFIX</span>
         <span class="p">)</span>
-        <span class="c1"># self._rpc_reply_queue_name = (</span>
-        <span class="c1">#     str(task_id) + DEFAULT_CLIENT_QUEUE_SUFFIX</span>
-        <span class="c1"># )  # TODO does this have to be taskid, or can be random? I think this dies with the resourcerequest context manager anyways?</span>
+        <span class="c1"># self._rpc_reply_queue_name = ( str(task_id) + DEFAULT_CLIENT_QUEUE_SUFFIX )  # TODO does this have to be</span>
+        <span class="c1">#  taskid, or can be random? I think this dies with the resourcerequest context manager anyways?</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rpc_reply_queue_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid4</span><span class="p">())</span> <span class="o">+</span> <span class="n">DEFAULT_CLIENT_QUEUE_SUFFIX</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span> <span class="o">=</span> <span class="n">task_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">,</span> <span class="n">Future</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -656,18 +653,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span> <span class="o">=</span> <span class="n">timeout</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the device wrapper.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_device_wrapper</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DevicesClient.create_device_wrapper"><a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DevicesClient.create_device_wrapper">[docs]</a>    <span class="k">def</span> <span class="nf">create_device_wrapper</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>  <span class="c1"># pylint: disable=no-self-use</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create a wrapper over a device with ``device_name``</span>
+<span class="sd">        Create a wrapper over a device with ``device_name``.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            device_name: the name of device to be wrapped</span>
 
-<span class="sd">        Returns:</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
 <span class="sd">            A device wrapper that will send every call to class method to remote server.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">DeviceWrapper</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">device_name</span><span class="p">,</span> <span class="n">devices_client</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
@@ -683,7 +682,8 @@
 <span class="sd">            *args: positional arguments to feed into the method function</span>
 <span class="sd">            **kwargs: keyword arguments to feed into the method function</span>
 
-<span class="sd">        Returns:</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
 <span class="sd">            the result of function</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span>
@@ -720,9 +720,7 @@
         <span class="n">properties</span><span class="p">:</span> <span class="n">BasicProperties</span><span class="p">,</span>
         <span class="n">_body</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Callback function to handle a returned message from Device Manager</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Callback function to handle a returned message from Device Manager.&quot;&quot;&quot;</span>
         <span class="n">body</span> <span class="o">=</span> <span class="n">dill</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">_body</span><span class="p">)</span>
 
         <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">ObjectId</span><span class="p">(</span><span class="n">properties</span><span class="o">.</span><span class="n">correlation_id</span><span class="p">))</span>

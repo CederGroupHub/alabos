@@ -481,9 +481,10 @@ validate: return True if the Task parameters are valid. If invalid (for example,
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.task_view.task.BaseTask.validate">
 <span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask.validate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validate the task. This function will be called before the task is executed.
-Should return False if the task has values that make it impossible to execute.</p>
-<p>For example, a <code class="docutils literal notranslate"><span class="pre">Heating</span></code> subclass of <cite>BaseTask</cite> might return False if the
+<dd><p>Validate the task.</p>
+<p>This function will be called before the task is executed.
+Should return False if the task has values that make it impossible to execute.
+For example, a <code class="docutils literal notranslate"><span class="pre">Heating</span></code> subclass of <cite>BaseTask</cite> might return False if the
 set temperature is too high for the furnace.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>

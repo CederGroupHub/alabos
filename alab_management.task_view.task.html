@@ -601,11 +601,8 @@
 <dt class="sig sig-object py" id="alab_management.task_view.task.BaseTask.add_to">
 <span class="sig-name descname"><span class="pre">add_to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask.add_to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask.add_to" title="Permalink to this definition">¶</a></dt>
 <dd><p>Used to add basetask to a SampleBuilder’s tasklist during Experiment construction.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>samples</strong> (<em>Union</em><em>[</em><a class="reference internal" href="alab_management.builders.samplebuilder.html#alab_management.builders.samplebuilder.SampleBuilder" title="alab_management.builders.samplebuilder.SampleBuilder"><em>SampleBuilder</em></a><em>, </em><em>List</em><em>[</em><a class="reference internal" href="alab_management.builders.samplebuilder.html#alab_management.builders.samplebuilder.SampleBuilder" title="alab_management.builders.samplebuilder.SampleBuilder"><em>SampleBuilder</em></a><em>]</em><em>]</em>) – One or more SampleBuilder’s which will have this task appended to their tasklists.</p>
-</dd>
-</dl>
+<p>Args: samples (Union[SampleBuilder, List[SampleBuilder]]): One or more SampleBuilder’s which will have this
+task appended to their tasklists.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -620,11 +617,11 @@ exported, then imported by a “RietveldRefinement” analysis task.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – The name of the result.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The value of the result.</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Any</p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any: The value of the result.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -632,7 +629,8 @@ exported, then imported by a “RietveldRefinement” analysis task.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.task_view.task.BaseTask.get_message">
 <span class="sig-name descname"><span class="pre">get_message</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask.get_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask.get_message" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Gets the task message to be displayed on the dashboard.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.task_view.task.BaseTask.import_result">
@@ -651,13 +649,13 @@ of pointers. If False, only ResultPointers are valid. Defaults to False.</p></li
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – If allow_explicit_value is False and the user passes a value instead of a pointer.</p>
+<dd class="field-even"><p><strong>ValueError</strong> – If allow_explicit_value is False and the user passes a value instead of a pointer.:</p>
 </dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The value of the result.</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>Any</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any: The value of the result.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -665,12 +663,14 @@ of pointers. If False, only ResultPointers are valid. Defaults to False.</p></li
 <dl class="py property">
 <dt class="sig sig-object py" id="alab_management.task_view.task.BaseTask.is_simulation">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_simulation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#alab_management.task_view.task.BaseTask.is_simulation" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns True if this task is a simulation, False if it is a live task.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="alab_management.task_view.task.BaseTask.priority">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">priority</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#alab_management.task_view.task.BaseTask.priority" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns the priority of this task.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="alab_management.task_view.task.BaseTask.result_specification">
@@ -678,10 +678,15 @@ of pointers. If False, only ResultPointers are valid. Defaults to False.</p></li
 <dd><p>Returns a dictionary describing the results to be generated by this task.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>NotImplementedError</strong> – The subclass must implement this method.</p>
+<dd class="field-odd"><p><strong>NotImplementedError</strong> – The subclass must implement this method.:</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><p>A dictionary with key:type pairs describing the type of data contained under each result key.</p>
+<dd class="field-even"><p><strong>Dict[str, Any]</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A dictionary with key:type pairs describing the type of data contained under each result key.</p>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">return</span> <span class="p">{</span>
 <span class="go">        &quot;temperature&quot;: float,</span>
@@ -698,12 +703,6 @@ of pointers. If False, only ResultPointers are valid. Defaults to False.</p></li
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">return</span> <span class="p">{}</span> <span class="c1">#no results associated with this task.</span>
 </pre></div>
 </div>
-</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Dict[str, Any]</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -758,7 +757,8 @@ and sample positions will be released automatically.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="alab_management.task_view.task.BaseTask.samples">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">samples</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#alab_management.task_view.task.BaseTask.samples" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns the list of samples associated with this task.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.task_view.task.BaseTask.set_message">
@@ -785,9 +785,10 @@ key will overwrite the previous value.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.task_view.task.BaseTask.validate">
 <span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask.validate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validate the task. This function will be called before the task is executed.
-Should return False if the task has values that make it impossible to execute.</p>
-<p>For example, a <code class="docutils literal notranslate"><span class="pre">Heating</span></code> subclass of <cite>BaseTask</cite> might return False if the
+<dd><p>Validate the task.</p>
+<p>This function will be called before the task is executed.
+Should return False if the task has values that make it impossible to execute.
+For example, a <code class="docutils literal notranslate"><span class="pre">Heating</span></code> subclass of <cite>BaseTask</cite> might return False if the
 set temperature is too high for the furnace.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -802,34 +803,37 @@ set temperature is too high for the furnace.</p>
 <dt class="sig sig-object py" id="alab_management.task_view.task.ResultPointer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ResultPointer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#ResultPointer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.ResultPointer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A reference to a result generated by a task. This result can then be imported by another task.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.task_view.task.ResultPointer.from_json">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#ResultPointer.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.ResultPointer.from_json" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Create a ResultPointer from a JSON-serializable dictionary.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.task_view.task.ResultPointer.to_json">
 <span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#ResultPointer.to_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.ResultPointer.to_json" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Convert this ResultPointer to a JSON-serializable dictionary.</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="alab_management.task_view.task.add_reroute_task">
 <span class="sig-name descname"><span class="pre">add_reroute_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">supported_sample_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#add_reroute_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.add_reroute_task" title="Permalink to this definition">¶</a></dt>
-<dd><p>Register a reroute task</p>
+<dd><p>Register a reroute task.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="alab_management.task_view.task.add_task">
 <span class="sig-name descname"><span class="pre">add_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#add_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.add_task" title="Permalink to this definition">¶</a></dt>
-<dd><p>Register a task</p>
+<dd><p>Register a task.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="alab_management.task_view.task.get_all_tasks">
 <span class="sig-name descname"><span class="pre">get_all_tasks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#get_all_tasks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.get_all_tasks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get all the tasks in the registry</p>
+<dd><p>Get all the tasks in the registry.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference internal" href="task_definition.html#alab_management.task_view.task.BaseTask" title="alab_management.task_view.task.BaseTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTask</span></code></a>]]</p>

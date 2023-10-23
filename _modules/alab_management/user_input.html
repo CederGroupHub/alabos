@@ -377,22 +377,23 @@
                 
   <h1>Source code for alab_management.user_input</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
-<span class="kn">from</span> <span class="nn">alab_management.experiment_view.experiment_view</span> <span class="kn">import</span> <span class="n">ExperimentView</span>
-<span class="kn">from</span> <span class="nn">alab_management.utils.data_objects</span> <span class="kn">import</span> <span class="n">get_collection</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
-<span class="kn">from</span> <span class="nn">alab_management.task_view</span> <span class="kn">import</span> <span class="n">TaskView</span>
+
 <span class="kn">from</span> <span class="nn">alab_management.alarm</span> <span class="kn">import</span> <span class="n">Alarm</span>
+<span class="kn">from</span> <span class="nn">alab_management.experiment_view.experiment_view</span> <span class="kn">import</span> <span class="n">ExperimentView</span>
+<span class="kn">from</span> <span class="nn">alab_management.task_view</span> <span class="kn">import</span> <span class="n">TaskView</span>
+<span class="kn">from</span> <span class="nn">alab_management.utils.data_objects</span> <span class="kn">import</span> <span class="n">get_collection</span>
+
 <span class="kn">from</span> <span class="nn">.config</span> <span class="kn">import</span> <span class="n">AlabConfig</span>
 
 <span class="n">CONFIG</span> <span class="o">=</span> <span class="n">AlabConfig</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="UserRequestStatus"><a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.UserRequestStatus">[docs]</a><span class="k">class</span> <span class="nc">UserRequestStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Enum for user response.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum for user response.&quot;&quot;&quot;</span>
 
     <span class="n">FULLFILLED</span> <span class="o">=</span> <span class="s2">&quot;fulfilled&quot;</span>
     <span class="n">PENDING</span> <span class="o">=</span> <span class="s2">&quot;pending&quot;</span>
@@ -400,16 +401,14 @@
 
 
 <div class="viewcode-block" id="UserInputView"><a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.UserInputView">[docs]</a><span class="k">class</span> <span class="nc">UserInputView</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Sample view manages the samples and their positions</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sample view manages the samples and their positions.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;user_input&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_task_view</span> <span class="o">=</span> <span class="n">TaskView</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_view</span> <span class="o">=</span> <span class="n">ExperimentView</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_alarm</span> <span class="o">=</span> <span class="n">Alarm</span><span class="p">()</span>
-        <span class="n">alarm_config</span> <span class="o">=</span> <span class="n">AlabConfig</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;alarm&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
+        <span class="n">alarm_config</span> <span class="o">=</span> <span class="n">AlabConfig</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;alarm&quot;</span><span class="p">,</span> <span class="p">{})</span>
         <span class="k">if</span> <span class="s2">&quot;email_receivers&quot;</span> <span class="ow">in</span> <span class="n">alarm_config</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_alarm</span><span class="o">.</span><span class="n">setup_email</span><span class="p">(</span>
                 <span class="n">email_receivers</span><span class="o">=</span><span class="n">alarm_config</span><span class="p">[</span><span class="s2">&quot;email_receivers&quot;</span><span class="p">],</span>
@@ -461,7 +460,7 @@
                 <span class="s2">&quot;request_context&quot;</span><span class="p">:</span> <span class="n">context</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="n">maintenance</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">maintenance</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">category</span> <span class="o">=</span> <span class="s2">&quot;Maintenance&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_alarm</span><span class="o">.</span><span class="n">alert</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;User input requested: </span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">request_id</span></div>
@@ -479,9 +478,7 @@
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">request</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="UserInputView.update_request_status"><a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.UserInputView.update_request_status">[docs]</a>    <span class="k">def</span> <span class="nf">update_request_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">note</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Update the status of a request.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the status of a request.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>  <span class="c1"># will error is request does not exist</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
             <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">},</span>
@@ -510,9 +507,7 @@
         <span class="k">return</span> <span class="n">request</span><span class="p">[</span><span class="s2">&quot;response&quot;</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="UserInputView.clean_up_user_input_collection"><a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.UserInputView.clean_up_user_input_collection">[docs]</a>    <span class="k">def</span> <span class="nf">clean_up_user_input_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Drop the sample position collection</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Drop the sample position collection.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">drop</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="UserInputView.get_all_pending_requests"><a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.UserInputView.get_all_pending_requests">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_pending_requests</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
@@ -521,7 +516,6 @@
 
 <span class="sd">        Returns a list of pending requests.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
             <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">value</span><span class="p">}),</span>
@@ -557,6 +551,13 @@
 
 
 <div class="viewcode-block" id="request_maintenance_input"><a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.request_maintenance_input">[docs]</a><span class="k">def</span> <span class="nf">request_maintenance_input</span><span class="p">(</span><span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Request user input through the dashboard. Blocks until response is given.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        prompt: prompt to give user</span>
+<span class="sd">        options: response options to give user</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">request_user_input</span><span class="p">(</span>
         <span class="n">task_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>

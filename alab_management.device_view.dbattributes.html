@@ -702,22 +702,23 @@
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DictInDatabase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Class that emulates a dict, but stores the dict in the device database. Useful for working with Device attributes that are dict, so values persist across alabos sessions. This should be instantiated using <cite>alab_management.device_view.device.BaseDevice.dict_in_database</cite></p>
+<p>Class that emulates a dict, but stores the dict in the device database. Useful for working with Device
+attributes that are dict, so values persist across alabos sessions. This should be instantiated using
+<cite>alab_management.device_view.device.BaseDevice.dict_in_database</cite>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.apply_default_value">
 <span class="sig-name descname"><span class="pre">apply_default_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.apply_default_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.apply_default_value" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is called within <cite>alab_management.scripts.setup_lab()</cite> to ensure that all devices have the correct default values for their attributes. This should not be called manually.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ValueError</strong> – Device is not found in the database. This should only occur if this function is called out of order (i.e. before the device is created in the db).</p>
-</dd>
-</dl>
+<dd><p>This is called within <cite>alab_management.scripts.setup_lab()</cite> to ensure that all devices have the correct
+default values for their attributes. This should not be called manually.</p>
+<p>Raises —— ValueError: Device is not found in the database. This should only occur if this function is
+called out of order (i.e. before the device is created in the db).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.as_normal_dict">
 <span class="sig-name descname"><span class="pre">as_normal_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.as_normal_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.as_normal_dict" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Return a normal dict representation of the DictInDatabase. This will not update the database.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
 </dd>
@@ -727,67 +728,80 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.clear">
 <span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.clear" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Clear the dict. This will update the database with the new value.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.copy">
 <span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.copy" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return a copy of the dict. This will not update the database.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.db_filter">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">db_filter</span></span><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.db_filter" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>The filter used to retrieve the attribute from the database. This is used internally by the class.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.db_projection">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">db_projection</span></span><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.db_projection" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>The projection used to retrieve the attribute from the database. This is used internally by the class.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.fromkeys">
 <span class="sig-name descname"><span class="pre">fromkeys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.fromkeys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.fromkeys" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return a copy of the dict. This will not update the database.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.get">
 <span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.get" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return a copy of the dict. This will not update the database.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.items">
 <span class="sig-name descname"><span class="pre">items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.items" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return a copy of the dict. This will not update the database.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.keys">
 <span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.keys" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return a copy of the dict. This will not update the database.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.pop">
 <span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'be8b61ee-48b1-4624-bf7a-2ca31f7c5ef4'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.pop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.pop" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return a copy of the dict. This will not update the database.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.popitem">
 <span class="sig-name descname"><span class="pre">popitem</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.popitem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.popitem" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return a copy of the dict. This will not update the database.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.setdefault">
 <span class="sig-name descname"><span class="pre">setdefault</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.setdefault"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.setdefault" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return a copy of the dict. This will not update the database.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.update">
 <span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.update" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return a copy of the dict. This will not update the database.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.values">
 <span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.values" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return a copy of the dict. This will not update the database.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -795,101 +809,112 @@
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ListInDatabase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Class that emulates a list, but stores the list in the device database. Useful for working with Device attributes that are lists, so values persist across alabos sessions. This should be instantiated using <cite>alab_management.device_view.device.BaseDevice.list_in_database</cite></p>
+<p>Class that emulates a list, but stores the list in the device database. Useful for working with Device
+attributes that are lists, so values persist across alabos sessions. This should be instantiated using
+<cite>alab_management.device_view.device.BaseDevice.list_in_database</cite>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.append">
 <span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.append" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Append an element to the list. This will update the database with the new value.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.apply_default_value">
 <span class="sig-name descname"><span class="pre">apply_default_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.apply_default_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.apply_default_value" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is called within <cite>alab_management.scripts.setup_lab()</cite> to ensure that all devices have the correct default values for their attributes. This should not be called manually.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ValueError</strong> – Device is not found in the database. This should only occur if this function is called out of order (i.e. before the device is created in the db).</p>
-</dd>
-</dl>
+<dd><p>This is called within <cite>alab_management.scripts.setup_lab()</cite> to ensure that all devices have the correct
+default values for their attributes. This should not be called manually.</p>
+<p>Raises —— ValueError: Device is not found in the database. This should only occur if this function is
+called out of order (i.e. before the device is created in the db).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.clear">
 <span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.clear" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Clear the list. This will update the database with the new value.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.copy">
 <span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.copy" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return a copy of the list. This will not update the database.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.count">
 <span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.count" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return the number of occurrences of x in the list. This will not update the database.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.db_filter">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">db_filter</span></span><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.db_filter" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>The filter used to retrieve the attribute from the database. This is used internally by the class.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.db_projection">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">db_projection</span></span><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.db_projection" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>The projection used to retrieve the attribute from the database. This is used internally by the class.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.extend">
 <span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.extend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.extend" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Extend the list with another iterable. This will update the database with the new value.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.index">
 <span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.index" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return the index of the first occurrence of x in the list. This will not update the database.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.insert">
 <span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.insert" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Insert an element at a given position. This will update the database with the new value.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.pop">
 <span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.pop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.pop" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Remove the element at a given position. This will update the database with the new value.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.remove">
 <span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.remove"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.remove" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Remove the first item from the list whose value is equal to x. This will update the database with the new.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.reverse">
 <span class="sig-name descname"><span class="pre">reverse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.reverse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.reverse" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Reverse the elements of the list in place. This will update the database with the new value.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.sort">
 <span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.sort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.sort" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sort the items of the list in place. This will update the database with the new value.</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.value_in_database">
 <span class="sig-name descname"><span class="pre">value_in_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#value_in_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.value_in_database" title="Permalink to this definition">¶</a></dt>
-<dd><p>Property factory to mirror a Device attribute in the ALab database. This must be declared as a Class Variable under a Device subclass of BaseDevice!</p>
+<dd><p>Property factory to mirror a Device attribute in the ALab database. This must be declared as a Class Variable
+under a Device subclass of BaseDevice!.</p>
+<p>Args: name (str): attribute name default_value (Any): default value for the attribute. Note that this value is
+not used until the first time a property is queried; at this time, if the attribute is not found in the database,
+it is set to this value.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – attribute name</p></li>
-<li><p><strong>default_value</strong> (<em>Any</em>) – default value for the attribute. Note that this value is not used until the first time a property is queried; at this time, if the attribute is not found in the database, it is set to this value.</p></li>
-</ul>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">property</span></code></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>class property that handles getting/setting values from the database.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>property</p>
+<dd class="field-even"><p>property: class property that handles getting/setting values from the database.</p>
 </dd>
 </dl>
 <p>Example usage when defining a new Device:</p>

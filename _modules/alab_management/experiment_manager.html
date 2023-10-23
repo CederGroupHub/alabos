@@ -385,21 +385,20 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
 
-<span class="kn">from</span> <span class="nn">.experiment_view</span> <span class="kn">import</span> <span class="n">ExperimentStatus</span><span class="p">,</span> <span class="n">ExperimentView</span><span class="p">,</span> <span class="n">CompletedExperimentView</span>
+<span class="kn">from</span> <span class="nn">.config</span> <span class="kn">import</span> <span class="n">AlabConfig</span>
+<span class="kn">from</span> <span class="nn">.experiment_view</span> <span class="kn">import</span> <span class="n">CompletedExperimentView</span><span class="p">,</span> <span class="n">ExperimentStatus</span><span class="p">,</span> <span class="n">ExperimentView</span>
 <span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="n">DBLogger</span>
 <span class="kn">from</span> <span class="nn">.sample_view</span> <span class="kn">import</span> <span class="n">SampleView</span>
-<span class="kn">from</span> <span class="nn">.task_view</span> <span class="kn">import</span> <span class="n">TaskView</span><span class="p">,</span> <span class="n">TaskStatus</span>
+<span class="kn">from</span> <span class="nn">.task_view</span> <span class="kn">import</span> <span class="n">TaskStatus</span><span class="p">,</span> <span class="n">TaskView</span>
 <span class="kn">from</span> <span class="nn">.utils.graph_ops</span> <span class="kn">import</span> <span class="n">Graph</span>
-<span class="kn">from</span> <span class="nn">.config</span> <span class="kn">import</span> <span class="n">AlabConfig</span>
-<span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 
 
 <div class="viewcode-block" id="ExperimentManager"><a class="viewcode-back" href="../../alab_management.experiment_manager.html#alab_management.experiment_manager.ExperimentManager">[docs]</a><span class="k">class</span> <span class="nc">ExperimentManager</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Experiment manager read experiments from the experiment collection</span>
-<span class="sd">    and submit the experiment to executor and flag the completed experiments</span>
+<span class="sd">    and submit the experiment to executor and flag the completed experiments.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -416,9 +415,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">completed_experiment_view</span> <span class="o">=</span> <span class="n">CompletedExperimentView</span><span class="p">()</span>
 
 <div class="viewcode-block" id="ExperimentManager.run"><a class="viewcode-back" href="../../alab_management.experiment_manager.html#alab_management.experiment_manager.ExperimentManager.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Start the event loop</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start the event loop.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">system_log</span><span class="p">(</span>
             <span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
             <span class="n">log_data</span><span class="o">=</span><span class="p">{</span>
@@ -437,7 +434,7 @@
 <div class="viewcode-block" id="ExperimentManager.handle_pending_experiments"><a class="viewcode-back" href="../../alab_management.experiment_manager.html#alab_management.experiment_manager.ExperimentManager.handle_pending_experiments">[docs]</a>    <span class="k">def</span> <span class="nf">handle_pending_experiments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method will scan the database to find out if there are</span>
-<span class="sd">        any pending experiments and submit it to task database</span>
+<span class="sd">        any pending experiments and submit it to task database.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">pending_experiments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span><span class="n">get_experiments_with_status</span><span class="p">(</span>
             <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">PENDING</span>
@@ -530,9 +527,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="ExperimentManager.mark_completed_experiments"><a class="viewcode-back" href="../../alab_management.experiment_manager.html#alab_management.experiment_manager.ExperimentManager.mark_completed_experiments">[docs]</a>    <span class="k">def</span> <span class="nf">mark_completed_experiments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This method will scan the database to mark completed experiments in time</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This method will scan the database to mark completed experiments in time.&quot;&quot;&quot;</span>
         <span class="n">running_experiments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span><span class="n">get_experiments_with_status</span><span class="p">(</span>
             <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">RUNNING</span>
         <span class="p">)</span>

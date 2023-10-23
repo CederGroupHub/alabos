@@ -530,11 +530,11 @@
 <dt class="sig sig-object py" id="alab_management.user_input.UserInputView">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">UserInputView</span></span><a class="reference internal" href="_modules/alab_management/user_input.html#UserInputView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.UserInputView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Sample view manages the samples and their positions</p>
+<p>Sample view manages the samples and their positions.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.user_input.UserInputView.clean_up_user_input_collection">
 <span class="sig-name descname"><span class="pre">clean_up_user_input_collection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#UserInputView.clean_up_user_input_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.UserInputView.clean_up_user_input_collection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Drop the sample position collection</p>
+<dd><p>Drop the sample position collection.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -618,7 +618,16 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="alab_management.user_input.request_maintenance_input">
 <span class="sig-name descname"><span class="pre">request_maintenance_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#request_maintenance_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.request_maintenance_input" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Request user input through the dashboard. Blocks until response is given.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prompt</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – prompt to give user</p></li>
+<li><p><strong>options</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – response options to give user</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="alab_management.user_input.request_user_input">

@@ -458,20 +458,20 @@
 <dt class="sig sig-object py" id="alab_management.experiment_view.completed_experiment_view.CompletedExperimentView">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CompletedExperimentView</span></span><a class="reference internal" href="_modules/alab_management/experiment_view/completed_experiment_view.html#CompletedExperimentView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.experiment_view.completed_experiment_view.CompletedExperimentView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Experiment view manages the experiment status, which is a collection of tasks and samples</p>
+<p>Experiment view manages the experiment status, which is a collection of tasks and samples.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.experiment_view.completed_experiment_view.CompletedExperimentView.exists">
 <span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/experiment_view/completed_experiment_view.html#CompletedExperimentView.exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.experiment_view.completed_experiment_view.CompletedExperimentView.exists" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if an experiment exists in the completed experiment database</p>
+<dd><p>Check if an experiment exists in the completed experiment database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>experiment_id</strong> (<em>ObjectId</em>) – id of the experiment within completed experiment collection</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if sample exists in the database</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool: True if sample exists in the database</p>
 </dd>
 </dl>
 </dd></dl>
@@ -479,16 +479,16 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.experiment_view.completed_experiment_view.CompletedExperimentView.get_experiment">
 <span class="sig-name descname"><span class="pre">get_experiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/experiment_view/completed_experiment_view.html#CompletedExperimentView.get_experiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.experiment_view.completed_experiment_view.CompletedExperimentView.get_experiment" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get an experiment from the completed experiment collection</p>
+<dd><p>Get an experiment from the completed experiment collection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>experiment_id</strong> (<em>ObjectId</em>) – id of the experiment within completed experiment collection</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>experiment dict</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Dict[str, Any]</p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[str, Any]: experiment dict</p>
 </dd>
 </dl>
 </dd></dl>

@@ -376,18 +376,16 @@
               <div>
                 
   <h1>Source code for alab_management.experiment_view.experiment</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Define the format of experiment request.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;Define the format of experiment request.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
+<span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">BSON</span><span class="p">,</span> <span class="n">ObjectId</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">constr</span><span class="p">,</span> <span class="n">validator</span>  <span class="c1"># pylint: disable=no-name-in-module</span>
-<span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">BSON</span>
 
 
 <span class="k">class</span> <span class="nc">_Sample</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="n">name</span><span class="p">:</span> <span class="n">constr</span><span class="p">(</span><span class="n">regex</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;^[^$.]+$&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore # noqa: F722</span>
+    <span class="n">name</span><span class="p">:</span> <span class="n">constr</span><span class="p">(</span><span class="n">regex</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;^[^$.]+$&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
     <span class="n">sample_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">tags</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="n">metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
@@ -399,10 +397,11 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;An experiment received over the API contained a sample with an invalid sample_id. The sample_id was set to </span><span class="si">{v}</span><span class="s2">, which is not a valid ObjectId.&quot;</span>
-            <span class="p">)</span>
+                <span class="s2">&quot;An experiment received over the API contained a sample with an invalid sample_id. The sample_id was &quot;</span>
+                <span class="s2">&quot;set to </span><span class="si">{v}</span><span class="s2">, which is not a valid ObjectId.&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
 
     <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;metadata&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">must_be_bsonable</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
@@ -410,10 +409,11 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">BSON</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">v</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;An experiment received over the API contained a sample with invalid metadata. The metadata was set to </span><span class="si">{v}</span><span class="s2">, which is not BSON-serializable.&quot;</span>
-            <span class="p">)</span>
+                <span class="s2">&quot;An experiment received over the API contained a sample with invalid metadata. The metadata was set &quot;</span>
+                <span class="s2">&quot;to </span><span class="si">{v}</span><span class="s2">, which is not BSON-serializable.&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
 
 
 <span class="k">class</span> <span class="nc">_Task</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
@@ -430,18 +430,17 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;An experiment received over the API contained a task with an invalid task_id. The task_id was set to </span><span class="si">{v}</span><span class="s2">, which is not a valid ObjectId.&quot;</span>
-            <span class="p">)</span>
+                <span class="s2">&quot;An experiment received over the API contained a task with an invalid task_id. The task_id was set to &quot;</span>
+                <span class="s2">&quot;</span><span class="si">{v}</span><span class="s2">, which is not a valid ObjectId.&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
 
 
 <div class="viewcode-block" id="InputExperiment"><a class="viewcode-back" href="../../../alab_management.experiment_view.experiment.html#alab_management.experiment_view.experiment.InputExperiment">[docs]</a><span class="k">class</span> <span class="nc">InputExperiment</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This is the format that user should follow to write to experiment database</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This is the format that user should follow to write to experiment database.&quot;&quot;&quot;</span>
 
-    <span class="n">name</span><span class="p">:</span> <span class="n">constr</span><span class="p">(</span><span class="n">regex</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;^[^$.]+$&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore # noqa: F722</span>
+    <span class="n">name</span><span class="p">:</span> <span class="n">constr</span><span class="p">(</span><span class="n">regex</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;^[^$.]+$&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
     <span class="n">samples</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">_Sample</span><span class="p">]</span>
     <span class="n">tasks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">_Task</span><span class="p">]</span>
     <span class="n">tags</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
@@ -449,14 +448,16 @@
 
 <div class="viewcode-block" id="InputExperiment.must_be_bsonable"><a class="viewcode-back" href="../../../alab_management.experiment_view.experiment.html#alab_management.experiment_view.experiment.InputExperiment.must_be_bsonable">[docs]</a>    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;metadata&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">must_be_bsonable</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;If v is not None, we must confirm that it can be encoded to BSON.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">BSON</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">v</span>
 
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;An experiment received over the API contained invalid metadata. The metadata was set to </span><span class="si">{v}</span><span class="s2">, which is not BSON-serializable.&quot;</span>
-            <span class="p">)</span></div></div>
+                <span class="s2">&quot;An experiment received over the API contained invalid metadata. The metadata was set to </span><span class="si">{v}</span><span class="s2">, &quot;</span>
+                <span class="s2">&quot;which is not BSON-serializable.&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span></div></div>
 </pre></div>
 
               </div>

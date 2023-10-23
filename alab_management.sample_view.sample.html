@@ -541,7 +541,7 @@
 <dt class="sig sig-object py" id="alab_management.sample_view.sample.Sample">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample.html#Sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.sample.Sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Basic sample object</p>
+<p>Basic sample object.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">sample_id</span></code>: the unique id of a sample in the database</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">task_id</span></code>: the unique id of a task that currently “owns” (is processing) this sample</p></li>
@@ -585,7 +585,7 @@ in the lab</p></li>
 <dt class="sig sig-object py" id="alab_management.sample_view.sample.SamplePosition">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SamplePosition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample.html#SamplePosition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.sample.SamplePosition" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A sample position in the lab</p>
+<p>A sample position in the lab.</p>
 <p>Sample position is a position in the lab that can hold sample,
 it is not a geographic coordinate in the lab, but a defined
 position in the lab</p>
@@ -619,13 +619,13 @@ identifier of a sample position</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="alab_management.sample_view.sample.add_standalone_sample_position">
 <span class="sig-name descname"><span class="pre">add_standalone_sample_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample.html#add_standalone_sample_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.sample.add_standalone_sample_position" title="Permalink to this definition">¶</a></dt>
-<dd><p>Register a device instance</p>
+<dd><p>Register a device instance.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="alab_management.sample_view.sample.get_all_standalone_sample_positions">
 <span class="sig-name descname"><span class="pre">get_all_standalone_sample_positions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample.html#get_all_standalone_sample_positions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.sample.get_all_standalone_sample_positions" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get all the device names in the device registry</p>
+<dd><p>Get all the device names in the device registry.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <a class="reference internal" href="#alab_management.sample_view.sample.SamplePosition" title="alab_management.sample_view.sample.SamplePosition"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplePosition</span></code></a>]</p>

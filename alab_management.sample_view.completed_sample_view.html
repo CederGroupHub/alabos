@@ -435,23 +435,26 @@
                 
   <section id="module-alab_management.sample_view.completed_sample_view">
 <span id="alab-management-sample-view-completed-sample-view-module"></span><h1>alab_management.sample_view.completed_sample_view module<a class="headerlink" href="#module-alab_management.sample_view.completed_sample_view" title="Permalink to this heading">¶</a></h1>
+<p>This module contains the CompletedSampleView class, which is responsible for
+saving samples to the completed database.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="alab_management.sample_view.completed_sample_view.CompletedSampleView">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CompletedSampleView</span></span><a class="reference internal" href="_modules/alab_management/sample_view/completed_sample_view.html#CompletedSampleView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.completed_sample_view.CompletedSampleView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Sample view manages the sample status, which is a collection of tasks.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.sample_view.completed_sample_view.CompletedSampleView.exists">
 <span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/completed_sample_view.html#CompletedSampleView.exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.completed_sample_view.CompletedSampleView.exists" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if a sample exists in the database</p>
+<dd><p>Check if a sample exists in the database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>sample_id</strong> (<em>ObjectId</em>) – id of the sample within sample collection</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if sample exists in the database</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool: True if sample exists in the database</p>
 </dd>
 </dl>
 </dd></dl>
@@ -459,7 +462,8 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.sample_view.completed_sample_view.CompletedSampleView.save_sample">
 <span class="sig-name descname"><span class="pre">save_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/completed_sample_view.html#CompletedSampleView.save_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.completed_sample_view.CompletedSampleView.save_sample" title="Permalink to this definition">¶</a></dt>
-<dd><p>Saves a sample dictionary to the completed database. This should be copying a sample from the working database to the completed database.</p>
+<dd><p>Saves a sample dictionary to the completed database. This should be copying a sample from the working
+database to the completed database.</p>
 </dd></dl>
 
 </dd></dl>

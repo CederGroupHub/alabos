@@ -471,6 +471,7 @@
                 
   <section id="module-alab_management.alarm">
 <span id="alab-management-alarm-module"></span><h1>alab_management.alarm module<a class="headerlink" href="#module-alab_management.alarm" title="Permalink to this heading">¶</a></h1>
+<p>The module to send alerts to the user via email or slack.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="alab_management.alarm.Alarm">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Alarm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email_receivers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email_sender</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email_password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slack_bot_token</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slack_channel_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/alarm.html#Alarm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.alarm.Alarm" title="Permalink to this definition">¶</a></dt>
@@ -479,57 +480,76 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.alarm.Alarm.alert">
 <span class="sig-name descname"><span class="pre">alert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/alarm.html#Alarm.alert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.alarm.Alarm.alert" title="Permalink to this definition">¶</a></dt>
-<dd><p>Try to alert user in all platform in format of “Category: Message”
-:type message: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param message: The message to print in the platform
-:type category: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param category: The category of the message</p>
+<dd><p>Try to alert user in all platform in format of “Category: Message”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The message to print in the platform</p></li>
+<li><p><strong>category</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The category of the message.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.alarm.Alarm.send_email">
 <span class="sig-name descname"><span class="pre">send_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/alarm.html#Alarm.send_email"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.alarm.Alarm.send_email" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sends an email to the receiver email address with the exception and category.
+<dd><p>Send an email to the receiver email address with the exception and category.
 Category is the type of exception that occurred.
-Automatically use “Error” as category if the message contains traceback.
-:type message: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param message: The message to print in the email
-:type category: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param category: The category of the message</p>
+Automatically use “Error” as category if the message contains traceback.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The message to print in the email</p></li>
+<li><p><strong>category</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The category of the message.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.alarm.Alarm.send_slack_notification">
 <span class="sig-name descname"><span class="pre">send_slack_notification</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/alarm.html#Alarm.send_slack_notification"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.alarm.Alarm.send_slack_notification" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sends a slack message to the receiver email address with the exception and category.
+<dd><p>Send a slack message to the receiver email address with the exception and category.
 Category is the type of exception that occurred.
-Automatically use “Error” as category if the message contains traceback.
-:type message: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param message: The message to print in the email
-:type category: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param category: The category of the message</p>
+Automatically use “Error” as category if the message contains traceback.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The message to print in the email</p></li>
+<li><p><strong>category</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The category of the message.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.alarm.Alarm.setup_email">
 <span class="sig-name descname"><span class="pre">setup_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email_receivers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email_sender</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email_password</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/alarm.html#Alarm.setup_email"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.alarm.Alarm.setup_email" title="Permalink to this definition">¶</a></dt>
-<dd><p>Try to setup email notification (called in __init__)
-:type email_receivers: <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>
-:param email_receivers: A list of email addresses to send the alert to.
-:type email_sender: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param email_sender: The email address to send the alert from.
-:type email_password: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param email_password: The password for the email address to send the alert from.</p>
+<dd><p>Try to setup email notification (called in __init__).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>email_receivers</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>) – A list of email addresses to send the alert to.</p></li>
+<li><p><strong>email_sender</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The email address to send the alert from.</p></li>
+<li><p><strong>email_password</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The password for the email address to send the alert from.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.alarm.Alarm.setup_slackbot">
 <span class="sig-name descname"><span class="pre">setup_slackbot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slack_bot_token</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slack_channel_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/alarm.html#Alarm.setup_slackbot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.alarm.Alarm.setup_slackbot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Try to setup slackbot notification (called in __init__)
-:type slack_bot_token: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param slack_bot_token: The token from slackbot app
-:type slack_channel_id: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param slack_channel_id: The slack channel id where the slackbot app is deployed</p>
+<dd><p>Try to setup slackbot notification (called in __init__).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slack_bot_token</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The token from slackbot app</p></li>
+<li><p><strong>slack_channel_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The slack channel id where the slackbot app is deployed.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -537,22 +557,18 @@ Automatically use “Error” as category if the message contains traceback.
 <dl class="py function">
 <dt class="sig sig-object py" id="alab_management.alarm.format_message_to_codeblock">
 <span class="sig-name descname"><span class="pre">format_message_to_codeblock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/alarm.html#format_message_to_codeblock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.alarm.format_message_to_codeblock" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function takes a message and formats it as a code block.
-It is used to format tracebacks as code blocks in Slack.
-:type message: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param message: The message to format (String). This is usually a traceback.</p>
+<dd><p>The function takes a message and formats it as a code block.
+It is used to format tracebacks as code blocks in Slack.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><dl class="simple">
-<dt>The formatted message. This will be formatted into code block in slack if the message contains traceback,</dt><dd><p>otherwise it will be the original message.</p>
-</dd>
-</dl>
-</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The message to format (String). This is usually a traceback.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>formatted_message</p>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 </dl>
+<p>Returns ——- formatted_message: The formatted message. This will be formatted into code block in slack if the
+message contains traceback, otherwise it will be the original message.</p>
 </dd></dl>
 
 </section>

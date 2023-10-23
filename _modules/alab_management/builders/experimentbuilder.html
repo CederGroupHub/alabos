@@ -407,7 +407,7 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SampleBuilder</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This function adds a sample to the batch. Each sample already has multiple tasks binded to it. Each</span>
+<span class="sd">        Add a sample to the batch. Each sample already has multiple tasks binded to it. Each</span>
 <span class="sd">        batch is a directed graph of tasks.</span>
 
 <span class="sd">        Args:</span>
@@ -458,11 +458,11 @@
 
 <div class="viewcode-block" id="ExperimentBuilder.to_dict"><a class="viewcode-back" href="../../../alab_management.builders.experimentbuilder.html#alab_management.builders.experimentbuilder.ExperimentBuilder.to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This function returns a dictionary that can be used to generate an input file for the `experiment`</span>
+<span class="sd">        Return a dictionary that can be used to generate an input file for the `experiment`</span>
 <span class="sd">        to run.</span>
-<span class="sd">        Args:</span>
-<span class="sd">            None</span>
-<span class="sd">        Returns:</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
 <span class="sd">            A dictionary that can be used to generate an input file for the `experiment` to run.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -502,7 +502,8 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fmt</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="s2">&quot;yaml&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This function generates an input file for the `experiment` command.</span>
+<span class="sd">        Genreate an input file for the `experiment` command.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            filename (str): The name of the file to be generated.</span>
 <span class="sd">            fmt (Literal[&quot;json&quot;, &quot;yaml&quot;]): The format of the file to be generated.</span>
@@ -523,7 +524,8 @@
 
 <div class="viewcode-block" id="ExperimentBuilder.plot"><a class="viewcode-back" href="../../../alab_management.builders.experimentbuilder.html#alab_management.builders.experimentbuilder.ExperimentBuilder.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This function plots the directed graph of tasks.</span>
+<span class="sd">        Plot the directed graph of tasks.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            ax (matplotlib.axes.Axes): The axes on which to plot the graph.</span>
 
@@ -557,7 +559,7 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">nx_agraph</span><span class="o">.</span><span class="n">graphviz_layout</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">prog</span><span class="o">=</span><span class="s2">&quot;dot&quot;</span><span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span><span class="p">:</span>  <span class="c1"># noqa: E722</span>
             <span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">spring_layout</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
 
         <span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span>
@@ -570,6 +572,7 @@
         <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a string representation of the ExperimentBuilder.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;ExperimentBuilder: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&gt;&quot;</span></div>
 </pre></div>
 

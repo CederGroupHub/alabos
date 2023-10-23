@@ -378,17 +378,16 @@
   <h1>Source code for alab_management.lab_view</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Each task process will have a ``LabView`` instance, through which it can request</span>
-<span class="sd">the lab resources (devices and sample positions). It can also update the position</span>
-<span class="sd">of a sample in the lab.</span>
+<span class="sd">the lab resources (devices and sample positions).</span>
+
+<span class="sd">It can also update the position of a sample in the lab.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
-<span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">traceback</span> <span class="kn">import</span> <span class="n">format_exc</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
-<span class="kn">import</span> <span class="nn">bson</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">root_validator</span>
 <span class="kn">from</span> <span class="nn">pydantic.main</span> <span class="kn">import</span> <span class="n">BaseModel</span>
 
@@ -397,7 +396,7 @@
 <span class="kn">from</span> <span class="nn">alab_management.experiment_view.experiment_view</span> <span class="kn">import</span> <span class="n">ExperimentView</span>
 <span class="kn">from</span> <span class="nn">alab_management.logger</span> <span class="kn">import</span> <span class="n">DBLogger</span>
 <span class="kn">from</span> <span class="nn">alab_management.sample_view.sample</span> <span class="kn">import</span> <span class="n">Sample</span>
-<span class="kn">from</span> <span class="nn">alab_management.sample_view.sample_view</span> <span class="kn">import</span> <span class="n">SampleView</span><span class="p">,</span> <span class="n">SamplePositionRequest</span>
+<span class="kn">from</span> <span class="nn">alab_management.sample_view.sample_view</span> <span class="kn">import</span> <span class="n">SamplePositionRequest</span><span class="p">,</span> <span class="n">SampleView</span>
 <span class="kn">from</span> <span class="nn">alab_management.task_manager.resource_requester</span> <span class="kn">import</span> <span class="n">ResourceRequester</span>
 <span class="kn">from</span> <span class="nn">alab_management.task_view.task</span> <span class="kn">import</span> <span class="n">BaseTask</span>
 <span class="kn">from</span> <span class="nn">alab_management.task_view.task_enums</span> <span class="kn">import</span> <span class="n">TaskPriority</span><span class="p">,</span> <span class="n">TaskStatus</span>
@@ -406,24 +405,24 @@
 
 
 <div class="viewcode-block" id="DeviceRunningException"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.DeviceRunningException">[docs]</a><span class="k">class</span> <span class="nc">DeviceRunningException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Raise when a task try to release a device that is still running</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raise when a task try to release a device that is still running.&quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="ResourcesRequest"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.ResourcesRequest">[docs]</a><span class="k">class</span> <span class="nc">ResourcesRequest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class is used to validate the resource request. Each request should have a format of</span>
-<span class="sd">    [DeviceType: List of SamplePositionRequest]</span>
+<span class="sd">    [DeviceType: List of SamplePositionRequest].</span>
 
-<span class="sd">    See Also:</span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
 <span class="sd">        :py:class:`SamplePositionRequest &lt;alab_management.sample_view.sample_view.SamplePositionRequest&gt;`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">__root__</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="n">SamplePositionRequest</span><span class="p">]]</span>  <span class="c1"># type: ignore</span>
 
 <div class="viewcode-block" id="ResourcesRequest.preprocess"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.ResourcesRequest.preprocess">[docs]</a>    <span class="nd">@root_validator</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>  <span class="c1"># pylint: disable=no-self-use,no-self-argument</span>
+    <span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Preprocess the request to make sure the request is in the correct format.&quot;&quot;&quot;</span>
         <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;__root__&quot;</span><span class="p">]</span>
         <span class="c1"># if the sample position request is string, we will automatically add a number attribute = 1.</span>
         <span class="n">values</span> <span class="o">=</span> <span class="p">{</span>
@@ -459,6 +458,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectId</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the task id of the current task.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span>
 
 <div class="viewcode-block" id="LabView.request_resources"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.LabView.request_resources">[docs]</a>    <span class="nd">@contextmanager</span>
@@ -474,17 +474,21 @@
 <span class="sd">        Request devices and sample positions. This function is a context manager, which should be used in</span>
 <span class="sd">        a with statement to ensure all the devices are released when the task is done.</span>
 
-<span class="sd">        resource_request format is:</span>
-<span class="sd">            {device: {position: number, ...}, ...}</span>
-<span class="sd">        device can be a name of a specific device (str), a type of device, or None. If device is a type, the resource request will look for any available device of that type. If device is None, the resource request will look for sample positions that do not belong to a device.</span>
-<span class="sd">        position is the name of a sample position that should be reserved on the device, and number is the number of such positions that should be reserved. If the device is required but no positions are required, this can be left as an empty dictionary.</span>
+<span class="sd">        resource_request format is: {device: {position: number, ...}, ...} device can be a name of a specific device</span>
+<span class="sd">        (str), a type of device, or None. If device is a type, the resource request will look for any available</span>
+<span class="sd">        device of that type. If device is None, the resource request will look for sample positions that do not</span>
+<span class="sd">        belong to a device. position is the name of a sample position that should be reserved on the device,</span>
+<span class="sd">        and number is the number of such positions that should be reserved. If the device is required but no</span>
+<span class="sd">        positions are required, this can be left as an empty dictionary.</span>
 
-<span class="sd">        Examples:</span>
+<span class="sd">        Examples -------- {TubeFurnace: {&quot;tray&quot;: 4}, &quot;arm1&quot;: {}} will find the first available TubeFurnace device,</span>
+<span class="sd">        then reserve 4 sample positions of &quot;{tubefurnacename}/tray/{tray_index}&quot; on that device. It will also find</span>
+<span class="sd">        the device named &quot;arm1&quot;.</span>
 
-<span class="sd">        {TubeFurnace: {&quot;tray&quot;: 4}, &quot;arm1&quot;: {}} will find the first available TubeFurnace device, then reserve 4 sample positions of &quot;{tubefurnacename}/tray/{tray_index}&quot; on that device. It will also find the device named &quot;arm1&quot;.</span>
 
-
-<span class="sd">        The priority of the request can optionally be specified as a positive integer, which should probably be in the range of 0-40. 20 is the default &quot;NORMAL&quot; priority level. Higher number = higher priority. Numbers &gt;= 100 are reserved for urgent/error correcting requests.</span>
+<span class="sd">        The priority of the request can optionally be specified as a positive integer, which should probably be in</span>
+<span class="sd">        the range of 0-40. 20 is the default &quot;NORMAL&quot; priority level. Higher number = higher priority. Numbers &gt;= 100</span>
+<span class="sd">        are reserved for urgent/error correcting requests.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">priority</span> <span class="o">=</span> <span class="n">priority</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">priority</span>
 
@@ -508,7 +512,9 @@
 
     <span class="k">def</span> <span class="nf">_sample_name_to_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectId</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get a sample id by name. Looks up sample name-&gt;id mapping for the experiment `self.task_id` belongs to.</span>
+<span class="sd">        Get a sample id by name.</span>
+
+<span class="sd">        Looks up sample name-&gt;id mapping for the experiment `self.task_id` belongs to.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__task_entry</span><span class="p">[</span><span class="s2">&quot;samples&quot;</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">sample_name</span><span class="p">:</span>
@@ -519,8 +525,9 @@
 
 <div class="viewcode-block" id="LabView.get_sample"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.LabView.get_sample">[docs]</a>    <span class="k">def</span> <span class="nf">get_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Sample</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get a sample by either an ObjectId corresponding to sample_id, or as a string corresponding to the sample&#39;s name within the experiment., see also</span>
-<span class="sd">        :py:meth:`get_sample &lt;alab_management.sample_view.sample_view.SampleView.get_sample&gt;`</span>
+<span class="sd">        Get a sample by either an ObjectId corresponding to sample_id, or as a string corresponding to the sample&#39;s</span>
+<span class="sd">        name within the experiment., see also :py:meth:`get_sample</span>
+<span class="sd">        &lt;alab_management.sample_view.sample_view.SampleView.get_sample&gt;`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">sample_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_name_to_id</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
@@ -532,9 +539,11 @@
 
 <div class="viewcode-block" id="LabView.move_sample"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.LabView.move_sample">[docs]</a>    <span class="k">def</span> <span class="nf">move_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">position</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Move a sample to a new position. `sample` can be given as either an ObjectId corresponding to sample_id, or as a string corresponding to the sample&#39;s name within the experiment.</span>
+<span class="sd">        Move a sample to a new position. `sample` can be given as either an ObjectId corresponding to sample_id,</span>
+<span class="sd">        or as a string corresponding to the sample&#39;s name within the experiment.</span>
 
-<span class="sd">        see also:</span>
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
 <span class="sd">        :py:meth:`move_sample &lt;alab_management.sample_view.sample_view.SampleView.move_sample&gt;`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># check if this sample position is locked by current task</span>
@@ -557,21 +566,17 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="LabView.get_locked_sample_positions"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.LabView.get_locked_sample_positions">[docs]</a>    <span class="k">def</span> <span class="nf">get_locked_sample_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get a list of sample positions that are occupied by this task</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a list of sample positions that are occupied by this task.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span><span class="o">.</span><span class="n">get_sample_positions_by_task</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="LabView.get_sample_position_parent_device"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.LabView.get_sample_position_parent_device">[docs]</a>    <span class="k">def</span> <span class="nf">get_sample_position_parent_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the name of the device that owns the sample position.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the name of the device that owns the sample position.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span><span class="o">.</span><span class="n">get_sample_position_parent_device</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">position</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="LabView.run_subtask"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.LabView.run_subtask">[docs]</a>    <span class="k">def</span> <span class="nf">run_subtask</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseTask</span><span class="p">],</span> <span class="n">samples</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;run a task as a subtask within the task. basically fills in task_id and lab_view for you.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run a task as a subtask within the task. basically fills in task_id and lab_view for you.</span>
 <span class="sd">            this command blocks until the subtask is completed.</span>
 
 <span class="sd">        Args:</span>
@@ -602,12 +607,12 @@
                 <span class="n">samples</span><span class="o">=</span><span class="n">samples</span><span class="p">,</span>
                 <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exception</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_task_view</span><span class="o">.</span><span class="n">update_subtask_status</span><span class="p">(</span>
                 <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">subtask_id</span><span class="o">=</span><span class="n">subtask_id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">ERROR</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_task_view</span><span class="o">.</span><span class="n">update_subtask_result</span><span class="p">(</span>
-                <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">subtask_id</span><span class="o">=</span><span class="n">subtask_id</span><span class="p">,</span> <span class="n">result</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">exception</span><span class="p">)</span>
+                <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">subtask_id</span><span class="o">=</span><span class="n">subtask_id</span><span class="p">,</span> <span class="n">result</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
                 <span class="s2">&quot;Failed to create subtask of type </span><span class="si">{}</span><span class="s2"> within task </span><span class="si">{}</span><span class="s2"> of type </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -615,7 +620,7 @@
                     <span class="n">task_id</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_task_view</span><span class="o">.</span><span class="n">get_task</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">encode</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span>
                 <span class="p">)</span>
-            <span class="p">)</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">system_log</span><span class="p">(</span>
             <span class="n">level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
             <span class="n">log_data</span><span class="o">=</span><span class="p">{</span>
@@ -669,13 +674,14 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="LabView.request_user_input"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.LabView.request_user_input">[docs]</a>    <span class="k">def</span> <span class="nf">request_user_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Request user input from the user. This function will block until the user inputs something. Returns the value returned by the user.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Request user input from the user. This function will block until the user inputs something. Returns the</span>
+<span class="sd">        value returned by the user.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">request_user_input</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">priority</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the priority of the task.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_priority</span>
 
     <span class="nd">@priority</span><span class="o">.</span><span class="n">setter</span>
@@ -686,18 +692,17 @@
 
 <div class="viewcode-block" id="LabView.update_result"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.LabView.update_result">[docs]</a>    <span class="k">def</span> <span class="nf">update_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Update a result of the task. This result will be saved in the task collection under `results.name` and can be retrieved later.</span>
+<span class="sd">        Update a result of the task. This result will be saved in the task collection under `results.name` and can be</span>
+<span class="sd">        retrieved later.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            name (str): name of the result (ie &quot;diffraction pattern&quot;). This will be used as the key in the results dictionary.</span>
-<span class="sd">            value (Any): value of the result. This can be a numpy array, a set, or any other bson-serializable object (most standard Python types).</span>
+<span class="sd">        Args: name (str): name of the result (ie &quot;diffraction pattern&quot;). This will be used as the key in the results</span>
+<span class="sd">        dictionary. value (Any): value of the result. This can be a numpy array, a set, or any other</span>
+<span class="sd">        bson-serializable object (most standard Python types).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_task_view</span><span class="o">.</span><span class="n">update_result</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="LabView.request_cleanup"><a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.LabView.request_cleanup">[docs]</a>    <span class="k">def</span> <span class="nf">request_cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Request cleanup of the task. This function will block until the task is cleaned up.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Request cleanup of the task. This function will block until the task is cleaned up.&quot;&quot;&quot;</span>
         <span class="n">all_reserved_sample_positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span><span class="o">.</span><span class="n">get_sample_positions_by_task</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span>
         <span class="p">)</span>

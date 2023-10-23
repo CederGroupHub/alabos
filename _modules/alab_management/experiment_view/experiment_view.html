@@ -376,28 +376,27 @@
               <div>
                 
   <h1>Source code for alab_management.experiment_view.experiment_view</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">A wrapper over the ``experiment`` class.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;A wrapper over the ``experiment`` class.&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 
-<span class="kn">from</span> <span class="nn">.experiment</span> <span class="kn">import</span> <span class="n">InputExperiment</span>
-<span class="kn">from</span> <span class="nn">..utils.data_objects</span> <span class="kn">import</span> <span class="n">get_collection</span>
 <span class="kn">from</span> <span class="nn">alab_management.sample_view</span> <span class="kn">import</span> <span class="n">SampleView</span>
 <span class="kn">from</span> <span class="nn">alab_management.task_view</span> <span class="kn">import</span> <span class="n">TaskView</span>
+<span class="kn">from</span> <span class="nn">alab_management.utils.data_objects</span> <span class="kn">import</span> <span class="n">get_collection</span>
+
 <span class="kn">from</span> <span class="nn">.completed_experiment_view</span> <span class="kn">import</span> <span class="n">CompletedExperimentView</span>
+<span class="kn">from</span> <span class="nn">.experiment</span> <span class="kn">import</span> <span class="n">InputExperiment</span>
 
 <span class="n">completed_experiment_view</span> <span class="o">=</span> <span class="n">CompletedExperimentView</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="ExperimentStatus"><a class="viewcode-back" href="../../../alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentStatus">[docs]</a><span class="k">class</span> <span class="nc">ExperimentStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The status of experiment</span>
+<span class="sd">    The status of experiment.</span>
 
 <span class="sd">    - ``PENDING``: The experiment has not been processed by experiment manager</span>
 <span class="sd">    - ``RUNNING``: The experiment has been submitted and put in the queue</span>
@@ -412,9 +411,7 @@
 
 
 <div class="viewcode-block" id="ExperimentView"><a class="viewcode-back" href="../../../alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView">[docs]</a><span class="k">class</span> <span class="nc">ExperimentView</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Experiment view manages the experiment status, which is a collection of tasks and samples</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Experiment view manages the experiment status, which is a collection of tasks and samples.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;experiment&quot;</span><span class="p">)</span>
@@ -425,7 +422,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create an experiment in the database</span>
 <span class="sd">        which is intended for raw experiment inserted by users. The</span>
-<span class="sd">        lab manager will add sample id and task id for the samples and tasks</span>
+<span class="sd">        lab manager will add sample id and task id for the samples and tasks.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            experiment: the required format of experiment, see also</span>
@@ -433,13 +430,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># NOTE: format of experiment dict is checked in api endpoint upstream of this method</span>
 
-        <span class="c1"># confirm that no task/sample id&#39;s already exist in the database. This is possible when users manually set these id&#39;s</span>
+        <span class="c1"># confirm that no task/sample id&#39;s already exist in the database. This is possible when users manually set</span>
+        <span class="c1"># these id&#39;s</span>
         <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">experiment</span><span class="o">.</span><span class="n">samples</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">sample</span><span class="o">.</span><span class="n">sample_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">continue</span>  <span class="c1"># ALabOS will assign a sample id, this is always safe</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_view</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">sample_id</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">sample_id</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Sample id </span><span class="si">{</span><span class="n">sample</span><span class="o">.</span><span class="n">sample_id</span><span class="si">}</span><span class="s2"> already exists in the database! Please use another id. This experiment was not submitted.&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Sample id </span><span class="si">{</span><span class="n">sample</span><span class="o">.</span><span class="n">sample_id</span><span class="si">}</span><span class="s2"> already exists in the database! Please use another id. This &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;experiment was not submitted.&quot;</span>
                 <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">experiment</span><span class="o">.</span><span class="n">tasks</span><span class="p">:</span>
@@ -447,7 +446,8 @@
                 <span class="k">continue</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">task_id</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Task id </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">task_id</span><span class="si">}</span><span class="s2"> already exists in the database! Please use another id. This experiment was not submitted.&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Task id </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">task_id</span><span class="si">}</span><span class="s2"> already exists in the database! Please use another id. This experiment &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;was not submitted.&quot;</span>
                 <span class="p">)</span>
 
         <span class="c1"># all good, lets submit the experiment into ALabOS!</span>
@@ -464,9 +464,7 @@
 <div class="viewcode-block" id="ExperimentView.get_experiments_with_status"><a class="viewcode-back" href="../../../alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.get_experiments_with_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_experiments_with_status</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ExperimentStatus</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter experiments by its status</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Filter experiments by its status.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">status</span> <span class="o">=</span> <span class="n">ExperimentStatus</span><span class="p">[</span><span class="n">status</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
@@ -479,9 +477,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="ExperimentView.get_experiment"><a class="viewcode-back" href="../../../alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.get_experiment">[docs]</a>    <span class="k">def</span> <span class="nf">get_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exp_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get an experiment by its id</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get an experiment by its id.&quot;&quot;&quot;</span>
         <span class="n">experiment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">exp_id</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">experiment</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
@@ -497,10 +493,8 @@
         <span class="k">return</span> <span class="n">experiment</span></div>
 
 <div class="viewcode-block" id="ExperimentView.update_experiment_status"><a class="viewcode-back" href="../../../alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.update_experiment_status">[docs]</a>    <span class="k">def</span> <span class="nf">update_experiment_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exp_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">ExperimentStatus</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Update the status of an experiment</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">experiment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_experiment</span><span class="p">(</span><span class="n">exp_id</span><span class="o">=</span><span class="n">exp_id</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the status of an experiment.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_experiment</span><span class="p">(</span><span class="n">exp_id</span><span class="o">=</span><span class="n">exp_id</span><span class="p">)</span>
 
         <span class="n">update_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
         <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">COMPLETED</span><span class="p">:</span>
@@ -514,7 +508,7 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">exp_id</span><span class="p">,</span> <span class="n">sample_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">],</span> <span class="n">task_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        At the creation of experiment, the id of samples and tasks has not been assigned</span>
+<span class="sd">        At the creation of experiment, the id of samples and tasks has not been assigned.</span>
 
 <span class="sd">        Later, we will use this method to assign sample &amp; task id (done by</span>
 <span class="sd">        :py:class:`LabView &lt;alab_management.lab_view.LabView&gt;`)</span>
@@ -547,9 +541,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="ExperimentView.get_experiment_by_task_id"><a class="viewcode-back" href="../../../alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.get_experiment_by_task_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_experiment_by_task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get an experiment that contains a task with the given task_id</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get an experiment that contains a task with the given task_id.&quot;&quot;&quot;</span>
         <span class="n">experiment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;tasks.task_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">experiment</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find experiment containing task_id: </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -558,9 +550,7 @@
 <div class="viewcode-block" id="ExperimentView.get_experiment_by_sample_id"><a class="viewcode-back" href="../../../alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.get_experiment_by_sample_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_experiment_by_sample_id</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get an experiment that contains a sample with the given sample_id</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get an experiment that contains a sample with the given sample_id.&quot;&quot;&quot;</span>
         <span class="n">experiment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span>
             <span class="p">{</span><span class="s2">&quot;samples.sample_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">}</span>
         <span class="p">)</span>
