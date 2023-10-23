@@ -18,7 +18,7 @@ from labgraph.views import (
     SampleView as LabgraphSampleView,
     MaterialView as LabgraphMaterialView,
 )
-from labgraph.errors import NotFoundInDatabaseError
+from labgraph.views.base import NotFoundInDatabaseError
 
 
 class SamplePositionRequest(BaseModel):

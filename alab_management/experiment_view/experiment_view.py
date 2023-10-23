@@ -15,7 +15,7 @@ from alab_management.sample_view import SampleView
 from alab_management.task_view import TaskView
 from .completed_experiment_view import CompletedExperimentView
 from labgraph import Sample as LabgraphSample
-from labgraph.errors import NotFoundInDatabaseError
+from labgraph.views.base import NotFoundInDatabaseError
 
 
 completed_experiment_view = CompletedExperimentView()

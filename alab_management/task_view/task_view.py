@@ -23,7 +23,7 @@ from .completed_task_view import CompletedTaskView
 from labgraph.data.nodes import BaseNode, BaseNodeWithActor
 from labgraph.views.base import BaseNodeView
 from labgraph import Action, Analysis, Measurement, Material, views
-from labgraph.errors import NotFoundInDatabaseError
+from labgraph.views.base import NotFoundInDatabaseError
 
 completed_task_view = CompletedTaskView()
 

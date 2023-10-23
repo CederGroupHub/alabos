@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from alab_management.device_view.device import BaseDevice
 
 from labgraph import Actor, ActorView
-from labgraph.errors import NotFoundInDatabaseError
+from labgraph.views.base import NotFoundInDatabaseError
 from alab_management.utils.data_objects import get_labgraph_mongodb
 from inspect import getfile
 from difflib import Differ
