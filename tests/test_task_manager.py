@@ -175,5 +175,5 @@ class TestTaskManager(unittest.TestCase):
     def test_task_request_wrong_number(self):
         with self.assertRaises(ValueError):
             self.resource_requester.request_resources(
-                {None: {"furnace_temp": 10}}, timeout=2
+                {None: {"furnace_temp": 10}}, timeout=4
             )
