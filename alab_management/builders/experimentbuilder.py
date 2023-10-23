@@ -29,7 +29,7 @@ class ExperimentBuilder:
         self, name: str, tags: Optional[List[str]] = None, **metadata
     ) -> SampleBuilder:
         """
-        This function adds a sample to the batch. Each sample already has multiple tasks binded to it. Each
+        Add a sample to the batch. Each sample already has multiple tasks binded to it. Each
         batch is a directed graph of tasks.
 
         Args:
@@ -80,11 +80,11 @@ class ExperimentBuilder:
 
     def to_dict(self) -> Dict[str, Any]:
         """
-        This function returns a dictionary that can be used to generate an input file for the `experiment`
+        Return a dictionary that can be used to generate an input file for the `experiment`
         to run.
-        Args:
-            None
-        Returns:
+
+        Returns
+        -------
             A dictionary that can be used to generate an input file for the `experiment` to run.
 
         """
@@ -124,7 +124,8 @@ class ExperimentBuilder:
         self, filename: str, fmt: Literal["json", "yaml"] = "json"
     ) -> None:
         """
-        This function generates an input file for the `experiment` command.
+        Genreate an input file for the `experiment` command.
+
         Args:
             filename (str): The name of the file to be generated.
             fmt (Literal["json", "yaml"]): The format of the file to be generated.
@@ -145,7 +146,8 @@ class ExperimentBuilder:
 
     def plot(self, ax=None) -> None:
         """
-        This function plots the directed graph of tasks.
+        Plot the directed graph of tasks.
+
         Args:
             ax (matplotlib.axes.Axes): The axes on which to plot the graph.
 
@@ -179,7 +181,7 @@ class ExperimentBuilder:
 
         try:
             pos = nx.nx_agraph.graphviz_layout(g, prog="dot")
-        except:
+        except:  # noqa: E722
             pos = nx.spring_layout(g)
 
         nx.draw(
@@ -192,4 +194,5 @@ class ExperimentBuilder:
         )
 
     def __repr__(self):
+        """Return a string representation of the ExperimentBuilder."""
         return f"<ExperimentBuilder: {self.name}>"

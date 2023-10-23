@@ -13,19 +13,19 @@ with contextlib.suppress(RuntimeError):
 
 
 def launch_dashboard(host: str, port: int, debug: bool = False):
+    """Launch the dashboard alone."""
     from alab_management.dashboard import create_app
 
     if debug:
         print("Debug mode is on, the dashboard will be served with CORS enabled!")
     app = create_app(cors=debug)  # if debug enabled, allow cross-origin requests to API
-    if debug:
-        server = WSGIServer((host, port), app)  # print server's log on the console
-    else:
-        server = WSGIServer((host, port), app, log=None, error_log=None)
+    server = WSGIServer((host, port), app) if debug \
+        else WSGIServer((host, port), app, log=None, error_log=None)
     server.serve_forever()
 
 
 def launch_experiment_manager():
+    """Launch the experiment manager."""
     from alab_management.experiment_manager import ExperimentManager
     from alab_management.utils.module_ops import load_definition
 
@@ -35,6 +35,7 @@ def launch_experiment_manager():
 
 
 def launch_task_manager():
+    """Launch the task manager."""
     from alab_management.task_manager.task_manager import TaskManager
     from alab_management.utils.module_ops import load_definition
 
@@ -44,6 +45,7 @@ def launch_task_manager():
 
 
 def launch_device_manager():
+    """Launch the device manager."""
     from alab_management.device_manager import DeviceManager
     from alab_management.utils.module_ops import load_definition
 
@@ -53,6 +55,7 @@ def launch_device_manager():
 
 
 def launch_lab(host, port, debug):
+    """Start to run the lab."""
     from alab_management.device_view import DeviceView
 
     dv = DeviceView()

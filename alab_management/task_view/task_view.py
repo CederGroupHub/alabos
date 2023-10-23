@@ -4,25 +4,21 @@ provides some convenience methods to query and manipulate the tasks collection.
 """
 
 from datetime import datetime
-from enum import Enum, auto
-from typing import Any, Dict, List, Type, Union, Optional, cast
+from typing import Any, Dict, List, Optional, Type, Union, cast
 
 from bson import ObjectId
-import bson
-import numpy as np
 
-from alab_management.task_view.task import get_all_tasks, BaseTask
-from alab_management.utils.data_objects import get_collection, make_bsonable, get_lock
+from alab_management.task_view.task import BaseTask, get_all_tasks
 from alab_management.task_view.task_enums import TaskStatus
+from alab_management.utils.data_objects import get_collection, get_lock, make_bsonable
+
 from .completed_task_view import CompletedTaskView
 
 completed_task_view = CompletedTaskView()
 
 
 class TaskView:
-    """
-    Task view manages the status, parameters of a task
-    """
+    """Task view manages the status, parameters of a task."""
 
     def __init__(self):
         self._task_collection = get_collection("tasks")
@@ -39,7 +35,7 @@ class TaskView:
         task_id: Optional[ObjectId] = None,
     ) -> ObjectId:
         """
-        Insert a task into the task collection
+        Insert a task into the task collection.
 
         Args:
             task_type: the type of task, which should be a type name of class inherited from
@@ -52,7 +48,8 @@ class TaskView:
             next_tasks: one or a list of ObjectId that refer to next tasks of this task
               (which cannot start until this task finishes)
 
-        Returns:
+        Returns
+        -------
             the assigned id for this task
         """
         if task_type not in self._tasks_definition:
@@ -86,9 +83,7 @@ class TaskView:
     def create_subtask(
         self, task_id, subtask_type, samples: List[str], parameters: dict
     ):
-        """
-        Create a subtask entry for a task.
-        """
+        """Create a subtask entry for a task."""
         task = self.get_task(task_id=task_id)
         subtask_id = ObjectId()
 
@@ -118,7 +113,7 @@ class TaskView:
 
     def get_task(self, task_id: ObjectId, encode: bool = False) -> Dict[str, Any]:
         """
-        Get a task by its task id, which will return all the info stored in the database
+        Get a task by its task id, which will return all the info stored in the database.
 
         Args:
             task_id: the task_id of interest. If not found, will return ``None``
@@ -143,9 +138,7 @@ class TaskView:
         return result
 
     def get_task_with_sample(self, sample_id: ObjectId) -> Optional[Dict[str, Any]]:
-        """
-        Get a task that contains the sample with the provided id
-        """
+        """Get a task that contains the sample with the provided id."""
         result = self._task_collection.find({"samples.sample_id": sample_id})
         if result is None:
             raise ValueError(
@@ -154,15 +147,13 @@ class TaskView:
         return list(result)
 
     def get_status(self, task_id: ObjectId) -> TaskStatus:
-        """
-        Get the status of a task
-        """
+        """Get the status of a task."""
         task = self.get_task(task_id=task_id)
         return TaskStatus[task["status"]]
 
     def update_status(self, task_id: ObjectId, status: TaskStatus):
         """
-        Update the status of one task
+        Update the status of one task.
 
         If the status is ``COMPLETED``, we will also try to
         mark its next tasks to ``READY``, if all of its previous
@@ -216,7 +207,8 @@ class TaskView:
                         if entry["sample_id"] not in samples_in_this_task
                     ]
                     if len(samples_to_remain_in_downstream_task) == 0:
-                        # This is probably impossible (if we have 0 samples remaining,this task should exclusive depends on the cancelled task and have been caught above), but just in case...
+                        # This is probably impossible (if we have 0 samples remaining,this task should exclusive
+                        # depends on the cancelled task and have been caught above), but just in case...
                         self.update_status(
                             task_id=next_task_id, status=TaskStatus.CANCELLED
                         )
@@ -240,9 +232,7 @@ class TaskView:
     def update_subtask_status(
         self, task_id: ObjectId, subtask_id: ObjectId, status: TaskStatus
     ):
-        """
-        Update the status of a subtask
-        """
+        """Update the status of a subtask."""
         task = self.get_task(task_id=task_id, encode=False)
         subtasks = task.get("subtasks", [])
         found = False
@@ -272,10 +262,9 @@ class TaskView:
         """
         Update result to completed job.
 
-        Args:
-            task_id: the id of task to be updated
-            name: the name of the result to be updated. If ``None``, will update the entire ``result`` field. Otherwise, will update the field ``result.name``.
-            value: the value to be stored. This must be bson-encodable (ie can be written into MongoDB!)
+        Args: task_id: the id of task to be updated name: the name of the result to be updated. If ``None``,
+        will update the entire ``result`` field. Otherwise, will update the field ``result.name``. value: the value
+        to be stored. This must be bson-encodable (ie can be written into MongoDB!)
         """
         _ = self.get_task(
             task_id=task_id
@@ -284,10 +273,7 @@ class TaskView:
         # if value is None:
         #     raise ValueError("Must provide a value to update result with!")
 
-        if name is None:
-            update_path = "result"
-        else:
-            update_path = f"result.{name}"
+        update_path = "result" if name is None else f"result.{name}"
 
         self._task_collection.update_one(
             {"_id": task_id},
@@ -338,7 +324,7 @@ class TaskView:
     def try_to_mark_task_ready(self, task_id: ObjectId):
         """
         Check if one task's parent tasks are all completed,
-        if so, mark it as READY
+        if so, mark it as READY.
         """
         task = self.get_task(task_id)
 
@@ -351,9 +337,10 @@ class TaskView:
 
     def get_ready_tasks(self) -> List[Dict[str, Any]]:
         """
-        Return a list of ready tasks
+        Return a list of ready tasks.
 
-        Returns:
+        Returns
+        -------
             List of task entry: {"task_id": ``ObjectId``,
             "type": :py:class:`BaseTask <alab_management.task_view.task.BaseTask>`}
         """
@@ -361,9 +348,10 @@ class TaskView:
 
     def get_tasks_by_status(self, status: TaskStatus) -> List[Dict[str, Any]]:
         """
-        Return a list of tasks with given status
+        Return a list of tasks with given status.
 
-        Returns:
+        Returns
+        -------
             List of task entry: {"task_id": ``ObjectId``,
             "type": :py:class:`BaseTask <alab_management.task_view.task.BaseTask>`}
         """
@@ -396,14 +384,14 @@ class TaskView:
     ):
         """
         Add prev tasks and next tasks to one task entry,
-        which will not overwrite old pre_task and next_tasks
+        which will not overwrite old pre_task and next_tasks.
 
         Args:
             task_id: the id of task to be updated
             prev_tasks: one or a list of ids of ``prev_tasks``
             next_tasks: one or a list of ids of ``next_tasks``
         """
-        result = self.get_task(task_id=task_id, encode=False)
+        self.get_task(task_id=task_id, encode=False)
 
         prev_tasks = prev_tasks if prev_tasks is not None else []
         prev_tasks = prev_tasks if isinstance(prev_tasks, list) else [prev_tasks]
@@ -432,9 +420,7 @@ class TaskView:
         )
 
     def set_message(self, task_id: ObjectId, message: str):
-        """
-        Set message for one task. This is displayed on the dashboard.
-        """
+        """Set message for one task. This is displayed on the dashboard."""
         self._task_collection.update_one(
             {"_id": task_id},
             {
@@ -465,7 +451,7 @@ class TaskView:
 
     def mark_task_as_cancelling(self, task_id: ObjectId):
         """
-        Try to cancel a task by marking the task as TaskStatus.CANCELLING
+        Try to cancel a task by marking the task as TaskStatus.CANCELLING.
 
         If the status is not in [READY, INITIATED, WAITING, PAUSED, READY, RUNNING],
         the request will be ignored and returned.
@@ -489,7 +475,5 @@ class TaskView:
             )
 
     def exists(self, task_id: Union[ObjectId, str]) -> bool:
-        """
-        Check if a task id exists
-        """
+        """Check if a task id exists."""
         return self._task_collection.count_documents({"_id": ObjectId(task_id)}) > 0

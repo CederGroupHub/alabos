@@ -1,3 +1,5 @@
+"""Serve the frontend files from the static folder."""
+
 from pathlib import Path
 from typing import cast
 

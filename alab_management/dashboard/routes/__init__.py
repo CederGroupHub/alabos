@@ -1,3 +1,5 @@
+"""This is a dashboard that displays data from the ALab database."""
+
 from .basic_route import modules
 from .experiment import experiment_bp
 from .pause import pause_bp

@@ -1,18 +1,21 @@
+"""The module to send alerts to the user via email or slack."""
+
 import smtplib
-import os
+
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
 
 def format_message_to_codeblock(message: str) -> str:
     """
-    This function takes a message and formats it as a code block.
+    The function takes a message and formats it as a code block.
     It is used to format tracebacks as code blocks in Slack.
+
     Args:
         message: The message to format (String). This is usually a traceback.
-    Returns:
-        formatted_message: The formatted message. This will be formatted into code block in slack if the message contains traceback,
-          otherwise it will be the original message.
+
+    Returns ------- formatted_message: The formatted message. This will be formatted into code block in slack if the
+    message contains traceback, otherwise it will be the original message.
     """
     # Check if "Traceback (most recent call last):" is in the message
     # Split the message into lines
@@ -50,17 +53,15 @@ def format_message_to_codeblock(message: str) -> str:
 
 
 class Alarm:
-    """
-    A class to send alerts to the user via email or slack.
-    """
+    """A class to send alerts to the user via email or slack."""
 
     def __init__(
-        self,
-        email_receivers: list = None,
-        email_sender: str = None,
-        email_password: str = None,
-        slack_bot_token: str = None,
-        slack_channel_id: str = None,
+            self,
+            email_receivers: list = None,
+            email_sender: str = None,
+            email_password: str = None,
+            slack_bot_token: str = None,
+            slack_channel_id: str = None,
     ):
         """
         Args:
@@ -76,21 +77,22 @@ class Alarm:
             try:
                 self.setup_email(email_sender, email_receivers, email_password)
                 self.email_alert = True
-            except:
+            except:  # noqa: E722
                 print("Email setup failed, please recheck config file")
         if slack_bot_token is not None:
             try:
                 self.setup_slackbot(slack_bot_token, slack_channel_id)
                 self.slack_alert = True
-            except:
+            except:  # noqa: E722
                 print("Slackbot setup failed, please recheck config file")
         self.platforms = {"email": self.email_alert, "slack": self.slack_alert}
 
     def setup_email(
-        self, email_receivers: list, email_sender: str, email_password: str
+            self, email_receivers: list, email_sender: str, email_password: str
     ):
         """
-        Try to setup email notification (called in __init__)
+        Try to setup email notification (called in __init__).
+
         Args:
             email_receivers: A list of email addresses to send the alert to.
             email_sender: The email address to send the alert from.
@@ -102,48 +104,51 @@ class Alarm:
             self.email_password = email_password
             self.email_alert = True
             self.platforms = {"email": self.email_alert, "slack": self.slack_alert}
-        except:
+        except:  # noqa: E722
             print("Email setup failed, please recheck config file")
 
     def setup_slackbot(self, slack_bot_token: str, slack_channel_id: str):
         """
-        Try to setup slackbot notification (called in __init__)
+        Try to setup slackbot notification (called in __init__).
+
         Args:
             slack_bot_token: The token from slackbot app
-            slack_channel_id: The slack channel id where the slackbot app is deployed
+            slack_channel_id: The slack channel id where the slackbot app is deployed.
         """
         try:
             self.slack_bot_token = slack_bot_token
             self.slack_channel_id = slack_channel_id
             self.slack_alert = True
             self.platforms = {"email": self.email_alert, "slack": self.slack_alert}
-        except:
+        except:  # noqa: E722
             print("Slackbot setup failed, please recheck config file")
 
     def alert(self, message: str, category: str):
         """
-        Try to alert user in all platform in format of "Category: Message"
+        Try to alert user in all platform in format of "Category: Message".
+
         Args:
             message: The message to print in the platform
-            category: The category of the message
+            category: The category of the message.
         """
         try:
             if self.platforms["email"]:
                 self.send_email(message, category)
             if self.platforms["slack"]:
                 self.send_slack_notification(message, category)
-        except:
+        except:  # noqa: E722
             if self.platforms["slack"]:
                 self.send_slack_notification(message, category)
 
     def send_email(self, message: str, category: str):
         """
-        Sends an email to the receiver email address with the exception and category.
+        Send an email to the receiver email address with the exception and category.
         Category is the type of exception that occurred.
         Automatically use "Error" as category if the message contains traceback.
+
         Args:
             message: The message to print in the email
-            category: The category of the message
+            category: The category of the message.
         """
         if "Traceback (most recent call last):" in message:
             category = "Error"
@@ -160,12 +165,13 @@ class Alarm:
 
     def send_slack_notification(self, message: str, category: str):
         """
-        Sends a slack message to the receiver email address with the exception and category.
+        Send a slack message to the receiver email address with the exception and category.
         Category is the type of exception that occurred.
         Automatically use "Error" as category if the message contains traceback.
+
         Args:
             message: The message to print in the email
-            category: The category of the message
+            category: The category of the message.
         """
         if "Traceback (most recent call last):" in message:
             category = "Error"
@@ -173,8 +179,8 @@ class Alarm:
             message = format_message_to_codeblock(message)
         try:
             client = WebClient(token=self.slack_bot_token)
-            response = client.chat_postMessage(
+            client.chat_postMessage(
                 channel=self.slack_channel_id, text=category + ": " + message
             )
         except SlackApiError as e:
-            print("Error : {}".format(e))
+            print(f"Error : {e}")

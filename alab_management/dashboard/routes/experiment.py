@@ -1,3 +1,5 @@
+"""This is a dashboard that displays data from the ALab database."""
+
 from datetime import datetime, timedelta
 
 from bson import ObjectId

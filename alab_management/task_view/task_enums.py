@@ -17,7 +17,7 @@ class TaskPriority(IntEnum):
 
 class TaskStatus(Enum):
     """
-    The status of one task
+    The status of one task.
 
     - ``WAITING``: the task cannot start yet, waiting for preceding tasks to finish
     - ``INITIATED``: the task has been sent to task actor, but not yet running

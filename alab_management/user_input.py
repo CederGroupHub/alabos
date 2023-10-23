@@ -1,20 +1,21 @@
 import time
-from typing import Any, Dict, List, Optional, Union, cast
-from alab_management.experiment_view.experiment_view import ExperimentView
-from alab_management.utils.data_objects import get_collection
 from enum import Enum
+from typing import Any, Dict, List, Optional, Union, cast
+
 from bson import ObjectId
-from alab_management.task_view import TaskView
+
 from alab_management.alarm import Alarm
+from alab_management.experiment_view.experiment_view import ExperimentView
+from alab_management.task_view import TaskView
+from alab_management.utils.data_objects import get_collection
+
 from .config import AlabConfig
 
 CONFIG = AlabConfig()
 
 
 class UserRequestStatus(Enum):
-    """
-    Enum for user response.
-    """
+    """Enum for user response."""
 
     FULLFILLED = "fulfilled"
     PENDING = "pending"
@@ -22,16 +23,14 @@ class UserRequestStatus(Enum):
 
 
 class UserInputView:
-    """
-    Sample view manages the samples and their positions
-    """
+    """Sample view manages the samples and their positions."""
 
     def __init__(self):
         self._input_collection = get_collection("user_input")
         self._task_view = TaskView()
         self._experiment_view = ExperimentView()
         self._alarm = Alarm()
-        alarm_config = AlabConfig().get("alarm", dict())
+        alarm_config = AlabConfig().get("alarm", {})
         if "email_receivers" in alarm_config:
             self._alarm.setup_email(
                 email_receivers=alarm_config["email_receivers"],
@@ -83,7 +82,7 @@ class UserInputView:
                 "request_context": context,
             }
         )
-        if maintenance == True:
+        if maintenance is True:
             category = "Maintenance"
         self._alarm.alert(f"User input requested: {prompt}", category)
         return request_id
@@ -101,9 +100,7 @@ class UserInputView:
         return cast(Dict[str, Any], request)
 
     def update_request_status(self, request_id: ObjectId, response: str, note: str):
-        """
-        Update the status of a request.
-        """
+        """Update the status of a request."""
         self.get_request(request_id)  # will error is request does not exist
         self._input_collection.update_one(
             {"_id": request_id},
@@ -132,9 +129,7 @@ class UserInputView:
         return request["response"]
 
     def clean_up_user_input_collection(self):
-        """
-        Drop the sample position collection
-        """
+        """Drop the sample position collection."""
         self._input_collection.drop()
 
     def get_all_pending_requests(self) -> list:
@@ -143,7 +138,6 @@ class UserInputView:
 
         Returns a list of pending requests.
         """
-
         return cast(
             List[Dict[str, Any]],
             self._input_collection.find({"status": UserRequestStatus.PENDING.value}),
@@ -179,6 +173,13 @@ def request_user_input(
 
 
 def request_maintenance_input(prompt: str, options: List[str]):
+    """
+    Request user input through the dashboard. Blocks until response is given.
+
+    Args:
+        prompt: prompt to give user
+        options: response options to give user
+    """
     return request_user_input(
         task_id=None,
         prompt=prompt,

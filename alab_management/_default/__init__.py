@@ -1,2 +1,2 @@
-from .devices import *
-from .tasks import *
+from .devices import *  # noqa
+from .tasks import *  # noqa

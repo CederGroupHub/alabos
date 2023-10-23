@@ -8,7 +8,12 @@ description = " Alab Workflow Management is aimed at providing a configurable an
 readme = "README.md"
 keywords = ["high-throughput experiments", "workflow", "autonomous synthesis"]
 license = { text = "modified BSD" }
-authors = [{ name = "Yuxing Fei", email = "yuxingfei@berkeley.edu" }, { name = "Bernardus Rendy", email = "brendy@lbl.gov" }, { name = "Rishi Kumar", email = "rekumar@lbl.gov" } ]
+authors = [
+    { name = "Yuxing Fei", email = "yuxingfei@berkeley.edu" },
+    { name = "Bernardus Rendy", email = "brendy@lbl.gov" },
+    { name = "Rishi Kumar", email = "rekumar@lbl.gov" },
+    { name = "Hrushikesh Sahasrabuddhe", email = "hpsahasrabuddhe@lbl.gov" }
+]
 dynamic = ["version"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -171,10 +176,13 @@ select = [
     "W",   # pycodestyle
     "YTT", # flake8-2020
 ]
-ignore = ["B028", "PLW0603", "RUF013"]
+ignore = ["B028", "PLW0603", "RUF013", "D100", "D404", "D401", "D205"]
 pydocstyle.convention = "numpy"
-isort.known-first-party = ["jobflow"]
+line-length = 130
 
 [tool.ruff.per-file-ignores]
 "__init__.py" = ["F401"]
+"**/dashboard/*" = ["D"]
 "**/tests/*" = ["D"]
+"**/fake_lab/*" = ["D", "B"]
+"docs/source/conf.py" = ["D"]

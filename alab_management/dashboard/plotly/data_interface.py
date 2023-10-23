@@ -1,3 +1,5 @@
+"""Plotly dashboard for ALAB management."""
+
 import pandas as pd
 
 from alab_management.sample_view import CompletedSampleView, SampleView

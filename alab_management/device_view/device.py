@@ -1,31 +1,30 @@
-"""
-Define the base class of devices
-"""
+"""Define the base class of devices."""
 
+import datetime
+import threading
+import time
 from abc import ABC, abstractmethod
+from queue import Empty, PriorityQueue
 from traceback import format_exc
-from typing import Any, Iterable, List, ClassVar, Dict, Optional, Union
-from alab_management.logger import DBLogger, LoggingType
+from typing import Any, Dict, List, Optional, Union
 
+from alab_management.logger import DBLogger
 from alab_management.sample_view.sample import SamplePosition
 from alab_management.user_input import request_maintenance_input
-from .dbattributes import value_in_database, ListInDatabase, DictInDatabase
-import datetime
-import time
-import threading
-from queue import PriorityQueue, Empty
 
+from .dbattributes import DictInDatabase, ListInDatabase
 
-### Base Device class ###
+# Base Device class #
 
 
 class BaseDevice(ABC):
     """
-    The abstract class of device
+    The abstract class of device.
 
     All the devices should be inherited from this class
 
-    Attributes:
+    Attributes
+    ----------
         name (str): the name of device, which is the unique identifier of this device
         description (Optional[str]): description of this kind of device, which can include
               the device type, how to set up and so on.
@@ -73,15 +72,16 @@ class BaseDevice(ABC):
     @property
     @abstractmethod
     def description(self) -> str:
-        """
-        A short description of the device. This will be stored in the database + displayed in the dashboard. This must be declared in subclasses of BaseDevice!
+        """A short description of the device. This will be stored in the database + displayed in the dashboard. This
+        must be declared in subclasses of BaseDevice!.
         """
         pass
 
     def set_message(self, message: str):
         """Sets the device message to be displayed on the dashboard.
 
-        Note: this method is used instead of python getter/setters because the DeviceWrapper can currently only access methods, not properties.
+        Note: this method is used instead of python getter/setters because the DeviceWrapper can currently only
+        access methods, not properties.
         """
         self._device_view.set_message(device_name=self.name, message=message)
         self.__message = message
@@ -89,16 +89,19 @@ class BaseDevice(ABC):
     def get_message(self) -> str:
         """Returns the device message to be displayed on the dashboard.
 
-        Note: this method is used instead of python getter/setters because the DeviceWrapper can currently only access methods, not properties.
+        Note: this method is used instead of python getter/setters because the DeviceWrapper can currently only
+        access methods, not properties.
         """
         self.__message = self._device_view.get_message(device_name=self.name)
         return self.__message
 
     def _connect_wrapper(self):
         """
-        Connect to the device and execute any backend actions that are only possible when alabos is running + the device is connected.
+        Connect to the device and execute any backend actions that are only possible when alabos is running + the
+        device is connected.
 
-        Note that device's only connect within `alabos launch`, so ExperimentManager, DeviceManager, and the API are guaranteed to be running when this method is called.
+        Note that device's only connect within `alabos launch`, so ExperimentManager, DeviceManager, and the API are
+        guaranteed to be running when this method is called.
         """
         self.connect()
         self.get_message()  # retrieve the most recent message from the database.
@@ -107,7 +110,8 @@ class BaseDevice(ABC):
     @abstractmethod
     def connect(self):
         """
-        Connect to any devices here. This will be called by alabos to make connections to devices at the appropriate time.
+        Connect to any devices here. This will be called by alabos to make connections to devices at the appropriate
+        time.
 
         This method must be defined even if no device connections are required! Just return in this case.
 
@@ -115,16 +119,15 @@ class BaseDevice(ABC):
         raise NotImplementedError()
 
     def _disconnect_wrapper(self):
-        """
-        Disconnect from the device and execute any backend actions that are only possible when alabos is running.
-        """
+        """Disconnect from the device and execute any backend actions that are only possible when alabos is running."""
         self.disconnect()
         self._signalemitter.stop()
 
     @abstractmethod
     def disconnect(self):
         """
-        Disconnect from devices here. This will be called by alabos to release connections to devices at the appropriate time.
+        Disconnect from devices here. This will be called by alabos to release connections to devices at the
+        appropriate time.
 
         This method must be defined even if no device connections are required! Just return in this case.
         """
@@ -167,31 +170,28 @@ class BaseDevice(ABC):
 
     @abstractmethod
     def emergent_stop(self):  # TODO rename this to emergency stop
-        """
-        Specify how the device should stop when emergency
-        """
+        """Specify how the device should stop when emergency."""
         raise NotImplementedError()
 
     @abstractmethod
     def is_running(self) -> bool:
-        """
-        Check whether this device is running
-        """
+        """Check whether this device is running."""
         raise NotImplementedError()
 
-    ## methods to store Device values inside the database. Lists and dictionaries are supported.
+    # methods to store Device values inside the database. Lists and dictionaries are supported.
     def list_in_database(
-        self, name: str, default_value: Optional[Union[list, None]] = None
+            self, name: str, default_value: Optional[Union[list, None]] = None
     ) -> ListInDatabase:
         """
         Create a list attribute that is stored in the database.
-        Note: nested dicts/lists are not supported!
+        Note: nested dicts/lists are not supported!.
 
         Args:
             name: The name of the attribute
             default_value: The default value of the attribute. if None (default), will default to an empty list.
 
-        Returns:
+        Returns
+        -------
             Class instance to access the attribute. Acts like a normal List, but is stored in the database.
         """
         return ListInDatabase(
@@ -202,17 +202,18 @@ class BaseDevice(ABC):
         )
 
     def dict_in_database(
-        self, name: str, default_value: Optional[Union[dict, None]] = None
+            self, name: str, default_value: Optional[Union[dict, None]] = None
     ) -> DictInDatabase:
         """
         Create a dict attribute that is stored in the database.
-        Note: nested dicts/lists are not supported!
+        Note: nested dicts/lists are not supported!.
 
         Args:
             name: The name of the attribute
             default_value: The default value of the attribute. if None (default), will default to an empty dict.
 
-        Returns:
+        Returns
+        -------
             Class instance to access the attribute. Acts like a normal Dict, but is stored in the database.
         """
         return DictInDatabase(
@@ -226,7 +227,8 @@ class BaseDevice(ABC):
         """
         Apply default values to attributes that are stored in the database.
 
-        This is called when the device is first added to the database, typically only when alabos is setting up a new lab.
+        This is called when the device is first added to the database, typically only when alabos is setting up a new
+        lab.
         """
         for attribute_name in dir(self):
             attribute = getattr(self, attribute_name)
@@ -234,25 +236,29 @@ class BaseDevice(ABC):
                 attribute.apply_default_value()
 
     def request_maintenance(self, prompt: str, options: List[Any]):
+        """
+        Request maintenance input from the user. This will display a prompt to the user and wait for them to select
+        an option. The selected option will be returned.
+
+        Args:
+            prompt: the text to display to the user
+            options: the options to display to the user. This should be a list of strings.
+        """
         return request_maintenance_input(prompt=prompt, options=options)
 
     def retrieve_signal(
-        self, signal_name: str, within: Optional[datetime.timedelta] = None
+            self, signal_name: str, within: Optional[datetime.timedelta] = None
     ):
-        """Retrieve a signal from the database
+        """Retrieve a signal from the database.
 
-        Args:
-            signal_name (str): device signal name. This should match the signal_name passed to the `@log_device_signal` decorator
-            within (Optional[datetime.timedelta], optional): timedelta defining how far back to pull logs from (relative to current time). Defaults to None.
+        Args: signal_name (str): device signal name. This should match the signal_name passed to the
+        `@log_device_signal` decorator within (Optional[datetime.timedelta], optional): timedelta defining how far
+        back to pull logs from (relative to current time). Defaults to None.
 
-        Returns:
-            Dict: Dictionary of signal result. Single value vs lists depends on whether `within` was None or not, respectively. Form is:
-            {
-                "device_name": "device_name",
-                "signal_name": "signal_name",
-                "value": "signal_value" or ["signal_value_1", "signal_value_2", ...]],
-                "timestamp": "timestamp" or ["timestamp_1", "timestamp_2", ...]
-            }
+        Returns ------- Dict: Dictionary of signal result. Single value vs lists depends on whether `within` was None
+        or not, respectively. Form is: { "device_name": "device_name", "signal_name": "signal_name",
+        "value": "signal_value" or ["signal_value_1", "signal_value_2", ...]], "timestamp": "timestamp" or [
+        "timestamp_1", "timestamp_2", ...] }
 
 
         """
@@ -261,7 +267,10 @@ class BaseDevice(ABC):
 
 ### DeviceSignalEmitter and related decorator ###
 def log_signal(signal_name: str, interval_seconds: int):
-    """This is a decorator for methods within a `BaseDevice`. Methods decorated with this will be called at the specified interval and the result will be logged to the database under the `signal_name` provided. The intended use is to track process variables (like a furnace temperature, a pressure sensor, etc.) whenever the device is connected to alabos.
+    """This is a decorator for methods within a `BaseDevice`. Methods decorated with this will be called at the
+    specified interval and the result will be logged to the database under the `signal_name` provided. The intended
+    use is to track process variables (like a furnace temperature, a pressure sensor, etc.) whenever the device is
+    connected to alabos.
 
     Args:
         signal_name (str): Name to attribute to this signal
@@ -301,6 +310,8 @@ class DeviceSignalEmitter:
 
     def get_methods_to_log(self):
         """
+        Log the data from all methods decorated with `@log_signal` to the database.
+
         Collected all the methods that are decorated with `@log_signal` and return a dictionary of the form:
 
         .. code-block::
@@ -316,14 +327,12 @@ class DeviceSignalEmitter:
             if hasattr(method, "logging_interval_seconds") and callable(method):
                 methods_to_log[method_name] = {
                     "interval": method.logging_interval_seconds,
-                    "signal_name": method.signal_name,  # noqa
+                    "signal_name": method.signal_name,
                 }
         return methods_to_log
 
     def _worker(self):
-        """
-        This is the worker thread that will periodically log device signals to the database.
-        """
+        """This is the worker thread that will periodically log device signals to the database."""
 
         def wait_with_option_to_kill(time_to_wait: float):
             """
@@ -436,14 +445,12 @@ class DeviceSignalEmitter:
         self._logging_thread.start()
 
     def stop(self):
-        """
-        Stop the logging worker thread. This will stop logging all.
-        """
+        """Stop the logging worker thread. This will stop logging all."""
         self.is_logging = False
         self._logging_thread.join()
 
     def retrieve_signal(self, signal_name, within: Optional[datetime.timedelta] = None):
-        """Retrieve a signal from the database
+        """Retrieve a signal from the database.
 
         Args:
             signal_name (str): device signal name. This should match the signal_name
@@ -451,7 +458,8 @@ class DeviceSignalEmitter:
             within (Optional[datetime.timedelta]): timedelta defining
               how far back to pull logs from (relative to current time). Defaults to None.
 
-        Returns:
+        Returns
+        -------
             Dict: Dictionary of signal result. Single value vs lists depends on whether ``within``
               was None or not, respectively. Form is:
 
@@ -477,9 +485,7 @@ _device_registry: Dict[str, BaseDevice] = {}
 
 
 def add_device(device: BaseDevice):
-    """
-    Register a device instance. It is stored in a global dictionary.
-    """
+    """Register a device instance. It is stored in a global dictionary."""
     if device.name in _device_registry:
         raise KeyError(f"Duplicated device name {device.name}")
     _device_registry[device.name] = device
@@ -489,7 +495,8 @@ def get_all_devices() -> Dict[str, BaseDevice]:
     """
     Get all the device names in the device registry. This is a shallow copy of the registry.
 
-    Returns:
+    Returns
+    -------
         A dictionary of all the devices in the registry. The keys are the device names,
           and the values are the device instances.
     """

@@ -4,18 +4,18 @@ from typing import List, Tuple
 from bson import ObjectId
 
 from alab_management import BaseTask
-from ..devices.furnace import Furnace
 
+from ..devices.furnace import Furnace  # noqa
 from .moving import Moving
 
 
 class Heating(BaseTask):
     def __init__(
-        self,
-        samples: List[ObjectId],
-        setpoints: List[Tuple[float, float]],
-        *args,
-        **kwargs,
+            self,
+            samples: List[ObjectId],
+            setpoints: List[Tuple[float, float]],
+            *args,
+            **kwargs,
     ):
         super().__init__(samples=samples, *args, **kwargs)
         self.setpoints = setpoints
@@ -23,8 +23,8 @@ class Heating(BaseTask):
 
     def run(self):
         with self.lab_view.request_resources({Furnace: {"inside": 1}}) as (
-            devices,
-            sample_positions,
+                devices,
+                sample_positions,
         ):
             furnace = devices[Furnace]
             inside_furnace = sample_positions[Furnace]["inside"][0]

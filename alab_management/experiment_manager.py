@@ -7,21 +7,20 @@ done.
 """
 
 import time
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
-from .experiment_view import ExperimentStatus, ExperimentView, CompletedExperimentView
+from .config import AlabConfig
+from .experiment_view import CompletedExperimentView, ExperimentStatus, ExperimentView
 from .logger import DBLogger
 from .sample_view import SampleView
-from .task_view import TaskView, TaskStatus
+from .task_view import TaskStatus, TaskView
 from .utils.graph_ops import Graph
-from .config import AlabConfig
-from bson import ObjectId
 
 
 class ExperimentManager:
     """
     Experiment manager read experiments from the experiment collection
-    and submit the experiment to executor and flag the completed experiments
+    and submit the experiment to executor and flag the completed experiments.
     """
 
     def __init__(self):
@@ -38,9 +37,7 @@ class ExperimentManager:
             self.completed_experiment_view = CompletedExperimentView()
 
     def run(self):
-        """
-        Start the event loop
-        """
+        """Start the event loop."""
         self.logger.system_log(
             level="DEBUG",
             log_data={
@@ -59,7 +56,7 @@ class ExperimentManager:
     def handle_pending_experiments(self):
         """
         This method will scan the database to find out if there are
-        any pending experiments and submit it to task database
+        any pending experiments and submit it to task database.
         """
         pending_experiments = self.experiment_view.get_experiments_with_status(
             ExperimentStatus.PENDING
@@ -152,9 +149,7 @@ class ExperimentManager:
         )
 
     def mark_completed_experiments(self):
-        """
-        This method will scan the database to mark completed experiments in time
-        """
+        """This method will scan the database to mark completed experiments in time."""
         running_experiments = self.experiment_view.get_experiments_with_status(
             ExperimentStatus.RUNNING
         )

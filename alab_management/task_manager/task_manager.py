@@ -14,7 +14,11 @@ import networkx as nx
 from bson import ObjectId
 from dramatiq_abort import abort
 
-from alab_management.logger import LoggingLevel, DBLogger
+from alab_management import BaseDevice
+from alab_management.device_view import get_all_devices
+from alab_management.device_view.device_view import DeviceView
+from alab_management.lab_view import LabView
+from alab_management.logger import DBLogger, LoggingLevel
 from alab_management.sample_view.sample import SamplePosition
 from alab_management.sample_view.sample_view import SamplePositionRequest, SampleView
 from alab_management.task_actor import run_task
@@ -23,9 +27,8 @@ from alab_management.task_view.task import BaseTask
 from alab_management.task_view.task_enums import TaskStatus
 from alab_management.utils.data_objects import get_collection
 from alab_management.utils.module_ops import load_definition
-from alab_management.device_view.device_view import DeviceView
 
-from .enums import _EXTRA_REQUEST, RequestStatus
+from .enums import _EXTRA_REQUEST
 from .resource_requester import (
     RequestMixin,
     RequestStatus,
@@ -33,7 +36,9 @@ from .resource_requester import (
 
 
 def parse_reroute_tasks() -> Dict[str, Type[BaseTask]]:
-    """Takes the reroute task registry and expands the supported sample positions (which is given in format similar to resource requests) to the individual sample positions.
+    """
+    Takes the reroute task registry and expands the supported sample positions (which is given in format similar to
+    resource requests) to the individual sample positions.
 
     Raises
     ------
@@ -43,8 +48,6 @@ def parse_reroute_tasks() -> Dict[str, Type[BaseTask]]:
     -------
         _type_: _description_
     """
-    from alab_management.task_view.task import _reroute_task_registry
-    from alab_management.device_view.device import _device_registry
     from alab_management.sample_view import SampleView
     from alab_management.task_view.task import _reroute_task_registry
 
@@ -75,8 +78,8 @@ def parse_reroute_tasks() -> Dict[str, Type[BaseTask]]:
                     "device must be a name of a specific device, a class of type BaseDevice, or None"
                 )
 
-            if type(positions) is str:
-                positions = [positions]
+            if isinstance(positions, str):
+                positions = [positions]  # noqa: PLW2901
             for device in devices:
                 for position in positions:
                     if device is None and position == "":
@@ -84,9 +87,9 @@ def parse_reroute_tasks() -> Dict[str, Type[BaseTask]]:
                             'Cannot have device=None and position="" -- this would return every sample_position!'
                         )
                     if device is not None:
-                        position = f"{device}{SamplePosition.SEPARATOR}{position}"
+                        position = f"{device}{SamplePosition.SEPARATOR}{position}"  # noqa: PLW2901
                     for found_position in sample_view._sample_positions_collection.find(
-                        {"name": {"$regex": position}}
+                            {"name": {"$regex": position}}
                     ):  # DB_ACCESS_OUTSIDE_VIEW
                         routes[found_position["name"]] = route_task
     return routes
@@ -118,10 +121,7 @@ class TaskManager(RequestMixin):
         time.sleep(1)  # allow some time for other modules to launch
 
     def run(self):
-        """
-        Start the loop
-        """
-
+        """Start the loop."""
         while True:
             self._loop()
             time.sleep(2)
@@ -136,9 +136,12 @@ class TaskManager(RequestMixin):
             self.handle_request_cycles()
 
     def _clean_up_tasks_from_previous_runs(self):
-        """Cleans up incomplete tasks that exist from the last time the taskmanager was running. Note that this will block the task queue until all samples in these tasks have been removed from the physical lab (confirmed via user requests on the dashboard).
+        """Cleans up incomplete tasks that exist from the last time the taskmanager was running. Note that this will
+        block the task queue until all samples in these tasks have been removed from the physical lab (confirmed via
+        user requests on the dashboard).
 
-        This typically occurs if the taskmanager was exited using SIGTERM (ctrl-c), in which case some tasks may still be in the RUNNING or CANCELLING state. These will be set to CANCELLED now.
+        This typically occurs if the taskmanager was exited using SIGTERM (ctrl-c), in which case some tasks may
+        still be in the RUNNING or CANCELLING state. These will be set to CANCELLED now.
         """
         statuses_to_cancel = [
             TaskStatus.RUNNING,
@@ -165,10 +168,13 @@ class TaskManager(RequestMixin):
 
         print(
             f"""
-              Found {len(tasks_to_cancel)} dangling tasks leftover from previous alabos workers. These tasks were in an unknown state (RUNNING or CANCELLING) when the alabos workers were stopped.
+              Found {len(tasks_to_cancel)} dangling tasks leftover from previous alabos workers. These tasks were in
+              an unknown state (RUNNING or CANCELLING) when the alabos workers were stopped.
 
-              We will now cancel them and remove their physical components from the lab. We will go through each task one by one. A user request will appear on the alabos dashboard for each task. Please acknowledge each request to remove the samples from the lab. Once all tasks have been addressed, the alabos workers will begin to process new tasks. Lets begin:
-              """
+              We will now cancel them and remove their physical components from the lab. We will go through each task
+              one by one. A user request will appear on the alabos dashboard for each task. Please acknowledge each
+              request to remove the samples from the lab. Once all tasks have been addressed, the alabos workers will
+              begin to process new tasks. Lets begin:"""
         )
         for i, task_entry in enumerate(tasks_to_cancel):
             task_id = task_entry["task_id"]
@@ -176,10 +182,13 @@ class TaskManager(RequestMixin):
             task_name = task_class.__name__
 
             print(
-                f"\n({i+1}/{len(tasks_to_cancel)}) please clean up task {task_name} ({task_id}) using the ALabOS dashboard..."
+                f"\n({i + 1}/{len(tasks_to_cancel)}) please clean up task {task_name} ({task_id}) using the ALabOS "
+                f"dashboard..."
             )
 
-            # puts a user request on the dashboard to remove all samples in this task from the physical lab, blocks until request is acknowledged. There may be a duplicate request on the dashboard if the task was already cancelled before the taskmanager was restarted. Acknowledging both should be fine.
+            # puts a user request on the dashboard to remove all samples in this task from the physical lab,
+            # blocks until request is acknowledged. There may be a duplicate request on the dashboard if the task was
+            # already cancelled before the taskmanager was restarted. Acknowledging both should be fine.
             LabView(task_id=task_id).request_cleanup()
 
             # mark task as successfully cancelled
@@ -213,6 +222,12 @@ class TaskManager(RequestMixin):
             )
 
     def handle_tasks_to_be_cancelled(self):
+        """
+        Check if there are any tasks that are in CANCELLING status. If so, cancel them.
+
+        This is done by sending a dramatiq abort message to the task actor process. The task actor process will
+        update the status from CANCELLING to CANCELLED.
+        """
         tasks_to_be_cancelled = self.task_view.get_tasks_by_status(
             status=TaskStatus.CANCELLING
         )
@@ -261,7 +276,11 @@ class TaskManager(RequestMixin):
             self._handle_requested_resources(request)
 
     def handle_request_cycles(self):
-        """Check for request cycles (gridlocks where a set of tasks require sample_positions occupied by one another.). We attempt to resolve these cycles by moving a sample out of the way by a reroute_task defined in the alab configuration. This will move samples to free up the blocked task of highest priority. If this alone does not resolve the cycle, we will try again on the next call to this method."""
+        """Check for request cycles (gridlocks where a set of tasks require sample_positions occupied by one
+        another.). We attempt to resolve these cycles by moving a sample out of the way by a reroute_task defined in
+        the alab configuration. This will move samples to free up the blocked task of highest priority. If this alone
+        does not resolve the cycle, we will try again on the next call to this method.
+        """
         positions_to_reroute, taskid_to_reroute = self._check_for_request_cycle()
         if len(positions_to_reroute) > 0:
             thread = Thread(
@@ -282,7 +301,8 @@ class TaskManager(RequestMixin):
             if not self.__skip_checking_task_id:
                 task_status = self.task_view.get_status(task_id=task_id)
                 if task_status != TaskStatus.REQUESTING_RESOURCES:
-                    # this implies the Task has been cancelled or errored somewhere else in the chain -- we should not allocate any resources to the broken Task.
+                    # this implies the Task has been cancelled or errored somewhere else in the chain -- we should
+                    # not allocate any resources to the broken Task.
                     self.update_request_status(
                         request_id=resource_request["_id"],
                         status=RequestStatus.CANCELED,
@@ -382,7 +402,7 @@ class TaskManager(RequestMixin):
             )
 
     def _occupy_sample_positions(
-        self, sample_positions: Dict[str, List[Dict[str, Any]]], task_id: ObjectId
+            self, sample_positions: Dict[str, List[Dict[str, Any]]], task_id: ObjectId
     ):
         for sample_positions_ in sample_positions.values():
             for sample_position_ in sample_positions_:
@@ -396,7 +416,7 @@ class TaskManager(RequestMixin):
                 self.device_view.release_device(device["name"])
 
     def _release_sample_positions(
-        self, sample_positions: Dict[str, List[Dict[str, Any]]]
+            self, sample_positions: Dict[str, List[Dict[str, Any]]]
     ):
         for sample_positions_ in sample_positions.values():
             for sample_position in sample_positions_:
@@ -404,7 +424,10 @@ class TaskManager(RequestMixin):
                     self.sample_view.release_sample_position(sample_position["name"])
 
     def _check_for_request_cycle(self):
-        """Check if there is a cycle in the request graph. (ie tasks occupy sample positions required by one another, no requests can be fulfilled). If found, use a reroute task to fix the cycle. This function will only trigger if a reroute task has been defined using `add_reroute`."""
+        """Check if there is a cycle in the request graph. (ie tasks occupy sample positions required by one another,
+        no requests can be fulfilled). If found, use a reroute task to fix the cycle. This function will only trigger
+        if a reroute task has been defined using `add_reroute`.
+        """
         tasks = self.task_view.get_tasks_by_status(TaskStatus.REQUESTING_RESOURCES)
 
         if len(tasks) < 2:
@@ -420,9 +443,13 @@ class TaskManager(RequestMixin):
                 {"task_id": t["task_id"], "status": RequestStatus.PENDING.name}
             )  # DB_ACCESS_OUTSIDE_VIEW
             if request is None:
-                continue  # race condition. task must have had resource request fulfilled between getting task and request entries.
+                # race condition. task must have had resource request fulfilled between getting task and
+                # request entries.
+                continue
             if "parsed_sample_positions_request" not in request:
-                continue  # slight delay between setting TaskStatus.REQUESTING_RESOURCES and generating parsed_sample_positions_request. can catch these on the next call if necessary.
+                # slight delay between setting TaskStatus.REQUESTING_RESOURCES and generating
+                # parsed_sample_positions_request. can catch these on the next call if necessary.
+                continue
             task_ids_to_consider.append(t["task_id"])
             occupied = occupied_by_task[t["task_id"]] = []
             blocked = requested_by_task[t["task_id"]] = []
@@ -431,26 +458,27 @@ class TaskManager(RequestMixin):
                 occupied.append(self.sample_view.get_sample(s["sample_id"]).position)
             for r in request["parsed_sample_positions_request"]:
                 if (
-                    len(
-                        self.sample_view.get_available_sample_position(
-                            task_id=t["task_id"], position_prefix=r["prefix"]
+                        len(
+                            self.sample_view.get_available_sample_position(
+                                task_id=t["task_id"], position_prefix=r["prefix"]
+                            )
                         )
-                    )
-                    < r["number"]
+                        < r["number"]
                 ):
                     blocked.append(
                         r["prefix"]
                     )  # we dont have enough available positions for this request
 
-        # construct a directed graph where nodes are task_id's, and edges indicate that the tail node is blocked by the head node (ie the tail task is requesting a sample_position occupied by the head task)
+        # construct a directed graph where nodes are task_id's, and edges indicate that the tail node is blocked by
+        # the head node (ie the tail task is requesting a sample_position occupied by the head task)
         edges = []
         for i, t0 in enumerate(task_ids_to_consider):
             for j, t1 in enumerate(task_ids_to_consider):
                 if i == j:
                     continue
                 if any(
-                    occupied in requested_by_task[t0]
-                    for occupied in occupied_by_task[t1]
+                        occupied in requested_by_task[t0]
+                        for occupied in occupied_by_task[t1]
                 ):
                     edges.append((t0, t1))
 
@@ -478,25 +506,25 @@ class TaskManager(RequestMixin):
         return positions_to_vacate, occupying_taskid
 
     def _reroute_to_fix_request_cycle(
-        self,
-        task_id: ObjectId,
-        sample_positions: List[str],
+            self,
+            task_id: ObjectId,
+            sample_positions: List[str],
     ):
         from alab_management.lab_view import LabView
 
         """
         Runs rerouting tasks (as specified by add_reroute_task) to vacate sample_positions to resolve a request cycle.
 
-        task_id: the task_id of the blocking task that will be rerouted
-        sample_positions: sample_positions occupied by the blocking task which will be moved by the appropriate reroute task.
-        """
+        task_id: the task_id of the blocking task that will be rerouted sample_positions: sample_positions occupied
+        by the blocking task which will be moved by the appropriate reroute task."""
 
         self.__reroute_in_progress = True
         lab_view = LabView(task_id=task_id)
         for fix_position in sample_positions:
             if fix_position not in _reroute_registry:
                 raise ValueError(
-                    f'No reroute task defined to move sample out from sample_position "{fix_position}". Please add a reroute task using `add_reroute`'
+                    f'No reroute task defined to move sample out from sample_position "{fix_position}". Please add a '
+                    f'reroute task using `add_reroute`'
                 )
             reroute_Task: BaseTask = _reroute_registry[fix_position]
 

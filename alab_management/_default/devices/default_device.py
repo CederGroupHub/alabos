@@ -1,12 +1,10 @@
 from typing import ClassVar
 
-from alab_management import BaseDevice, SamplePosition, value_in_database
+from alab_management import BaseDevice, SamplePosition
 
 
 class DefaultDevice(BaseDevice):
-    """
-    Default device definition, refer to https://idocx.github.io/alab_management/device_definition.html
-    """
+    """Default device definition, refer to https://idocx.github.io/alab_management/device_definition.html."""
 
     description: ClassVar[str] = "Default device"
 
@@ -15,9 +13,7 @@ class DefaultDevice(BaseDevice):
 
     @property
     def sample_positions(self):
-        """
-        Sample positions define the sample positions related to this device
-        """
+        """Sample positions define the sample positions related to this device."""
         return [
             SamplePosition(
                 name="DefaultSamplePosition",
