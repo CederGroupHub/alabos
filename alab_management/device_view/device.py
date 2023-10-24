@@ -6,7 +6,7 @@ import time
 from abc import ABC, abstractmethod
 from queue import Empty, PriorityQueue
 from traceback import format_exc
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, Callable
 
 from alab_management.logger import DBLogger
 from alab_management.sample_view.sample import SamplePosition
@@ -14,9 +14,33 @@ from alab_management.user_input import request_maintenance_input
 
 from .dbattributes import DictInDatabase, ListInDatabase
 
+
+def mock(*, return_constant: Any = None, return_mock_call: Callable[..., Any] = None):
+    def decorator(f: Callable[..., Any]):
+        @functools.wraps(f)
+        def wrapper(*args, **kwargs):
+            from alab_management.config import AlabConfig
+
+            if AlabConfig()["general"].get("simulation", False):
+                if return_constant is not None and return_mock_call is not None:
+                    raise ValueError(
+                        "Cannot specify both return_constant and return_mock_call!"
+                    )
+                elif return_constant is not None:
+                    return return_constant
+                elif return_mock_call is not None:
+                    return return_mock_call(*args, **kwargs)
+                else:
+                    raise ValueError(
+                        "Must specify either return_constant or return_mock_call!"
+                    )
+            else:
+                return f(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
 # Base Device class #
-
-
 class BaseDevice(ABC):
     """
     The abstract class of device.
