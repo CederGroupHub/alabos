@@ -111,7 +111,7 @@ class TestDeviceView(TestCase):
         task_id = ObjectId()
 
         devices = self.device_view.request_devices(
-            task_id, device_names_str=device_types
+            task_id, device_types_str=device_types
         )
         occupy_devices(devices, device_view=self.device_view, task_id=task_id)
         self.assertFalse(devices is None)
