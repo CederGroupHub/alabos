@@ -27,7 +27,7 @@ An example of the yaml file is as follows:
 import os
 from pathlib import Path
 from types import MappingProxyType as FrozenDict
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import toml
 from monty.design_patterns import singleton
@@ -61,16 +61,16 @@ def freeze_config(config_: Dict[str, Any]) -> FrozenDict:
     return _frozen_collection(config_)
 
 
-@singleton
+# @singleton
 class AlabConfig:
     """Class used for storing all the config data."""
 
-    def __init__(self):
+    def __init__(self, sim_mode: Optional[bool] = None):
         """Load a immutable toml config file from `config_path`."""
         config_path = os.getenv("ALAB_CONFIG", None)
+
         if config_path is None:
             config_path = "config.toml"
-
         try:
             with open(config_path, encoding="utf-8") as f:
                 _config = toml.load(f)
@@ -83,7 +83,22 @@ class AlabConfig:
             ) from exc
 
         self._path = Path(config_path).absolute()
-        self._config = freeze_config(_config)
+        # self._config = freeze_config(_config)
+        self._config = _config
+
+        # Define the key and value to be updated
+        key = 'general'
+        nested_key = 'simulation'
+
+        # Update the 'general' section with the new value for 'simulation' if sim_mode is provided
+        if sim_mode is not None and key in self._config:
+            general_section = self._config[key]
+            general_section[nested_key] = sim_mode
+            self.set_item(key, general_section)
+
+            # Save the modified configuration back to the file 'config.toml'
+            with open(config_path, 'w', encoding='utf-8') as f:
+                toml.dump(self._config, f)
 
     def __getitem__(self, item):
         """Get the config item."""
@@ -104,6 +119,11 @@ class AlabConfig:
     def get(self, item, default=None):
         """Get the config item."""
         return self._config.get(item, default)
+    
+    def set_item(self, key, value):
+        """Set a specific config item."""
+        self._config[key] = value
+
 
     def __contains__(self, item):
         """Check if the config contains the item."""

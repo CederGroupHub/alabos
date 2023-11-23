@@ -13,26 +13,36 @@ from alab_management.sample_view.sample import SamplePosition
 from alab_management.user_input import request_maintenance_input
 
 from .dbattributes import DictInDatabase, ListInDatabase
+import functools
+from unittest.mock import Mock
 
-
-def mock(*, return_constant: Any = None, return_mock_call: Callable[..., Any] = None):
+def mock(return_constant: Any = None, object_type: Union[List[Any], Any] = None):
     def decorator(f: Callable[..., Any]):
         @functools.wraps(f)
         def wrapper(*args, **kwargs):
             from alab_management.config import AlabConfig
-
-            if AlabConfig()["general"].get("simulation", False):
-                if return_constant is not None and return_mock_call is not None:
+            if AlabConfig()["general"].get("simulation"):
+                if return_constant is not None and object_type is not None:
                     raise ValueError(
                         "Cannot specify both return_constant and return_mock_call!"
                     )
+                elif isinstance(return_constant, dict):
+                    return_dict = {key: return_constant[key] for key in return_constant.keys()}
+                    return return_dict
+                elif isinstance(return_constant, list):
+                    return[return_constant_i for return_constant_i in range(len(return_constant))] 
                 elif return_constant is not None:
                     return return_constant
-                elif return_mock_call is not None:
-                    return return_mock_call(*args, **kwargs)
+                elif object_type is not None:
+                    if isinstance(object_type, list):
+                        return [Mock(spec=cls) for cls in object_type]
+                    else:
+                        return Mock(spec=object_type)
                 else:
                     raise ValueError(
-                        "Must specify either return_constant or return_mock_call!"
+                        "Must specify either return_constant or object_type! return_constant should "
+                        "be of the type str, int, float, bool, list or dict. "
+                        "object_type should be any other class that you want to mock."
                     )
             else:
                 return f(*args, **kwargs)
