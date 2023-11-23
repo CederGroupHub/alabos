@@ -124,7 +124,9 @@ def run_task(task_id_str: str):
                 "task_type": task_type.__name__,
             },
         )
-        result = task.run() # This is the line of code that actually runs the task from Alab_one, for eg: Powder dosing. Powder dosing class will have a method "run".
+        # Following is the line of code that actually runs the task
+        # from Alab_one, for eg: Powder dosing. Powder dosing class will have a method "run".
+        result = task.run()
     except Abort:
         task_view.update_status(task_id=task_id, status=TaskStatus.CANCELLED)
         task_view.set_message(

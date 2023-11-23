@@ -30,7 +30,6 @@ from types import MappingProxyType as FrozenDict
 from typing import Any, Dict, Optional
 
 import toml
-from monty.design_patterns import singleton
 
 
 def freeze_config(config_: Dict[str, Any]) -> FrozenDict:
@@ -87,8 +86,8 @@ class AlabConfig:
         self._config = _config
 
         # Define the key and value to be updated
-        key = 'general'
-        nested_key = 'simulation'
+        key = "general"
+        nested_key = "simulation"
 
         # Update the 'general' section with the new value for 'simulation' if sim_mode is provided
         if sim_mode is not None and key in self._config:
@@ -97,7 +96,7 @@ class AlabConfig:
             self.set_item(key, general_section)
 
             # Save the modified configuration back to the file 'config.toml'
-            with open(config_path, 'w', encoding='utf-8') as f:
+            with open(config_path, "w", encoding="utf-8") as f:
                 toml.dump(self._config, f)
 
     def __getitem__(self, item):
@@ -119,7 +118,7 @@ class AlabConfig:
     def get(self, item, default=None):
         """Get the config item."""
         return self._config.get(item, default)
-    
+
     def set_item(self, key, value):
         """Set a specific config item."""
         self._config[key] = value

@@ -1,22 +1,85 @@
 """Define the base class of devices."""
 
 import datetime
+import functools
 import threading
 import time
 from abc import ABC, abstractmethod
 from queue import Empty, PriorityQueue
 from traceback import format_exc
-from typing import Any, Dict, List, Optional, Union, Callable
+from typing import Any, Callable, Dict, List, Optional, Union
+from unittest.mock import Mock
 
 from alab_management.logger import DBLogger
 from alab_management.sample_view.sample import SamplePosition
 from alab_management.user_input import request_maintenance_input
 
 from .dbattributes import DictInDatabase, ListInDatabase
-import functools
-from unittest.mock import Mock
+
 
 def mock(return_constant: Any = None, object_type: Union[List[Any], Any] = None):
+    """
+    A decorator used for mocking functions during simulation.
+
+    Args:
+    - return_constant (Any, optional): The constant value to be returned by the mocked function.
+        It can be a value (str, int, float, bool), list of values, or a dictionary specifying
+        return values for keys. Default is None.
+    - object_type (Union[List[Any], Any], optional): The type or list of types to mock if the
+        function returns an object. Default is None.
+
+    Returns
+    -------
+    - decorator: Decorator function used to mock other functions during simulation.
+
+    Raises
+    ------
+    - ValueError: If both `return_constant` and `object_type` are specified.
+    - ValueError: If `return_constant` is not of types: str, int, float, bool, list, or dict.
+    - ValueError: If `object_type` is specified and not a list or a class type.
+
+    Note:
+    - The decorator mocks the function during simulation based on specified constant values
+        or object types.
+
+    Examples
+    --------
+    1. Mocking a function with a constant return value:
+    @mock(return_constant=42)
+    def get_data() -> int:
+        ...
+        a = some_integer
+        return a
+
+    2. Mocking a function that returns multiple values in a dictionary:
+    @mock(return_constant={"twotheta": [0.1, 0.2, 0.3], "counts": [100, 200, 300]})
+    def run_simulation() -> dict:
+        ...
+        a = {twotheta: [0.1, 0.2, 0.3]}
+        b = {counts: [100, 200, 300]}
+        return {**a, **b}
+
+    3. Mocking a function that returns a specific object type:
+    @mock(object_type=str)
+    def create_mock_string() -> str:
+        return "Mocked String"
+
+    4. Mocking a function that returns a single object type:
+    from alab_control.ohaus_scale import OhausScale as ScaleDriver
+    @mock(object_type=ScaleDriver)
+    def get_driver(self):
+        self.driver = ScaleDriver(ip=self.ip_address, timeout=self.TIMEOUT)
+        self.driver.set_unit_to_mg()
+        return self.driver
+
+    5. Mocking a function that returns a list of object types:
+    from alab_control.furnace_2416 import FurnaceController
+    from alab_control.door_controller import DoorController
+    @mock(object_type=[FurnaceController, DoorController])
+    def get_driver(self):
+        self.driver = FurnaceController(port=self.com_port)
+        return self.driver, self.door_controller
+    """
     def decorator(f: Callable[..., Any]):
         @functools.wraps(f)
         def wrapper(*args, **kwargs):
@@ -27,10 +90,10 @@ def mock(return_constant: Any = None, object_type: Union[List[Any], Any] = None)
                         "Cannot specify both return_constant and return_mock_call!"
                     )
                 elif isinstance(return_constant, dict):
-                    return_dict = {key: return_constant[key] for key in return_constant.keys()}
+                    return_dict = {key: return_constant[key] for key in return_constant}
                     return return_dict
                 elif isinstance(return_constant, list):
-                    return[return_constant_i for return_constant_i in range(len(return_constant))] 
+                    return list(range(len(return_constant)))
                 elif return_constant is not None:
                     return return_constant
                 elif object_type is not None:
