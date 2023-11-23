@@ -33,8 +33,6 @@ def load_definition():
 
     config = AlabConfig()
     working_dir = config["general"]["working_dir"]
-    parent_package_devices = config["general"].get("parent_package_devices", None)
-    parent_package_tasks = config["general"].get("parent_package_tasks", None)
 
     dir_to_import_from = copy(working_dir)
     if os.path.isabs(dir_to_import_from):
@@ -42,11 +40,7 @@ def load_definition():
     else:
         dir_to_import_from = config.path.parent / dir_to_import_from
 
-    print(f"import_module_from_path: {Path(dir_to_import_from, parent_package_devices)}")
-    import_module_from_path(dir_to_import_from, parent_package_devices)
-
-    print(f"import_module_from_path: {Path(dir_to_import_from, parent_package_tasks)}")
-    import_module_from_path(dir_to_import_from, parent_package_tasks)
+    import_module_from_path(dir_to_import_from)
 
 
 # def import_device_definitions(file_folder: str, module_name: str):

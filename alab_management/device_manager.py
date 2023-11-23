@@ -9,6 +9,7 @@ DeviceManager class, which will handle all the request to run certain methods on
 from concurrent.futures import Future
 from enum import Enum, auto
 from functools import partial
+import os
 from threading import Thread
 from typing import Any, Callable, Dict, NoReturn, Optional, cast
 from uuid import uuid4
@@ -113,9 +114,15 @@ class DeviceManager:
               running commands. (disable it only for test purpose).
         """
         load_definition()
-        self._rpc_queue_name = (
-            AlabConfig()["general"]["name"] + DEFAULT_SERVER_QUEUE_SUFFIX
-        )
+        sim_mode_flag = os.getenv("SIM_MODE_FLAG", "True")
+        if sim_mode_flag.lower() == "true":
+            self._rpc_queue_name = (
+                AlabConfig()["general"]["name"] + "_sim" + DEFAULT_SERVER_QUEUE_SUFFIX
+            )
+        else:
+            self._rpc_queue_name = (
+                AlabConfig()["general"]["name"] + DEFAULT_SERVER_QUEUE_SUFFIX
+            )
         self._device_view = DeviceView(connect_to_devices=True)
         self._check_status = _check_status
         self.threads = []
@@ -246,9 +253,15 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
         """
         assert task_id is not None, "task_id cannot be None!"
 
-        self._rpc_queue_name = (
-            AlabConfig()["general"]["name"] + DEFAULT_SERVER_QUEUE_SUFFIX
-        )
+        sim_mode_flag = os.getenv("SIM_MODE_FLAG", "True")
+        if sim_mode_flag.lower() == "true":
+            self._rpc_queue_name = (
+                AlabConfig()["general"]["name"] + "_sim" + DEFAULT_SERVER_QUEUE_SUFFIX
+            )
+        else:
+            self._rpc_queue_name = (
+                AlabConfig()["general"]["name"] + DEFAULT_SERVER_QUEUE_SUFFIX
+            )
         # self._rpc_reply_queue_name = ( str(task_id) + DEFAULT_CLIENT_QUEUE_SUFFIX )  # TODO does this have to be
         #  taskid, or can be random? I think this dies with the resourcerequest context manager anyways?
         self._rpc_reply_queue_name = str(uuid4()) + DEFAULT_CLIENT_QUEUE_SUFFIX

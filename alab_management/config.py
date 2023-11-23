@@ -27,7 +27,7 @@ An example of the yaml file is as follows:
 import os
 from pathlib import Path
 from types import MappingProxyType as FrozenDict
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import toml
 
@@ -59,7 +59,7 @@ def freeze_config(config_: Dict[str, Any]) -> FrozenDict:
 class AlabConfig:
     """Class used for storing all the config data."""
 
-    def __init__(self):
+    def __init__(self, sim_mode: Optional[bool] = None):
         """Load a immutable toml config file from `config_path`."""
         config_path = os.getenv("ALAB_CONFIG", None)
         sim_mode_flag = os.getenv("SIM_MODE_FLAG", "True")
@@ -69,7 +69,6 @@ class AlabConfig:
 
         if config_path is None:
             config_path = "config.toml"
-
         try:
             with open(config_path, encoding="utf-8") as f:
                 _config = toml.load(f)
@@ -82,7 +81,8 @@ class AlabConfig:
             ) from exc
 
         self._path = Path(config_path).absolute()
-        self._config = freeze_config(_config)
+        # self._config = freeze_config(_config)
+        self._config = _config
 
     def __getitem__(self, item):
         """Get the config item."""
@@ -103,6 +103,10 @@ class AlabConfig:
     def get(self, item, default=None):
         """Get the config item."""
         return self._config.get(item, default)
+    
+    def set_item(self, key, value):
+        """Set a specific config item."""
+        self._config[key] = value
 
     def set_item(self, key, value):
         """Set a specific config item."""

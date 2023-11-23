@@ -5,6 +5,7 @@ import json
 from abc import ABC, abstractmethod
 from datetime import datetime
 from enum import Enum
+import os
 from typing import Optional
 
 import numpy as np
@@ -53,7 +54,11 @@ class _GetMongoCollection(_BaseGetMongoCollection):
             username=db_config.get("username", ""),
             password=db_config.get("password", ""),
         )
-        cls.db = cls.client[AlabConfig()["general"]["name"]]  # type: ignore # pylint: disable=unsubscriptable-object
+        sim_mode_flag = os.getenv("SIM_MODE_FLAG", "True")
+        if sim_mode_flag.lower() == "true":
+            cls.db = cls.client[AlabConfig()["general"]["name"] + "_sim"]
+        else:
+            cls.db = cls.client[AlabConfig()["general"]["name"]]  # type: ignore # pylint: disable=unsubscriptable-object
 
 
 class _GetCompletedMongoCollection(_BaseGetMongoCollection):
@@ -78,7 +83,11 @@ class _GetCompletedMongoCollection(_BaseGetMongoCollection):
             username=db_config.get("username", ""),
             password=db_config.get("password", ""),
         )
-        cls.db = cls.client[AlabConfig()["general"]["name"] + "(completed)"]
+        sim_mode_flag = os.getenv("SIM_MODE_FLAG", "True")
+        if sim_mode_flag.lower() == "true":
+            cls.db = cls.client[AlabConfig()["general"]["name"] + "(completed)" + "_sim"]
+        else:
+            cls.db = cls.client[AlabConfig()["general"]["name"] + "(completed)"]
         # type: ignore # pylint: disable=unsubscriptable-object
 
 
