@@ -15,8 +15,6 @@ from alab_management.sample_view.sample import SamplePosition
 from alab_management.user_input import request_maintenance_input
 
 from .dbattributes import DictInDatabase, ListInDatabase
-import functools
-from unittest.mock import Mock
 
 
 def _UNSPECIFIED(_):

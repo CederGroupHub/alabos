@@ -103,7 +103,7 @@ class AlabConfig:
     def get(self, item, default=None):
         """Get the config item."""
         return self._config.get(item, default)
-    
+
     def set_item(self, key, value):
         """Set a specific config item."""
         self._config[key] = value
