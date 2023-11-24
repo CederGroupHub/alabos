@@ -78,7 +78,7 @@ class _GetCompletedMongoCollection(_BaseGetMongoCollection):
             username=db_config.get("username", ""),
             password=db_config.get("password", ""),
         )
-        cls.db = cls.client[AlabConfig()["general"]["name"] + "(completed)"]  
+        cls.db = cls.client[AlabConfig()["general"]["name"] + "(completed)"]
         # type: ignore # pylint: disable=unsubscriptable-object
 
 

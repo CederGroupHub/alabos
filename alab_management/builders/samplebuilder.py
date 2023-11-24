@@ -135,7 +135,7 @@ class SampleBuilder:
 
 # class SampleInputFormat(BaseModel):
 #     """
-#     Format check for API for Sample submission. 
+#     Format check for API for Sample submission.
 #     Sample's must follow this format to be accepted into the batching queue.
 #     """
 
