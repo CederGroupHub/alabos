@@ -108,10 +108,6 @@ class AlabConfig:
         """Set a specific config item."""
         self._config[key] = value
 
-    def set_item(self, key, value):
-        """Set a specific config item."""
-        self._config[key] = value
-
     def __contains__(self, item):
         """Check if the config contains the item."""
         return self._config.__contains__(item)
