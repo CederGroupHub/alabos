@@ -42,7 +42,8 @@ def run_task(task_id_str: str):
     Submit a task. In this system, each task is run in an
     independent process, which will try to acquire device and
     process samples. This will change the status of the task under the specified id into "RUNNING".
-    If the task is not in the "INITIATED" state, it has been picked up by another task actor beforehand, and no action is taken.
+    If the task is not in "INITIATED" state, it has been picked up by another task actor beforehand, 
+    and no action is taken.
     If an Abort (exception) signal is sent, the task status will be changed to "CANCELLED".
     If a Shutdown (exception) signal is sent, the task status will be changed to "STOPPED".
     If any other exception is raised, the task status will be changed to "ERROR".

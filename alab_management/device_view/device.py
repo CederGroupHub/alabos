@@ -362,7 +362,7 @@ class BaseDevice(ABC):
         return self._signalemitter.retrieve_signal(signal_name, within)
 
 
-### DeviceSignalEmitter and related decorator ###
+# DeviceSignalEmitter and related decorator #
 def log_signal(signal_name: str, interval_seconds: int):
     """This is a decorator for methods within a `BaseDevice`. Methods decorated with this will be called at the
     specified interval and the result will be logged to the database under the `signal_name` provided. The intended

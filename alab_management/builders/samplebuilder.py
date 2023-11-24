@@ -135,7 +135,8 @@ class SampleBuilder:
 
 # class SampleInputFormat(BaseModel):
 #     """
-#     Format check for API for Sample submission. Sample's must follow this format to be accepted into the batching queue.
+#     Format check for API for Sample submission. 
+#     Sample's must follow this format to be accepted into the batching queue.
 #     """
 
 #     id: Optional[Any] = Field(None, alias="id")
