@@ -139,6 +139,7 @@ class BaseDevice(ABC):
 
         Args:
             name: the name of device, which is the unique identifier of this device
+            description: description of this kind of device
 
         Here is an example of how to write a new device
 

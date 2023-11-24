@@ -38,8 +38,7 @@ class ParameterError(Exception):
     notify_shutdown=True,
 )  # TODO time limit is set in ms. currently set to 30 days
 def run_task(task_id_str: str):
-    """
-    Submit a task. In this system, each task is run in an
+    """Submit a task. In this system, each task is run in an
     independent process, which will try to acquire device and
     process samples. This will change the status of the task under the specified id into "RUNNING".
     If the task is not in "INITIATED" state, it has been picked up by another task actor beforehand,
@@ -49,6 +48,7 @@ def run_task(task_id_str: str):
     If any other exception is raised, the task status will be changed to "ERROR".
     If there is no exception raised, once the task is completed, the status will be changed to "COMPLETED".
     Sample task id will be set to None after the task is completed.
+
     Args:
         task_id_str: The id of the task to run.
     """

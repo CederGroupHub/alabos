@@ -468,6 +468,7 @@ class DeviceView:
 
         Args:
             device_name (str): name of the device to set the attributes for
+            attributes (dict): attributes to be set
         """
         self.get_device(device_name=device_name)
 
