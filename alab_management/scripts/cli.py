@@ -9,6 +9,7 @@ from .init_project import init_project
 from .launch_lab import launch_dashboard, launch_lab
 from .launch_worker import launch_worker
 from .setup_lab import setup_lab
+from .config_file import config_file_update
 
 CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
 
@@ -125,3 +126,11 @@ def launch_summary_dashboard(host, port):
     from alab_management.dashboard.plotly import launch
 
     launch(host=host, port=port)
+
+
+@cli.command("simulation", short_help="Whether to run the lab in simulation mode")
+@click.option("--sim_mode", type=bool)
+def config_file_update_cli(sim_mode):
+    """Start to run the lab."""
+    click.echo(f"The simulation mode is {sim_mode}")
+    config_file_update(sim_mode)
