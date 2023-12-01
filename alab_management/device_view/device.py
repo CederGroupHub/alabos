@@ -16,7 +16,9 @@ from alab_management.user_input import request_maintenance_input
 
 from .dbattributes import DictInDatabase, ListInDatabase
 
-_UNSPECIFIED = lambda _: None
+
+def _UNSPECIFIED(_):
+    return None
 
 def _UNSPECIFIED(_):
     return None
