@@ -4,11 +4,11 @@ import click
 from alab_management import __version__
 
 from .cleanup_lab import cleanup_lab
+from .config_file import config_file_update
 from .init_project import init_project
 from .launch_lab import launch_dashboard, launch_lab
 from .launch_worker import launch_worker
 from .setup_lab import setup_lab
-from .config_file import config_file_update
 
 CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
 
