@@ -40,7 +40,7 @@ jobs:
           # cache-dependency-path:
       - name: Set up environment
         run: |
-          pip install --quiet .
+          pip install --quiet .[dev, test]
       - name: Set up pyright
         run: |
           npm install -g pyright

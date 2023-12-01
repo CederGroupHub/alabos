@@ -85,7 +85,7 @@ class AlabConfig:
         # self._config = freeze_config(_config)
         self._config = _config
 
-        # Define the key and value to be updated
+        # Define the key and nested_key for the 'general' section
         key = "general"
         nested_key = "simulation"
 
@@ -96,6 +96,39 @@ class AlabConfig:
             self.set_item(key, general_section)
 
             # Save the modified configuration back to the file 'config.toml'
+            with open(config_path, "w", encoding="utf-8") as f:
+                toml.dump(self._config, f)
+
+            # Define the key and nested_key for the 'alarm' section
+            key = "alarm"
+            nested_key = ["email_password", "email_receivers", "email_sender", "slack_bot_token", "slack_channel"]
+
+            # Open the file 'config.toml' again to read the modified configuration
+            with open(config_path, encoding="utf-8") as f:
+                _config = toml.load(f)
+
+            # Update the 'alarm' section with the new value for 'email_password', 'email_receivers', 'email_sender', 'slack_bot_token', 'slack_channel' if sim_mode is provided
+            if sim_mode:
+                email_password = ""
+                email_receivers = [""]
+                email_sender = ""
+                slack_bot_token = ""
+                slack_channel = ""
+            else:
+                email_password = "rjuttalfbnvquyek"
+                email_receivers = [
+                    "bernardus_rendy@berkeley.edu",
+                ]
+                email_sender = "alabmanagement@gmail.com"
+                slack_bot_token = "xoxb-53032848964-4821073683568-Ccm2VwTJLbhU0reM8XENw2wr"
+                slack_channel = "C04PF6C68MR"
+            alarm_section = self._config[key]
+            alarm_section[nested_key[0]] = email_password
+            alarm_section[nested_key[1]] = email_receivers
+            alarm_section[nested_key[2]] = email_sender
+            alarm_section[nested_key[3]] = slack_bot_token
+            alarm_section[nested_key[4]] = slack_channel
+            self.set_item(key, alarm_section)
             with open(config_path, "w", encoding="utf-8") as f:
                 toml.dump(self._config, f)
 
