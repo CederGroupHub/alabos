@@ -2,7 +2,7 @@
 
 from typing import TYPE_CHECKING, List, Union
 
-from bson import ObjectId
+from bson import ObjectId  # type: ignore
 
 from .experimentbuilder import ExperimentBuilder
 from .samplebuilder import SampleBuilder

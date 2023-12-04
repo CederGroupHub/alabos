@@ -179,7 +179,13 @@ class BaseDevice(ABC):
         """A short description of the device. This will be stored in the database + displayed in the dashboard. This
         must be declared in subclasses of BaseDevice!.
         """
-        pass
+        return self._description
+
+    @description.setter
+    def description(self, value: str) -> None:
+        if not isinstance(value, str):
+            raise TypeError("description must be a string")
+        self._description = value
 
     def set_message(self, message: str):
         """Sets the device message to be displayed on the dashboard.
@@ -401,7 +407,7 @@ class DeviceSignalEmitter:
         self.dblogger = DBLogger(task_id=None)
         self.device = device
         self.is_logging = False
-        self.queue = PriorityQueue()
+        self.queue: PriorityQueue = PriorityQueue()
 
         self._logging_thread: Optional[threading.Thread] = None
         self._start_time: Optional[datetime.datetime] = None

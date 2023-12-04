@@ -1,5 +1,6 @@
 """Plotly dashboard for ALAB management."""
 
+
 import pandas as pd
 
 from alab_management.sample_view import CompletedSampleView, SampleView
@@ -14,10 +15,10 @@ def get_samples() -> pd.DataFrame:
     sdf = pd.DataFrame(all_samples)
     csdf = pd.DataFrame(list(svc._completed_sample_collection.find({})))
 
-    df = pd.concat([sdf, csdf]).reset_index()
+    df: pd.DataFrame = pd.concat([sdf, csdf]).reset_index()
 
-    df["last_updated"] = df["last_updated"].astype("datetime64")
-    df["created_at"] = df["created_at"].astype("datetime64")
+    df["last_updated"] = df["last_updated"].astype("datetime64")  # type: ignore
+    df["created_at"] = df["created_at"].astype("datetime64")  # type: ignore
 
     return df
 
@@ -31,8 +32,6 @@ def get_tasks() -> pd.DataFrame:
     ctdf = pd.DataFrame(list(tvc._completed_task_collection.find({})))
     tdf = pd.concat([tdf, ctdf]).reset_index()
 
-    tdf["duration_minutes"] = (tdf["completed_at"] - tdf["started_at"]).apply(
-        lambda x: x.total_seconds() / 60
-    )
+    tdf["duration_minutes"] = (tdf["completed_at"] - tdf["started_at"]).apply(lambda x: x.total_seconds() / 60)
 
     return tdf

@@ -1,4 +1,4 @@
-from bson import ObjectId
+from bson import ObjectId  # type: ignore
 from flask import Blueprint
 
 from alab_management.dashboard.lab_views import task_view
@@ -11,8 +11,8 @@ task_bp = Blueprint("/task", __name__, url_prefix="/api/task")
 def cancel_task(task_id: str):
     """API to cancel a task."""
     try:
-        task_id: ObjectId = ObjectId(task_id)
-        task_view.mark_task_as_cancelling(task_id)
+        task_id_obj: ObjectId = ObjectId(task_id)
+        task_view.mark_task_as_cancelling(task_id_obj)
 
         return {"status": "success"}
     except Exception as exception:
@@ -22,8 +22,8 @@ def cancel_task(task_id: str):
 @task_bp.route("/<task_id>", methods=["GET"])
 def get_task(task_id: str):
     try:
-        task_id: ObjectId = ObjectId(task_id)
-        task_data = task_view.get_task(task_id)
+        task_id_obj: ObjectId = ObjectId(task_id)
+        task_data = task_view.get_task(task_id_obj)
 
         return {"status": "success", "data": make_jsonable(task_data)}
 

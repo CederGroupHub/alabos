@@ -3,7 +3,7 @@
 from pathlib import Path
 
 from flask import Flask
-from flask_cors import CORS
+from flask_cors import CORS  # type: ignore
 
 from .routes import init_app as init_app_route
 

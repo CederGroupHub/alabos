@@ -99,7 +99,8 @@ dev = [
     "pytest-env ~= 0.6.2",
     "requests >= 2.26.0",
     "flake8-bugbear >= 21.11.29",
-    "flake8-docstrings >= 1.6.0"
+    "flake8-docstrings >= 1.6.0",
+    "pandas-stubs >= 2.1.1.230928"
 ]
 tests = ["pytest-cov==4.1.0", "pytest==7.4.1", "moto==4.2.2"]
 vis = ["matplotlib", "pydot"]
@@ -139,7 +140,11 @@ rst-roles = "class, func, ref, obj"
 
 [tool.mypy]
 ignore_missing_imports = true
-no_strict_optional = true
+namespace_packages = true
+explicit_package_bases = true
+no_implicit_optional = false
+follow_imports = "skip"
+disable_error_code = "annotation-unchecked"
 
 [tool.coverage.run]
 include = ["src/*"]

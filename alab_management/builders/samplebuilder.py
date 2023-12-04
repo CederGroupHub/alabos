@@ -2,7 +2,7 @@
 
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
-from bson import ObjectId
+from bson import ObjectId  # type: ignore
 
 if TYPE_CHECKING:
     from alab_management.builders.experimentbuilder import ExperimentBuilder
@@ -90,7 +90,7 @@ class SampleBuilder:
 
 # class TaskInputFormat(BaseModel):
 #     id: Optional[Any] = Field(None, alias="id")
-#     type: str
+#     task_type: str
 #     parameters: Dict[str, Any]
 #     capacity: int
 #     prev_tasks: List[str]

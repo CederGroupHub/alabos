@@ -2,8 +2,9 @@
 
 from typing import Any, Dict, List, Optional
 
-from bson import BSON, ObjectId
-from pydantic import BaseModel, constr, validator  # pylint: disable=no-name-in-module
+from bson import BSON, ObjectId  # type: ignore
+from pydantic import constr  # pylint: disable=no-name-in-module
+from pydantic import BaseModel, validator
 
 
 class _Sample(BaseModel):
