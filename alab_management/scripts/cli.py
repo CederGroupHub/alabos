@@ -126,9 +126,14 @@ def launch_summary_dashboard(host, port):
     launch(host=host, port=port)
 
 
-@cli.command("simulation", short_help="Whether to run the lab in simulation mode")
-@click.option("-s", "--sim_mode", type=bool, default=False, is_flag=True)
-def config_file_update_cli(sim_mode):
+@cli.command("sim_mode", short_help="Whether to run the lab in simulation mode")
+@click.option("--on", type=bool, default=False, is_flag=True)
+@click.option("--off", type=bool, default=False, is_flag=True)
+def config_file_update_cli(on, off):
     """Start to run the lab."""
-    click.echo(f"The simulation mode is {sim_mode}")
-    config_file_update(sim_mode)
+    if on is not None:
+        click.echo(f"The simulation mode is {on}")
+        config_file_update(on)
+    elif off is not None:
+        click.echo(f"The simulation mode is {off}")
+        config_file_update(not off)
