@@ -99,7 +99,7 @@ def launch_dashboard_cli(host, port, debug):
 @cli.command(
     "copy_completed_experiments",
     short_help='Copy completed experiments from working database to completed database. Note that "mongodb_completed" '
-               'must be specified in the config file.',
+    "must be specified in the config file.",
 )
 def copy_completed_experiments_cli():
     """Copy completed experiments from working database to completed database. Note that "mongodb_completed" must be
@@ -127,7 +127,7 @@ def launch_summary_dashboard(host, port):
 
 
 @cli.command("simulation", short_help="Whether to run the lab in simulation mode")
-@click.option("--sim_mode", type=bool)
+@click.option("-s", "--sim_mode", type=bool, default=False, is_flag=True)
 def config_file_update_cli(sim_mode):
     """Start to run the lab."""
     click.echo(f"The simulation mode is {sim_mode}")
