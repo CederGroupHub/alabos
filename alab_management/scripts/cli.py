@@ -129,7 +129,7 @@ def launch_summary_dashboard(host, port):
 
 
 @cli.command("simulation", short_help="Whether to run the lab in simulation mode")
-@click.option("--sim_mode", type=bool)
+@click.option("-s", "--sim_mode", type=bool, default=False, is_flag=True)
 def config_file_update_cli(sim_mode):
     """Start to run the lab."""
     click.echo(f"The simulation mode is {sim_mode}")
