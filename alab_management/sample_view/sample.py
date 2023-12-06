@@ -22,8 +22,8 @@ class Sample:
     task_id: Optional[ObjectId]
     name: str
     position: Optional[str]
-    metadata: Optional[Dict[str, Any]] = field(default_factory=lambda: None)
-    tags: Optional[List[str]] = field(default_factory=lambda: None)
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    tags: List[str] = field(default_factory=list)
 
 
 @dataclass(frozen=True)

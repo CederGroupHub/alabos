@@ -55,9 +55,11 @@ def setup_lab_cli():
 )
 @click.option("-p", "--port", default="8895", type=int)
 @click.option("--debug", default=False, is_flag=True)
-def launch_lab_cli(host, port, debug):
+@click.option("--sim_mode", type=bool, default=False, is_flag=True)
+def launch_lab_cli(host, port, debug, sim_mode):
     """Start to run the lab."""
     click.echo(f"The dashboard will be served on http://{host}:{port}")
+    config_file_update(sim_mode)
     launch_lab(host, port, debug)
 
 
@@ -71,8 +73,10 @@ def launch_lab_cli(host, port, debug):
     },
 )
 @click.pass_context
-def launch_worker_cli(ctx):
+@click.option("--sim_mode", type=bool, default=False, is_flag=True)
+def launch_worker_cli(ctx, sim_mode):
     """Launch Dramatiq worker in current folder."""
+    config_file_update(sim_mode)
     launch_worker(ctx.args)
 
 
@@ -126,16 +130,3 @@ def launch_summary_dashboard(host, port):
     from alab_management.dashboard.plotly import launch
 
     launch(host=host, port=port)
-
-
-@cli.command("sim_mode", short_help="Whether to run the lab in simulation mode")
-@click.option("--on", type=bool, default=False, is_flag=True)
-@click.option("--off", type=bool, default=False, is_flag=True)
-def config_file_update_cli(on, off):
-    """Start to run the lab."""
-    if on is not None:
-        click.echo(f"The simulation mode is {on}")
-        config_file_update(on)
-    elif off is not None:
-        click.echo(f"The simulation mode is {off}")
-        config_file_update(not off)
