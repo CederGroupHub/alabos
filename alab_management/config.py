@@ -64,7 +64,7 @@ class AlabConfig:
         """Load a immutable toml config file from `config_path`."""
         config_path = os.getenv("ALAB_CONFIG", None)
         sim_mode_flag = os.getenv("SIM_MODE_FLAG", "False")
-        sim_mode_flag_boolean = eval(sim_mode_flag)
+        sim_mode_flag_boolean = sim_mode_flag.lower() == "true"
         if sim_mode_flag_boolean and config_path is not None:
             config_path = config_path.replace("alab_management_config.toml", "alab_management_config_sim.toml")
             os.environ["ALAB_CONFIG"] = config_path
