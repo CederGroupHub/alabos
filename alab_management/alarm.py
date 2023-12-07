@@ -131,14 +131,17 @@ class Alarm:
             message: The message to print in the platform
             category: The category of the message.
         """
-        try:
-            if self.platforms["email"]:
-                self.send_email(message, category)
-            if self.platforms["slack"]:
-                self.send_slack_notification(message, category)
-        except:  # noqa: E722
-            if self.platforms["slack"]:
-                self.send_slack_notification(message, category)
+        import os
+        sim_mode_flag = os.getenv("SIM_MODE_FLAG", "False")
+        if not sim_mode_flag:
+            try:
+                if self.platforms["email"]:
+                    self.send_email(message, category)
+                if self.platforms["slack"]:
+                    self.send_slack_notification(message, category)
+            except:  # noqa: E722
+                if self.platforms["slack"]:
+                    self.send_slack_notification(message, category)
 
     def send_email(self, message: str, category: str):
         """
