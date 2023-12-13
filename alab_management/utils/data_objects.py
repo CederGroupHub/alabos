@@ -1,21 +1,19 @@
-"""
-A convenient wrapper for MongoClient. We can get a database object by calling ``get_collection`` function.
-"""
+"""A convenient wrapper for MongoClient. We can get a database object by calling ``get_collection`` function."""
 
+import contextlib
+import json
+from abc import ABC, abstractmethod
+from datetime import datetime
+from enum import Enum
 from typing import Optional
-import numpy as np
 
+import numpy as np
 import pika
 import pymongo
+from bson import ObjectId
 from pymongo import collection, database
 
 from .db_lock import MongoLock
-from bson import ObjectId
-import json
-from enum import Enum
-from datetime import datetime
-from abc import ABC, abstractmethod
-from labgraph.utils import LabgraphMongoDB
 
 
 class _BaseGetMongoCollection(ABC):
@@ -26,9 +24,7 @@ class _BaseGetMongoCollection(ABC):
 
     @classmethod
     def get_collection(cls, name: str) -> collection.Collection:
-        """
-        Get collection by name
-        """
+        """Get collection by name."""
         if cls.client is None:
             cls.init()
 
@@ -48,7 +44,7 @@ class _GetMongoCollection(_BaseGetMongoCollection):
 
     @classmethod
     def init(cls):
-        from ..config import AlabConfig
+        from alab_management.config import AlabConfig
 
         db_config = AlabConfig()["mongodb"]
         cls.client = pymongo.MongoClient(
@@ -60,19 +56,6 @@ class _GetMongoCollection(_BaseGetMongoCollection):
         cls.db = cls.client[AlabConfig()["general"]["name"]]  # type: ignore # pylint: disable=unsubscriptable-object
 
 
-def get_labgraph_mongodb():
-    from ..config import AlabConfig
-
-    db_config = AlabConfig()["mongodb"]
-    return LabgraphMongoDB(
-        host=db_config.get("host", None),
-        port=db_config.get("port", None),
-        db_name=AlabConfig()["general"]["name"],
-        username=db_config.get("username", ""),
-        password=db_config.get("password", ""),
-    )
-
-
 class _GetCompletedMongoCollection(_BaseGetMongoCollection):
     client: Optional[pymongo.MongoClient] = None
     db: Optional[database.Database] = None
@@ -80,12 +63,13 @@ class _GetCompletedMongoCollection(_BaseGetMongoCollection):
 
     @classmethod
     def init(cls):
-        from ..config import AlabConfig
+        from alab_management.config import AlabConfig
 
         ALAB_CONFIG = AlabConfig()
         if "mongodb_completed" not in ALAB_CONFIG:
             raise ValueError(
-                "Cannot use the completed database feature until that database info is set. Please specify the mongodb_completed configuration in the config file!"
+                "Cannot use the completed database feature until that database info is set. Please specify the "
+                "mongodb_completed configuration in the config file!"
             )
         db_config = ALAB_CONFIG["mongodb_completed"]
         cls.client = pymongo.MongoClient(
@@ -98,7 +82,8 @@ class _GetCompletedMongoCollection(_BaseGetMongoCollection):
 
 
 def get_rabbitmq_connection():
-    from ..config import AlabConfig
+    """Get a connection to the RabbitMQ server."""
+    from alab_management.config import AlabConfig
 
     rabbit_mq_config = AlabConfig()["rabbitmq"]
     _connection = pika.BlockingConnection(
@@ -127,16 +112,22 @@ def make_bsonable(obj):
     elif isinstance(obj, np.ndarray):
         obj = obj.tolist()
     elif isinstance(obj, str):
-        try:
+        with contextlib.suppress(Exception):
             obj = ObjectId(obj)
-        except:
-            pass
 
     return obj
 
 
 class ALabJSONEncoder(json.JSONEncoder):
+    """
+    A customized JSON encoder.
+
+    It can handle some typical ALab types (ObjectId, Enums, Numpy arrays, etc.) that are not JSON
+    serializable by default.
+    """
+
     def default(self, z):
+        """Converts a Python object to a JSON serializable object."""
         if isinstance(z, ObjectId):
             return str(z)
         elif isinstance(z, np.ndarray):
@@ -154,8 +145,9 @@ class ALabJSONEncoder(json.JSONEncoder):
 
 
 def make_jsonable(obj):
-    """Converts a Python object to a JSON serializable object. Handles some typical ALab types (ObjectId, Enums, Numpy arrays, etc.) that are not JSON serializable by default. This is mostly used in API calls."""
-
+    """Converts a Python object to a JSON serializable object. Handles some typical ALab types (ObjectId, Enums,
+    Numpy arrays, etc.) that are not JSON serializable by default. This is mostly used in API calls.
+    """
     return json.loads(ALabJSONEncoder().encode(obj))
 
 
@@ -164,3 +156,4 @@ get_lock = _GetMongoCollection.get_lock
 
 get_completed_collection = _GetCompletedMongoCollection.get_collection
 get_completed_lock = _GetCompletedMongoCollection.get_lock
+

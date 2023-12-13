@@ -6,6 +6,11 @@ from typing import Any, Collection, Dict, List, Optional, TypeVar, Union, cast
 from difflib import Differ
 from inspect import getfile
 
+from ..utils.data_objects import get_collection, get_lock
+from alab_management.sample_view import SampleView, SamplePosition
+from labgraph import ActorView, Actor
+from labgraph.views.base import NotFoundInDatabaseError
+
 import pymongo
 from bson import ObjectId
 
@@ -13,11 +18,6 @@ from alab_management.sample_view import SamplePosition, SampleView
 from alab_management.utils.data_objects import get_collection, get_lock
 
 from .device import BaseDevice, get_all_devices
-
-from ..utils.data_objects import get_collection, get_labgraph_mongodb, get_lock
-from alab_management.sample_view import SampleView, SamplePosition
-from labgraph import ActorView, Actor
-from labgraph.views.base import NotFoundInDatabaseError
 
 _DeviceType = TypeVar("_DeviceType", bound=BaseDevice)  # pylint: disable=invalid-name
 
@@ -38,7 +38,9 @@ class DeviceTaskStatus(Enum):
 
 @unique
 class DevicePauseStatus(Enum):
-    """Pause status of the Device. This is used to pause the device outside of the typical Task queue (like by an operator for maintenance or refilling consumables)"""
+    """Pause status of the Device. This is used to pause the device outside of the typical Task queue (like by an
+    operator for maintenance or refilling consumables).
+    """
 
     RELEASED = auto()
     REQUESTED = auto()
@@ -59,8 +61,8 @@ class DeviceView:
               (serial, ip, etc.). If False, can still check Device status, but cannot execute
               methods on devices. Defaults to False.
         """
-
-        self.actor_view = ActorView(labgraph_mongodb_instance=get_labgraph_mongodb())
+        
+        self.actor_view = ActorView()
         self._device_collection = self.actor_view._collection
         self._device_list = get_all_devices()
         self._lock = get_lock(self._device_collection.name)
@@ -76,7 +78,7 @@ class DeviceView:
             filepath = getfile(device.__class__)
             with open(filepath, "r") as f:
                 code_str = f.readlines()
-            if "code" in actor:
+            if "code" in actor.keys():
                 if code_str == actor["code"]:
                     return  # no need to update
                 print(f"\tUpdating code for {device_name}")
@@ -86,6 +88,7 @@ class DeviceView:
                 )
 
             actor["code"] = code_str
+
             self.actor_view.update(actor)
 
         for device_name, device in self._device_list.items():
@@ -142,18 +145,16 @@ class DeviceView:
             actor = None
             try:
                 actor: Actor = self.actor_view.get_by_name(device.name)[0]
-                if "task_id" in actor:  # implies actor is active in ALabOS
+                if "task_id" in actor.keys():  # implies actor is active in ALabOS
                     raise NameError(
                         f"Duplicated device name {device.name}, did you cleanup the database?"
                     )
                 # if we got here, this is a leftover actor from a previous ALabOS setup. We can update this to make it active again
             except NotFoundInDatabaseError:
                 pass  # this is good, device does not yet exist in the database
-
             filepath = getfile(device.__class__)
             with open(filepath, "r") as f:
                 code_str = f.readlines()
-
             if actor is None:
                 actor = Actor(
                     name=device.name,
@@ -188,30 +189,7 @@ class DeviceView:
                 actor.new_version(
                     description="This device was re-included into an ALabOS configuration."
                 )
-
             self.actor_view.add(actor, if_already_in_db="update")
-            # if self._device_collection.find_one({"name": device.name}) is not None:
-            #     raise NameError(
-            #         f"Duplicated device name {device.name}, did you cleanup the database?"
-            #     )
-            # self._device_collection.insert_one(
-            #     {
-            #         "name": device.name,
-            #         "description": device.description,
-            #         "type": device.__class__.__name__,
-            #         "sample_positions": [
-            #             f"{device.name}{SamplePosition.SEPARATOR}{sample_pos.name}"
-            #             for sample_pos in device.sample_positions
-            #         ],
-            #         "status": DeviceTaskStatus.IDLE.name,
-            #         "pause_status": DevicePauseStatus.RELEASED.name,
-            #         "task_id": None,
-            #         "created_at": datetime.now(),
-            #         "message": "",
-            #         "last_updated": datetime.now(),
-            #         "attributes": {},
-            #     }
-            # )
 
     def get_all(self) -> List[Dict[str, Any]]:
         """
@@ -219,7 +197,6 @@ class DeviceView:
         """
         devices = self.actor_view.get_by_tags(["device"])
         return [device.to_dict() for device in devices]
-        # return cast(List[Dict[str, Any]], self._device_collection.find())
 
     def _clean_up_device_collection(self):
         """
@@ -276,7 +253,7 @@ class DeviceView:
         with self._lock():  # pylint: disable=not-callable
             for device_name in device_names_str:
                 result = self.get_available_devices(
-                    device_str=device_name, type_or_name="type", task_id=task_id
+                    device_str=device_name, type_or_name="name", task_id=task_id
                 )
                 if not result:
                     return None  # cannot meet all requirement, return None
@@ -323,18 +300,17 @@ class DeviceView:
         else:
             raise ValueError(f"Unknown type_or_name: {type_or_name}")
 
-        request_dict = {
+        if self._device_collection.find_one(request_dict) is None:
+            request_dict = {
             "tags": {"$in": ["device"]},
-        }
-
-        if type_or_name == "type":
-            request_dict["type"] = device_str
-        else:
-            # implies type_or_name == "name":
-            request_dict["name"] = device_str
-
-        if self.actor_view._collection.find_one(request_dict) is None:
-            raise ValueError(f"No such device of {type_or_name} {device_str}")
+            }
+            if type_or_name == "type":
+                request_dict["type"] = device_str
+            else:
+                # implies type_or_name == "name":
+                request_dict["name"] = device_str
+            if self.actor_view._collection.find_one(request_dict) is None:
+                raise ValueError(f"No such device of {type_or_name} {device_str}")
 
         request_dict.update(
             {
@@ -655,6 +631,8 @@ class DeviceView:
             {"$set": update_dict},
         )
 
-    def __exit__(self):
+    def __exit__(self, exc_type, exc_value, traceback):
+        """Disconnect from all devices when exiting the context manager."""
         if self.__connected_to_devices:
             self.__disconnect_all_devices()
+

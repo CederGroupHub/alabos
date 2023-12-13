@@ -1,8 +1,7 @@
 from labgraph import Actor, ActorView
-from alab_management.utils.data_objects import get_labgraph_mongodb
 
 
-actor_view = ActorView(labgraph_mongodb_instance=get_labgraph_mongodb())
+actor_view = ActorView()
 try:
     PLACEHOLDER_ACTOR_FOR_TASKS_THAT_HAVENT_RUN_YET = actor_view.get_by_name(
         "Placeholder before execution"

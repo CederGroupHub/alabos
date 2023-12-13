@@ -4,6 +4,7 @@ To remove all the device, sample position definition from database.
 If ``-a`` is true, the whole database (including the data recorded) shall
 be deleted.
 """
+from labgraph.views.base import NotFoundInDatabaseError
 
 
 def cleanup_lab(
@@ -28,8 +29,14 @@ def cleanup_lab(
         _GetMongoCollection.init()
         for alabos_collection in ["abortable", "experiments", "tasks"]:
             _GetMongoCollection.get_collection(alabos_collection).drop()
-    DeviceView()._clean_up_device_collection()
-    SampleView().clean_up_sample_position_collection()
+    try:
+        DeviceView()._clean_up_device_collection()
+    except NotFoundInDatabaseError:
+        pass
+    try:
+        SampleView().clean_up_sample_position_collection()
+    except NotFoundInDatabaseError:
+        pass
     _GetMongoCollection.get_collection("_lock").drop()
     _GetMongoCollection.get_collection("requests").drop()
     return True

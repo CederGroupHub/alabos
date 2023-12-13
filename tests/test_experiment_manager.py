@@ -35,6 +35,7 @@ class TestExperimentManager(TestCase):
                             "p_2": 2,
                         },
                         "samples": ["test_sample"],
+                        "labgraph_node_type": "Action",
                     },
                     {
                         "type": "Heating",
@@ -46,6 +47,7 @@ class TestExperimentManager(TestCase):
                         "samples": [
                             "test_sample_2",
                         ],
+                        "labgraph_node_type": "Action",
                     },
                 ],
             }
@@ -119,6 +121,7 @@ class TestExperimentManager(TestCase):
                             "p_2": 2,
                         },
                         "samples": ["test_sample"],
+                        "labgraph_node_type": "Action",
                     },
                     {
                         "type": "Heating",
@@ -130,6 +133,7 @@ class TestExperimentManager(TestCase):
                         "samples": [
                             "test_sample_2",
                         ],
+                        "labgraph_node_type": "Action",
                     },
                 ],
             }

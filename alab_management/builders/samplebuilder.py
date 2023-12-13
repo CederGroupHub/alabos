@@ -11,7 +11,7 @@ from alab_management.labgraph_types.action import BaseAction
 from alab_management.labgraph_types.analysis import BaseAnalysis
 from alab_management.labgraph_types.measurement import BaseMeasurement
 from labgraph import Sample as LabgraphSample, Material, Measurement, Analysis
-from labgraph.data.nodes import UnspecifiedAmountIngredient
+from labgraph.data.nodes import WholeIngredient
 
 from typing import List
 
@@ -39,10 +39,10 @@ class SampleBuilder(LabgraphSample):
     ):
         if input_materials:
             for material in input_materials:
-                task.add_ingredient(UnspecifiedAmountIngredient(material))
+                task.add_ingredient(WholeIngredient(material))
         elif self.current_material:
             task.add_ingredient(
-                UnspecifiedAmountIngredient(material=self.current_material)
+                WholeIngredient(material=self.current_material)
             )
 
         if generated_materials:

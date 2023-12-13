@@ -15,7 +15,6 @@ if TYPE_CHECKING:
 
 from labgraph import Actor, ActorView
 from labgraph.views.base import NotFoundInDatabaseError
-from alab_management.utils.data_objects import get_labgraph_mongodb
 from inspect import getfile
 from difflib import Differ
 
@@ -363,7 +362,7 @@ _reroute_task_registry: List[
 ] = []
 
 
-actor_view = ActorView(labgraph_mongodb_instance=get_labgraph_mongodb())
+actor_view = ActorView()
 
 
 def add_task(task: Type[BaseTask]):

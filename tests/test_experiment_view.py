@@ -3,9 +3,9 @@ from unittest import TestCase
 from bson import ObjectId
 
 from alab_management.experiment_view import (
+    ExperimentStatus,
     ExperimentView,
     InputExperiment,
-    ExperimentStatus,
 )
 from alab_management.scripts.cleanup_lab import cleanup_lab
 from alab_management.scripts.setup_lab import setup_lab
@@ -218,3 +218,4 @@ class TestExperimentView(TestCase):
         # try non exist exp id
         with self.assertRaises(ValueError):
             self.experiment_view.update_sample_task_id(ObjectId(), sample_ids, task_ids)
+

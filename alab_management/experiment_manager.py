@@ -7,22 +7,20 @@ done.
 """
 
 import time
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
-from .experiment_view import ExperimentStatus, ExperimentView, CompletedExperimentView
+from .config import AlabConfig
+from .experiment_view import CompletedExperimentView, ExperimentStatus, ExperimentView
 from .logger import DBLogger
 from .sample_view import SampleView
-from .task_view import TaskView, TaskStatus
+from .task_view import TaskStatus, TaskView
 from .utils.graph_ops import Graph
-from .config import AlabConfig
-from bson import ObjectId
-from labgraph import Sample
 
 
 class ExperimentManager:
     """
     Experiment manager read experiments from the experiment collection
-    and submit the experiment to executor and flag the completed experiments
+    and submit the experiment to executor and flag the completed experiments.
     """
 
     def __init__(self):
@@ -39,9 +37,7 @@ class ExperimentManager:
             self.completed_experiment_view = CompletedExperimentView()
 
     def run(self):
-        """
-        Start the event loop
-        """
+        """Start the event loop."""
         self.logger.system_log(
             level="DEBUG",
             log_data={
@@ -60,7 +56,7 @@ class ExperimentManager:
     def handle_pending_experiments(self):
         """
         This method will scan the database to find out if there are
-        any pending experiments and submit it to task database
+        any pending experiments and submit it to task database.
         """
         pending_experiments = self.experiment_view.get_experiments_with_status(
             ExperimentStatus.PENDING
@@ -76,85 +72,84 @@ class ExperimentManager:
                 },
             )
 
-    def _handle_pending_experiment(self, experiment: dict):
+    def _handle_pending_experiment(self, experiment: Dict[str, Any]):
         samples: List[Dict[str, Any]] = experiment["samples"]
         tasks: List[Dict[str, Any]] = experiment["tasks"]
 
-        # # check if there is any cycle in the graph #TODO already covered in Labgraph, marked for removal
-        # reversed_edges = {i: task["prev_tasks"] for i, task in enumerate(tasks)}
-        # task_graph = Graph(
-        #     list(range(len(tasks))),
-        #     # reverse reserved edges to get right directions of edges
-        #     {
-        #         i: [
-        #             j
-        #             for j, children in reversed_edges.items()
-        #             for child in children
-        #             if child == i
-        #         ]
-        #         for i in list(range(len(tasks)))
-        #     },
-        # )
-        # if task_graph.has_cycle():
-        #     raise ValueError(
-        #         "Detect cycle in task graph, which is supposed "
-        #         "to be a DAG (directed acyclic graph)."
-        #     )
+        # check if there is any cycle in the graph
+        reversed_edges = {i: task["prev_tasks"] for i, task in enumerate(tasks)}
+        task_graph = Graph(
+            list(range(len(tasks))),
+            # reverse reserved edges to get right directions of edges
+            {
+                i: [
+                    j
+                    for j, children in reversed_edges.items()
+                    for child in children
+                    if child == i
+                ]
+                for i in list(range(len(tasks)))
+            },
+        )
+        if task_graph.has_cycle():
+            raise ValueError(
+                "Detect cycle in task graph, which is supposed "
+                "to be a DAG (directed acyclic graph)."
+            )
 
-        # # create samples in the sample database
-        # sample_ids = {
-        #     sample["name"]: self.sample_view.add(
-        #         sample["name"],
-        #         sample_id=sample.get("sample_id", None),
-        #         tags=sample.get("tags", []),
-        #         metadata=sample.get("metadata", {}),
-        #     )
-        #     for sample in samples
-        # }
+        # create samples in the sample database
+        sample_ids = {
+            sample["name"]: self.sample_view.create_sample(
+                sample["name"],
+                sample_id=sample.get("sample_id", None),
+                tags=sample.get("tags", []),
+                metadata=sample.get("metadata", {}),
+            )
+            for sample in samples
+        }
 
-        # # create tasks in the task database
-        # task_ids = []
-        # for task in tasks:
-        #     samples = [
-        #         {"name": samplename, "sample_id": sample_ids[samplename]}
-        #         for samplename in task["samples"]
-        #     ]
-        #     task_ids.append(
-        #         self.task_view.create_task(
-        #             name=task["type"],
-        #             parameters=task["parameters"],
-        #             samples=samples,
-        #             task_id=task.get("task_id", None),
-        #             labgraph_node_type=task["labgraph_node_type"],
-        #         )
-        #     )
+        # create tasks in the task database
+        task_ids = []
+        for task in tasks:
+            samples = [
+                {"name": samplename, "sample_id": sample_ids[samplename]}
+                for samplename in task["samples"]
+            ]
+            task_ids.append(
+                self.task_view.create_task(
+                    task_type=task["type"],
+                    parameters=task["parameters"],
+                    samples=samples,
+                    task_id=task.get("task_id", None),
+                )
+            )
 
-        # # change the content of graph's vertices
-        # task_graph.vertices = task_ids
+        # change the content of graph's vertices
+        task_graph.vertices = task_ids
 
         # add dependency to each task
-        # for task in experiment["tasks"]:
+        for task_id in task_ids:
+            self.task_view.update_task_dependency(
+                task_id,
+                next_tasks=task_graph.get_children(task_id),
+                prev_tasks=task_graph.get_parents(task_id),
+            )
+            self.task_view.try_to_mark_task_ready(task_id)
 
-        # for task_id in task_ids:
-        #     self.task_view.update_task_dependency(
-        #         task_id,
-        #         next_tasks=task_graph.get_children(task_id),
-        #         prev_tasks=task_graph.get_parents(task_id),
-        #     )
-        #     self.task_view.try_to_mark_task_ready(task_id)
-
-        for task in experiment["tasks"]:
-            self.task_view.try_to_mark_task_ready(task["task_id"])
+        # write back the assign task & sample ids
+        self.experiment_view.update_sample_task_id(
+            exp_id=experiment["_id"],
+            sample_ids=list(sample_ids.values()),
+            task_ids=task_ids,
+        )
 
         # update the status of experiment to RUNNING (have handled by experiment manager)
-        self.experiment_view.start_experiment_for_the_first_time(
-            exp_id=experiment["_id"]
+        self.experiment_view.update_experiment_status(
+            exp_id=experiment["_id"], status=ExperimentStatus.RUNNING
         )
 
     def mark_completed_experiments(self):
-        """
-        This method will scan the database to mark completed experiments in time
-        """
+        """This method will scan the database to mark completed experiments in time."""
         running_experiments = self.experiment_view.get_experiments_with_status(
             ExperimentStatus.RUNNING
         )
@@ -183,21 +178,18 @@ class ExperimentManager:
                         "exp_id": experiment["_id"],
                     },
                 )
-                print(
-                    f"Experiment ({experiment['_id']}: {experiment['name']}) completed."
-                )
+                print(f"Experiment ({experiment['_id']}) completed.")
 
                 if self.__copy_to_completed_db:
-                    pass
-                    # self.completed_experiment_view.save_experiment(experiment["_id"])
-                    # print(
-                    #     f"Experiment ({experiment["_id"]}) and associated samples/tasks were copied to the completed db."
-                    # )
-                    # self.logger.system_log(
-                    #     level="DEBUG",
-                    #     log_data={
-                    #         "logged_by": self.__class__.__name__,
-                    #         "type": "ExperimentSavedToCompletedDB",
-                    #         "exp_id": experiment["_id"],
-                    #     },
-                    # )
+                    self.completed_experiment_view.save_experiment(experiment["_id"])
+                    print(
+                        f"Experiment ({experiment['_id']}) and associated samples/tasks were copied to the completed db."
+                    )
+                    self.logger.system_log(
+                        level="DEBUG",
+                        log_data={
+                            "logged_by": self.__class__.__name__,
+                            "type": "ExperimentSavedToCompletedDB",
+                            "exp_id": experiment["_id"],
+                        },
+                    )

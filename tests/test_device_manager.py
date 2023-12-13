@@ -1,6 +1,5 @@
 import time
 from multiprocessing import Process
-from threading import Thread
 from traceback import print_exc
 from unittest import TestCase
 
@@ -56,3 +55,4 @@ class TestDeviceManager(TestCase):
         # try to call a property
         with self.assertRaises(TypeError):
             f()
+

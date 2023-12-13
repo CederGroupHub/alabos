@@ -12,7 +12,7 @@ from bson import ObjectId
 from pydantic import BaseModel, conint
 
 from .sample import Sample, SamplePosition
-from ..utils.data_objects import get_collection, get_lock, get_labgraph_mongodb
+from ..utils.data_objects import get_collection, get_lock
 from labgraph import Sample as LabgraphSample
 from labgraph.views import (
     SampleView as LabgraphSampleView,
@@ -72,7 +72,8 @@ class SampleView(LabgraphSampleView):
     """
 
     def __init__(self):
-        super().__init__(labgraph_mongodb_instance=get_labgraph_mongodb())
+        super().__init__()
+        self._sample_collection = get_collection("samples")
         self._sample_positions_collection = get_collection("sample_positions")
         self._sample_positions_collection.create_index(
             [
@@ -431,7 +432,7 @@ class SampleView(LabgraphSampleView):
 
 class PositionView(LabgraphMaterialView):
     def __init__(self):
-        super().__init__(labgraph_mongodb_instance=get_labgraph_mongodb())
+        super().__init__()
         self._sample_view = SampleView()
         self._sample_positions_collection = get_collection("sample_positions")
         self._sample_positions_collection.create_index(

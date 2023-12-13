@@ -1,16 +1,16 @@
 """
-This module is adapted from https://github.com/Mause/rpc
+This module is adapted from https://github.com/Mause/rpc.
 
 The task process can only get access to a wrapper over the real device object. The wrapper will
 redirect all the method calls to the real device object via RabbitMQ. The real device object is in
 DeviceManager class, which will handle all the request to run certain methods on the real device.
 """
 
-from concurrent.futures import Future, ThreadPoolExecutor
+from concurrent.futures import Future
 from enum import Enum, auto
 from functools import partial
 from threading import Thread
-from typing import Optional, Any, Dict, NoReturn, cast, Callable
+from typing import Any, Callable, Dict, NoReturn, Optional, cast
 from uuid import uuid4
 
 import dill
@@ -21,7 +21,7 @@ from pika.adapters.blocking_connection import BlockingChannel
 from pika.spec import Basic
 
 from .config import AlabConfig
-from .device_view.device_view import DeviceView, DeviceTaskStatus
+from .device_view.device_view import DeviceTaskStatus, DeviceView
 from .utils.data_objects import get_rabbitmq_connection
 from .utils.module_ops import load_definition
 
@@ -30,6 +30,8 @@ DEFAULT_CLIENT_QUEUE_SUFFIX = DEFAULT_SERVER_QUEUE_SUFFIX + ".reply_to"
 
 
 class MethodCallStatus(Enum):
+    """The status of a method call."""
+
     PENDING = auto()
     IN_PROGRESS = auto()
     SUCCESS = auto()
@@ -37,9 +39,7 @@ class MethodCallStatus(Enum):
 
 
 class DeviceMethodCallState:
-    """
-    holds the status of a pending method call to a device
-    """
+    """holds the status of a pending method call to a device."""
 
     status: MethodCallStatus
     future: Future
@@ -47,14 +47,10 @@ class DeviceMethodCallState:
 
 
 class DeviceWrapper:
-    """
-    A wrapper over the device
-    """
+    """A wrapper over the device."""
 
     class DeviceMethodWrapper:
-        """
-        A wrapper over a device method
-        """
+        """A wrapper over a device method."""
 
         def __init__(self, device_name: str, method: str, method_handler: Callable):
             self._device_name = device_name
@@ -63,15 +59,19 @@ class DeviceWrapper:
 
         @property
         def method(self) -> str:
+            """The name of the method."""
             return self._method
 
         def __call__(self, *args, **kwargs):
+            """Call the method."""
             return self._method_handler(*args, **kwargs)
 
         def __repr__(self) -> str:
+            """Return the representation of the method."""
             return f"<method {self._device_name}.{self._method}>"
 
         def _raise(self, *args, **kwargs) -> NoReturn:  # pylint: disable=no-self-use
+            """Raise an error."""
             raise AttributeError(
                 "This is a class method, you cannot use it as an attribute."
             )
@@ -88,9 +88,11 @@ class DeviceWrapper:
 
     @property
     def name(self) -> str:
+        """The name of the device."""
         return self._name
 
     def __getattr__(self, method: str):
+        """Get the method."""
         return self.DeviceMethodWrapper(
             device_name=self.name,
             method=method,
@@ -108,7 +110,7 @@ class DeviceManager:
         """
         Args:
             _check_status: Check if the task currently occupied this device when
-              running commands. (disable it only for test purpose)
+              running commands. (disable it only for test purpose).
         """
         load_definition()
         self._rpc_queue_name = (
@@ -119,9 +121,7 @@ class DeviceManager:
         self.threads = []
 
     def run(self):
-        """
-        Start to listen on the device_rpc queue and conduct the command one by one.
-        """
+        """Start to listen on the device_rpc queue and conduct the command one by one."""
         self.connection = get_rabbitmq_connection()
         with self.connection.channel() as channel:
             channel.queue_declare(
@@ -148,9 +148,7 @@ class DeviceManager:
         *args,
         **kwargs,
     ):
-        """
-        Execute a command on the device. Acknowledges completion on rabbitmq channel.
-        """
+        """Execute a command on the device. Acknowledges completion on rabbitmq channel."""
 
         def callback_publish(channel, delivery_tag, props, response):
             if props.reply_to is not None:
@@ -233,7 +231,7 @@ class DeviceManager:
 
 class DevicesClient:  # pylint: disable=too-many-instance-attributes
     """
-    A rabbitmq-backed RPC client for sending device requests to the Device Manager (server)
+    A rabbitmq-backed RPC client for sending device requests to the Device Manager (server).
 
     Use ``create_device_wrapper`` to create Device Wrapper instance.
     """
@@ -244,16 +242,15 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
             task_id: the task id of current task process
             timeout: the max time to wait for the server to respond, if
               the time exceed the max time, a :py:class:`TimeoutError <concurrent.futures._base.TimeoutError>`
-              shall be raised
+              shall be raised.
         """
         assert task_id is not None, "task_id cannot be None!"
 
         self._rpc_queue_name = (
             AlabConfig()["general"]["name"] + DEFAULT_SERVER_QUEUE_SUFFIX
         )
-        # self._rpc_reply_queue_name = (
-        #     str(task_id) + DEFAULT_CLIENT_QUEUE_SUFFIX
-        # )  # TODO does this have to be taskid, or can be random? I think this dies with the resourcerequest context manager anyways?
+        # self._rpc_reply_queue_name = ( str(task_id) + DEFAULT_CLIENT_QUEUE_SUFFIX )  # TODO does this have to be
+        #  taskid, or can be random? I think this dies with the resourcerequest context manager anyways?
         self._rpc_reply_queue_name = str(uuid4()) + DEFAULT_CLIENT_QUEUE_SUFFIX
         self._task_id = task_id
         self._waiting: Dict[ObjectId, Future] = {}
@@ -278,18 +275,20 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
         self._timeout = timeout
 
     def __getitem__(self, device_name: str):
+        """Get the device wrapper."""
         return self.create_device_wrapper(device_name=device_name)
 
     def create_device_wrapper(
         self, device_name: str
     ) -> object:  # pylint: disable=no-self-use
         """
-        Create a wrapper over a device with ``device_name``
+        Create a wrapper over a device with ``device_name``.
 
         Args:
             device_name: the name of device to be wrapped
 
-        Returns:
+        Returns
+        -------
             A device wrapper that will send every call to class method to remote server.
         """
         return DeviceWrapper(name=device_name, devices_client=self)
@@ -305,7 +304,8 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
             *args: positional arguments to feed into the method function
             **kwargs: keyword arguments to feed into the method function
 
-        Returns:
+        Returns
+        -------
             the result of function
         """
         assert self._conn and self._channel
@@ -342,9 +342,7 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
         properties: BasicProperties,
         _body: bytes,
     ):
-        """
-        Callback function to handle a returned message from Device Manager
-        """
+        """Callback function to handle a returned message from Device Manager."""
         body = dill.loads(_body)
 
         f = self._waiting.pop(ObjectId(properties.correlation_id))
@@ -352,3 +350,4 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
             f.set_result(body["result"])
         else:
             f.set_exception(body["result"])
+

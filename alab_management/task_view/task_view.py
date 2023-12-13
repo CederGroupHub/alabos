@@ -11,7 +11,6 @@ from bson import ObjectId
 from alab_management.task_view.task import get_all_tasks, BaseTask
 from alab_management.utils.data_objects import (
     get_collection,
-    get_labgraph_mongodb,
     make_bsonable,
     get_lock,
 )
@@ -19,8 +18,9 @@ from alab_management.task_view.task_enums import TaskStatus
 from alab_management.labgraph_types.placeholders import (
     PLACEHOLDER_ACTOR_FOR_TASKS_THAT_HAVENT_RUN_YET,
 )
+
 from .completed_task_view import CompletedTaskView
-from labgraph.data.nodes import BaseNode, BaseNodeWithActor
+from labgraph.data.nodes import BaseNode
 from labgraph.views.base import BaseNodeView
 from labgraph import Action, Analysis, Measurement, Material, views
 from labgraph.views.base import NotFoundInDatabaseError
@@ -30,19 +30,10 @@ completed_task_view = CompletedTaskView()
 
 class LabgraphNodeView:
     def __init__(self):
-        labgraph_mongodb_instance = get_labgraph_mongodb()
-        self.action_view = views.ActionView(
-            labgraph_mongodb_instance=labgraph_mongodb_instance
-        )
-        self.measurement_view = views.MeasurementView(
-            labgraph_mongodb_instance=labgraph_mongodb_instance
-        )
-        self.analysis_view = views.AnalysisView(
-            labgraph_mongodb_instance=labgraph_mongodb_instance
-        )
-        self.material_view = views.MaterialView(
-            labgraph_mongodb_instance=labgraph_mongodb_instance
-        )
+        self.action_view = views.ActionView()
+        self.measurement_view = views.MeasurementView()
+        self.analysis_view = views.AnalysisView()
+        self.material_view = views.MaterialView()
 
         self.views: Dict[str, BaseNodeView] = {
             "Action": self.action_view,
@@ -174,7 +165,7 @@ class TaskView:
         # )
         return subtask_id
 
-    def get_task_node(self, task_id: ObjectId) -> BaseNodeWithActor:
+    def get_task_node(self, task_id: ObjectId) -> BaseNode:
         """
         Get a task by its task id, which will return all the info stored in the database
 
@@ -311,7 +302,7 @@ class TaskView:
         """
         Add a task actor to the database
         """
-        actor_view = views.ActorView(labgraph_mongodb_instance=get_labgraph_mongodb())
+        actor_view = views.ActorView()
         actor = actor_view.get_by_name(name=actor_name)[0]
 
         task_node = self.get_task_node(task_id=task_id)

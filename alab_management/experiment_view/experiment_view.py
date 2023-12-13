@@ -59,23 +59,30 @@ class ExperimentView:
         """
         # NOTE: format of experiment dict is checked in api endpoint upstream of this method
 
-        if any(
-            self.sample_view.exists(sample["_id"]) for sample in experiment["samples"]
-        ):
-            raise ValueError(
-                f"Sample id already exists in the database! Please use another id. This experiment was not submitted."
-            )
+        for sample in experiment.samples:
+            if sample.sample_id is None:
+                continue  # ALabOS will assign a sample id, this is always safe
+            if self.sample_view.exists(sample_id=sample.sample_id):
+                raise ValueError(
+                    f"Sample id {sample.sample_id} already exists in the database! Please use another id. This "
+                    f"experiment was not submitted."
+                )
 
-        if self._experiment_collection.count_documents({"_id": experiment["_id"]}) > 0:
-            raise ValueError(
-                f"Experiment id already exists in the database! Please use another id. This experiment was not submitted."
-            )
+        for task in experiment.tasks:
+            if task.task_id is None:
+                continue
+            if self.task_view.exists(task_id=task.task_id):
+                raise ValueError(
+                    f"Task id {task.task_id} already exists in the database! Please use another id. This experiment "
+                    f"was not submitted."
+                )
 
         sample_objects = []
         sample_list = []
         sample_name_to_id = {}
         for sample_dict in experiment["samples"]:
             sample_dict["node_contents"] = experiment["node_contents"]
+            #TODO: There is no from_dict method in labgraph sample
             sample = LabgraphSample.from_dict(
                 sample_dict, labgraph_mongodb_instance=get_labgraph_mongodb()
             )
