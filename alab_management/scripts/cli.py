@@ -1,4 +1,5 @@
 """Useful CLI tools for the alab_management package."""
+from alab_management.config import AlabConfig
 import click
 
 from alab_management import __version__
@@ -55,11 +56,9 @@ def setup_lab_cli():
 )
 @click.option("-p", "--port", default="8895", type=int)
 @click.option("--debug", default=False, is_flag=True)
-@click.option("--sim_mode", type=bool, default=False, is_flag=True)
-def launch_lab_cli(host, port, debug, sim_mode):
+def launch_lab_cli(host, port, debug):
     """Start to run the lab."""
     click.echo(f"The dashboard will be served on http://{host}:{port}")
-    config_file_update(sim_mode)
     launch_lab(host, port, debug)
 
 
@@ -73,10 +72,8 @@ def launch_lab_cli(host, port, debug, sim_mode):
     },
 )
 @click.pass_context
-@click.option("--sim_mode", type=bool, default=False, is_flag=True)
-def launch_worker_cli(ctx, sim_mode):
+def launch_worker_cli(ctx):
     """Launch Dramatiq worker in current folder."""
-    config_file_update(sim_mode)
     launch_worker(ctx.args)
 
 

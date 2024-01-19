@@ -69,6 +69,7 @@ class AlabConfig:
 
         if config_path is None:
             config_path = "config.toml"
+
         try:
             with open(config_path, encoding="utf-8") as f:
                 _config = toml.load(f)

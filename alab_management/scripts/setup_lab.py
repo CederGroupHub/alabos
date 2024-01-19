@@ -22,9 +22,13 @@ def setup_lab():
 
     # start with all standalone sample positions
     sample_positions = list(get_all_standalone_sample_positions().values())
-    sample_view.add_sample_positions_to_db(sample_positions=sample_positions, parent_device_name=None)
+    sample_view.add_sample_positions_to_db(
+        sample_positions=sample_positions, parent_device_name=None
+    )
     # next add positions within devices
     for device in devices:  # prepend device name to device sample positions
-        sample_view.add_sample_positions_to_db(sample_positions=device.sample_positions, parent_device_name=device.name)
+        sample_view.add_sample_positions_to_db(
+            sample_positions=device.sample_positions, parent_device_name=device.name
+        )
 
     return True
