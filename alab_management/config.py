@@ -56,21 +56,20 @@ def freeze_config(config_: Dict[str, Any]) -> FrozenDict:
     return _frozen_collection(config_)
 
 
-# @singleton
 class AlabConfig:
     """Class used for storing all the config data."""
 
     def __init__(self):
         """Load a immutable toml config file from `config_path`."""
         config_path = os.getenv("ALAB_CONFIG", None)
-        sim_mode_flag = os.getenv("SIM_MODE_FLAG", "False")
+        sim_mode_flag = os.getenv("SIM_MODE_FLAG", "True")
         sim_mode_flag_boolean = sim_mode_flag.lower() == "true"
-        if sim_mode_flag_boolean and config_path is not None:
-            config_path = config_path.replace("alab_management_config.toml", "alab_management_config_sim.toml")
-            os.environ["ALAB_CONFIG"] = config_path
-            config_path = os.getenv("ALAB_CONFIG", None)
-        elif config_path is None:
+
+        self.sim_mode_flag = sim_mode_flag_boolean
+
+        if config_path is None:
             config_path = "config.toml"
+
         try:
             with open(config_path, encoding="utf-8") as f:
                 _config = toml.load(f)
@@ -117,3 +116,7 @@ class AlabConfig:
     def path(self) -> Path:
         """The absolute path to the config file."""
         return self._path
+
+    def is_sim_mode(self) -> bool:
+        """Check if the system is in simulation mode."""
+        return self.sim_mode_flag

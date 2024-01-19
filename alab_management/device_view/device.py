@@ -90,7 +90,7 @@ def mock(return_constant: Any = _UNSPECIFIED, object_type: Union[List[Any], Any]
         def wrapper(*args, **kwargs):
             from alab_management.config import AlabConfig
 
-            if AlabConfig()["general"].get("simulation"):
+            if AlabConfig().is_sim_mode():
                 if return_constant is not _UNSPECIFIED and object_type is not _UNSPECIFIED:
                     raise ValueError("Cannot specify both return_constant and return_mock_call!")
                 elif isinstance(return_constant, dict):
