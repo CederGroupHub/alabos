@@ -5,7 +5,8 @@ If ``-a`` is true, the whole database (including the data recorded) shall
 be deleted.
 """
 
-def cleanup_lab(all_collections: bool = False, _force_i_know_its_dangerous: bool = False, user_confirmation: str = None, 
+
+def cleanup_lab(all_collections: bool = False, _force_i_know_its_dangerous: bool = False, user_confirmation: str = None,
                 sim_mode: bool = True, database_name: str = None):
     """Drop device, sample_position collection from MongoDB."""
     from alab_management.config import AlabConfig  # type: ignore
@@ -25,7 +26,7 @@ def cleanup_lab(all_collections: bool = False, _force_i_know_its_dangerous: bool
             if user_confirmation != "y":
                 return False
         if database_name is None:
-            database_name = input(f"Write the name of the database that you want to remove: ")
+            database_name = input("Write the name of the database that you want to remove: ")
 
         if sim_mode != AlabConfig().is_sim_mode() or database_name == "Alab":
             print("Wrong name of database. Hence, not removed.")
