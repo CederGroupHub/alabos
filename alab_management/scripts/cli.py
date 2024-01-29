@@ -1,12 +1,10 @@
 """Useful CLI tools for the alab_management package."""
-from alab_management.config import AlabConfig
 import click
 
 from alab_management import __version__
 from alab_management.config import AlabConfig
 
 from .cleanup_lab import cleanup_lab
-from .config_file import config_file_update
 from .init_project import init_project
 from .launch_lab import launch_dashboard, launch_lab
 from .launch_worker import launch_worker
