@@ -13,7 +13,6 @@ def cleanup_lab(all_collections: bool = False, _force_i_know_its_dangerous: bool
     from alab_management.device_view.device_view import DeviceView
     from alab_management.sample_view.sample_view import SampleView
     from alab_management.utils.data_objects import _GetMongoCollection
-    import pymongo
 
     _GetMongoCollection.init()
     config = AlabConfig()
