@@ -28,7 +28,8 @@ def launch_task_manager():
 class TestTaskManager(unittest.TestCase):
     def setUp(self) -> None:
         time.sleep(2)
-        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True, sim_mode=True, database_name="Alab_sim", user_confirmation="y")
+        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True, sim_mode=True,
+                    database_name="Alab_sim", user_confirmation="y")
         setup_lab()
         self.devices = get_all_devices()
         self.device_view = DeviceView()
@@ -41,7 +42,8 @@ class TestTaskManager(unittest.TestCase):
 
     def tearDown(self) -> None:
         self.process.terminate()
-        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True, sim_mode=True, database_name="Alab_sim", user_confirmation="y")
+        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True, sim_mode=True,
+                    database_name="Alab_sim", user_confirmation="y")
         time.sleep(2)
 
     def test_task_requester(self):

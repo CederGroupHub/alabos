@@ -25,7 +25,8 @@ def launch_task_manager():
 
 class TestLabView(TestCase):
     def setUp(self) -> None:
-        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True, sim_mode=True, database_name="Alab_sim", user_confirmation="y")
+        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True, sim_mode=True,
+                    database_name="Alab_sim", user_confirmation="y")
         setup_lab()
         self.device_view = DeviceView()
         self.device_list = self.device_view._device_list
@@ -38,7 +39,8 @@ class TestLabView(TestCase):
 
     def tearDown(self) -> None:
         self.process.terminate()
-        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True, sim_mode=True, database_name="Alab_sim", user_confirmation="y")
+        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True, sim_mode=True,
+                    database_name="Alab_sim", user_confirmation="y")
         time.sleep(1)
 
     def test_request_resources(self):

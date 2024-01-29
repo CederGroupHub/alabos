@@ -13,14 +13,16 @@ from alab_management.scripts.setup_lab import setup_lab
 
 class TestExperimentView(TestCase):
     def setUp(self) -> None:
-        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True, sim_mode=True, database_name="Alab_sim", user_confirmation="y")
+        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True, sim_mode=True,
+                    database_name="Alab_sim", user_confirmation="y")
         setup_lab()
         self.experiment_view = ExperimentView()
         self.experiment_collection = self.experiment_view._experiment_collection
         self.experiment_collection.drop()
 
     def tearDown(self) -> None:
-        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True, sim_mode=True, database_name="Alab_sim", user_confirmation="y")
+        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True, sim_mode=True,
+                    database_name="Alab_sim", user_confirmation="y")
         self.experiment_collection.drop()
 
     def test_create_experiment(self):
