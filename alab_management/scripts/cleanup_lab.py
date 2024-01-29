@@ -32,13 +32,13 @@ def cleanup_lab(all_collections: bool = False, _force_i_know_its_dangerous: bool
             database_name = input(
                 f"Write the name of the database that you want to remove. "
                 f"If you want to remove the simulation database then type in "
-                f"{config['general']['name']}:  ")
+                f"{config['general']['name']}_sim:  ")
 
         if sim_mode != AlabConfig().is_sim_mode() or database_name == "Alab":
             print("Wrong name of database. Hence, not removed.")
             return False
         elif sim_mode == AlabConfig().is_sim_mode() and database_name != "Alab":
-            print(f"Removing database {config['general']['name']}")
+            print(f"Removing database {database_name}")
             _GetMongoCollection.init()
             _GetMongoCollection.client.drop_database(database_name)  # type: ignore
         else:
