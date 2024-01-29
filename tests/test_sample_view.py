@@ -26,13 +26,13 @@ def release_sample_positions(sample_positions, sample_view: SampleView):
 
 class TestSampleView(TestCase):
     def setUp(self) -> None:
-        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True)
+        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True, sim_mode=True, database_name="Alab_sim", user_confirmation="y")
         setup_lab()
         self.sample_view = SampleView()
         self.sample_view._sample_collection.drop()
 
     def tearDown(self) -> None:
-        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True)
+        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True, sim_mode=True, database_name="Alab_sim", user_confirmation="y")
         self.sample_view._sample_collection.drop()
 
     @contextmanager
