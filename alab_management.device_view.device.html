@@ -988,8 +988,81 @@ connected to alabos.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="alab_management.device_view.device.mock">
-<span class="sig-name descname"><span class="pre">mock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_constant</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_mock_call</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#mock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.mock" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">mock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_constant=&lt;function</span> <span class="pre">_UNSPECIFIED&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_type=&lt;function</span> <span class="pre">_UNSPECIFIED&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#mock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.mock" title="Permalink to this definition">¶</a></dt>
+<dd><p>A decorator used for mocking functions during simulation.</p>
+<p>Args:
+- return_constant (Any, optional): The constant value to be returned by the mocked function.</p>
+<blockquote>
+<div><p>It can be a value (str, int, float, bool), list of values, or a dictionary specifying
+return values for keys. Default is None.</p>
+</div></blockquote>
+<ul class="simple">
+<li><dl class="simple">
+<dt>object_type (Union[List[Any], Any], optional): The type or list of types to mock if the</dt><dd><p>function returns an object. Default is None.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>- decorator</strong></p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Decorator function used to mock other functions during simulation.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>- ValueError</strong> – If both <cite>return_constant</cite> and <cite>object_type</cite> are specified.:</p></li>
+<li><p><strong>- ValueError</strong> – If <cite>return_constant</cite> is not of types: str, int, float, bool, list, or dict.:</p></li>
+<li><p><strong>- ValueError</strong> – If <cite>object_type</cite> is specified and not a list or a class type.:</p></li>
+<li><p><strong>Note:</strong> – </p></li>
+<li><p><strong>- The decorator mocks the function during simulation based on specified constant values</strong> – or object types.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>1. Mocking a function with a constant return value:
+&#64;mock(return_constant=42)
+def get_data() -&gt; int:</p>
+<blockquote>
+<div><p>…
+a = some_integer
+return a</p>
+</div></blockquote>
+<p>2. Mocking a function that returns multiple values in a dictionary:
+&#64;mock(return_constant={“twotheta”: [0.1, 0.2, 0.3], “counts”: [100, 200, 300]})
+def run_simulation() -&gt; dict:</p>
+<blockquote>
+<div><p>…
+a = {twotheta: [0.1, 0.2, 0.3]}
+b = {counts: [100, 200, 300]}
+return {<a href="#id1"><span class="problematic" id="id2">**</span></a>a, <a href="#id3"><span class="problematic" id="id4">**</span></a>b}</p>
+</div></blockquote>
+<p>3. Mocking a function that returns a specific object type:
+&#64;mock(object_type=str)
+def create_mock_string() -&gt; str:</p>
+<blockquote>
+<div><p>return “Mocked String”</p>
+</div></blockquote>
+<p>4. Mocking a function that returns a single object type:
+from alab_control.ohaus_scale import OhausScale as ScaleDriver
+&#64;mock(object_type=ScaleDriver)
+def get_driver(self):</p>
+<blockquote>
+<div><p>self.driver = ScaleDriver(ip=self.ip_address, timeout=self.TIMEOUT)
+self.driver.set_unit_to_mg()
+return self.driver</p>
+</div></blockquote>
+<p>5. Mocking a function that returns a list of object types:
+from alab_control.furnace_2416 import FurnaceController
+from alab_control.door_controller import DoorController
+&#64;mock(object_type=[FurnaceController, DoorController])
+def get_driver(self):</p>
+<blockquote>
+<div><p>self.driver = FurnaceController(port=self.com_port)
+return self.driver, self.door_controller</p>
+</div></blockquote>
+</dd></dl>
 
 </section>
 
@@ -1012,7 +1085,7 @@ connected to alabos.</p>
         
           By Alab Project Team<br/>
         
-            &copy; Copyright 2023, Alab Project Team.<br/>
+            &copy; Copyright 2024, Alab Project Team.<br/>
       </p>
     </div>
   </footer>

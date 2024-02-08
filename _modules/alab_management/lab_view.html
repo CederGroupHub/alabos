@@ -580,8 +580,9 @@
 <span class="sd">            this command blocks until the subtask is completed.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            task_type (Union[str, type[BaseTask]]): name or class of Task to run.</span>
-<span class="sd">            **kwargs: will be passed to the Task method via the parameters entry in task collection.</span>
+<span class="sd">        task (Type[BaseTask]): The type/class of the Task to run.</span>
+<span class="sd">        samples (List[Union[ObjectId, str]]): List of sample IDs or names.</span>
+<span class="sd">        **kwargs: will be passed to the Task method via the parameters entry in the task collection.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">BaseTask</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;task must be a subclass of BaseTask!&quot;</span><span class="p">)</span>
@@ -749,7 +750,7 @@
         
           By Alab Project Team<br/>
         
-            &copy; Copyright 2023, Alab Project Team.<br/>
+            &copy; Copyright 2024, Alab Project Team.<br/>
       </p>
     </div>
   </footer>

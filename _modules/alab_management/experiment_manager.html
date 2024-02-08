@@ -561,7 +561,8 @@
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__copy_to_completed_db</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">completed_experiment_view</span><span class="o">.</span><span class="n">save_experiment</span><span class="p">(</span><span class="n">experiment</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">])</span>
                     <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Experiment (</span><span class="si">{</span><span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">) and associated samples/tasks were copied to the completed db.&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;Experiment (</span><span class="si">{</span><span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">) and associated &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;samples/tasks were copied to the completed db.&quot;</span>
                     <span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">system_log</span><span class="p">(</span>
                         <span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
@@ -589,7 +590,7 @@
         
           By Alab Project Team<br/>
         
-            &copy; Copyright 2023, Alab Project Team.<br/>
+            &copy; Copyright 2024, Alab Project Team.<br/>
       </p>
     </div>
   </footer>

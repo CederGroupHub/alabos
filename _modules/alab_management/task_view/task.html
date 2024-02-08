@@ -468,7 +468,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">task_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">lab_view</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">samples</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;BaseTask was instantiated with simulation mode off -- task_id, lab_view, and samples must all be provided!&quot;</span>
+                    <span class="s2">&quot;BaseTask was instantiated with simulation mode off -- task_id, &quot;</span>
+                    <span class="s2">&quot;lab_view, and samples must all be provided!&quot;</span>
                 <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span> <span class="o">=</span> <span class="n">task_id</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span> <span class="o">=</span> <span class="n">lab_view</span>
@@ -506,7 +507,7 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">            Dict[str, Any]: A dictionary with key:type pairs describing the type of data contained under each result key.</span>
+<span class="sd">            Dict[str, Any]: Dictionary with key:type pairs describing the type of data contained under each result key.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -794,7 +795,7 @@
         
           By Alab Project Team<br/>
         
-            &copy; Copyright 2023, Alab Project Team.<br/>
+            &copy; Copyright 2024, Alab Project Team.<br/>
       </p>
     </div>
   </footer>

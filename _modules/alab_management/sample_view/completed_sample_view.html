@@ -383,7 +383,7 @@
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
+<span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>  <span class="c1"># type: ignore</span>
 
 <span class="kn">from</span> <span class="nn">alab_management.utils.data_objects</span> <span class="kn">import</span> <span class="n">get_collection</span><span class="p">,</span> <span class="n">get_completed_collection</span>
 
@@ -404,13 +404,9 @@
         <span class="c1">#         f&quot;Sample with id {sample_id} already exists in the completed database!&quot;</span>
         <span class="c1">#     )</span>
 
-        <span class="n">sample_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_working_sample_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">sample_id</span><span class="p">)}</span>
-        <span class="p">)</span>
+        <span class="n">sample_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_working_sample_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">sample_id</span><span class="p">)})</span>
         <span class="k">if</span> <span class="n">sample_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Sample with id </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2"> does not exist in the database!&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sample with id </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2"> does not exist in the database!&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">sample_id</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_completed_sample_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
                 <span class="nb">filter</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">sample_id</span><span class="p">)},</span>
@@ -430,12 +426,7 @@
 <span class="sd">        -------</span>
 <span class="sd">            bool: True if sample exists in the database</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_completed_sample_collection</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span>
-                <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">sample_id</span><span class="p">)}</span>
-            <span class="p">)</span>
-            <span class="o">&gt;</span> <span class="mi">0</span>
-        <span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_completed_sample_collection</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">sample_id</span><span class="p">)})</span> <span class="o">&gt;</span> <span class="mi">0</span></div></div>
 </pre></div>
 
               </div>
@@ -454,7 +445,7 @@
         
           By Alab Project Team<br/>
         
-            &copy; Copyright 2023, Alab Project Team.<br/>
+            &copy; Copyright 2024, Alab Project Team.<br/>
       </p>
     </div>
   </footer>

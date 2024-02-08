@@ -657,14 +657,10 @@ value returned by the user.</p>
 <dt>Run a task as a subtask within the task. basically fills in task_id and lab_view for you.</dt><dd><p>this command blocks until the subtask is completed.</p>
 </dd>
 </dl>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>task_type</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>type</em><em>[</em><a class="reference internal" href="task_definition.html#alab_management.task_view.task.BaseTask" title="alab_management.task_view.task.BaseTask"><em>BaseTask</em></a><em>]</em><em>]</em>) – name or class of Task to run.</p></li>
-<li><p><strong>**kwargs</strong> – will be passed to the Task method via the parameters entry in task collection.</p></li>
-</ul>
-</dd>
-</dl>
+<p>Args:
+task (Type[BaseTask]): The type/class of the Task to run.
+samples (List[Union[ObjectId, str]]): List of sample IDs or names.
+<a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs: will be passed to the Task method via the parameters entry in the task collection.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -720,7 +716,7 @@ bson-serializable object (most standard Python types).</p>
         
           By Alab Project Team<br/>
         
-            &copy; Copyright 2023, Alab Project Team.<br/>
+            &copy; Copyright 2024, Alab Project Team.<br/>
       </p>
     </div>
   </footer>

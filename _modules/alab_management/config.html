@@ -408,7 +408,6 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
 
 <span class="kn">import</span> <span class="nn">toml</span>
-<span class="kn">from</span> <span class="nn">monty.design_patterns</span> <span class="kn">import</span> <span class="n">singleton</span>
 
 
 <div class="viewcode-block" id="freeze_config"><a class="viewcode-back" href="../../alab_management.config.html#alab_management.config.freeze_config">[docs]</a><span class="k">def</span> <span class="nf">freeze_config</span><span class="p">(</span><span class="n">config_</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">FrozenDict</span><span class="p">:</span>
@@ -426,26 +425,26 @@
     <span class="k">def</span> <span class="nf">_frozen_collection</span><span class="p">(</span><span class="n">collection_or_element</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert a list to tuple, a dict to frozen_dict recursively.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">collection_or_element</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
-                <span class="n">_frozen_collection</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">collection_or_element</span>
-            <span class="p">)</span>
+            <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">_frozen_collection</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">collection_or_element</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">collection_or_element</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">FrozenDict</span><span class="p">(</span>
-                <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">_frozen_collection</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">collection_or_element</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">FrozenDict</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">_frozen_collection</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">collection_or_element</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
 
         <span class="k">return</span> <span class="n">collection_or_element</span>
 
     <span class="k">return</span> <span class="n">_frozen_collection</span><span class="p">(</span><span class="n">config_</span><span class="p">)</span></div>
 
 
-<span class="nd">@singleton</span>
-<span class="k">class</span> <span class="nc">AlabConfig</span><span class="p">:</span>
+<div class="viewcode-block" id="AlabConfig"><a class="viewcode-back" href="../../alab_management.config.html#alab_management.config.AlabConfig">[docs]</a><span class="k">class</span> <span class="nc">AlabConfig</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class used for storing all the config data.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load a immutable toml config file from `config_path`.&quot;&quot;&quot;</span>
         <span class="n">config_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;ALAB_CONFIG&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">sim_mode_flag</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SIM_MODE_FLAG&quot;</span><span class="p">,</span> <span class="s2">&quot;True&quot;</span><span class="p">)</span>
+        <span class="n">sim_mode_flag_boolean</span> <span class="o">=</span> <span class="n">sim_mode_flag</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sim_mode_flag</span> <span class="o">=</span> <span class="n">sim_mode_flag_boolean</span>
+
         <span class="k">if</span> <span class="n">config_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">config_path</span> <span class="o">=</span> <span class="s2">&quot;config.toml&quot;</span>
 
@@ -479,9 +478,13 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the hash of the config.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="AlabConfig.get"><a class="viewcode-back" href="../../alab_management.config.html#alab_management.config.AlabConfig.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the config item.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AlabConfig.set_item"><a class="viewcode-back" href="../../alab_management.config.html#alab_management.config.AlabConfig.set_item">[docs]</a>    <span class="k">def</span> <span class="nf">set_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set a specific config item.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
 
     <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the config contains the item.&quot;&quot;&quot;</span>
@@ -491,6 +494,10 @@
     <span class="k">def</span> <span class="nf">path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The absolute path to the config file.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path</span>
+
+<div class="viewcode-block" id="AlabConfig.is_sim_mode"><a class="viewcode-back" href="../../alab_management.config.html#alab_management.config.AlabConfig.is_sim_mode">[docs]</a>    <span class="k">def</span> <span class="nf">is_sim_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the system is in simulation mode.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_mode_flag</span></div></div>
 </pre></div>
 
               </div>
@@ -509,7 +516,7 @@
         
           By Alab Project Team<br/>
         
-            &copy; Copyright 2023, Alab Project Team.<br/>
+            &copy; Copyright 2024, Alab Project Team.<br/>
       </p>
     </div>
   </footer>

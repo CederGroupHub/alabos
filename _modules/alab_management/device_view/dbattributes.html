@@ -378,7 +378,7 @@
   <h1>Source code for alab_management.device_view.dbattributes</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">pymongo.collection</span> <span class="kn">import</span> <span class="n">Collection</span>
+<span class="kn">from</span> <span class="nn">pymongo.collection</span> <span class="kn">import</span> <span class="n">Collection</span>  <span class="c1"># type: ignore</span>
 
 <span class="n">UUID4_PLACEHOLDER</span> <span class="o">=</span> <span class="s2">&quot;be8b61ee-48b1-4624-bf7a-2ca31f7c5ef4&quot;</span>
 
@@ -431,9 +431,7 @@
         <span class="k">return</span> <span class="n">attributes</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">setter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span>
-            <span class="n">device_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="nb">property</span><span class="p">(</span><span class="n">getter</span><span class="p">,</span> <span class="n">setter</span><span class="p">)</span></div>
 
@@ -445,11 +443,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">device_collection</span><span class="p">:</span> <span class="n">Collection</span><span class="p">,</span>
-            <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="n">attribute_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="n">default_value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">device_collection</span><span class="p">:</span> <span class="n">Collection</span><span class="p">,</span>
+        <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">attribute_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">default_value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span> <span class="o">=</span> <span class="n">device_collection</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">attribute_name</span> <span class="o">=</span> <span class="n">attribute_name</span>
@@ -489,13 +487,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;A device by the name </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> was not found in the collection.&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;A device by the name </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> was not found in the collection.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attribute_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;attributes&quot;</span><span class="p">]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_value</span><span class="p">}}</span>
-            <span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_value</span><span class="p">}})</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">db_projection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -509,13 +503,9 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_name</span><span class="p">},</span> <span class="n">projection</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">]</span>
-        <span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_name</span><span class="p">},</span> <span class="n">projection</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">])</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Device </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> does not contain data at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="si">}</span><span class="s2">!&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> does not contain data at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
         <span class="n">return_value</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
             <span class="n">return_value</span> <span class="o">=</span> <span class="n">return_value</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
@@ -535,9 +525,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Extend the list with another iterable. This will update the database with the new value.&quot;&quot;&quot;</span>
         <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span>
         <span class="n">current</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="n">current</span><span class="p">}}</span>
-        <span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="n">current</span><span class="p">}})</span></div>
 
 <div class="viewcode-block" id="ListInDatabase.clear"><a class="viewcode-back" href="../../../alab_management.device_view.dbattributes.html#alab_management.device_view.dbattributes.ListInDatabase.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear the list. This will update the database with the new value.&quot;&quot;&quot;</span>
@@ -559,42 +547,32 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Insert an element at a given position. This will update the database with the new value.&quot;&quot;&quot;</span>
         <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span>
         <span class="n">current</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="n">current</span><span class="p">}}</span>
-        <span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="n">current</span><span class="p">}})</span></div>
 
 <div class="viewcode-block" id="ListInDatabase.pop"><a class="viewcode-back" href="../../../alab_management.device_view.dbattributes.html#alab_management.device_view.dbattributes.ListInDatabase.pop">[docs]</a>    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove the element at a given position. This will update the database with the new value.&quot;&quot;&quot;</span>
         <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">current</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="n">current</span><span class="p">}}</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="n">current</span><span class="p">}})</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="ListInDatabase.remove"><a class="viewcode-back" href="../../../alab_management.device_view.dbattributes.html#alab_management.device_view.dbattributes.ListInDatabase.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove the first item from the list whose value is equal to x. This will update the database with the new.&quot;&quot;&quot;</span>
         <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span>
         <span class="n">current</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="n">current</span><span class="p">}}</span>
-        <span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="n">current</span><span class="p">}})</span></div>
 
 <div class="viewcode-block" id="ListInDatabase.reverse"><a class="viewcode-back" href="../../../alab_management.device_view.dbattributes.html#alab_management.device_view.dbattributes.ListInDatabase.reverse">[docs]</a>    <span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Reverse the elements of the list in place. This will update the database with the new value.&quot;&quot;&quot;</span>
         <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span>
         <span class="n">current</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="n">current</span><span class="p">}}</span>
-        <span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="n">current</span><span class="p">}})</span></div>
 
 <div class="viewcode-block" id="ListInDatabase.sort"><a class="viewcode-back" href="../../../alab_management.device_view.dbattributes.html#alab_management.device_view.dbattributes.ListInDatabase.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sort the items of the list in place. This will update the database with the new value.&quot;&quot;&quot;</span>
         <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span>
         <span class="n">current</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">reverse</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="n">current</span><span class="p">}}</span>
-        <span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="n">current</span><span class="p">}})</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a string representation of the list. This will not update the database.&quot;&quot;&quot;</span>
@@ -638,9 +616,7 @@
                 <span class="s2">&quot;Elements within a ListInDatabase cannot be iterable. Spefically, values of the ListInDatabase cannot &quot;</span>
                 <span class="s2">&quot;be a dict, list, or tuple!&quot;</span>
             <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="n">current</span><span class="p">}}</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="n">current</span><span class="p">}})</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the length of the list. This will not update the database.&quot;&quot;&quot;</span>
@@ -658,11 +634,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">device_collection</span><span class="p">:</span> <span class="n">Collection</span><span class="p">,</span>
-            <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="n">attribute_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="n">default_value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">device_collection</span><span class="p">:</span> <span class="n">Collection</span><span class="p">,</span>
+        <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">attribute_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">default_value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span> <span class="o">=</span> <span class="n">device_collection</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">attribute_name</span> <span class="o">=</span> <span class="n">attribute_name</span>
@@ -671,9 +647,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">default_value</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default_value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;Default value for DictInDatabase must be a dictionary!&quot;</span>
-                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Default value for DictInDatabase must be a dictionary!&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">default_value</span> <span class="o">=</span> <span class="n">default_value</span>
 
 <div class="viewcode-block" id="DictInDatabase.apply_default_value"><a class="viewcode-back" href="../../../alab_management.device_view.dbattributes.html#alab_management.device_view.dbattributes.DictInDatabase.apply_default_value">[docs]</a>    <span class="k">def</span> <span class="nf">apply_default_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -685,13 +659,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;A device by the name </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> was not found in the collection.&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;A device by the name </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> was not found in the collection.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attribute_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;attributes&quot;</span><span class="p">]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_value</span><span class="p">}}</span>
-            <span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_value</span><span class="p">}})</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">db_projection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -705,13 +675,9 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_name</span><span class="p">},</span> <span class="n">projection</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">]</span>
-        <span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_name</span><span class="p">},</span> <span class="n">projection</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">])</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Device </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> does not contain data at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="si">}</span><span class="s2">!&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> does not contain data at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
         <span class="n">return_value</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
             <span class="n">return_value</span> <span class="o">=</span> <span class="n">return_value</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
@@ -735,13 +701,9 @@
 
 <div class="viewcode-block" id="DictInDatabase.as_normal_dict"><a class="viewcode-back" href="../../../alab_management.device_view.dbattributes.html#alab_management.device_view.dbattributes.DictInDatabase.as_normal_dict">[docs]</a>    <span class="k">def</span> <span class="nf">as_normal_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a normal dict representation of the DictInDatabase. This will not update the database.&quot;&quot;&quot;</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_name</span><span class="p">},</span> <span class="n">projection</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">]</span>
-        <span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_name</span><span class="p">},</span> <span class="n">projection</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">])</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Device </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> does not contain data at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="si">}</span><span class="s2">!&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> does not contain data at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">value</span></div>
@@ -781,18 +743,14 @@
         <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="n">UUID4_PLACEHOLDER</span><span class="p">:</span>  <span class="c1"># only fires if default value was not provided</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> was not found in the dictionary!&quot;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="n">current</span><span class="p">}}</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="n">current</span><span class="p">}})</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="DictInDatabase.popitem"><a class="viewcode-back" href="../../../alab_management.device_view.dbattributes.html#alab_management.device_view.dbattributes.DictInDatabase.popitem">[docs]</a>    <span class="k">def</span> <span class="nf">popitem</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a copy of the dict. This will not update the database.&quot;&quot;&quot;</span>
         <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">current</span><span class="o">.</span><span class="n">popitem</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="n">current</span><span class="p">}}</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="n">current</span><span class="p">}})</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="DictInDatabase.setdefault"><a class="viewcode-back" href="../../../alab_management.device_view.dbattributes.html#alab_management.device_view.dbattributes.DictInDatabase.setdefault">[docs]</a>    <span class="k">def</span> <span class="nf">setdefault</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -803,9 +761,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a copy of the dict. This will not update the database.&quot;&quot;&quot;</span>
         <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span>
         <span class="n">current</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="n">current</span><span class="p">}}</span>
-        <span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="n">current</span><span class="p">}})</span></div>
 
     <span class="k">def</span> <span class="fm">__reversed__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a reversed copy of the dict. This will not update the database.&quot;&quot;&quot;</span>
@@ -837,17 +793,13 @@
 
         <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_normal_dict</span><span class="p">()</span>
         <span class="n">current</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="n">current</span><span class="p">}}</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="n">current</span><span class="p">}})</span>
 
     <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete an item from the dict. This will update the database with the new value.&quot;&quot;&quot;</span>
         <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_normal_dict</span><span class="p">()</span>
         <span class="k">del</span> <span class="n">current</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="n">current</span><span class="p">}}</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_filter</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_projection</span><span class="p">:</span> <span class="n">current</span><span class="p">}})</span>
 
     <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if an item is in the dict. This will not update the database.&quot;&quot;&quot;</span>
@@ -874,7 +826,7 @@
         
           By Alab Project Team<br/>
         
-            &copy; Copyright 2023, Alab Project Team.<br/>
+            &copy; Copyright 2024, Alab Project Team.<br/>
       </p>
     </div>
   </footer>

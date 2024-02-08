@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>alab_management.experiment_view.experiment &#8212; Alab Management</title>
+    <title>alab_management.builders.samplebuilder &#8212; Alab Management</title>
     
   <link rel="stylesheet" href="../../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -375,93 +375,161 @@
         
               <div>
                 
-  <h1>Source code for alab_management.experiment_view.experiment</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Define the format of experiment request.&quot;&quot;&quot;</span>
+  <h1>Source code for alab_management.builders.samplebuilder</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Build the sample object.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">BSON</span><span class="p">,</span> <span class="n">ObjectId</span>  <span class="c1"># type: ignore</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">BaseModel</span><span class="p">,</span>
-    <span class="n">constr</span><span class="p">,</span>  <span class="c1"># pylint: disable=no-name-in-module</span>
-    <span class="n">validator</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>  <span class="c1"># type: ignore</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">alab_management.builders.experimentbuilder</span> <span class="kn">import</span> <span class="n">ExperimentBuilder</span>
 
 
-<span class="k">class</span> <span class="nc">_Sample</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="n">name</span><span class="p">:</span> <span class="n">constr</span><span class="p">(</span><span class="n">regex</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;^[^$.]+$&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
-    <span class="n">sample_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">tags</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-    <span class="n">metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+<div class="viewcode-block" id="SampleBuilder"><a class="viewcode-back" href="../../../alab_management.builders.samplebuilder.html#alab_management.builders.samplebuilder.SampleBuilder">[docs]</a><span class="k">class</span> <span class="nc">SampleBuilder</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build a sample.</span>
 
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;sample_id&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">if_provided_must_be_valid_objectid</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span>  <span class="c1"># management will autogenerate a valid objectid</span>
+<span class="sd">    Each sample has a name, tags, and metadata. Each sample also</span>
+<span class="sd">    has a list of tasks which are binded to it. Each sample is a node in a directed graph of tasks.</span>
+<span class="sd">    Each task has a list of samples which are binded to it. Each sample also has a list of tags and</span>
+<span class="sd">    metadata. The tags and metadata are used to filter the samples and tasks. The tags and metadata are</span>
+<span class="sd">    also used to group the samples and tasks.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;An experiment received over the API contained a sample with an invalid sample_id. The sample_id was &quot;</span>
-                <span class="s2">&quot;set to </span><span class="si">{v}</span><span class="s2">, which is not a valid ObjectId.&quot;</span>
-            <span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">experiment</span><span class="p">:</span> <span class="s2">&quot;ExperimentBuilder&quot;</span><span class="p">,</span>
+        <span class="n">tags</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">metadata</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: ignore</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span> <span class="o">=</span> <span class="n">experiment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ObjectId</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="n">tags</span> <span class="ow">or</span> <span class="p">[]</span>
 
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;metadata&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">must_be_bsonable</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;If v is not None, we must confirm that it can be encoded to BSON.&quot;&quot;&quot;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">BSON</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">v</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;An experiment received over the API contained a sample with invalid metadata. The metadata was set &quot;</span>
-                <span class="s2">&quot;to </span><span class="si">{v}</span><span class="s2">, which is not BSON-serializable.&quot;</span>
-            <span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
+<div class="viewcode-block" id="SampleBuilder.add_task"><a class="viewcode-back" href="../../../alab_management.builders.samplebuilder.html#alab_management.builders.samplebuilder.SampleBuilder.add_task">[docs]</a>    <span class="k">def</span> <span class="nf">add_task</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">task_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a task to the sample. You should use this function only for special cases which</span>
+<span class="sd">        are not handled by the `add_sample` function.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            task_id (str): The object id of the task in mongodb</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">task_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SampleBuilder.to_dict"><a class="viewcode-back" href="../../../alab_management.builders.samplebuilder.html#alab_management.builders.samplebuilder.SampleBuilder.to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return Sample as a dictionary.</span>
+
+<span class="sd">        This looks like:</span>
+<span class="sd">        {</span>
+<span class="sd">            &quot;_id&quot;: str(ObjectId),</span>
+<span class="sd">            &quot;name&quot;: str,</span>
+<span class="sd">            &quot;tags&quot;: List[str],</span>
+<span class="sd">            &quot;metadata&quot;: Dict[str, Any],</span>
+<span class="sd">        }</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">            Dict[str, Any]: sample as a dictionary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">),</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span>
+            <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span>
+        <span class="p">}</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the tasks binded to this sample.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if two samples are equal.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_id</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a string representation of the sample.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;Sample: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&gt;&quot;</span></div>
 
 
-<span class="k">class</span> <span class="nc">_Task</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
-    <span class="n">prev_tasks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
-    <span class="n">samples</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-    <span class="n">task_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;task_id&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">if_provided_must_be_valid_objectid</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span>  <span class="c1"># management will autogenerate a valid objectid</span>
-
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;An experiment received over the API contained a task with an invalid task_id. The task_id was set to &quot;</span>
-                <span class="s2">&quot;</span><span class="si">{v}</span><span class="s2">, which is not a valid ObjectId.&quot;</span>
-            <span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
+<span class="c1"># ## Format checking for API inputs</span>
 
 
-<div class="viewcode-block" id="InputExperiment"><a class="viewcode-back" href="../../../alab_management.experiment_view.experiment.html#alab_management.experiment_view.experiment.InputExperiment">[docs]</a><span class="k">class</span> <span class="nc">InputExperiment</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This is the format that user should follow to write to experiment database.&quot;&quot;&quot;</span>
+<span class="c1"># class TaskInputFormat(BaseModel):</span>
+<span class="c1">#     id: Optional[Any] = Field(None, alias=&quot;id&quot;)</span>
+<span class="c1">#     task_type: str</span>
+<span class="c1">#     parameters: Dict[str, Any]</span>
+<span class="c1">#     capacity: int</span>
+<span class="c1">#     prev_tasks: List[str]</span>
+<span class="c1">#     samples: List[Union[str, Any]]</span>
 
-    <span class="n">name</span><span class="p">:</span> <span class="n">constr</span><span class="p">(</span><span class="n">regex</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;^[^$.]+$&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
-    <span class="n">samples</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">_Sample</span><span class="p">]</span>
-    <span class="n">tasks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">_Task</span><span class="p">]</span>
-    <span class="n">tags</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-    <span class="n">metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+<span class="c1">#     @validator(&quot;id&quot;)</span>
+<span class="c1">#     def must_be_valid_objectid(cls, v):</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             ObjectId(v)</span>
+<span class="c1">#         except:</span>
+<span class="c1">#             raise ValueError(f&quot;Received invalid _id: {v} is not a valid ObjectId!&quot;)</span>
+<span class="c1">#         return v</span>
 
-<div class="viewcode-block" id="InputExperiment.must_be_bsonable"><a class="viewcode-back" href="../../../alab_management.experiment_view.experiment.html#alab_management.experiment_view.experiment.InputExperiment.must_be_bsonable">[docs]</a>    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;metadata&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">must_be_bsonable</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;If v is not None, we must confirm that it can be encoded to BSON.&quot;&quot;&quot;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">BSON</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">v</span>
+<span class="c1">#     @validator(&quot;capacity&quot;)</span>
+<span class="c1">#     def must_be_positive(cls, v):</span>
+<span class="c1">#         if v &lt; 0:</span>
+<span class="c1">#             raise ValueError(f&quot;Capacity must be positive, received {v}&quot;)</span>
+<span class="c1">#         return v</span>
 
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;An experiment received over the API contained invalid metadata. The metadata was set to </span><span class="si">{v}</span><span class="s2">, &quot;</span>
-                <span class="s2">&quot;which is not BSON-serializable.&quot;</span>
-            <span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span></div></div>
+<span class="c1">#     @validator(&quot;samples&quot;)</span>
+<span class="c1">#     def samples_must_be_valid_objectid(cls, v):</span>
+<span class="c1">#         for sample_id in v:</span>
+<span class="c1">#             try:</span>
+<span class="c1">#                 ObjectId(sample_id)</span>
+<span class="c1">#             except:</span>
+<span class="c1">#                 raise ValueError(</span>
+<span class="c1">#                     f&quot;Received invalid sample_id: {sample_id} is not a valid ObjectId!&quot;</span>
+<span class="c1">#                 )</span>
+<span class="c1">#         return v</span>
+
+<span class="c1">#     @validator(&quot;prev_tasks&quot;)</span>
+<span class="c1">#     def prevtasks_must_be_valid_objectid(cls, v):</span>
+<span class="c1">#         for task_id in v:</span>
+<span class="c1">#             try:</span>
+<span class="c1">#                 ObjectId(task_id)</span>
+<span class="c1">#             except:</span>
+<span class="c1">#                 raise ValueError(</span>
+<span class="c1">#                     f&quot;Received invalid sample_id: {task_id} is not a valid ObjectId!&quot;</span>
+<span class="c1">#                 )</span>
+<span class="c1">#         return v</span>
+
+
+<span class="c1"># class SampleInputFormat(BaseModel):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     Format check for API for Sample submission.</span>
+<span class="c1">#     Sample&#39;s must follow this format to be accepted into the batching queue.</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+
+<span class="c1">#     id: Optional[Any] = Field(None, alias=&quot;id&quot;)</span>
+<span class="c1">#     name: constr(regex=r&quot;^[^$.]+$&quot;)  # type: ignore</span>
+<span class="c1">#     tags: List[str]</span>
+<span class="c1">#     tasks: List[TaskInputFormat]</span>
+<span class="c1">#     metadata: Dict[str, Any]</span>
+
+<span class="c1">#     @validator(&quot;id&quot;)</span>
+<span class="c1">#     def must_be_valid_objectid(cls, v):</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             ObjectId(v)</span>
+<span class="c1">#         except:</span>
+<span class="c1">#             raise ValueError(f&quot;Received invalid _id: {v} is not a valid ObjectId!&quot;)</span>
+<span class="c1">#         return v</span>
 </pre></div>
 
               </div>
