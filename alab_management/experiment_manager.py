@@ -183,7 +183,8 @@ class ExperimentManager:
                 if self.__copy_to_completed_db:
                     self.completed_experiment_view.save_experiment(experiment["_id"])
                     print(
-                        f"Experiment ({experiment['_id']}) and associated samples/tasks were copied to the completed db."
+                        f"Experiment ({experiment['_id']}) and associated "
+                        f"samples/tasks were copied to the completed db."
                     )
                     self.logger.system_log(
                         level="DEBUG",

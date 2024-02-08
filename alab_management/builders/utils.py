@@ -2,7 +2,7 @@
 
 from typing import TYPE_CHECKING, List, Union
 
-from bson import ObjectId
+from bson import ObjectId  # type: ignore
 
 from .experimentbuilder import ExperimentBuilder
 from .samplebuilder import SampleBuilder
@@ -19,6 +19,7 @@ def append_task(
     Used to add basetask to a SampleBuilder's tasklist during Experiment construction.
 
     Args:
+        task (BaseTask): The task to be added to the SampleBuilder's tasklist.
         samples (Union[SampleBuilder, List[SampleBuilder]]): One or more SampleBuilder's which will
         have this task appended to their tasklists.
     """

@@ -10,7 +10,6 @@ def setup_lab():
     from alab_management.sample_view import SampleView
     from alab_management.sample_view.sample import get_all_standalone_sample_positions
     from alab_management.utils.module_ops import load_definition
-
     load_definition()
     devices = get_all_devices().values()
     DeviceView().add_devices_to_db()

@@ -90,7 +90,8 @@ class BaseTask(ABC):
         else:
             if (task_id is None) or (lab_view is None) or (samples is None):
                 raise ValueError(
-                    "BaseTask was instantiated with simulation mode off -- task_id, lab_view, and samples must all be provided!"
+                    "BaseTask was instantiated with simulation mode off -- task_id, "
+                    "lab_view, and samples must all be provided!"
                 )
             self.task_id = task_id
             self.lab_view = lab_view
@@ -128,7 +129,7 @@ class BaseTask(ABC):
 
         Returns
         -------
-            Dict[str, Any]: A dictionary with key:type pairs describing the type of data contained under each result key.
+            Dict[str, Any]: Dictionary with key:type pairs describing the type of data contained under each result key.
 
         Examples
         --------

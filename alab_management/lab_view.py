@@ -202,8 +202,9 @@ class LabView:
             this command blocks until the subtask is completed.
 
         Args:
-            task_type (Union[str, type[BaseTask]]): name or class of Task to run.
-            **kwargs: will be passed to the Task method via the parameters entry in task collection.
+        task (Type[BaseTask]): The type/class of the Task to run.
+        samples (List[Union[ObjectId, str]]): List of sample IDs or names.
+        **kwargs: will be passed to the Task method via the parameters entry in the task collection.
         """
         if not issubclass(task, BaseTask):
             raise TypeError("task must be a subclass of BaseTask!")

@@ -1,11 +1,6 @@
 from flask import Blueprint
 
-from alab_management.dashboard.lab_views import (
-    device_view,
-    experiment_view,
-    sample_view,
-    task_view,
-)
+from alab_management.dashboard.lab_views import device_view, experiment_view, sample_view, task_view
 
 status_bp = Blueprint("/status", __name__, url_prefix="/api/status")
 
@@ -40,9 +35,7 @@ def get_all_status():
                     }
                     for sample_id in samples
                 ]
-                for position, samples in device_view.get_samples_on_device(
-                    device["name"]
-                ).items()
+                for position, samples in device_view.get_samples_on_device(device["name"]).items()
             },
         }
         for device in devices
@@ -63,10 +56,7 @@ def get_all_status():
         {
             "id": str(experiment["_id"]),
             "name": experiment["name"],
-            "samples": [
-                {"name": sample["name"], "id": str(sample["sample_id"])}
-                for sample in experiment["samples"]
-            ],
+            "samples": [{"name": sample["name"], "id": str(sample["sample_id"])} for sample in experiment["samples"]],
             "tasks": [
                 {
                     "id": str(task["task_id"]),

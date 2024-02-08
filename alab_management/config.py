@@ -30,7 +30,6 @@ from types import MappingProxyType as FrozenDict
 from typing import Any, Dict
 
 import toml
-from monty.design_patterns import singleton
 
 
 def freeze_config(config_: Dict[str, Any]) -> FrozenDict:
@@ -48,26 +47,26 @@ def freeze_config(config_: Dict[str, Any]) -> FrozenDict:
     def _frozen_collection(collection_or_element):
         """Convert a list to tuple, a dict to frozen_dict recursively."""
         if isinstance(collection_or_element, list):
-            return tuple(
-                _frozen_collection(element) for element in collection_or_element
-            )
+            return tuple(_frozen_collection(element) for element in collection_or_element)
         if isinstance(collection_or_element, dict):
-            return FrozenDict(
-                {k: _frozen_collection(v) for k, v in collection_or_element.items()}
-            )
+            return FrozenDict({k: _frozen_collection(v) for k, v in collection_or_element.items()})
 
         return collection_or_element
 
     return _frozen_collection(config_)
 
 
-@singleton
 class AlabConfig:
     """Class used for storing all the config data."""
 
     def __init__(self):
         """Load a immutable toml config file from `config_path`."""
         config_path = os.getenv("ALAB_CONFIG", None)
+        sim_mode_flag = os.getenv("SIM_MODE_FLAG", "True")
+        sim_mode_flag_boolean = sim_mode_flag.lower() == "true"
+
+        self.sim_mode_flag = sim_mode_flag_boolean
+
         if config_path is None:
             config_path = "config.toml"
 
@@ -105,6 +104,10 @@ class AlabConfig:
         """Get the config item."""
         return self._config.get(item, default)
 
+    def set_item(self, key, value):
+        """Set a specific config item."""
+        self._config[key] = value
+
     def __contains__(self, item):
         """Check if the config contains the item."""
         return self._config.__contains__(item)
@@ -113,3 +116,7 @@ class AlabConfig:
     def path(self) -> Path:
         """The absolute path to the config file."""
         return self._path
+
+    def is_sim_mode(self) -> bool:
+        """Check if the system is in simulation mode."""
+        return self.sim_mode_flag

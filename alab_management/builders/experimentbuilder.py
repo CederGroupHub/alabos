@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional, Set, Union
 
 from .samplebuilder import SampleBuilder
 
@@ -25,9 +25,7 @@ class ExperimentBuilder:
         self.tags = tags or []
         self.metadata = metadata
 
-    def add_sample(
-        self, name: str, tags: Optional[List[str]] = None, **metadata
-    ) -> SampleBuilder:
+    def add_sample(self, name: str, tags: Optional[List[str]] = None, **metadata) -> SampleBuilder:
         """
         Add a sample to the batch. Each sample already has multiple tasks binded to it. Each
         batch is a directed graph of tasks.
@@ -88,8 +86,9 @@ class ExperimentBuilder:
             A dictionary that can be used to generate an input file for the `experiment` to run.
 
         """
-        samples = []
-        tasks = []
+        samples: List[Dict[str, Any]] = []
+        # tasks = []
+        tasks: List[Dict[str, Union[str, Set[int], List]]] = []
         task_ids = {}
 
         for sample in self._samples:
@@ -120,9 +119,7 @@ class ExperimentBuilder:
             "tasks": tasks,
         }
 
-    def generate_input_file(
-        self, filename: str, fmt: Literal["json", "yaml"] = "json"
-    ) -> None:
+    def generate_input_file(self, filename: str, fmt: Literal["json", "yaml"] = "json") -> None:
         """
         Genreate an input file for the `experiment` command.
 
@@ -155,8 +152,8 @@ class ExperimentBuilder:
         -------
             None.
         """
-        import matplotlib.pyplot as plt
-        import networkx as nx
+        import matplotlib.pyplot as plt  # type: ignore
+        import networkx as nx  # type: ignore
 
         if ax is None:
             _, ax = plt.subplots(figsize=(8, 6))
@@ -164,9 +161,7 @@ class ExperimentBuilder:
         task_list = self.to_dict()["tasks"]
 
         unique_tasks = {task["type"] for task in task_list}
-        color_key = {
-            nodetype: plt.cm.tab10(i) for i, nodetype in enumerate(unique_tasks)
-        }
+        color_key = {nodetype: plt.cm.tab10(i) for i, nodetype in enumerate(unique_tasks)}
         node_colors = []
         node_labels = {}
         for task in task_list:

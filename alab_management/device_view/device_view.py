@@ -4,8 +4,8 @@ from datetime import datetime
 from enum import Enum, auto, unique
 from typing import Any, Collection, Dict, List, Optional, TypeVar, Union, cast
 
-import pymongo
-from bson import ObjectId
+import pymongo  # type: ignore
+from bson import ObjectId  # type: ignore
 
 from alab_management.sample_view import SamplePosition, SampleView
 from alab_management.utils.data_objects import get_collection, get_lock
@@ -69,9 +69,7 @@ class DeviceView:
             try:
                 device._connect_wrapper()
             except Exception as e:
-                raise DeviceConnectionError(
-                    f"Could not connect to {device_name}!"
-                ) from e
+                raise DeviceConnectionError(f"Could not connect to {device_name}!") from e
             print(f"Connected to {device_name}")
         self.__connected_to_devices = True
 
@@ -80,9 +78,7 @@ class DeviceView:
             try:
                 device._disconnect_wrapper()
             except Exception as e:
-                raise DeviceConnectionError(
-                    f"Could not disconnect from {device_name}!"
-                ) from e
+                raise DeviceConnectionError(f"Could not disconnect from {device_name}!") from e
             print(f"Disconnected from {device_name}")
         self.__connected_to_devices = False
 
@@ -94,11 +90,7 @@ class DeviceView:
         status to ``OCCUPIED``
         """
         for device in self._device_list.values():
-            status = (
-                DeviceTaskStatus.OCCUPIED
-                if device.is_running()
-                else DeviceTaskStatus.IDLE
-            )
+            status = DeviceTaskStatus.OCCUPIED if device.is_running() else DeviceTaskStatus.IDLE
             self._update_status(
                 device=device.name,
                 target_status=status,
@@ -116,17 +108,14 @@ class DeviceView:
         """
         for device in self._device_list.values():
             if self._device_collection.find_one({"name": device.name}) is not None:
-                raise NameError(
-                    f"Duplicated device name {device.name}, did you cleanup the database?"
-                )
+                raise NameError(f"Duplicated device name {device.name}, did you cleanup the database?")
             self._device_collection.insert_one(
                 {
                     "name": device.name,
                     "description": device.description,
                     "type": device.__class__.__name__,
                     "sample_positions": [
-                        f"{device.name}{SamplePosition.SEPARATOR}{sample_pos.name}"
-                        for sample_pos in device.sample_positions
+                        f"{device.name}{SamplePosition.SEPARATOR}{sample_pos.name}" for sample_pos in device.sample_positions
                     ],
                     "status": DeviceTaskStatus.IDLE.name,
                     "pause_status": DevicePauseStatus.RELEASED.name,
@@ -150,9 +139,7 @@ class DeviceView:
         self,
         task_id: ObjectId,
         device_names_str: Optional[Collection[str]] = None,
-        device_types_str: Optional[
-            Collection[str]
-        ] = None,  # pylint: disable=unsubscriptable-object
+        device_types_str: Optional[Collection[str]] = None,  # pylint: disable=unsubscriptable-object
     ) -> Optional[Dict[str, Dict[str, Union[str, bool]]]]:
         """
         Request a list of device, this function will return the name of devices if all the requested device is ready.
@@ -178,23 +165,17 @@ class DeviceView:
             device_types_str = []
 
         if len(device_types_str) != len(set(device_types_str)):
-            raise ValueError(
-                "Currently we do not allow duplicated device types in one request."
-            )
+            raise ValueError("Currently we do not allow duplicated device types in one request.")
 
         idle_devices: Dict[str, Dict[str, Union[str, bool]]] = {}
         with self._lock():  # pylint: disable=not-callable
             for device_name in device_names_str:
-                result = self.get_available_devices(
-                    device_str=device_name, type_or_name="name", task_id=task_id
-                )
+                result = self.get_available_devices(device_str=device_name, type_or_name="name", task_id=task_id)
                 if not result:
                     return None  # cannot meet all requirement, return None
                 idle_devices[device_name] = result[0]
             for device in device_types_str:
-                result = self.get_available_devices(
-                    device_str=device, type_or_name="type", task_id=task_id
-                )
+                result = self.get_available_devices(device_str=device, type_or_name="type", task_id=task_id)
                 if not result:
                     return None
                 # just pick the first device
@@ -286,10 +267,7 @@ class DeviceView:
 
     def get_devices_by_task(self, task_id: Optional[ObjectId]) -> List[BaseDevice]:
         """Get devices given a task id (regardless of its status!)."""
-        return [
-            self._device_list[device["name"]]
-            for device in self._device_collection.find({"task_id": task_id})
-        ]
+        return [self._device_list[device["name"]] for device in self._device_collection.find({"task_id": task_id})]
 
     def release_device(self, device_name: str):
         """
@@ -305,10 +283,7 @@ class DeviceView:
             "status": DeviceTaskStatus.IDLE.name,
         }
 
-        if (
-            DevicePauseStatus[device_entry["pause_status"]]
-            == DevicePauseStatus.REQUESTED
-        ):
+        if DevicePauseStatus[device_entry["pause_status"]] == DevicePauseStatus.REQUESTED:
             update_dict.update(
                 {
                     "pause_status": DevicePauseStatus.PAUSED.name,
@@ -349,24 +324,15 @@ class DeviceView:
         device_entry = self._device_collection.find_one({"name": device_name})
 
         if device_entry is None:
-            raise ValueError(
-                f"Cannot find device ({device_name}). Did you run `setup` command?"
-            )
+            raise ValueError(f"Cannot find device ({device_name}). Did you run `setup` command?")
 
-        required_status = (
-            [required_status]
-            if isinstance(required_status, DeviceTaskStatus)
-            else required_status
-        )
+        required_status = [required_status] if isinstance(required_status, DeviceTaskStatus) else required_status
 
         # if task_id has the same value, we will not check the current status
         if device_entry["task_id"] == task_id:
             required_status = None
 
-        if (
-            required_status is not None
-            and DeviceTaskStatus[device_entry["status"]] not in required_status
-        ):
+        if required_status is not None and DeviceTaskStatus[device_entry["status"]] not in required_status:
             raise ValueError(
                 f"Device's current status ({device_entry['status']}) is "
                 f"not in allowed set of statuses {[status.name for status in required_status]}. "
@@ -396,18 +362,14 @@ class DeviceView:
         device: BaseDevice = self._device_list[device_name]
 
         if not hasattr(device, prop):
-            raise AttributeError(
-                f"Cannot find method with name: {prop} on {device_name}"
-            )
+            raise AttributeError(f"Cannot find method with name: {prop} on {device_name}")
 
         return getattr(device, prop)
 
     def execute_command(self, device_name: str, method: str, *args, **kwargs):
         """Call a callable function (``method``) with ``*args`` and ``**kwargs`` on ``device_name``."""
         if not self.__connected_to_devices:
-            raise Exception(
-                "DeviceView cannot execute device commands without first connecting to the devices!"
-            )
+            raise Exception("DeviceView cannot execute device commands without first connecting to the devices!")
         device_method = self.query_property(device_name=device_name, prop=method)
         return device_method(*args, **kwargs)
 
@@ -420,9 +382,7 @@ class DeviceView:
         """
         self.get_device(device_name=device_name)
 
-        self._device_collection.update_one(
-            {"name": device_name}, {"$set": {"message": message}}
-        )
+        self._device_collection.update_one({"name": device_name}, {"$set": {"message": message}})
 
     def get_message(self, device_name: str):
         """Gets the current device message. Message is used to communicate device state with the user dashboard.
@@ -458,9 +418,7 @@ class DeviceView:
         """
         device = self.get_device(device_name=device_name)
         if attribute not in device["attributes"]:
-            raise AttributeError(
-                f"Device {device_name} does not have attribute {attribute}"
-            )
+            raise AttributeError(f"Device {device_name} does not have attribute {attribute}")
         return device["attributes"][attribute]
 
     def set_all_attributes(self, device_name: str, attributes: dict):
@@ -468,6 +426,7 @@ class DeviceView:
 
         Args:
             device_name (str): name of the device to set the attributes for
+            attributes (dict): attributes to be set
         """
         self.get_device(device_name=device_name)
 

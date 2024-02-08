@@ -1,9 +1,10 @@
 """This is a dashboard that displays data from the ALab database."""
 
 from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
-from bson import ObjectId
-from bson.errors import InvalidId
+from bson import ObjectId  # type: ignore
+from bson.errors import InvalidId  # type: ignore
 from flask import Blueprint, request
 from pydantic import ValidationError
 
@@ -67,8 +68,7 @@ def get_overview():
             [
                 str(exp["_id"])
                 for exp in experiments
-                if datetime.now() - exp.get("completed_at", datetime.now())
-                <= timedelta(days=1)
+                if datetime.now() - exp.get("completed_at", datetime.now()) <= timedelta(days=1)
             ]
         )
 
@@ -103,9 +103,7 @@ def query_experiment(exp_id: str):
         "progress": progress,
     }
 
-    return_dict["status"] = (
-        experiment["status"] if not error_state else ExperimentStatus.ERROR.name
-    )
+    return_dict["status"] = experiment["status"] if not error_state else ExperimentStatus.ERROR.name
 
     for task in experiment["tasks"]:
         task_entry = task_view.get_task(task["task_id"])
@@ -179,7 +177,12 @@ def query_experiment_results(exp_id: str):
 def cancel_experiment(exp_id: str):
     try:
         exp_id = ObjectId(exp_id)
-        tasks = experiment_view.get_experiment(exp_id)["tasks"]
+        experiment: Optional[Dict[str, Any]] = experiment_view.get_experiment(exp_id)
+        if experiment is None:
+            return {"status": "error", "reason": "Experiment not found"}, 400
+
+        tasks: List[Dict[str, Any]] = experiment["tasks"]
+        # tasks = experiment_view.get_experiment(exp_id)["tasks"]
 
         for task in tasks:
             task_view.mark_task_as_cancelling(task["task_id"])

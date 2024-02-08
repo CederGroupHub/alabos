@@ -2,6 +2,7 @@
 import click
 
 from alab_management import __version__
+from alab_management.config import AlabConfig
 
 from .cleanup_lab import cleanup_lab
 from .init_project import init_project
@@ -23,6 +24,7 @@ def cli():
    /_/   \_\_|\__,_|_.__/    \___/|____/
 
 ----  Alab OS v{__version__} -- Alab Project Team  ----
+    Simulation mode: {"ON" if AlabConfig().is_sim_mode() else "OFF"}
     """
     )
 
@@ -98,7 +100,7 @@ def launch_dashboard_cli(host, port, debug):
 @cli.command(
     "copy_completed_experiments",
     short_help='Copy completed experiments from working database to completed database. Note that "mongodb_completed" '
-               'must be specified in the config file.',
+    "must be specified in the config file.",
 )
 def copy_completed_experiments_cli():
     """Copy completed experiments from working database to completed database. Note that "mongodb_completed" must be

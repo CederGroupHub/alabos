@@ -3,7 +3,7 @@
 from dataclasses import dataclass, field
 from typing import Any, ClassVar, Dict, List, Optional
 
-from bson import ObjectId
+from bson import ObjectId  # type: ignore
 
 
 @dataclass(frozen=True)
@@ -22,8 +22,8 @@ class Sample:
     task_id: Optional[ObjectId]
     name: str
     position: Optional[str]
-    metadata: Optional[Dict[str, Any]] = field(default_factory=dict)
-    tags: Optional[List[str]] = field(default_factory=list)
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    tags: List[str] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -60,9 +60,7 @@ _standalone_sample_position_registry: Dict[str, SamplePosition] = {}
 def add_standalone_sample_position(position: SamplePosition):
     """Register a device instance."""
     if not isinstance(position, SamplePosition):
-        raise TypeError(
-            f"The type of position should be SamplePosition, but user provided {type(position)}"
-        )
+        raise TypeError(f"The type of position should be SamplePosition, but user provided {type(position)}")
     if position.name in _standalone_sample_position_registry:
         raise KeyError(f"Duplicated standalone sample position name {position.name}")
     _standalone_sample_position_registry[position.name] = position

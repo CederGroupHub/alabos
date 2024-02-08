@@ -1,12 +1,14 @@
 """Define the base class of devices."""
 
 import datetime
+import functools
 import threading
 import time
 from abc import ABC, abstractmethod
 from queue import Empty, PriorityQueue
 from traceback import format_exc
-from typing import Any, Dict, List, Optional, Union, Callable
+from typing import Any, Callable, Dict, List, Optional, Union
+from unittest.mock import Mock
 
 from alab_management.logger import DBLogger
 from alab_management.sample_view.sample import SamplePosition
@@ -15,28 +17,105 @@ from alab_management.user_input import request_maintenance_input
 from .dbattributes import DictInDatabase, ListInDatabase
 
 
-def mock(*, return_constant: Any = None, return_mock_call: Callable[..., Any] = None):
+def _UNSPECIFIED(_):
+    return None
+
+
+def mock(return_constant: Any = _UNSPECIFIED, object_type: Union[List[Any], Any] = _UNSPECIFIED):
+    """
+    A decorator used for mocking functions during simulation.
+
+    Args:
+    - return_constant (Any, optional): The constant value to be returned by the mocked function.
+        It can be a value (str, int, float, bool), list of values, or a dictionary specifying
+        return values for keys. Default is None.
+    - object_type (Union[List[Any], Any], optional): The type or list of types to mock if the
+        function returns an object. Default is None.
+
+    Returns
+    -------
+    - decorator: Decorator function used to mock other functions during simulation.
+
+    Raises
+    ------
+    - ValueError: If both `return_constant` and `object_type` are specified.
+    - ValueError: If `return_constant` is not of types: str, int, float, bool, list, or dict.
+    - ValueError: If `object_type` is specified and not a list or a class type.
+
+    Note:
+    - The decorator mocks the function during simulation based on specified constant values
+        or object types.
+
+    Examples
+    --------
+    1. Mocking a function with a constant return value:
+    @mock(return_constant=42)
+    def get_data() -> int:
+        ...
+        a = some_integer
+        return a
+
+    2. Mocking a function that returns multiple values in a dictionary:
+    @mock(return_constant={"twotheta": [0.1, 0.2, 0.3], "counts": [100, 200, 300]})
+    def run_simulation() -> dict:
+        ...
+        a = {twotheta: [0.1, 0.2, 0.3]}
+        b = {counts: [100, 200, 300]}
+        return {**a, **b}
+
+    3. Mocking a function that returns a specific object type:
+    @mock(object_type=str)
+    def create_mock_string() -> str:
+        return "Mocked String"
+
+    4. Mocking a function that returns a single object type:
+    from alab_control.ohaus_scale import OhausScale as ScaleDriver
+    @mock(object_type=ScaleDriver)
+    def get_driver(self):
+        self.driver = ScaleDriver(ip=self.ip_address, timeout=self.TIMEOUT)
+        self.driver.set_unit_to_mg()
+        return self.driver
+
+    5. Mocking a function that returns a list of object types:
+    from alab_control.furnace_2416 import FurnaceController
+    from alab_control.door_controller import DoorController
+    @mock(object_type=[FurnaceController, DoorController])
+    def get_driver(self):
+        self.driver = FurnaceController(port=self.com_port)
+        return self.driver, self.door_controller
+    """
+
     def decorator(f: Callable[..., Any]):
         @functools.wraps(f)
         def wrapper(*args, **kwargs):
             from alab_management.config import AlabConfig
 
-            if AlabConfig()["general"].get("simulation", False):
-                if return_constant is not None and return_mock_call is not None:
-                    raise ValueError(
-                        "Cannot specify both return_constant and return_mock_call!"
-                    )
-                elif return_constant is not None:
+            if AlabConfig().is_sim_mode():
+                if return_constant is not _UNSPECIFIED and object_type is not _UNSPECIFIED:
+                    raise ValueError("Cannot specify both return_constant and return_mock_call!")
+                elif isinstance(return_constant, dict):
+                    return_dict = {key: return_constant[key] for key in return_constant}
+                    return return_dict
+                elif isinstance(return_constant, list):
+                    return list(range(len(return_constant)))
+                elif return_constant is not _UNSPECIFIED:
                     return return_constant
-                elif return_mock_call is not None:
-                    return return_mock_call(*args, **kwargs)
+                elif object_type is not _UNSPECIFIED:
+                    if isinstance(object_type, list):
+                        return [Mock(spec=cls) for cls in object_type]
+                    else:
+                        return Mock(spec=object_type)
                 else:
                     raise ValueError(
-                        "Must specify either return_constant or return_mock_call!"
+                        "Must specify either return_constant or object_type! return_constant should "
+                        "be of the type str, int, float, bool, list or dict. "
+                        "object_type should be any other class that you want to mock."
                     )
             else:
                 return f(*args, **kwargs)
+
         return wrapper
+
     return decorator
 
 
@@ -66,6 +145,7 @@ class BaseDevice(ABC):
 
         Args:
             name: the name of device, which is the unique identifier of this device
+            description: description of this kind of device
 
         Here is an example of how to write a new device
 
@@ -99,7 +179,13 @@ class BaseDevice(ABC):
         """A short description of the device. This will be stored in the database + displayed in the dashboard. This
         must be declared in subclasses of BaseDevice!.
         """
-        pass
+        return self._description
+
+    @description.setter
+    def description(self, value: str) -> None:
+        if not isinstance(value, str):
+            raise TypeError("description must be a string")
+        self._description = value
 
     def set_message(self, message: str):
         """Sets the device message to be displayed on the dashboard.
@@ -203,9 +289,7 @@ class BaseDevice(ABC):
         raise NotImplementedError()
 
     # methods to store Device values inside the database. Lists and dictionaries are supported.
-    def list_in_database(
-            self, name: str, default_value: Optional[Union[list, None]] = None
-    ) -> ListInDatabase:
+    def list_in_database(self, name: str, default_value: Optional[Union[list, None]] = None) -> ListInDatabase:
         """
         Create a list attribute that is stored in the database.
         Note: nested dicts/lists are not supported!.
@@ -225,9 +309,7 @@ class BaseDevice(ABC):
             default_value=default_value,
         )
 
-    def dict_in_database(
-            self, name: str, default_value: Optional[Union[dict, None]] = None
-    ) -> DictInDatabase:
+    def dict_in_database(self, name: str, default_value: Optional[Union[dict, None]] = None) -> DictInDatabase:
         """
         Create a dict attribute that is stored in the database.
         Note: nested dicts/lists are not supported!.
@@ -270,9 +352,7 @@ class BaseDevice(ABC):
         """
         return request_maintenance_input(prompt=prompt, options=options)
 
-    def retrieve_signal(
-            self, signal_name: str, within: Optional[datetime.timedelta] = None
-    ):
+    def retrieve_signal(self, signal_name: str, within: Optional[datetime.timedelta] = None):
         """Retrieve a signal from the database.
 
         Args: signal_name (str): device signal name. This should match the signal_name passed to the
@@ -289,7 +369,7 @@ class BaseDevice(ABC):
         return self._signalemitter.retrieve_signal(signal_name, within)
 
 
-### DeviceSignalEmitter and related decorator ###
+# DeviceSignalEmitter and related decorator #
 def log_signal(signal_name: str, interval_seconds: int):
     """This is a decorator for methods within a `BaseDevice`. Methods decorated with this will be called at the
     specified interval and the result will be logged to the database under the `signal_name` provided. The intended
@@ -327,7 +407,7 @@ class DeviceSignalEmitter:
         self.dblogger = DBLogger(task_id=None)
         self.device = device
         self.is_logging = False
-        self.queue = PriorityQueue()
+        self.queue: PriorityQueue = PriorityQueue()
 
         self._logging_thread: Optional[threading.Thread] = None
         self._start_time: Optional[datetime.datetime] = None
@@ -377,9 +457,7 @@ class DeviceSignalEmitter:
             while total_time_to_wait > 0:
                 if not self.is_logging:
                     return
-                time_to_wait = min(
-                    total_time_to_wait, 0.2
-                )  # we will wait 0.2 second at a time
+                time_to_wait = min(total_time_to_wait, 0.2)  # we will wait 0.2 second at a time
                 total_time_to_wait -= time_to_wait
                 time.sleep(time_to_wait)
 
@@ -391,9 +469,7 @@ class DeviceSignalEmitter:
             # to be stopped mid-wait if necessary. Prevents us blocking a `.stop()` call if stuck
             # waiting to log method on a long interval.
             try:
-                log_at, method_name, signal_name, interval, count = self.queue.get(
-                    block=False
-                )
+                log_at, method_name, signal_name, interval, count = self.queue.get(block=False)
             except Empty:
                 # wait for queue to refill. We shouldn't reach this under normal circumstances
                 time.sleep(1)
@@ -405,9 +481,7 @@ class DeviceSignalEmitter:
             self.log_method_to_db(method_name=method_name, signal_name=signal_name)
 
             count += 1
-            next_log_at = self._start_time + datetime.timedelta(
-                seconds=interval * count
-            )
+            next_log_at = self._start_time + datetime.timedelta(seconds=interval * count)
             self.queue.put((next_log_at, method_name, signal_name, interval, count))
 
     def log_method_to_db(self, method_name: str, signal_name: str):
@@ -425,11 +499,7 @@ class DeviceSignalEmitter:
         try:
             value = method()
         except Exception:
-            value = (
-                f"Error reading {method_name} from device {self.device.name}."
-                f"The error message is: "
-                f"{format_exc()}"
-            )
+            value = f"Error reading {method_name} from device {self.device.name}." f"The error message is: " f"{format_exc()}"
 
         self.dblogger.log_device_signal(
             device_name=self.device.name,
@@ -454,8 +524,7 @@ class DeviceSignalEmitter:
             #  )
             self.queue.put(
                 (
-                    datetime.datetime.now()
-                    + datetime.timedelta(seconds=logging_properties["interval"]),
+                    datetime.datetime.now() + datetime.timedelta(seconds=logging_properties["interval"]),
                     method_name,
                     logging_properties["signal_name"],
                     logging_properties["interval"],
@@ -496,13 +565,9 @@ class DeviceSignalEmitter:
             }
         """
         if within is None:
-            return self.dblogger.get_latest_device_signal(
-                device_name=self.device.name, signal_name=signal_name
-            )
+            return self.dblogger.get_latest_device_signal(device_name=self.device.name, signal_name=signal_name)
         else:
-            return self.dblogger.filter_device_signal(
-                device_name=self.device.name, signal_name=signal_name, within=within
-            )
+            return self.dblogger.filter_device_signal(device_name=self.device.name, signal_name=signal_name, within=within)
 
 
 _device_registry: Dict[str, BaseDevice] = {}

@@ -9,12 +9,14 @@ from alab_management.task_view import TaskStatus
 
 class TestExperimentManager(TestCase):
     def setUp(self) -> None:
-        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True)
+        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True, sim_mode=True,
+                    database_name="Alab_sim", user_confirmation="y")
         setup_lab()
         self.experiment_manager = ExperimentManager()
 
     def tearDown(self) -> None:
-        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True)
+        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True, sim_mode=True,
+                    database_name="Alab_sim", user_confirmation="y")
 
     def test_handle_pending_experiments(self):
         exp_template = InputExperiment(

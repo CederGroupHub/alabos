@@ -1,4 +1,4 @@
-from bson import ObjectId
+from bson import ObjectId  # type: ignore
 
 from alab_management.task_view.task import BaseTask
 
@@ -15,9 +15,7 @@ class DefaultTask(BaseTask):
             _,
             sample_positions,
         ):
-            self.lab_view.move_sample(
-                self.sample, sample_positions[None]["DefaultSamplePosition"][0]
-            )
+            self.lab_view.move_sample(self.sample, sample_positions[None]["DefaultSamplePosition"][0])
 
     def validate(self):
         return True

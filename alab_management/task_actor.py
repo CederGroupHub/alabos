@@ -38,16 +38,17 @@ class ParameterError(Exception):
     notify_shutdown=True,
 )  # TODO time limit is set in ms. currently set to 30 days
 def run_task(task_id_str: str):
-    """
-    Submit a task. In this system, each task is run in an
+    """Submit a task. In this system, each task is run in an
     independent process, which will try to acquire device and
     process samples. This will change the status of the task under the specified id into "RUNNING".
-    If the task is not in the "INITIATED" state, it has been picked up by task actor beforehand, and no action is taken.
+    If the task is not in "INITIATED" state, it has been picked up by another task actor beforehand,
+    and no action is taken.
     If an Abort (exception) signal is sent, the task status will be changed to "CANCELLED".
     If a Shutdown (exception) signal is sent, the task status will be changed to "STOPPED".
     If any other exception is raised, the task status will be changed to "ERROR".
     If there is no exception raised, once the task is completed, the status will be changed to "COMPLETED".
     Sample task id will be set to None after the task is completed.
+
     Args:
         task_id_str: The id of the task to run.
     """
@@ -124,6 +125,8 @@ def run_task(task_id_str: str):
                 "task_type": task_type.__name__,
             },
         )
+        # Following is the line of code that actually runs the task
+        # from Alab_one, for eg: Powder dosing. Powder dosing class will have a method "run".
         result = task.run()
     except Abort:
         task_view.update_status(task_id=task_id, status=TaskStatus.CANCELLED)
