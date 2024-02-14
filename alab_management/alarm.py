@@ -132,7 +132,9 @@ class Alarm:
             category: The category of the message.
         """
         import os
-        sim_mode_flag = os.getenv("SIM_MODE_FLAG", "False")
+        sim_mode_flag = os.getenv("SIM_MODE_FLAG", "True")
+        sim_mode_flag_boolean = sim_mode_flag.lower() == "true"
+        sim_mode_flag = sim_mode_flag_boolean
         if not sim_mode_flag:
             try:
                 if self.platforms["email"]:
