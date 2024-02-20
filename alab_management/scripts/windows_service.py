@@ -1,16 +1,18 @@
-from contextlib import redirect_stdout, redirect_stderr
+import socket
+import sys
+import time
+from contextlib import redirect_stderr, redirect_stdout
+from multiprocessing import Process
+from threading import Thread
+
+import servicemanager
+import win32event
 import win32service
 import win32serviceutil
-import win32event
-import servicemanager
-import socket
-import time
-import sys
+
 from alab_management.scripts.launch_lab import launch_lab
 from alab_management.scripts.launch_worker import launch_worker
 from alab_management.user_input import UserInputView
-from multiprocessing import Process
-from threading import Thread
 
 alabos_host = "127.0.0.1"
 alabos_port = 8895
@@ -48,27 +50,21 @@ class alabosService(win32serviceutil.ServiceFramework):
         socket.setdefaulttimeout(60)
 
     def SvcStop(self):
-        """
-        Stops the service.
-        """
+        """Stops the service."""
         self.running = False
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
         win32event.SetEvent(self.hWaitStop)
 
     def SvcDoRun(self):
-        """
-        Runs the service.
-        """
+        """Runs the service."""
         servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE, servicemanager.PYS_SERVICE_STARTED, (self._svc_name_, ""))
         self.main()
 
     def main(self):
-        """
-        Main function of the service.
-        """
-        with redirect_stdout(open("D:\\alabos_service.log", "a")) as A_, redirect_stderr(
+        """Main function of the service."""
+        with redirect_stdout(open("D:\\alabos_service.log", "a")), redirect_stderr(
             open("D:\\alabos_service.log", "a")
-        ) as B_:
+        ):
             self.running = True
             self.warned = False
             self.alabos_thread = Thread(target=launch_lab, args=(alabos_host, alabos_port, alabos_debug))
