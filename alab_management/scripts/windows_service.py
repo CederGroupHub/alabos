@@ -17,22 +17,25 @@ alabos_port = 8895
 alabos_debug = False
 user_input_view = UserInputView()
 
+
 def process_launch_worker():
-    sys.stdout = open('D:\\alabos_service.log', 'a')
-    sys.stderr = open('D:\\alabos_service.log', 'a')
+    sys.stdout = open("D:\\alabos_service.log", "a")
+    sys.stderr = open("D:\\alabos_service.log", "a")
     launch_worker([])
 
+
 class alabosService(win32serviceutil.ServiceFramework):
-    
+
     """
     To use this, make sure to add win32 and pywin32 site-packages folders to environment variables.
     Current behavior:
     1. No output is printed to the log file if the service is running properly other than the dramatiq infos.
     2. Once we stop the service, the logs will be filled.
-    3. Once we stop the service, We need to end task some of the zombie python processes 
+    3. Once we stop the service, We need to end task some of the zombie python processes
         (originating from the "launch_worker" "grand"-children processes that cannot be terminated somehow).
         Some references said that we have to keep track of the "grand"-children processes and terminate them first before terminating the "launch_worker" process itself.
     """
+
     _svc_name_ = "alabosService"
     _svc_display_name_ = "AlabOS Service"
 
@@ -41,42 +44,48 @@ class alabosService(win32serviceutil.ServiceFramework):
         self.hWaitStop = win32event.CreateEvent(None, 0, 0, None)
         socket.setdefaulttimeout(60)
 
-    def SvcStop(self):              
-        self.running=False
+    def SvcStop(self):
+        self.running = False
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
         win32event.SetEvent(self.hWaitStop)
-        
+
     def SvcDoRun(self):
-        servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE,
-                              servicemanager.PYS_SERVICE_STARTED,
-                              (self._svc_name_, ''))
+        servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE, servicemanager.PYS_SERVICE_STARTED, (self._svc_name_, ""))
         self.main()
 
     def main(self):
-        with redirect_stdout(open('D:\\alabos_service.log', 'a')):
-            with redirect_stderr(open('D:\\alabos_service.log', 'a')):
-                self.running=True
-                self.warned=False
-                self.alabos_thread=Thread(target=launch_lab, args=(alabos_host, alabos_port, alabos_debug))
-                self.alabos_thread.daemon=True
+        with redirect_stdout(open("D:\\alabos_service.log", "a")):
+            with redirect_stderr(open("D:\\alabos_service.log", "a")):
+                self.running = True
+                self.warned = False
+                self.alabos_thread = Thread(target=launch_lab, args=(alabos_host, alabos_port, alabos_debug))
+                self.alabos_thread.daemon = True
                 self.alabos_thread.start()
-                self.worker_process=Process(target=process_launch_worker)
-                self.worker_process.daemon=False
+                self.worker_process = Process(target=process_launch_worker)
+                self.worker_process.daemon = False
                 self.worker_process.start()
                 while self.running:
                     time.sleep(0.1)
                     if not self.alabos_thread.is_alive() and not self.warned:
                         print("AlabOS thread is dead")
-                        user_input_view._alarm.alert("Traceback (most recent call last): \nURGENT! AlabOS thread is dead!", category="Error")
-                        self.warned=True
+                        user_input_view._alarm.alert(
+                            "Traceback (most recent call last): \nURGENT! AlabOS thread is dead!", category="Error"
+                        )
+                        self.warned = True
                     if not self.worker_process.is_alive() and not self.warned:
                         print("AlabOS worker thread is dead")
-                        user_input_view._alarm.alert("Traceback (most recent call last): \nURGENT! AlabOS worker thread is dead!", category="Error")
-                        self.warned=True
+                        user_input_view._alarm.alert(
+                            "Traceback (most recent call last): \nURGENT! AlabOS worker thread is dead!", category="Error"
+                        )
+                        self.warned = True
                     if not self.alabos_thread.is_alive() and not self.worker_process.is_alive():
                         print("Both AlabOS and the worker thread are dead")
-                        user_input_view._alarm.alert("Traceback (most recent call last): \nURGENT! Both AlabOS and the worker thread are dead!", category="Error")
-                        self.running=False
+                        user_input_view._alarm.alert(
+                            "Traceback (most recent call last): \nURGENT! Both AlabOS and the worker thread are dead!",
+                            category="Error",
+                        )
+                        self.running = False
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     win32serviceutil.HandleCommandLine(alabosService)
