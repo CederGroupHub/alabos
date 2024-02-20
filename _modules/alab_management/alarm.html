@@ -510,7 +510,9 @@
 <span class="sd">            category: The category of the message.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">os</span>
-        <span class="n">sim_mode_flag</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SIM_MODE_FLAG&quot;</span><span class="p">,</span> <span class="s2">&quot;False&quot;</span><span class="p">)</span>
+        <span class="n">sim_mode_flag</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SIM_MODE_FLAG&quot;</span><span class="p">,</span> <span class="s2">&quot;True&quot;</span><span class="p">)</span>
+        <span class="n">sim_mode_flag_boolean</span> <span class="o">=</span> <span class="n">sim_mode_flag</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span>
+        <span class="n">sim_mode_flag</span> <span class="o">=</span> <span class="n">sim_mode_flag_boolean</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">sim_mode_flag</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">platforms</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]:</span>
