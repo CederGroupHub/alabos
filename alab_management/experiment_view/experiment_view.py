@@ -116,9 +116,7 @@ class ExperimentView:
 
         update_dict = {"status": status.name}
         if status == ExperimentStatus.COMPLETED:
-            now = datetime.now()
-            update_dict["completed_at"] = now.strftime("%Y-%m-%d %H:%M:%S")
-            # update_dict["completed_at"] = datetime.now()
+            update_dict["completed_at"] = datetime.now()
         self._experiment_collection.update_one(
             {"_id": exp_id},
             {"$set": update_dict},
