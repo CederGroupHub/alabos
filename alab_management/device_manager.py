@@ -114,8 +114,8 @@ class DeviceManager:
               running commands. (disable it only for test purpose).
         """
         load_definition()
-        sim_mode_flag = os.getenv("SIM_MODE_FLAG", "True")
-        if sim_mode_flag.lower() == "true":
+        self.sim_mode_flag = AlabOSConfig().is_sim_mode()
+        if self.sim_mode_flag:
             self._rpc_queue_name = (
                 AlabOSConfig()["general"]["name"] + "_sim" + DEFAULT_SERVER_QUEUE_SUFFIX
             )
@@ -253,8 +253,8 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
         """
         assert task_id is not None, "task_id cannot be None!"
 
-        sim_mode_flag = os.getenv("SIM_MODE_FLAG", "True")
-        if sim_mode_flag.lower() == "true":
+        self.sim_mode_flag = AlabOSConfig().is_sim_mode()
+        if self.sim_mode_flag:
             self._rpc_queue_name = (
                 AlabOSConfig()["general"]["name"] + "_sim" + DEFAULT_SERVER_QUEUE_SUFFIX
             )

@@ -15,6 +15,7 @@ from bson import ObjectId
 from pymongo import collection, database
 
 from .db_lock import MongoLock
+from alab_management.config import AlabOSConfig
 
 
 class _BaseGetMongoCollection(ABC):
@@ -54,8 +55,8 @@ class _GetMongoCollection(_BaseGetMongoCollection):
             username=db_config.get("username", ""),
             password=db_config.get("password", ""),
         )
-        sim_mode_flag = os.getenv("SIM_MODE_FLAG", "True")
-        if sim_mode_flag.lower() == "true":
+        sim_mode_flag = AlabOSConfig().is_sim_mode()
+        if sim_mode_flag:
             cls.db = cls.client[AlabOSConfig()["general"]["name"] + "_sim"]
         else:
             cls.db = cls.client[AlabOSConfig()["general"]["name"]]  # type: ignore # pylint: disable=unsubscriptable-object
@@ -83,8 +84,8 @@ class _GetCompletedMongoCollection(_BaseGetMongoCollection):
             username=db_config.get("username", ""),
             password=db_config.get("password", ""),
         )
-        sim_mode_flag = os.getenv("SIM_MODE_FLAG", "True")
-        if sim_mode_flag.lower() == "true":
+        sim_mode_flag = AlabOSConfig().is_sim_mode()
+        if sim_mode_flag:
             cls.db = cls.client[AlabOSConfig()["general"]["name"] + "(completed)" + "_sim"]
         else:
             cls.db = cls.client[AlabOSConfig()["general"]["name"] + "(completed)"]

@@ -4,6 +4,7 @@ import smtplib
 
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
+from .config import AlabOSConfig
 
 
 def format_message_to_codeblock(message: str) -> str:
@@ -71,6 +72,7 @@ class Alarm:
             slack_bot_token: The slack bot token to send the alert from.
             slack_channel_id: The slack channel id to send the alert to.
         """
+        self.sim_mode_flag = AlabOSConfig().is_sim_mode()
         self.email_alert = False
         self.slack_alert = False
         if email_receivers is not None:
@@ -132,10 +134,7 @@ class Alarm:
             category: The category of the message.
         """
         import os
-        sim_mode_flag = os.getenv("SIM_MODE_FLAG", "True")
-        sim_mode_flag_boolean = sim_mode_flag.lower() == "true"
-        sim_mode_flag = sim_mode_flag_boolean
-        if not sim_mode_flag:
+        if not self.sim_mode_flag:
             try:
                 if self.platforms["email"]:
                     self.send_email(message, category)
