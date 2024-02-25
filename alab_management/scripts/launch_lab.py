@@ -19,7 +19,11 @@ def launch_dashboard(host: str, port: int, debug: bool = False):
     if debug:
         print("Debug mode is on, the dashboard will be served with CORS enabled!")
     app = create_app(cors=debug)  # if debug enabled, allow cross-origin requests to API
-    server = WSGIServer((host, port), app) if debug else WSGIServer((host, port), app, log=None, error_log=None)
+    server = (
+        WSGIServer((host, port), app)
+        if debug
+        else WSGIServer((host, port), app, log=None, error_log=None)
+    )
     server.serve_forever()
 
 
@@ -60,7 +64,9 @@ def launch_lab(host, port, debug):
     dv = DeviceView()
 
     if len(list(dv.get_all())) == 0:
-        print("No devices found in the database. Please setup the lab using `alabos setup` first!")
+        print(
+            "No devices found in the database. Please setup the lab using `alabos setup` first!"
+        )
         sys.exit(1)
 
     dashboard_thread = Thread(target=launch_dashboard, args=(host, port, debug))
@@ -68,7 +74,9 @@ def launch_lab(host, port, debug):
     task_launcher_thread = Thread(target=launch_task_manager)
     device_manager_thread = Thread(target=launch_device_manager)
 
-    dashboard_thread.daemon = experiment_manager_thread.daemon = task_launcher_thread.daemon = device_manager_thread.daemon = True
+    dashboard_thread.daemon = experiment_manager_thread.daemon = (
+        task_launcher_thread.daemon
+    ) = device_manager_thread.daemon = True
 
     dashboard_thread.start()
     device_manager_thread.start()

@@ -20,7 +20,9 @@ earliest_date = min(sample_df.created_at.min(), task_df.started_at.min())
 
 def build_task_row(task_type: str, task_df: pd.DataFrame = task_df):
     fig = px.scatter(
-        data_frame=task_df[(task_df.status == "COMPLETED") & (task_df.type == task_type)],
+        data_frame=task_df[
+            (task_df.status == "COMPLETED") & (task_df.type == task_type)
+        ],
         x="completed_at",
         y="duration_minutes",
         height=100,
@@ -112,10 +114,15 @@ app.layout = html.Div(CONTROLS_LAYOUT + SAMPLE_LAYOUT + TASK_LAYOUT)
 )
 def update_task_table(date_range):
     # print(date_range)
-    filtered_task_df = task_df[(task_df.started_at >= date_range[0]) & (task_df.started_at <= date_range[1])]
+    filtered_task_df = task_df[
+        (task_df.started_at >= date_range[0]) & (task_df.started_at <= date_range[1])
+    ]
     return [
         dmc.Text("Tasks", align="center", size="lg"),
-    ] + [build_task_row(task_type, filtered_task_df) for task_type in filtered_task_df.type.unique()]
+    ] + [
+        build_task_row(task_type, filtered_task_df)
+        for task_type in filtered_task_df.type.unique()
+    ]
 
 
 if __name__ == "__main__":

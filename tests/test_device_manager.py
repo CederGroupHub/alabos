@@ -21,8 +21,13 @@ def launch_device_manager():
 
 class TestDeviceManager(TestCase):
     def setUp(self):
-        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True, sim_mode=True,
-                    database_name="Alab_sim", user_confirmation="y")
+        cleanup_lab(
+            all_collections=True,
+            _force_i_know_its_dangerous=True,
+            sim_mode=True,
+            database_name="Alab_sim",
+            user_confirmation="y",
+        )
         setup_lab()
         self.devices_client = DevicesClient(task_id=ObjectId(), timeout=5)
         self.process = Process(target=launch_device_manager)
@@ -32,8 +37,13 @@ class TestDeviceManager(TestCase):
 
     def tearDown(self):
         self.process.terminate()
-        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True, sim_mode=True,
-                    database_name="Alab_sim", user_confirmation="y")
+        cleanup_lab(
+            all_collections=True,
+            _force_i_know_its_dangerous=True,
+            sim_mode=True,
+            database_name="Alab_sim",
+            user_confirmation="y",
+        )
         time.sleep(1)
 
     def test_rpc(self):

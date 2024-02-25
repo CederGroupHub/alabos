@@ -40,7 +40,10 @@ class Graph:
             rec_stack[v] = False
             return False
 
-        return any(not visited[vertex] and _is_cyclic(vertex) for vertex in range(len(self.vertices)))
+        return any(
+            not visited[vertex] and _is_cyclic(vertex)
+            for vertex in range(len(self.vertices))
+        )
 
     def get_parents(self, v: Any) -> List[Any]:
         """Provide the value of vertex, return the value of its parents vertices."""

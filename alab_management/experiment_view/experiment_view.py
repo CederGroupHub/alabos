@@ -83,7 +83,9 @@ class ExperimentView:
 
         return cast(ObjectId, result.inserted_id)
 
-    def get_experiments_with_status(self, status: Union[str, ExperimentStatus]) -> List[Dict[str, Any]]:
+    def get_experiments_with_status(
+        self, status: Union[str, ExperimentStatus]
+    ) -> List[Dict[str, Any]]:
         """Filter experiments by its status."""
         if isinstance(status, str):
             status = ExperimentStatus[status]
@@ -101,7 +103,9 @@ class ExperimentView:
         experiment = self._experiment_collection.find_one({"_id": exp_id})
         if experiment is None:
             try:
-                experiment = completed_experiment_view.get_experiment(experiment_id=exp_id)
+                experiment = completed_experiment_view.get_experiment(
+                    experiment_id=exp_id
+                )
             except ValueError:
                 experiment = None  # could not find in completed database either
 
@@ -122,7 +126,9 @@ class ExperimentView:
             {"$set": update_dict},
         )
 
-    def update_sample_task_id(self, exp_id, sample_ids: List[ObjectId], task_ids: List[ObjectId]):
+    def update_sample_task_id(
+        self, exp_id, sample_ids: List[ObjectId], task_ids: List[ObjectId]
+    ):
         """
         At the creation of experiment, the id of samples and tasks has not been assigned.
 
@@ -144,8 +150,14 @@ class ExperimentView:
             {"_id": exp_id},
             {
                 "$set": {
-                    **{f"samples.{i}.sample_id": sample_id for i, sample_id in enumerate(sample_ids)},
-                    **{f"tasks.{j}.task_id": task_id for j, task_id in enumerate(task_ids)},
+                    **{
+                        f"samples.{i}.sample_id": sample_id
+                        for i, sample_id in enumerate(sample_ids)
+                    },
+                    **{
+                        f"tasks.{j}.task_id": task_id
+                        for j, task_id in enumerate(task_ids)
+                    },
                 }
             },
         )
@@ -157,7 +169,11 @@ class ExperimentView:
             raise ValueError(f"Cannot find experiment containing task_id: {task_id}")
         return experiment
 
-    def get_experiment_by_sample_id(self, sample_id: ObjectId) -> Optional[Dict[str, Any]]:
+    def get_experiment_by_sample_id(
+        self, sample_id: ObjectId
+    ) -> Optional[Dict[str, Any]]:
         """Get an experiment that contains a sample with the given sample_id."""
-        experiment = self._experiment_collection.find_one({"samples.sample_id": sample_id})
+        experiment = self._experiment_collection.find_one(
+            {"samples.sample_id": sample_id}
+        )
         return experiment

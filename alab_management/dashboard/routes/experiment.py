@@ -68,7 +68,8 @@ def get_overview():
             [
                 str(exp["_id"])
                 for exp in experiments
-                if datetime.now() - exp.get("completed_at", datetime.now()) <= timedelta(days=1)
+                if datetime.now() - exp.get("completed_at", datetime.now())
+                <= timedelta(days=1)
             ]
         )
 
@@ -103,7 +104,9 @@ def query_experiment(exp_id: str):
         "progress": progress,
     }
 
-    return_dict["status"] = experiment["status"] if not error_state else ExperimentStatus.ERROR.name
+    return_dict["status"] = (
+        experiment["status"] if not error_state else ExperimentStatus.ERROR.name
+    )
 
     for task in experiment["tasks"]:
         task_entry = task_view.get_task(task["task_id"])

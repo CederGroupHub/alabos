@@ -1,7 +1,11 @@
 from bson import ObjectId  # type: ignore
 from flask import Blueprint, request
 
-from alab_management.dashboard.lab_views import experiment_view, task_view, user_input_view
+from alab_management.dashboard.lab_views import (
+    experiment_view,
+    task_view,
+    user_input_view,
+)
 
 userinput_bp = Blueprint("/userinput", __name__, url_prefix="/api/userinput")
 
@@ -20,12 +24,18 @@ def get_userinput_status():
                 task_type = "DeviceRequest"
             else:
                 task_id = str(request_["request_context"]["task_id"])
-                task_type = task_view.get_task(request_["request_context"]["task_id"])["type"]
+                task_type = task_view.get_task(request_["request_context"]["task_id"])[
+                    "type"
+                ]
         else:
             eid = str(request_["request_context"]["experiment_id"])
-            experiment_name = experiment_view.get_experiment(request_["request_context"]["experiment_id"])["name"]
+            experiment_name = experiment_view.get_experiment(
+                request_["request_context"]["experiment_id"]
+            )["name"]
             task_id = str(request_["request_context"]["task_id"])
-            task_type = task_view.get_task(request_["request_context"]["task_id"])["type"]
+            task_type = task_view.get_task(request_["request_context"]["task_id"])[
+                "type"
+            ]
 
         if eid not in user_input_requests:
             user_input_requests[eid] = []
@@ -73,7 +83,9 @@ def submit_user_input():
 def query_user_input(request_id: str):
     """Find an user input request by idresponse."""
     try:
-        user_input_request = user_input_view.get_request(request_id=ObjectId(request_id))
+        user_input_request = user_input_view.get_request(
+            request_id=ObjectId(request_id)
+        )
     except ValueError as exception:
         return {"status": "error", "errors": exception.args[0]}
     return {

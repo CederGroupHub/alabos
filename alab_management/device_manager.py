@@ -9,7 +9,6 @@ DeviceManager class, which will handle all the request to run certain methods on
 from concurrent.futures import Future
 from enum import Enum, auto
 from functools import partial
-import os
 from threading import Thread
 from typing import Any, Callable, Dict, NoReturn, Optional, cast
 from uuid import uuid4
@@ -79,9 +78,9 @@ class DeviceWrapper:
 
         __str__ = __repr__
 
-        __len__ = (
-            __getattr__
-        ) = __getitem__ = __add__ = __sub__ = __eq__ = __lt__ = __gt__ = _raise
+        __len__ = __getattr__ = __getitem__ = __add__ = __sub__ = __eq__ = __lt__ = (
+            __gt__
+        ) = _raise
 
     def __init__(self, name: str, devices_client: "DevicesClient"):
         self._name = name

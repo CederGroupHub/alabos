@@ -2,6 +2,7 @@
 TaskLauncher is the core module of the system,
 which actually executes the tasks.
 """
+
 import time
 from concurrent.futures import Future
 from datetime import datetime
@@ -127,9 +128,7 @@ class ResourceRequester(RequestMixin):
         self._request_collection = get_collection("requests")
         self._waiting: Dict[ObjectId, Dict[str, Any]] = {}
         self.task_id = task_id
-        self.priority: Union[
-            int, TaskPriority
-        ] = (
+        self.priority: Union[int, TaskPriority] = (
             TaskPriority.NORMAL
         )  # will usually be overwritten by BaseTask instantiation.
 

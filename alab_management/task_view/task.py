@@ -1,4 +1,5 @@
 """Define the base class of task, which will be used for defining more tasks."""
+
 import inspect
 from abc import ABC, abstractmethod
 from inspect import getfullargspec
@@ -46,14 +47,14 @@ class BaseTask(ABC):
     """
 
     def __init__(
-            self,
-            samples: Optional[List[Union[str, ObjectId]]] = None,
-            task_id: Optional[ObjectId] = None,
-            lab_view: Optional["LabView"] = None,
-            priority: Optional[Union[TaskPriority, int]] = TaskPriority.NORMAL,
-            simulation: bool = True,
-            *args,
-            **kwargs,
+        self,
+        samples: Optional[List[Union[str, ObjectId]]] = None,
+        task_id: Optional[ObjectId] = None,
+        lab_view: Optional["LabView"] = None,
+        priority: Optional[Union[TaskPriority, int]] = TaskPriority.NORMAL,
+        simulation: bool = True,
+        *args,
+        **kwargs,
     ):
         """
         Args:
@@ -189,9 +190,9 @@ class BaseTask(ABC):
         return ResultPointer(task_id=self.task_id, key=key).to_json()
 
     def import_result(
-            self,
-            pointer: Union[ResultPointer, Dict[str, Any]],
-            allow_explicit_value: bool = False,
+        self,
+        pointer: Union[ResultPointer, Dict[str, Any]],
+        allow_explicit_value: bool = False,
     ) -> Any:
         """
         Imports a result from another task. This is useful in cases where
@@ -314,10 +315,10 @@ class BaseTask(ABC):
         )
 
     def run_subtask(
-            self,
-            task: Type["BaseTask"],
-            samples: Optional[Union[List[str], str]] = None,
-            **kwargs,
+        self,
+        task: Type["BaseTask"],
+        samples: Optional[Union[List[str], str]] = None,
+        **kwargs,
     ):
         """Run a subtask of this current task. Returns the result, if any, of the subtask."""
         samples = samples or self.samples
@@ -326,8 +327,8 @@ class BaseTask(ABC):
         return self.lab_view.run_subtask(task=task, samples=samples, **kwargs)
 
     def add_to(
-            self,
-            samples: Union[SampleBuilder, List[SampleBuilder]],
+        self,
+        samples: Union[SampleBuilder, List[SampleBuilder]],
     ):
         """Used to add basetask to a SampleBuilder's tasklist during Experiment construction.
 
@@ -377,9 +378,9 @@ def get_all_tasks() -> Dict[str, Type[BaseTask]]:
 
 
 def add_reroute_task(
-        supported_sample_positions: SUPPORTED_SAMPLE_POSITIONS_TYPE,
-        task: Type[BaseTask],
-        **kwargs,
+    supported_sample_positions: SUPPORTED_SAMPLE_POSITIONS_TYPE,
+    task: Type[BaseTask],
+    **kwargs,
 ):
     """Register a reroute task."""
     if task.__name__ not in _task_registry:

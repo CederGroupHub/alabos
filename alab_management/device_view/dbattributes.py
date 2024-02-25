@@ -53,7 +53,9 @@ def value_in_database(name: str, default_value: Any) -> property:
         return attributes[name]
 
     def setter(self, value: Any) -> None:
-        self._device_view.set_attribute(device_name=self.name, attribute=name, value=value)
+        self._device_view.set_attribute(
+            device_name=self.name, attribute=name, value=value
+        )
 
     return property(getter, setter)
 
@@ -109,9 +111,13 @@ class ListInDatabase:
         """
         result = self._collection.find_one(self.db_filter)
         if result is None:
-            raise ValueError(f"A device by the name {self.device_name} was not found in the collection.")
+            raise ValueError(
+                f"A device by the name {self.device_name} was not found in the collection."
+            )
         if self.attribute_name not in result["attributes"]:
-            self._collection.update_one(self.db_filter, {"$set": {self.db_projection: self.default_value}})
+            self._collection.update_one(
+                self.db_filter, {"$set": {self.db_projection: self.default_value}}
+            )
 
     @property
     def db_projection(self):
@@ -125,9 +131,13 @@ class ListInDatabase:
 
     @property
     def _value(self):
-        value = self._collection.find_one({"name": self.device_name}, projection=[self.db_projection])
+        value = self._collection.find_one(
+            {"name": self.device_name}, projection=[self.db_projection]
+        )
         if value is None:
-            raise ValueError(f"Device {self.device_name} does not contain data at {self.db_projection}!")
+            raise ValueError(
+                f"Device {self.device_name} does not contain data at {self.db_projection}!"
+            )
         return_value = value
         for key in self.db_projection.split("."):
             return_value = return_value[key]
@@ -147,7 +157,9 @@ class ListInDatabase:
         """Extend the list with another iterable. This will update the database with the new value."""
         current = self._value
         current.extend(x)
-        self._collection.update_one(self.db_filter, {"$set": {self.db_projection: current}})
+        self._collection.update_one(
+            self.db_filter, {"$set": {self.db_projection: current}}
+        )
 
     def clear(self):
         """Clear the list. This will update the database with the new value."""
@@ -169,32 +181,42 @@ class ListInDatabase:
         """Insert an element at a given position. This will update the database with the new value."""
         current = self._value
         current.insert(i, x)
-        self._collection.update_one(self.db_filter, {"$set": {self.db_projection: current}})
+        self._collection.update_one(
+            self.db_filter, {"$set": {self.db_projection: current}}
+        )
 
     def pop(self, i=-1):
         """Remove the element at a given position. This will update the database with the new value."""
         current = self._value
         result = current.pop(i)
-        self._collection.update_one(self.db_filter, {"$set": {self.db_projection: current}})
+        self._collection.update_one(
+            self.db_filter, {"$set": {self.db_projection: current}}
+        )
         return result
 
     def remove(self, x):
         """Remove the first item from the list whose value is equal to x. This will update the database with the new."""
         current = self._value
         current.remove(x)
-        self._collection.update_one(self.db_filter, {"$set": {self.db_projection: current}})
+        self._collection.update_one(
+            self.db_filter, {"$set": {self.db_projection: current}}
+        )
 
     def reverse(self):
         """Reverse the elements of the list in place. This will update the database with the new value."""
         current = self._value
         current.reverse()
-        self._collection.update_one(self.db_filter, {"$set": {self.db_projection: current}})
+        self._collection.update_one(
+            self.db_filter, {"$set": {self.db_projection: current}}
+        )
 
     def sort(self, key=None, reverse=False):
         """Sort the items of the list in place. This will update the database with the new value."""
         current = self._value
         current.sort(key, reverse)
-        self._collection.update_one(self.db_filter, {"$set": {self.db_projection: current}})
+        self._collection.update_one(
+            self.db_filter, {"$set": {self.db_projection: current}}
+        )
 
     def __repr__(self):
         """Return a string representation of the list. This will not update the database."""
@@ -238,7 +260,9 @@ class ListInDatabase:
                 "Elements within a ListInDatabase cannot be iterable. Spefically, values of the ListInDatabase cannot "
                 "be a dict, list, or tuple!"
             )
-        self._collection.update_one(self.db_filter, {"$set": {self.db_projection: current}})
+        self._collection.update_one(
+            self.db_filter, {"$set": {self.db_projection: current}}
+        )
 
     def __len__(self):
         """Return the length of the list. This will not update the database."""
@@ -269,7 +293,9 @@ class DictInDatabase:
             self.default_value = {}
         else:
             if not isinstance(default_value, dict):
-                raise ValueError("Default value for DictInDatabase must be a dictionary!")
+                raise ValueError(
+                    "Default value for DictInDatabase must be a dictionary!"
+                )
             self.default_value = default_value
 
     def apply_default_value(self):
@@ -281,9 +307,13 @@ class DictInDatabase:
         """
         result = self._collection.find_one(self.db_filter)
         if result is None:
-            raise ValueError(f"A device by the name {self.device_name} was not found in the collection.")
+            raise ValueError(
+                f"A device by the name {self.device_name} was not found in the collection."
+            )
         if self.attribute_name not in result["attributes"]:
-            self._collection.update_one(self.db_filter, {"$set": {self.db_projection: self.default_value}})
+            self._collection.update_one(
+                self.db_filter, {"$set": {self.db_projection: self.default_value}}
+            )
 
     @property
     def db_projection(self):
@@ -297,9 +327,13 @@ class DictInDatabase:
 
     @property
     def _value(self):
-        value = self._collection.find_one({"name": self.device_name}, projection=[self.db_projection])
+        value = self._collection.find_one(
+            {"name": self.device_name}, projection=[self.db_projection]
+        )
         if value is None:
-            raise ValueError(f"Device {self.device_name} does not contain data at {self.db_projection}!")
+            raise ValueError(
+                f"Device {self.device_name} does not contain data at {self.db_projection}!"
+            )
         return_value = value
         for key in self.db_projection.split("."):
             return_value = return_value[key]
@@ -323,9 +357,13 @@ class DictInDatabase:
 
     def as_normal_dict(self) -> dict:
         """Return a normal dict representation of the DictInDatabase. This will not update the database."""
-        value = self._collection.find_one({"name": self.device_name}, projection=[self.db_projection])
+        value = self._collection.find_one(
+            {"name": self.device_name}, projection=[self.db_projection]
+        )
         if value is None:
-            raise ValueError(f"Device {self.device_name} does not contain data at {self.db_projection}!")
+            raise ValueError(
+                f"Device {self.device_name} does not contain data at {self.db_projection}!"
+            )
         for key in self.db_projection.split("."):
             value = value[key]
         return value
@@ -365,14 +403,18 @@ class DictInDatabase:
         if result == UUID4_PLACEHOLDER:  # only fires if default value was not provided
             raise KeyError(f"{key} was not found in the dictionary!")
 
-        self._collection.update_one(self.db_filter, {"$set": {self.db_projection: current}})
+        self._collection.update_one(
+            self.db_filter, {"$set": {self.db_projection: current}}
+        )
         return result
 
     def popitem(self):
         """Return a copy of the dict. This will not update the database."""
         current = self._value
         result = current.popitem()
-        self._collection.update_one(self.db_filter, {"$set": {self.db_projection: current}})
+        self._collection.update_one(
+            self.db_filter, {"$set": {self.db_projection: current}}
+        )
         return result
 
     def setdefault(self, key, default=None):
@@ -383,7 +425,9 @@ class DictInDatabase:
         """Return a copy of the dict. This will not update the database."""
         current = self._value
         current.update(*args, **kwargs)
-        self._collection.update_one(self.db_filter, {"$set": {self.db_projection: current}})
+        self._collection.update_one(
+            self.db_filter, {"$set": {self.db_projection: current}}
+        )
 
     def __reversed__(self):
         """Return a reversed copy of the dict. This will not update the database."""
@@ -415,13 +459,17 @@ class DictInDatabase:
 
         current = self.as_normal_dict()
         current[x] = val
-        self._collection.update_one(self.db_filter, {"$set": {self.db_projection: current}})
+        self._collection.update_one(
+            self.db_filter, {"$set": {self.db_projection: current}}
+        )
 
     def __delitem__(self, x):
         """Delete an item from the dict. This will update the database with the new value."""
         current = self.as_normal_dict()
         del current[x]
-        self._collection.update_one(self.db_filter, {"$set": {self.db_projection: current}})
+        self._collection.update_one(
+            self.db_filter, {"$set": {self.db_projection: current}}
+        )
 
     def __contains__(self, x):
         """Check if an item is in the dict. This will not update the database."""

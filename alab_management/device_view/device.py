@@ -20,11 +20,11 @@ from .dbattributes import DictInDatabase, ListInDatabase
 def _UNSPECIFIED(_):
     return None
 
-def _UNSPECIFIED(_):
-    return None
 
-
-def mock(return_constant: Any = _UNSPECIFIED, object_type: Union[List[Any], Any] = _UNSPECIFIED):
+def mock(
+    return_constant: Any = _UNSPECIFIED,
+    object_type: Union[List[Any], Any] = _UNSPECIFIED,
+):
     """
     A decorator used for mocking functions during simulation.
 
@@ -94,8 +94,13 @@ def mock(return_constant: Any = _UNSPECIFIED, object_type: Union[List[Any], Any]
             from alab_management.config import AlabOSConfig
 
             if AlabOSConfig().is_sim_mode():
-                if return_constant is not _UNSPECIFIED and object_type is not _UNSPECIFIED:
-                    raise ValueError("Cannot specify both return_constant and return_mock_call!")
+                if (
+                    return_constant is not _UNSPECIFIED
+                    and object_type is not _UNSPECIFIED
+                ):
+                    raise ValueError(
+                        "Cannot specify both return_constant and return_mock_call!"
+                    )
                 elif isinstance(return_constant, dict):
                     return_dict = {key: return_constant[key] for key in return_constant}
                     return return_dict
@@ -292,7 +297,9 @@ class BaseDevice(ABC):
         raise NotImplementedError()
 
     # methods to store Device values inside the database. Lists and dictionaries are supported.
-    def list_in_database(self, name: str, default_value: Optional[Union[list, None]] = None) -> ListInDatabase:
+    def list_in_database(
+        self, name: str, default_value: Optional[Union[list, None]] = None
+    ) -> ListInDatabase:
         """
         Create a list attribute that is stored in the database.
         Note: nested dicts/lists are not supported!.
@@ -312,7 +319,9 @@ class BaseDevice(ABC):
             default_value=default_value,
         )
 
-    def dict_in_database(self, name: str, default_value: Optional[Union[dict, None]] = None) -> DictInDatabase:
+    def dict_in_database(
+        self, name: str, default_value: Optional[Union[dict, None]] = None
+    ) -> DictInDatabase:
         """
         Create a dict attribute that is stored in the database.
         Note: nested dicts/lists are not supported!.
@@ -355,7 +364,9 @@ class BaseDevice(ABC):
         """
         return request_maintenance_input(prompt=prompt, options=options)
 
-    def retrieve_signal(self, signal_name: str, within: Optional[datetime.timedelta] = None):
+    def retrieve_signal(
+        self, signal_name: str, within: Optional[datetime.timedelta] = None
+    ):
         """Retrieve a signal from the database.
 
         Args: signal_name (str): device signal name. This should match the signal_name passed to the
@@ -460,7 +471,9 @@ class DeviceSignalEmitter:
             while total_time_to_wait > 0:
                 if not self.is_logging:
                     return
-                time_to_wait = min(total_time_to_wait, 0.2)  # we will wait 0.2 second at a time
+                time_to_wait = min(
+                    total_time_to_wait, 0.2
+                )  # we will wait 0.2 second at a time
                 total_time_to_wait -= time_to_wait
                 time.sleep(time_to_wait)
 
@@ -472,7 +485,9 @@ class DeviceSignalEmitter:
             # to be stopped mid-wait if necessary. Prevents us blocking a `.stop()` call if stuck
             # waiting to log method on a long interval.
             try:
-                log_at, method_name, signal_name, interval, count = self.queue.get(block=False)
+                log_at, method_name, signal_name, interval, count = self.queue.get(
+                    block=False
+                )
             except Empty:
                 # wait for queue to refill. We shouldn't reach this under normal circumstances
                 time.sleep(1)
@@ -484,7 +499,9 @@ class DeviceSignalEmitter:
             self.log_method_to_db(method_name=method_name, signal_name=signal_name)
 
             count += 1
-            next_log_at = self._start_time + datetime.timedelta(seconds=interval * count)
+            next_log_at = self._start_time + datetime.timedelta(
+                seconds=interval * count
+            )
             self.queue.put((next_log_at, method_name, signal_name, interval, count))
 
     def log_method_to_db(self, method_name: str, signal_name: str):
@@ -502,7 +519,11 @@ class DeviceSignalEmitter:
         try:
             value = method()
         except Exception:
-            value = f"Error reading {method_name} from device {self.device.name}." f"The error message is: " f"{format_exc()}"
+            value = (
+                f"Error reading {method_name} from device {self.device.name}."
+                f"The error message is: "
+                f"{format_exc()}"
+            )
 
         self.dblogger.log_device_signal(
             device_name=self.device.name,
@@ -527,7 +548,8 @@ class DeviceSignalEmitter:
             #  )
             self.queue.put(
                 (
-                    datetime.datetime.now() + datetime.timedelta(seconds=logging_properties["interval"]),
+                    datetime.datetime.now()
+                    + datetime.timedelta(seconds=logging_properties["interval"]),
                     method_name,
                     logging_properties["signal_name"],
                     logging_properties["interval"],
@@ -568,9 +590,13 @@ class DeviceSignalEmitter:
             }
         """
         if within is None:
-            return self.dblogger.get_latest_device_signal(device_name=self.device.name, signal_name=signal_name)
+            return self.dblogger.get_latest_device_signal(
+                device_name=self.device.name, signal_name=signal_name
+            )
         else:
-            return self.dblogger.filter_device_signal(device_name=self.device.name, signal_name=signal_name, within=within)
+            return self.dblogger.filter_device_signal(
+                device_name=self.device.name, signal_name=signal_name, within=within
+            )
 
 
 _device_registry: Dict[str, BaseDevice] = {}

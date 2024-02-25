@@ -26,9 +26,13 @@ class CompletedSampleView:
         #         f"Sample with id {sample_id} already exists in the completed database!"
         #     )
 
-        sample_dict = self._working_sample_collection.find_one({"_id": ObjectId(sample_id)})
+        sample_dict = self._working_sample_collection.find_one(
+            {"_id": ObjectId(sample_id)}
+        )
         if sample_dict is None:
-            raise ValueError(f"Sample with id {sample_id} does not exist in the database!")
+            raise ValueError(
+                f"Sample with id {sample_id} does not exist in the database!"
+            )
         if self.exists(sample_id):
             self._completed_sample_collection.update_one(
                 filter={"_id": ObjectId(sample_id)},
@@ -48,4 +52,9 @@ class CompletedSampleView:
         -------
             bool: True if sample exists in the database
         """
-        return self._completed_sample_collection.count_documents({"_id": ObjectId(sample_id)}) > 0
+        return (
+            self._completed_sample_collection.count_documents(
+                {"_id": ObjectId(sample_id)}
+            )
+            > 0
+        )

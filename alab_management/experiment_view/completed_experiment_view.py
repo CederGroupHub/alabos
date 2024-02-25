@@ -27,9 +27,13 @@ class CompletedExperimentView:
         Args:
             experiment_id (ObjectId): id of the experiment to be transferred
         """
-        experiment_dict = self._working_experiment_collection.find_one(ObjectId(experiment_id))
+        experiment_dict = self._working_experiment_collection.find_one(
+            ObjectId(experiment_id)
+        )
         if experiment_dict is None:
-            raise ValueError(f"Experiment with id {experiment_id} does not exist in the working database!")
+            raise ValueError(
+                f"Experiment with id {experiment_id} does not exist in the working database!"
+            )
 
         for sample in experiment_dict["samples"]:
             self.completed_sample_view.save_sample(sample_id=sample["sample_id"])
@@ -47,7 +51,9 @@ class CompletedExperimentView:
 
     def save_all(self):
         """Saves all completed experiments in the working database to the completed database."""
-        for experiment_dict in self._working_experiment_collection.find({"status": "COMPLETED"}):
+        for experiment_dict in self._working_experiment_collection.find(
+            {"status": "COMPLETED"}
+        ):
             try:
                 self.save_experiment(experiment_dict["_id"])
             except:  # noqa: E722
@@ -63,7 +69,12 @@ class CompletedExperimentView:
         -------
             bool: True if sample exists in the database
         """
-        return self._completed_experiment_collection.count_documents({"_id": ObjectId(experiment_id)}) > 0
+        return (
+            self._completed_experiment_collection.count_documents(
+                {"_id": ObjectId(experiment_id)}
+            )
+            > 0
+        )
 
     def get_experiment(self, experiment_id: Union[ObjectId, str]) -> Dict[str, Any]:
         """Get an experiment from the completed experiment collection.
@@ -75,7 +86,9 @@ class CompletedExperimentView:
         -------
             Dict[str, Any]: experiment dict
         """
-        experiment_dict = self._completed_experiment_collection.find_one({"_id": ObjectId(experiment_id)})
+        experiment_dict = self._completed_experiment_collection.find_one(
+            {"_id": ObjectId(experiment_id)}
+        )
 
         if experiment_dict is None:
             raise ValueError(f"Experiment with id {experiment_id} does not exist!")

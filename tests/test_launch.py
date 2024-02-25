@@ -15,8 +15,13 @@ from alab_management.task_view import TaskView
 class TestLaunch(unittest.TestCase):
     def setUp(self) -> None:
         time.sleep(2)
-        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True, sim_mode=True,
-                    database_name="Alab_sim", user_confirmation="y")
+        cleanup_lab(
+            all_collections=True,
+            _force_i_know_its_dangerous=True,
+            sim_mode=True,
+            database_name="Alab_sim",
+            user_confirmation="y",
+        )
         setup_lab()
         self.task_view = TaskView()
         self.experiment_view = ExperimentView()
@@ -29,8 +34,13 @@ class TestLaunch(unittest.TestCase):
     def tearDown(self) -> None:
         self.main_process.terminate()
         self.worker_process.terminate()
-        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True, sim_mode=True,
-                    database_name="Alab_sim", user_confirmation="y")
+        cleanup_lab(
+            all_collections=True,
+            _force_i_know_its_dangerous=True,
+            sim_mode=True,
+            database_name="Alab_sim",
+            user_confirmation="y",
+        )
 
     def test_submit_experiment(self):
         experiment = {

@@ -1,6 +1,5 @@
 """Launch Dramatiq worker to submit tasks."""
 
-
 from alab_management.task_manager.task_manager import TaskManager
 
 

@@ -9,15 +9,25 @@ from alab_management.task_view import TaskStatus, TaskView
 
 class TestTaskView(TestCase):
     def setUp(self) -> None:
-        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True, sim_mode=True,
-                    database_name="Alab_sim", user_confirmation="y")
+        cleanup_lab(
+            all_collections=True,
+            _force_i_know_its_dangerous=True,
+            sim_mode=True,
+            database_name="Alab_sim",
+            user_confirmation="y",
+        )
         setup_lab()
         self.task_view = TaskView()
         self.task_view._task_collection.drop()
 
     def tearDown(self) -> None:
-        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True, sim_mode=True,
-                    database_name="Alab_sim", user_confirmation="y")
+        cleanup_lab(
+            all_collections=True,
+            _force_i_know_its_dangerous=True,
+            sim_mode=True,
+            database_name="Alab_sim",
+            user_confirmation="y",
+        )
         self.task_view._task_collection.drop()
 
     def test_create_task(self):

@@ -22,16 +22,26 @@ def release_devices(devices, device_view: DeviceView):
 
 class TestDeviceView(TestCase):
     def setUp(self):
-        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True, sim_mode=True,
-                    database_name="Alab_sim", user_confirmation="y")
+        cleanup_lab(
+            all_collections=True,
+            _force_i_know_its_dangerous=True,
+            sim_mode=True,
+            database_name="Alab_sim",
+            user_confirmation="y",
+        )
         setup_lab()
         self.device_view = DeviceView()
         self.device_list = self.device_view._device_list
         self.device_names = list(self.device_view._device_list)
 
     def tearDown(self):
-        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True, sim_mode=True,
-                    database_name="Alab_sim", user_confirmation="y")
+        cleanup_lab(
+            all_collections=True,
+            _force_i_know_its_dangerous=True,
+            sim_mode=True,
+            database_name="Alab_sim",
+            user_confirmation="y",
+        )
 
     @contextmanager
     def request_devices(self, device_list, task_id: ObjectId, _timeout=None):
@@ -48,9 +58,9 @@ class TestDeviceView(TestCase):
 
         if devices is not None:
             occupy_devices(devices, self.device_view, task_id)
-        yield {
-            t: d["name"] for t, d in devices.items()
-        } if devices is not None else None
+        yield (
+            {t: d["name"] for t, d in devices.items()} if devices is not None else None
+        )
         if devices is not None:
             release_devices(devices, self.device_view)
 

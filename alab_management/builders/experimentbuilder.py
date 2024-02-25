@@ -25,7 +25,9 @@ class ExperimentBuilder:
         self.tags = tags or []
         self.metadata = metadata
 
-    def add_sample(self, name: str, tags: Optional[List[str]] = None, **metadata) -> SampleBuilder:
+    def add_sample(
+        self, name: str, tags: Optional[List[str]] = None, **metadata
+    ) -> SampleBuilder:
         """
         Add a sample to the batch. Each sample already has multiple tasks binded to it. Each
         batch is a directed graph of tasks.
@@ -119,7 +121,9 @@ class ExperimentBuilder:
             "tasks": tasks,
         }
 
-    def generate_input_file(self, filename: str, fmt: Literal["json", "yaml"] = "json") -> None:
+    def generate_input_file(
+        self, filename: str, fmt: Literal["json", "yaml"] = "json"
+    ) -> None:
         """
         Genreate an input file for the `experiment` command.
 
@@ -161,7 +165,9 @@ class ExperimentBuilder:
         task_list = self.to_dict()["tasks"]
 
         unique_tasks = {task["type"] for task in task_list}
-        color_key = {nodetype: plt.cm.tab10(i) for i, nodetype in enumerate(unique_tasks)}
+        color_key = {
+            nodetype: plt.cm.tab10(i) for i, nodetype in enumerate(unique_tasks)
+        }
         node_colors = []
         node_labels = {}
         for task in task_list:

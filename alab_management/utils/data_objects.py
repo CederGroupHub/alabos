@@ -5,7 +5,6 @@ import json
 from abc import ABC, abstractmethod
 from datetime import datetime
 from enum import Enum
-import os
 from typing import Optional
 
 import numpy as np
@@ -14,8 +13,9 @@ import pymongo
 from bson import ObjectId
 from pymongo import collection, database
 
-from .db_lock import MongoLock
 from alab_management.config import AlabOSConfig
+
+from .db_lock import MongoLock
 
 
 class _BaseGetMongoCollection(ABC):
@@ -46,7 +46,6 @@ class _GetMongoCollection(_BaseGetMongoCollection):
 
     @classmethod
     def init(cls):
-        from alab_management.config import AlabOSConfig
 
         db_config = AlabOSConfig()["mongodb"]
         cls.client = pymongo.MongoClient(
@@ -69,7 +68,6 @@ class _GetCompletedMongoCollection(_BaseGetMongoCollection):
 
     @classmethod
     def init(cls):
-        from alab_management.config import AlabOSConfig
 
         ALABOS_CONFIG = AlabOSConfig()
         if "mongodb_completed" not in ALABOS_CONFIG:
@@ -86,7 +84,9 @@ class _GetCompletedMongoCollection(_BaseGetMongoCollection):
         )
         sim_mode_flag = AlabOSConfig().is_sim_mode()
         if sim_mode_flag:
-            cls.db = cls.client[AlabOSConfig()["general"]["name"] + "(completed)" + "_sim"]
+            cls.db = cls.client[
+                AlabOSConfig()["general"]["name"] + "(completed)" + "_sim"
+            ]
         else:
             cls.db = cls.client[AlabOSConfig()["general"]["name"] + "(completed)"]
         # type: ignore # pylint: disable=unsubscriptable-object
@@ -94,8 +94,6 @@ class _GetCompletedMongoCollection(_BaseGetMongoCollection):
 
 def get_rabbitmq_connection():
     """Get a connection to the RabbitMQ server."""
-    from alab_management.config import AlabOSConfig
-
     rabbit_mq_config = AlabOSConfig()["rabbitmq"]
     _connection = pika.BlockingConnection(
         parameters=pika.ConnectionParameters(

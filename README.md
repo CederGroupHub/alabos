@@ -18,6 +18,12 @@ You also need to install `Rabbitmq`.
 ```shell
 python setup.py develop
 ```
+Before any commit, please go to `alab_management` folder and run flake8, ruff, and black, and solve all the typing issues:
+```bash
+flake8
+black .
+ruff --fix
+```
 
 ## Docs
 

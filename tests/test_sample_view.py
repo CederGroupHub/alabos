@@ -26,15 +26,25 @@ def release_sample_positions(sample_positions, sample_view: SampleView):
 
 class TestSampleView(TestCase):
     def setUp(self) -> None:
-        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True, sim_mode=True,
-                    database_name="Alab_sim", user_confirmation="y")
+        cleanup_lab(
+            all_collections=True,
+            _force_i_know_its_dangerous=True,
+            sim_mode=True,
+            database_name="Alab_sim",
+            user_confirmation="y",
+        )
         setup_lab()
         self.sample_view = SampleView()
         self.sample_view._sample_collection.drop()
 
     def tearDown(self) -> None:
-        cleanup_lab(all_collections=True, _force_i_know_its_dangerous=True, sim_mode=True,
-                    database_name="Alab_sim", user_confirmation="y")
+        cleanup_lab(
+            all_collections=True,
+            _force_i_know_its_dangerous=True,
+            sim_mode=True,
+            database_name="Alab_sim",
+            user_confirmation="y",
+        )
         self.sample_view._sample_collection.drop()
 
     @contextmanager
@@ -56,10 +66,14 @@ class TestSampleView(TestCase):
 
         if sample_positions is not None:
             occupy_sample_positions(sample_positions, self.sample_view, task_id)
-        yield {
-            prefix: [sp["name"] for sp in sps]
-            for prefix, sps in sample_positions.items()
-        } if sample_positions is not None else None
+        yield (
+            {
+                prefix: [sp["name"] for sp in sps]
+                for prefix, sps in sample_positions.items()
+            }
+            if sample_positions is not None
+            else None
+        )
         if sample_positions is not None:
             release_sample_positions(sample_positions, self.sample_view)
 

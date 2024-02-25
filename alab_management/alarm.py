@@ -4,6 +4,7 @@ import smtplib
 
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
+
 from .config import AlabOSConfig
 
 
@@ -57,12 +58,12 @@ class Alarm:
     """A class to send alerts to the user via email or slack."""
 
     def __init__(
-            self,
-            email_receivers: list = None,
-            email_sender: str = None,
-            email_password: str = None,
-            slack_bot_token: str = None,
-            slack_channel_id: str = None,
+        self,
+        email_receivers: list = None,
+        email_sender: str = None,
+        email_password: str = None,
+        slack_bot_token: str = None,
+        slack_channel_id: str = None,
     ):
         """
         Args:
@@ -90,7 +91,7 @@ class Alarm:
         self.platforms = {"email": self.email_alert, "slack": self.slack_alert}
 
     def setup_email(
-            self, email_receivers: list, email_sender: str, email_password: str
+        self, email_receivers: list, email_sender: str, email_password: str
     ):
         """
         Try to setup email notification (called in __init__).
@@ -133,7 +134,6 @@ class Alarm:
             message: The message to print in the platform
             category: The category of the message.
         """
-        import os
         if not self.sim_mode_flag:
             try:
                 if self.platforms["email"]:

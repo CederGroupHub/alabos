@@ -6,8 +6,13 @@ be deleted.
 """
 
 
-def cleanup_lab(all_collections: bool = False, _force_i_know_its_dangerous: bool = False, user_confirmation: str = None,
-                sim_mode: bool = True, database_name: str = None):
+def cleanup_lab(
+    all_collections: bool = False,
+    _force_i_know_its_dangerous: bool = False,
+    user_confirmation: str = None,
+    sim_mode: bool = True,
+    database_name: str = None,
+):
     """Drop device, sample_position collection from MongoDB."""
     from alab_management.config import AlabOSConfig  # type: ignore
     from alab_management.device_view.device_view import DeviceView
@@ -16,8 +21,11 @@ def cleanup_lab(all_collections: bool = False, _force_i_know_its_dangerous: bool
 
     _GetMongoCollection.init()
     config = AlabOSConfig()
-    task_count_new = _GetMongoCollection.client.get_database(config["general"]["name"]) \
-        .get_collection("tasks").count_documents({})
+    task_count_new = (
+        _GetMongoCollection.client.get_database(config["general"]["name"])
+        .get_collection("tasks")
+        .count_documents({})
+    )
     if all_collections:
         if not _force_i_know_its_dangerous:
             if user_confirmation is None:
@@ -25,14 +33,15 @@ def cleanup_lab(all_collections: bool = False, _force_i_know_its_dangerous: bool
                     f"Are you sure you want to remove the whole database? "
                     f"It will purge all of your data [{task_count_new} entries] in {config['mongodb']['host']}, "
                     f"which cannot be recovered. [y/n]: "
-                    )
+                )
             if user_confirmation != "y":
                 return False
         if database_name is None:
             database_name = input(
                 f"Write the name of the database that you want to remove. "
                 f"If you want to remove the simulation database then type in "
-                f"{config['general']['name']}_sim:  ")
+                f"{config['general']['name']}_sim:  "
+            )
 
         if sim_mode != AlabOSConfig().is_sim_mode() or database_name == "Alab":
             print("Wrong name of database. Hence, not removed.")
