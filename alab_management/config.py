@@ -61,7 +61,7 @@ class AlabConfig:
 
     def __init__(self):
         """Load a immutable toml config file from `config_path`."""
-        config_path = os.getenv("ALAB_CONFIG", None)
+        config_path = os.getenv("ALABOS_CONFIG_PATH", None)
         sim_mode_flag = os.getenv("SIM_MODE_FLAG", "True")
         sim_mode_flag_boolean = sim_mode_flag.lower() == "true"
 
@@ -76,7 +76,7 @@ class AlabConfig:
         except FileNotFoundError as exc:
             raise FileNotFoundError(
                 f"Config file was not found at {config_path}."
-                "Please set your computer's environment variable 'ALAB_CONFIG' to the path to the config file. In "
+                "Please set your computer's environment variable 'ALABOS_CONFIG_PATH' to the path to the config file. In "
                 "absence of this environment variable, we assume there is a file named config.toml in the current "
                 "directory."
             ) from exc

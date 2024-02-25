@@ -29,9 +29,9 @@ def import_module_from_path(
 
 def load_definition():
     """Load device and task definitions from file (specified in config file)."""
-    from alab_management.config import AlabConfig
+    from alab_management.config import AlabOSConfig
 
-    config = AlabConfig()
+    config = AlabOSConfig()
     working_dir = config["general"]["working_dir"]
 
     dir_to_import_from = copy(working_dir)
