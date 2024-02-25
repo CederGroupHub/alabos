@@ -9,9 +9,9 @@ from alab_management.experiment_view.experiment_view import ExperimentView
 from alab_management.task_view import TaskView
 from alab_management.utils.data_objects import get_collection
 
-from .config import AlabConfig
+from .config import AlabOSConfig
 
-CONFIG = AlabConfig()
+CONFIG = AlabOSConfig()
 
 
 class UserRequestStatus(Enum):
@@ -30,7 +30,7 @@ class UserInputView:
         self._task_view = TaskView()
         self._experiment_view = ExperimentView()
         self._alarm = Alarm()
-        alarm_config = AlabConfig().get("alarm", {})
+        alarm_config = AlabOSConfig().get("alarm", {})
         if "email_receivers" in alarm_config:
             self._alarm.setup_email(
                 email_receivers=alarm_config["email_receivers"],

@@ -21,7 +21,7 @@ from pika import BasicProperties
 from pika.adapters.blocking_connection import BlockingChannel
 from pika.spec import Basic
 
-from .config import AlabConfig
+from .config import AlabOSConfig
 from .device_view.device_view import DeviceTaskStatus, DeviceView
 from .utils.data_objects import get_rabbitmq_connection
 from .utils.module_ops import load_definition
@@ -117,11 +117,11 @@ class DeviceManager:
         sim_mode_flag = os.getenv("SIM_MODE_FLAG", "True")
         if sim_mode_flag.lower() == "true":
             self._rpc_queue_name = (
-                AlabConfig()["general"]["name"] + "_sim" + DEFAULT_SERVER_QUEUE_SUFFIX
+                AlabOSConfig()["general"]["name"] + "_sim" + DEFAULT_SERVER_QUEUE_SUFFIX
             )
         else:
             self._rpc_queue_name = (
-                AlabConfig()["general"]["name"] + DEFAULT_SERVER_QUEUE_SUFFIX
+                AlabOSConfig()["general"]["name"] + DEFAULT_SERVER_QUEUE_SUFFIX
             )
         self._device_view = DeviceView(connect_to_devices=True)
         self._check_status = _check_status
@@ -256,11 +256,11 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
         sim_mode_flag = os.getenv("SIM_MODE_FLAG", "True")
         if sim_mode_flag.lower() == "true":
             self._rpc_queue_name = (
-                AlabConfig()["general"]["name"] + "_sim" + DEFAULT_SERVER_QUEUE_SUFFIX
+                AlabOSConfig()["general"]["name"] + "_sim" + DEFAULT_SERVER_QUEUE_SUFFIX
             )
         else:
             self._rpc_queue_name = (
-                AlabConfig()["general"]["name"] + DEFAULT_SERVER_QUEUE_SUFFIX
+                AlabOSConfig()["general"]["name"] + DEFAULT_SERVER_QUEUE_SUFFIX
             )
         # self._rpc_reply_queue_name = ( str(task_id) + DEFAULT_CLIENT_QUEUE_SUFFIX )  # TODO does this have to be
         #  taskid, or can be random? I think this dies with the resourcerequest context manager anyways?

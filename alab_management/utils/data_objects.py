@@ -45,9 +45,9 @@ class _GetMongoCollection(_BaseGetMongoCollection):
 
     @classmethod
     def init(cls):
-        from alab_management.config import AlabConfig
+        from alab_management.config import AlabOSConfig
 
-        db_config = AlabConfig()["mongodb"]
+        db_config = AlabOSConfig()["mongodb"]
         cls.client = pymongo.MongoClient(
             host=db_config.get("host", None),
             port=db_config.get("port", None),
@@ -56,9 +56,9 @@ class _GetMongoCollection(_BaseGetMongoCollection):
         )
         sim_mode_flag = os.getenv("SIM_MODE_FLAG", "True")
         if sim_mode_flag.lower() == "true":
-            cls.db = cls.client[AlabConfig()["general"]["name"] + "_sim"]
+            cls.db = cls.client[AlabOSConfig()["general"]["name"] + "_sim"]
         else:
-            cls.db = cls.client[AlabConfig()["general"]["name"]]  # type: ignore # pylint: disable=unsubscriptable-object
+            cls.db = cls.client[AlabOSConfig()["general"]["name"]]  # type: ignore # pylint: disable=unsubscriptable-object
 
 
 class _GetCompletedMongoCollection(_BaseGetMongoCollection):
@@ -68,15 +68,15 @@ class _GetCompletedMongoCollection(_BaseGetMongoCollection):
 
     @classmethod
     def init(cls):
-        from alab_management.config import AlabConfig
+        from alab_management.config import AlabOSConfig
 
-        ALAB_CONFIG = AlabConfig()
-        if "mongodb_completed" not in ALAB_CONFIG:
+        ALABOS_CONFIG = AlabOSConfig()
+        if "mongodb_completed" not in ALABOS_CONFIG:
             raise ValueError(
                 "Cannot use the completed database feature until that database info is set. Please specify the "
                 "mongodb_completed configuration in the config file!"
             )
-        db_config = ALAB_CONFIG["mongodb_completed"]
+        db_config = ALABOS_CONFIG["mongodb_completed"]
         cls.client = pymongo.MongoClient(
             host=db_config.get("host", None),
             port=db_config.get("port", None),
@@ -85,17 +85,17 @@ class _GetCompletedMongoCollection(_BaseGetMongoCollection):
         )
         sim_mode_flag = os.getenv("SIM_MODE_FLAG", "True")
         if sim_mode_flag.lower() == "true":
-            cls.db = cls.client[AlabConfig()["general"]["name"] + "(completed)" + "_sim"]
+            cls.db = cls.client[AlabOSConfig()["general"]["name"] + "(completed)" + "_sim"]
         else:
-            cls.db = cls.client[AlabConfig()["general"]["name"] + "(completed)"]
+            cls.db = cls.client[AlabOSConfig()["general"]["name"] + "(completed)"]
         # type: ignore # pylint: disable=unsubscriptable-object
 
 
 def get_rabbitmq_connection():
     """Get a connection to the RabbitMQ server."""
-    from alab_management.config import AlabConfig
+    from alab_management.config import AlabOSConfig
 
-    rabbit_mq_config = AlabConfig()["rabbitmq"]
+    rabbit_mq_config = AlabOSConfig()["rabbitmq"]
     _connection = pika.BlockingConnection(
         parameters=pika.ConnectionParameters(
             host=rabbit_mq_config.get("host", "localhost"),

@@ -2,7 +2,7 @@
 import click
 
 from alab_management import __version__
-from alab_management.config import AlabConfig
+from alab_management.config import AlabOSConfig
 
 from .cleanup_lab import cleanup_lab
 from .init_project import init_project
@@ -24,7 +24,7 @@ def cli():
    /_/   \_\_|\__,_|_.__/    \___/|____/
 
 ----  Alab OS v{__version__} -- Alab Project Team  ----
-    Simulation mode: {"ON" if AlabConfig().is_sim_mode() else "OFF"}
+    Simulation mode: {"ON" if AlabOSConfig().is_sim_mode() else "OFF"}
     """
     )
 

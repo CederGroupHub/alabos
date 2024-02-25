@@ -56,7 +56,7 @@ def freeze_config(config_: Dict[str, Any]) -> FrozenDict:
     return _frozen_collection(config_)
 
 
-class AlabConfig:
+class AlabOSConfig:
     """Class used for storing all the config data."""
 
     def __init__(self):

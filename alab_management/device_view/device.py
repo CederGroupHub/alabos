@@ -91,9 +91,9 @@ def mock(return_constant: Any = _UNSPECIFIED, object_type: Union[List[Any], Any]
     def decorator(f: Callable[..., Any]):
         @functools.wraps(f)
         def wrapper(*args, **kwargs):
-            from alab_management.config import AlabConfig
+            from alab_management.config import AlabOSConfig
 
-            if AlabConfig().is_sim_mode():
+            if AlabOSConfig().is_sim_mode():
                 if return_constant is not _UNSPECIFIED and object_type is not _UNSPECIFIED:
                     raise ValueError("Cannot specify both return_constant and return_mock_call!")
                 elif isinstance(return_constant, dict):

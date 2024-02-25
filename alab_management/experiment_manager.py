@@ -9,7 +9,7 @@ done.
 import time
 from typing import Any, Dict, List
 
-from .config import AlabConfig
+from .config import AlabOSConfig
 from .experiment_view import CompletedExperimentView, ExperimentStatus, ExperimentView
 from .logger import DBLogger
 from .sample_view import SampleView
@@ -29,7 +29,7 @@ class ExperimentManager:
         self.sample_view = SampleView()
         self.logger = DBLogger(task_id=None)
 
-        config = AlabConfig()
+        config = AlabOSConfig()
         self.__copy_to_completed_db = (
             "mongodb_completed" in config
         )  # if this is not defined in the config, assume it this feature is not being used.
