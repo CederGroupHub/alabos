@@ -43,16 +43,16 @@ def cleanup_lab(
                 f"{config['general']['name']}_sim:  "
             )
 
-        if sim_mode != AlabOSConfig().is_sim_mode() or database_name == "Alab":
-            print("Wrong name of database. Hence, not removed.")
-            return False
-        elif sim_mode == AlabOSConfig().is_sim_mode() and database_name != "Alab":
-            print(f"Removing database {database_name}")
-            _GetMongoCollection.init()
-            _GetMongoCollection.client.drop_database(database_name)  # type: ignore
-        else:
-            print("Wrong name of database. Hence, not removed.")
-            return False
+        # if sim_mode != AlabOSConfig().is_sim_mode() or database_name == "Alab":
+        #     print("Wrong name of database. Hence, not removed.")
+        #     return False
+        # elif sim_mode == AlabOSConfig().is_sim_mode() and database_name != "Alab":
+        #     print(f"Removing database {database_name}")
+        #     _GetMongoCollection.init()
+        #     _GetMongoCollection.client.drop_database(database_name)  # type: ignore
+        # else:
+        #     print("Wrong name of database. Hence, not removed.")
+        #     return False
 
     DeviceView()._clean_up_device_collection()
     SampleView().clean_up_sample_position_collection()
