@@ -76,13 +76,13 @@ class Alarm:
         self.sim_mode_flag = AlabOSConfig().is_sim_mode()
         self.email_alert = False
         self.slack_alert = False
-        if email_receivers is not None:
+        if email_receivers is not None and self.sim_mode_flag is False:
             try:
                 self.setup_email(email_sender, email_receivers, email_password)
                 self.email_alert = True
             except:  # noqa: E722
                 print("Email setup failed, please recheck config file")
-        if slack_bot_token is not None:
+        if slack_bot_token is not None and self.sim_mode_flag is False:
             try:
                 self.setup_slackbot(slack_bot_token, slack_channel_id)
                 self.slack_alert = True
