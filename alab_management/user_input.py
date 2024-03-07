@@ -29,19 +29,8 @@ class UserInputView:
         self._input_collection = get_collection("user_input")
         self._task_view = TaskView()
         self._experiment_view = ExperimentView()
-        self._alarm = Alarm()
         alarm_config = AlabOSConfig().get("alarm", {})
-        if "email_receivers" in alarm_config:
-            self._alarm.setup_email(
-                email_receivers=alarm_config["email_receivers"],
-                email_sender=alarm_config["email_sender"],
-                email_password=alarm_config["email_password"],
-            )
-        if "slack_bot_token" in alarm_config:
-            self._alarm.setup_slackbot(
-                slack_bot_token=alarm_config["slack_bot_token"],
-                slack_channel_id=alarm_config["slack_channel"],
-            )
+        self._alarm = Alarm(**alarm_config)
 
     def insert_request(
         self,
