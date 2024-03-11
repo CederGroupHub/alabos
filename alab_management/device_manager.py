@@ -181,9 +181,10 @@ class DeviceManager:
                 or device_entry["status"] != DeviceTaskStatus.OCCUPIED.name
                 or device_entry["task_id"] != ObjectId(task_id)
             ):
+                device_task_id = str(device_entry["task_id"])
                 raise PermissionError(
                     f"Currently the task ({task_id}) "
-                    f"does not occupy this device: {device}, which is currently occupied by task {task_id}"
+                    f"does not occupy this device: {device}, which is currently occupied by task {device_task_id}"
                 )
 
             result = self._device_view.execute_command(device, method, *args, **kwargs)
