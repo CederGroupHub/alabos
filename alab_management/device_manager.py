@@ -181,11 +181,20 @@ class DeviceManager:
                 or device_entry["status"] != DeviceTaskStatus.OCCUPIED.name
                 or device_entry["task_id"] != ObjectId(task_id)
             ):
-                device_task_id = str(device_entry["task_id"])
-                raise PermissionError(
-                    f"Currently the task ({task_id}) "
-                    f"does not occupy this device: {device}, which is currently occupied by task {device_task_id}"
-                )
+                if device_entry is None:
+                    raise PermissionError(
+                        "There is no such device in the device view."
+                    )
+                if device_entry["status"] != DeviceTaskStatus.OCCUPIED.name:
+                    raise PermissionError(
+                        f"Currently the device ({device}) is NOT OCCUPIED, which is currently in status {device_entry['status']}"
+                    )
+                if device_entry["task_id"] != ObjectId(task_id)
+                    device_task_id = str(device_entry["task_id"])
+                    raise PermissionError(
+                        f"Currently the task ({task_id}) "
+                        f"does not occupy this device: {device}, which is currently occupied by task {device_task_id}"
+                    )
 
             result = self._device_view.execute_command(device, method, *args, **kwargs)
             response = {"status": "success", "result": result}
