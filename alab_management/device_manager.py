@@ -78,9 +78,9 @@ class DeviceWrapper:
 
         __str__ = __repr__
 
-        __len__ = __getattr__ = __getitem__ = __add__ = __sub__ = __eq__ = __lt__ = (
-            __gt__
-        ) = _raise
+        __len__ = (
+            __getattr__
+        ) = __getitem__ = __add__ = __sub__ = __eq__ = __lt__ = __gt__ = _raise
 
     def __init__(self, name: str, devices_client: "DevicesClient"):
         self._name = name
@@ -182,14 +182,12 @@ class DeviceManager:
                 or device_entry["task_id"] != ObjectId(task_id)
             ):
                 if device_entry is None:
-                    raise PermissionError(
-                        "There is no such device in the device view."
-                    )
+                    raise PermissionError("There is no such device in the device view.")
                 if device_entry["status"] != DeviceTaskStatus.OCCUPIED.name:
                     raise PermissionError(
                         f"Currently the device ({device}) is NOT OCCUPIED, which is currently in status {device_entry['status']}"
                     )
-                if device_entry["task_id"] != ObjectId(task_id)
+                if device_entry["task_id"] != ObjectId(task_id):
                     device_task_id = str(device_entry["task_id"])
                     raise PermissionError(
                         f"Currently the task ({task_id}) "

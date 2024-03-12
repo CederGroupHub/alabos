@@ -46,7 +46,6 @@ class _GetMongoCollection(_BaseGetMongoCollection):
 
     @classmethod
     def init(cls):
-
         db_config = AlabOSConfig()["mongodb"]
         cls.client = pymongo.MongoClient(
             host=db_config.get("host", None),
@@ -68,7 +67,6 @@ class _GetCompletedMongoCollection(_BaseGetMongoCollection):
 
     @classmethod
     def init(cls):
-
         ALABOS_CONFIG = AlabOSConfig()
         if "mongodb_completed" not in ALABOS_CONFIG:
             raise ValueError(
