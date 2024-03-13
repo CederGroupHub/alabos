@@ -1,0 +1,37 @@
+name: Report a Bug
+description: Use this template to report an alab_os bug.
+labels: ["bug"]
+title: "[Bug]: "
+body:
+  - type: textarea
+    id: current-behavior
+    attributes:
+      label: Current behavior
+      description: What bad behavior do you see?
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to see?
+    validations:
+      required: true
+
+  - type: textarea
+    id: code-snippet
+    attributes:
+      label: Minimal example
+      description: If possible, provide a code snippet relevant to reproducing this bug.
+      render: Python
+    validations:
+      required: false
+
+  - type: textarea
+    id: files
+    attributes:
+      label: Relevant files/images/logs
+      description: Please upload relevant files to help reproduce this bug, or logs if helpful.
+    validations:
+      required: false
