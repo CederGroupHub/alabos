@@ -103,8 +103,7 @@ class SampleView:
 
                 if re.search(r"[$.]", name) is not None:
                     raise ValueError(
-                        f"Unsupported sample position name: {name}. "
-                        f"Sample position name should not contain '.' or '$'"
+                        f"Unsupported sample position name: {name}. " f"Sample position name should not contain '.' or '$'"
                     )
 
                 sample_pos_ = self._sample_positions_collection.find_one({"name": name})
@@ -146,9 +145,7 @@ class SampleView:
             for sample_position in sample_positions
         ]
 
-        if len(sample_positions_request) != len(
-            {sample_position.prefix for sample_position in sample_positions_request}
-        ):
+        if len(sample_positions_request) != len({sample_position.prefix for sample_position in sample_positions_request}):
             raise ValueError("Duplicated sample_positions in one request.")
 
         # check if there are enough positions
@@ -165,15 +162,13 @@ class SampleView:
         with self._lock():  # pylint: disable=not-callable
             available_positions: Dict[str, List[Dict[str, Union[str, bool]]]] = {}
             for sample_position in sample_positions_request:
-                result = self.get_available_sample_position(
-                    task_id, position_prefix=sample_position.prefix
-                )
+                result = self.get_available_sample_position(task_id, position_prefix=sample_position.prefix)
                 if not result or len(result) < sample_position.number:
                     return None
                 # we try to choose the position that has already been locked by this task
-                available_positions[sample_position.prefix] = sorted(
-                    result, key=lambda task: int(task["need_release"])
-                )[: sample_position.number]
+                available_positions[sample_position.prefix] = sorted(result, key=lambda task: int(task["need_release"]))[
+                    : sample_position.number
+                ]
             return available_positions
 
     def get_sample_position(self, position: str) -> Optional[Dict[str, Any]]:
@@ -184,9 +179,7 @@ class SampleView:
         """
         return self._sample_positions_collection.find_one({"name": position})
 
-    def get_sample_position_status(
-        self, position: str
-    ) -> Tuple[SamplePositionStatus, Optional[ObjectId]]:
+    def get_sample_position_status(self, position: str) -> Tuple[SamplePositionStatus, Optional[ObjectId]]:
         """
         Get the status of a sample position.
 
@@ -225,9 +218,7 @@ class SampleView:
         for position="furnace_1/tray" will properly return "furnace_1" even if "furnace_1/tray/1" and
         "furnace_1/tray/2" are in the database _as long as "furnace_1" is the parent device of both!_).
         """
-        sample_positions = self._sample_positions_collection.find(
-            {"name": {"$regex": f"^{position}"}}
-        )
+        sample_positions = self._sample_positions_collection.find({"name": {"$regex": f"^{position}"}})
         parent_devices = list({sp.get("parent_device") for sp in sample_positions})
         if len(parent_devices) == 0:
             raise ValueError(f"No sample position(s) beginning with: {position}")
@@ -240,14 +231,9 @@ class SampleView:
 
     def is_unoccupied_position(self, position: str) -> bool:
         """Tell if a sample position is unoccupied or not."""
-        return (
-            self.get_sample_position_status(position)[0]
-            is not SamplePositionStatus.OCCUPIED
-        )
+        return self.get_sample_position_status(position)[0] is not SamplePositionStatus.OCCUPIED
 
-    def get_available_sample_position(
-        self, task_id: ObjectId, position_prefix: str
-    ) -> List[Dict[str, Union[str, bool]]]:
+    def get_available_sample_position(self, task_id: ObjectId, position_prefix: str) -> List[Dict[str, Union[str, bool]]]:
         """
         Check if the position is occupied.
 
@@ -255,12 +241,7 @@ class SampleView:
         The entry need_release indicates whether a sample position needs to be released
         when __exit__ method is called in the ``SamplePositionsLock``.
         """
-        if (
-            self._sample_positions_collection.find_one(
-                {"name": {"$regex": f"^{re.escape(position_prefix)}"}}
-            )
-            is None
-        ):
+        if self._sample_positions_collection.find_one({"name": {"$regex": f"^{re.escape(position_prefix)}"}}) is None:
             raise ValueError(f"Cannot find device with prefix: {position_prefix}")
 
         available_sample_positions = self._sample_positions_collection.find(
@@ -278,9 +259,7 @@ class SampleView:
         )
         available_sp_names = []
         for sample_position in available_sample_positions:
-            status, current_task_id = self.get_sample_position_status(
-                sample_position["name"]
-            )
+            status, current_task_id = self.get_sample_position_status(sample_position["name"])
             if status is SamplePositionStatus.EMPTY or task_id == current_task_id:
                 available_sp_names.append(
                     {
@@ -298,9 +277,7 @@ class SampleView:
             if sample_status is SamplePositionStatus.OCCUPIED:
                 raise ValueError(f"Position ({position}) is currently occupied")
             if sample_status is SamplePositionStatus.LOCKED:
-                raise ValueError(
-                    f"Position is currently locked by task: {current_task_id}"
-                )
+                raise ValueError(f"Position is currently locked by task: {current_task_id}")
 
         self._sample_positions_collection.update_one(
             {"name": position},
@@ -327,12 +304,7 @@ class SampleView:
 
     def get_sample_positions_by_task(self, task_id: Optional[ObjectId]) -> List[str]:
         """Get the list of sample positions that is locked by a task (given task id)."""
-        return [
-            sample_position["name"]
-            for sample_position in self._sample_positions_collection.find(
-                {"task_id": task_id}
-            )
-        ]
+        return [sample_position["name"] for sample_position in self._sample_positions_collection.find({"task_id": task_id})]
 
     #################################################################
     #                 operations related to samples                 #
@@ -355,10 +327,7 @@ class SampleView:
             raise ValueError(f"Requested position ({position}) is not EMPTY.")
 
         if re.search(r"[.$]", name) is not None:
-            raise ValueError(
-                f"Unsupported sample name: {name}. "
-                f"Sample name should not contain '.' or '$'"
-            )
+            raise ValueError(f"Unsupported sample name: {name}. " f"Sample name should not contain '.' or '$'")
 
         entry = {
             "name": name,
@@ -424,6 +393,20 @@ class SampleView:
             },
         )
 
+    def update_sample_metadata(self, sample_id: ObjectId, metadata: Dict[str, Any]):
+        """Update the metadata for a sample. This adds new metadata or updates existing metadata."""
+        result = self._sample_collection.find_one({"_id": sample_id})
+        if result is None:
+            raise ValueError(f"Cannot find sample with id: {sample_id}")
+
+        update_dict = {f"metadata.{k}": v for k, v in metadata.items()}
+        update_dict["last_updated"] = datetime.now()
+
+        self._sample_collection.update_one(
+            {"_id": sample_id},
+            {"$set": update_dict},
+        )
+
     def move_sample(self, sample_id: ObjectId, position: Optional[str]):
         """Update the sample with new position."""
         result = self._sample_collection.find_one({"_id": sample_id})
@@ -434,9 +417,7 @@ class SampleView:
             return
 
         if position is not None and not self.is_unoccupied_position(position):
-            raise ValueError(
-                f"Requested position ({position}) is not EMPTY or LOCKED by other task."
-            )
+            raise ValueError(f"Requested position ({position}) is not EMPTY or LOCKED by other task.")
 
         self._sample_collection.update_one(
             {"_id": sample_id},
