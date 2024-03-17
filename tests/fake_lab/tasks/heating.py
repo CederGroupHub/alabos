@@ -2,7 +2,7 @@ import time
 
 from bson import ObjectId
 
-from alab_management import BaseTask
+from alab_management.task_view import BaseTask
 
 from ..devices.furnace import Furnace  # noqa
 from .moving import Moving

@@ -8,7 +8,7 @@ from .experimentbuilder import ExperimentBuilder
 from .samplebuilder import SampleBuilder
 
 if TYPE_CHECKING:
-    from alab_management import BaseTask
+    from alab_management.task_view import BaseTask
 
 
 def append_task(

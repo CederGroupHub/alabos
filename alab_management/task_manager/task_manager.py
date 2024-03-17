@@ -15,8 +15,7 @@ import networkx as nx
 from bson import ObjectId
 from dramatiq_abort import abort
 
-from alab_management import BaseDevice
-from alab_management.device_view import get_all_devices
+from alab_management.device_view import BaseDevice, get_all_devices
 from alab_management.device_view.device_view import DeviceView
 from alab_management.lab_view import LabView
 from alab_management.logger import DBLogger, LoggingLevel

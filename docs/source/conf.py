@@ -30,7 +30,7 @@ copyright = f"{date.today().year}, Alab Project Team"
 author = "Alab Project Team"
 
 # The full version, including alpha/beta/rc tags
-from alab_management import __version__  # noqa
+from alab_management.__init__ import __version__  # noqa
 
 release = __version__
 
