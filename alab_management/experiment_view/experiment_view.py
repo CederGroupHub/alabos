@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Union, cast
+from typing import Any, cast
 
 from bson import ObjectId  # type: ignore
 
@@ -84,13 +84,13 @@ class ExperimentView:
         return cast(ObjectId, result.inserted_id)
 
     def get_experiments_with_status(
-        self, status: Union[str, ExperimentStatus]
-    ) -> List[Dict[str, Any]]:
+        self, status: str | ExperimentStatus
+    ) -> list[dict[str, Any]]:
         """Filter experiments by its status."""
         if isinstance(status, str):
             status = ExperimentStatus[status]
         return cast(
-            List[Dict[str, Any]],
+            list[dict[str, Any]],
             self._experiment_collection.find(
                 {
                     "status": status.name,
@@ -98,7 +98,7 @@ class ExperimentView:
             ),
         )
 
-    def get_experiment(self, exp_id: ObjectId) -> Optional[Dict[str, Any]]:
+    def get_experiment(self, exp_id: ObjectId) -> dict[str, Any] | None:
         """Get an experiment by its id."""
         experiment = self._experiment_collection.find_one({"_id": exp_id})
         if experiment is None:
@@ -127,7 +127,7 @@ class ExperimentView:
         )
 
     def update_sample_task_id(
-        self, exp_id, sample_ids: List[ObjectId], task_ids: List[ObjectId]
+        self, exp_id, sample_ids: list[ObjectId], task_ids: list[ObjectId]
     ):
         """
         At the creation of experiment, the id of samples and tasks has not been assigned.
@@ -162,16 +162,14 @@ class ExperimentView:
             },
         )
 
-    def get_experiment_by_task_id(self, task_id: ObjectId) -> Optional[Dict[str, Any]]:
+    def get_experiment_by_task_id(self, task_id: ObjectId) -> dict[str, Any] | None:
         """Get an experiment that contains a task with the given task_id."""
         experiment = self._experiment_collection.find_one({"tasks.task_id": task_id})
         if experiment is None:
             raise ValueError(f"Cannot find experiment containing task_id: {task_id}")
         return experiment
 
-    def get_experiment_by_sample_id(
-        self, sample_id: ObjectId
-    ) -> Optional[Dict[str, Any]]:
+    def get_experiment_by_sample_id(self, sample_id: ObjectId) -> dict[str, Any] | None:
         """Get an experiment that contains a sample with the given sample_id."""
         experiment = self._experiment_collection.find_one(
             {"samples.sample_id": sample_id}

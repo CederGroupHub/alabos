@@ -1,7 +1,7 @@
 """The definition of the Sample and SamplePosition classes."""
 
 from dataclasses import dataclass, field
-from typing import Any, ClassVar, Dict, List, Optional
+from typing import Any, ClassVar
 
 from bson import ObjectId  # type: ignore
 
@@ -19,11 +19,11 @@ class Sample:
     """
 
     sample_id: ObjectId
-    task_id: Optional[ObjectId]
+    task_id: ObjectId | None
     name: str
-    position: Optional[str]
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    tags: List[str] = field(default_factory=list)
+    position: str | None
+    metadata: dict[str, Any] = field(default_factory=dict)
+    tags: list[str] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -54,7 +54,7 @@ class SamplePosition:
             )
 
 
-_standalone_sample_position_registry: Dict[str, SamplePosition] = {}
+_standalone_sample_position_registry: dict[str, SamplePosition] = {}
 
 
 def add_standalone_sample_position(position: SamplePosition):
@@ -68,6 +68,6 @@ def add_standalone_sample_position(position: SamplePosition):
     _standalone_sample_position_registry[position.name] = position
 
 
-def get_all_standalone_sample_positions() -> Dict[str, SamplePosition]:
+def get_all_standalone_sample_positions() -> dict[str, SamplePosition]:
     """Get all the device names in the device registry."""
     return _standalone_sample_position_registry.copy()

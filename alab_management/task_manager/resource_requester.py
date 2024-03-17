@@ -8,7 +8,7 @@ from concurrent.futures import Future
 from datetime import datetime
 from threading import Thread
 from traceback import print_exc
-from typing import Any, Dict, List, Optional, Type, Union, cast
+from typing import Any, cast
 
 import dill
 from bson import ObjectId
@@ -22,9 +22,9 @@ from alab_management.utils.data_objects import get_collection
 
 from .enums import _EXTRA_REQUEST, RequestStatus
 
-_SampleRequestDict = Dict[str, int]
-_ResourceRequestDict = Dict[
-    Optional[Union[Type[BaseDevice], str]], _SampleRequestDict
+_SampleRequestDict = dict[str, int]
+_ResourceRequestDict = dict[
+    type[BaseDevice] | str | None, _SampleRequestDict
 ]  # the raw request sent by task process
 
 
@@ -53,8 +53,8 @@ class ResourcesRequest(BaseModel):
         :py:class:`SamplePositionRequest <alab_management.sample_view.sample_view.SamplePositionRequest>`
     """
 
-    __root__: List[
-        Dict[str, Union[List[Dict[str, Union[str, int]]], Dict[str, str]]]
+    __root__: list[
+        dict[str, list[dict[str, str | int]] | dict[str, str]]
     ]  # type: ignore
 
     @root_validator(pre=True, allow_reuse=True)
@@ -126,9 +126,9 @@ class ResourceRequester(RequestMixin):
         task_id: ObjectId,
     ):
         self._request_collection = get_collection("requests")
-        self._waiting: Dict[ObjectId, Dict[str, Any]] = {}
+        self._waiting: dict[ObjectId, dict[str, Any]] = {}
         self.task_id = task_id
-        self.priority: Union[int, TaskPriority] = (
+        self.priority: int | TaskPriority = (
             TaskPriority.NORMAL
         )  # will usually be overwritten by BaseTask instantiation.
 
@@ -150,9 +150,9 @@ class ResourceRequester(RequestMixin):
     def request_resources(
         self,
         resource_request: _ResourceRequestDict,
-        timeout: Optional[float] = None,
-        priority: Optional[Union[TaskPriority, int]] = None,
-    ) -> Dict[str, Any]:
+        timeout: float | None = None,
+        priority: TaskPriority | int | None = None,
+    ) -> dict[str, Any]:
         """
         Request lab resources.
 
@@ -293,13 +293,13 @@ class ResourceRequester(RequestMixin):
         if entry["status"] != RequestStatus.FULFILLED.name:  # type: ignore
             return
 
-        assigned_devices: Dict[str, Dict[str, Union[str, bool]]] = entry["assigned_devices"]  # type: ignore
-        assigned_sample_positions: Dict[str, List[Dict[str, Any]]] = entry["assigned_sample_positions"]  # type: ignore
+        assigned_devices: dict[str, dict[str, str | bool]] = entry["assigned_devices"]  # type: ignore
+        assigned_sample_positions: dict[str, list[dict[str, Any]]] = entry["assigned_sample_positions"]  # type: ignore
 
-        request: Dict[str, Any] = self._waiting.pop(request_id)
+        request: dict[str, Any] = self._waiting.pop(request_id)
 
         f: Future = request["f"]
-        device_str_to_request: Dict[str, Union[Type[BaseDevice], str, None]] = request[
+        device_str_to_request: dict[str, type[BaseDevice] | str | None] = request[
             "device_str_to_request"
         ]
 
@@ -326,18 +326,18 @@ class ResourceRequester(RequestMixin):
             return
 
         error: Exception = dill.loads(entry["error"])  # type: ignore
-        request: Dict[str, Any] = self._waiting.pop(request_id)
+        request: dict[str, Any] = self._waiting.pop(request_id)
         f: Future = request["f"]
         f.set_exception(error)
 
     @staticmethod
     def _post_process_requested_resource(
-        devices: Dict[Type[BaseDevice], str],
-        sample_positions: Dict[str, List[str]],
-        resource_request: Dict[str, List[Dict[str, Union[int, str]]]],
+        devices: dict[type[BaseDevice], str],
+        sample_positions: dict[str, list[str]],
+        resource_request: dict[str, list[dict[str, int | str]]],
     ):
-        processed_sample_positions: Dict[
-            Optional[Type[BaseDevice]], Dict[str, List[str]]
+        processed_sample_positions: dict[
+            type[BaseDevice] | None, dict[str, list[str]]
         ] = {}
 
         for device_request, sample_position_dict in resource_request.items():

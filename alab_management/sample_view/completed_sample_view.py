@@ -3,8 +3,6 @@ This module contains the CompletedSampleView class, which is responsible for
 saving samples to the completed database.
 """
 
-from typing import Union
-
 from bson import ObjectId  # type: ignore
 
 from alab_management.utils.data_objects import get_collection, get_completed_collection
@@ -42,7 +40,7 @@ class CompletedSampleView:
         else:
             self._completed_sample_collection.insert_one(sample_dict)
 
-    def exists(self, sample_id: Union[ObjectId, str]) -> bool:
+    def exists(self, sample_id: ObjectId | str) -> bool:
         """Check if a sample exists in the database.
 
         Args:

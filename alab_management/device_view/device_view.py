@@ -1,8 +1,9 @@
 """Wrapper over the ``devices`` collection."""
 
+from collections.abc import Collection
 from datetime import datetime
 from enum import Enum, auto, unique
-from typing import Any, Collection, Dict, List, Optional, TypeVar, Union, cast
+from typing import Any, TypeVar, cast
 
 import pymongo  # type: ignore
 from bson import ObjectId  # type: ignore
@@ -138,9 +139,9 @@ class DeviceView:
                 }
             )
 
-    def get_all(self) -> List[Dict[str, Any]]:
+    def get_all(self) -> list[dict[str, Any]]:
         """Get all the devices in the database, used for dashboard."""
-        return cast(List[Dict[str, Any]], self._device_collection.find())
+        return cast(list[dict[str, Any]], self._device_collection.find())
 
     def _clean_up_device_collection(self):
         """Clean up the device collection."""
@@ -149,11 +150,11 @@ class DeviceView:
     def request_devices(
         self,
         task_id: ObjectId,
-        device_names_str: Optional[Collection[str]] = None,
-        device_types_str: Optional[
-            Collection[str]
-        ] = None,  # pylint: disable=unsubscriptable-object
-    ) -> Optional[Dict[str, Dict[str, Union[str, bool]]]]:
+        device_names_str: Collection[str] | None = None,
+        device_types_str: (
+            Collection[str] | None
+        ) = None,  # pylint: disable=unsubscriptable-object
+    ) -> dict[str, dict[str, str | bool]] | None:
         """
         Request a list of device, this function will return the name of devices if all the requested device is ready.
 
@@ -182,7 +183,7 @@ class DeviceView:
                 "Currently we do not allow duplicated device types in one request."
             )
 
-        idle_devices: Dict[str, Dict[str, Union[str, bool]]] = {}
+        idle_devices: dict[str, dict[str, str | bool]] = {}
         with self._lock():  # pylint: disable=not-callable
             for device_name in device_names_str:
                 result = self.get_available_devices(
@@ -205,8 +206,8 @@ class DeviceView:
             return idle_devices
 
     def get_available_devices(
-        self, device_str: str, type_or_name: str, task_id: Optional[ObjectId] = None
-    ) -> List[Dict[str, Union[str, bool]]]:
+        self, device_str: str, type_or_name: str, task_id: ObjectId | None = None
+    ) -> list[dict[str, str | bool]]:
         """
         Given device type, it will return all the device with this type.
 
@@ -262,7 +263,7 @@ class DeviceView:
             for device_entry in self._device_collection.find(request_dict)
         ]
 
-    def get_device(self, device_name: str) -> Dict[str, Any]:
+    def get_device(self, device_name: str) -> dict[str, Any]:
         """Get device by device name, if not found, raises ``ValueError``."""
         device_entry = self._device_collection.find_one({"name": device_name})
         if device_entry is None:
@@ -275,7 +276,7 @@ class DeviceView:
 
         return DeviceTaskStatus[device_entry["status"]]
 
-    def occupy_device(self, device: Union[BaseDevice, str], task_id: ObjectId):
+    def occupy_device(self, device: BaseDevice | str, task_id: ObjectId):
         """Occupy a device with given task id."""
         self._update_status(
             device=device,
@@ -284,7 +285,7 @@ class DeviceView:
             task_id=task_id,
         )
 
-    def get_devices_by_task(self, task_id: Optional[ObjectId]) -> List[BaseDevice]:
+    def get_devices_by_task(self, task_id: ObjectId | None) -> list[BaseDevice]:
         """Get devices given a task id (regardless of its status!)."""
         return [
             self._device_list[device["name"]]
@@ -333,10 +334,10 @@ class DeviceView:
 
     def _update_status(
         self,
-        device: Union[BaseDevice, str],
-        required_status: Optional[Union[DeviceTaskStatus, List[DeviceTaskStatus]]],
+        device: BaseDevice | str,
+        required_status: DeviceTaskStatus | list[DeviceTaskStatus] | None,
         target_status: DeviceTaskStatus,
-        task_id: Optional[ObjectId],
+        task_id: ObjectId | None,
     ):
         """
         A method that check and update the status of a device.

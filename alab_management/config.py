@@ -27,12 +27,12 @@ An example of the yaml file is as follows:
 import os
 from pathlib import Path
 from types import MappingProxyType as FrozenDict
-from typing import Any, Dict
+from typing import Any
 
 import toml
 
 
-def freeze_config(config_: Dict[str, Any]) -> FrozenDict:
+def freeze_config(config_: dict[str, Any]) -> FrozenDict:
     """
     Convert the config dict to frozen config.
 

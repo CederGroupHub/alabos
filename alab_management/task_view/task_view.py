@@ -4,7 +4,7 @@ provides some convenience methods to query and manipulate the tasks collection.
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Type, Union, cast
+from typing import Any, cast
 
 from bson import ObjectId
 
@@ -23,16 +23,16 @@ class TaskView:
     def __init__(self):
         self._task_collection = get_collection("tasks")
         self._lock = get_lock("tasks")
-        self._tasks_definition: Dict[str, Type[BaseTask]] = get_all_tasks()
+        self._tasks_definition: dict[str, type[BaseTask]] = get_all_tasks()
 
     def create_task(
         self,
         task_type: str,
-        samples: List[ObjectId],
-        parameters: Dict[str, Any],
-        prev_tasks: Optional[Union[ObjectId, List[ObjectId]]] = None,
-        next_tasks: Optional[Union[ObjectId, List[ObjectId]]] = None,
-        task_id: Optional[ObjectId] = None,
+        samples: list[ObjectId],
+        parameters: dict[str, Any],
+        prev_tasks: ObjectId | list[ObjectId] | None = None,
+        next_tasks: ObjectId | list[ObjectId] | None = None,
+        task_id: ObjectId | None = None,
     ) -> ObjectId:
         """
         Insert a task into the task collection.
@@ -81,7 +81,7 @@ class TaskView:
         return cast(ObjectId, result.inserted_id)
 
     def create_subtask(
-        self, task_id, subtask_type, samples: List[str], parameters: dict
+        self, task_id, subtask_type, samples: list[str], parameters: dict
     ):
         """Create a subtask entry for a task."""
         task = self.get_task(task_id=task_id)
@@ -111,7 +111,7 @@ class TaskView:
         )
         return subtask_id
 
-    def get_task(self, task_id: ObjectId, encode: bool = False) -> Dict[str, Any]:
+    def get_task(self, task_id: ObjectId, encode: bool = False) -> dict[str, Any]:
         """
         Get a task by its task id, which will return all the info stored in the database.
 
@@ -137,7 +137,7 @@ class TaskView:
             result = self.encode_task(result)
         return result
 
-    def get_task_with_sample(self, sample_id: ObjectId) -> Optional[Dict[str, Any]]:
+    def get_task_with_sample(self, sample_id: ObjectId) -> dict[str, Any] | None:
         """Get a task that contains the sample with the provided id."""
         result = self._task_collection.find({"samples.sample_id": sample_id})
         if result is None:
@@ -257,7 +257,7 @@ class TaskView:
         )
 
     def update_result(
-        self, task_id: ObjectId, name: Optional[str] = None, value: Any = None
+        self, task_id: ObjectId, name: str | None = None, value: Any = None
     ):
         """
         Update result to completed job.
@@ -335,7 +335,7 @@ class TaskView:
         ):
             self.update_status(task_id, TaskStatus.READY)
 
-    def get_ready_tasks(self) -> List[Dict[str, Any]]:
+    def get_ready_tasks(self) -> list[dict[str, Any]]:
         """
         Return a list of ready tasks.
 
@@ -346,7 +346,7 @@ class TaskView:
         """
         return self.get_tasks_by_status(status=TaskStatus.READY)
 
-    def get_tasks_by_status(self, status: TaskStatus) -> List[Dict[str, Any]]:
+    def get_tasks_by_status(self, status: TaskStatus) -> list[dict[str, Any]]:
         """
         Return a list of tasks with given status.
 
@@ -357,17 +357,17 @@ class TaskView:
         """
         result = self._task_collection.find({"status": status.name})
 
-        tasks: List[Dict[str, Any]] = []
+        tasks: list[dict[str, Any]] = []
         for task_entry in result:
             tasks.append(self.encode_task(task_entry))
         return tasks
 
-    def encode_task(self, task_entry: Dict[str, Any]) -> Dict[str, Any]:
+    def encode_task(self, task_entry: dict[str, Any]) -> dict[str, Any]:
         """
         Rename _id to task_id
         Translate task's type into corresponding python class.
         """
-        operation_type: Type[BaseTask] = self._tasks_definition[task_entry["type"]]
+        operation_type: type[BaseTask] = self._tasks_definition[task_entry["type"]]
         task_entry["task_id"] = task_entry.pop(
             "_id"
         )  # change the key name of `_id` to `task_id`
@@ -379,8 +379,8 @@ class TaskView:
     def update_task_dependency(
         self,
         task_id: ObjectId,
-        prev_tasks: Optional[Union[ObjectId, List[ObjectId]]] = None,
-        next_tasks: Optional[Union[ObjectId, List[ObjectId]]] = None,
+        prev_tasks: ObjectId | list[ObjectId] | None = None,
+        next_tasks: ObjectId | list[ObjectId] | None = None,
     ):
         """
         Add prev tasks and next tasks to one task entry,
@@ -474,6 +474,6 @@ class TaskView:
                 status=TaskStatus.CANCELLING,
             )
 
-    def exists(self, task_id: Union[ObjectId, str]) -> bool:
+    def exists(self, task_id: ObjectId | str) -> bool:
         """Check if a task id exists."""
         return self._task_collection.count_documents({"_id": ObjectId(task_id)}) > 0

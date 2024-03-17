@@ -1,5 +1,4 @@
 import time
-from typing import List, Tuple
 
 from bson import ObjectId
 
@@ -12,8 +11,8 @@ from .moving import Moving
 class Heating(BaseTask):
     def __init__(
         self,
-        samples: List[ObjectId],
-        setpoints: List[Tuple[float, float]],
+        samples: list[ObjectId],
+        setpoints: list[tuple[float, float]],
         *args,
         **kwargs,
     ):

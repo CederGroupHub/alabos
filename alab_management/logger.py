@@ -1,8 +1,9 @@
 """Logger module takes charge of recording information, warnings and errors during executing tasks."""
 
+from collections.abc import Iterable
 from datetime import datetime, timedelta
 from enum import Enum, auto, unique
-from typing import Any, Dict, Iterable, Optional, Union, cast
+from typing import Any, cast
 
 from bson import ObjectId
 
@@ -35,14 +36,14 @@ class LoggingLevel(Enum):
 class DBLogger:
     """A custom logger that wrote data to database, where we predefined some log pattern."""
 
-    def __init__(self, task_id: Optional[ObjectId]):
+    def __init__(self, task_id: ObjectId | None):
         self.task_id = task_id
         self._logging_collection = get_collection("logs")
 
     def log(
         self,
-        level: Union[str, int, LoggingLevel],
-        log_data: Dict[str, Any],
+        level: str | int | LoggingLevel,
+        log_data: dict[str, Any],
         logging_type: LoggingType = LoggingType.OTHER,
     ) -> ObjectId:
         """
@@ -70,7 +71,7 @@ class DBLogger:
 
         return cast(ObjectId, result.inserted_id)
 
-    def log_amount(self, log_data: Dict[str, Any]):
+    def log_amount(self, log_data: dict[str, Any]):
         """Log the amount of samples and chemicals (e.g. weight)."""
         return self.log(
             level=LoggingLevel.INFO,
@@ -78,7 +79,7 @@ class DBLogger:
             logging_type=LoggingType.SAMPLE_AMOUNT,
         )
 
-    def log_characterization_result(self, log_data: Dict[str, Any]):
+    def log_characterization_result(self, log_data: dict[str, Any]):
         """Log the characterization result (e.g. XRD pattern)."""
         return self.log(
             level=LoggingLevel.INFO,
@@ -98,17 +99,15 @@ class DBLogger:
             logging_type=LoggingType.DEVICE_SIGNAL,
         )
 
-    def system_log(
-        self, level: Union[str, int, LoggingLevel], log_data: Dict[str, Any]
-    ):
+    def system_log(self, level: str | int | LoggingLevel, log_data: dict[str, Any]):
         """Log that comes from the workflow system."""
         return self.log(
             level=level, log_data=log_data, logging_type=LoggingType.SYSTEM_LOG
         )
 
     def filter_log(
-        self, level: Union[str, int, LoggingLevel], within: timedelta
-    ) -> Iterable[Dict[str, Any]]:
+        self, level: str | int | LoggingLevel, within: timedelta
+    ) -> Iterable[dict[str, Any]]:
         """Find log within a range of time (1h/1d or else) higher than certain level."""
         if isinstance(level, str):
             level = cast(int, LoggingLevel[level].value)
@@ -121,7 +120,7 @@ class DBLogger:
 
     def get_latest_device_signal(
         self, device_name: str, signal_name: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Get the last device signal log.
 
         Args:
@@ -163,7 +162,7 @@ class DBLogger:
 
     def filter_device_signal(
         self, device_name: str, signal_name: str, within: timedelta
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Find device signal log within a range of time (1h/1d or else).
 
         Args:
