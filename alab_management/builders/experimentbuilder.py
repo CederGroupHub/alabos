@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional, Set, Union
+from typing import Any, Literal
 
 from .samplebuilder import SampleBuilder
 
@@ -13,20 +13,20 @@ class ExperimentBuilder:
       name (str): The name of the experiment.
     """
 
-    def __init__(self, name: str, tags: Optional[List[str]] = None, **metadata):
+    def __init__(self, name: str, tags: list[str] | None = None, **metadata):
         """
         Args:
           name (str): The name of the experiment.
           tags (List[str]): A list of tags to attach to the experiment.
         """
         self.name = name
-        self._samples: List[SampleBuilder] = []
-        self._tasks: Dict[str, Dict[str, Any]] = {}
+        self._samples: list[SampleBuilder] = []
+        self._tasks: dict[str, dict[str, Any]] = {}
         self.tags = tags or []
         self.metadata = metadata
 
     def add_sample(
-        self, name: str, tags: Optional[List[str]] = None, **metadata
+        self, name: str, tags: list[str] | None = None, **metadata
     ) -> SampleBuilder:
         """
         Add a sample to the batch. Each sample already has multiple tasks binded to it. Each
@@ -53,8 +53,8 @@ class ExperimentBuilder:
         self,
         task_id: str,
         task_name: str,
-        task_kwargs: Dict[str, Any],
-        samples: List[SampleBuilder],
+        task_kwargs: dict[str, Any],
+        samples: list[SampleBuilder],
     ) -> None:
         """
         This function adds a task to the sample. You should use this function only for special cases which
@@ -78,7 +78,7 @@ class ExperimentBuilder:
             "samples": [sample.name for sample in samples],
         }
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """
         Return a dictionary that can be used to generate an input file for the `experiment`
         to run.
@@ -88,9 +88,9 @@ class ExperimentBuilder:
             A dictionary that can be used to generate an input file for the `experiment` to run.
 
         """
-        samples: List[Dict[str, Any]] = []
+        samples: list[dict[str, Any]] = []
         # tasks = []
-        tasks: List[Dict[str, Union[str, Set[int], List]]] = []
+        tasks: list[dict[str, str | set[int] | list]] = []
         task_ids = {}
 
         for sample in self._samples:

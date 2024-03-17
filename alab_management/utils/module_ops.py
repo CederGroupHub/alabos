@@ -5,12 +5,9 @@ import os.path
 import sys
 from copy import copy
 from pathlib import Path
-from typing import Optional, Union
 
 
-def import_module_from_path(
-    path: Union[str, Path], parent_package: Optional[str] = None
-):
+def import_module_from_path(path: str | Path, parent_package: str | None = None):
     """Import a module by its path."""
     if not isinstance(path, Path):
         path = Path(path)

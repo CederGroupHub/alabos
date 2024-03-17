@@ -1,6 +1,6 @@
 """This module contains utility functions for the builders module."""
 
-from typing import TYPE_CHECKING, List, Union
+from typing import TYPE_CHECKING
 
 from bson import ObjectId  # type: ignore
 
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 def append_task(
     task: "BaseTask",
-    samples: Union[SampleBuilder, List[SampleBuilder]],
+    samples: SampleBuilder | list[SampleBuilder],
 ):
     """
     Used to add basetask to a SampleBuilder's tasklist during Experiment construction.

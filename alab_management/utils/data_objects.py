@@ -5,7 +5,6 @@ import json
 from abc import ABC, abstractmethod
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
 import numpy as np
 import pika
@@ -40,9 +39,9 @@ class _BaseGetMongoCollection(ABC):
 
 
 class _GetMongoCollection(_BaseGetMongoCollection):
-    client: Optional[pymongo.MongoClient] = None
-    db: Optional[database.Database] = None
-    db_lock: Optional[MongoLock] = None
+    client: pymongo.MongoClient | None = None
+    db: database.Database | None = None
+    db_lock: MongoLock | None = None
 
     @classmethod
     def init(cls):
@@ -62,9 +61,9 @@ class _GetMongoCollection(_BaseGetMongoCollection):
 
 
 class _GetCompletedMongoCollection(_BaseGetMongoCollection):
-    client: Optional[pymongo.MongoClient] = None
-    db: Optional[database.Database] = None
-    db_lock: Optional[MongoLock] = None
+    client: pymongo.MongoClient | None = None
+    db: database.Database | None = None
+    db_lock: MongoLock | None = None
 
     @classmethod
     def init(cls):

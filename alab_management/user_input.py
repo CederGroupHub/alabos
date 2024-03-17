@@ -1,6 +1,6 @@
 import time
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union, cast
+from typing import Any, cast
 
 from bson import ObjectId
 
@@ -35,8 +35,8 @@ class UserInputView:
     def insert_request(
         self,
         prompt: str,
-        options: List[str],
-        task_id: Optional[ObjectId] = None,
+        options: list[str],
+        task_id: ObjectId | None = None,
         maintenance: bool = False,
         category: str = "Unknown Category",
     ) -> ObjectId:
@@ -76,7 +76,7 @@ class UserInputView:
         self._alarm.alert(f"User input requested: {prompt}", category)
         return request_id
 
-    def get_request(self, request_id: ObjectId) -> Dict[str, Any]:
+    def get_request(self, request_id: ObjectId) -> dict[str, Any]:
         """
         Get a request.
 
@@ -86,7 +86,7 @@ class UserInputView:
 
         if request is None:
             raise ValueError(f"User input request id {request_id} does not exist!")
-        return cast(Dict[str, Any], request)
+        return cast(dict[str, Any], request)
 
     def update_request_status(self, request_id: ObjectId, response: str, note: str):
         """Update the status of a request."""
@@ -128,15 +128,15 @@ class UserInputView:
         Returns a list of pending requests.
         """
         return cast(
-            List[Dict[str, Any]],
+            list[dict[str, Any]],
             self._input_collection.find({"status": UserRequestStatus.PENDING.value}),
         )
 
 
 def request_user_input(
-    task_id: Union[ObjectId, None],
+    task_id: ObjectId | None,
     prompt: str,
-    options: List[str],
+    options: list[str],
     maintenance: bool = False,
     category: str = "Unknown Category",
 ) -> str:
@@ -161,7 +161,7 @@ def request_user_input(
     return user_input_view.retrieve_user_input(request_id=request_id)
 
 
-def request_maintenance_input(prompt: str, options: List[str]):
+def request_maintenance_input(prompt: str, options: list[str]):
     """
     Request user input through the dashboard. Blocks until response is given.
 

@@ -1,4 +1,4 @@
-from typing import Any, Union
+from typing import Any
 
 from pymongo.collection import Collection  # type: ignore
 
@@ -71,7 +71,7 @@ class ListInDatabase:
         device_collection: Collection,
         device_name: str,
         attribute_name: str,
-        default_value: Union[list, None] = None,
+        default_value: list | None = None,
     ):
         self._collection = device_collection
         self.attribute_name = attribute_name
@@ -284,7 +284,7 @@ class DictInDatabase:
         device_collection: Collection,
         device_name: str,
         attribute_name: str,
-        default_value: Union[dict, None] = None,
+        default_value: dict | None = None,
     ):
         self._collection = device_collection
         self.attribute_name = attribute_name

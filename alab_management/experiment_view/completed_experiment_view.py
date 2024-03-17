@@ -1,6 +1,6 @@
 """A wrapper over the ``experiment`` class."""
 
-from typing import Any, Dict, Union
+from typing import Any
 
 from bson import ObjectId  # type: ignore
 
@@ -59,7 +59,7 @@ class CompletedExperimentView:
             except:  # noqa: E722
                 print(f"Error saving experiment {experiment_dict['_id']}")
 
-    def exists(self, experiment_id: Union[ObjectId, str]) -> bool:
+    def exists(self, experiment_id: ObjectId | str) -> bool:
         """Check if an experiment exists in the completed experiment database.
 
         Args:
@@ -76,7 +76,7 @@ class CompletedExperimentView:
             > 0
         )
 
-    def get_experiment(self, experiment_id: Union[ObjectId, str]) -> Dict[str, Any]:
+    def get_experiment(self, experiment_id: ObjectId | str) -> dict[str, Any]:
         """Get an experiment from the completed experiment collection.
 
         Args:

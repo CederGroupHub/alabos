@@ -5,9 +5,10 @@ import functools
 import threading
 import time
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from queue import Empty, PriorityQueue
 from traceback import format_exc
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any
 from unittest.mock import Mock
 
 from alab_management.logger import DBLogger
@@ -23,7 +24,7 @@ def _UNSPECIFIED(_):
 
 def mock(
     return_constant: Any = _UNSPECIFIED,
-    object_type: Union[List[Any], Any] = _UNSPECIFIED,
+    object_type: list[Any] | Any = _UNSPECIFIED,
 ):
     """
     A decorator used for mocking functions during simulation.
@@ -143,7 +144,7 @@ class BaseDevice(ABC):
         kwargs: keyword arguments that will be passed to the device class
     """
 
-    def __init__(self, name: str, description: Optional[str] = None, *args, **kwargs):
+    def __init__(self, name: str, description: str | None = None, *args, **kwargs):
         """
         Initialize a device object, you can set up connection to
         the device in this method. The device will only be initialized
@@ -253,7 +254,7 @@ class BaseDevice(ABC):
 
     @property
     @abstractmethod
-    def sample_positions(self) -> List[SamplePosition]:
+    def sample_positions(self) -> list[SamplePosition]:
         """
         The sample positions describe the position that can hold a sample. The name of sample
         position will be the unique identifier of this sample position. It does not store any
@@ -298,7 +299,7 @@ class BaseDevice(ABC):
 
     # methods to store Device values inside the database. Lists and dictionaries are supported.
     def list_in_database(
-        self, name: str, default_value: Optional[Union[list, None]] = None
+        self, name: str, default_value: list | None | None = None
     ) -> ListInDatabase:
         """
         Create a list attribute that is stored in the database.
@@ -320,7 +321,7 @@ class BaseDevice(ABC):
         )
 
     def dict_in_database(
-        self, name: str, default_value: Optional[Union[dict, None]] = None
+        self, name: str, default_value: dict | None | None = None
     ) -> DictInDatabase:
         """
         Create a dict attribute that is stored in the database.
@@ -353,7 +354,7 @@ class BaseDevice(ABC):
             if any(isinstance(attribute, t) for t in [ListInDatabase, DictInDatabase]):
                 attribute.apply_default_value()
 
-    def request_maintenance(self, prompt: str, options: List[Any]):
+    def request_maintenance(self, prompt: str, options: list[Any]):
         """
         Request maintenance input from the user. This will display a prompt to the user and wait for them to select
         an option. The selected option will be returned.
@@ -365,7 +366,7 @@ class BaseDevice(ABC):
         return request_maintenance_input(prompt=prompt, options=options)
 
     def retrieve_signal(
-        self, signal_name: str, within: Optional[datetime.timedelta] = None
+        self, signal_name: str, within: datetime.timedelta | None = None
     ):
         """Retrieve a signal from the database.
 
@@ -423,8 +424,8 @@ class DeviceSignalEmitter:
         self.is_logging = False
         self.queue: PriorityQueue = PriorityQueue()
 
-        self._logging_thread: Optional[threading.Thread] = None
-        self._start_time: Optional[datetime.datetime] = None
+        self._logging_thread: threading.Thread | None = None
+        self._start_time: datetime.datetime | None = None
 
     def get_methods_to_log(self):
         """
@@ -567,7 +568,7 @@ class DeviceSignalEmitter:
         self.is_logging = False
         self._logging_thread.join()
 
-    def retrieve_signal(self, signal_name, within: Optional[datetime.timedelta] = None):
+    def retrieve_signal(self, signal_name, within: datetime.timedelta | None = None):
         """Retrieve a signal from the database.
 
         Args:
@@ -599,7 +600,7 @@ class DeviceSignalEmitter:
             )
 
 
-_device_registry: Dict[str, BaseDevice] = {}
+_device_registry: dict[str, BaseDevice] = {}
 
 
 def add_device(device: BaseDevice):
@@ -609,7 +610,7 @@ def add_device(device: BaseDevice):
     _device_registry[device.name] = device
 
 
-def get_all_devices() -> Dict[str, BaseDevice]:
+def get_all_devices() -> dict[str, BaseDevice]:
     """
     Get all the device names in the device registry. This is a shallow copy of the registry.
 
