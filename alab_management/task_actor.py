@@ -182,7 +182,6 @@ def run_task(task_id_str: str):
         lab_view.request_cleanup()
         raise
     else:
-        task_view.update_status(task_id=task_id, status=TaskStatus.COMPLETED)
         if result is None:
             pass
         elif isinstance(result, dict):
@@ -205,6 +204,7 @@ def run_task(task_id_str: str):
                 "status": "COMPLETED",
             },
         )
+        task_view.update_status(task_id=task_id, status=TaskStatus.COMPLETED)
     finally:
         for sample in task_entry["samples"]:
             sample_view.update_sample_task_id(
