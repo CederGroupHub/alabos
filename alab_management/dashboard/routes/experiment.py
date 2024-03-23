@@ -1,7 +1,7 @@
 """This is a dashboard that displays data from the ALab database."""
 
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from bson import ObjectId  # type: ignore
 from bson.errors import InvalidId  # type: ignore
@@ -180,11 +180,11 @@ def query_experiment_results(exp_id: str):
 def cancel_experiment(exp_id: str):
     try:
         exp_id = ObjectId(exp_id)
-        experiment: Optional[Dict[str, Any]] = experiment_view.get_experiment(exp_id)
+        experiment: dict[str, Any] | None = experiment_view.get_experiment(exp_id)
         if experiment is None:
             return {"status": "error", "reason": "Experiment not found"}, 400
 
-        tasks: List[Dict[str, Any]] = experiment["tasks"]
+        tasks: list[dict[str, Any]] = experiment["tasks"]
         # tasks = experiment_view.get_experiment(exp_id)["tasks"]
 
         for task in tasks:

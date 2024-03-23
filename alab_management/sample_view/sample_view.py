@@ -3,7 +3,7 @@
 import re
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Tuple, Union, cast
+from typing import Any, cast
 
 import pymongo  # type: ignore
 from bson import ObjectId  # type: ignore
@@ -36,7 +36,7 @@ class SamplePositionRequest(BaseModel):
         return cls(prefix=sample_position_prefix)
 
     @classmethod
-    def from_py_type(cls, sample_position: Union[str, Dict[str, Any]]):
+    def from_py_type(cls, sample_position: str | dict[str, Any]):
         """Create a ``SamplePositionRequest`` from a string or a dict."""
         if isinstance(sample_position, str):
             return cls.from_str(sample_position_prefix=sample_position)
@@ -75,8 +75,8 @@ class SampleView:
 
     def add_sample_positions_to_db(
         self,
-        sample_positions: List[SamplePosition],
-        parent_device_name: Optional[str] = None,
+        sample_positions: list[SamplePosition],
+        parent_device_name: str | None = None,
     ):
         """
         Insert sample positions info to db, which includes position name and description.
@@ -126,8 +126,8 @@ class SampleView:
     def request_sample_positions(
         self,
         task_id: ObjectId,
-        sample_positions: List[Union[SamplePositionRequest, str, Dict[str, Any]]],
-    ) -> Optional[Dict[str, List[Dict[str, Any]]]]:
+        sample_positions: list[SamplePositionRequest | str | dict[str, Any]],
+    ) -> dict[str, list[dict[str, Any]]] | None:
         """
         Request a list of sample positions, this function will return until all the sample positions are available.
 
@@ -137,7 +137,7 @@ class SampleView:
               The sample position name is actually the prefix of a sample position, which we
               will try to match all the sample positions will the name
         """
-        sample_positions_request: List[SamplePositionRequest] = [
+        sample_positions_request: list[SamplePositionRequest] = [
             (
                 SamplePositionRequest.from_py_type(sample_position)
                 if not isinstance(sample_position, SamplePositionRequest)
@@ -163,7 +163,7 @@ class SampleView:
                 )
 
         with self._lock():  # pylint: disable=not-callable
-            available_positions: Dict[str, List[Dict[str, Union[str, bool]]]] = {}
+            available_positions: dict[str, list[dict[str, str | bool]]] = {}
             for sample_position in sample_positions_request:
                 result = self.get_available_sample_position(
                     task_id, position_prefix=sample_position.prefix
@@ -176,7 +176,7 @@ class SampleView:
                 )[: sample_position.number]
             return available_positions
 
-    def get_sample_position(self, position: str) -> Optional[Dict[str, Any]]:
+    def get_sample_position(self, position: str) -> dict[str, Any] | None:
         """
         Get the sample position entry in the database.
 
@@ -186,7 +186,7 @@ class SampleView:
 
     def get_sample_position_status(
         self, position: str
-    ) -> Tuple[SamplePositionStatus, Optional[ObjectId]]:
+    ) -> tuple[SamplePositionStatus, ObjectId | None]:
         """
         Get the status of a sample position.
 
@@ -216,7 +216,7 @@ class SampleView:
 
         return SamplePositionStatus.EMPTY, None
 
-    def get_sample_position_parent_device(self, position: str) -> Optional[str]:
+    def get_sample_position_parent_device(self, position: str) -> str | None:
         """
         Get the parent device of a sample position.
 
@@ -247,7 +247,7 @@ class SampleView:
 
     def get_available_sample_position(
         self, task_id: ObjectId, position_prefix: str
-    ) -> List[Dict[str, Union[str, bool]]]:
+    ) -> list[dict[str, str | bool]]:
         """
         Check if the position is occupied.
 
@@ -325,7 +325,7 @@ class SampleView:
             },
         )
 
-    def get_sample_positions_by_task(self, task_id: Optional[ObjectId]) -> List[str]:
+    def get_sample_positions_by_task(self, task_id: ObjectId | None) -> list[str]:
         """Get the list of sample positions that is locked by a task (given task id)."""
         return [
             sample_position["name"]
@@ -341,10 +341,10 @@ class SampleView:
     def create_sample(
         self,
         name: str,
-        position: Optional[str] = None,
-        sample_id: Optional[ObjectId] = None,
-        tags: Optional[List[str]] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        position: str | None = None,
+        sample_id: ObjectId | None = None,
+        tags: list[str] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> ObjectId:
         """
         Create a sample and return its uid in the database.
@@ -408,7 +408,7 @@ class SampleView:
             tags=result.get("tags", []),
         )
 
-    def update_sample_task_id(self, sample_id: ObjectId, task_id: Optional[ObjectId]):
+    def update_sample_task_id(self, sample_id: ObjectId, task_id: ObjectId | None):
         """Update the task id for a sample."""
         result = self._sample_collection.find_one({"_id": sample_id})
         if result is None:
@@ -424,7 +424,21 @@ class SampleView:
             },
         )
 
-    def move_sample(self, sample_id: ObjectId, position: Optional[str]):
+    def update_sample_metadata(self, sample_id: ObjectId, metadata: dict[str, Any]):
+        """Update the metadata for a sample. This adds new metadata or updates existing metadata."""
+        result = self._sample_collection.find_one({"_id": sample_id})
+        if result is None:
+            raise ValueError(f"Cannot find sample with id: {sample_id}")
+
+        update_dict = {f"metadata.{k}": v for k, v in metadata.items()}
+        update_dict["last_updated"] = datetime.now()
+
+        self._sample_collection.update_one(
+            {"_id": sample_id},
+            {"$set": update_dict},
+        )
+
+    def move_sample(self, sample_id: ObjectId, position: str | None):
         """Update the sample with new position."""
         result = self._sample_collection.find_one({"_id": sample_id})
         if result is None:
@@ -448,7 +462,7 @@ class SampleView:
             },
         )
 
-    def exists(self, sample_id: Union[ObjectId, str]) -> bool:
+    def exists(self, sample_id: ObjectId | str) -> bool:
         """Check if a sample exists in the database.
 
         Args:

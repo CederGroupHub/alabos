@@ -7,7 +7,7 @@ done.
 """
 
 import time
-from typing import Any, Dict, List
+from typing import Any
 
 from .config import AlabOSConfig
 from .experiment_view import CompletedExperimentView, ExperimentStatus, ExperimentView
@@ -72,9 +72,9 @@ class ExperimentManager:
                 },
             )
 
-    def _handle_pending_experiment(self, experiment: Dict[str, Any]):
-        samples: List[Dict[str, Any]] = experiment["samples"]
-        tasks: List[Dict[str, Any]] = experiment["tasks"]
+    def _handle_pending_experiment(self, experiment: dict[str, Any]):
+        samples: list[dict[str, Any]] = experiment["samples"]
+        tasks: list[dict[str, Any]] = experiment["tasks"]
 
         # check if there is any cycle in the graph
         reversed_edges = {i: task["prev_tasks"] for i, task in enumerate(tasks)}

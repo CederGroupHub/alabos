@@ -1,6 +1,6 @@
 """Define the format of experiment request."""
 
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from bson import BSON, ObjectId  # type: ignore
 from pydantic import (
@@ -12,9 +12,9 @@ from pydantic import (
 
 class _Sample(BaseModel):
     name: constr(regex=r"^[^$.]+$")  # type: ignore
-    sample_id: Optional[str] = None
-    tags: List[str]
-    metadata: Dict[str, Any]
+    sample_id: str | None = None
+    tags: list[str]
+    metadata: dict[str, Any]
 
     @validator("sample_id")
     def if_provided_must_be_valid_objectid(cls, v):
@@ -44,10 +44,10 @@ class _Sample(BaseModel):
 
 class _Task(BaseModel):
     type: str
-    parameters: Dict[str, Any]
-    prev_tasks: List[int]
-    samples: List[str]
-    task_id: Optional[str] = None
+    parameters: dict[str, Any]
+    prev_tasks: list[int]
+    samples: list[str]
+    task_id: str | None = None
 
     @validator("task_id")
     def if_provided_must_be_valid_objectid(cls, v):
@@ -67,10 +67,10 @@ class InputExperiment(BaseModel):
     """This is the format that user should follow to write to experiment database."""
 
     name: constr(regex=r"^[^$.]+$")  # type: ignore
-    samples: List[_Sample]
-    tasks: List[_Task]
-    tags: List[str]
-    metadata: Dict[str, Any]
+    samples: list[_Sample]
+    tasks: list[_Task]
+    tags: list[str]
+    metadata: dict[str, Any]
 
     @validator("metadata")
     def must_be_bsonable(cls, v):

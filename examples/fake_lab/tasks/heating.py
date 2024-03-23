@@ -1,9 +1,8 @@
 import time
-from typing import List, Tuple
 
 from bson import ObjectId
 
-from alab_management import BaseTask
+from alab_management.task_view import BaseTask
 from fake_lab.devices.furnace import Furnace
 
 from .moving import Moving
@@ -12,8 +11,8 @@ from .moving import Moving
 class Heating(BaseTask):
     def __init__(
         self,
-        samples: List[ObjectId],
-        setpoints: List[Tuple[float, float]],
+        samples: list[ObjectId],
+        setpoints: list[tuple[float, float]],
         *args,
         **kwargs,
     ):

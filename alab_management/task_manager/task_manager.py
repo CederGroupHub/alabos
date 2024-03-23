@@ -8,15 +8,14 @@ from datetime import datetime
 from functools import partial
 from math import inf
 from threading import Thread
-from typing import Any, Dict, List, Type, cast
+from typing import Any, cast
 
 import dill
 import networkx as nx
 from bson import ObjectId
 from dramatiq_abort import abort
 
-from alab_management import BaseDevice
-from alab_management.device_view import get_all_devices
+from alab_management.device_view import BaseDevice, get_all_devices
 from alab_management.device_view.device_view import DeviceView
 from alab_management.lab_view import LabView
 from alab_management.logger import DBLogger, LoggingLevel
@@ -36,7 +35,7 @@ from .resource_requester import (
 )
 
 
-def parse_reroute_tasks() -> Dict[str, Type[BaseTask]]:
+def parse_reroute_tasks() -> dict[str, type[BaseTask]]:
     """
     Takes the reroute task registry and expands the supported sample positions (which is given in format similar to
     resource requests) to the individual sample positions.
@@ -56,7 +55,7 @@ def parse_reroute_tasks() -> Dict[str, Type[BaseTask]]:
 
     load_definition()
 
-    routes: Dict[str, BaseTask] = {}  # sample_position: Task
+    routes: dict[str, BaseTask] = {}  # sample_position: Task
     sample_view = SampleView()
 
     for reroute in _reroute_task_registry:
@@ -294,7 +293,7 @@ class TaskManager(RequestMixin):
             thread.daemon = False
             thread.start()
 
-    def _handle_requested_resources(self, request_entry: Dict[str, Any]):
+    def _handle_requested_resources(self, request_entry: dict[str, Any]):
         try:
             resource_request = request_entry["request"]
             task_id = request_entry["task_id"]
@@ -396,14 +395,14 @@ class TaskManager(RequestMixin):
             sample_positions=sample_positions, task_id=task_id
         )
 
-    def _occupy_devices(self, devices: Dict[str, Dict[str, Any]], task_id: ObjectId):
+    def _occupy_devices(self, devices: dict[str, dict[str, Any]], task_id: ObjectId):
         for device in devices.values():
             self.device_view.occupy_device(
                 device=cast(str, device["name"]), task_id=task_id
             )
 
     def _occupy_sample_positions(
-        self, sample_positions: Dict[str, List[Dict[str, Any]]], task_id: ObjectId
+        self, sample_positions: dict[str, list[dict[str, Any]]], task_id: ObjectId
     ):
         for sample_positions_ in sample_positions.values():
             for sample_position_ in sample_positions_:
@@ -411,13 +410,13 @@ class TaskManager(RequestMixin):
                     task_id, cast(str, sample_position_["name"])
                 )
 
-    def _release_devices(self, devices: Dict[str, Dict[str, Any]]):
+    def _release_devices(self, devices: dict[str, dict[str, Any]]):
         for device in devices.values():
             if device["need_release"]:
                 self.device_view.release_device(device["name"])
 
     def _release_sample_positions(
-        self, sample_positions: Dict[str, List[Dict[str, Any]]]
+        self, sample_positions: dict[str, list[dict[str, Any]]]
     ):
         for sample_positions_ in sample_positions.values():
             for sample_position in sample_positions_:
@@ -509,7 +508,7 @@ class TaskManager(RequestMixin):
     def _reroute_to_fix_request_cycle(
         self,
         task_id: ObjectId,
-        sample_positions: List[str],
+        sample_positions: list[str],
     ):
         from alab_management.lab_view import LabView
 

@@ -2,7 +2,7 @@
 
 import click
 
-from alab_management import __version__
+from alab_management.__init__ import __version__
 from alab_management.config import AlabOSConfig
 
 from .cleanup_lab import cleanup_lab

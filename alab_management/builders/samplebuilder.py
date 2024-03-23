@@ -1,6 +1,6 @@
 """Build the sample object."""
 
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any
 
 from bson import ObjectId  # type: ignore
 
@@ -23,11 +23,11 @@ class SampleBuilder:
         self,
         name: str,
         experiment: "ExperimentBuilder",
-        tags: Optional[List[str]] = None,
+        tags: list[str] | None = None,
         **metadata,
     ):
         self.name = name
-        self._tasks: List[str] = []  # type: ignore
+        self._tasks: list[str] = []  # type: ignore
         self.experiment = experiment
         self.metadata = metadata
         self._id = str(ObjectId())
@@ -49,7 +49,7 @@ class SampleBuilder:
         if task_id not in self._tasks:
             self._tasks.append(task_id)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Return Sample as a dictionary.
 
         This looks like:

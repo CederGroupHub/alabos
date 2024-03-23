@@ -6,11 +6,12 @@ redirect all the method calls to the real device object via RabbitMQ. The real d
 DeviceManager class, which will handle all the request to run certain methods on the real device.
 """
 
+from collections.abc import Callable
 from concurrent.futures import Future
 from enum import Enum, auto
 from functools import partial
 from threading import Thread
-from typing import Any, Callable, Dict, NoReturn, Optional, cast
+from typing import Any, NoReturn, cast
 from uuid import uuid4
 
 import dill
@@ -171,9 +172,7 @@ class DeviceManager:
             channel.basic_ack(delivery_tag=cast(int, delivery_tag))
 
         try:
-            device_entry: Optional[Dict[str, Any]] = self._device_view.get_device(
-                device
-            )
+            device_entry: dict[str, Any] | None = self._device_view.get_device(device)
 
             # check if the device is currently occupied by this task
             if self._check_status and (
@@ -224,7 +223,7 @@ class DeviceManager:
               "kwargs": Dict,
           }
         """
-        body: Dict[str, Any] = dill.loads(_body)
+        body: dict[str, Any] = dill.loads(_body)
 
         thread = Thread(
             target=self._execute_command_wrapper,
@@ -273,7 +272,7 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
         #  taskid, or can be random? I think this dies with the resourcerequest context manager anyways?
         self._rpc_reply_queue_name = str(uuid4()) + DEFAULT_CLIENT_QUEUE_SUFFIX
         self._task_id = task_id
-        self._waiting: Dict[ObjectId, Future] = {}
+        self._waiting: dict[ObjectId, Future] = {}
 
         self._conn = get_rabbitmq_connection()
         self._channel = self._conn.channel()
@@ -281,7 +280,7 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
             self._rpc_reply_queue_name, exclusive=False, auto_delete=True
         )
 
-        self._thread: Optional[Thread] = None
+        self._thread: Thread | None = None
 
         self._channel.basic_consume(
             queue=self._rpc_reply_queue_name,

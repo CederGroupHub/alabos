@@ -3,8 +3,6 @@ This module contains the CompletedTaskView class, which is used to interact with
 completed task database.
 """
 
-from typing import Union
-
 from bson import ObjectId
 
 from alab_management.utils.data_objects import get_collection, get_completed_collection
@@ -41,7 +39,7 @@ class CompletedTaskView:
         else:
             self._completed_task_collection.insert_one(task_dict)
 
-    def exists(self, task_id: Union[ObjectId, str]) -> bool:
+    def exists(self, task_id: ObjectId | str) -> bool:
         """
         Check if a task exists in the database.
 

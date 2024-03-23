@@ -102,6 +102,24 @@ class TestSampleView(TestCase):
         with self.assertRaises(ValueError):
             self.sample_view.get_sample(sample_id=ObjectId())
 
+    def test_update_sample_metadata(self):
+        sample_id = self.sample_view.create_sample(
+            "test_sample", position=None, metadata={"test_param": "test_value"}
+        )
+        self.sample_view.update_sample_metadata(
+            sample_id=sample_id, metadata={"test_param2": "test_value2"}
+        )
+        sample = self.sample_view.get_sample(sample_id=sample_id)
+        self.assertDictEqual(
+            {"test_param": "test_value", "test_param2": "test_value2"}, sample.metadata
+        )
+
+        # try to update a non-exist sample
+        with self.assertRaises(ValueError):
+            self.sample_view.update_sample_metadata(
+                sample_id=ObjectId(), metadata={"test_param": "test_value"}
+            )
+
     def test_move_sample(self):
         sample_id = self.sample_view.create_sample("test", position=None)
         sample_id_2 = self.sample_view.create_sample("test", position=None)
@@ -381,8 +399,11 @@ class TestSampleView(TestCase):
                     )
 
         # try when requesting sample positions more than we have in the lab
-        with self.assertRaises(ValueError), self.request_sample_positions(
-            [{"prefix": "furnace_temp", "number": 5}], task_id
+        with (
+            self.assertRaises(ValueError),
+            self.request_sample_positions(
+                [{"prefix": "furnace_temp", "number": 5}], task_id
+            ),
         ):
             pass
 

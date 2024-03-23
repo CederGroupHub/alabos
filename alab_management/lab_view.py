@@ -7,7 +7,7 @@ It can also update the position of a sample in the lab.
 
 from contextlib import contextmanager
 from traceback import format_exc
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import Any
 
 from bson import ObjectId
 from pydantic import root_validator
@@ -40,7 +40,7 @@ class ResourcesRequest(BaseModel):
         :py:class:`SamplePositionRequest <alab_management.sample_view.sample_view.SamplePositionRequest>`
     """
 
-    __root__: Dict[Optional[Type[BaseDevice]], List[SamplePositionRequest]]  # type: ignore
+    __root__: dict[type[BaseDevice] | None, list[SamplePositionRequest]]  # type: ignore
 
     @root_validator(pre=True, allow_reuse=True)
     def preprocess(cls, values):
@@ -86,11 +86,9 @@ class LabView:
     @contextmanager
     def request_resources(
         self,
-        resource_request: Dict[
-            Optional[Union[Type[BaseDevice], str]], Dict[str, Union[str, int]]
-        ],
-        priority: Optional[int] = None,
-        timeout: Optional[float] = None,
+        resource_request: dict[type[BaseDevice] | str | None, dict[str, str | int]],
+        priority: int | None = None,
+        timeout: float | None = None,
     ):
         """
         Request devices and sample positions. This function is a context manager, which should be used in
@@ -145,7 +143,7 @@ class LabView:
             f"No sample with name \"{sample_name}\" found for task \"{self.__task_entry['type']}\""
         )
 
-    def get_sample(self, sample: Union[ObjectId, str]) -> Sample:
+    def get_sample(self, sample: ObjectId | str) -> Sample:
         """
         Get a sample by either an ObjectId corresponding to sample_id, or as a string corresponding to the sample's
         name within the experiment., see also :py:meth:`get_sample
@@ -159,7 +157,7 @@ class LabView:
             raise TypeError("sample must be a sample name (str) or id (ObjectId)")
         return self._sample_view.get_sample(sample_id=sample_id)
 
-    def move_sample(self, sample: Union[ObjectId, str], position: Optional[str]):
+    def move_sample(self, sample: ObjectId | str, position: str | None):
         """
         Move a sample to a new position. `sample` can be given as either an ObjectId corresponding to sample_id,
         or as a string corresponding to the sample's name within the experiment.
@@ -187,16 +185,36 @@ class LabView:
             sample_id=sample_entry.sample_id, position=position
         )
 
-    def get_locked_sample_positions(self) -> List[str]:
+    def get_locked_sample_positions(self) -> list[str]:
         """Get a list of sample positions that are occupied by this task."""
         return self._sample_view.get_sample_positions_by_task(task_id=self._task_id)
 
-    def get_sample_position_parent_device(self, position: str) -> Optional[str]:
+    def get_sample_position_parent_device(self, position: str) -> str | None:
         """Get the name of the device that owns the sample position."""
         return self._sample_view.get_sample_position_parent_device(position=position)
 
+    def update_sample_metadata(self, sample: ObjectId | str, metadata: dict[str, Any]):
+        """
+        Update the metadata of a sample. `sample` can be given as either an ObjectId corresponding to sample_id,
+        or as a string corresponding to the sample's name within the experiment.
+
+        See Also
+        --------
+        :py:meth:`update_sample_metadata <alab_management.sample_view.sample_view.SampleView.update_sample_metadata>`
+        """
+        if isinstance(sample, str):
+            sample_id = self._sample_name_to_id(sample)
+        elif isinstance(sample, ObjectId):
+            sample_id = sample
+        else:
+            raise TypeError("sample must be a sample name (str) or id (ObjectId)")
+
+        return self._sample_view.update_sample_metadata(
+            sample_id=sample_id, metadata=metadata
+        )
+
     def run_subtask(
-        self, task: Type[BaseTask], samples: List[Union[ObjectId, str]], **kwargs
+        self, task: type[BaseTask], samples: list[ObjectId | str], **kwargs
     ):
         """Run a task as a subtask within the task. basically fills in task_id and lab_view for you.
             this command blocks until the subtask is completed.
@@ -296,7 +314,7 @@ class LabView:
             )
         return result
 
-    def request_user_input(self, prompt: str, options: List[str]) -> str:
+    def request_user_input(self, prompt: str, options: list[str]) -> str:
         """Request user input from the user. This function will block until the user inputs something. Returns the
         value returned by the user.
         """

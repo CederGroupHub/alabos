@@ -25,9 +25,10 @@ def process_launch_worker():
     Launches the worker process.
     This is a workaround to redirect the output of the worker process to a file.
     """
-    with open("D:\\alabos_service.log", "a", encoding="utf-8") as sys.stdout, open(
-        "D:\\alabos_service.log", "a", encoding="utf-8"
-    ) as sys.stderr:
+    with (
+        open("D:\\alabos_service.log", "a", encoding="utf-8") as sys.stdout,
+        open("D:\\alabos_service.log", "a", encoding="utf-8") as sys.stderr,
+    ):
         launch_worker([])
 
 
@@ -68,9 +69,10 @@ class alabosService(win32serviceutil.ServiceFramework):
 
     def main(self):
         """Main function of the service."""
-        with redirect_stdout(
-            open("D:\\alabos_service.log", "a", encoding="utf-8")
-        ), redirect_stderr(open("D:\\alabos_service.log", "a", encoding="utf-8")):
+        with (
+            redirect_stdout(open("D:\\alabos_service.log", "a", encoding="utf-8")),
+            redirect_stderr(open("D:\\alabos_service.log", "a", encoding="utf-8")),
+        ):
             self.running = True
             self.warned = False
             self.alabos_thread = Thread(

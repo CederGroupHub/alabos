@@ -1,7 +1,8 @@
 from threading import Timer
 from typing import ClassVar
 
-from alab_management import BaseDevice, SamplePosition
+from alab_management.device_view import BaseDevice
+from alab_management.sample_view import SamplePosition
 
 
 class Furnace(BaseDevice):

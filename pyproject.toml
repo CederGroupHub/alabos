@@ -24,13 +24,11 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Topic :: Database :: Front-Ends",
     "Topic :: Other/Nonlisted Topic",
     "Topic :: Scientific/Engineering",
 ]
-requires-python = ">=3.8.0"
+requires-python = ">=3.10.0"
 dependencies = [
     "toml>=0.10.1",
     "pymongo>=3.12.3",
@@ -134,7 +132,7 @@ max-doc-length = 400 # jobflow uses 88. Ensure to change this back to 88 in the 
 select = "C, E, F, W, B"
 extend-ignore = "E203, W503, E501, F401, RST21, D102"
 ignore = "E203, W503, E501, F401, RST21, D102"
-min-python-version = "3.8.0"
+min-python-version = "3.10.0"
 docstring-convention = "numpy"
 rst-roles = "class, func, ref, obj"
 
@@ -165,7 +163,7 @@ exclude_lines = [
 ]
 
 [tool.ruff]
-target-version = "py38"
+target-version = "py310"
 ignore-init-module-imports = true
 select = [
     "B",   # flake8-bugbear

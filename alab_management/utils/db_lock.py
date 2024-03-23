@@ -2,7 +2,6 @@
 
 import time
 from contextlib import contextmanager
-from typing import Optional
 
 from pymongo.collection import Collection
 from pymongo.errors import DuplicateKeyError
@@ -30,12 +29,12 @@ class MongoLock:
         return self._name
 
     @contextmanager
-    def __call__(self, timeout: Optional[float] = None):
+    def __call__(self, timeout: float | None = None):
         """Acquire the lock and release it after the context is finished."""
         yield self.acquire(timeout=timeout)
         self.release()
 
-    def acquire(self, timeout: Optional[float] = None):
+    def acquire(self, timeout: float | None = None):
         """Acquire the lock."""
         start_time = time.time()
         while timeout is None or time.time() - start_time <= timeout:

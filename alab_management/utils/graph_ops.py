@@ -1,12 +1,12 @@
 """This file contains a custom graph class and functions for checking if there are cycles in a graph."""
 
-from typing import Any, Dict, List
+from typing import Any
 
 
 class Graph:
     """Use adjacent table to store a graph."""
 
-    def __init__(self, vertices: List[Any], edges: Dict[int, List[int]]):
+    def __init__(self, vertices: list[Any], edges: dict[int, list[int]]):
         """Note that the all the keys and values are the index of vertices."""
         if len(vertices) != len(edges):
             raise ValueError(
@@ -45,7 +45,7 @@ class Graph:
             for vertex in range(len(self.vertices))
         )
 
-    def get_parents(self, v: Any) -> List[Any]:
+    def get_parents(self, v: Any) -> list[Any]:
         """Provide the value of vertex, return the value of its parents vertices."""
         index = self.vertices.index(v)
         return [
@@ -55,7 +55,7 @@ class Graph:
             if child == index
         ]
 
-    def get_children(self, v: Any) -> List[Any]:
+    def get_children(self, v: Any) -> list[Any]:
         """Provide the index of vertex, return the value of its children vertices."""
         index = self.vertices.index(v)
         return [self.vertices[i] for i in self.edges[index]]
