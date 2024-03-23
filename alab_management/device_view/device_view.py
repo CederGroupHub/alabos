@@ -198,11 +198,23 @@ class DeviceView:
                 )
                 if not result:
                     return None
-                # just pick the first device
-                idle_devices[device] = next(
-                    filter(lambda device_: not device_["need_release"], result),
-                    result[0],
+                same_task_devices = list(
+                    filter(lambda device_: not device_["need_release"], result)
                 )
+                if len(same_task_devices) > 0:
+                    # just pick the first device
+                    idle_devices[device] = same_task_devices[0]
+                else:
+                    # if no device is held by the same task, pick the device with least samples
+                    minimum_number_of_samples = 999999999
+                    for device_ in result:
+                        samples_on_device_ = self.get_samples_on_device(device_["name"])
+                        number_of_samples_in_device_ = sum(
+                            len(samples) for samples in samples_on_device_.values()
+                        )
+                        if number_of_samples_in_device_ < minimum_number_of_samples:
+                            minimum_number_of_samples = number_of_samples_in_device_
+                            idle_devices[device] = device_
             return idle_devices
 
     def get_available_devices(
