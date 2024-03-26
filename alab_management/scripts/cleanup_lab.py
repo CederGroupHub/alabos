@@ -26,8 +26,6 @@ def cleanup_lab(
         .get_collection("tasks")
         .count_documents({})
     )
-
-    whole_database_dropped = False
     if all_collections:
         if not _force_i_know_its_dangerous:
             if user_confirmation is None:
@@ -47,12 +45,10 @@ def cleanup_lab(
             print(f"Removing database {database_name}")
             _GetMongoCollection.init()
             _GetMongoCollection.client.drop_database(database_name)  # type: ignore
-            whole_database_dropped = True
         else:
             print(f"Removing database {database_name}")
             _GetMongoCollection.init()
             _GetMongoCollection.client.drop_database(database_name)
-            whole_database_dropped = True
 
         # if sim_mode != AlabOSConfig().is_sim_mode() or database_name == "Alab":
         #     print("Wrong name of database. Hence, not removed.")
@@ -64,9 +60,9 @@ def cleanup_lab(
         # else:
         #     print("Wrong name of database. Hence, not removed.")
         #     return False
-    if not whole_database_dropped:
-        DeviceView()._clean_up_device_collection()
-        SampleView().clean_up_sample_position_collection()
-        _GetMongoCollection.get_collection("_lock").drop()
-        _GetMongoCollection.get_collection("requests").drop()
+
+    DeviceView()._clean_up_device_collection()
+    SampleView().clean_up_sample_position_collection()
+    _GetMongoCollection.get_collection("_lock").drop()
+    _GetMongoCollection.get_collection("requests").drop()
     return True
