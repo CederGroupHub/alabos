@@ -279,6 +279,9 @@ class ResourceRequester(RequestMixin):
                 }
             },
         )
+        # wait for all the requests to be released
+        while any(request["status"] == RequestStatus.NEED_RELEASE.name for request in self.get_requests_by_task_id(self.task_id)):
+            time.sleep(0.5)
 
     def _check_request_status_loop(self):
         while not self._stop:
