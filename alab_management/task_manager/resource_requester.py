@@ -240,6 +240,12 @@ class ResourceRequester(RequestMixin):
             },
         )
 
+        # wait for the request to be released
+        while (self.get_request(request_id, projection=["status"]))[
+            "status"
+        ] == RequestStatus.NEED_RELEASE.name:
+            time.sleep(0.5)
+
         return result.modified_count == 1
 
     def release_all_resources(self):
