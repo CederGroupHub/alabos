@@ -240,6 +240,12 @@ class ResourceRequester(RequestMixin):
             },
         )
 
+        # wait for the request to be released
+        while (self.get_request(request_id, projection=["status"]))[
+            "status"
+        ] == RequestStatus.NEED_RELEASE.name:
+            time.sleep(0.5)
+
         return result.modified_count == 1
 
     def release_all_resources(self):
@@ -273,6 +279,9 @@ class ResourceRequester(RequestMixin):
                 }
             },
         )
+        # wait for all the requests to be released
+        while any(request["status"] == RequestStatus.NEED_RELEASE.name for request in self.get_requests_by_task_id(self.task_id)):
+            time.sleep(0.5)
 
     def _check_request_status_loop(self):
         while not self._stop:
