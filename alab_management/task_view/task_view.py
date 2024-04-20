@@ -127,7 +127,7 @@ class TaskView:
             encode: whether to encode the task using ``self.encode_task`` method
         """
         task_id = ObjectId(task_id)
-        
+
         result = self._task_collection.find_one({"_id": task_id})
 
         if result is None:
@@ -237,7 +237,10 @@ class TaskView:
                             },
                         )
                         # Wait until the status is updated
-                        while self.get_task(task_id=next_task_id)["last_updated"] == previous_update_time:
+                        while (
+                            self.get_task(task_id=next_task_id)["last_updated"]
+                            == previous_update_time
+                        ):
                             time.sleep(0.5)
                         self.try_to_mark_task_ready(
                             task_id=next_task_id
@@ -267,9 +270,7 @@ class TaskView:
         previous_update_time = self.get_task(task_id=task_id)["last_updated"]
         self._task_collection.update_one(
             {"_id": task_id},
-            {"$set": {
-                "subtasks": subtasks,
-                "last_updated": datetime.now()}},
+            {"$set": {"subtasks": subtasks, "last_updated": datetime.now()}},
         )
         # Wait until the status is updated
         while self.get_task(task_id=task_id)["last_updated"] == previous_update_time:
@@ -430,7 +431,9 @@ class TaskView:
         for next_task in next_tasks:
             if self.get_task(task_id=next_task) is None:
                 raise ValueError(f"Non-exist task id: {next_task}")
-        previous_update_time = self.get_task(task_id=task_id, encode=False)["last_updated"]
+        previous_update_time = self.get_task(task_id=task_id, encode=False)[
+            "last_updated"
+        ]
         self._task_collection.update_one(
             {"_id": task_id},
             {
@@ -444,7 +447,10 @@ class TaskView:
             },
         )
         # Wait until the status is updated
-        while self.get_task(task_id=task_id, encode=False)["last_updated"] == previous_update_time:
+        while (
+            self.get_task(task_id=task_id, encode=False)["last_updated"]
+            == previous_update_time
+        ):
             time.sleep(0.5)
 
     def set_message(self, task_id: ObjectId, message: str):

@@ -3,8 +3,9 @@ This module contains the CompletedSampleView class, which is responsible for
 saving samples to the completed database.
 """
 
-from bson import ObjectId  # type: ignore
 import time
+
+from bson import ObjectId  # type: ignore
 
 from alab_management.utils.data_objects import get_collection, get_completed_collection
 
@@ -41,9 +42,10 @@ class CompletedSampleView:
         else:
             self._completed_sample_collection.insert_one(sample_dict)
             # wait for the insert to complete
-            while self._completed_sample_collection.find_one(
-                {"_id": ObjectId(sample_id)}
-            ) is None:
+            while (
+                self._completed_sample_collection.find_one({"_id": ObjectId(sample_id)})
+                is None
+            ):
                 time.sleep(0.5)
 
     def exists(self, sample_id: ObjectId | str) -> bool:

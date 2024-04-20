@@ -412,8 +412,14 @@ class TaskManager(RequestMixin):
             != "FULFILLED"
         ):
             # handle if the request is cancelled or errored
-            if (self.get_request(request_entry["_id"], projection=["status"])["status"] == "CANCELED"
-                    or self.get_request(request_entry["_id"], projection=["status"])["status"] == "ERROR"):
+            if (
+                self.get_request(request_entry["_id"], projection=["status"])["status"]
+                == "CANCELED"
+                or self.get_request(request_entry["_id"], projection=["status"])[
+                    "status"
+                ]
+                == "ERROR"
+            ):
                 return
             time.sleep(0.5)
         # label the resources as occupied

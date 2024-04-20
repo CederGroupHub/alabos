@@ -447,11 +447,13 @@ class DeviceView:
         self.get_device(device_name=device_name)
         previous_update_time = self.get_device(device_name=device_name)["last_updated"]
         self._device_collection.update_one(
-            {"name": device_name}, {"$set": {
-                "message": message,
-                "last_updated": datetime.now()}}
+            {"name": device_name},
+            {"$set": {"message": message, "last_updated": datetime.now()}},
         )
-        while self.get_device(device_name=device_name)["last_updated"] == previous_update_time:
+        while (
+            self.get_device(device_name=device_name)["last_updated"]
+            == previous_update_time
+        ):
             time.sleep(0.5)
 
     def get_message(self, device_name: str) -> str:
@@ -511,7 +513,10 @@ class DeviceView:
                 }
             },
         )
-        while self.get_device(device_name=device_name)["last_updated"] == previous_update_time:
+        while (
+            self.get_device(device_name=device_name)["last_updated"]
+            == previous_update_time
+        ):
             time.sleep(0.5)
 
     def set_attribute(self, device_name: str, attribute: str, value: Any):
@@ -534,7 +539,10 @@ class DeviceView:
                 }
             },
         )
-        while self.get_device(device_name=device_name)["last_updated"] == previous_update_time:
+        while (
+            self.get_device(device_name=device_name)["last_updated"]
+            == previous_update_time
+        ):
             time.sleep(0.5)
 
     def pause_device(self, device_name: str):
