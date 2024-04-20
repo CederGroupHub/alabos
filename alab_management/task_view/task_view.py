@@ -3,8 +3,8 @@ Tasks view is a convienent wrapper over the ``tasks`` collection in the database
 provides some convenience methods to query and manipulate the tasks collection.
 """
 
-from datetime import datetime
 import time
+from datetime import datetime
 from typing import Any, cast
 
 from bson import ObjectId

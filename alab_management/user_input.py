@@ -102,7 +102,9 @@ class UserInputView:
             },
         )
         # Wait until the status is updated
-        while self.get_request(request_id)["status"] != UserRequestStatus.FULLFILLED.value:
+        while (
+            self.get_request(request_id)["status"] != UserRequestStatus.FULLFILLED.value
+        ):
             time.sleep(1)
 
     def retrieve_user_input(self, request_id: ObjectId) -> str:

@@ -1,9 +1,9 @@
 """A wrapper over the ``experiment`` class."""
 
+import time
 from datetime import datetime
 from enum import Enum, auto
 from typing import Any, cast
-import time
 
 from bson import ObjectId  # type: ignore
 

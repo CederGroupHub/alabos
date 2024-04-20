@@ -1,10 +1,10 @@
 """A wrapper over the ``samples`` and ``sample_positions`` collections."""
 
 import re
+import time
 from datetime import datetime
 from enum import Enum, auto
 from typing import Any, cast
-import time
 
 import pymongo  # type: ignore
 from bson import ObjectId  # type: ignore
@@ -245,7 +245,7 @@ class SampleView:
             self.get_sample_position_status(position)[0]
             is not SamplePositionStatus.OCCUPIED
         )
-    
+
     def is_locked_position(self, position: str) -> bool:
         """Tell if a sample position is locked or not."""
         sample_position = self.get_sample_position(position=position)
@@ -321,7 +321,6 @@ class SampleView:
         # Wait until the position is locked successfully
         while not self.is_locked_position(position):
             time.sleep(0.5)
-            
 
     def release_sample_position(self, position: str):
         """Unlock a sample position."""

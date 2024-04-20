@@ -1,10 +1,10 @@
 """Wrapper over the ``devices`` collection."""
 
+import time
 from collections.abc import Collection
 from datetime import datetime
 from enum import Enum, auto, unique
 from typing import Any, TypeVar, cast
-import time
 
 import pymongo  # type: ignore
 from bson import ObjectId  # type: ignore
@@ -548,7 +548,10 @@ class DeviceView:
             },
         )
         # wait until the device pause status has been updated
-        while self.get_device(device_name=device_name)["pause_status"].name != new_pause_status:
+        while (
+            self.get_device(device_name=device_name)["pause_status"].name
+            != new_pause_status
+        ):
             time.sleep(0.5)
 
     def unpause_device(self, device_name: str):
@@ -573,7 +576,9 @@ class DeviceView:
             {"$set": update_dict},
         )
         # wait until the device pause status has been updated
-        while self.get_device(device_name=device_name)["pause_status"].name != "RELEASED":
+        while (
+            self.get_device(device_name=device_name)["pause_status"].name != "RELEASED"
+        ):
             time.sleep(0.5)
 
     def __exit__(self, exc_type, exc_value, traceback):

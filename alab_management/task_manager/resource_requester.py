@@ -96,7 +96,9 @@ class RequestMixin:
             {"_id": request_id}, {"$set": {"status": status.name}}
         )
         # wait for the request to be updated
-        while self.get_request(request_id, projection=["status"])["status"] != status.name:
+        while (
+            self.get_request(request_id, projection=["status"])["status"] != status.name
+        ):
             time.sleep(0.5)
         return value_returned
 
@@ -250,7 +252,10 @@ class ResourceRequester(RequestMixin):
         )
 
         # wait for the request to be released
-        while self.get_request(request_id, projection=["status"])["status"] != "NEED_RELEASE":
+        while (
+            self.get_request(request_id, projection=["status"])["status"]
+            != "NEED_RELEASE"
+        ):
             time.sleep(0.5)
 
         return result.modified_count == 1
@@ -287,7 +292,10 @@ class ResourceRequester(RequestMixin):
             },
         )
         # wait for all the requests to be released
-        while any(request["status"] == RequestStatus.NEED_RELEASE.name for request in self.get_requests_by_task_id(self.task_id)):
+        while any(
+            request["status"] == RequestStatus.NEED_RELEASE.name
+            for request in self.get_requests_by_task_id(self.task_id)
+        ):
             time.sleep(0.5)
 
     def _check_request_status_loop(self):
