@@ -3,6 +3,7 @@
 from datetime import datetime
 from enum import Enum, auto
 from typing import Any, cast
+import time
 
 from bson import ObjectId  # type: ignore
 
@@ -125,6 +126,9 @@ class ExperimentView:
             {"_id": exp_id},
             {"$set": update_dict},
         )
+        # Wait until experiment status is updated in the database
+        while self.get_experiment(exp_id=exp_id)["status"] != status.name:
+            time.sleep(0.5)
 
     def update_sample_task_id(
         self, exp_id, sample_ids: list[ObjectId], task_ids: list[ObjectId]
@@ -161,6 +165,15 @@ class ExperimentView:
                 }
             },
         )
+        # Wait until the sample and task id's are updated
+        update = "not completed"
+        while update != "completed":
+            experiment = self.get_experiment(exp_id=exp_id)
+            if all(
+                sample["sample_id"] is not None for sample in experiment["samples"]
+            ) and all(task["task_id"] is not None for task in experiment["tasks"]):
+                update = "completed"
+            time.sleep(0.5)
 
     def get_experiment_by_task_id(self, task_id: ObjectId) -> dict[str, Any] | None:
         """Get an experiment that contains a task with the given task_id."""

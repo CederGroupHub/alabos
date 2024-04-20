@@ -4,6 +4,7 @@ provides some convenience methods to query and manipulate the tasks collection.
 """
 
 from datetime import datetime
+import time
 from typing import Any, cast
 
 from bson import ObjectId
@@ -178,6 +179,9 @@ class TaskView:
             {"_id": task_id},
             {"$set": update_dict},
         )
+        # Wait until the status is updated
+        while self.get_status(task_id=task_id).name != status.name:
+            time.sleep(0.5)
 
         if status is TaskStatus.COMPLETED:
             # try to figure out tasks that is READY

@@ -356,6 +356,10 @@ class TaskManager(RequestMixin):
                     }
                 },
             )
+            # wait until the parsed_sample_positions_request is updated in the database
+            while self.get_request(request_entry["_id"], projection=["parsed_sample_positions_request"])["parsed_sample_positions_request"] is None:
+                time.sleep(0.5)
+
             sample_positions = self.sample_view.request_sample_positions(
                 task_id=task_id, sample_positions=parsed_sample_positions_request
             )
@@ -375,6 +379,9 @@ class TaskManager(RequestMixin):
                     }
                 },
             )
+            while self.get_request(request_entry["_id"], projection=["status"])[
+                "status"].name != "ERROR":
+                time.sleep(0.5)
             return
 
         # if both devices and sample positions can be satisfied
@@ -389,6 +396,10 @@ class TaskManager(RequestMixin):
                 }
             },
         )
+        # Wait until the status of the request is updated in the database
+        while self.get_request(request_entry["_id"], projection=["status"])[
+            "status"] != "FULFILLED":
+            time.sleep(0.5)
         # label the resources as occupied
         self._occupy_devices(devices=devices, task_id=task_id)
         self._occupy_sample_positions(

@@ -4,6 +4,7 @@ import re
 from datetime import datetime
 from enum import Enum, auto
 from typing import Any, cast
+import time
 
 import pymongo  # type: ignore
 from bson import ObjectId  # type: ignore
@@ -244,6 +245,13 @@ class SampleView:
             self.get_sample_position_status(position)[0]
             is not SamplePositionStatus.OCCUPIED
         )
+    
+    def is_locked_position(self, position: str) -> bool:
+        """Tell if a sample position is locked or not."""
+        sample_position = self.get_sample_position(position=position)
+        if sample_position is None:
+            raise ValueError(f"Invalid sample position: {position}")
+        return sample_position["task_id"] is not None
 
     def get_available_sample_position(
         self, task_id: ObjectId, position_prefix: str
@@ -310,6 +318,10 @@ class SampleView:
                 }
             },
         )
+        # Wait until the position is locked successfully
+        while not self.is_locked_position(position):
+            time.sleep(0.5)
+            
 
     def release_sample_position(self, position: str):
         """Unlock a sample position."""
@@ -324,6 +336,9 @@ class SampleView:
                 }
             },
         )
+        # Wait until the position is released successfully
+        while self.is_locked_position(position):
+            time.sleep(0.5)
 
     def get_sample_positions_by_task(self, task_id: ObjectId | None) -> list[str]:
         """Get the list of sample positions that is locked by a task (given task id)."""
@@ -423,6 +438,9 @@ class SampleView:
                 }
             },
         )
+        # Wait until the task id is updated
+        while self.get_sample(sample_id).task_id != task_id:
+            time.sleep(0.5)
 
     def update_sample_metadata(self, sample_id: ObjectId, metadata: dict[str, Any]):
         """Update the metadata for a sample. This adds new metadata or updates existing metadata."""
@@ -461,6 +479,9 @@ class SampleView:
                 }
             },
         )
+        # Wait until the position is updated
+        while self.get_sample(sample_id).position != position:
+            time.sleep(0.5)
 
     def exists(self, sample_id: ObjectId | str) -> bool:
         """Check if a sample exists in the database.

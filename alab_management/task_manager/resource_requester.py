@@ -92,11 +92,15 @@ class RequestMixin:
 
     def update_request_status(self, request_id: ObjectId, status: RequestStatus):
         """Update the status of a request by request_id."""
-        return self._request_collection.update_one(
+        value_returned = self._request_collection.update_one(
             {"_id": request_id}, {"$set": {"status": status.name}}
         )
+        # wait for the request to be updated
+        while self.get_request(request_id, projection=["status"])["status"] != status.name:
+            time.sleep(0.5)
+        return value_returned
 
-    def get_request(self, request_id: ObjectId, **kwargs):
+    def get_request(self, request_id: ObjectId, **kwargs) -> dict[str, Any] | None:
         """Get a request by request_id."""
         return self._request_collection.find_one(
             {"_id": request_id}, **kwargs
@@ -216,6 +220,11 @@ class ResourceRequester(RequestMixin):
             result = f.result(timeout=timeout)
         except TimeoutError:  # cancel the task if timeout
             self.update_request_status(request_id=_id, status=RequestStatus.CANCELED)
+            # wait for the request status to be updated
+            while (self.get_request(_id, projection=["status"]))[
+                "status"
+            ] != "CANCELED":
+                time.sleep(0.5)
             raise
         return {
             **self._post_process_requested_resource(
@@ -241,9 +250,7 @@ class ResourceRequester(RequestMixin):
         )
 
         # wait for the request to be released
-        while (self.get_request(request_id, projection=["status"]))[
-            "status"
-        ] == RequestStatus.NEED_RELEASE.name:
+        while self.get_request(request_id, projection=["status"])["status"] != "NEED_RELEASE":
             time.sleep(0.5)
 
         return result.modified_count == 1
