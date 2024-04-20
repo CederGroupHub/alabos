@@ -455,17 +455,10 @@ class SampleView:
 
         update_dict = {f"metadata.{k}": v for k, v in metadata.items()}
         update_dict["last_updated"] = datetime.now()
-        previous_update_time = result["last_updated"]
         self._sample_collection.update_one(
             {"_id": sample_id},
             {"$set": update_dict},
         )
-        # Wait until the metadata is updated
-        while (
-            self._sample_collection.find_one({"_id": sample_id})["last_updated"]
-            == previous_update_time
-        ):
-            time.sleep(0.1)
 
     def move_sample(self, sample_id: ObjectId, position: str | None):
         """Update the sample with new position."""
@@ -480,7 +473,6 @@ class SampleView:
             raise ValueError(
                 f"Requested position ({position}) is not EMPTY or LOCKED by other task."
             )
-        previous_update_time = result["last_updated"]
         self._sample_collection.update_one(
             {"_id": sample_id},
             {
@@ -490,12 +482,6 @@ class SampleView:
                 }
             },
         )
-        # Wait until the position is updated
-        while (
-            self._sample_collection.find_one({"_id": sample_id})["last_updated"]
-            == previous_update_time
-        ):
-            time.sleep(0.1)
 
     def exists(self, sample_id: ObjectId | str) -> bool:
         """Check if a sample exists in the database.

@@ -238,9 +238,9 @@ class ResourceRequester(RequestMixin):
             "error": None,
         }
 
-    def release_resources(self, request_id: ObjectId) -> bool:
+    def release_resources(self, request_id: ObjectId):
         """Release a request by request_id."""
-        result = self._request_collection.update_one(
+        self._request_collection.update_one(
             {
                 "_id": request_id,
                 "status": RequestStatus.FULFILLED.name,
@@ -265,8 +265,6 @@ class ResourceRequester(RequestMixin):
             != RequestStatus.RELEASED.name
         ):
             time.sleep(0.1)
-
-        return result.modified_count == 2
 
     def release_all_resources(self):
         """
