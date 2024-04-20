@@ -97,7 +97,7 @@ class TestLabView(TestCase):
                 "LOCKED",
                 self.sample_view.get_sample_position_status("furnace_table")[0].name,
             )
-        time.sleep(4)
+        time.sleep(0.1)
         self.assertEqual("IDLE", self.device_view.get_status("furnace_1").name)
         self.assertEqual("IDLE", self.device_view.get_status("dummy").name)
 
