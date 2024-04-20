@@ -3,6 +3,7 @@
 from typing import Any
 
 from bson import ObjectId  # type: ignore
+import time
 
 from alab_management.sample_view import CompletedSampleView
 from alab_management.task_view import CompletedTaskView
@@ -46,6 +47,11 @@ class CompletedExperimentView:
                 filter={"_id": ObjectId(experiment_id)},
                 update={"$set": experiment_dict},
             )
+            # wait for the update to complete
+            while self._completed_experiment_collection.find_one(
+                {"_id": ObjectId(experiment_id)}
+            ) is None:
+                time.sleep(0.5)
         else:
             self._completed_experiment_collection.insert_one(experiment_dict)
 

@@ -405,11 +405,16 @@ class TaskManager(RequestMixin):
                 }
             },
         )
-        # Wait until the status of the request is updated in the database
+        # Wait until the status of the request is updated in the database,
+        # TODO: This process seems to be slow somehow
         while (
             self.get_request(request_entry["_id"], projection=["status"])["status"]
             != "FULFILLED"
         ):
+            # handle if the request is cancelled or errored
+            if (self.get_request(request_entry["_id"], projection=["status"])["status"] == "CANCELED"
+                    or self.get_request(request_entry["_id"], projection=["status"])["status"] == "ERROR"):
+                return
             time.sleep(0.5)
         # label the resources as occupied
         self._occupy_devices(devices=devices, task_id=task_id)

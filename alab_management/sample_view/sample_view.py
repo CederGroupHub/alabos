@@ -119,6 +119,9 @@ class SampleView:
                     if parent_device_name:
                         new_entry["parent_device"] = parent_device_name
                     self._sample_positions_collection.insert_one(new_entry)
+                    # Wait until the sample position is created
+                    while self.get_sample_position(name) is None:
+                        time.sleep(0.5)
 
     def clean_up_sample_position_collection(self):
         """Drop the sample position collection."""
@@ -373,7 +376,6 @@ class SampleView:
                 f"Unsupported sample name: {name}. "
                 f"Sample name should not contain '.' or '$'"
             )
-
         entry = {
             "name": name,
             "tags": tags or [],
@@ -392,7 +394,9 @@ class SampleView:
             entry["_id"] = sample_id
 
         result = self._sample_collection.insert_one(entry)
-
+        # Wait until the sample is created
+        while not self.exists(result.inserted_id):
+            time.sleep(0.5)
         return cast(ObjectId, result.inserted_id)
 
     def get_sample(self, sample_id: ObjectId) -> Sample:
@@ -449,11 +453,14 @@ class SampleView:
 
         update_dict = {f"metadata.{k}": v for k, v in metadata.items()}
         update_dict["last_updated"] = datetime.now()
-
+        previous_update_time = result["last_updated"]
         self._sample_collection.update_one(
             {"_id": sample_id},
             {"$set": update_dict},
         )
+        # Wait until the metadata is updated
+        while self.get_sample(sample_id).last_updated == previous_update_time:
+            time.sleep(0.5)
 
     def move_sample(self, sample_id: ObjectId, position: str | None):
         """Update the sample with new position."""

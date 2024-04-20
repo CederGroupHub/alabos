@@ -169,9 +169,9 @@ class ExperimentView:
         update = "not completed"
         while update != "completed":
             experiment = self.get_experiment(exp_id=exp_id)
-            if all(
-                sample["sample_id"] is not None for sample in experiment["samples"]
-            ) and all(task["task_id"] is not None for task in experiment["tasks"]):
+            updated_sample_ids = [sample["sample_id"] for sample in experiment["samples"]]
+            updated_task_ids = [task["task_id"] for task in experiment["tasks"]]
+            if updated_sample_ids == sample_ids and updated_task_ids == task_ids:
                 update = "completed"
             time.sleep(0.5)
 

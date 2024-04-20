@@ -445,10 +445,14 @@ class DeviceView:
             message (str): message to be set
         """
         self.get_device(device_name=device_name)
-
+        previous_update_time = self.get_device(device_name=device_name)["last_updated"]
         self._device_collection.update_one(
-            {"name": device_name}, {"$set": {"message": message}}
+            {"name": device_name}, {"$set": {
+                "message": message,
+                "last_updated": datetime.now()}}
         )
+        while self.get_device(device_name=device_name)["last_updated"] == previous_update_time:
+            time.sleep(0.5)
 
     def get_message(self, device_name: str) -> str:
         """Gets the current device message. Message is used to communicate device state with the user dashboard.
@@ -497,7 +501,7 @@ class DeviceView:
             attributes (dict): attributes to be set
         """
         self.get_device(device_name=device_name)
-
+        previous_update_time = self.get_device(device_name=device_name)["last_updated"]
         self._device_collection.update_one(
             {"name": device_name},
             {
@@ -507,6 +511,8 @@ class DeviceView:
                 }
             },
         )
+        while self.get_device(device_name=device_name)["last_updated"] == previous_update_time:
+            time.sleep(0.5)
 
     def set_attribute(self, device_name: str, attribute: str, value: Any):
         """Sets a device attribute. Attributes are used to store device-specific values in the database.
@@ -518,7 +524,7 @@ class DeviceView:
         """
         attributes = self.get_all_attributes(device_name=device_name)
         attributes[attribute] = value
-
+        previous_update_time = self.get_device(device_name=device_name)["last_updated"]
         self._device_collection.update_one(
             {"name": device_name},
             {
@@ -528,6 +534,8 @@ class DeviceView:
                 }
             },
         )
+        while self.get_device(device_name=device_name)["last_updated"] == previous_update_time:
+            time.sleep(0.5)
 
     def pause_device(self, device_name: str):
         """Request pause for a specific device."""
