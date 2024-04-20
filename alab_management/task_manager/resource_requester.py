@@ -227,8 +227,7 @@ class ResourceRequester(RequestMixin):
                 "status"
             ] != "CANCELED":
                 time.sleep(0.1)
-            return {"request_id": result["request_id"],
-                    "error": TimeoutError}
+            return {"request_id": result["request_id"], "error": TimeoutError}
         return {
             **self._post_process_requested_resource(
                 devices=result["devices"],
@@ -236,7 +235,7 @@ class ResourceRequester(RequestMixin):
                 resource_request=resource_request,
             ),
             "request_id": result["request_id"],
-            "error": None
+            "error": None,
         }
 
     def release_resources(self, request_id: ObjectId) -> bool:

@@ -72,9 +72,7 @@ class UserInputView:
             }
         )
         # Wait until the request is inserted
-        while (
-            self.get_request(request_id)["status"] != UserRequestStatus.PENDING.value
-        ):
+        while self.get_request(request_id)["status"] != UserRequestStatus.PENDING.value:
             time.sleep(0.1)
         if maintenance is True:
             category = "Maintenance"

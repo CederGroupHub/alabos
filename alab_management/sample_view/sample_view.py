@@ -442,7 +442,9 @@ class SampleView:
             },
         )
         # Wait until the task id is updated
-        while self._sample_collection.find_one({"_id": sample_id})["task_id"] != task_id:
+        while (
+            self._sample_collection.find_one({"_id": sample_id})["task_id"] != task_id
+        ):
             time.sleep(0.1)
 
     def update_sample_metadata(self, sample_id: ObjectId, metadata: dict[str, Any]):
@@ -459,7 +461,10 @@ class SampleView:
             {"$set": update_dict},
         )
         # Wait until the metadata is updated
-        while self._sample_collection.find_one({"_id": sample_id})["last_updated"] == previous_update_time:
+        while (
+            self._sample_collection.find_one({"_id": sample_id})["last_updated"]
+            == previous_update_time
+        ):
             time.sleep(0.1)
 
     def move_sample(self, sample_id: ObjectId, position: str | None):
@@ -486,7 +491,10 @@ class SampleView:
             },
         )
         # Wait until the position is updated
-        while self._sample_collection.find_one({"_id": sample_id})["last_updated"] == previous_update_time:
+        while (
+            self._sample_collection.find_one({"_id": sample_id})["last_updated"]
+            == previous_update_time
+        ):
             time.sleep(0.1)
 
     def exists(self, sample_id: ObjectId | str) -> bool:

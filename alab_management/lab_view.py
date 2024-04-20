@@ -130,7 +130,9 @@ class LabView:
                 device_type: self._device_client.create_device_wrapper(device_name)
                 for device_type, device_name in devices.items()
             }  # type: ignore
-            self._task_view.update_status(task_id=self.task_id, status=TaskStatus.RUNNING)
+            self._task_view.update_status(
+                task_id=self.task_id, status=TaskStatus.RUNNING
+            )
             yield devices, sample_positions
 
             self._resource_requester.release_resources(request_id=request_id)

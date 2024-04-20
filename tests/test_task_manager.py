@@ -68,7 +68,7 @@ class TestTaskManager(unittest.TestCase):
             {
                 "devices": {furnace_type: "furnace_1"},
                 "sample_positions": {furnace_type: {"inside": ["furnace_1/inside"]}},
-                "error": None
+                "error": None,
             },
             result,
         )
@@ -98,7 +98,7 @@ class TestTaskManager(unittest.TestCase):
             {
                 "devices": {furnace_type: "furnace_1"},
                 "sample_positions": {furnace_type: {"inside": ["furnace_1/inside"]}},
-                "error": None
+                "error": None,
             },
             result,
         )
@@ -109,7 +109,7 @@ class TestTaskManager(unittest.TestCase):
             self.sample_view.get_sample_position_status("furnace_1/inside"),
             (SamplePositionStatus.LOCKED, self.resource_requester.task_id),
         )
-        True == self.resource_requester.release_resources(_id)
+        self.assertTrue(self.resource_requester.release_resources(_id))
         self.assertEqual(
             self.device_view.get_status("furnace_1"), DeviceTaskStatus.IDLE
         )
@@ -127,7 +127,7 @@ class TestTaskManager(unittest.TestCase):
             {
                 "devices": {furnace_type: "furnace_1"},
                 "sample_positions": {furnace_type: {"inside": ["furnace_1/inside"]}},
-                "error": None
+                "error": None,
             },
             result,
         )
@@ -152,7 +152,7 @@ class TestTaskManager(unittest.TestCase):
                         ]
                     }
                 },
-                "error": None
+                "error": None,
             },
             result,
         )
@@ -182,7 +182,7 @@ class TestTaskManager(unittest.TestCase):
                         ]
                     },
                 },
-                "error": None
+                "error": None,
             },
             result,
         )

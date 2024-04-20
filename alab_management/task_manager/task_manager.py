@@ -357,12 +357,11 @@ class TaskManager(RequestMixin):
                 },
             )
             # wait until the parsed_sample_positions_request is updated in the database
-            while (
-                self.get_request(
-                    request_entry["_id"], projection=["parsed_sample_positions_request"]
-                )["parsed_sample_positions_request"]
-                != [dict(spr) for spr in parsed_sample_positions_request]
-            ):
+            while self.get_request(
+                request_entry["_id"], projection=["parsed_sample_positions_request"]
+            )["parsed_sample_positions_request"] != [
+                dict(spr) for spr in parsed_sample_positions_request
+            ]:
                 time.sleep(0.1)
 
             sample_positions = self.sample_view.request_sample_positions(
@@ -385,9 +384,7 @@ class TaskManager(RequestMixin):
                 },
             )
             while (
-                self.get_request(request_entry["_id"], projection=["status"])[
-                    "status"
-                ]
+                self.get_request(request_entry["_id"], projection=["status"])["status"]
                 != RequestStatus.ERROR.name
             ):
                 time.sleep(0.1)
