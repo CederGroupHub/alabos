@@ -71,6 +71,11 @@ class UserInputView:
                 "request_context": context,
             }
         )
+        # Wait until the request is inserted
+        while (
+            self.get_request(request_id)["status"] != UserRequestStatus.PENDING.value
+        ):
+            time.sleep(0.1)
         if maintenance is True:
             category = "Maintenance"
         self._alarm.alert(f"User input requested: {prompt}", category)
@@ -105,7 +110,7 @@ class UserInputView:
         while (
             self.get_request(request_id)["status"] != UserRequestStatus.FULLFILLED.value
         ):
-            time.sleep(1)
+            time.sleep(0.1)
 
     def retrieve_user_input(self, request_id: ObjectId) -> str:
         """
@@ -119,7 +124,7 @@ class UserInputView:
             if request is None:
                 raise ValueError(f"User input request id {request_id} does not exist!")
             status = UserRequestStatus(request["status"])
-            time.sleep(1)
+            time.sleep(0.1)
         return request["response"]
 
     def clean_up_user_input_collection(self):

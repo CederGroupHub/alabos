@@ -118,17 +118,22 @@ class LabView:
         result = self._resource_requester.request_resources(
             resource_request=resource_request, timeout=timeout, priority=priority
         )
-        devices = result["devices"]
-        sample_positions = result["sample_positions"]
         request_id = result["request_id"]
-        devices = {
-            device_type: self._device_client.create_device_wrapper(device_name)
-            for device_type, device_name in devices.items()
-        }  # type: ignore
-        self._task_view.update_status(task_id=self.task_id, status=TaskStatus.RUNNING)
-        yield devices, sample_positions
+        error = result["error"]
+        if error:
+            self._resource_requester.release_resources(request_id=request_id)
+            raise error
+        else:
+            devices = result["devices"]
+            sample_positions = result["sample_positions"]
+            devices = {
+                device_type: self._device_client.create_device_wrapper(device_name)
+                for device_type, device_name in devices.items()
+            }  # type: ignore
+            self._task_view.update_status(task_id=self.task_id, status=TaskStatus.RUNNING)
+            yield devices, sample_positions
 
-        self._resource_requester.release_resources(request_id=request_id)
+            self._resource_requester.release_resources(request_id=request_id)
 
     def _sample_name_to_id(self, sample_name: str) -> ObjectId:
         """
@@ -179,7 +184,7 @@ class LabView:
         # check if this sample is owned by current task
         sample_entry = self.get_sample(sample=sample)
         if sample_entry.task_id != self._task_id:
-            raise ValueError("Cannot move a sample that is not belong to this task.")
+            raise ValueError("Cannot move a sample that does not belong to this task.")
 
         return self._sample_view.move_sample(
             sample_id=sample_entry.sample_id, position=position
