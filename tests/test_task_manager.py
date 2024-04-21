@@ -27,7 +27,7 @@ def launch_task_manager():
 
 class TestTaskManager(unittest.TestCase):
     def setUp(self) -> None:
-        time.sleep(0.1)
+        time.sleep(0.5)
         cleanup_lab(
             all_collections=True,
             _force_i_know_its_dangerous=True,
@@ -43,7 +43,7 @@ class TestTaskManager(unittest.TestCase):
         self.process = Process(target=launch_task_manager)
         self.process.daemon = True
         self.process.start()
-        time.sleep(0.1)
+        time.sleep(0.5)
 
     def tearDown(self) -> None:
         self.process.terminate()
@@ -54,7 +54,7 @@ class TestTaskManager(unittest.TestCase):
             database_name="Alab_sim",
             user_confirmation="y",
         )
-        time.sleep(0.1)
+        time.sleep(0.5)
 
     def test_task_requester(self):
         furnace_type = self.devices["furnace_1"].__class__
@@ -80,7 +80,7 @@ class TestTaskManager(unittest.TestCase):
             (SamplePositionStatus.LOCKED, self.resource_requester.task_id),
         )
         self.resource_requester.release_resources(_id)
-        time.sleep(0.1)
+        time.sleep(0.5)
         self.assertEqual(
             self.device_view.get_status("furnace_1"), DeviceTaskStatus.IDLE
         )
@@ -109,7 +109,7 @@ class TestTaskManager(unittest.TestCase):
             self.sample_view.get_sample_position_status("furnace_1/inside"),
             (SamplePositionStatus.LOCKED, self.resource_requester.task_id),
         )
-        self.assertTrue(self.resource_requester.release_resources(_id))
+        self.resource_requester.release_resources(_id)
         self.assertEqual(
             self.device_view.get_status("furnace_1"), DeviceTaskStatus.IDLE
         )

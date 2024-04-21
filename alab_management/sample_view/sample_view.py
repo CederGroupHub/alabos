@@ -121,7 +121,7 @@ class SampleView:
                     self._sample_positions_collection.insert_one(new_entry)
                     # Wait until the sample position is created
                     while self.get_sample_position(name) is None:
-                        time.sleep(0.1)
+                        time.sleep(0.5)
 
     def clean_up_sample_position_collection(self):
         """Drop the sample position collection."""
@@ -323,7 +323,7 @@ class SampleView:
         )
         # Wait until the position is locked successfully
         while not self.is_locked_position(position):
-            time.sleep(0.1)
+            time.sleep(0.5)
 
     def release_sample_position(self, position: str):
         """Unlock a sample position."""
@@ -340,7 +340,7 @@ class SampleView:
         )
         # Wait until the position is released successfully
         while self.is_locked_position(position):
-            time.sleep(0.1)
+            time.sleep(0.5)
 
     def get_sample_positions_by_task(self, task_id: ObjectId | None) -> list[str]:
         """Get the list of sample positions that is locked by a task (given task id)."""
@@ -396,7 +396,7 @@ class SampleView:
         result = self._sample_collection.insert_one(entry)
         # Wait until the sample is created
         while not self.exists(result.inserted_id):
-            time.sleep(0.1)
+            time.sleep(0.5)
         return cast(ObjectId, result.inserted_id)
 
     def get_sample(self, sample_id: ObjectId) -> Sample:
@@ -441,11 +441,6 @@ class SampleView:
                 }
             },
         )
-        # Wait until the task id is updated
-        while (
-            self._sample_collection.find_one({"_id": sample_id})["task_id"] != task_id
-        ):
-            time.sleep(0.1)
 
     def update_sample_metadata(self, sample_id: ObjectId, metadata: dict[str, Any]):
         """Update the metadata for a sample. This adds new metadata or updates existing metadata."""

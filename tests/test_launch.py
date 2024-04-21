@@ -14,7 +14,7 @@ from alab_management.task_view import TaskView
 
 class TestLaunch(unittest.TestCase):
     def setUp(self) -> None:
-        time.sleep(0.1)
+        time.sleep(0.5)
         cleanup_lab(
             all_collections=True,
             _force_i_know_its_dangerous=True,

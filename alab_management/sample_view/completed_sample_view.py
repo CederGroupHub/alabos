@@ -46,7 +46,7 @@ class CompletedSampleView:
                 self._completed_sample_collection.find_one({"_id": ObjectId(sample_id)})
                 is None
             ):
-                time.sleep(0.1)
+                time.sleep(0.5)
 
     def exists(self, sample_id: ObjectId | str) -> bool:
         """Check if a sample exists in the database.

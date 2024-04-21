@@ -128,7 +128,7 @@ class ExperimentView:
         )
         # Wait until experiment status is updated in the database
         while self.get_experiment(exp_id=exp_id)["status"] != status.name:
-            time.sleep(0.1)
+            time.sleep(0.5)
 
     def update_sample_task_id(
         self, exp_id, sample_ids: list[ObjectId], task_ids: list[ObjectId]
@@ -175,7 +175,7 @@ class ExperimentView:
             updated_task_ids = [task["task_id"] for task in experiment["tasks"]]
             if updated_sample_ids == sample_ids and updated_task_ids == task_ids:
                 update = "completed"
-            time.sleep(0.1)
+            time.sleep(0.5)
 
     def get_experiment_by_task_id(self, task_id: ObjectId) -> dict[str, Any] | None:
         """Get an experiment that contains a task with the given task_id."""

@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 from enum import Enum
 from typing import Any, cast
 
@@ -69,11 +70,12 @@ class UserInputView:
                 "options": [str(opt) for opt in options],
                 "status": UserRequestStatus.PENDING.value,
                 "request_context": context,
+                "last_updated": datetime.now(),
             }
         )
         # Wait until the request is inserted
-        while self.get_request(request_id)["status"] != UserRequestStatus.PENDING.value:
-            time.sleep(0.1)
+        while self.get_request(request_id) is None:
+            time.sleep(0.5)
         if maintenance is True:
             category = "Maintenance"
         self._alarm.alert(f"User input requested: {prompt}", category)
@@ -94,6 +96,7 @@ class UserInputView:
     def update_request_status(self, request_id: ObjectId, response: str, note: str):
         """Update the status of a request."""
         self.get_request(request_id)  # will error is request does not exist
+        previous_update_time = self.get_request(request_id)["last_updated"]
         self._input_collection.update_one(
             {"_id": request_id},
             {
@@ -101,14 +104,13 @@ class UserInputView:
                     "response": response,
                     "note": note,
                     "status": UserRequestStatus.FULLFILLED.value,
+                    "last_updated": datetime.now(),
                 }
             },
         )
         # Wait until the status is updated
-        while (
-            self.get_request(request_id)["status"] != UserRequestStatus.FULLFILLED.value
-        ):
-            time.sleep(0.1)
+        while self.get_request(request_id)["last_updated"] == previous_update_time:
+            time.sleep(0.5)
 
     def retrieve_user_input(self, request_id: ObjectId) -> str:
         """
@@ -122,7 +124,7 @@ class UserInputView:
             if request is None:
                 raise ValueError(f"User input request id {request_id} does not exist!")
             status = UserRequestStatus(request["status"])
-            time.sleep(0.1)
+            time.sleep(0.5)
         return request["response"]
 
     def clean_up_user_input_collection(self):

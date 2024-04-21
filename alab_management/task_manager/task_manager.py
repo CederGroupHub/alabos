@@ -124,7 +124,7 @@ class TaskManager(RequestMixin):
         """Start the loop."""
         while True:
             self._loop()
-            time.sleep(0.1)
+            time.sleep(0.5)
 
     def _loop(self):
         self.submit_ready_tasks()
@@ -362,7 +362,7 @@ class TaskManager(RequestMixin):
             )["parsed_sample_positions_request"] != [
                 dict(spr) for spr in parsed_sample_positions_request
             ]:
-                time.sleep(0.1)
+                time.sleep(0.5)
 
             sample_positions = self.sample_view.request_sample_positions(
                 task_id=task_id, sample_positions=parsed_sample_positions_request
@@ -387,7 +387,7 @@ class TaskManager(RequestMixin):
                 self.get_request(request_entry["_id"], projection=["status"])["status"]
                 != RequestStatus.ERROR.name
             ):
-                time.sleep(0.1)
+                time.sleep(0.5)
             return
 
         # if both devices and sample positions can be satisfied
@@ -419,7 +419,7 @@ class TaskManager(RequestMixin):
                 self._release_devices(devices)
                 self._release_sample_positions(sample_positions)
                 return
-            time.sleep(0.1)
+            time.sleep(0.5)
         # label the resources as occupied
         self._occupy_devices(devices=devices, task_id=task_id)
         self._occupy_sample_positions(

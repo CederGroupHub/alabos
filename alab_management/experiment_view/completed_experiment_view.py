@@ -54,7 +54,7 @@ class CompletedExperimentView:
                 )
                 is None
             ):
-                time.sleep(0.1)
+                time.sleep(0.5)
         else:
             self._completed_experiment_collection.insert_one(experiment_dict)
 

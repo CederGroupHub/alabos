@@ -47,7 +47,7 @@ class ExperimentManager:
         )
         while True:
             self._loop()
-            time.sleep(0.1)
+            time.sleep(0.5)
 
     def _loop(self):
         self.handle_pending_experiments()

@@ -80,7 +80,7 @@ class TaskView:
         result = self._task_collection.insert_one(entry)
         # Wait until the task is inserted
         while not self.exists(task_id=cast(ObjectId, result.inserted_id)):
-            time.sleep(0.1)
+            time.sleep(0.5)
 
         return cast(ObjectId, result.inserted_id)
 
@@ -115,7 +115,7 @@ class TaskView:
         )
         # Wait until the subtask is inserted
         while self.get_task(task_id=task_id)["last_updated"] == previous_update_time:
-            time.sleep(0.1)
+            time.sleep(0.5)
         return subtask_id
 
     def get_task(self, task_id: ObjectId, encode: bool = False) -> dict[str, Any]:
@@ -171,7 +171,7 @@ class TaskView:
             status: the new status of the task
         """
         task = self.get_task(task_id=task_id, encode=False)
-
+        previous_update_time = task["last_updated"]
         update_dict = {
             "status": status.name,
             "last_updated": datetime.now(),
@@ -186,8 +186,8 @@ class TaskView:
             {"$set": update_dict},
         )
         # Wait until the status is updated
-        while self.get_status(task_id=task_id).name != status.name:
-            time.sleep(0.1)
+        while self.get_task(task_id=task_id)["last_updated"] == previous_update_time:
+            time.sleep(0.5)
 
         if status is TaskStatus.COMPLETED:
             # try to figure out tasks that is READY
@@ -241,7 +241,7 @@ class TaskView:
                             self.get_task(task_id=next_task_id)["last_updated"]
                             == previous_update_time
                         ):
-                            time.sleep(0.1)
+                            time.sleep(0.5)
                         self.try_to_mark_task_ready(
                             task_id=next_task_id
                         )  # in case it was only waiting on task we just cancelled
@@ -274,7 +274,7 @@ class TaskView:
         )
         # Wait until the status is updated
         while self.get_task(task_id=task_id)["last_updated"] == previous_update_time:
-            time.sleep(0.1)
+            time.sleep(0.5)
 
     def update_result(
         self, task_id: ObjectId, name: str | None = None, value: Any = None
@@ -306,7 +306,7 @@ class TaskView:
         )
         # Wait until the status is updated
         while self.get_task(task_id=task_id)["last_updated"] == previous_update_time:
-            time.sleep(0.1)
+            time.sleep(0.5)
 
     def update_subtask_result(
         self, task_id: ObjectId, subtask_id: ObjectId, result: Any
@@ -345,7 +345,7 @@ class TaskView:
         )
         # Wait until the status is updated
         while self.get_task(task_id=task_id)["last_updated"] == previous_update_time:
-            time.sleep(0.1)
+            time.sleep(0.5)
 
     def try_to_mark_task_ready(self, task_id: ObjectId):
         """
@@ -451,7 +451,7 @@ class TaskView:
             self.get_task(task_id=task_id, encode=False)["last_updated"]
             == previous_update_time
         ):
-            time.sleep(0.1)
+            time.sleep(0.5)
 
     def set_message(self, task_id: ObjectId, message: str):
         """Set message for one task. This is displayed on the dashboard."""
@@ -467,7 +467,7 @@ class TaskView:
         )
         # Wait until the status is updated
         while self.get_task(task_id=task_id)["last_updated"] == previous_update_time:
-            time.sleep(0.1)
+            time.sleep(0.5)
 
     def set_task_actor_id(self, task_id: ObjectId, message_id: str):
         """
@@ -489,7 +489,7 @@ class TaskView:
         )
         # Wait until the status is updated
         while self.get_task(task_id=task_id)["last_updated"] == previous_update_time:
-            time.sleep(0.1)
+            time.sleep(0.5)
 
     def mark_task_as_cancelling(self, task_id: ObjectId):
         """
