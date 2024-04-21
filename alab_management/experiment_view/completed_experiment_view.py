@@ -1,6 +1,5 @@
 """A wrapper over the ``experiment`` class."""
 
-import time
 from typing import Any
 
 from bson import ObjectId  # type: ignore
@@ -47,14 +46,6 @@ class CompletedExperimentView:
                 filter={"_id": ObjectId(experiment_id)},
                 update={"$set": experiment_dict},
             )
-            # wait for the update to complete
-            while (
-                self._completed_experiment_collection.find_one(
-                    {"_id": ObjectId(experiment_id)}
-                )
-                is None
-            ):
-                time.sleep(0.5)
         else:
             self._completed_experiment_collection.insert_one(experiment_dict)
 

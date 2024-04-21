@@ -15,7 +15,7 @@ def launch_worker(args):
 
     args = make_argument_parser().parse_args(
         args=["alab_management.task_actor", *args],
-        namespace=Namespace(processes=12, threads=128),
+        namespace=Namespace(processes=6, threads=128),
     )
     launch(args=args)
     return True

@@ -68,7 +68,7 @@ class TestTaskManager(unittest.TestCase):
             {
                 "devices": {furnace_type: "furnace_1"},
                 "sample_positions": {furnace_type: {"inside": ["furnace_1/inside"]}},
-                "error": None,
+                "timeout_error": False,
             },
             result,
         )
@@ -98,7 +98,7 @@ class TestTaskManager(unittest.TestCase):
             {
                 "devices": {furnace_type: "furnace_1"},
                 "sample_positions": {furnace_type: {"inside": ["furnace_1/inside"]}},
-                "error": None,
+                "timeout_error": False,
             },
             result,
         )
@@ -127,7 +127,7 @@ class TestTaskManager(unittest.TestCase):
             {
                 "devices": {furnace_type: "furnace_1"},
                 "sample_positions": {furnace_type: {"inside": ["furnace_1/inside"]}},
-                "error": None,
+                "timeout_error": False,
             },
             result,
         )
@@ -152,7 +152,7 @@ class TestTaskManager(unittest.TestCase):
                         ]
                     }
                 },
-                "error": None,
+                "timeout_error": False,
             },
             result,
         )
@@ -182,7 +182,7 @@ class TestTaskManager(unittest.TestCase):
                         ]
                     },
                 },
-                "error": None,
+                "timeout_error": False,
             },
             result,
         )

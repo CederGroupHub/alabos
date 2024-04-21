@@ -119,10 +119,10 @@ class LabView:
             resource_request=resource_request, timeout=timeout, priority=priority
         )
         request_id = result["request_id"]
-        error = result["error"]
-        if error:
+        timeout_error = result["timeout_error"]
+        if timeout_error:
             self._resource_requester.release_resources(request_id=request_id)
-            raise error
+            raise TimeoutError
         else:
             devices = result["devices"]
             sample_positions = result["sample_positions"]
@@ -187,8 +187,7 @@ class LabView:
         sample_entry = self.get_sample(sample=sample)
         if sample_entry.task_id != self._task_id:
             raise ValueError("Cannot move a sample that does not belong to this task.")
-
-        return self._sample_view.move_sample(
+        self._sample_view.move_sample(
             sample_id=sample_entry.sample_id, position=position
         )
 

@@ -73,9 +73,6 @@ class UserInputView:
                 "last_updated": datetime.now(),
             }
         )
-        # Wait until the request is inserted
-        while self.get_request(request_id) is None:
-            time.sleep(0.5)
         if maintenance is True:
             category = "Maintenance"
         self._alarm.alert(f"User input requested: {prompt}", category)
@@ -96,7 +93,6 @@ class UserInputView:
     def update_request_status(self, request_id: ObjectId, response: str, note: str):
         """Update the status of a request."""
         self.get_request(request_id)  # will error is request does not exist
-        previous_update_time = self.get_request(request_id)["last_updated"]
         self._input_collection.update_one(
             {"_id": request_id},
             {
@@ -108,9 +104,6 @@ class UserInputView:
                 }
             },
         )
-        # Wait until the status is updated
-        while self.get_request(request_id)["last_updated"] == previous_update_time:
-            time.sleep(0.5)
 
     def retrieve_user_input(self, request_id: ObjectId) -> str:
         """

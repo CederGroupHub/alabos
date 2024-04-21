@@ -239,9 +239,9 @@ class ResourceRequester(RequestMixin):
             # wait for the request status to be updated
             while (self.get_request(_id, projection=["status"]))[
                 "status"
-            ] != "CANCELED":
+            ] != RequestStatus.CANCELED.name:
                 time.sleep(0.5)
-            return {"request_id": _id, "error": TimeoutError}
+            return {"request_id": _id, "timeout_error": True}
         return {
             **self._post_process_requested_resource(
                 devices=result["devices"],
@@ -249,7 +249,7 @@ class ResourceRequester(RequestMixin):
                 resource_request=resource_request,
             ),
             "request_id": result["request_id"],
-            "error": None,
+            "timeout_error": False,
         }
 
     def release_resources(self, request_id: ObjectId):
@@ -269,7 +269,7 @@ class ResourceRequester(RequestMixin):
         # wait for the request to update
         while (
             self.get_request(request_id, projection=["status"])["status"]
-            != "NEED_RELEASE"
+            != RequestStatus.NEED_RELEASE.name
         ):
             time.sleep(0.5)
 

@@ -119,9 +119,6 @@ class SampleView:
                     if parent_device_name:
                         new_entry["parent_device"] = parent_device_name
                     self._sample_positions_collection.insert_one(new_entry)
-                    # Wait until the sample position is created
-                    while self.get_sample_position(name) is None:
-                        time.sleep(0.5)
 
     def clean_up_sample_position_collection(self):
         """Drop the sample position collection."""

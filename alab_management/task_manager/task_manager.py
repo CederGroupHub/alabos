@@ -124,7 +124,7 @@ class TaskManager(RequestMixin):
         """Start the loop."""
         while True:
             self._loop()
-            time.sleep(0.5)
+            time.sleep(1)
 
     def _loop(self):
         self.submit_ready_tasks()
@@ -356,13 +356,6 @@ class TaskManager(RequestMixin):
                     }
                 },
             )
-            # wait until the parsed_sample_positions_request is updated in the database
-            while self.get_request(
-                request_entry["_id"], projection=["parsed_sample_positions_request"]
-            )["parsed_sample_positions_request"] != [
-                dict(spr) for spr in parsed_sample_positions_request
-            ]:
-                time.sleep(0.5)
 
             sample_positions = self.sample_view.request_sample_positions(
                 task_id=task_id, sample_positions=parsed_sample_positions_request
@@ -383,11 +376,6 @@ class TaskManager(RequestMixin):
                     }
                 },
             )
-            while (
-                self.get_request(request_entry["_id"], projection=["status"])["status"]
-                != RequestStatus.ERROR.name
-            ):
-                time.sleep(0.5)
             return
 
         # if both devices and sample positions can be satisfied

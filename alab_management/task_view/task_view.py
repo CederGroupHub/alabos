@@ -3,7 +3,6 @@ Tasks view is a convienent wrapper over the ``tasks`` collection in the database
 provides some convenience methods to query and manipulate the tasks collection.
 """
 
-import time
 from datetime import datetime
 from typing import Any, cast
 
@@ -78,9 +77,6 @@ class TaskView:
         if isinstance(task_id, ObjectId):
             entry["_id"] = task_id
         result = self._task_collection.insert_one(entry)
-        # Wait until the task is inserted
-        while not self.exists(task_id=cast(ObjectId, result.inserted_id)):
-            time.sleep(0.5)
 
         return cast(ObjectId, result.inserted_id)
 
@@ -103,7 +99,6 @@ class TaskView:
                 "last_updated": datetime.now(),
             }
         )
-        previous_update_time = task["last_updated"]
         self._task_collection.update_one(
             {"_id": task_id},
             {
@@ -113,9 +108,6 @@ class TaskView:
                 }
             },
         )
-        # Wait until the subtask is inserted
-        while self.get_task(task_id=task_id)["last_updated"] == previous_update_time:
-            time.sleep(0.5)
         return subtask_id
 
     def get_task(self, task_id: ObjectId, encode: bool = False) -> dict[str, Any]:
@@ -171,7 +163,6 @@ class TaskView:
             status: the new status of the task
         """
         task = self.get_task(task_id=task_id, encode=False)
-        previous_update_time = task["last_updated"]
         update_dict = {
             "status": status.name,
             "last_updated": datetime.now(),
@@ -185,9 +176,6 @@ class TaskView:
             {"_id": task_id},
             {"$set": update_dict},
         )
-        # Wait until the status is updated
-        while self.get_task(task_id=task_id)["last_updated"] == previous_update_time:
-            time.sleep(0.5)
 
         if status is TaskStatus.COMPLETED:
             # try to figure out tasks that is READY
@@ -223,7 +211,6 @@ class TaskView:
                             task_id=next_task_id, status=TaskStatus.CANCELLED
                         )
                     else:
-                        previous_update_time = next_task["last_updated"]
                         self._task_collection.update_one(
                             {"_id": next_task_id},
                             {
@@ -236,12 +223,6 @@ class TaskView:
                                 },
                             },
                         )
-                        # Wait until the status is updated
-                        while (
-                            self.get_task(task_id=next_task_id)["last_updated"]
-                            == previous_update_time
-                        ):
-                            time.sleep(0.5)
                         self.try_to_mark_task_ready(
                             task_id=next_task_id
                         )  # in case it was only waiting on task we just cancelled
@@ -267,14 +248,10 @@ class TaskView:
             raise ValueError(
                 f"No subtask found with id: {subtask_id} within task: {task_id}"
             )
-        previous_update_time = self.get_task(task_id=task_id)["last_updated"]
         self._task_collection.update_one(
             {"_id": task_id},
             {"$set": {"subtasks": subtasks, "last_updated": datetime.now()}},
         )
-        # Wait until the status is updated
-        while self.get_task(task_id=task_id)["last_updated"] == previous_update_time:
-            time.sleep(0.5)
 
     def update_result(
         self, task_id: ObjectId, name: str | None = None, value: Any = None
@@ -294,7 +271,6 @@ class TaskView:
         #     raise ValueError("Must provide a value to update result with!")
 
         update_path = "result" if name is None else f"result.{name}"
-        previous_update_time = self.get_task(task_id=task_id)["last_updated"]
         self._task_collection.update_one(
             {"_id": task_id},
             {
@@ -304,9 +280,6 @@ class TaskView:
                 }
             },
         )
-        # Wait until the status is updated
-        while self.get_task(task_id=task_id)["last_updated"] == previous_update_time:
-            time.sleep(0.5)
 
     def update_subtask_result(
         self, task_id: ObjectId, subtask_id: ObjectId, result: Any
@@ -333,7 +306,6 @@ class TaskView:
             raise ValueError(
                 f"No subtask found with id: {subtask_id} within task: {task_id}"
             )
-        previous_update_time = self.get_task(task_id=task_id)["last_updated"]
         self._task_collection.update_one(
             {"_id": task_id},
             {
@@ -343,9 +315,6 @@ class TaskView:
                 }
             },
         )
-        # Wait until the status is updated
-        while self.get_task(task_id=task_id)["last_updated"] == previous_update_time:
-            time.sleep(0.5)
 
     def try_to_mark_task_ready(self, task_id: ObjectId):
         """
@@ -431,9 +400,6 @@ class TaskView:
         for next_task in next_tasks:
             if self.get_task(task_id=next_task) is None:
                 raise ValueError(f"Non-exist task id: {next_task}")
-        previous_update_time = self.get_task(task_id=task_id, encode=False)[
-            "last_updated"
-        ]
         self._task_collection.update_one(
             {"_id": task_id},
             {
@@ -446,16 +412,9 @@ class TaskView:
                 },
             },
         )
-        # Wait until the status is updated
-        while (
-            self.get_task(task_id=task_id, encode=False)["last_updated"]
-            == previous_update_time
-        ):
-            time.sleep(0.5)
 
     def set_message(self, task_id: ObjectId, message: str):
         """Set message for one task. This is displayed on the dashboard."""
-        previous_update_time = self.get_task(task_id=task_id)["last_updated"]
         self._task_collection.update_one(
             {"_id": task_id},
             {
@@ -465,9 +424,6 @@ class TaskView:
                 }
             },
         )
-        # Wait until the status is updated
-        while self.get_task(task_id=task_id)["last_updated"] == previous_update_time:
-            time.sleep(0.5)
 
     def set_task_actor_id(self, task_id: ObjectId, message_id: str):
         """
@@ -477,7 +433,6 @@ class TaskView:
             task_id: the task id of the task
             message_id: a uid generated by dramatiq (message_id)
         """
-        previous_update_time = self.get_task(task_id=task_id)["last_updated"]
         self._task_collection.update_one(
             {"_id": task_id},
             {
@@ -487,9 +442,6 @@ class TaskView:
                 }
             },
         )
-        # Wait until the status is updated
-        while self.get_task(task_id=task_id)["last_updated"] == previous_update_time:
-            time.sleep(0.5)
 
     def mark_task_as_cancelling(self, task_id: ObjectId):
         """
