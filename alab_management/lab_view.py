@@ -5,6 +5,7 @@ the lab resources (devices and sample positions).
 It can also update the position of a sample in the lab.
 """
 
+import time
 from contextlib import contextmanager
 from traceback import format_exc
 from typing import Any
@@ -178,9 +179,22 @@ class LabView:
             and self._sample_view.get_sample_position_status(position)[1]
             != self._task_id
         ):
-            raise ValueError(
-                f"Cannot move sample to the new sample position ({position}) without locking it."
-            )
+            # Wait a few seconds for the sample position to be locked in case it is not
+            # locked by the current task yet.
+            for _ in range(5):
+                time.sleep(1)
+                if (
+                    self._sample_view.get_sample_position_status(position)[1]
+                    == self._task_id
+                ):
+                    break
+            if (
+                self._sample_view.get_sample_position_status(position)[1]
+                != self._task_id
+            ):
+                raise ValueError(
+                    f"Cannot move sample to the new sample position ({position}) without locking it."
+                )
 
         # check if this sample is owned by current task
         sample_entry = self.get_sample(sample=sample)
