@@ -365,6 +365,12 @@ class TaskManager(RequestMixin):
 
         # in case some errors happen, we will raise the error in the task process instead of the main process
         except Exception as error:  # pylint: disable=broad-except
+            # Request clean up if task can be identified, otherwise just update the request status
+            try:
+                if self.task_view.get_task(task_id):
+                    LabView(task_id=task_id).request_cleanup()
+            except ValueError:
+                pass
             self._request_collection.update_one(
                 {"_id": request_entry["_id"]},
                 {

@@ -15,6 +15,7 @@ from bson import ObjectId
 from pydantic import BaseModel, root_validator
 
 from alab_management.device_view.device import BaseDevice
+from alab_management.device_view.device_view import DeviceView
 from alab_management.sample_view.sample import SamplePosition
 from alab_management.sample_view.sample_view import SamplePositionRequest
 from alab_management.task_view import TaskPriority
@@ -134,6 +135,7 @@ class ResourceRequester(RequestMixin):
         self._request_collection = get_collection("requests")
         self._waiting: dict[ObjectId, dict[str, Any]] = {}
         self.task_id = task_id
+        self.device_view = DeviceView()
         self.priority: int | TaskPriority = (
             TaskPriority.NORMAL
         )  # will usually be overwritten by BaseTask instantiation.
@@ -294,7 +296,26 @@ class ResourceRequester(RequestMixin):
         For the requests that are not fulfilled, they will be marked as CANCELED.
 
         For the request that have been fulfilled, they will be marked as NEED_RELEASE.
+
+        For the request that have been errored, release assigned resources.
         """
+        if self.get_request(self.task_id)["status"] == RequestStatus.ERROR.name:
+            # If the request has assigned devices, release them
+            if "assigned_devices" in self.get_request(self.task_id):
+                for device in self.get_request(self.task_id)[
+                    "assigned_devices"
+                ].values():
+                    if device["need_release"]:
+                        self.device_view.release_device(device["name"])
+            # If the request has assigned sample positions, release them
+            if "assigned_sample_positions" in self.get_request(self.task_id):
+                for sample_position in self.get_request(self.task_id)[
+                    "assigned_sample_positions"
+                ].values():
+                    if sample_position["need_release"]:
+                        self.device_view.release_sample_position(
+                            sample_position["name"]
+                        )
         self._request_collection.update_many(
             {
                 "task_id": self.task_id,
