@@ -99,7 +99,7 @@ class RequestMixin:
         while (
             self.get_request(request_id, projection=["status"])["status"] != status.name
         ):
-            time.sleep(0.1)
+            time.sleep(0.5)
         return value_returned
 
     def get_request(self, request_id: ObjectId, **kwargs) -> dict[str, Any] | None:
@@ -219,15 +219,29 @@ class ResourceRequester(RequestMixin):
         self._waiting[_id] = {"f": f, "device_str_to_request": device_str_to_request}
 
         try:
-            result = f.result(timeout=timeout)
+            # wait for the request to be fulfilled
+            start_time = time.time()
+            while self.get_request(_id, projection=["status"])["status"] not in [
+                RequestStatus.FULFILLED.name,
+                RequestStatus.CANCELED.name,
+                RequestStatus.ERROR.name,
+            ]:
+                if timeout is not None and time.time() - start_time > timeout:
+                    raise TimeoutError
+                time.sleep(0.5)
+                remaining_time = (
+                    float(timeout - (time.time() - start_time)) if timeout else None
+                )
+
+            result = f.result(timeout=remaining_time)
         except TimeoutError:  # cancel the task if timeout
             self.update_request_status(request_id=_id, status=RequestStatus.CANCELED)
             # wait for the request status to be updated
             while (self.get_request(_id, projection=["status"]))[
                 "status"
             ] != "CANCELED":
-                time.sleep(0.1)
-            return {"request_id": result["request_id"], "error": TimeoutError}
+                time.sleep(0.5)
+            return {"request_id": _id, "error": TimeoutError}
         return {
             **self._post_process_requested_resource(
                 devices=result["devices"],
@@ -257,14 +271,14 @@ class ResourceRequester(RequestMixin):
             self.get_request(request_id, projection=["status"])["status"]
             != "NEED_RELEASE"
         ):
-            time.sleep(0.1)
+            time.sleep(0.5)
 
         # wait for the request to be released
         while (
             self.get_request(request_id, projection=["status"])["status"]
             != RequestStatus.RELEASED.name
         ):
-            time.sleep(0.1)
+            time.sleep(0.5)
 
     def release_all_resources(self):
         """
@@ -302,14 +316,14 @@ class ResourceRequester(RequestMixin):
             request["status"] == RequestStatus.NEED_RELEASE.name
             for request in self.get_requests_by_task_id(self.task_id)
         ):
-            time.sleep(0.1)
+            time.sleep(0.5)
 
         # wait for all the requests to be released
         while any(
             request["status"] != RequestStatus.RELEASED.name
             for request in self.get_requests_by_task_id(self.task_id)
         ):
-            time.sleep(0.1)
+            time.sleep(0.5)
 
     def _check_request_status_loop(self):
         while not self._stop:
@@ -323,7 +337,7 @@ class ResourceRequester(RequestMixin):
             except Exception:
                 print_exc()  # for debugging in the test
                 raise
-            time.sleep(0.1)
+            time.sleep(0.5)
 
     def _handle_fulfilled_request(self, request_id: ObjectId):
         entry = self.get_request(request_id)
