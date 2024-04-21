@@ -121,7 +121,6 @@ class LabView:
         request_id = result["request_id"]
         timeout_error = result["timeout_error"]
         if timeout_error:
-            self._resource_requester.release_resources(request_id=request_id)
             raise TimeoutError
         else:
             devices = result["devices"]

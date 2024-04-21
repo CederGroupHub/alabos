@@ -228,20 +228,27 @@ class ResourceRequester(RequestMixin):
             ]:
                 if timeout is not None and time.time() - start_time > timeout:
                     raise TimeoutError
-                time.sleep(0.5)
-                remaining_time = (
-                    float(timeout - (time.time() - start_time)) if timeout else None
-                )
+                time.sleep(0.1)
 
-            result = f.result(timeout=remaining_time)
-        except TimeoutError:  # cancel the task if timeout
-            self.update_request_status(request_id=_id, status=RequestStatus.CANCELED)
-            # wait for the request status to be updated
-            while (self.get_request(_id, projection=["status"]))[
-                "status"
-            ] != RequestStatus.CANCELED.name:
-                time.sleep(0.5)
-            return {"request_id": _id, "timeout_error": True}
+            result = f.result(timeout=None)
+        except (
+            TimeoutError
+        ):  # cancel the task if timeout, make sure it is not fulfilled
+            if (
+                self.get_request(_id, projection=["status"])["status"]
+                != RequestStatus.FULFILLED.name
+            ):
+                self.update_request_status(
+                    request_id=_id, status=RequestStatus.CANCELED
+                )
+                # wait for the request status to be updated
+                while (self.get_request(_id, projection=["status"]))[
+                    "status"
+                ] != RequestStatus.CANCELED.name:
+                    time.sleep(0.5)
+                return {"request_id": _id, "timeout_error": True}
+            else:  # if the request is fulfilled, return the result normally, wrong timeout
+                result = f.result(timeout=None)
         return {
             **self._post_process_requested_resource(
                 devices=result["devices"],

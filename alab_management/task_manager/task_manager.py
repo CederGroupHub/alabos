@@ -404,8 +404,6 @@ class TaskManager(RequestMixin):
                 ]
                 == RequestStatus.ERROR.name
             ):
-                self._release_devices(devices)
-                self._release_sample_positions(sample_positions)
                 return
             time.sleep(0.5)
         # label the resources as occupied
