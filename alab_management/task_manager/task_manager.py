@@ -303,8 +303,9 @@ class TaskManager(RequestMixin):
                 if task_status != TaskStatus.REQUESTING_RESOURCES:
                     # this implies the Task has been cancelled or errored somewhere else in the chain -- we should
                     # not allocate any resources to the broken Task.
+                    # TODO: maybe the request have assigned devices and sample_positions, we should release them
                     self.update_request_status(
-                        request_id=resource_request["_id"],
+                        request_id=request_entry["_id"],
                         status=RequestStatus.CANCELED,
                     )
                     return

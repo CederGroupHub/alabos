@@ -263,30 +263,48 @@ class ResourceRequester(RequestMixin):
 
     def release_resources(self, request_id: ObjectId):
         """Release a request by request_id."""
-        self._request_collection.update_one(
-            {
-                "_id": request_id,
-                "status": RequestStatus.FULFILLED.name,
-            },
-            {
-                "$set": {
-                    "status": RequestStatus.NEED_RELEASE.name,
-                }
-            },
-        )
+        # For the requests that were CANCELED or ERROR, but have assigned resources, release them
+        request = self.get_request(request_id)
+        if request["status"] in [RequestStatus.CANCELED.name, RequestStatus.ERROR.name]:
+            if ("assigned_devices" in request) or (
+                "assigned_sample_positions" in request
+            ):
+                self.update_request_status(request_id, RequestStatus.NEED_RELEASE)
+                # wait for the request to be updated to NEED_RELEASE or have been released
+                while self.get_request(request_id, projection=["status"])["status"] in [
+                    RequestStatus.CANCELED.name,
+                    RequestStatus.ERROR.name,
+                ]:
+                    time.sleep(0.5)
+            else:
+                # If it doesn't have assigned resources, just leave it as CANCELED or ERROR
+                return
+        # For the requests that were fulfilled, definitely have assigned resources, release them
+        elif request["status"] == RequestStatus.FULFILLED.name:
+            self._request_collection.update_one(
+                {
+                    "_id": request_id,
+                    "status": RequestStatus.FULFILLED.name,
+                },
+                {
+                    "$set": {
+                        "status": RequestStatus.NEED_RELEASE.name,
+                    }
+                },
+            )
+            # wait for the request to be updated to NEED_RELEASE or have been released
+            while (
+                self.get_request(request_id, projection=["status"])["status"]
+                == RequestStatus.FULFILLED.name
+            ):
+                time.sleep(0.5)
 
-        # wait for the request to update
-        while (
-            self.get_request(request_id, projection=["status"])["status"]
-            != RequestStatus.NEED_RELEASE.name
-        ):
-            time.sleep(0.5)
-
-        # wait for the request to be released
-        while (
-            self.get_request(request_id, projection=["status"])["status"]
-            != RequestStatus.RELEASED.name
-        ):
+        # wait for the request to be released or canceled or errored during the release
+        while self.get_request(request_id, projection=["status"])["status"] not in [
+            RequestStatus.RELEASED.name,
+            RequestStatus.CANCELED.name,
+            RequestStatus.ERROR.name,
+        ]:
             time.sleep(0.5)
 
     def release_all_resources(self):
@@ -299,23 +317,8 @@ class ResourceRequester(RequestMixin):
 
         For the request that have been errored, release assigned resources.
         """
-        if self.get_request(self.task_id)["status"] == RequestStatus.ERROR.name:
-            # If the request has assigned devices, release them
-            if "assigned_devices" in self.get_request(self.task_id):
-                for device in self.get_request(self.task_id)[
-                    "assigned_devices"
-                ].values():
-                    if device["need_release"]:
-                        self.device_view.release_device(device["name"])
-            # If the request has assigned sample positions, release them
-            if "assigned_sample_positions" in self.get_request(self.task_id):
-                for sample_position in self.get_request(self.task_id)[
-                    "assigned_sample_positions"
-                ].values():
-                    if sample_position["need_release"]:
-                        self.device_view.release_sample_position(
-                            sample_position["name"]
-                        )
+        # For the requests that were fulfilled, definitely have assigned resources, release them
+
         self._request_collection.update_many(
             {
                 "task_id": self.task_id,
@@ -327,7 +330,20 @@ class ResourceRequester(RequestMixin):
                 }
             },
         )
+        # For the requests that were CANCELED or ERROR, but have assigned resources, release them
+        assigned_cancel_error_requests_id = []
+        for request in self.get_requests_by_task_id(self.task_id):
+            if request["status"] in [
+                RequestStatus.CANCELED.name,
+                RequestStatus.ERROR.name,
+            ] and (
+                ("assigned_devices" in request)
+                or ("assigned_sample_positions" in request)
+            ):
+                self.update_request_status(request["_id"], RequestStatus.NEED_RELEASE)
+                assigned_cancel_error_requests_id.append(request["_id"])
 
+        # For the requests that were PENDING, mark them as CANCELED, they don't have assigned resources
         self._request_collection.update_many(
             {
                 "task_id": self.task_id,
@@ -341,14 +357,31 @@ class ResourceRequester(RequestMixin):
         )
         # wait for all the requests to be updated
         while any(
-            request["status"] == RequestStatus.NEED_RELEASE.name
+            request["status"]
+            in [RequestStatus.FULFILLED.name, RequestStatus.PENDING.name]
             for request in self.get_requests_by_task_id(self.task_id)
         ):
             time.sleep(0.5)
+        if assigned_cancel_error_requests_id:
+            # wait for the requests to be updated to updated to NEED_RELEASE or have been released
+            while any(
+                request["status"]
+                in [RequestStatus.CANCELED.name, RequestStatus.ERROR.name]
+                for request in self.get_requests_by_task_id(self.task_id)
+                if request["_id"] in assigned_cancel_error_requests_id
+            ):
+                time.sleep(0.5)
 
-        # wait for all the requests to be released
+        # wait for all the requests to be released or canceled or errored during the release
         while any(
-            request["status"] != RequestStatus.RELEASED.name
+            (
+                request["status"]
+                not in [
+                    RequestStatus.RELEASED.name,
+                    RequestStatus.CANCELED.name,
+                    RequestStatus.ERROR.name,
+                ]
+            )
             for request in self.get_requests_by_task_id(self.task_id)
         ):
             time.sleep(0.5)
