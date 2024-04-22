@@ -246,6 +246,8 @@ class TaskManager(RequestMixin):
             if message_id is not None:
                 abort(message_id=message_id)
                 # updating the status from CANCELLING to CANCELLED will be executed in task actor process
+                # TODO: sometimes this does not work, and the task remains in CANCELLING status. This is a known issue
+                # This will keep spamming abort messages to the task actor process, which is not ideal.
             else:
                 self.task_view.update_status(
                     task_id=task_entry["task_id"],
@@ -303,7 +305,6 @@ class TaskManager(RequestMixin):
                 if task_status != TaskStatus.REQUESTING_RESOURCES:
                     # this implies the Task has been cancelled or errored somewhere else in the chain -- we should
                     # not allocate any resources to the broken Task.
-                    # TODO: maybe the request have assigned devices and sample_positions, we should release them
                     self.update_request_status(
                         request_id=request_entry["_id"],
                         status=RequestStatus.CANCELED,
