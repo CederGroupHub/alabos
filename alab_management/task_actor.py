@@ -60,7 +60,12 @@ def run_task(task_id_str: str):
     logger = DBLogger(task_id=None)
 
     task_id = ObjectId(task_id_str)
-    if task_view.get_status(task_id) != TaskStatus.INITIATED:
+    if (task_status := task_view.get_status(task_id)) != TaskStatus.INITIATED:
+        if task_status == TaskStatus.CANCELLING:
+            task_view.update_status(task_id, TaskStatus.CANCELLING)
+            lab_view = LabView(task_id=task_id)
+            lab_view.request_cleanup()
+            return
         print(
             "Task status is not INITIATED; this implies the task has already been picked up by a previous task actor. "
             "No action is taken."
@@ -129,58 +134,75 @@ def run_task(task_id_str: str):
         # from Alab_one, for eg: Powder dosing. Powder dosing class will have a method "run".
         result = task.run()
     except Abort:
-        task_view.update_status(task_id=task_id, status=TaskStatus.CANCELLED)
-        task_view.set_message(
-            task_id=task_id, message="Task was cancelled due to the abort signal"
-        )  # display exception on the dashboard
-        logger.system_log(
-            level="ERROR",
-            log_data={
-                "logged_by": "TaskActor",
-                "type": "TaskEnd",
-                "task_id": task_id,
-                "task_type": task_type.__name__,
-                "status": TaskStatus.CANCELLED.name,
-                "traceback": "Task was cancelled due to the abort signal",
-            },
-        )
-        lab_view.request_cleanup()
+        while True:
+            try:
+                task_view.update_status(task_id=task_id, status=TaskStatus.CANCELLED)
+                task_view.set_message(
+                    task_id=task_id, message="Task was cancelled due to the abort signal"
+                )  # display exception on the dashboard
+                logger.system_log(
+                    level="ERROR",
+                    log_data={
+                        "logged_by": "TaskActor",
+                        "type": "TaskEnd",
+                        "task_id": task_id,
+                        "task_type": task_type.__name__,
+                        "status": TaskStatus.CANCELLED.name,
+                        "traceback": "Task was cancelled due to the abort signal",
+                    },
+                )
+                lab_view.request_cleanup()
+                break
+            except:
+                print("Encounter error, skipping and continue cleaning up.")
+                continue
     except Shutdown:
-        task_view.update_status(task_id=task_id, status=TaskStatus.STOPPED)
-        task_view.set_message(
-            task_id=task_id, message="Task was cancelled due to the worker shutdown"
-        )  # display exception on the dashboard
-        logger.system_log(
-            level="ERROR",
-            log_data={
-                "logged_by": "TaskActor",
-                "type": "TaskEnd",
-                "task_id": task_id,
-                "task_type": task_type.__name__,
-                "status": TaskStatus.STOPPED.name,
-                "traceback": "Task was cancelled due to the worker shutdown",
-            },
-        )
-        lab_view.request_cleanup()
+        while True:
+            try:
+                task_view.update_status(task_id=task_id, status=TaskStatus.STOPPED)
+                task_view.set_message(
+                    task_id=task_id, message="Task was cancelled due to the worker shutdown"
+                )  # display exception on the dashboard
+                logger.system_log(
+                    level="ERROR",
+                    log_data={
+                        "logged_by": "TaskActor",
+                        "type": "TaskEnd",
+                        "task_id": task_id,
+                        "task_type": task_type.__name__,
+                        "status": TaskStatus.STOPPED.name,
+                        "traceback": "Task was cancelled due to the worker shutdown",
+                    },
+                )
+                lab_view.request_cleanup()
+                break
+            except:
+                print("Encounter error, skipping and continue cleaning up.")
+                continue
     except Exception:
-        task_view.update_status(task_id=task_id, status=TaskStatus.ERROR)
-        formatted_exception = format_exc()
-        task_view.set_message(
-            task_id=task_id, message=formatted_exception
-        )  # display exception on the dashboard
-        logger.system_log(
-            level="ERROR",
-            log_data={
-                "logged_by": "TaskActor",
-                "type": "TaskEnd",
-                "task_id": task_id,
-                "task_type": task_type.__name__,
-                "status": "ERROR",
-                "traceback": formatted_exception,
-            },
-        )
-        lab_view.request_cleanup()
-        raise
+        while True:
+            try:
+                task_view.update_status(task_id=task_id, status=TaskStatus.ERROR)
+                formatted_exception = format_exc()
+                task_view.set_message(
+                    task_id=task_id, message=formatted_exception
+                )  # display exception on the dashboard
+                logger.system_log(
+                    level="ERROR",
+                    log_data={
+                        "logged_by": "TaskActor",
+                        "type": "TaskEnd",
+                        "task_id": task_id,
+                        "task_type": task_type.__name__,
+                        "status": "ERROR",
+                        "traceback": formatted_exception,
+                    },
+                )
+                lab_view.request_cleanup()
+                raise
+            except:
+                print("Encounter error, skipping and continue cleaning up.")
+                continue
     else:
         if result is None:
             pass
