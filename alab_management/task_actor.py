@@ -138,7 +138,8 @@ def run_task(task_id_str: str):
             try:
                 task_view.update_status(task_id=task_id, status=TaskStatus.CANCELLED)
                 task_view.set_message(
-                    task_id=task_id, message="Task was cancelled due to the abort signal"
+                    task_id=task_id,
+                    message="Task was cancelled due to the abort signal",
                 )  # display exception on the dashboard
                 logger.system_log(
                     level="ERROR",
@@ -153,7 +154,7 @@ def run_task(task_id_str: str):
                 )
                 lab_view.request_cleanup()
                 break
-            except:
+            except:  # noqa: E722
                 print("Encounter error, skipping and continue cleaning up.")
                 continue
     except Shutdown:
@@ -161,7 +162,8 @@ def run_task(task_id_str: str):
             try:
                 task_view.update_status(task_id=task_id, status=TaskStatus.STOPPED)
                 task_view.set_message(
-                    task_id=task_id, message="Task was cancelled due to the worker shutdown"
+                    task_id=task_id,
+                    message="Task was cancelled due to the worker shutdown",
                 )  # display exception on the dashboard
                 logger.system_log(
                     level="ERROR",
@@ -176,7 +178,7 @@ def run_task(task_id_str: str):
                 )
                 lab_view.request_cleanup()
                 break
-            except:
+            except:  # noqa: E722
                 print("Encounter error, skipping and continue cleaning up.")
                 continue
     except Exception:
@@ -200,7 +202,7 @@ def run_task(task_id_str: str):
                 )
                 lab_view.request_cleanup()
                 raise
-            except:
+            except:  # noqa: E722
                 print("Encounter error, skipping and continue cleaning up.")
                 continue
     else:

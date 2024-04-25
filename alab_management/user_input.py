@@ -116,11 +116,15 @@ class UserInputView:
             while status == UserRequestStatus.PENDING:
                 request = self._input_collection.find_one({"_id": request_id})
                 if request is None:
-                    raise ValueError(f"User input request id {request_id} does not exist!")
+                    raise ValueError(
+                        f"User input request id {request_id} does not exist!"
+                    )
                 status = UserRequestStatus(request["status"])
                 time.sleep(0.5)
         except:
-            self._input_collection.update_one({"_id": request_id}, {"$set": {"status": UserRequestStatus.ERROR.name}})
+            self._input_collection.update_one(
+                {"_id": request_id}, {"$set": {"status": UserRequestStatus.ERROR.name}}
+            )
             raise
         return request["response"]
 

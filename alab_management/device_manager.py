@@ -79,9 +79,9 @@ class DeviceWrapper:
 
         __str__ = __repr__
 
-        __len__ = __getattr__ = __getitem__ = __add__ = __sub__ = __eq__ = __lt__ = (
-            __gt__
-        ) = _raise
+        __len__ = (
+            __getattr__
+        ) = __getitem__ = __add__ = __sub__ = __eq__ = __lt__ = __gt__ = _raise
 
     def __init__(self, name: str, devices_client: "DevicesClient"):
         self._name = name
