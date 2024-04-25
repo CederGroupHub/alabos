@@ -121,7 +121,7 @@ class UserInputView:
                     )
                 status = UserRequestStatus(request["status"])
                 time.sleep(0.5)
-        except:
+        except:  # noqa: E722
             self._input_collection.update_one(
                 {"_id": request_id}, {"$set": {"status": UserRequestStatus.ERROR.name}}
             )
