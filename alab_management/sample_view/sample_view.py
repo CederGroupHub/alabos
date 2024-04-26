@@ -366,7 +366,13 @@ class SampleView:
         Samples with the same name can exist in the database
         """
         if position is not None and not self.is_unoccupied_position(position):
-            raise ValueError(f"Requested position ({position}) is not EMPTY.")
+            # Wait a bit to see if it is actually locked
+            for _ in range(5):
+                time.sleep(1)
+                if self.is_unoccupied_position(position):
+                    break
+            if not self.is_unoccupied_position(position):
+                raise ValueError(f"Requested position ({position}) is not EMPTY.")
 
         if re.search(r"[.$]", name) is not None:
             raise ValueError(
@@ -462,9 +468,15 @@ class SampleView:
             return
 
         if position is not None and not self.is_unoccupied_position(position):
-            raise ValueError(
-                f"Requested position ({position}) is not EMPTY or LOCKED by other task."
-            )
+            # Wait a bit to see if it is actually locked
+            for _ in range(5):
+                time.sleep(1)
+                if self.is_unoccupied_position(position):
+                    break
+            if not self.is_unoccupied_position(position):
+                raise ValueError(
+                    f"Requested position ({position}) is not EMPTY or LOCKED by other task."
+                )
         self._sample_collection.update_one(
             {"_id": sample_id},
             {
