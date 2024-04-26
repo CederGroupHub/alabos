@@ -527,10 +527,11 @@ class DeviceView:
         """Request pause for a specific device."""
         # with self._lock():
         device = self.get_device(device_name=device_name)
-        if device["status"] == DeviceTaskStatus.IDLE.name:
-            new_pause_status = DevicePauseStatus.PAUSED.name
-        else:
-            new_pause_status = DevicePauseStatus.REQUESTED.name
+        new_pause_status = (
+            DevicePauseStatus.PAUSED.name
+            if device["status"] == DeviceTaskStatus.IDLE.name
+            else DevicePauseStatus.REQUESTED.name
+        )
 
         self._device_collection.update_one(
             {"name": device_name},
