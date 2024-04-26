@@ -156,7 +156,7 @@ def run_task(task_id_str: str):
                 break
             except:  # noqa: E722
                 print("Encounter error, skipping and continue cleaning up.")
-                continue
+                pass
     except Shutdown:
         while True:
             try:
@@ -180,7 +180,7 @@ def run_task(task_id_str: str):
                 break
             except:  # noqa: E722
                 print("Encounter error, skipping and continue cleaning up.")
-                continue
+                pass
     except Exception:
         while True:
             try:
@@ -201,10 +201,11 @@ def run_task(task_id_str: str):
                     },
                 )
                 lab_view.request_cleanup()
-                raise
+                break
             except:  # noqa: E722
                 print("Encounter error, skipping and continue cleaning up.")
-                continue
+                pass
+        raise
     else:
         if result is None:
             pass
