@@ -84,7 +84,7 @@ def launch_lab(host, port, debug):
     task_launcher_thread.start()
 
     while True:
-        time.sleep(1)
+        time.sleep(1.5)
         if not experiment_manager_thread.is_alive():
             sys.exit(1001)
 

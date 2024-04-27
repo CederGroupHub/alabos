@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 from enum import Enum
 from typing import Any, cast
 
@@ -69,6 +70,7 @@ class UserInputView:
                 "options": [str(opt) for opt in options],
                 "status": UserRequestStatus.PENDING.value,
                 "request_context": context,
+                "last_updated": datetime.now(),
             }
         )
         if maintenance is True:
@@ -98,6 +100,7 @@ class UserInputView:
                     "response": response,
                     "note": note,
                     "status": UserRequestStatus.FULLFILLED.value,
+                    "last_updated": datetime.now(),
                 }
             },
         )
@@ -109,12 +112,20 @@ class UserInputView:
         Returns the user response, which is one of a list of options
         """
         status = UserRequestStatus.PENDING
-        while status == UserRequestStatus.PENDING:
-            request = self._input_collection.find_one({"_id": request_id})
-            if request is None:
-                raise ValueError(f"User input request id {request_id} does not exist!")
-            status = UserRequestStatus(request["status"])
-            time.sleep(1)
+        try:
+            while status == UserRequestStatus.PENDING:
+                request = self._input_collection.find_one({"_id": request_id})
+                if request is None:
+                    raise ValueError(
+                        f"User input request id {request_id} does not exist!"
+                    )
+                status = UserRequestStatus(request["status"])
+                time.sleep(0.5)
+        except:  # noqa: E722
+            self._input_collection.update_one(
+                {"_id": request_id}, {"$set": {"status": UserRequestStatus.ERROR.name}}
+            )
+            raise
         return request["response"]
 
     def clean_up_user_input_collection(self):

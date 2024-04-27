@@ -124,7 +124,7 @@ class TaskManager(RequestMixin):
         """Start the loop."""
         while True:
             self._loop()
-            time.sleep(2)
+            time.sleep(1)
 
     def _loop(self):
         self.submit_ready_tasks()
@@ -246,6 +246,8 @@ class TaskManager(RequestMixin):
             if message_id is not None:
                 abort(message_id=message_id)
                 # updating the status from CANCELLING to CANCELLED will be executed in task actor process
+                # TODO: sometimes this does not work, and the task remains in CANCELLING status. This is a known issue
+                # This will keep spamming abort messages to the task actor process, which is not ideal.
             else:
                 self.task_view.update_status(
                     task_id=task_entry["task_id"],
@@ -304,7 +306,7 @@ class TaskManager(RequestMixin):
                     # this implies the Task has been cancelled or errored somewhere else in the chain -- we should
                     # not allocate any resources to the broken Task.
                     self.update_request_status(
-                        request_id=resource_request["_id"],
+                        request_id=request_entry["_id"],
                         status=RequestStatus.CANCELED,
                     )
                     return
@@ -356,6 +358,7 @@ class TaskManager(RequestMixin):
                     }
                 },
             )
+
             sample_positions = self.sample_view.request_sample_positions(
                 task_id=task_id, sample_positions=parsed_sample_positions_request
             )
@@ -364,6 +367,12 @@ class TaskManager(RequestMixin):
 
         # in case some errors happen, we will raise the error in the task process instead of the main process
         except Exception as error:  # pylint: disable=broad-except
+            # Request clean up if task can be identified, otherwise just update the request status
+            try:
+                if self.task_view.get_task(task_id):
+                    LabView(task_id=task_id).request_cleanup()
+            except ValueError:
+                pass
             self._request_collection.update_one(
                 {"_id": request_entry["_id"]},
                 {
@@ -389,6 +398,22 @@ class TaskManager(RequestMixin):
                 }
             },
         )
+        # Wait until the status of the request is updated in the database
+        while (
+            self.get_request(request_entry["_id"], projection=["status"])["status"]
+            != RequestStatus.FULFILLED.name
+        ):
+            # handle if the request is cancelled or errored during the wait
+            if (
+                self.get_request(request_entry["_id"], projection=["status"])["status"]
+                == RequestStatus.CANCELED.name
+                or self.get_request(request_entry["_id"], projection=["status"])[
+                    "status"
+                ]
+                == RequestStatus.ERROR.name
+            ):
+                return
+            time.sleep(0.5)
         # label the resources as occupied
         self._occupy_devices(devices=devices, task_id=task_id)
         self._occupy_sample_positions(

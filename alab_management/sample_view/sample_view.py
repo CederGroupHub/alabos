@@ -1,6 +1,7 @@
 """A wrapper over the ``samples`` and ``sample_positions`` collections."""
 
 import re
+import time
 from datetime import datetime
 from enum import Enum, auto
 from typing import Any, cast
@@ -245,6 +246,13 @@ class SampleView:
             is not SamplePositionStatus.OCCUPIED
         )
 
+    def is_locked_position(self, position: str) -> bool:
+        """Tell if a sample position is locked or not."""
+        sample_position = self.get_sample_position(position=position)
+        if sample_position is None:
+            raise ValueError(f"Invalid sample position: {position}")
+        return sample_position["task_id"] is not None
+
     def get_available_sample_position(
         self, task_id: ObjectId, position_prefix: str
     ) -> list[dict[str, str | bool]]:
@@ -310,6 +318,9 @@ class SampleView:
                 }
             },
         )
+        # Wait until the position is locked successfully
+        while not self.is_locked_position(position):
+            time.sleep(0.5)
 
     def release_sample_position(self, position: str):
         """Unlock a sample position."""
@@ -324,6 +335,9 @@ class SampleView:
                 }
             },
         )
+        # Wait until the position is released successfully
+        while self.is_locked_position(position):
+            time.sleep(0.5)
 
     def get_sample_positions_by_task(self, task_id: ObjectId | None) -> list[str]:
         """Get the list of sample positions that is locked by a task (given task id)."""
@@ -352,14 +366,19 @@ class SampleView:
         Samples with the same name can exist in the database
         """
         if position is not None and not self.is_unoccupied_position(position):
-            raise ValueError(f"Requested position ({position}) is not EMPTY.")
+            # Wait a bit to see if it is actually locked
+            for _ in range(5):
+                time.sleep(1)
+                if self.is_unoccupied_position(position):
+                    break
+            if not self.is_unoccupied_position(position):
+                raise ValueError(f"Requested position ({position}) is not EMPTY.")
 
         if re.search(r"[.$]", name) is not None:
             raise ValueError(
                 f"Unsupported sample name: {name}. "
                 f"Sample name should not contain '.' or '$'"
             )
-
         entry = {
             "name": name,
             "tags": tags or [],
@@ -378,7 +397,9 @@ class SampleView:
             entry["_id"] = sample_id
 
         result = self._sample_collection.insert_one(entry)
-
+        # Wait until the sample is created
+        while not self.exists(result.inserted_id):
+            time.sleep(0.5)
         return cast(ObjectId, result.inserted_id)
 
     def get_sample(self, sample_id: ObjectId) -> Sample:
@@ -432,7 +453,6 @@ class SampleView:
 
         update_dict = {f"metadata.{k}": v for k, v in metadata.items()}
         update_dict["last_updated"] = datetime.now()
-
         self._sample_collection.update_one(
             {"_id": sample_id},
             {"$set": update_dict},
@@ -448,10 +468,15 @@ class SampleView:
             return
 
         if position is not None and not self.is_unoccupied_position(position):
-            raise ValueError(
-                f"Requested position ({position}) is not EMPTY or LOCKED by other task."
-            )
-
+            # Wait a bit to see if it is actually locked
+            for _ in range(5):
+                time.sleep(1)
+                if self.is_unoccupied_position(position):
+                    break
+            if not self.is_unoccupied_position(position):
+                raise ValueError(
+                    f"Requested position ({position}) is not EMPTY or LOCKED by other task."
+                )
         self._sample_collection.update_one(
             {"_id": sample_id},
             {

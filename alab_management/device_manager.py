@@ -6,6 +6,7 @@ redirect all the method calls to the real device object via RabbitMQ. The real d
 DeviceManager class, which will handle all the request to run certain methods on the real device.
 """
 
+import time
 from collections.abc import Callable
 from concurrent.futures import Future
 from enum import Enum, auto
@@ -180,11 +181,27 @@ class DeviceManager:
                 or device_entry["status"] != DeviceTaskStatus.OCCUPIED.name
                 or device_entry["task_id"] != ObjectId(task_id)
             ):
-                device_task_id = str(device_entry["task_id"])
-                raise PermissionError(
-                    f"Currently the task ({task_id}) "
-                    f"does not occupy this device: {device}, which is currently occupied by task {device_task_id}"
-                )
+                if device_entry is None:
+                    raise PermissionError("There is no such device in the device view.")
+                if device_entry["status"] != DeviceTaskStatus.OCCUPIED.name:
+                    # Wait a few seconds for the device to be OCCUPIED.
+                    for _ in range(5):
+                        time.sleep(1)
+                        device_entry: dict[str, Any] | None = (
+                            self._device_view.get_device(device)
+                        )
+                        if device_entry["status"] == DeviceTaskStatus.OCCUPIED.name:
+                            break
+                    if device_entry["status"] != DeviceTaskStatus.OCCUPIED.name:
+                        raise PermissionError(
+                            f"Currently the device ({device}) is NOT OCCUPIED, it is currently in status {device_entry['status']}"
+                        )
+                if device_entry["task_id"] != ObjectId(task_id):
+                    device_task_id = str(device_entry["task_id"])
+                    raise PermissionError(
+                        f"Currently the task ({task_id}) "
+                        f"does not occupy this device: {device}, which is currently occupied by task {device_task_id}"
+                    )
 
             result = self._device_view.execute_command(device, method, *args, **kwargs)
             response = {"status": "success", "result": result}

@@ -54,7 +54,7 @@ class TestDeviceView(TestCase):
                 task_id=task_id, device_types_str=device_list
             )
             cnt += 1
-            time.sleep(0.1)
+            time.sleep(0.5)
 
         if devices is not None:
             occupy_devices(devices, self.device_view, task_id)

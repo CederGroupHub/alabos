@@ -5,6 +5,7 @@ the lab resources (devices and sample positions).
 It can also update the position of a sample in the lab.
 """
 
+import time
 from contextlib import contextmanager
 from traceback import format_exc
 from typing import Any
@@ -118,17 +119,23 @@ class LabView:
         result = self._resource_requester.request_resources(
             resource_request=resource_request, timeout=timeout, priority=priority
         )
-        devices = result["devices"]
-        sample_positions = result["sample_positions"]
         request_id = result["request_id"]
-        devices = {
-            device_type: self._device_client.create_device_wrapper(device_name)
-            for device_type, device_name in devices.items()
-        }  # type: ignore
-        self._task_view.update_status(task_id=self.task_id, status=TaskStatus.RUNNING)
-        yield devices, sample_positions
+        timeout_error = result["timeout_error"]
+        if timeout_error:
+            raise TimeoutError
+        else:
+            devices = result["devices"]
+            sample_positions = result["sample_positions"]
+            devices = {
+                device_type: self._device_client.create_device_wrapper(device_name)
+                for device_type, device_name in devices.items()
+            }  # type: ignore
+            self._task_view.update_status(
+                task_id=self.task_id, status=TaskStatus.RUNNING
+            )
+            yield devices, sample_positions
 
-        self._resource_requester.release_resources(request_id=request_id)
+            self._resource_requester.release_resources(request_id=request_id)
 
     def _sample_name_to_id(self, sample_name: str) -> ObjectId:
         """
@@ -172,16 +179,28 @@ class LabView:
             and self._sample_view.get_sample_position_status(position)[1]
             != self._task_id
         ):
-            raise ValueError(
-                f"Cannot move sample to the new sample position ({position}) without locking it."
-            )
+            # Wait a few seconds for the sample position to be locked in case it is not
+            # locked by the current task yet.
+            for _ in range(5):
+                time.sleep(1)
+                if (
+                    self._sample_view.get_sample_position_status(position)[1]
+                    == self._task_id
+                ):
+                    break
+            if (
+                self._sample_view.get_sample_position_status(position)[1]
+                != self._task_id
+            ):
+                raise ValueError(
+                    f"Cannot move sample to the new sample position ({position}) without locking it."
+                )
 
         # check if this sample is owned by current task
         sample_entry = self.get_sample(sample=sample)
         if sample_entry.task_id != self._task_id:
-            raise ValueError("Cannot move a sample that is not belong to this task.")
-
-        return self._sample_view.move_sample(
+            raise ValueError("Cannot move a sample that does not belong to this task.")
+        self._sample_view.move_sample(
             sample_id=sample_entry.sample_id, position=position
         )
 
