@@ -33,7 +33,7 @@ class TestDeviceManager(TestCase):
         self.process = Process(target=launch_device_manager)
         self.process.daemon = False
         self.process.start()
-        time.sleep(1.5)
+        time.sleep(1)
 
     def tearDown(self):
         self.process.terminate()

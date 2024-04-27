@@ -62,7 +62,7 @@ class TestSampleView(TestCase):
                 task_id=task_id, sample_positions=sample_positions_list
             )
             cnt += 1
-            time.sleep(0.1)
+            time.sleep(0.5)
 
         if sample_positions is not None:
             occupy_sample_positions(sample_positions, self.sample_view, task_id)

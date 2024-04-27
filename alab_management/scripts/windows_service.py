@@ -84,7 +84,7 @@ class alabosService(win32serviceutil.ServiceFramework):
             self.worker_process.daemon = False
             self.worker_process.start()
             while self.running:
-                time.sleep(0.1)
+                time.sleep(0.5)
                 if not self.alabos_thread.is_alive() and not self.warned:
                     print("AlabOS thread is dead")
                     user_input_view._alarm.alert(

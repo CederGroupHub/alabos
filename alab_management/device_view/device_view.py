@@ -1,5 +1,6 @@
 """Wrapper over the ``devices`` collection."""
 
+import time
 from collections.abc import Collection
 from datetime import datetime
 from enum import Enum, auto, unique
@@ -198,11 +199,23 @@ class DeviceView:
                 )
                 if not result:
                     return None
-                # just pick the first device
-                idle_devices[device] = next(
-                    filter(lambda device_: not device_["need_release"], result),
-                    result[0],
+                same_task_devices = list(
+                    filter(lambda device_: not device_["need_release"], result)
                 )
+                if len(same_task_devices) > 0:
+                    # just pick the first device
+                    idle_devices[device] = same_task_devices[0]
+                else:
+                    # if no device is held by the same task, pick the device with least samples
+                    minimum_number_of_samples = 999999999
+                    for device_ in result:
+                        samples_on_device_ = self.get_samples_on_device(device_["name"])
+                        number_of_samples_in_device_ = sum(
+                            len(samples) for samples in samples_on_device_.values()
+                        )
+                        if number_of_samples_in_device_ < minimum_number_of_samples:
+                            minimum_number_of_samples = number_of_samples_in_device_
+                            idle_devices[device] = device_
             return idle_devices
 
     def get_available_devices(
@@ -273,7 +286,6 @@ class DeviceView:
     def get_status(self, device_name: str) -> DeviceTaskStatus:
         """Get device status by device name, if not found, raise ``ValueError``."""
         device_entry = self.get_device(device_name=device_name)
-
         return DeviceTaskStatus[device_entry["status"]]
 
     def occupy_device(self, device: BaseDevice | str, task_id: ObjectId):
@@ -284,6 +296,13 @@ class DeviceView:
             target_status=DeviceTaskStatus.OCCUPIED,
             task_id=task_id,
         )
+        device_name = device.name if isinstance(device, BaseDevice) else device
+        # Wait until the device status has been updated to OCCUPIED
+        while (
+            self.get_status(device_name=device_name).name
+            != DeviceTaskStatus.OCCUPIED.name
+        ):
+            time.sleep(0.5)
 
     def get_devices_by_task(self, task_id: ObjectId | None) -> list[BaseDevice]:
         """Get devices given a task id (regardless of its status!)."""
@@ -320,6 +339,9 @@ class DeviceView:
             {"name": device_name},
             {"$set": update_dict},
         )
+        # wait until the device status has been updated to IDLE
+        while self.get_status(device_name=device_name).name != "IDLE":
+            time.sleep(0.5)
 
     def get_samples_on_device(self, device_name: str):
         """Get all samples on a device."""
@@ -373,7 +395,6 @@ class DeviceView:
                 f"not in allowed set of statuses {[status.name for status in required_status]}. "
                 f"Cannot change status to {target_status.name}"
             )
-
         self._device_collection.update_one(
             {"name": device_name},
             {
@@ -420,12 +441,12 @@ class DeviceView:
             message (str): message to be set
         """
         self.get_device(device_name=device_name)
-
         self._device_collection.update_one(
-            {"name": device_name}, {"$set": {"message": message}}
+            {"name": device_name},
+            {"$set": {"message": message, "last_updated": datetime.now()}},
         )
 
-    def get_message(self, device_name: str):
+    def get_message(self, device_name: str) -> str:
         """Gets the current device message. Message is used to communicate device state with the user dashboard.
 
         Args:
@@ -433,7 +454,7 @@ class DeviceView:
         """
         return self.get_device(device_name=device_name)["message"]
 
-    def get_all_attributes(self, device_name: str):
+    def get_all_attributes(self, device_name: str) -> dict[str, Any]:
         """Returns the device attributes.
 
         Args:
@@ -446,7 +467,7 @@ class DeviceView:
         device = self.get_device(device_name=device_name)
         return device["attributes"]
 
-    def get_attribute(self, device_name: str, attribute: str):
+    def get_attribute(self, device_name: str, attribute: str) -> Any:
         """Gets a device attribute. Attributes are used to store device-specific values in the database.
 
         Args:
@@ -472,7 +493,6 @@ class DeviceView:
             attributes (dict): attributes to be set
         """
         self.get_device(device_name=device_name)
-
         self._device_collection.update_one(
             {"name": device_name},
             {
@@ -493,7 +513,6 @@ class DeviceView:
         """
         attributes = self.get_all_attributes(device_name=device_name)
         attributes[attribute] = value
-
         self._device_collection.update_one(
             {"name": device_name},
             {
@@ -508,10 +527,11 @@ class DeviceView:
         """Request pause for a specific device."""
         # with self._lock():
         device = self.get_device(device_name=device_name)
-        if device["status"] == DeviceTaskStatus.IDLE.name:
-            new_pause_status = DevicePauseStatus.PAUSED.name
-        else:
-            new_pause_status = DevicePauseStatus.REQUESTED.name
+        new_pause_status = (
+            DevicePauseStatus.PAUSED.name
+            if device["status"] == DeviceTaskStatus.IDLE.name
+            else DevicePauseStatus.REQUESTED.name
+        )
 
         self._device_collection.update_one(
             {"name": device_name},

@@ -41,7 +41,7 @@ class MongoLock:
             try:
                 self._lock_collection.insert_one({"_id": self._name})
             except DuplicateKeyError:
-                time.sleep(0.1)
+                time.sleep(0.5)
                 continue
             else:
                 self._locked = True

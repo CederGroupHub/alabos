@@ -32,10 +32,11 @@ def load_definition():
     working_dir = config["general"]["working_dir"]
 
     dir_to_import_from = copy(working_dir)
-    if os.path.isabs(dir_to_import_from):
-        dir_to_import_from = Path(dir_to_import_from)
-    else:
-        dir_to_import_from = config.path.parent / dir_to_import_from
+    dir_to_import_from = (
+        Path(dir_to_import_from)
+        if os.path.isabs(dir_to_import_from)
+        else config.path.parent / dir_to_import_from
+    )
 
     import_module_from_path(dir_to_import_from)
 

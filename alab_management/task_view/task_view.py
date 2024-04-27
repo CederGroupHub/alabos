@@ -98,7 +98,6 @@ class TaskView:
                 "last_updated": datetime.now(),
             }
         )
-
         self._task_collection.update_one(
             {"_id": task_id},
             {
@@ -165,7 +164,6 @@ class TaskView:
         self._check_allow_update_status()
 
         task = self.get_task(task_id=task_id, encode=False)
-
         update_dict = {
             "status": status.name,
             "last_updated": datetime.now(),
@@ -251,10 +249,9 @@ class TaskView:
             raise ValueError(
                 f"No subtask found with id: {subtask_id} within task: {task_id}"
             )
-
         self._task_collection.update_one(
             {"_id": task_id},
-            {"$set": {"subtasks": subtasks}},
+            {"$set": {"subtasks": subtasks, "last_updated": datetime.now()}},
         )
 
     def update_result(
@@ -275,7 +272,6 @@ class TaskView:
         #     raise ValueError("Must provide a value to update result with!")
 
         update_path = "result" if name is None else f"result.{name}"
-
         self._task_collection.update_one(
             {"_id": task_id},
             {
@@ -311,7 +307,6 @@ class TaskView:
             raise ValueError(
                 f"No subtask found with id: {subtask_id} within task: {task_id}"
             )
-
         self._task_collection.update_one(
             {"_id": task_id},
             {
@@ -408,7 +403,6 @@ class TaskView:
         for next_task in next_tasks:
             if self.get_task(task_id=next_task) is None:
                 raise ValueError(f"Non-exist task id: {next_task}")
-
         self._task_collection.update_one(
             {"_id": task_id},
             {
