@@ -36,7 +36,7 @@ class ParameterError(Exception):
     max_retries=0,
     time_limit=30 * 24 * 60 * 60 * 1000,
     notify_shutdown=True,
-)  # TODO time limit is set in ms. currently set to 30 days
+)  # time limit is set in ms. currently set to 30 days
 def run_task(task_id_str: str):
     """Submit a task. In this system, each task is run in an
     independent process, which will try to acquire device and
@@ -129,62 +129,45 @@ def run_task(task_id_str: str):
         # from Alab_one, for eg: Powder dosing. Powder dosing class will have a method "run".
         result = task.run()
     except Abort:
-        task_view.update_status(task_id=task_id, status=TaskStatus.CANCELLED)
+        # task_view.update_status(task_id=task_id, status=TaskStatus.CANCELLED)
         task_view.set_message(
             task_id=task_id, message="Task was cancelled due to the abort signal"
         )  # display exception on the dashboard
-        logger.system_log(
-            level="ERROR",
-            log_data={
-                "logged_by": "TaskActor",
-                "type": "TaskEnd",
-                "task_id": task_id,
-                "task_type": task_type.__name__,
-                "status": TaskStatus.CANCELLED.name,
-                "traceback": "Task was cancelled due to the abort signal",
-            },
-        )
-        lab_view.request_cleanup()
-    except Shutdown:
-        task_view.update_status(task_id=task_id, status=TaskStatus.STOPPED)
-        task_view.set_message(
-            task_id=task_id, message="Task was cancelled due to the worker shutdown"
-        )  # display exception on the dashboard
-        logger.system_log(
-            level="ERROR",
-            log_data={
-                "logged_by": "TaskActor",
-                "type": "TaskEnd",
-                "task_id": task_id,
-                "task_type": task_type.__name__,
-                "status": TaskStatus.STOPPED.name,
-                "traceback": "Task was cancelled due to the worker shutdown",
-            },
-        )
-        lab_view.request_cleanup()
+        # logger.system_log(
+        #     level="ERROR",
+        #     log_data={
+        #         "logged_by": "TaskActor",
+        #         "type": "TaskEnd",
+        #         "task_id": task_id,
+        #         "task_type": task_type.__name__,
+        #         "status": TaskStatus.CANCELLED.name,
+        #         "traceback": "Task was cancelled due to the abort signal",
+        #     },
+        # )
+        # lab_view.request_cleanup()
     except Exception:
-        task_view.update_status(task_id=task_id, status=TaskStatus.ERROR)
+        # task_view.update_status(task_id=task_id, status=TaskStatus.ERROR)
         formatted_exception = format_exc()
         task_view.set_message(
             task_id=task_id, message=formatted_exception
         )  # display exception on the dashboard
-        logger.system_log(
-            level="ERROR",
-            log_data={
-                "logged_by": "TaskActor",
-                "type": "TaskEnd",
-                "task_id": task_id,
-                "task_type": task_type.__name__,
-                "status": "ERROR",
-                "traceback": formatted_exception,
-            },
-        )
-        lab_view.request_cleanup()
+        # logger.system_log(
+        #     level="ERROR",
+        #     log_data={
+        #         "logged_by": "TaskActor",
+        #         "type": "TaskEnd",
+        #         "task_id": task_id,
+        #         "task_type": task_type.__name__,
+        #         "status": "ERROR",
+        #         "traceback": formatted_exception,
+        #     },
+        # )
+        # lab_view.request_cleanup()
         raise
     else:
-        task_view.update_status(task_id=task_id, status=TaskStatus.COMPLETED)
+        # task_view.update_status(task_id=task_id, status=TaskStatus.COMPLETED)
         if result is None:
-            pass
+            ...
         elif isinstance(result, dict):
             for key, value in result.items():
                 # we do this per item to avoid overwriting existing results. Its possible that some results were

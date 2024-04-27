@@ -12,7 +12,7 @@ def cancel_task(task_id: str):
     """API to cancel a task."""
     try:
         task_id_obj: ObjectId = ObjectId(task_id)
-        task_view.mark_task_as_cancelling(task_id_obj)
+        task_view.mark_task_as_canceling(task_id_obj)
 
         return {"status": "success"}
     except Exception as exception:

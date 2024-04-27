@@ -13,11 +13,14 @@ from bson import ObjectId
 from pymongo import collection, database
 
 from alab_management.config import AlabOSConfig
-
-from .db_lock import MongoLock
+from alab_management.utils.db_lock import MongoLock
 
 
 class _BaseGetMongoCollection(ABC):
+    client: pymongo.MongoClient | None = None
+    db: database.Database | None = None
+    db_lock: MongoLock | None = None
+
     @classmethod
     @abstractmethod
     def init(cls):
@@ -39,13 +42,8 @@ class _BaseGetMongoCollection(ABC):
 
 
 class _GetMongoCollection(_BaseGetMongoCollection):
-    client: pymongo.MongoClient | None = None
-    db: database.Database | None = None
-    db_lock: MongoLock | None = None
-
     @classmethod
     def init(cls):
-
         db_config = AlabOSConfig()["mongodb"]
         cls.client = pymongo.MongoClient(
             host=db_config.get("host", None),
@@ -54,27 +52,20 @@ class _GetMongoCollection(_BaseGetMongoCollection):
             password=db_config.get("password", ""),
         )
         sim_mode_flag = AlabOSConfig().is_sim_mode()
-        if sim_mode_flag:
-            cls.db = cls.client[AlabOSConfig()["general"]["name"] + "_sim"]
-        else:
-            cls.db = cls.client[AlabOSConfig()["general"]["name"]]  # type: ignore # pylint: disable=unsubscriptable-object
+        # force to enable sim mode, just in case
+        cls.db = cls.client[AlabOSConfig()["general"]["name"] + ("_sim" * sim_mode_flag)]
 
 
 class _GetCompletedMongoCollection(_BaseGetMongoCollection):
-    client: pymongo.MongoClient | None = None
-    db: database.Database | None = None
-    db_lock: MongoLock | None = None
-
     @classmethod
     def init(cls):
-
-        ALABOS_CONFIG = AlabOSConfig()
-        if "mongodb_completed" not in ALABOS_CONFIG:
+        alabos_config = AlabOSConfig()
+        if "mongodb_completed" not in alabos_config:
             raise ValueError(
                 "Cannot use the completed database feature until that database info is set. Please specify the "
                 "mongodb_completed configuration in the config file!"
             )
-        db_config = ALABOS_CONFIG["mongodb_completed"]
+        db_config = alabos_config["mongodb_completed"]
         cls.client = pymongo.MongoClient(
             host=db_config.get("host", None),
             port=db_config.get("port", None),
@@ -85,7 +76,7 @@ class _GetCompletedMongoCollection(_BaseGetMongoCollection):
         if sim_mode_flag:
             cls.db = cls.client[
                 AlabOSConfig()["general"]["name"] + "(completed)" + "_sim"
-            ]
+                ]
         else:
             cls.db = cls.client[AlabOSConfig()["general"]["name"] + "(completed)"]
         # type: ignore # pylint: disable=unsubscriptable-object
