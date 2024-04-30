@@ -3,8 +3,6 @@ import unittest
 from multiprocessing import Process
 from traceback import print_exc
 
-from bson import ObjectId
-
 from alab_management.device_view import DeviceTaskStatus, DeviceView
 from alab_management.device_view.device import get_all_devices
 from alab_management.resource_manager.resource_requester import ResourceRequester
