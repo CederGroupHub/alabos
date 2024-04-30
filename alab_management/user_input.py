@@ -12,8 +12,6 @@ from alab_management.utils.data_objects import get_collection
 
 from .config import AlabOSConfig
 
-CONFIG = AlabOSConfig()
-
 
 class UserRequestStatus(Enum):
     """Enum for user response."""

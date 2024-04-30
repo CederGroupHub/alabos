@@ -47,7 +47,7 @@ class ExperimentManager:
         )
         while True:
             self._loop()
-            time.sleep(1)
+            # time.sleep()
 
     def _loop(self):
         self.handle_pending_experiments()
@@ -163,7 +163,6 @@ class ExperimentManager:
                     TaskStatus.COMPLETED,
                     TaskStatus.ERROR,
                     TaskStatus.CANCELLED,
-                    TaskStatus.STOPPED,
                 }
                 for task_id in task_ids
             ):

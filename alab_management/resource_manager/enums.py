@@ -1,4 +1,4 @@
-from enum import Enum, auto
+from enum import auto, Enum
 
 _EXTRA_REQUEST: str = "__nodevice"
 

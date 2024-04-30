@@ -9,6 +9,7 @@ from alab_management.device_view import DeviceView
 from alab_management.lab_view import LabView
 from alab_management.sample_view import SampleView
 from alab_management.scripts.cleanup_lab import cleanup_lab
+from alab_management.scripts.launch_lab import launch_resource_manager
 from alab_management.scripts.setup_lab import setup_lab
 from alab_management.task_manager.task_manager import TaskManager
 from alab_management.task_view import TaskView
@@ -37,7 +38,7 @@ class TestLabView(TestCase):
         self.device_list = self.device_view._device_list
         self.sample_view = SampleView()
         self.task_view = TaskView()
-        self.process = Process(target=launch_task_manager)
+        self.process = Process(target=launch_resource_manager)
         self.process.daemon = True
         self.process.start()
         time.sleep(1)
@@ -77,7 +78,8 @@ class TestLabView(TestCase):
                 None: {
                     "furnace_table": 1,
                 },
-            }
+            },
+            timeout=1,
         ) as (devices, sample_positions):
             self.assertDictEqual(
                 {
@@ -120,6 +122,6 @@ class TestLabView(TestCase):
         )
         lab_view = LabView(task_id=task_id)
 
-        with lab_view.request_resources({}) as (devices, sample_positions):
+        with lab_view.request_resources({}, timeout=1) as (devices, sample_positions):
             self.assertDictEqual({}, devices)
             self.assertEqual({}, sample_positions)

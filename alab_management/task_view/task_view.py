@@ -8,12 +8,10 @@ from typing import Any, cast
 
 from bson import ObjectId
 
-from alab_management.task_view.completed_task_view import CompletedTaskView
+from alab_management.task_view import CompletedTaskView
 from alab_management.task_view.task import BaseTask, get_all_tasks
 from alab_management.task_view.task_enums import TaskStatus
 from alab_management.utils.data_objects import get_collection, make_bsonable
-
-completed_task_view = CompletedTaskView()
 
 
 class TaskView:
@@ -22,11 +20,12 @@ class TaskView:
     def __init__(self):
         self._task_collection = get_collection("tasks")
         self._tasks_definition: dict[str, type[BaseTask]] = get_all_tasks()
+        self.completed_task_view = CompletedTaskView()
 
     def create_task(
             self,
             task_type: str,
-            samples: list[ObjectId],
+            samples: list[dict[str, Any]],
             parameters: dict[str, Any],
             prev_tasks: ObjectId | list[ObjectId] | None = None,
             next_tasks: ObjectId | list[ObjectId] | None = None,
@@ -123,7 +122,7 @@ class TaskView:
         if result is None:
             # try to get a completed task entry
             try:
-                result = completed_task_view.get_task(task_id=task_id)
+                result = self.completed_task_view.get_task(task_id=task_id)
             except ValueError:
                 result = None  # couldn't find it here either
 

@@ -17,12 +17,11 @@ from pydantic import BaseModel, root_validator
 
 from alab_management.device_view.device import BaseDevice
 from alab_management.device_view.device_view import DeviceView
+from alab_management.resource_manager.enums import _EXTRA_REQUEST, RequestStatus
 from alab_management.sample_view.sample import SamplePosition
 from alab_management.sample_view.sample_view import SamplePositionRequest
 from alab_management.task_view import TaskPriority
 from alab_management.utils.data_objects import get_collection
-
-from .enums import _EXTRA_REQUEST, RequestStatus
 
 _SampleRequestDict = dict[str, int]
 _ResourceRequestDict = dict[
@@ -99,7 +98,7 @@ class RequestMixin:
         )
         # wait for the request to be updated
         while (
-            self.get_request(request_id, projection=["status"])["status"] != status.name
+                self.get_request(request_id, projection=["status"])["status"] != status.name
         ):
             time.sleep(0.5)
         return value_returned
@@ -130,8 +129,8 @@ class ResourceRequester(RequestMixin):
     """
 
     def __init__(
-        self,
-        task_id: ObjectId,
+            self,
+            task_id: ObjectId,
     ):
         self._request_collection = get_collection("requests")
         self._waiting: dict[ObjectId, dict[str, Any]] = {}
@@ -157,10 +156,10 @@ class ResourceRequester(RequestMixin):
     __del__ = __close__
 
     def request_resources(
-        self,
-        resource_request: _ResourceRequestDict,
-        timeout: float | None = None,
-        priority: TaskPriority | int | None = None,
+            self,
+            resource_request: _ResourceRequestDict,
+            timeout: float | None = None,
+            priority: TaskPriority | int | None = None,
     ) -> dict[str, Any]:
         """
         Request lab resources.
@@ -235,11 +234,11 @@ class ResourceRequester(RequestMixin):
 
             result = f.result(timeout=None)
         except (
-            TimeoutError
+                TimeoutError
         ):  # cancel the task if timeout, make sure it is not fulfilled
             if (
-                self.get_request(_id, projection=["status"])["status"]
-                != RequestStatus.FULFILLED.name
+                    self.get_request(_id, projection=["status"])["status"]
+                    != RequestStatus.FULFILLED.name
             ):
                 self.update_request_status(
                     request_id=_id, status=RequestStatus.CANCELED
@@ -268,7 +267,7 @@ class ResourceRequester(RequestMixin):
         request = self.get_request(request_id)
         if request["status"] in [RequestStatus.CANCELED.name, RequestStatus.ERROR.name]:
             if ("assigned_devices" in request) or (
-                "assigned_sample_positions" in request
+                    "assigned_sample_positions" in request
             ):
                 self.update_request_status(request_id, RequestStatus.NEED_RELEASE)
                 # wait for the request to be updated to NEED_RELEASE or have been released
@@ -295,8 +294,8 @@ class ResourceRequester(RequestMixin):
             )
             # wait for the request to be updated to NEED_RELEASE or have been released
             while (
-                self.get_request(request_id, projection=["status"])["status"]
-                == RequestStatus.FULFILLED.name
+                    self.get_request(request_id, projection=["status"])["status"]
+                    == RequestStatus.FULFILLED.name
             ):
                 time.sleep(0.5)
 
@@ -338,8 +337,8 @@ class ResourceRequester(RequestMixin):
                 RequestStatus.CANCELED.name,
                 RequestStatus.ERROR.name,
             ] and (
-                ("assigned_devices" in request)
-                or ("assigned_sample_positions" in request)
+                    ("assigned_devices" in request)
+                    or ("assigned_sample_positions" in request)
             ):
                 self.update_request_status(request["_id"], RequestStatus.NEED_RELEASE)
                 assigned_cancel_error_requests_id.append(request["_id"])
@@ -358,32 +357,32 @@ class ResourceRequester(RequestMixin):
         )
         # wait for all the requests to be updated
         while any(
-            request["status"]
-            in [RequestStatus.FULFILLED.name, RequestStatus.PENDING.name]
-            for request in self.get_requests_by_task_id(self.task_id)
+                request["status"]
+                in [RequestStatus.FULFILLED.name, RequestStatus.PENDING.name]
+                for request in self.get_requests_by_task_id(self.task_id)
         ):
             time.sleep(0.5)
         if assigned_cancel_error_requests_id:
             # wait for the requests to be updated to updated to NEED_RELEASE or have been released
             while any(
-                request["status"]
-                in [RequestStatus.CANCELED.name, RequestStatus.ERROR.name]
-                for request in self.get_requests_by_task_id(self.task_id)
-                if request["_id"] in assigned_cancel_error_requests_id
+                    request["status"]
+                    in [RequestStatus.CANCELED.name, RequestStatus.ERROR.name]
+                    for request in self.get_requests_by_task_id(self.task_id)
+                    if request["_id"] in assigned_cancel_error_requests_id
             ):
                 time.sleep(0.5)
 
         # wait for all the requests to be released or canceled or errored during the release
         while any(
-            (
-                request["status"]
-                not in [
-                    RequestStatus.RELEASED.name,
-                    RequestStatus.CANCELED.name,
-                    RequestStatus.ERROR.name,
-                ]
-            )
-            for request in self.get_requests_by_task_id(self.task_id)
+                (
+                        request["status"]
+                        not in [
+                            RequestStatus.RELEASED.name,
+                            RequestStatus.CANCELED.name,
+                            RequestStatus.ERROR.name,
+                        ]
+                )
+                for request in self.get_requests_by_task_id(self.task_id)
         ):
             time.sleep(0.5)
 
@@ -457,9 +456,9 @@ class ResourceRequester(RequestMixin):
 
     @staticmethod
     def _post_process_requested_resource(
-        devices: dict[type[BaseDevice], str],
-        sample_positions: dict[str, list[str]],
-        resource_request: dict[str, list[dict[str, int | str]]],
+            devices: dict[type[BaseDevice], str],
+            sample_positions: dict[str, list[str]],
+            resource_request: dict[str, list[dict[str, int | str]]],
     ):
         processed_sample_positions: dict[
             type[BaseDevice] | None, dict[str, list[str]]
@@ -478,7 +477,7 @@ class ResourceRequester(RequestMixin):
                         f"{devices[device_request]}{SamplePosition.SEPARATOR}"
                     )
                     if not reply_prefix.startswith(
-                        device_prefix
+                            device_prefix
                     ):  # dont extra prepend for nested requests
                         reply_prefix = device_prefix + reply_prefix
                 processed_sample_positions[device_request][prefix] = sample_positions[

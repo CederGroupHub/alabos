@@ -8,23 +8,12 @@ from traceback import format_exc
 
 import dramatiq
 from bson import ObjectId
-from dramatiq import get_broker
-from dramatiq_abort import Abort, Abortable, backends
+from dramatiq_abort import Abort
 
 from alab_management.logger import DBLogger
 from alab_management.sample_view import SampleView
 from alab_management.task_view import BaseTask, TaskStatus, TaskView
-from alab_management.utils.data_objects import get_collection
 from alab_management.utils.module_ops import load_definition
-
-abortable = Abortable(
-    backend=backends.MongoDBBackend(collection=get_collection("abortable"))
-)
-get_broker().add_middleware(abortable)
-"""
-This allows the task to be aborted.
-The abort signal is sent by the user, and the task will be aborted at the next checkpoint.
-"""
 
 
 @dramatiq.actor(

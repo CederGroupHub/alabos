@@ -1,4 +1,3 @@
-import datetime
 import subprocess
 import time
 import unittest
@@ -27,9 +26,14 @@ class TestLaunch(unittest.TestCase):
         self.experiment_view = ExperimentView()
         self.main_process = subprocess.Popen(["alabos", "launch", "--port", "8896"])
         self.worker_process = subprocess.Popen(
-            ["alabos", "launch_worker", "--processes", "4", "--threads", "1"]
+            ["alabos", "launch_worker", "--processes", "8", "--threads", "16"]
         )
         time.sleep(3)  # waiting for starting up
+
+        if self.main_process.poll() is not None:
+            raise RuntimeError("Main process failed to start")
+        if self.worker_process.poll() is not None:
+            raise RuntimeError("Worker process failed to start")
 
     def tearDown(self) -> None:
         self.main_process.terminate()
@@ -82,24 +86,25 @@ class TestLaunch(unittest.TestCase):
             exp_id = ObjectId(resp_json["data"]["exp_id"])
             self.assertTrue("success", resp_json["status"])
             exp_ids.append(exp_id)
-            time.sleep(3)
-        # self.assertEqual(9, self.task_view._task_collection.count_documents({}))
-        # print(list(self.task_view._task_collection.find({})))
-        print(datetime.datetime.now())
-        # self.assertTrue(
-        #     all(
-        #         task["status"] == "COMPLETED"
-        #         for task in self.task_view._task_collection.find()
-        #     )
-        # )
-        # self.assertTrue(
-        #     all(
-        #         task["result"] == task["_id"]
-        #         for task in self.task_view._task_collection.find()
-        #     )
-        # )
+        time.sleep(30)
+        self.assertEqual(9, self.task_view._task_collection.count_documents({}))
+        import rich
+        rich.print(list(self.task_view._task_collection.find({})))
+        # print(datetime.datetime.now())
+        self.assertTrue(
+            all(
+                task["status"] == "COMPLETED"
+                for task in self.task_view._task_collection.find()
+            )
+        )
+        self.assertTrue(
+            all(
+                task["result"] == task["_id"]
+                for task in self.task_view._task_collection.find()
+            )
+        )
 
-        # for exp_id in exp_ids:
-        #     self.assertEqual(
-        #         "COMPLETED", self.experiment_view.get_experiment(exp_id)["status"]
-        #     )
+        for exp_id in exp_ids:
+            self.assertEqual(
+                "COMPLETED", self.experiment_view.get_experiment(exp_id)["status"]
+            )

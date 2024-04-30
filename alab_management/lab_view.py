@@ -20,7 +20,7 @@ from alab_management.experiment_view.experiment_view import ExperimentView
 from alab_management.logger import DBLogger
 from alab_management.sample_view.sample import Sample
 from alab_management.sample_view.sample_view import SamplePositionRequest, SampleView
-from alab_management.task_manager.resource_requester import ResourceRequester
+from alab_management.resource_manager.resource_requester import ResourceRequester
 from alab_management.task_view.task import BaseTask
 from alab_management.task_view.task_enums import TaskPriority, TaskStatus
 from alab_management.task_view.task_view import TaskView

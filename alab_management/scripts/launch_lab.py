@@ -57,6 +57,16 @@ def launch_device_manager():
     device_manager.run()
 
 
+def launch_resource_manager():
+    """Launch the resource manager."""
+    from alab_management.resource_manager.resource_manager import ResourceManager
+    from alab_management.utils.module_ops import load_definition
+
+    load_definition()
+    resource_manager = ResourceManager()
+    resource_manager.run()
+
+
 def launch_lab(host, port, debug):
     """Start to run the lab."""
     from alab_management.device_view import DeviceView
@@ -73,6 +83,7 @@ def launch_lab(host, port, debug):
     experiment_manager_thread = Thread(target=launch_experiment_manager)
     task_launcher_thread = Thread(target=launch_task_manager)
     device_manager_thread = Thread(target=launch_device_manager)
+    resource_manager_thread = Thread(target=launch_resource_manager)
 
     dashboard_thread.daemon = experiment_manager_thread.daemon = (
         task_launcher_thread.daemon
@@ -82,6 +93,7 @@ def launch_lab(host, port, debug):
     device_manager_thread.start()
     experiment_manager_thread.start()
     task_launcher_thread.start()
+    resource_manager_thread.start()
 
     while True:
         time.sleep(1.5)

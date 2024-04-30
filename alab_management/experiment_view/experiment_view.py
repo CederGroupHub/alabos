@@ -13,8 +13,6 @@ from alab_management.utils.data_objects import get_collection
 from .completed_experiment_view import CompletedExperimentView
 from .experiment import InputExperiment
 
-completed_experiment_view = CompletedExperimentView()
-
 
 class ExperimentStatus(Enum):
     """
@@ -39,6 +37,7 @@ class ExperimentView:
         self._experiment_collection = get_collection("experiment")
         self.sample_view = SampleView()
         self.task_view = TaskView()
+        self.completed_experiment_view = CompletedExperimentView()
 
     def create_experiment(self, experiment: InputExperiment) -> ObjectId:
         """
@@ -103,7 +102,7 @@ class ExperimentView:
         experiment = self._experiment_collection.find_one({"_id": exp_id})
         if experiment is None:
             try:
-                experiment = completed_experiment_view.get_experiment(
+                experiment = self.completed_experiment_view.get_experiment(
                     experiment_id=exp_id
                 )
             except ValueError:
@@ -167,7 +166,7 @@ class ExperimentView:
         experiment = self._experiment_collection.find_one({"tasks.task_id": task_id})
         if experiment is None:
             raise ValueError(f"Cannot find experiment containing task_id: {task_id}")
-        return experiment
+        return dict(experiment)
 
     def get_experiment_by_sample_id(self, sample_id: ObjectId) -> dict[str, Any] | None:
         """Get an experiment that contains a sample with the given sample_id."""

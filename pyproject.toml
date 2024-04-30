@@ -50,28 +50,6 @@ dependencies = [
     "dramatiq-abort @ git+https://github.com/idocx/dramatiq-abort",
     "slack_sdk>=3.19.5",
     "Flask-Cors>=3.0.10",
-    "pytest >= 6.2.5",
-    "pytest_reraise >= 2.1.1",
-    "pylint >= 2.11.1",
-    "flake8 ~= 4.0.1",
-    "pytest-env ~= 0.6.2",
-    "requests >= 2.26.0",
-    "flake8-bugbear >= 21.11.29",
-    "flake8-docstrings >= 1.6.0",
-    "black",
-    "sphinx >= 3.2.1",
-    "sphinx_book_theme",
-    "recommonmark ~= 0.7.1",
-    "sphinx-autodoc-typehints >= 1.12.0",
-    "pytest >= 6.2.5",
-    "pytest_reraise >= 2.1.1",
-    "pylint >= 2.11.1",
-    "flake8 ~= 4.0.1",
-    "pytest-env ~= 0.6.2",
-    "requests >= 2.26.0",
-    "flake8-bugbear >= 21.11.29",
-    "flake8-docstrings >= 1.6.0",
-    "ruff"
 ]
 
 [project.optional-dependencies]
@@ -98,7 +76,11 @@ dev = [
     "requests >= 2.26.0",
     "flake8-bugbear >= 21.11.29",
     "flake8-docstrings >= 1.6.0",
-    "pandas-stubs >= 2.1.1.230928"
+    "pandas-stubs >= 2.1.1.230928",
+    "requests >= 2.26.0",
+    "flake8-bugbear >= 21.11.29",
+    "flake8-docstrings >= 1.6.0",
+    "ruff"
 ]
 tests = ["pytest-cov==4.1.0", "pytest==7.4.1", "moto==4.2.2"]
 vis = ["matplotlib", "pydot"]
@@ -192,3 +174,7 @@ line-length = 150
 "**/tests/*" = ["D"]
 "**/fake_lab/*" = ["D", "B"]
 "docs/source/conf.py" = ["D"]
+
+[tool.pytest.ini_options]
+testpaths = "./tests"
+env = "ALABOS_CONFIG_PATH = ./tests/fake_lab/config.toml"

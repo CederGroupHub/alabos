@@ -7,12 +7,14 @@ from bson import ObjectId
 
 from alab_management.device_view import DeviceTaskStatus, DeviceView
 from alab_management.device_view.device import get_all_devices
+from alab_management.resource_manager.resource_requester import ResourceRequester
 from alab_management.sample_view import SampleView
 from alab_management.sample_view.sample_view import SamplePositionStatus
 from alab_management.scripts.cleanup_lab import cleanup_lab
+from alab_management.scripts.launch_lab import launch_resource_manager
 from alab_management.scripts.setup_lab import setup_lab
-from alab_management.task_manager.resource_requester import ResourceRequester
 from alab_management.task_manager.task_manager import TaskManager
+from alab_management.task_view import TaskView
 
 
 def launch_task_manager():
@@ -25,7 +27,7 @@ def launch_task_manager():
         raise
 
 
-class TestTaskManager(unittest.TestCase):
+class TestResourceManager(unittest.TestCase):
     def setUp(self) -> None:
         time.sleep(0.5)
         cleanup_lab(
@@ -39,8 +41,15 @@ class TestTaskManager(unittest.TestCase):
         self.devices = get_all_devices()
         self.device_view = DeviceView()
         self.sample_view = SampleView()
-        self.resource_requester = ResourceRequester(task_id=ObjectId())
-        self.process = Process(target=launch_task_manager)
+        self.task_view = TaskView()
+        fake_task = self.task_view._task_collection.insert_one(
+            {
+                "type": "fake_task",
+                "status": "REQUESTING_RESOURCES",
+            }
+        )
+        self.resource_requester = ResourceRequester(task_id=fake_task.inserted_id)
+        self.process = Process(target=launch_resource_manager)
         self.process.daemon = True
         self.process.start()
         time.sleep(0.5)
