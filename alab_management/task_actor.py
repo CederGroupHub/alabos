@@ -9,7 +9,6 @@ from traceback import format_exc
 import dramatiq
 from bson import ObjectId
 from dramatiq import get_broker
-from dramatiq.middleware import Shutdown
 from dramatiq_abort import Abort, Abortable, backends
 
 from alab_management.logger import DBLogger
@@ -26,10 +25,6 @@ get_broker().add_middleware(abortable)
 This allows the task to be aborted.
 The abort signal is sent by the user, and the task will be aborted at the next checkpoint.
 """
-
-
-class ParameterError(Exception):
-    """The exception raised when parameters of a task is wrong."""
 
 
 @dramatiq.actor(
@@ -107,7 +102,6 @@ def run_task(task_id_str: str):
         raise Exception(
             f"Failed to create task {task_id} of type {task_type!s}"
         ) from exception
-        # raise ParameterError(exception.args[0]) from exception
 
     try:
         task_view.update_status(task_id=task_id, status=TaskStatus.RUNNING)
@@ -129,45 +123,47 @@ def run_task(task_id_str: str):
         # from Alab_one, for eg: Powder dosing. Powder dosing class will have a method "run".
         result = task.run()
     except Abort:
-        # task_view.update_status(task_id=task_id, status=TaskStatus.CANCELLED)
+        task_status = TaskStatus.CANCELLED
+        task_view.update_status(task_id=task_id, status=TaskStatus.FINISHING)
         task_view.set_message(
             task_id=task_id, message="Task was cancelled due to the abort signal"
         )  # display exception on the dashboard
-        # logger.system_log(
-        #     level="ERROR",
-        #     log_data={
-        #         "logged_by": "TaskActor",
-        #         "type": "TaskEnd",
-        #         "task_id": task_id,
-        #         "task_type": task_type.__name__,
-        #         "status": TaskStatus.CANCELLED.name,
-        #         "traceback": "Task was cancelled due to the abort signal",
-        #     },
-        # )
-        # lab_view.request_cleanup()
+        logger.system_log(
+            level="ERROR",
+            log_data={
+                "logged_by": "TaskActor",
+                "type": "TaskEnd",
+                "task_id": task_id,
+                "task_type": task_type.__name__,
+                "status": TaskStatus.CANCELLED.name,
+                "traceback": "Task was cancelled due to the abort signal",
+            },
+        )
+        lab_view.request_cleanup()
     except Exception:
-        # task_view.update_status(task_id=task_id, status=TaskStatus.ERROR)
+        task_status = TaskStatus.ERROR
+        task_view.update_status(task_id=task_id, status=TaskStatus.FINISHING)
         formatted_exception = format_exc()
         task_view.set_message(
             task_id=task_id, message=formatted_exception
         )  # display exception on the dashboard
-        # logger.system_log(
-        #     level="ERROR",
-        #     log_data={
-        #         "logged_by": "TaskActor",
-        #         "type": "TaskEnd",
-        #         "task_id": task_id,
-        #         "task_type": task_type.__name__,
-        #         "status": "ERROR",
-        #         "traceback": formatted_exception,
-        #     },
-        # )
-        # lab_view.request_cleanup()
-        raise
+        logger.system_log(
+            level="ERROR",
+            log_data={
+                "logged_by": "TaskActor",
+                "type": "TaskEnd",
+                "task_id": task_id,
+                "task_type": task_type.__name__,
+                "status": "ERROR",
+                "traceback": formatted_exception,
+            },
+        )
+        lab_view.request_cleanup()
     else:
-        # task_view.update_status(task_id=task_id, status=TaskStatus.COMPLETED)
+        task_status = TaskStatus.COMPLETED
+        task_view.update_status(task_id=task_id, status=TaskStatus.FINISHING)
         if result is None:
-            ...
+            pass
         elif isinstance(result, dict):
             for key, value in result.items():
                 # we do this per item to avoid overwriting existing results. Its possible that some results were
@@ -193,3 +189,4 @@ def run_task(task_id_str: str):
             sample_view.update_sample_task_id(
                 task_id=None, sample_id=sample["sample_id"]
             )
+        task_view.update_status(task_id=task_id, status=task_status)

@@ -19,10 +19,9 @@ completed_task_view = CompletedTaskView()
 class TaskView:
     """Task view manages the status, parameters of a task."""
 
-    def __init__(self, allow_update_status: bool = False):
+    def __init__(self):
         self._task_collection = get_collection("tasks")
         self._tasks_definition: dict[str, type[BaseTask]] = get_all_tasks()
-        self._allow_update_status = allow_update_status
 
     def create_task(
             self,
@@ -161,8 +160,6 @@ class TaskView:
             task_id: the id of task to be updated
             status: the new status of the task
         """
-        self._check_allow_update_status()
-
         task = self.get_task(task_id=task_id, encode=False)
         update_dict = {
             "status": status.name,
@@ -322,8 +319,6 @@ class TaskView:
         Check if one task's parent tasks are all completed,
         if so, mark it as READY.
         """
-        self._check_allow_update_status()
-
         task = self.get_task(task_id)
 
         prev_task_ids = task["prev_tasks"]
@@ -472,8 +467,3 @@ class TaskView:
         """Check if a task id exists."""
         return self._task_collection.find_one({"_id": ObjectId(task_id)}) is not None
 
-    def _check_allow_update_status(self):
-        if not self._allow_update_status:
-            raise PermissionError(
-                "This method is not allowed to be called when `allow_update_status` is False"
-            )

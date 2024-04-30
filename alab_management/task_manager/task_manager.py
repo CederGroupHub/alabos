@@ -38,7 +38,7 @@ class TaskManager(RequestMixin):
 
     def __init__(self):
         load_definition()
-        self.task_view = TaskView(allow_update_status=True)
+        self.task_view = TaskView()
         self.sample_view = SampleView()
         self.device_view = DeviceView()
         self._request_collection = get_collection("requests")

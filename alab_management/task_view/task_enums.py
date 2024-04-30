@@ -24,6 +24,7 @@ class TaskStatus(Enum):
     - ``INITIATED``: the task has been sent to task actor, but not yet running
     - ``REQUESTING_RESOURCES``: the task is requesting resources
     - ``RUNNING``: the task is currently running
+    - ``FINISHING``: the task is finishing up, but not yet completed/errored/cancelled
     - ``ERROR``: the task encountered some errors during execution
     - ``COMPLETED``: the task is completed
     - ``CANCELLED``: the task has been cancelled and stopped.
@@ -34,6 +35,7 @@ class TaskStatus(Enum):
     INITIATED = auto()
     REQUESTING_RESOURCES = auto()
     RUNNING = auto()
+    FINISHING = auto()
     ERROR = auto()
     COMPLETED = auto()
     CANCELLED = auto()
