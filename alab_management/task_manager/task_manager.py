@@ -12,7 +12,7 @@ from alab_management.logger import DBLogger
 from alab_management.task_actor import run_task
 from alab_management.task_view import TaskView
 from alab_management.task_view.task_enums import TaskStatus
-from alab_management.utils.middleware import register_abortable_middleware
+from alab_management.utils.middleware import patch_dramatiq, register_abortable_middleware
 from alab_management.utils.module_ops import load_definition
 
 
@@ -27,6 +27,7 @@ class TaskManager:
     def __init__(self):
         load_definition()
         register_abortable_middleware()
+        patch_dramatiq()
         self.task_view = TaskView()
 
         self.logger = DBLogger(task_id=None)
