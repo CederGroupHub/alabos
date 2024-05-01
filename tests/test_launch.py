@@ -1,4 +1,5 @@
 import subprocess
+import sys
 import time
 import unittest
 
@@ -24,9 +25,10 @@ class TestLaunch(unittest.TestCase):
         setup_lab()
         self.task_view = TaskView()
         self.experiment_view = ExperimentView()
-        self.main_process = subprocess.Popen(["alabos", "launch", "--port", "8896"])
+        self.main_process = subprocess.Popen(["alabos", "launch", "--port", "8896"], stdout=sys.stdout,
+                                             stderr=sys.stderr)
         self.worker_process = subprocess.Popen(
-            ["alabos", "launch_worker", "--processes", "8", "--threads", "16"]
+            ["alabos", "launch_worker", "--processes", "8", "--threads", "1"], stdout=sys.stdout, stderr=sys.stderr
         )
         time.sleep(3)  # waiting for starting up
 
@@ -86,7 +88,7 @@ class TestLaunch(unittest.TestCase):
             exp_id = ObjectId(resp_json["data"]["exp_id"])
             self.assertTrue("success", resp_json["status"])
             exp_ids.append(exp_id)
-        time.sleep(30)
+        time.sleep(60)
         self.assertEqual(9, self.task_view._task_collection.count_documents({}))
         import rich
         rich.print(list(self.task_view._task_collection.find({})))

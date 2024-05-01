@@ -12,7 +12,7 @@ from alab_management.logger import DBLogger
 from alab_management.task_actor import run_task
 from alab_management.task_view import TaskView
 from alab_management.task_view.task_enums import TaskStatus
-from alab_management.utils.middleware import patch_dramatiq, register_abortable_middleware
+from alab_management.utils.middleware import register_abortable_middleware
 from alab_management.utils.module_ops import load_definition
 
 
@@ -26,8 +26,6 @@ class TaskManager:
 
     def __init__(self):
         load_definition()
-        register_abortable_middleware()
-        patch_dramatiq()
         self.task_view = TaskView()
 
         self.logger = DBLogger(task_id=None)
@@ -44,7 +42,7 @@ class TaskManager:
         self.handle_tasks_to_be_canceled()
         self.submit_ready_tasks()
 
-    def _clean_up_tasks_from_previous_runs(self):
+    def clean_up_tasks_from_previous_runs(self):
         """Cleans up incomplete tasks that exist from the last time the taskmanager was running. Note that this will
         block the task queue until all samples in these tasks have been removed from the physical lab (confirmed via
         user requests on the dashboard).

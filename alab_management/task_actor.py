@@ -13,7 +13,10 @@ from dramatiq_abort import Abort
 from alab_management.logger import DBLogger
 from alab_management.sample_view import SampleView
 from alab_management.task_view import BaseTask, TaskStatus, TaskView
+from alab_management.utils.middleware import register_abortable_middleware
 from alab_management.utils.module_ops import load_definition
+
+register_abortable_middleware()
 
 
 @dramatiq.actor(
