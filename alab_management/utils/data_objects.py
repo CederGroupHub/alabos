@@ -29,7 +29,7 @@ class _BaseGetMongoCollection(ABC):
     @classmethod
     def get_collection(cls, name: str) -> collection.Collection:
         """Get collection by name."""
-        if cls.client is None:
+        if cls.db is None:
             cls.init()
 
         return cls.db[name]  # type: ignore # pylint: disable=unsubscriptable-object

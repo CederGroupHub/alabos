@@ -26,6 +26,7 @@ class TaskManager:
 
     def __init__(self):
         load_definition()
+        register_abortable_middleware()
         self.task_view = TaskView()
 
         self.logger = DBLogger(task_id=None)

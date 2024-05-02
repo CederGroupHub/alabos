@@ -92,10 +92,9 @@ class ExperimentManager:
             },
         )
         if task_graph.has_cycle():
-            raise ValueError(
-                "Detect cycle in task graph, which is supposed "
-                "to be a DAG (directed acyclic graph)."
-            )
+            self.experiment_view.update_experiment_status(experiment["_id"], ExperimentStatus.ERROR)
+            print(f"Experiment ({experiment['_id']}) has a cycle in the graph.")
+            return
 
         # create samples in the sample database
         sample_ids = {

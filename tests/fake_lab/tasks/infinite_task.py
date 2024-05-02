@@ -4,7 +4,7 @@ from ..devices.device_that_never_ends import DeviceThatNeverEnds
 from alab_management.task_view.task import BaseTask
 
 
-class ErrorHandling(BaseTask):
+class InfiniteTask(BaseTask):
     def __init__(self, samples: list[ObjectId], *args, **kwargs):
         super().__init__(samples=samples, *args, **kwargs)
         self.sample = samples[0]
