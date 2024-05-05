@@ -20,7 +20,7 @@ class DeviceThatFails(BaseDevice):
         pass
 
     def fail(self):
-        raise Exception("This device always fails.")
+        raise ValueError("This device always fails.")
 
     def connect(self):
         pass

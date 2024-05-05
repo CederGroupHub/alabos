@@ -8,12 +8,13 @@ from .devices.device_that_run_slow import DeviceThatRunSlow
 from .devices.furnace import Furnace
 from .devices.robot_arm import RobotArm
 from .tasks.ending import Ending
-from .tasks.error_handling_task import ErrorHandling
+from .tasks.error_handling_task import ErrorHandlingUnrecoverable, ErrorHandlingRecoverable
 from .tasks.heating import Heating
 from .tasks.infinite_task import InfiniteTask
 from .tasks.moving import Moving
 from .tasks.starting import Starting
 from .tasks.test_threading_task import TestThreading
+
 
 add_device(Furnace(name="furnace_1"))
 add_device(Furnace(name="furnace_2"))
@@ -34,7 +35,7 @@ add_standalone_sample_position(
 add_standalone_sample_position(
     SamplePosition(
         "furnace_temp",
-        number=16,
+        number=64,
         description="Test positions",
     )
 )
@@ -43,6 +44,7 @@ add_task(Starting)
 add_task(Moving)
 add_task(Heating)
 add_task(Ending)
-add_task(ErrorHandling)
+add_task(ErrorHandlingUnrecoverable)
+add_task(ErrorHandlingRecoverable)
 add_task(InfiniteTask)
 add_task(TestThreading)

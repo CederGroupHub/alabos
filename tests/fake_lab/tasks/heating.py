@@ -18,22 +18,22 @@ class Heating(BaseTask):
     ):
         super().__init__(samples=samples, *args, **kwargs)
         self.setpoints = setpoints
-        self.sample = samples[0]
 
     def run(self):
-        with self.lab_view.request_resources({Furnace: {"inside": 1}}) as (
+        with self.lab_view.request_resources({Furnace: {"inside": 8}}) as (
             devices,
             sample_positions,
         ):
             furnace = devices[Furnace]
-            inside_furnace = sample_positions[Furnace]["inside"][0]
+            inside_furnaces = sample_positions[Furnace]["inside"]
 
-            self.lab_view.run_subtask(
-                Moving,
-                sample=self.sample,
-                samples=[self.sample],
-                dest=inside_furnace,
-            )
+            for sample, inside_furnace in zip(self.samples, inside_furnaces):
+                self.lab_view.run_subtask(
+                    Moving,
+                    sample=sample,
+                    samples=self.samples,
+                    dest=inside_furnace,
+                )
 
             furnace.run_program(self.setpoints)
 
