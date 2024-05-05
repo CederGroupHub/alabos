@@ -1,7 +1,8 @@
 from bson import ObjectId
-from ..devices.device_that_never_ends import DeviceThatNeverEnds
 
 from alab_management.task_view.task import BaseTask
+
+from ..devices.device_that_never_ends import DeviceThatNeverEnds  # noqa: TID252
 
 
 class InfiniteTask(BaseTask):

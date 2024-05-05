@@ -6,7 +6,6 @@ tasks and samples and mark the finished tasks in the database when it is
 done.
 """
 
-import time
 from typing import Any
 
 from .config import AlabOSConfig
@@ -31,7 +30,7 @@ class ExperimentManager:
 
         config = AlabOSConfig()
         self.__copy_to_completed_db = (
-            "mongodb_completed" in config
+                "mongodb_completed" in config
         )  # if this is not defined in the config, assume it this feature is not being used.
         if self.__copy_to_completed_db:
             self.completed_experiment_view = CompletedExperimentView()
@@ -157,13 +156,13 @@ class ExperimentManager:
 
             # if all the tasks of an experiment have been finished
             if all(
-                self.task_view.get_status(task_id=task_id)
-                in {
-                    TaskStatus.COMPLETED,
-                    TaskStatus.ERROR,
-                    TaskStatus.CANCELLED,
-                }
-                for task_id in task_ids
+                    self.task_view.get_status(task_id=task_id)
+                    in {
+                        TaskStatus.COMPLETED,
+                        TaskStatus.ERROR,
+                        TaskStatus.CANCELLED,
+                    }
+                    for task_id in task_ids
             ):
                 self.experiment_view.update_experiment_status(
                     exp_id=experiment["_id"], status=ExperimentStatus.COMPLETED
