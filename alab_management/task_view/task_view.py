@@ -465,4 +465,3 @@ class TaskView:
     def exists(self, task_id: ObjectId | str) -> bool:
         """Check if a task id exists."""
         return self._task_collection.find_one({"_id": ObjectId(task_id)}) is not None
-
