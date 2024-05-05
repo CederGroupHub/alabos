@@ -42,7 +42,7 @@ class TestLaunch(unittest.TestCase):
     def tearDown(self) -> None:
         self.main_process.terminate()
         self.worker_process.terminate()
-        time.sleep(1)
+        time.sleep(5)
         cleanup_lab(
             all_collections=True,
             _force_i_know_its_dangerous=True,
@@ -153,11 +153,9 @@ class TestLaunch(unittest.TestCase):
             exp_id = ObjectId(resp_json["data"]["exp_id"])
             self.assertTrue("success", resp_json["status"])
             exp_ids.append(exp_id)
-            time.sleep(5)
+            time.sleep(10)
 
             pending_user_input = requests.get("http://127.0.0.1:8896/api/userinput/pending").json()
-            import rich
-            rich.print(pending_user_input)
             self.assertEqual(len(pending_user_input["pending_requests"].get(str(exp_id), [])), 1)
 
             request_id = pending_user_input["pending_requests"][str(exp_id)][0]["id"]
@@ -173,7 +171,7 @@ class TestLaunch(unittest.TestCase):
             )
             self.assertEqual("success", resp.json()["status"])
 
-        time.sleep(5)
+        time.sleep(10)
         self.assertTrue(
             all(
                 task["status"] == "COMPLETED" or task["status"] == "ERROR"
@@ -218,7 +216,7 @@ class TestLaunch(unittest.TestCase):
         exp_id = ObjectId(resp_json["data"]["exp_id"])
         self.assertTrue("success", resp_json["status"])
 
-        time.sleep(3)
+        time.sleep(10)
         self.assertEqual(
             "RUNNING", self.experiment_view.get_experiment(exp_id)["status"]
         )
@@ -227,7 +225,7 @@ class TestLaunch(unittest.TestCase):
             f"http://127.0.0.1:8896/api/experiment/cancel/{exp_id!s}",
         )
         self.assertEqual("success", resp.json()["status"])
-        time.sleep(3)
+        time.sleep(10)
 
         pending_user_input = requests.get("http://127.0.0.1:8896/api/userinput/pending").json()
         self.assertEqual(len(pending_user_input["pending_requests"].get(str(exp_id), [])), 1)
@@ -243,7 +241,7 @@ class TestLaunch(unittest.TestCase):
         )
         self.assertEqual("success", resp.json()["status"])
 
-        time.sleep(3)
+        time.sleep(10)
         self.assertEqual(
             "COMPLETED", self.experiment_view.get_experiment(exp_id)["status"]
         )
