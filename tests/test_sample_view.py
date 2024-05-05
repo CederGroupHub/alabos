@@ -84,9 +84,9 @@ class TestSampleView(TestCase):
         self.assertEqual("test", sample.name)
 
         # try to create samples with same name
-        sample_id = self.sample_view.create_sample("test", position="furnace_1/inside")
+        sample_id = self.sample_view.create_sample("test", position="furnace_1/inside/1")
         sample = self.sample_view.get_sample(sample_id=sample_id)
-        self.assertEqual("furnace_1/inside", sample.position)
+        self.assertEqual("furnace_1/inside/1", sample.position)
         self.assertEqual("test", sample.name)
 
         # try to create samples with non-exist positions
@@ -399,22 +399,22 @@ class TestSampleView(TestCase):
                     )
 
         # try when requesting sample positions more than we have in the lab
-        with (
-            self.assertRaises(ValueError),
-            self.request_sample_positions(
-                [{"prefix": "furnace_temp", "number": 5}], task_id
-            ),
-        ):
-            pass
+        with self.assertRaises(ValueError):  # noqa: SIM117
+            with (
+                self.request_sample_positions(
+                    [{"prefix": "furnace_temp", "number": 10000}], task_id
+                ),
+            ):
+                pass
 
     def test_request_multiple_sample_positions_multiple_tasks(self):
         task_id_1 = ObjectId()
         task_id_2 = ObjectId()
 
         with self.request_sample_positions(
-            [{"prefix": "furnace_temp", "number": 2}], task_id_1
+            [{"prefix": "furnace_temp", "number": 32}], task_id_1
         ) as sample_positions:
-            self.assertEqual(2, len(sample_positions["furnace_temp"]))
+            self.assertEqual(32, len(sample_positions["furnace_temp"]))
             self.assertTrue(
                 sample_positions["furnace_temp"][0].startswith("furnace_temp")
             )
@@ -422,9 +422,9 @@ class TestSampleView(TestCase):
                 sample_positions["furnace_temp"][1].startswith("furnace_temp")
             )
             with self.request_sample_positions(
-                [{"prefix": "furnace_temp", "number": 2}], task_id_2
+                [{"prefix": "furnace_temp", "number": 32}], task_id_2
             ) as sample_positions_:
-                self.assertEqual(2, len(sample_positions_["furnace_temp"]))
+                self.assertEqual(32, len(sample_positions_["furnace_temp"]))
                 self.assertTrue(
                     sample_positions_["furnace_temp"][0].startswith("furnace_temp")
                 )
@@ -432,6 +432,6 @@ class TestSampleView(TestCase):
                     sample_positions_["furnace_temp"][1].startswith("furnace_temp")
                 )
             with self.request_sample_positions(
-                [{"prefix": "furnace_temp", "number": 4}], task_id_2
+                [{"prefix": "furnace_temp", "number": 33}], task_id_2
             ) as sample_positions_:
                 self.assertIs(None, sample_positions_)

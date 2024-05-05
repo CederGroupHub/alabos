@@ -13,7 +13,6 @@ from .tasks.heating import Heating
 from .tasks.infinite_task import InfiniteTask
 from .tasks.moving import Moving
 from .tasks.starting import Starting
-from .tasks.test_threading_task import TestThreading
 
 
 add_device(Furnace(name="furnace_1"))
@@ -47,4 +46,3 @@ add_task(Ending)
 add_task(ErrorHandlingUnrecoverable)
 add_task(ErrorHandlingRecoverable)
 add_task(InfiniteTask)
-add_task(TestThreading)

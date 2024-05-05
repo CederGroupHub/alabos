@@ -83,7 +83,7 @@ class TestLabView(TestCase):
         ) as (devices, sample_positions):
             self.assertDictEqual(
                 {
-                    Furnace: {"inside": ["furnace_1/inside"]},
+                    Furnace: {"inside": ["furnace_1/inside/1"]},
                     None: {"furnace_table": ["furnace_table"]},
                 },
                 sample_positions,
@@ -93,7 +93,7 @@ class TestLabView(TestCase):
 
             self.assertEqual(
                 "LOCKED",
-                self.sample_view.get_sample_position_status("furnace_1/inside")[0].name,
+                self.sample_view.get_sample_position_status("furnace_1/inside/1")[0].name,
             )
             self.assertEqual(
                 "LOCKED",
@@ -105,7 +105,7 @@ class TestLabView(TestCase):
 
         self.assertEqual(
             "EMPTY",
-            self.sample_view.get_sample_position_status("furnace_1/inside")[0].name,
+            self.sample_view.get_sample_position_status("furnace_1/inside/1")[0].name,
         )
         self.assertEqual(
             "EMPTY",
