@@ -23,7 +23,7 @@ def launch_worker(args):
     if os.path.exists(lock_file):
         raise RuntimeError("Worker lock file exists. Another worker is already running.")
 
-    with open(lock_file, "w") as f:
+    with open(lock_file, "w", encoding="utf-8") as f:
         f.write(str(os.getpid()))
     try:
         launch(args=args)
