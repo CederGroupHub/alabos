@@ -131,8 +131,6 @@ function Row({ experiment_id, hoverForId }) {
         return "inherit";
       case "CANCELLED":
         return "gray";
-      case "CANCELLING":
-        return "gray";
       default:
         return "inherit";
     }
@@ -276,7 +274,7 @@ function Row({ experiment_id, hoverForId }) {
                           <Button
                             variant="outlined"
                             color="error"
-                            disabled={task.status === "COMPLETED" || task.status === "CANCELLED" || task.status === "CANCELLING" || task.status === "ERROR"}
+                            disabled={task.status !== "RUNNING" && task.status !== "REQUESTING_RESOURCES"}
                             onClick={() => handleCancel(task.id, "task")}
                           >
                             Cancel
