@@ -11,5 +11,6 @@ class InfiniteTask(BaseTask):
         self.sample = samples[0]
 
     def run(self):
-        with self.lab_view.request_resources({DeviceThatNeverEnds: {"infinite_loop": 1}}) as (device_that_fails, _):
-            device_that_fails.run_infinite()
+        with self.lab_view.request_resources({DeviceThatNeverEnds: {"infinite_loop": 1}}) as (devices, _):
+            device_that_never_ends = devices[DeviceThatNeverEnds]
+            device_that_never_ends.run_infinite()
