@@ -152,5 +152,5 @@ class TaskManager:
                 self.task_view.update_canceling_progress(
                     task_id=task_entry["task_id"],
                     canceling_progress=CancelingProgress.WORKER_NOTIFIED,
-                    original_progress=task_entry["canceling_progress"],
+                    original_progress=CancelingProgress(task_entry["canceling_progress"]),
                 )
