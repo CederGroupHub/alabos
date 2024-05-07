@@ -8,13 +8,10 @@ from typing import Any, cast
 
 from bson import ObjectId
 
+from alab_management.task_view import CompletedTaskView
 from alab_management.task_view.task import BaseTask, get_all_tasks
-from alab_management.task_view.task_enums import TaskStatus
-from alab_management.utils.data_objects import get_collection, get_lock, make_bsonable
-
-from .completed_task_view import CompletedTaskView
-
-completed_task_view = CompletedTaskView()
+from alab_management.task_view.task_enums import CancelingProgress, TaskStatus
+from alab_management.utils.data_objects import get_collection, make_bsonable
 
 
 class TaskView:
@@ -22,13 +19,13 @@ class TaskView:
 
     def __init__(self):
         self._task_collection = get_collection("tasks")
-        self._lock = get_lock("tasks")
         self._tasks_definition: dict[str, type[BaseTask]] = get_all_tasks()
+        self.completed_task_view = CompletedTaskView()
 
     def create_task(
         self,
         task_type: str,
-        samples: list[ObjectId],
+        samples: list[dict[str, Any]],
         parameters: dict[str, Any],
         prev_tasks: ObjectId | list[ObjectId] | None = None,
         next_tasks: ObjectId | list[ObjectId] | None = None,
@@ -125,7 +122,7 @@ class TaskView:
         if result is None:
             # try to get a completed task entry
             try:
-                result = completed_task_view.get_task(task_id=task_id)
+                result = self.completed_task_view.get_task(task_id=task_id)
             except ValueError:
                 result = None  # couldn't find it here either
 
@@ -136,7 +133,7 @@ class TaskView:
             result = self.encode_task(result)
         return result
 
-    def get_task_with_sample(self, sample_id: ObjectId) -> dict[str, Any] | None:
+    def get_task_with_sample(self, sample_id: ObjectId) -> list[dict[str, Any]] | None:
         """Get a task that contains the sample with the provided id."""
         result = self._task_collection.find({"samples.sample_id": sample_id})
         if result is None:
@@ -443,31 +440,73 @@ class TaskView:
             },
         )
 
-    def mark_task_as_cancelling(self, task_id: ObjectId):
+    def mark_task_as_canceling(self, task_id: ObjectId) -> bool:
+        """Try to cancel a task by setting the field "stopping" to True."""
+        entry = self._task_collection.find_one_and_update(
+            {
+                "_id": task_id,
+                "status": {
+                    "$in": [
+                        TaskStatus.RUNNING.name,
+                        TaskStatus.REQUESTING_RESOURCES.name,
+                    ],
+                },
+            },
+            {
+                "$set": {
+                    "canceling_progress": CancelingProgress.PENDING.name,
+                    "last_updated": datetime.now(),
+                }
+            },
+        )
+        return entry is not None
+
+    def update_canceling_progress(
+        self,
+        task_id: ObjectId,
+        canceling_progress: CancelingProgress,
+        original_progress: CancelingProgress,
+    ) -> bool:
+        """Update the canceling progress of a task."""
+        returned_value = self._task_collection.update_one(
+            {"_id": task_id, "canceling_progress": original_progress.name},
+            {
+                "$set": {
+                    "canceling_progress": canceling_progress.name,
+                    "last_updated": datetime.now(),
+                }
+            },
+        )
+        return returned_value.modified_count == 1
+
+    def get_tasks_to_be_canceled(
+        self, canceling_progress: CancelingProgress | None
+    ) -> list[dict[str, Any]]:
         """
-        Try to cancel a task by marking the task as TaskStatus.CANCELLING.
+        Get a list of tasks that are in the process of being canceled.
 
-        If the status is not in [READY, INITIATED, WAITING, PAUSED, READY, RUNNING],
-        the request will be ignored and returned.
-
-        The task manager will handle it.
+        Args:
+            canceling_progress: the progress of the task being canceled.
+                If None, return all tasks that are in the process of being canceled.
         """
-        current_status = self.get_status(task_id=task_id)
-
-        if current_status in [
-            TaskStatus.READY,
-            TaskStatus.INITIATED,
-            TaskStatus.WAITING,
-            TaskStatus.REQUESTING_RESOURCES,
-            TaskStatus.PAUSED,
-            TaskStatus.READY,
-            TaskStatus.RUNNING,
-        ]:
-            self.update_status(
-                task_id=ObjectId(task_id),
-                status=TaskStatus.CANCELLING,
+        if canceling_progress is None:
+            result = self._task_collection.find(
+                {"canceling_progress": {"$exists": True}}
             )
+        else:
+            result = self._task_collection.find(
+                {
+                    "canceling_progress": canceling_progress.name,
+                    "status": {
+                        "$in": [
+                            TaskStatus.RUNNING.name,
+                            TaskStatus.REQUESTING_RESOURCES.name,
+                        ],
+                    },
+                }
+            )
+        return [self.encode_task(task) for task in result]
 
     def exists(self, task_id: ObjectId | str) -> bool:
         """Check if a task id exists."""
-        return self._task_collection.count_documents({"_id": ObjectId(task_id)}) > 0
+        return self._task_collection.find_one({"_id": ObjectId(task_id)}) is not None

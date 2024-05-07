@@ -16,24 +16,32 @@ class Heating(BaseTask):
         *args,
         **kwargs,
     ):
+        """Heating task.
+
+        Args:
+            samples (list[ObjectId]): List of sample ids.
+            setpoints (list[tuple[float, float]]): List of setpoints as the heating profile. Since it is a fake
+                lab, the setpoints are just a list of tuples, each tuple contains two float numbers, the first
+                number is the temperature, and the second number is the time in seconds.
+        """
         super().__init__(samples=samples, *args, **kwargs)
         self.setpoints = setpoints
-        self.sample = samples[0]
 
     def run(self):
-        with self.lab_view.request_resources({Furnace: {"inside": 1}}) as (
+        with self.lab_view.request_resources({Furnace: {"inside": 8}}) as (
             devices,
             sample_positions,
         ):
             furnace = devices[Furnace]
-            inside_furnace = sample_positions[Furnace]["inside"][0]
+            inside_furnaces = sample_positions[Furnace]["inside"]
 
-            self.lab_view.run_subtask(
-                Moving,
-                sample=self.sample,
-                samples=[self.sample],
-                dest=inside_furnace,
-            )
+            for sample, inside_furnace in zip(self.samples, inside_furnaces):
+                self.lab_view.run_subtask(
+                    Moving,
+                    sample=sample,
+                    samples=self.samples,
+                    dest=inside_furnace,
+                )
 
             furnace.run_program(self.setpoints)
 

@@ -18,6 +18,7 @@ class Furnace(BaseDevice):
             SamplePosition(
                 "inside",
                 description="The position inside the furnace, where the samples are heated",
+                number=8,  # eight samples can be heated at the same time
             ),
         ]
 
@@ -30,7 +31,7 @@ class Furnace(BaseDevice):
         def finish():
             self._is_running = False
 
-        t = Timer(2, finish)
+        t = Timer(0.1, finish)
         t.start()
 
     def is_running(self):

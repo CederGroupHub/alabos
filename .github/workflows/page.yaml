@@ -21,7 +21,7 @@ jobs:
         with:
           python-version: '3.10'
       - name: Set up dependencies
-        run: pip install --quiet .
+        run: pip install '.[docs]'
       - name: Compile sphinx
         working-directory: .
         run: |

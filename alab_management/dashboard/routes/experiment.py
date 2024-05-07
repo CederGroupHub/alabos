@@ -188,7 +188,7 @@ def cancel_experiment(exp_id: str):
         # tasks = experiment_view.get_experiment(exp_id)["tasks"]
 
         for task in tasks:
-            task_view.mark_task_as_cancelling(task["task_id"])
+            task_view.mark_task_as_canceling(task["task_id"])
     except Exception as e:
         return {"status": "error", "reason": e.args[0]}, 400
     else:

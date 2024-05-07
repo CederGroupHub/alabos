@@ -3,16 +3,16 @@ import unittest
 from multiprocessing import Process
 from traceback import print_exc
 
-from bson import ObjectId
-
 from alab_management.device_view import DeviceTaskStatus, DeviceView
 from alab_management.device_view.device import get_all_devices
+from alab_management.resource_manager.resource_requester import ResourceRequester
 from alab_management.sample_view import SampleView
 from alab_management.sample_view.sample_view import SamplePositionStatus
 from alab_management.scripts.cleanup_lab import cleanup_lab
+from alab_management.scripts.launch_lab import launch_resource_manager
 from alab_management.scripts.setup_lab import setup_lab
-from alab_management.task_manager.resource_requester import ResourceRequester
 from alab_management.task_manager.task_manager import TaskManager
+from alab_management.task_view import TaskView
 
 
 def launch_task_manager():
@@ -25,7 +25,7 @@ def launch_task_manager():
         raise
 
 
-class TestTaskManager(unittest.TestCase):
+class TestResourceManager(unittest.TestCase):
     def setUp(self) -> None:
         time.sleep(0.5)
         cleanup_lab(
@@ -39,8 +39,15 @@ class TestTaskManager(unittest.TestCase):
         self.devices = get_all_devices()
         self.device_view = DeviceView()
         self.sample_view = SampleView()
-        self.resource_requester = ResourceRequester(task_id=ObjectId())
-        self.process = Process(target=launch_task_manager)
+        self.task_view = TaskView()
+        fake_task = self.task_view._task_collection.insert_one(
+            {
+                "type": "fake_task",
+                "status": "REQUESTING_RESOURCES",
+            }
+        )
+        self.resource_requester = ResourceRequester(task_id=fake_task.inserted_id)
+        self.process = Process(target=launch_resource_manager)
         self.process.daemon = True
         self.process.start()
         time.sleep(0.5)
@@ -67,7 +74,7 @@ class TestTaskManager(unittest.TestCase):
         self.assertDictEqual(
             {
                 "devices": {furnace_type: "furnace_1"},
-                "sample_positions": {furnace_type: {"inside": ["furnace_1/inside"]}},
+                "sample_positions": {furnace_type: {"inside": ["furnace_1/inside/1"]}},
                 "timeout_error": False,
             },
             result,
@@ -76,7 +83,7 @@ class TestTaskManager(unittest.TestCase):
             self.device_view.get_status("furnace_1"), DeviceTaskStatus.OCCUPIED
         )
         self.assertEqual(
-            self.sample_view.get_sample_position_status("furnace_1/inside"),
+            self.sample_view.get_sample_position_status("furnace_1/inside/1"),
             (SamplePositionStatus.LOCKED, self.resource_requester.task_id),
         )
         self.resource_requester.release_resources(_id)
@@ -85,7 +92,7 @@ class TestTaskManager(unittest.TestCase):
             self.device_view.get_status("furnace_1"), DeviceTaskStatus.IDLE
         )
         self.assertEqual(
-            self.sample_view.get_sample_position_status("furnace_1/inside"),
+            self.sample_view.get_sample_position_status("furnace_1/inside/1"),
             (SamplePositionStatus.EMPTY, None),
         )
 
@@ -97,7 +104,7 @@ class TestTaskManager(unittest.TestCase):
         self.assertDictEqual(
             {
                 "devices": {furnace_type: "furnace_1"},
-                "sample_positions": {furnace_type: {"inside": ["furnace_1/inside"]}},
+                "sample_positions": {furnace_type: {"inside": ["furnace_1/inside/1"]}},
                 "timeout_error": False,
             },
             result,
@@ -106,7 +113,7 @@ class TestTaskManager(unittest.TestCase):
             self.device_view.get_status("furnace_1"), DeviceTaskStatus.OCCUPIED
         )
         self.assertEqual(
-            self.sample_view.get_sample_position_status("furnace_1/inside"),
+            self.sample_view.get_sample_position_status("furnace_1/inside/1"),
             (SamplePositionStatus.LOCKED, self.resource_requester.task_id),
         )
         self.resource_requester.release_resources(_id)
@@ -114,7 +121,7 @@ class TestTaskManager(unittest.TestCase):
             self.device_view.get_status("furnace_1"), DeviceTaskStatus.IDLE
         )
         self.assertEqual(
-            self.sample_view.get_sample_position_status("furnace_1/inside"),
+            self.sample_view.get_sample_position_status("furnace_1/inside/1"),
             (SamplePositionStatus.EMPTY, None),
         )
 
@@ -126,7 +133,7 @@ class TestTaskManager(unittest.TestCase):
         self.assertDictEqual(
             {
                 "devices": {furnace_type: "furnace_1"},
-                "sample_positions": {furnace_type: {"inside": ["furnace_1/inside"]}},
+                "sample_positions": {furnace_type: {"inside": ["furnace_1/inside/1"]}},
                 "timeout_error": False,
             },
             result,
@@ -172,7 +179,7 @@ class TestTaskManager(unittest.TestCase):
             {
                 "devices": {furnace_type: "furnace_1"},
                 "sample_positions": {
-                    furnace_type: {"inside": ["furnace_1/inside"]},
+                    furnace_type: {"inside": ["furnace_1/inside/1"]},
                     None: {
                         "furnace_temp": [
                             "furnace_temp/1",
@@ -191,5 +198,5 @@ class TestTaskManager(unittest.TestCase):
     def test_task_request_wrong_number(self):
         with self.assertRaises(ValueError):
             self.resource_requester.request_resources(
-                {None: {"furnace_temp": 10}}, timeout=4
+                {None: {"furnace_temp": 10000}}, timeout=4
             )
