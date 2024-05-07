@@ -21,7 +21,7 @@ from alab_management.resource_manager.resource_requester import (
 from alab_management.sample_view.sample import SamplePosition
 from alab_management.sample_view.sample_view import SamplePositionRequest, SampleView
 from alab_management.task_view import TaskView
-from alab_management.task_view.task_enums import TaskStatus
+from alab_management.task_view.task_enums import CancelingProgress, TaskStatus
 from alab_management.utils.data_objects import DocumentNotUpdatedError, get_collection
 from alab_management.utils.module_ops import load_definition
 
@@ -84,7 +84,8 @@ class ResourceManager(RequestMixin):
             task_id = request_entry["task_id"]
 
             task_status = self.task_view.get_status(task_id=task_id)
-            if task_status != TaskStatus.REQUESTING_RESOURCES:
+            if (task_status != TaskStatus.REQUESTING_RESOURCES or
+                    self.task_view.get_tasks_to_be_canceled(canceling_progress=CancelingProgress.WORKER_NOTIFIED)):
                 # this implies the Task has been cancelled or errored somewhere else in the chain -- we should
                 # not allocate any resources to the broken Task.
                 self.update_request_status(
