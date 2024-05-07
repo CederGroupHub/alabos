@@ -5,6 +5,10 @@ from alab_management.sample_view import SamplePosition
 
 
 class DeviceThatNeverEnds(BaseDevice):
+    """
+    This is a fake device that never ends. This is used for testing the cancel feature.
+    """
+
     description: ClassVar[str] = "DeviceThatNeverEnds"
 
     @property

@@ -18,7 +18,7 @@ class Furnace(BaseDevice):
             SamplePosition(
                 "inside",
                 description="The position inside the furnace, where the samples are heated",
-                number=8,
+                number=8,  # eight samples can be heated at the same time
             ),
         ]
 

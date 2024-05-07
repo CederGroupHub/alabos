@@ -5,6 +5,10 @@ from alab_management.sample_view import SamplePosition
 
 
 class DeviceThatRunSlow(BaseDevice):
+    """
+    This is a fake device that runs slow. This is used for testing the user input feature.
+    """
+
     description: ClassVar[str] = "DeviceThatRunsSlow"
 
     @property

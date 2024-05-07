@@ -5,6 +5,10 @@ from alab_management.sample_view import SamplePosition
 
 
 class DeviceThatFails(BaseDevice):
+    """
+    This is a fake device that always fails. This is used for testing the user input feature.
+    """
+
     description: ClassVar[str] = "DeviceThatFails"
 
     @property

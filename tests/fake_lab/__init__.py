@@ -33,6 +33,7 @@ add_standalone_sample_position(
 add_standalone_sample_position(
     SamplePosition(
         "furnace_temp",
+        # 64 samples can be held at the same time. This is used for launching a lot of samples at the same time.
         number=64,
         description="Test positions",
     )
