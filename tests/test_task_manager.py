@@ -75,7 +75,6 @@ class TestResourceManager(unittest.TestCase):
             {
                 "devices": {furnace_type: "furnace_1"},
                 "sample_positions": {furnace_type: {"inside": ["furnace_1/inside/1"]}},
-                "timeout_error": False,
             },
             result,
         )
@@ -105,7 +104,6 @@ class TestResourceManager(unittest.TestCase):
             {
                 "devices": {furnace_type: "furnace_1"},
                 "sample_positions": {furnace_type: {"inside": ["furnace_1/inside/1"]}},
-                "timeout_error": False,
             },
             result,
         )
@@ -134,7 +132,6 @@ class TestResourceManager(unittest.TestCase):
             {
                 "devices": {furnace_type: "furnace_1"},
                 "sample_positions": {furnace_type: {"inside": ["furnace_1/inside/1"]}},
-                "timeout_error": False,
             },
             result,
         )
@@ -159,7 +156,6 @@ class TestResourceManager(unittest.TestCase):
                         ]
                     }
                 },
-                "timeout_error": False,
             },
             result,
         )
@@ -189,7 +185,6 @@ class TestResourceManager(unittest.TestCase):
                         ]
                     },
                 },
-                "timeout_error": False,
             },
             result,
         )

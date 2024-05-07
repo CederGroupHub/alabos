@@ -196,7 +196,7 @@ class TestLaunch(unittest.TestCase):
                         "type": "Starting",
                         "prev_tasks": [],
                         "parameters": {
-                            "dest": "furnace_table",
+                            "dest": "furnace_temp",
                         },
                         "samples": ["test_sample"],
                     },
@@ -209,40 +209,51 @@ class TestLaunch(unittest.TestCase):
                 ],
             }
 
-        experiment = compose_exp("Experiment with cancel")
-        resp = requests.post(
-            SUBMISSION_API, json=experiment
-        )
-        resp_json = resp.json()
-        exp_id = ObjectId(resp_json["data"]["exp_id"])
-        self.assertTrue("success", resp_json["status"])
+        exp_ids = {}
+        for exp_name in ["Experiment with cancel when running", "Experiment with cancel when requesting resources"]:
+            experiment = compose_exp(exp_name)
+            resp = requests.post(
+                SUBMISSION_API, json=experiment
+            )
+            resp_json = resp.json()
+            exp_id = ObjectId(resp_json["data"]["exp_id"])
+            exp_ids[exp_name] = exp_id
+            self.assertTrue("success", resp_json["status"])
+            time.sleep(2)
+
+        time.sleep(15)
+        for exp_id in exp_ids.values():
+            self.assertEqual(
+                "RUNNING", self.experiment_view.get_experiment(exp_id)["status"]
+            )
+
+        for exp_name in ["Experiment with cancel when requesting resources", "Experiment with cancel when running"]:
+            exp_id = exp_ids[exp_name]
+            resp = requests.get(
+                f"http://127.0.0.1:8896/api/experiment/cancel/{exp_id!s}",
+            )
+            self.assertEqual("success", resp.json()["status"])
+            time.sleep(10)
+
+            pending_user_input = requests.get("http://127.0.0.1:8896/api/userinput/pending").json()
+            self.assertEqual(len(pending_user_input["pending_requests"].get(str(exp_id), [])), 1)
+            request_id = pending_user_input["pending_requests"][str(exp_id)][0]["id"]
+            request_prompt = pending_user_input["pending_requests"][str(exp_id)][0]["prompt"]
+            self.assertIn("dramatiq_abort.abort_manager.Abort", request_prompt)
+            # acknowledge the request
+            resp = requests.post(
+                "http://127.0.0.1:8896/api/userinput/submit",
+                json={
+                    "request_id": request_id,
+                    "response": "OK",
+                    "note": "dummy",
+                },
+            )
+            self.assertEqual("success", resp.json()["status"])
 
         time.sleep(10)
-        self.assertEqual(
-            "RUNNING", self.experiment_view.get_experiment(exp_id)["status"]
-        )
 
-        resp = requests.get(
-            f"http://127.0.0.1:8896/api/experiment/cancel/{exp_id!s}",
-        )
-        self.assertEqual("success", resp.json()["status"])
-        time.sleep(10)
-
-        pending_user_input = requests.get("http://127.0.0.1:8896/api/userinput/pending").json()
-        self.assertEqual(len(pending_user_input["pending_requests"].get(str(exp_id), [])), 1)
-        request_id = pending_user_input["pending_requests"][str(exp_id)][0]["id"]
-        # acknowledge the request
-        resp = requests.post(
-            "http://127.0.0.1:8896/api/userinput/submit",
-            json={
-                "request_id": request_id,
-                "response": "OK",
-                "note": "dummy",
-            },
-        )
-        self.assertEqual("success", resp.json()["status"])
-
-        time.sleep(10)
-        self.assertEqual(
-            "COMPLETED", self.experiment_view.get_experiment(exp_id)["status"]
-        )
+        for exp_id in exp_ids.values():
+            self.assertEqual(
+                "COMPLETED", self.experiment_view.get_experiment(exp_id)["status"]
+            )

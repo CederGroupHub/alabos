@@ -155,3 +155,7 @@ get_lock = _GetMongoCollection.get_lock
 
 get_completed_collection = _GetCompletedMongoCollection.get_collection
 get_completed_lock = _GetCompletedMongoCollection.get_lock
+
+
+class DocumentNotUpdatedError(Exception):
+    """Exception raised when a document is not updated in the database."""
