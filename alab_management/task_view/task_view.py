@@ -10,7 +10,7 @@ from bson import ObjectId
 
 from alab_management.task_view import CompletedTaskView
 from alab_management.task_view.task import BaseTask, get_all_tasks
-from alab_management.task_view.task_enums import TaskStatus
+from alab_management.task_view.task_enums import CancelingProgress, TaskStatus
 from alab_management.utils.data_objects import get_collection, make_bsonable
 
 
@@ -23,13 +23,13 @@ class TaskView:
         self.completed_task_view = CompletedTaskView()
 
     def create_task(
-            self,
-            task_type: str,
-            samples: list[dict[str, Any]],
-            parameters: dict[str, Any],
-            prev_tasks: ObjectId | list[ObjectId] | None = None,
-            next_tasks: ObjectId | list[ObjectId] | None = None,
-            task_id: ObjectId | None = None,
+        self,
+        task_type: str,
+        samples: list[dict[str, Any]],
+        parameters: dict[str, Any],
+        prev_tasks: ObjectId | list[ObjectId] | None = None,
+        next_tasks: ObjectId | list[ObjectId] | None = None,
+        task_id: ObjectId | None = None,
     ) -> ObjectId:
         """
         Insert a task into the task collection.
@@ -78,7 +78,7 @@ class TaskView:
         return cast(ObjectId, result.inserted_id)
 
     def create_subtask(
-            self, task_id, subtask_type, samples: list[str], parameters: dict
+        self, task_id, subtask_type, samples: list[str], parameters: dict
     ):
         """Create a subtask entry for a task."""
         task = self.get_task(task_id=task_id)
@@ -225,7 +225,7 @@ class TaskView:
                         )  # in case it was only waiting on task we just cancelled
 
     def update_subtask_status(
-            self, task_id: ObjectId, subtask_id: ObjectId, status: TaskStatus
+        self, task_id: ObjectId, subtask_id: ObjectId, status: TaskStatus
     ):
         """Update the status of a subtask."""
         task = self.get_task(task_id=task_id, encode=False)
@@ -251,7 +251,7 @@ class TaskView:
         )
 
     def update_result(
-            self, task_id: ObjectId, name: str | None = None, value: Any = None
+        self, task_id: ObjectId, name: str | None = None, value: Any = None
     ):
         """
         Update result to completed job.
@@ -279,7 +279,7 @@ class TaskView:
         )
 
     def update_subtask_result(
-            self, task_id: ObjectId, subtask_id: ObjectId, result: Any
+        self, task_id: ObjectId, subtask_id: ObjectId, result: Any
     ):
         """
         Update result of completed subtask within task job.
@@ -322,8 +322,8 @@ class TaskView:
 
         prev_task_ids = task["prev_tasks"]
         if task["status"] == TaskStatus.WAITING.name and all(
-                self.get_status(task_id=task_id_) is TaskStatus.COMPLETED
-                for task_id_ in prev_task_ids
+            self.get_status(task_id=task_id_) is TaskStatus.COMPLETED
+            for task_id_ in prev_task_ids
         ):
             self.update_status(task_id, TaskStatus.READY)
 
@@ -369,10 +369,10 @@ class TaskView:
         }
 
     def update_task_dependency(
-            self,
-            task_id: ObjectId,
-            prev_tasks: ObjectId | list[ObjectId] | None = None,
-            next_tasks: ObjectId | list[ObjectId] | None = None,
+        self,
+        task_id: ObjectId,
+        prev_tasks: ObjectId | list[ObjectId] | None = None,
+        next_tasks: ObjectId | list[ObjectId] | None = None,
     ):
         """
         Add prev tasks and next tasks to one task entry,
@@ -443,35 +443,68 @@ class TaskView:
     def mark_task_as_canceling(self, task_id: ObjectId) -> bool:
         """Try to cancel a task by setting the field "stopping" to True."""
         entry = self._task_collection.find_one_and_update(
-            {"_id": task_id, "status": {"$in": [
-                TaskStatus.RUNNING.name, TaskStatus.REQUESTING_RESOURCES.name],
-            }},
+            {
+                "_id": task_id,
+                "status": {
+                    "$in": [
+                        TaskStatus.RUNNING.name,
+                        TaskStatus.REQUESTING_RESOURCES.name,
+                    ],
+                },
+            },
             {
                 "$set": {
-                    "canceling": True,
-                    "last_updated": datetime.now(),
-                }
-            }
-        )
-        return entry is not None
-
-    def unmark_canceling_task(self, task_id: ObjectId):
-        """Unmark a task as canceling."""
-        self._task_collection.update_one(
-            {"_id": task_id, "canceling": True},
-            {
-                "$set": {
-                    "canceling": False,
+                    "canceling_progress": CancelingProgress.PENDING.name,
                     "last_updated": datetime.now(),
                 }
             },
         )
+        return entry is not None
 
-    def get_tasks_to_be_canceled(self) -> list[dict[str, Any]]:
-        """Get a list of tasks that are in the process of being canceled."""
-        result = self._task_collection.find({"canceling": True, "status": {"$in": [
-            TaskStatus.RUNNING.name, TaskStatus.REQUESTING_RESOURCES.name],
-        }})
+    def update_canceling_progress(
+        self,
+        task_id: ObjectId,
+        canceling_progress: CancelingProgress,
+        original_progress: CancelingProgress,
+    ) -> bool:
+        """Update the canceling progress of a task."""
+        returned_value = self._task_collection.update_one(
+            {"_id": task_id, "canceling_progress": original_progress.name},
+            {
+                "$set": {
+                    "canceling_progress": canceling_progress.name,
+                    "last_updated": datetime.now(),
+                }
+            },
+        )
+        return returned_value.modified_count == 1
+
+    def get_tasks_to_be_canceled(
+        self, canceling_progress: CancelingProgress | None
+    ) -> list[dict[str, Any]]:
+        """
+        Get a list of tasks that are in the process of being canceled.
+
+        Args:
+            canceling_progress: the progress of the task being canceled.
+                If None, return all tasks that are in the process of being canceled.
+        """
+        if canceling_progress is None:
+            result = self._task_collection.find(
+                {"canceling_progress": {"$exists": True}}
+            )
+        else:
+            result = self._task_collection.find(
+                {
+                    "canceling_progress": canceling_progress.name,
+                    "status": {
+                        "$in": [
+                            TaskStatus.RUNNING.name,
+                            TaskStatus.REQUESTING_RESOURCES.name,
+                        ],
+                    },
+                }
+            )
         return [self.encode_task(task) for task in result]
 
     def exists(self, task_id: ObjectId | str) -> bool:
