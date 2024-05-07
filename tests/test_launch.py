@@ -10,6 +10,8 @@ from alab_management.scripts.cleanup_lab import cleanup_lab
 from alab_management.scripts.setup_lab import setup_lab
 from alab_management.task_view import TaskView
 
+SUBMISSION_API = "http://127.0.0.1:8896/api/experiment/submit"
+
 
 class TestLaunch(unittest.TestCase):
     def setUp(self) -> None:
@@ -86,10 +88,10 @@ class TestLaunch(unittest.TestCase):
         exp_ids = []
         num_of_tasks = 0
         for i in range(8):
-            experiment = compose_exp(f"Experiment with {i+1} samples", num_samples=i+1)
+            experiment = compose_exp(f"Experiment with {i + 1} samples", num_samples=i + 1)
             num_of_tasks += len(experiment["tasks"])
             resp = requests.post(
-                "http://127.0.0.1:8896/api/experiment/submit", json=experiment
+                SUBMISSION_API, json=experiment
             )
             resp_json = resp.json()
             exp_id = ObjectId(resp_json["data"]["exp_id"])
@@ -140,11 +142,12 @@ class TestLaunch(unittest.TestCase):
                     },
                 ],
             }
+
         exp_ids = []
         for error_name in ["ErrorHandlingUnrecoverable", "ErrorHandlingRecoverable"]:
             experiment = compose_exp(f"Experiment with {error_name}", error_task=error_name)
             resp = requests.post(
-                "http://127.0.0.1:8896/api/experiment/submit", json=experiment
+                SUBMISSION_API, json=experiment
             )
             resp_json = resp.json()
             exp_id = ObjectId(resp_json["data"]["exp_id"])
@@ -205,9 +208,10 @@ class TestLaunch(unittest.TestCase):
                     },
                 ],
             }
+
         experiment = compose_exp("Experiment with cancel")
         resp = requests.post(
-            "http://127.0.0.1:8896/api/experiment/submit", json=experiment
+            SUBMISSION_API, json=experiment
         )
         resp_json = resp.json()
         exp_id = ObjectId(resp_json["data"]["exp_id"])

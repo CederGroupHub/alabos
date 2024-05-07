@@ -16,6 +16,14 @@ class Heating(BaseTask):
         *args,
         **kwargs,
     ):
+        """Heating task.
+
+        Args:
+            samples (list[ObjectId]): List of sample ids.
+            setpoints (list[tuple[float, float]]): List of setpoints as the heating profile. Since it is a fake
+                lab, the setpoints are just a list of tuples, each tuple contains two float numbers, the first
+                number is the temperature, and the second number is the time in seconds.
+        """
         super().__init__(samples=samples, *args, **kwargs)
         self.setpoints = setpoints
 
