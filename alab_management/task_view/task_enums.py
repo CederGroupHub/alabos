@@ -39,3 +39,16 @@ class TaskStatus(Enum):
     ERROR = auto()
     COMPLETED = auto()
     CANCELLED = auto()
+
+
+class CancelingProgress(Enum):
+    """
+    The status for a request that is being canceled. It is kept in the ``canceling`` field of the request.
+
+    PENDING: The canceling process has been initiated.
+    WORKER_NOTIFIED: The worker has been notified to cancel the request, which means an
+        abort error has been raised in the worker.
+    """
+
+    PENDING = auto()
+    WORKER_NOTIFIED = auto()

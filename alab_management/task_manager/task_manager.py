@@ -10,7 +10,7 @@ from dramatiq_abort import abort, abort_requested
 from alab_management.lab_view import LabView
 from alab_management.logger import DBLogger
 from alab_management.task_view import TaskView
-from alab_management.task_view.task_enums import TaskStatus
+from alab_management.task_view.task_enums import CancelingProgress, TaskStatus
 from alab_management.utils.module_ops import load_definition
 
 
@@ -121,7 +121,9 @@ class TaskManager:
             self.task_view.update_status(
                 task_id=task_entry["task_id"], status=TaskStatus.INITIATED
             )
-            result = run_task.send_with_options(kwargs={"task_id_str": str(task_entry["task_id"])})
+            result = run_task.send_with_options(
+                kwargs={"task_id_str": str(task_entry["task_id"])}
+            )
             message_id = result.message_id
             self.task_view.set_task_actor_id(
                 task_id=task_entry["task_id"], message_id=message_id
@@ -129,7 +131,9 @@ class TaskManager:
 
     def handle_tasks_to_be_canceled(self):
         """Check if there are any tasks needs to be stopped."""
-        tasks_to_be_cancelled = self.task_view.get_tasks_to_be_canceled()
+        tasks_to_be_cancelled = self.task_view.get_tasks_to_be_canceled(
+            CancelingProgress.PENDING
+        )
 
         for task_entry in tasks_to_be_cancelled:
             self.logger.system_log(
@@ -141,7 +145,12 @@ class TaskManager:
                     "task_actor_id": task_entry.get("task_actor_id", None),
                 },
             )
-            if ((message_id := task_entry.get("task_actor_id", None)) is not None and
-                    abort_requested(message_id=message_id) is None):
+            if (
+                message_id := task_entry.get("task_actor_id", None)
+            ) is not None and abort_requested(message_id=message_id) is None:
                 abort(message_id=message_id)
-                self.task_view.unmark_canceling_task(task_id=task_entry["task_id"])
+                self.task_view.update_canceling_progress(
+                    task_id=task_entry["task_id"],
+                    canceling_progress=CancelingProgress.WORKER_NOTIFIED,
+                    original_progress=task_entry["canceling_progress"],
+                )
