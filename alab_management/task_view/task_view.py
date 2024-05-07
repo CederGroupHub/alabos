@@ -455,6 +455,18 @@ class TaskView:
         )
         return entry is not None
 
+    def unmark_canceling_task(self, task_id: ObjectId):
+        """Unmark a task as canceling."""
+        self._task_collection.update_one(
+            {"_id": task_id, "canceling": True},
+            {
+                "$set": {
+                    "canceling": False,
+                    "last_updated": datetime.now(),
+                }
+            },
+        )
+
     def get_tasks_to_be_canceled(self) -> list[dict[str, Any]]:
         """Get a list of tasks that are in the process of being canceled."""
         result = self._task_collection.find({"canceling": True, "status": {"$in": [

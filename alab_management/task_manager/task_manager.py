@@ -5,14 +5,12 @@ which actually executes the tasks.
 
 import time
 
-from dramatiq_abort import abort
+from dramatiq_abort import abort, abort_requested
 
 from alab_management.lab_view import LabView
 from alab_management.logger import DBLogger
-from alab_management.task_actor import run_task
 from alab_management.task_view import TaskView
 from alab_management.task_view.task_enums import TaskStatus
-from alab_management.utils.middleware import register_abortable_middleware
 from alab_management.utils.module_ops import load_definition
 
 
@@ -26,7 +24,6 @@ class TaskManager:
 
     def __init__(self):
         load_definition()
-        register_abortable_middleware()
         self.task_view = TaskView()
 
         self.logger = DBLogger(task_id=None)
@@ -109,6 +106,8 @@ class TaskManager:
         Checking if there are any tasks that are ready to be submitted. (STATUS = READY)
         If so, submit them to task actor (dramatiq worker).
         """
+        from alab_management.task_actor import run_task
+
         ready_task_entries = self.task_view.get_ready_tasks()
         for task_entry in ready_task_entries:
             self.logger.system_log(
@@ -142,11 +141,7 @@ class TaskManager:
                     "task_actor_id": task_entry.get("task_actor_id", None),
                 },
             )
-            if (message_id := task_entry.get("task_actor_id", None)) is not None:
+            if ((message_id := task_entry.get("task_actor_id", None)) is not None and
+                    abort_requested(message_id=message_id) is None):
                 abort(message_id=message_id)
-
-            # even if the task is not running, we will mark it as cancelled
-            self.task_view.update_status(
-                task_id=task_entry["task_id"],
-                status=TaskStatus.CANCELLED,
-            )
+                self.task_view.unmark_canceling_task(task_id=task_entry["task_id"])

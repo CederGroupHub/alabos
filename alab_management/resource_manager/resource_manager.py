@@ -87,7 +87,7 @@ class ResourceManager(RequestMixin):
                 # this implies the Task has been cancelled or errored somewhere else in the chain -- we should
                 # not allocate any resources to the broken Task.
                 self.update_request_status(
-                    request_id=resource_request["_id"],
+                    request_id=request_entry["_id"],
                     status=RequestStatus.CANCELED,
                 )
                 return

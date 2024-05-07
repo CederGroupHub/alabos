@@ -36,9 +36,6 @@ class TestLaunch(unittest.TestCase):
         if self.worker_process.poll() is not None:
             raise RuntimeError("Worker process failed to start")
 
-        print("Main process started: pid", self.main_process.pid)
-        print("Worker process started: pid", self.worker_process.pid)
-
     def tearDown(self) -> None:
         self.main_process.terminate()
         self.worker_process.terminate()

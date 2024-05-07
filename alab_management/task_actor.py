@@ -13,7 +13,10 @@ from dramatiq_abort import Abort
 from alab_management.logger import DBLogger
 from alab_management.sample_view import SampleView
 from alab_management.task_view import BaseTask, TaskStatus, TaskView
+from alab_management.utils.middleware import register_abortable_middleware
 from alab_management.utils.module_ops import load_definition
+
+register_abortable_middleware()
 
 
 @dramatiq.actor(
@@ -44,6 +47,15 @@ def run_task(task_id_str: str):
     logger = DBLogger(task_id=None)
 
     task_id = ObjectId(task_id_str)
+    try:
+        task_entry = task_view.get_task(task_id, encode=True)
+    except ValueError:
+        print(
+            f"{datetime.datetime.now()}: No task found with id: {task_id} -- assuming that alabos was aborted without "
+            f"cleanup, and skipping this task."
+        )
+        return
+
     if task_view.get_status(task_id) != TaskStatus.INITIATED:
         print(
             "Task status is not INITIATED; this implies the task has already been picked up by a previous task actor. "
@@ -52,7 +64,6 @@ def run_task(task_id_str: str):
         return
 
     try:
-        task_entry = task_view.get_task(task_id, encode=True)
         task_type = task_entry.pop("type")
         print(
             f"{datetime.datetime.now()}: Worker picked up task {task_id} of type {task_type.__name__}"
