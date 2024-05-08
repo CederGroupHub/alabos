@@ -120,22 +120,18 @@ class LabView:
             resource_request=resource_request, timeout=timeout, priority=priority
         )
         request_id = result["request_id"]
-        timeout_error = result["timeout_error"]
-        if timeout_error:
-            raise TimeoutError
-        else:
-            devices = result["devices"]
-            sample_positions = result["sample_positions"]
-            devices = {
-                device_type: self._device_client.create_device_wrapper(device_name)
-                for device_type, device_name in devices.items()
-            }  # type: ignore
-            self._task_view.update_status(
-                task_id=self.task_id, status=TaskStatus.RUNNING
-            )
-            yield devices, sample_positions
+        devices = result["devices"]
+        sample_positions = result["sample_positions"]
+        devices = {
+            device_type: self._device_client.create_device_wrapper(device_name)
+            for device_type, device_name in devices.items()
+        }  # type: ignore
+        self._task_view.update_status(
+            task_id=self.task_id, status=TaskStatus.RUNNING
+        )
+        yield devices, sample_positions
 
-            self._resource_requester.release_resources(request_id=request_id)
+        self._resource_requester.release_resources(request_id=request_id)
 
     def _sample_name_to_id(self, sample_name: str) -> ObjectId:
         """

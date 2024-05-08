@@ -5,6 +5,7 @@ which actually executes the tasks.
 
 import time
 from datetime import datetime
+from traceback import format_exc
 from typing import Any, cast
 
 import dill
@@ -20,8 +21,8 @@ from alab_management.resource_manager.resource_requester import (
 from alab_management.sample_view.sample import SamplePosition
 from alab_management.sample_view.sample_view import SamplePositionRequest, SampleView
 from alab_management.task_view import TaskView
-from alab_management.task_view.task_enums import TaskStatus
-from alab_management.utils.data_objects import get_collection
+from alab_management.task_view.task_enums import CancelingProgress, TaskStatus
+from alab_management.utils.data_objects import DocumentNotUpdatedError, get_collection
 from alab_management.utils.module_ops import load_definition
 
 
@@ -62,7 +63,7 @@ class ResourceManager(RequestMixin):
             self._release_devices(devices)
             self._release_sample_positions(sample_positions)
             self.update_request_status(
-                request_id=request["_id"], status=RequestStatus.RELEASED
+                request_id=request["_id"], status=RequestStatus.RELEASED, original_status=RequestStatus.NEED_RELEASE
             )
 
     def handle_requested_resources(self):
@@ -83,12 +84,14 @@ class ResourceManager(RequestMixin):
             task_id = request_entry["task_id"]
 
             task_status = self.task_view.get_status(task_id=task_id)
-            if task_status != TaskStatus.REQUESTING_RESOURCES:
+            if (task_status != TaskStatus.REQUESTING_RESOURCES or
+                    self.task_view.get_tasks_to_be_canceled(canceling_progress=CancelingProgress.WORKER_NOTIFIED)):
                 # this implies the Task has been cancelled or errored somewhere else in the chain -- we should
                 # not allocate any resources to the broken Task.
                 self.update_request_status(
                     request_id=request_entry["_id"],
                     status=RequestStatus.CANCELED,
+                    original_status=RequestStatus.PENDING,
                 )
                 return
 
@@ -147,8 +150,10 @@ class ResourceManager(RequestMixin):
 
         # in case some errors happen, we will raise the error in the task process instead of the main process
         except Exception as error:  # pylint: disable=broad-except
-            self._request_collection.update_one(
-                {"_id": request_entry["_id"]},
+            # we will store the error in the database for easier debugging
+            error.args = (format_exc(),)
+            returned_value = self._request_collection.update_one(
+                {"_id": request_entry["_id"], "status": RequestStatus.PENDING.name},
                 {
                     "$set": {
                         "status": RequestStatus.ERROR.name,
@@ -158,11 +163,16 @@ class ResourceManager(RequestMixin):
                     }
                 },
             )
+            if returned_value.modified_count != 1:
+                raise DocumentNotUpdatedError(
+                    f"Error updating request {request_entry['_id']}: cannot update the request status from PENDING "
+                    f"to ERROR."
+                ) from error
             return
 
         # if both devices and sample positions can be satisfied
-        self._request_collection.update_one(
-            {"_id": request_entry["_id"]},
+        returned_value = self._request_collection.update_one(
+            {"_id": request_entry["_id"], "status": RequestStatus.PENDING.name},
             {
                 "$set": {
                     "assigned_devices": devices,
@@ -172,11 +182,12 @@ class ResourceManager(RequestMixin):
                 }
             },
         )
-        # label the resources as occupied
-        self._occupy_devices(devices=devices, task_id=task_id)
-        self._occupy_sample_positions(
-            sample_positions=sample_positions, task_id=task_id
-        )
+        if returned_value.modified_count == 1:
+            # label the resources as occupied
+            self._occupy_devices(devices=devices, task_id=task_id)
+            self._occupy_sample_positions(
+                sample_positions=sample_positions, task_id=task_id
+            )
 
     def _occupy_devices(self, devices: dict[str, dict[str, Any]], task_id: ObjectId):
         for device in devices.values():
