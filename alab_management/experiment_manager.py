@@ -5,7 +5,7 @@ It is responsible for parsing the incoming experiment requests into many
 tasks and samples and mark the finished tasks in the database when it is
 done.
 """
-
+import time
 from typing import Any
 
 from .config import AlabOSConfig
@@ -46,7 +46,7 @@ class ExperimentManager:
         )
         while True:
             self._loop()
-            # time.sleep()
+            time.sleep(1)
 
     def _loop(self):
         self.handle_pending_experiments()

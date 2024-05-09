@@ -49,7 +49,7 @@ class ResourceManager(RequestMixin):
         """Start the loop."""
         while True:
             self._loop()
-            # time.sleep(1)
+            time.sleep(0.5)
 
     def _loop(self):
         self.handle_released_resources()
