@@ -206,6 +206,14 @@ class TestLaunch(unittest.TestCase):
                         "parameters": {},
                         "samples": ["test_sample"],
                     },
+                    {
+                        "type": "Heating",
+                        "prev_tasks": [1],
+                        "parameters": {
+                            "setpoints": ((1, 2),),
+                        },
+                        "samples": ["test_sample"],
+                    },
                 ],
             }
 
