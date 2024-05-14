@@ -242,9 +242,22 @@ class ResourceRequester(RequestMixin):
         try:
             result = f.result(timeout=timeout)
         except concurrent.futures.TimeoutError as e:
-            raise CombinedTimeoutError(
-                f"Request {result.inserted_id} timed out after {timeout} seconds."
-            ) from e
+            # if the request is not fulfilled, cancel it to make sure the resources are released
+            request = self._request_collection.find_one_and_update({
+                "_id": result.inserted_id,
+                "status": {"$ne": RequestStatus.FULFILLED.name}
+            }, {
+                "$set": {
+                    "status": RequestStatus.CANCELED.name
+                }
+            })
+            if request is not None:
+                raise CombinedTimeoutError(
+                    f"Request {result.inserted_id} timed out after {timeout} seconds."
+                ) from e
+            else:  # if the request is fulfilled, return the result normally, wrong timeout
+                result = f.result(timeout=None)
+
         return {
             **self._post_process_requested_resource(
                 devices=result["devices"],
