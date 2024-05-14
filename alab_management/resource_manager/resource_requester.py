@@ -244,7 +244,7 @@ class ResourceRequester(RequestMixin):
         except concurrent.futures.TimeoutError as e:
             # if the request is not fulfilled, cancel it to make sure the resources are released
             request = self._request_collection.find_one_and_update({
-                "_id": result.inserted_id,
+                "_id": _id,
                 "status": {"$ne": RequestStatus.FULFILLED.name}
             }, {
                 "$set": {
