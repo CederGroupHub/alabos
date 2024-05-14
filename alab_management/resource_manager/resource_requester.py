@@ -2,7 +2,7 @@
 TaskLauncher is the core module of the system,
 which actually executes the tasks.
 """
-
+import concurrent
 import time
 from concurrent.futures import Future
 from datetime import datetime
@@ -26,6 +26,14 @@ _SampleRequestDict = dict[str, int]
 _ResourceRequestDict = dict[
     type[BaseDevice] | str | None, _SampleRequestDict
 ]  # the raw request sent by task process
+
+
+class CombinedTimeoutError(TimeoutError, concurrent.futures.TimeoutError):
+    """
+    Combined TimeoutError.
+
+    If you catch either TimeoutError or concurrent.futures.TimeoutError, this will catch both.
+    """
 
 
 class ResourcesRequest(BaseModel):
@@ -231,7 +239,12 @@ class ResourceRequester(RequestMixin):
         )  # DB_ACCESS_OUTSIDE_VIEW
         _id: ObjectId = cast(ObjectId, result.inserted_id)
         self._waiting[_id] = {"f": f, "device_str_to_request": device_str_to_request}
-        result = f.result(timeout=timeout)
+        try:
+            result = f.result(timeout=timeout)
+        except concurrent.futures.TimeoutError as e:
+            raise CombinedTimeoutError(
+                f"Request {result.inserted_id} timed out after {timeout} seconds."
+            ) from e
         return {
             **self._post_process_requested_resource(
                 devices=result["devices"],
