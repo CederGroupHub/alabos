@@ -34,7 +34,7 @@ class TaskManager:
         """Start the loop."""
         while True:
             self._loop()
-            # time.sleep(1)
+            time.sleep(1)
 
     def _loop(self):
         self.handle_tasks_to_be_canceled()

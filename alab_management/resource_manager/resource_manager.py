@@ -49,7 +49,7 @@ class ResourceManager(RequestMixin):
         """Start the loop."""
         while True:
             self._loop()
-            # time.sleep(1)
+            time.sleep(0.5)
 
     def _loop(self):
         self.handle_released_resources()
@@ -85,7 +85,8 @@ class ResourceManager(RequestMixin):
 
             task_status = self.task_view.get_status(task_id=task_id)
             if (task_status != TaskStatus.REQUESTING_RESOURCES or
-                    self.task_view.get_tasks_to_be_canceled(canceling_progress=CancelingProgress.WORKER_NOTIFIED)):
+                    task_id in {task["task_id"] for task in self.task_view.get_tasks_to_be_canceled(
+                        canceling_progress=CancelingProgress.WORKER_NOTIFIED)}):
                 # this implies the Task has been cancelled or errored somewhere else in the chain -- we should
                 # not allocate any resources to the broken Task.
                 self.update_request_status(

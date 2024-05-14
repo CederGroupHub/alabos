@@ -97,7 +97,7 @@ class TestLaunch(unittest.TestCase):
             exp_id = ObjectId(resp_json["data"]["exp_id"])
             self.assertTrue("success", resp_json["status"])
             exp_ids.append(exp_id)
-        time.sleep(30)
+        time.sleep(50)
         self.assertEqual(num_of_tasks, self.task_view._task_collection.count_documents({}))
 
         self.assertTrue(
@@ -153,7 +153,7 @@ class TestLaunch(unittest.TestCase):
             exp_id = ObjectId(resp_json["data"]["exp_id"])
             self.assertTrue("success", resp_json["status"])
             exp_ids.append(exp_id)
-            time.sleep(10)
+            time.sleep(20)
 
             pending_user_input = requests.get("http://127.0.0.1:8896/api/userinput/pending").json()
             self.assertEqual(len(pending_user_input["pending_requests"].get(str(exp_id), [])), 1)
@@ -204,6 +204,14 @@ class TestLaunch(unittest.TestCase):
                         "type": "InfiniteTask",
                         "prev_tasks": [0],
                         "parameters": {},
+                        "samples": ["test_sample"],
+                    },
+                    {
+                        "type": "Heating",
+                        "prev_tasks": [1],
+                        "parameters": {
+                            "setpoints": ((1, 2),),
+                        },
                         "samples": ["test_sample"],
                     },
                 ],
