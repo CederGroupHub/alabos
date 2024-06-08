@@ -4,6 +4,7 @@
 ![tag](https://img.shields.io/github/v/tag/CederGroupHub/alab_management)
 ![os](https://img.shields.io/badge/OS-win%7Cmac%7Clinux-9cf)
 ![python](https://img.shields.io/badge/Python-3.8%7C3.9%7C3.10-blueviolet)
+[![arXiv](https://img.shields.io/badge/arXiv-2405.13930-b31b1b.svg)](https://arxiv.org/abs/2405.13930)
 
 Managing the workflows in the **A**utonomous **Lab**.
 
