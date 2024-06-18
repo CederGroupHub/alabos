@@ -332,7 +332,7 @@ class LabView:
         value returned by the user.
         """
         return request_user_input(task_id=self.task_id, prompt=prompt, options=options)
-    
+
     def request_user_input_with_note(
         self, prompt: str, options: list[str]
     ) -> tuple[str, str]:
