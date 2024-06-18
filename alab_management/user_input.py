@@ -141,6 +141,29 @@ class UserInputView:
             self._input_collection.find({"status": UserRequestStatus.PENDING.value}),
         )
 
+    def retrieve_user_input_with_note(self, request_id: ObjectId) -> tuple[str, str]:
+        """
+        Retrive response from user for a given request. Blocks until request is marked as completed.
+
+        Returns the user response, which is one of a list of options
+        """
+        status = UserRequestStatus.PENDING
+        try:
+            while status == UserRequestStatus.PENDING:
+                request = self._input_collection.find_one({"_id": request_id})
+                if request is None:
+                    raise ValueError(
+                        f"User input request id {request_id} does not exist!"
+                    )
+                status = UserRequestStatus(request["status"])
+                time.sleep(0.5)
+        except:  # noqa: E722
+            self._input_collection.update_one(
+                {"_id": request_id}, {"$set": {"status": UserRequestStatus.ERROR.name}}
+            )
+            raise
+        return request["response"], request["note"]
+
 
 def request_user_input(
     task_id: ObjectId | None,
@@ -185,3 +208,31 @@ def request_maintenance_input(prompt: str, options: list[str]):
         maintenance=True,
         category="Maintenance",
     )
+
+
+def request_user_input_with_note(
+    task_id: ObjectId | None,
+    prompt: str,
+    options: list[str],
+    maintenance: bool = False,
+    category: str = "Unknown Category",
+) -> tuple[str, str]:
+    """
+    Request user input through the dashboard. Blocks until response is given.
+
+    task_id (ObjectId): task id requesting user input
+    prompt (str): prompt to give user
+    options (List[str]): response options to give user
+    maintenance (bool): if true, mark this as a request for overall system maintenance
+
+    Returns user response as string.
+    """
+    user_input_view = UserInputView()
+    request_id = user_input_view.insert_request(
+        task_id=task_id,
+        prompt=prompt,
+        options=options,
+        maintenance=maintenance,
+        category=category,
+    )
+    return user_input_view.retrieve_user_input_with_note(request_id=request_id)

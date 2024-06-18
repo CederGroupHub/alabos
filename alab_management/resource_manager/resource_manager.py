@@ -63,7 +63,9 @@ class ResourceManager(RequestMixin):
             self._release_devices(devices)
             self._release_sample_positions(sample_positions)
             self.update_request_status(
-                request_id=request["_id"], status=RequestStatus.RELEASED, original_status=RequestStatus.NEED_RELEASE
+                request_id=request["_id"],
+                status=RequestStatus.RELEASED,
+                original_status=RequestStatus.NEED_RELEASE,
             )
 
     def handle_requested_resources(self):
@@ -84,9 +86,12 @@ class ResourceManager(RequestMixin):
             task_id = request_entry["task_id"]
 
             task_status = self.task_view.get_status(task_id=task_id)
-            if (task_status != TaskStatus.REQUESTING_RESOURCES or
-                    task_id in {task["task_id"] for task in self.task_view.get_tasks_to_be_canceled(
-                        canceling_progress=CancelingProgress.WORKER_NOTIFIED)}):
+            if task_status != TaskStatus.REQUESTING_RESOURCES or task_id in {
+                task["task_id"]
+                for task in self.task_view.get_tasks_to_be_canceled(
+                    canceling_progress=CancelingProgress.WORKER_NOTIFIED
+                )
+            }:
                 # this implies the Task has been cancelled or errored somewhere else in the chain -- we should
                 # not allocate any resources to the broken Task.
                 self.update_request_status(
@@ -197,7 +202,7 @@ class ResourceManager(RequestMixin):
             )
 
     def _occupy_sample_positions(
-            self, sample_positions: dict[str, list[dict[str, Any]]], task_id: ObjectId
+        self, sample_positions: dict[str, list[dict[str, Any]]], task_id: ObjectId
     ):
         for sample_positions_ in sample_positions.values():
             for sample_position_ in sample_positions_:
@@ -211,7 +216,7 @@ class ResourceManager(RequestMixin):
                 self.device_view.release_device(device["name"])
 
     def _release_sample_positions(
-            self, sample_positions: dict[str, list[dict[str, Any]]]
+        self, sample_positions: dict[str, list[dict[str, Any]]]
     ):
         for sample_positions_ in sample_positions.values():
             for sample_position in sample_positions_:

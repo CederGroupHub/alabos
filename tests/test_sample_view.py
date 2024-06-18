@@ -84,7 +84,9 @@ class TestSampleView(TestCase):
         self.assertEqual("test", sample.name)
 
         # try to create samples with same name
-        sample_id = self.sample_view.create_sample("test", position="furnace_1/inside/1")
+        sample_id = self.sample_view.create_sample(
+            "test", position="furnace_1/inside/1"
+        )
         sample = self.sample_view.get_sample(sample_id=sample_id)
         self.assertEqual("furnace_1/inside/1", sample.position)
         self.assertEqual("test", sample.name)
