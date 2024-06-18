@@ -93,7 +93,9 @@ class TestLabView(TestCase):
 
             self.assertEqual(
                 "LOCKED",
-                self.sample_view.get_sample_position_status("furnace_1/inside/1")[0].name,
+                self.sample_view.get_sample_position_status("furnace_1/inside/1")[
+                    0
+                ].name,
             )
             self.assertEqual(
                 "LOCKED",

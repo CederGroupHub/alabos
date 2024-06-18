@@ -164,6 +164,7 @@ class UserInputView:
             raise
         return request["response"], request["note"]
 
+
 def request_user_input(
     task_id: ObjectId | None,
     prompt: str,
@@ -207,6 +208,7 @@ def request_maintenance_input(prompt: str, options: list[str]):
         maintenance=True,
         category="Maintenance",
     )
+
 
 def request_user_input_with_note(
     task_id: ObjectId | None,

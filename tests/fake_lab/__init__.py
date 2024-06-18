@@ -8,7 +8,10 @@ from .devices.device_that_run_slow import DeviceThatRunSlow
 from .devices.furnace import Furnace
 from .devices.robot_arm import RobotArm
 from .tasks.ending import Ending
-from .tasks.error_handling_task import ErrorHandlingRecoverable, ErrorHandlingUnrecoverable
+from .tasks.error_handling_task import (
+    ErrorHandlingRecoverable,
+    ErrorHandlingUnrecoverable,
+)
 from .tasks.heating import Heating
 from .tasks.infinite_task import InfiniteTask
 from .tasks.moving import Moving

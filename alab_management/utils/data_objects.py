@@ -53,7 +53,9 @@ class _GetMongoCollection(_BaseGetMongoCollection):
         )
         sim_mode_flag = AlabOSConfig().is_sim_mode()
         # force to enable sim mode, just in case
-        cls.db = cls.client[AlabOSConfig()["general"]["name"] + ("_sim" * sim_mode_flag)]
+        cls.db = cls.client[
+            AlabOSConfig()["general"]["name"] + ("_sim" * sim_mode_flag)
+        ]
 
 
 class _GetCompletedMongoCollection(_BaseGetMongoCollection):
@@ -76,7 +78,7 @@ class _GetCompletedMongoCollection(_BaseGetMongoCollection):
         if sim_mode_flag:
             cls.db = cls.client[
                 AlabOSConfig()["general"]["name"] + "(completed)" + "_sim"
-                ]
+            ]
         else:
             cls.db = cls.client[AlabOSConfig()["general"]["name"] + "(completed)"]
         # type: ignore # pylint: disable=unsubscriptable-object
