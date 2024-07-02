@@ -9,27 +9,36 @@ from gevent.pywsgi import WSGIServer  # type: ignore
 import multiprocessing
 with contextlib.suppress(RuntimeError):
     multiprocessing.set_start_method("spawn")
-termination_event = multiprocessing.Event()
 
 class RestartableProcess:
     """A class for creating processes that can be automatically restarted after failures."""
-    def __init__(self, target, args=(), live_time=None):
-        self.target_func = target
+
+    def __init__(self, target, args=(), live_time=None, termination_event=None):
+        self.target = target
         self.live_time = live_time
         self.process = None
-        self.termination_event = termination_event
+        self.termination_event = termination_event or multiprocessing.Event()
 
     def run(self):
-        while True:
-            self.process = multiprocessing.Process(target=self.target_func)
-            self.process.start()
-            self.process.join()  # Wait for process to finish
+        start = time.time()
+        while not self.termination_event.is_set() and (self.live_time is None or time.time() - start < self.live_time):
+            try:
+                process = multiprocessing.Process(target=self.target, args=self.args)
+                process.start()
+                process.join()  # Wait for process to finish
 
-            # Check exit code and restart if needed
-            if self.process.exitcode == 0:
-                print(f"Process {self.process.name} exited normally. Restarting...")
-            else:
-                print(f"Process {self.process.name} exited with code {self.process.exitcode}.")
+                # Check exit code, handle errors, and restart if needed
+                if process.exitcode == 0:
+                    print(f"Process {process.name} exited normally. Restarting...")
+                else:
+                    print(f"Process {process.name} exited with code {process.exitcode}.")
+            except Exception as e:
+                print(f"Error occurred while running process: {e}")
+
+            # Check for termination before restarting
+            if self.termination_event.is_set():
+                break
+
             time.sleep(self.live_time or 0)  # Restart after live_time or immediately if None
 
 def launch_dashboard(host: str, port: int, debug: bool = False):
