@@ -6,20 +6,22 @@ import sys
 import time
 from threading import Thread
 from gevent.pywsgi import WSGIServer  # type: ignore
-from multiprocessing import Process
+import multiprocessing
 with contextlib.suppress(RuntimeError):
     multiprocessing.set_start_method("spawn")
+termination_event = multiprocessing.Event()
 
 class RestartableProcess:
     """A class for creating processes that can be automatically restarted after failures."""
-    def __init__(self, target_func, live_time=None):
-        self.target_func = target_func
+    def __init__(self, target, args=(), live_time=None):
+        self.target_func = target
         self.live_time = live_time
         self.process = None
+        self.termination_event = termination_event
 
     def run(self):
         while True:
-            self.process = Process(target=self.target_func)
+            self.process = multiprocessing.Process(target=self.target_func)
             self.process.start()
             self.process.join()  # Wait for process to finish
 
@@ -99,10 +101,10 @@ def launch_lab(host, port, debug):
 
     # Create RestartableProcess objects for each process
     dashboard_process = RestartableProcess(target=launch_dashboard, args=(host, port, debug), live_time=3600)  # Restart every hour
-    experiment_manager_process = RestartableProcess(target=launch_experiment_manager)
-    task_launcher_process = RestartableProcess(target=launch_task_manager)
-    device_manager_process = RestartableProcess(target=launch_device_manager)
-    resource_manager_process = RestartableProcess(target=launch_resource_manager)
+    experiment_manager_process = RestartableProcess(target=launch_experiment_manager, args=(host, port, debug), live_time=3600)
+    task_launcher_process = RestartableProcess(target=launch_task_manager, args=(host, port, debug), live_time=3600)
+    device_manager_process = RestartableProcess(target=launch_device_manager, args=(host, port, debug), live_time=3600)
+    resource_manager_process = RestartableProcess(target=launch_resource_manager, args=(host, port, debug), live_time=3600)
 
     # Start the processes
     dashboard_process.run()
