@@ -22,17 +22,18 @@ class TaskManager:
     (2) handle all the resource requests
     """
 
-    def __init__(self):
+    def __init__(self, live_time: float | None = None):
         load_definition()
         self.task_view = TaskView()
-
         self.logger = DBLogger(task_id=None)
         super().__init__()
         time.sleep(1)  # allow some time for other modules to launch
+        self.live_time = live_time
 
     def run(self):
         """Start the loop."""
-        while True:
+        start = time.time()
+        while (time.time() - start) < self.live_time:
             self._loop()
             time.sleep(1)
 
