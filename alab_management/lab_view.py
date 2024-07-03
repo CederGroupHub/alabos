@@ -125,7 +125,7 @@ class LabView:
         sample_positions = result["sample_positions"]
         self._task_view.update_status(task_id=self.task_id, status=TaskStatus.RUNNING)
         yield devices, sample_positions
-
+        # todo: disconnect devices
         self._resource_requester.release_resources(request_id=request_id)
 
     def _sample_name_to_id(self, sample_name: str) -> ObjectId:
