@@ -88,6 +88,19 @@ class DeviceView:
             print(f"Disconnected from {device_name}")
         self.__connected_to_devices = False
 
+    def connect_device(self, device_name: str) -> _DeviceType:
+        """Connect to a device."""
+        device = self._device_list[device_name]
+        if not device.connected:
+            device._connect_wrapper()
+        return device
+
+    def disconnect_device(self, device_name: str):
+        """Disconnect from a device."""
+        device = self._device_list[device_name]
+        if device.connected:
+            device._disconnect_wrapper()
+
     def sync_device_status(self):
         """
         Sync the device status (usually when the system is set up).

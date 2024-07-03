@@ -192,6 +192,7 @@ class ResourceRequester(RequestMixin):
         resource_request: _ResourceRequestDict,
         timeout: float | None = None,
         priority: TaskPriority | int | None = None,
+        return_device_instance: bool = False,
     ) -> dict[str, Any]:
         """
         Request lab resources.
@@ -270,6 +271,7 @@ class ResourceRequester(RequestMixin):
                 devices=result["devices"],
                 sample_positions=result["sample_positions"],
                 resource_request=resource_request,
+                return_device_instance=return_device_instance,
             ),
             "request_id": result["request_id"],
         }
@@ -294,6 +296,13 @@ class ResourceRequester(RequestMixin):
         """Release a request by request_id."""
         # For the requests that were CANCELED or ERROR, but have assigned resources, release them
         request = self.get_request(request_id)
+
+        # disconnect the released device if it has been finished using by current task
+        assigned_devices = request.get("assigned_devices", {})
+        for _device_type, device_dict in assigned_devices.items():
+            if device_dict["need_release"]:
+                self.device_view.disconnect_device(device_dict["name"])
+
         if request["status"] in [RequestStatus.CANCELED.name, RequestStatus.ERROR.name]:
             if ("assigned_devices" in request) or (
                 "assigned_sample_positions" in request
@@ -332,8 +341,14 @@ class ResourceRequester(RequestMixin):
 
         For the request that have been errored, release assigned resources.
         """
-        # For the requests that were fulfilled, definitely have assigned resources, release them
+        # disconnect the released device if it has been finished using by current task
+        for request in self.get_requests_by_task_id(self.task_id):
+            assigned_devices = request.get("assigned_devices", {})
+            for _device_type, device_dict in assigned_devices.items():
+                if device_dict["need_release"]:
+                    self.device_view.disconnect_device(device_dict["name"])
 
+        # For the requests that were fulfilled, definitely have assigned resources, release them
         self._request_collection.update_many(
             {
                 "task_id": self.task_id,
@@ -446,11 +461,12 @@ class ResourceRequester(RequestMixin):
         # and wait for the abort to be handled by the task actor
         f.set_exception(RequestCanceledError("Abort signal received."))
 
-    @staticmethod
     def _post_process_requested_resource(
+        self,
         devices: dict[type[BaseDevice] | str, str],
         sample_positions: dict[str, list[str]],
         resource_request: dict[str | type[BaseDevice] | None, dict[str, int]],
+        return_device_instance: bool = False,
     ):
         processed_sample_positions: dict[
             type[BaseDevice] | str | None, dict[str, list[str]]
@@ -475,6 +491,11 @@ class ResourceRequester(RequestMixin):
                 processed_sample_positions[device_request][prefix] = sample_positions[
                     reply_prefix
                 ]
+        if return_device_instance:
+            devices = {
+                device_type: self.device_view.connect_device(device_name)
+                for device_type, device_name in devices.items()
+            }
         return {
             "devices": devices,
             "sample_positions": processed_sample_positions,

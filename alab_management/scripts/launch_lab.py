@@ -5,13 +5,16 @@ import multiprocessing
 import sys
 import time
 from threading import Thread
+
 from gevent.pywsgi import WSGIServer  # type: ignore
-import multiprocessing
+
 with contextlib.suppress(RuntimeError):
     multiprocessing.set_start_method("spawn")
 
 # Create a global termination event
 termination_event = multiprocessing.Event()
+
+
 class RestartableProcess:
     """A class for creating processes that can be automatically restarted after failures."""
 
@@ -19,11 +22,14 @@ class RestartableProcess:
         self.target = target
         self.live_time = live_time
         self.process = None
+        self.args = args
         self.termination_event = termination_event or multiprocessing.Event()
 
     def run(self):
         start = time.time()
-        while not self.termination_event.is_set() and (self.live_time is None or time.time() - start < self.live_time):
+        while not self.termination_event.is_set() and (
+            self.live_time is None or time.time() - start < self.live_time
+        ):
             try:
                 process = multiprocessing.Process(target=self.target, args=self.args)
                 process.start()
@@ -33,7 +39,9 @@ class RestartableProcess:
                 if process.exitcode == 0:
                     print(f"Process {process.name} exited normally. Restarting...")
                 else:
-                    print(f"Process {process.name} exited with code {process.exitcode}.")
+                    print(
+                        f"Process {process.name} exited with code {process.exitcode}."
+                    )
             except Exception as e:
                 print(f"Error occurred while running process: {e}")
 
@@ -41,7 +49,10 @@ class RestartableProcess:
             if self.termination_event.is_set():
                 break
 
-            time.sleep(self.live_time or 0)  # Restart after live_time or immediately if None
+            time.sleep(
+                self.live_time or 0
+            )  # Restart after live_time or immediately if None
+
 
 def launch_dashboard(host: str, port: int, debug: bool = False):
     """Launch the dashboard alone."""
@@ -64,7 +75,9 @@ def launch_experiment_manager():
     from alab_management.utils.module_ops import load_definition
 
     load_definition()
-    experiment_manager = ExperimentManager(live_time=3600, termination_event=termination_event)
+    experiment_manager = ExperimentManager(
+        live_time=3600, termination_event=termination_event
+    )
     experiment_manager.run()
 
 
@@ -78,23 +91,15 @@ def launch_task_manager():
     task_launcher.run()
 
 
-def launch_device_manager():
-    """Launch the device manager."""
-    from alab_management.device_manager import DeviceManager
-    from alab_management.utils.module_ops import load_definition
-
-    load_definition()
-    device_manager = DeviceManager(live_time=3600, termination_event=termination_event)
-    device_manager.run()
-
-
 def launch_resource_manager():
     """Launch the resource manager."""
     from alab_management.resource_manager.resource_manager import ResourceManager
     from alab_management.utils.module_ops import load_definition
 
     load_definition()
-    resource_manager = ResourceManager(live_time=3600, termination_event=termination_event)
+    resource_manager = ResourceManager(
+        live_time=3600, termination_event=termination_event
+    )
     resource_manager.run()
 
 
@@ -111,14 +116,35 @@ def launch_lab(host, port, debug):
         sys.exit(1)
 
     # Create RestartableProcess objects for each process with shared termination_event
-    dashboard_process = RestartableProcess(target=launch_dashboard, args=(host, port, debug), live_time=3600, termination_event=termination_event)
-    experiment_manager_process = RestartableProcess(target=launch_experiment_manager, args=(host, port, debug), live_time=3600, termination_event=termination_event)
-    task_launcher_process = RestartableProcess(target=launch_task_manager, args=(host, port, debug), live_time=3600, termination_event=termination_event)
-    device_manager_process = RestartableProcess(target=launch_device_manager, args=(host, port, debug), live_time=3600, termination_event=termination_event)
-    resource_manager_process = RestartableProcess(target=launch_resource_manager, args=(host, port, debug), live_time=3600, termination_event=termination_event)
+    dashboard_process = RestartableProcess(
+        target=launch_dashboard,
+        args=(host, port, debug),
+        live_time=3600,
+        termination_event=termination_event,
+    )
+    experiment_manager_process = RestartableProcess(
+        target=launch_experiment_manager,
+        args=(host, port, debug),
+        live_time=3600,
+        termination_event=termination_event,
+    )
+    task_launcher_process = RestartableProcess(
+        target=launch_task_manager,
+        args=(host, port, debug),
+        live_time=3600,
+        termination_event=termination_event,
+    )
+    resource_manager_process = RestartableProcess(
+        target=launch_resource_manager,
+        args=(host, port, debug),
+        live_time=3600,
+        termination_event=termination_event,
+    )
+
 
     # Start the processes using multiprocessing
-    processes = [dashboard_process, experiment_manager_process, task_launcher_process, device_manager_process, resource_manager_process]
+    processes = [dashboard_process, experiment_manager_process, task_launcher_process, resource_manager_process]
+
 
     jobs = []
     for process in processes:
@@ -127,6 +153,7 @@ def launch_lab(host, port, debug):
         jobs.append(p)
 
     return jobs
+
 
 
 def terminate_all_processes():

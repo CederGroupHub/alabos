@@ -66,10 +66,43 @@ class TestResourceManager(unittest.TestCase):
     def test_task_requester(self):
         furnace_type = self.devices["furnace_1"].__class__
 
-        # 1
+        # 1A
         result = self.resource_requester.request_resources(
-            {furnace_type: {"inside": 1}}, timeout=4
+            {furnace_type: {"inside": 1}}, timeout=4, return_device_instance=False
         )
+        _id = result.pop("request_id")
+        self.assertDictEqual(
+            {
+                "devices": {furnace_type: "furnace_1"},
+                "sample_positions": {furnace_type: {"inside": ["furnace_1/inside/1"]}},
+            },
+            result,
+        )
+        self.assertEqual(
+            self.device_view.get_status("furnace_1"), DeviceTaskStatus.OCCUPIED
+        )
+        self.assertEqual(
+            self.sample_view.get_sample_position_status("furnace_1/inside/1"),
+            (SamplePositionStatus.LOCKED, self.resource_requester.task_id),
+        )
+        self.resource_requester.release_resources(_id)
+        time.sleep(0.5)
+        self.assertEqual(
+            self.device_view.get_status("furnace_1"), DeviceTaskStatus.IDLE
+        )
+        self.assertEqual(
+            self.sample_view.get_sample_position_status("furnace_1/inside/1"),
+            (SamplePositionStatus.EMPTY, None),
+        )
+
+        # 1B
+        result = self.resource_requester.request_resources(
+            {furnace_type: {"inside": 1}}, timeout=4, return_device_instance=True
+        )
+        result["devices"] = {
+            device_type: device.name
+            for device_type, device in result["devices"].items()
+        }
         _id = result.pop("request_id")
         self.assertDictEqual(
             {
@@ -97,9 +130,13 @@ class TestResourceManager(unittest.TestCase):
 
         # 2
         result = self.resource_requester.request_resources(
-            {furnace_type: {"inside": 1}}, timeout=4
+            {furnace_type: {"inside": 1}}, timeout=4, return_device_instance=True
         )
         _id = result.pop("request_id")
+        result["devices"] = {
+            device_type: device.name
+            for device_type, device in result["devices"].items()
+        }
         self.assertDictEqual(
             {
                 "devices": {furnace_type: "furnace_1"},

@@ -176,7 +176,7 @@ class BaseDevice(ABC):
             raise TypeError("description must be a string")
 
         from alab_management.device_view import DeviceView
-
+        self.__connected = False
         self._device_view = DeviceView()
         self._signalemitter = DeviceSignalEmitter(
             device=self
@@ -225,6 +225,12 @@ class BaseDevice(ABC):
         self.connect()
         self.get_message()  # retrieve the most recent message from the database.
         self._signalemitter.start()  # start the signal emitter thread
+        self.__connected = True
+
+    @property
+    def connected(self) -> bool:
+        """Check if the device is connected."""
+        return self.__connected
 
     @abstractmethod
     def connect(self):
@@ -241,6 +247,7 @@ class BaseDevice(ABC):
         """Disconnect from the device and execute any backend actions that are only possible when alabos is running."""
         self.disconnect()
         self._signalemitter.stop()
+        self.__connected = False
 
     @abstractmethod
     def disconnect(self):
