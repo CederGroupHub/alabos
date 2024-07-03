@@ -3,15 +3,14 @@
 import time
 from collections.abc import Collection
 from datetime import datetime
-from enum import Enum, auto, unique
-from typing import Any, TypeVar, cast
+from enum import auto, Enum, unique
+from typing import Any, cast, TypeVar
 
 import pymongo  # type: ignore
 from bson import ObjectId  # type: ignore
 
 from alab_management.sample_view import SamplePosition, SampleView
 from alab_management.utils.data_objects import get_collection, get_lock
-
 from .device import BaseDevice, get_all_devices
 
 _DeviceType = TypeVar("_DeviceType", bound=BaseDevice)  # pylint: disable=invalid-name
@@ -88,6 +87,19 @@ class DeviceView:
             print(f"Disconnected from {device_name}")
         self.__connected_to_devices = False
 
+    def connect_device(self, device_name: str) -> _DeviceType:
+        """Connect to a device."""
+        device = self._device_list[device_name]
+        if not device.connected:
+            device._connect_wrapper()
+        return device
+
+    def disconnect_device(self, device_name: str):
+        """Disconnect from a device."""
+        device = self._device_list[device_name]
+        if device.connected:
+            device._disconnect_wrapper()
+
     def sync_device_status(self):
         """
         Sync the device status (usually when the system is set up).
@@ -149,12 +161,12 @@ class DeviceView:
         self._device_collection.drop()
 
     def request_devices(
-        self,
-        task_id: ObjectId,
-        device_names_str: Collection[str] | None = None,
-        device_types_str: (
-            Collection[str] | None
-        ) = None,  # pylint: disable=unsubscriptable-object
+            self,
+            task_id: ObjectId,
+            device_names_str: Collection[str] | None = None,
+            device_types_str: (
+                    Collection[str] | None
+            ) = None,  # pylint: disable=unsubscriptable-object
     ) -> dict[str, dict[str, str | bool]] | None:
         """
         Request a list of device, this function will return the name of devices if all the requested device is ready.
@@ -219,7 +231,7 @@ class DeviceView:
             return idle_devices
 
     def get_available_devices(
-        self, device_str: str, type_or_name: str, task_id: ObjectId | None = None
+            self, device_str: str, type_or_name: str, task_id: ObjectId | None = None
     ) -> list[dict[str, str | bool]]:
         """
         Given device type, it will return all the device with this type.
@@ -299,8 +311,8 @@ class DeviceView:
         device_name = device.name if isinstance(device, BaseDevice) else device
         # Wait until the device status has been updated to OCCUPIED
         while (
-            self.get_status(device_name=device_name).name
-            != DeviceTaskStatus.OCCUPIED.name
+                self.get_status(device_name=device_name).name
+                != DeviceTaskStatus.OCCUPIED.name
         ):
             time.sleep(0.5)
 
@@ -326,8 +338,8 @@ class DeviceView:
         }
 
         if (
-            DevicePauseStatus[device_entry["pause_status"]]
-            == DevicePauseStatus.REQUESTED
+                DevicePauseStatus[device_entry["pause_status"]]
+                == DevicePauseStatus.REQUESTED
         ):
             update_dict.update(
                 {
@@ -355,11 +367,11 @@ class DeviceView:
         return samples_per_position
 
     def _update_status(
-        self,
-        device: BaseDevice | str,
-        required_status: DeviceTaskStatus | list[DeviceTaskStatus] | None,
-        target_status: DeviceTaskStatus,
-        task_id: ObjectId | None,
+            self,
+            device: BaseDevice | str,
+            required_status: DeviceTaskStatus | list[DeviceTaskStatus] | None,
+            target_status: DeviceTaskStatus,
+            task_id: ObjectId | None,
     ):
         """
         A method that check and update the status of a device.
@@ -387,8 +399,8 @@ class DeviceView:
             required_status = None
 
         if (
-            required_status is not None
-            and DeviceTaskStatus[device_entry["status"]] not in required_status
+                required_status is not None
+                and DeviceTaskStatus[device_entry["status"]] not in required_status
         ):
             raise ValueError(
                 f"Device's current status ({device_entry['status']}) is "

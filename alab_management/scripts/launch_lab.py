@@ -4,14 +4,17 @@ import contextlib
 import multiprocessing
 import sys
 import time
-from threading import Thread
-from gevent.pywsgi import WSGIServer  # type: ignore
 from multiprocessing import Process
+
+from gevent.pywsgi import WSGIServer  # type: ignore
+
 with contextlib.suppress(RuntimeError):
     multiprocessing.set_start_method("spawn")
 
+
 class RestartableProcess:
     """A class for creating processes that can be automatically restarted after failures."""
+
     def __init__(self, target_func, live_time=None):
         self.target_func = target_func
         self.live_time = live_time
@@ -27,8 +30,13 @@ class RestartableProcess:
             if self.process.exitcode == 0:
                 print(f"Process {self.process.name} exited normally. Restarting...")
             else:
-                print(f"Process {self.process.name} exited with code {self.process.exitcode}.")
-            time.sleep(self.live_time or 0)  # Restart after live_time or immediately if None
+                print(
+                    f"Process {self.process.name} exited with code {self.process.exitcode}."
+                )
+            time.sleep(
+                self.live_time or 0
+            )  # Restart after live_time or immediately if None
+
 
 def launch_dashboard(host: str, port: int, debug: bool = False):
     """Launch the dashboard alone."""
@@ -65,16 +73,6 @@ def launch_task_manager():
     task_launcher.run()
 
 
-def launch_device_manager():
-    """Launch the device manager."""
-    from alab_management.device_manager import DeviceManager
-    from alab_management.utils.module_ops import load_definition
-
-    load_definition()
-    device_manager = DeviceManager()
-    device_manager.run()
-
-
 def launch_resource_manager():
     """Launch the resource manager."""
     from alab_management.resource_manager.resource_manager import ResourceManager
@@ -98,17 +96,17 @@ def launch_lab(host, port, debug):
         sys.exit(1)
 
     # Create RestartableProcess objects for each process
-    dashboard_process = RestartableProcess(target=launch_dashboard, args=(host, port, debug), live_time=3600)  # Restart every hour
+    dashboard_process = RestartableProcess(
+        target=launch_dashboard, args=(host, port, debug), live_time=3600
+    )  # Restart every hour
     experiment_manager_process = RestartableProcess(target=launch_experiment_manager)
     task_launcher_process = RestartableProcess(target=launch_task_manager)
-    device_manager_process = RestartableProcess(target=launch_device_manager)
     resource_manager_process = RestartableProcess(target=launch_resource_manager)
 
     # Start the processes
     dashboard_process.run()
     experiment_manager_process.run()
     task_launcher_process.run()
-    device_manager_process.run()
     resource_manager_process.run()
 
     """With RestartableProcess, each process is designed to handle restarts automatically.

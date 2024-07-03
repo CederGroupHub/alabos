@@ -14,7 +14,6 @@ from bson import ObjectId
 from pydantic import root_validator
 from pydantic.main import BaseModel
 
-from alab_management.device_manager import DevicesClient
 from alab_management.device_view.device import BaseDevice
 from alab_management.experiment_view.experiment_view import ExperimentView
 from alab_management.logger import DBLogger
@@ -74,7 +73,6 @@ class LabView:
         self._task_id = task_id
         self._sample_view = SampleView()
         self._resource_requester = ResourceRequester(task_id=task_id)
-        self._device_client = DevicesClient(task_id=task_id, timeout=None)
         self.logger = DBLogger(task_id=task_id)
 
         self._priority = TaskPriority.NORMAL.value
@@ -117,15 +115,14 @@ class LabView:
             task_id=self.task_id, status=TaskStatus.REQUESTING_RESOURCES
         )
         result = self._resource_requester.request_resources(
-            resource_request=resource_request, timeout=timeout, priority=priority
+            resource_request=resource_request,
+            timeout=timeout,
+            priority=priority,
+            return_device_instance=True,
         )
         request_id = result["request_id"]
         devices = result["devices"]
         sample_positions = result["sample_positions"]
-        devices = {
-            device_type: self._device_client.create_device_wrapper(device_name)
-            for device_type, device_name in devices.items()
-        }  # type: ignore
         self._task_view.update_status(task_id=self.task_id, status=TaskStatus.RUNNING)
         yield devices, sample_positions
 
