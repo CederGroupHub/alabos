@@ -10,6 +10,8 @@ import multiprocessing
 with contextlib.suppress(RuntimeError):
     multiprocessing.set_start_method("spawn")
 
+# Create a global termination event
+termination_event = multiprocessing.Event()
 class RestartableProcess:
     """A class for creating processes that can be automatically restarted after failures."""
 
@@ -62,7 +64,7 @@ def launch_experiment_manager():
     from alab_management.utils.module_ops import load_definition
 
     load_definition()
-    experiment_manager = ExperimentManager()
+    experiment_manager = ExperimentManager(live_time=3600, termination_event=termination_event)
     experiment_manager.run()
 
 
@@ -72,7 +74,7 @@ def launch_task_manager():
     from alab_management.utils.module_ops import load_definition
 
     load_definition()
-    task_launcher = TaskManager(live_time=3600)
+    task_launcher = TaskManager(live_time=3600, termination_event=termination_event)
     task_launcher.run()
 
 
@@ -82,7 +84,7 @@ def launch_device_manager():
     from alab_management.utils.module_ops import load_definition
 
     load_definition()
-    device_manager = DeviceManager()
+    device_manager = DeviceManager(live_time=3600, termination_event=termination_event)
     device_manager.run()
 
 
@@ -92,7 +94,7 @@ def launch_resource_manager():
     from alab_management.utils.module_ops import load_definition
 
     load_definition()
-    resource_manager = ResourceManager()
+    resource_manager = ResourceManager(live_time=3600, termination_event=termination_event)
     resource_manager.run()
 
 
@@ -108,20 +110,24 @@ def launch_lab(host, port, debug):
         )
         sys.exit(1)
 
-    # Create RestartableProcess objects for each process
-    dashboard_process = RestartableProcess(target=launch_dashboard, args=(host, port, debug), live_time=3600)  # Restart every hour
-    experiment_manager_process = RestartableProcess(target=launch_experiment_manager, args=(host, port, debug), live_time=3600)
-    task_launcher_process = RestartableProcess(target=launch_task_manager, args=(host, port, debug), live_time=3600)
-    device_manager_process = RestartableProcess(target=launch_device_manager, args=(host, port, debug), live_time=3600)
-    resource_manager_process = RestartableProcess(target=launch_resource_manager, args=(host, port, debug), live_time=3600)
+    # Create RestartableProcess objects for each process with shared termination_event
+    dashboard_process = RestartableProcess(target=launch_dashboard, args=(host, port, debug), live_time=3600, termination_event=termination_event)
+    experiment_manager_process = RestartableProcess(target=launch_experiment_manager, args=(host, port, debug), live_time=3600, termination_event=termination_event)
+    task_launcher_process = RestartableProcess(target=launch_task_manager, args=(host, port, debug), live_time=3600, termination_event=termination_event)
+    device_manager_process = RestartableProcess(target=launch_device_manager, args=(host, port, debug), live_time=3600, termination_event=termination_event)
+    resource_manager_process = RestartableProcess(target=launch_resource_manager, args=(host, port, debug), live_time=3600, termination_event=termination_event)
 
-    # Start the processes
-    dashboard_process.run()
-    experiment_manager_process.run()
-    task_launcher_process.run()
-    device_manager_process.run()
-    resource_manager_process.run()
+    # Start the processes in separate threads to allow termination event setting
+    processes = [dashboard_process, experiment_manager_process, task_launcher_process, device_manager_process, resource_manager_process]
 
-    """With RestartableProcess, each process is designed to handle restarts automatically.
-    So, there's no need to worry about the program exiting before background tasks finish -
-    they will be restarted by RestartableProcess if necessary."""
+    threads = []
+    for process in processes:
+        thread = Thread(target=process.run)
+        thread.start()
+        threads.append(thread)
+
+    return threads
+
+def terminate_all_processes():
+    """Set the termination event to stop all processes."""
+    termination_event.set()

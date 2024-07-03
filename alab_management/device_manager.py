@@ -6,6 +6,7 @@ redirect all the method calls to the real device object via RabbitMQ. The real d
 DeviceManager class, which will handle all the request to run certain methods on the real device.
 """
 
+import multiprocessing
 import time
 from collections.abc import Callable
 from concurrent.futures import Future
@@ -108,7 +109,7 @@ class DeviceManager:
     executes commands on the device drivers, as requested by the task process.
     """
 
-    def __init__(self, _check_status: bool = True):
+    def __init__(self, _check_status: bool = True, live_time: float | None = None, termination_event=None):
         """
         Args:
             _check_status: Check if the task currently occupied this device when
@@ -127,23 +128,28 @@ class DeviceManager:
         self._device_view = DeviceView(connect_to_devices=True)
         self._check_status = _check_status
         self.threads = []
+        self.live_time = live_time
+        self.termination_event = termination_event or multiprocessing.Event()
 
     def run(self):
         """Start to listen on the device_rpc queue and conduct the command one by one."""
         self.connection = get_rabbitmq_connection()
-        with self.connection.channel() as channel:
-            channel.queue_declare(
-                queue=self._rpc_queue_name,
-                auto_delete=True,
-                exclusive=False,
-            )
-            channel.basic_consume(
-                queue=self._rpc_queue_name,
-                on_message_callback=self.on_message,
-                auto_ack=False,
-                consumer_tag=self._rpc_queue_name,
-            )
-            channel.start_consuming()
+        start = time.time
+        while not self.termination_event.is_set() and (self.live_time is None or time.time() - start < self.live_time):
+
+            with self.connection.channel() as channel:
+                channel.queue_declare(
+                    queue=self._rpc_queue_name,
+                    auto_delete=True,
+                    exclusive=False,
+                )
+                channel.basic_consume(
+                    queue=self._rpc_queue_name,
+                    on_message_callback=self.on_message,
+                    auto_ack=False,
+                    consumer_tag=self._rpc_queue_name,
+                )
+                channel.start_consuming()
 
     def _execute_command_wrapper(
         self,
