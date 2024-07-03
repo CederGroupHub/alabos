@@ -3,6 +3,7 @@ TaskLauncher is the core module of the system,
 which actually executes the tasks.
 """
 
+import multiprocessing
 import time
 
 from dramatiq_abort import abort, abort_requested
@@ -22,18 +23,19 @@ class TaskManager:
     (2) handle all the resource requests
     """
 
-    def __init__(self, live_time: float | None = None):
+    def __init__(self, live_time: float | None = None, termination_event=None):
         load_definition()
         self.task_view = TaskView()
         self.logger = DBLogger(task_id=None)
         super().__init__()
         time.sleep(1)  # allow some time for other modules to launch
         self.live_time = live_time
+        self.termination_event = termination_event or multiprocessing.Event()
 
     def run(self):
         """Start the loop."""
         start = time.time()
-        while (time.time() - start) < self.live_time:
+        while not self.termination_event.is_set() and (self.live_time is None or time.time() - start < self.live_time):
             self._loop()
             time.sleep(1)
 

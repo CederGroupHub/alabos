@@ -6,6 +6,7 @@ tasks and samples and mark the finished tasks in the database when it is
 done.
 """
 
+import multiprocessing
 import time
 from typing import Any
 
@@ -23,7 +24,7 @@ class ExperimentManager:
     and submit the experiment to executor and flag the completed experiments.
     """
 
-    def __init__(self):
+    def __init__(self, live_time: float | None = None, termination_event=None):
         self.experiment_view = ExperimentView()
         self.task_view = TaskView()
         self.sample_view = SampleView()
@@ -36,6 +37,9 @@ class ExperimentManager:
         if self.__copy_to_completed_db:
             self.completed_experiment_view = CompletedExperimentView()
 
+        self.live_time = live_time
+        self.termination_event = termination_event or multiprocessing.Event()
+
     def run(self):
         """Start the event loop."""
         self.logger.system_log(
@@ -45,7 +49,8 @@ class ExperimentManager:
                 "type": "ExperimentManagerStarted",
             },
         )
-        while True:
+        start = time.time()
+        while not self.termination_event.is_set() and (self.live_time is None or time.time() - start < self.live_time):
             self._loop()
             time.sleep(1)
 

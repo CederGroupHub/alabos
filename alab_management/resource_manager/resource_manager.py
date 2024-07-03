@@ -3,6 +3,7 @@ TaskLauncher is the core module of the system,
 which actually executes the tasks.
 """
 
+import multiprocessing
 import time
 from datetime import datetime
 from traceback import format_exc
@@ -34,7 +35,7 @@ class ResourceManager(RequestMixin):
     (2) handle all the resource requests
     """
 
-    def __init__(self):
+    def __init__(self, live_time: float | None = None, termination_event=None):
         load_definition()
         self.task_view = TaskView()
         self.sample_view = SampleView()
@@ -44,10 +45,13 @@ class ResourceManager(RequestMixin):
         self.logger = DBLogger(task_id=None)
         super().__init__()
         time.sleep(1)  # allow some time for other modules to launch
+        self.live_time = live_time
+        self.termination_event = termination_event or multiprocessing.Event()
 
     def run(self):
         """Start the loop."""
-        while True:
+        start = time.time()
+        while not self.termination_event.is_set() and (self.live_time is None or time.time() - start < self.live_time):
             self._loop()
             time.sleep(0.5)
 
