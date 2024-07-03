@@ -117,16 +117,17 @@ def launch_lab(host, port, debug):
     device_manager_process = RestartableProcess(target=launch_device_manager, args=(host, port, debug), live_time=3600, termination_event=termination_event)
     resource_manager_process = RestartableProcess(target=launch_resource_manager, args=(host, port, debug), live_time=3600, termination_event=termination_event)
 
-    # Start the processes in separate threads to allow termination event setting
+    # Start the processes using multiprocessing
     processes = [dashboard_process, experiment_manager_process, task_launcher_process, device_manager_process, resource_manager_process]
 
-    threads = []
+    jobs = []
     for process in processes:
-        thread = Thread(target=process.run)
-        thread.start()
-        threads.append(thread)
+        p = multiprocessing.Process(target=process.run)
+        p.start()
+        jobs.append(p)
 
-    return threads
+    return jobs
+
 
 def terminate_all_processes():
     """Set the termination event to stop all processes."""
