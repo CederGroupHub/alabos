@@ -21,10 +21,10 @@ def value_in_database(name: str, default_value: Any) -> property:
     Example usage when defining a new Device:
 
         .. code-block:: python
-        from alab_management.device_view import BaseDevice, attribute_in_database
+        from alab_management.device_view import BaseDevice, value_in_database
 
         class MyDevice(BaseDevice):
-            my_attribute = attribute_in_database("my_attribute", 0)
+            my_attribute = value_in_database("my_attribute", 0)
 
             def __init__(self, name: str, **kwargs):
                 super().__init__(name, **kwargs)

@@ -62,6 +62,18 @@ class _Task(BaseModel):
                 "{v}, which is not a valid ObjectId."
             ) from exc
 
+    @validator("parameters")
+    def must_be_bsonable(cls, v):
+        """If v is not None, we must confirm that it can be encoded to BSON."""
+        try:
+            BSON.encode(v)
+            return v
+        except Exception as exc:
+            raise ValueError(
+                "An experiment received over the API contained a sample with invalid metadata. The metadata was set "
+                "to {v}, which is not BSON-serializable."
+            ) from exc
+
 
 class InputExperiment(BaseModel):
     """This is the format that user should follow to write to experiment database."""
