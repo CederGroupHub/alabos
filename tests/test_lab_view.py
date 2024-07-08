@@ -32,6 +32,7 @@ class TestLabView(TestCase):
             sim_mode=True,
             database_name="Alab_sim",
             user_confirmation="y",
+            remove_versions=True,
         )
         setup_lab()
         self.device_view = DeviceView()
@@ -51,6 +52,7 @@ class TestLabView(TestCase):
             sim_mode=True,
             database_name="Alab_sim",
             user_confirmation="y",
+            remove_versions=True,
         )
         time.sleep(1)
 

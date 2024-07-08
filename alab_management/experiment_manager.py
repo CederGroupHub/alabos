@@ -50,7 +50,9 @@ class ExperimentManager:
             },
         )
         start = time.time()
-        while not self.termination_event.is_set() and (self.live_time is None or time.time() - start < self.live_time):
+        while not self.termination_event.is_set() and (
+            self.live_time is None or time.time() - start < self.live_time
+        ):
             self._loop()
             time.sleep(1)
 
@@ -127,6 +129,7 @@ class ExperimentManager:
                     parameters=task["parameters"],
                     samples=samples,
                     task_id=task.get("task_id", None),
+                    commit_hash_or_version=experiment["commit_hash_or_version"],
                 )
             )
 

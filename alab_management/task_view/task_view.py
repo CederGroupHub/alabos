@@ -30,6 +30,7 @@ class TaskView:
         prev_tasks: ObjectId | list[ObjectId] | None = None,
         next_tasks: ObjectId | list[ObjectId] | None = None,
         task_id: ObjectId | None = None,
+        commit_hash_or_version: str | None = None,
     ) -> ObjectId:
         """
         Insert a task into the task collection.
@@ -69,6 +70,7 @@ class TaskView:
             "next_tasks": next_tasks,
             "created_at": datetime.now(),
             "last_updated": datetime.now(),
+            "commit_hash_or_version": commit_hash_or_version,
             "message": "",
         }
         if isinstance(task_id, ObjectId):

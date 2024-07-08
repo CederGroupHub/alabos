@@ -1,7 +1,11 @@
 """A wrapper over the ``experiment`` class."""
 
+import os
+import shutil
+from copy import copy
 from datetime import datetime
 from enum import Enum, auto
+from pathlib import Path
 from typing import Any, cast
 
 from bson import ObjectId  # type: ignore
@@ -71,10 +75,38 @@ class ExperimentView:
                     f"was not submitted."
                 )
 
+        # create a new folder in the version control folder inside working directory if it does not exist
+        from alab_management.config import AlabOSConfig
+        from alab_management.utils.versioning import get_version
+
+        config = AlabOSConfig()
+        working_dir = config["general"]["working_dir"]
+
+        dir_to_import_from = copy(working_dir)
+        dir_to_import_from = (
+            Path(dir_to_import_from)
+            if os.path.isabs(dir_to_import_from)
+            else config.path.parent / dir_to_import_from
+        )
+        versions_dir = os.listdir(dir_to_import_from / "versions")
+        current_version = get_version()
+        if current_version not in versions_dir:
+            os.mkdir(dir_to_import_from / "versions" / current_version)
+            # copy all the folders other than versions folder to the new folder using shutil
+            folders = os.listdir(dir_to_import_from)
+            for folder in folders:
+                if folder != "versions":
+                    # copy the folder to the new folder
+                    shutil.copytree(
+                        dir_to_import_from / folder,
+                        dir_to_import_from / "versions" / current_version / folder,
+                    )
+
         # all good, lets submit the experiment into ALabOS!
         result = self._experiment_collection.insert_one(
             {
                 **experiment.dict(),
+                "commit_hash_or_version": current_version,
                 "submitted_at": datetime.now(),
                 "status": ExperimentStatus.PENDING.name,
             }

@@ -176,6 +176,7 @@ class BaseDevice(ABC):
             raise TypeError("description must be a string")
 
         from alab_management.device_view import DeviceView
+
         self.__connected = False
         self._device_view = DeviceView()
         self._signalemitter = DeviceSignalEmitter(
@@ -613,7 +614,7 @@ _device_registry: dict[str, BaseDevice] = {}
 def add_device(device: BaseDevice):
     """Register a device instance. It is stored in a global dictionary."""
     if device.name in _device_registry:
-        raise KeyError(f"Duplicated device name {device.name}")
+        raise KeyError(f"Duplicated device name {device.name}.")
     _device_registry[device.name] = device
 
 

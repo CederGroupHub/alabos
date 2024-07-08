@@ -9,6 +9,7 @@ from alab_management.experiment_view import (
 )
 from alab_management.scripts.cleanup_lab import cleanup_lab
 from alab_management.scripts.setup_lab import setup_lab
+from alab_management.utils.versioning import get_version
 
 
 class TestExperimentView(TestCase):
@@ -19,6 +20,7 @@ class TestExperimentView(TestCase):
             sim_mode=True,
             database_name="Alab_sim",
             user_confirmation="y",
+            remove_versions=True,
         )
         setup_lab()
         self.experiment_view = ExperimentView()
@@ -32,6 +34,7 @@ class TestExperimentView(TestCase):
             sim_mode=True,
             database_name="Alab_sim",
             user_confirmation="y",
+            remove_versions=True,
         )
         self.experiment_collection.drop()
 
@@ -61,6 +64,7 @@ class TestExperimentView(TestCase):
         exp_dict = exp_template.dict()
         exp_dict["_id"] = exp_id
         exp_dict["status"] = "PENDING"
+        exp_dict["commit_hash_or_version"] = get_version()
 
         exp.pop("submitted_at")
 

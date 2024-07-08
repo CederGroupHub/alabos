@@ -28,6 +28,7 @@ class TestDeviceView(TestCase):
             sim_mode=True,
             database_name="Alab_sim",
             user_confirmation="y",
+            remove_versions=True,
         )
         setup_lab()
         self.device_view = DeviceView()

@@ -13,6 +13,7 @@ from alab_management.logger import DBLogger
 from alab_management.task_view import TaskView
 from alab_management.task_view.task_enums import CancelingProgress, TaskStatus
 from alab_management.utils.module_ops import load_definition
+from alab_management.utils.versioning import get_version
 
 
 class TaskManager:
@@ -24,7 +25,7 @@ class TaskManager:
     """
 
     def __init__(self, live_time: float | None = None, termination_event=None):
-        load_definition()
+        load_definition(get_version())
         self.task_view = TaskView()
         self.logger = DBLogger(task_id=None)
         super().__init__()
@@ -35,7 +36,9 @@ class TaskManager:
     def run(self):
         """Start the loop."""
         start = time.time()
-        while not self.termination_event.is_set() and (self.live_time is None or time.time() - start < self.live_time):
+        while not self.termination_event.is_set() and (
+            self.live_time is None or time.time() - start < self.live_time
+        ):
             self._loop()
             time.sleep(1)
 

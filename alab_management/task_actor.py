@@ -25,9 +25,11 @@ register_abortable_middleware()
     notify_shutdown=True,
 )  # time limit is set in ms. currently set to 30 days
 def run_task(task_id_str: str):
-    """Submit a task. In this system, each task is run in an
-    independent process, which will try to acquire device and
-    process samples. This will change the status of the task under the specified id into "RUNNING".
+    """Submit a task. Each task is run in an independent process, which will try to acquire device and process samples.
+    A task is created in TaskView with the status "WAITING".
+    When the task is ready to be run, the task status will be changed to "READY".
+    Once task is ready, TaskManager will pick up the task and call this function.
+    This will change the status of the task under the specified id into "RUNNING".
     If the task is not in "INITIATED" state, it has been picked up by another task actor beforehand,
     and no action is taken.
     If an Abort (exception) signal is sent, the task status will be changed to "CANCELLED".
@@ -41,7 +43,6 @@ def run_task(task_id_str: str):
     """
     from .lab_view import LabView  # pylint: disable=cyclic-import
 
-    load_definition()
     task_view = TaskView()
     sample_view = SampleView()
     logger = DBLogger(task_id=None)
@@ -49,6 +50,7 @@ def run_task(task_id_str: str):
     task_id = ObjectId(task_id_str)
     try:
         task_entry = task_view.get_task(task_id, encode=True)
+        load_definition(task_entry["commit_hash_or_version"])
     except ValueError:
         print(
             f"{datetime.datetime.now()}: No task found with id: {task_id} -- assuming that alabos was aborted without "

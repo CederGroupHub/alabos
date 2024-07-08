@@ -34,6 +34,7 @@ class TestResourceManager(unittest.TestCase):
             sim_mode=True,
             database_name="Alab_sim",
             user_confirmation="y",
+            remove_versions=True,
         )
         setup_lab()
         self.devices = get_all_devices()
@@ -47,7 +48,7 @@ class TestResourceManager(unittest.TestCase):
             }
         )
         self.resource_requester = ResourceRequester(task_id=fake_task.inserted_id)
-        self.process = Process(target=launch_resource_manager)
+        self.process = Process(target=launch_resource_manager(live_time=300))
         self.process.daemon = True
         self.process.start()
         time.sleep(0.5)

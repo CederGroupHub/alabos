@@ -32,6 +32,7 @@ class TestSampleView(TestCase):
             sim_mode=True,
             database_name="Alab_sim",
             user_confirmation="y",
+            remove_versions=True,
         )
         setup_lab()
         self.sample_view = SampleView()
@@ -44,6 +45,7 @@ class TestSampleView(TestCase):
             sim_mode=True,
             database_name="Alab_sim",
             user_confirmation="y",
+            remove_versions=True,
         )
         self.sample_view._sample_collection.drop()
 

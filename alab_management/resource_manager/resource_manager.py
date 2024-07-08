@@ -25,6 +25,7 @@ from alab_management.task_view import TaskView
 from alab_management.task_view.task_enums import CancelingProgress, TaskStatus
 from alab_management.utils.data_objects import DocumentNotUpdatedError, get_collection
 from alab_management.utils.module_ops import load_definition
+from alab_management.utils.versioning import get_version
 
 
 class ResourceManager(RequestMixin):
@@ -36,7 +37,7 @@ class ResourceManager(RequestMixin):
     """
 
     def __init__(self, live_time: float | None = None, termination_event=None):
-        load_definition()
+        load_definition(get_version())
         self.task_view = TaskView()
         self.sample_view = SampleView()
         self.device_view = DeviceView()
@@ -51,7 +52,9 @@ class ResourceManager(RequestMixin):
     def run(self):
         """Start the loop."""
         start = time.time()
-        while not self.termination_event.is_set() and (self.live_time is None or time.time() - start < self.live_time):
+        while not self.termination_event.is_set() and (
+            self.live_time is None or time.time() - start < self.live_time
+        ):
             self._loop()
             time.sleep(0.5)
 

@@ -15,6 +15,7 @@ class TestTaskView(TestCase):
             sim_mode=True,
             database_name="Alab_sim",
             user_confirmation="y",
+            remove_versions=True,
         )
         setup_lab()
         self.task_view = TaskView()
@@ -27,6 +28,7 @@ class TestTaskView(TestCase):
             sim_mode=True,
             database_name="Alab_sim",
             user_confirmation="y",
+            remove_versions=True,
         )
         self.task_view._task_collection.drop()
 

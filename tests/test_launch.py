@@ -22,6 +22,7 @@ class TestLaunch(unittest.TestCase):
             sim_mode=True,
             database_name="Alab_sim",
             user_confirmation="y",
+            remove_versions=True,
         )
         setup_lab()
         self.task_view = TaskView()
@@ -50,6 +51,7 @@ class TestLaunch(unittest.TestCase):
             sim_mode=True,
             database_name="Alab_sim",
             user_confirmation="y",
+            remove_versions=True,
         )
 
     def test_submit_experiment(self):

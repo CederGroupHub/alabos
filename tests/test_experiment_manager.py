@@ -15,6 +15,7 @@ class TestExperimentManager(TestCase):
             sim_mode=True,
             database_name="Alab_sim",
             user_confirmation="y",
+            remove_versions=True,
         )
         setup_lab()
         self.experiment_manager = ExperimentManager()
@@ -26,6 +27,7 @@ class TestExperimentManager(TestCase):
             sim_mode=True,
             database_name="Alab_sim",
             user_confirmation="y",
+            remove_versions=True,
         )
 
     def test_handle_pending_experiments(self):

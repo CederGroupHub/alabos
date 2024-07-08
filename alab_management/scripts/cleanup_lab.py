@@ -5,6 +5,11 @@ If ``-a`` is true, the whole database (including the data recorded) shall
 be deleted.
 """
 
+import os
+import shutil
+from copy import copy
+from pathlib import Path
+
 
 def cleanup_lab(
     all_collections: bool = False,
@@ -12,15 +17,37 @@ def cleanup_lab(
     user_confirmation: str = None,
     sim_mode: bool = True,
     database_name: str = None,
+    remove_versions: bool = True,
 ):
-    """Drop device, sample_position collection from MongoDB."""
+    """
+    Drop device, sample_position collection from MongoDB.
+    Can also drop the whole database if 'all_collections' is true.
+    Can also remove the versions folder if 'remove_versions' is true.
+    """
     from alab_management.config import AlabOSConfig  # type: ignore
     from alab_management.device_view.device_view import DeviceView
     from alab_management.sample_view.sample_view import SampleView
     from alab_management.utils.data_objects import _GetMongoCollection
 
-    _GetMongoCollection.init()
     config = AlabOSConfig()
+    if remove_versions:
+        print("Removing versions folder")
+        working_dir = config["general"]["working_dir"]
+        dir_to_import_from = copy(working_dir)
+        dir_to_import_from = (
+            Path(dir_to_import_from)
+            if os.path.isabs(dir_to_import_from)
+            else config.path.parent / dir_to_import_from
+        )
+        versions_folders = [
+            entry
+            for entry in os.listdir(dir_to_import_from / "versions")
+            if os.path.isdir(os.path.join(dir_to_import_from / "versions", entry))
+        ]
+        for version_folder in versions_folders:
+            shutil.rmtree(dir_to_import_from / "versions" / version_folder)
+
+    _GetMongoCollection.init()
     task_count_new = (
         _GetMongoCollection.client.get_database(config["general"]["name"])
         .get_collection("tasks")
