@@ -62,7 +62,7 @@ class BaseTask(ABC):
             lab_view: a lab_view corresponding to the task_id
             samples: a list of sample_id's corresponding to samples involvend in the task.
             offline_mode: whether the task is run in offline mode or not. It is in offline mode when you
-              are trying to build an experiment out of it.
+              are trying to build an experiment out of it or get the task result.
 
         Here is an example about how to define a custom task
 
