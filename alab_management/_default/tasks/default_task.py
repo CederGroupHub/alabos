@@ -20,9 +20,15 @@ class DefaultTask(BaseTask):
                 self.sample, sample_positions[None]["DefaultSamplePosition"][0]
             )
 
-    def validate(self):
+    def validate(self) -> bool:
+        """
+        Validation of the input parameters.
+
+        You can add more validation logic here. The method should return True if the input parameters
+        are valid, False otherwise. This method is called when you build the task.
+        """
         return True
 
     @property
-    def result_specification(self) -> BaseModel:
+    def result_specification(self) -> type[BaseModel]:
         pass

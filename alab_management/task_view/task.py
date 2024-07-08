@@ -94,8 +94,6 @@ class BaseTask(ABC):
                 for key, val in inspect.getargvalues(subclass_init_frame).locals.items()
                 if key not in ["self", "args", "kwargs", "__class__"]
             }
-            if not self.validate():
-                raise ValueError("Task validation failed!")
         else:
             if (task_id is None) or (lab_view is None) or (samples is None):
                 raise ValueError(
@@ -107,6 +105,9 @@ class BaseTask(ABC):
             self.logger = self.lab_view.logger
             self.priority = priority
             self.lab_view.priority = priority
+
+            if not self.validate():
+                raise ValueError("Task validation failed!")
 
     @property
     def is_offline(self) -> bool:
