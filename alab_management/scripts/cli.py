@@ -55,10 +55,13 @@ def setup_lab_cli():
 )
 @click.option("-p", "--port", default="8895", type=int)
 @click.option("--debug", default=False, is_flag=True)
-def launch_lab_cli(host, port, debug):
+@click.option("--live_time", default=10, type=float)
+def launch_lab_cli(host, port, debug, live_time):
     """Start to run the lab."""
-    click.echo(f"The dashboard will be served on http://{host}:{port}")
-    launch_lab(host, port, debug)
+    click.echo(
+        f"The dashboard will be served on http://{host}:{port} with live time {live_time} seconds."
+    )
+    launch_lab(host, port, debug, live_time)
 
 
 @cli.command(
@@ -80,12 +83,19 @@ def launch_worker_cli(ctx):
 @click.option("-a", "--all-collections", is_flag=True, default=False)
 @click.option("-f", "--_force_i_know_its_dangerous", is_flag=True, default=False)
 @click.option("--database_name", default="Alab_sim")
+@click.option("--remove_versions", is_flag=True, default=False)
 def cleanup_lab_cli(
-    all_collections: bool, _force_i_know_its_dangerous: bool, database_name: str
+    all_collections: bool,
+    _force_i_know_its_dangerous: bool,
+    database_name: str,
+    remove_versions: bool,
 ):
     """Clean up the database."""
     if cleanup_lab(
-        all_collections, _force_i_know_its_dangerous, database_name=database_name
+        all_collections,
+        _force_i_know_its_dangerous,
+        database_name=database_name,
+        remove_versions=remove_versions,
     ):
         click.echo("Done")
     else:
