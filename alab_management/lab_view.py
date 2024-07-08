@@ -354,6 +354,17 @@ class LabView:
             priority = priority.value
         self._priority = priority
 
+    def update_result(self, name: str, value: Any):
+        """
+        Update a result of the task. This result will be saved in the task collection under `results.name` and can be
+        retrieved later.
+
+        Args: name (str): name of the result (ie "diffraction pattern"). This will be used as the key in the results
+        dictionary. value (Any): value of the result. This can be a numpy array, a set, or any other
+        bson-serializable object (most standard Python types).
+        """
+        self._task_view.update_result(task_id=self.task_id, name=name, value=value)
+
     def request_cleanup(self):
         """Request cleanup of the task. This function will block until the task is cleaned up."""
         all_reserved_sample_positions = self._sample_view.get_sample_positions_by_task(
