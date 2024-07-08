@@ -2,7 +2,7 @@
 
 import os
 
-__version__ = "0.4.1"
+__version__ = "1.0.1"
 from .builders import ExperimentBuilder
 from .device_view.dbattributes import value_in_database
 from .device_view.device import BaseDevice, add_device

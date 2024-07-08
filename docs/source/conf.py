@@ -26,7 +26,7 @@ os.environ["ALABOS_CONFIG_PATH"] = (
 # -- Project information -----------------------------------------------------
 
 project = "Alab Management System"
-copyright = f"{date.today().year}, Alab Project Team"
+copyright = f"{date.today().year}, Ceder group"
 author = "Alab Project Team"
 
 # The full version, including alpha/beta/rc tags
@@ -50,7 +50,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
     "sphinx.ext.githubpages",
-    "recommonmark",
+    "myst_nb",
     "sphinx_autodoc_typehints",
 ]
 
@@ -79,14 +79,14 @@ html_theme_options = {
     "show_navbar_depth": 0,
 }
 
-html_logo = (Path(__file__).parent / "_static" / "logo.png").as_posix()
-html_title = "Alab Management"
+# html_logo = (Path(__file__).parent / "_static" / "logo.png").as_posix()
+html_title = f"Alab Management {__version__}"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
-html_css_files = ["custom.css"]
+html_css_files = []
 
 StandaloneHTMLBuilder.supported_image_types = [
     "image/svg+xml",

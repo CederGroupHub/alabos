@@ -1,10 +1,11 @@
 from bson import ObjectId  # type: ignore
+from pydantic import BaseModel
 
 from alab_management.task_view.task import BaseTask
 
 
 class DefaultTask(BaseTask):
-    """The default task, refer to https://idocx.github.io/alab_management/task_definition.html for more details."""
+    """The default task, refer to https://idocx.github.io/alab_management/task_definition.html for more details. #TODO"""
 
     def __init__(self, sample: ObjectId, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -21,3 +22,7 @@ class DefaultTask(BaseTask):
 
     def validate(self):
         return True
+
+    @property
+    def result_specification(self) -> BaseModel:
+        pass

@@ -288,11 +288,6 @@ class BaseDevice(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def emergent_stop(self):  # TODO rename this to emergency stop
-        """Specify how the device should stop when emergency."""
-        raise NotImplementedError()
-
-    @abstractmethod
     def is_running(self) -> bool:
         """Check whether this device is running."""
         raise NotImplementedError()

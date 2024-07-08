@@ -1,0 +1,1 @@
+# Launching lab in simulation mode

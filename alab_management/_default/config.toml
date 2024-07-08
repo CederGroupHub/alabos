@@ -1,19 +1,35 @@
 [general]
-name = 'default_lab'
-working_dir = "."
+name = 'default_lab'  # Put the name of the lab here, it will be used as the DB name
+working_dir = "."  # the working directory of the lab, where the device and task definitions are stored
 
-[mongodb]
+[mongodb]  # the MongoDB configuration
 host = 'localhost'
 password = ''
 port = 27017
 username = ''
 
+# all the completed experiments are stored in this database
+# the db name will be the lab name + '_completed'
 [mongodb_completed]
 host = "localhost"
 password = ""
 port = 27017
 username = ""
 
-[rabbitmq]
+[rabbitmq]  # the RabbitMQ configuration
 host = "localhost"
 port = 5672
+
+# the user notification configuration, currently only email and slack are supported
+# if you don't want to use them, just leave them empty
+[alarm]
+# the email configuration. All the user notification will be sent to all the email_receivers in the list
+# the email_sender is the email address of the sender, e.g. alabos@xxx.com
+email_receivers = []
+email_sender = " "
+email_password = " "
+
+# the slack configuration. All the user notification will be sent to the slack_channel_id
+# the slack_bot_token is the token of the slack bot, you can get it from https://api.slack.com/apps
+slack_bot_token = " "
+slack_channel_id = " "

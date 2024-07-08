@@ -2,8 +2,6 @@
   :width: 430
   :class: no-scaled-link
 
-.. note::
-  *Currently, this package is still under construction.*
 
 This Alab Workflow Management is aimed at providing a configurable and sharable platform for autonomous synthesis, just like
 what `ROS <https://www.ros.org/>`_ has done for robotics.
@@ -94,29 +92,23 @@ Task actor is a function that start a task process (managed by `Dramatiq <https:
 will run only one task (defined in the experiment, e.g. heating, moving, etc.) The task manager launch the task actor
 process and the actor process will not die even if the main process of the system ends.
 
+
 Data Storage
 """"""""""""""
 
 We will use `MongoDB <https://www.mongodb.com/>`_ as our database. We communicate with database
 via `pymongo <https://pymongo.readthedocs.io/en/stable/>`_ package.
 
-.. toctree::
-   :maxdepth: -1
-   :caption: Quickstart
-   :hidden:
-
-   Installation<installation>
-   Setup definition folder<setup>
-   Defining new devices<device_definition>
-   Defining new tasks<task_definition>
 
 .. toctree::
-   :maxdepth: -1
-   :hidden:
+    :maxdepth: -1
+    :hidden:
 
-   Development<development>
-   API Docs<modules>
-
+    installation
+    tutorial
+    bestpractice
+    Development<development>
+    API Docs<modules>
 
 
 Indices and tables

@@ -3,7 +3,6 @@
 import click
 
 from alab_management.__init__ import __version__
-from alab_management.config import AlabOSConfig
 
 from .cleanup_lab import cleanup_lab
 from .init_project import init_project
@@ -25,7 +24,6 @@ def cli():
    /_/   \_\_|\__,_|_.__/    \___/|____/
 
 ----  Alab OS v{__version__} -- Alab Project Team  ----
-    Simulation mode: {"ON" if AlabOSConfig().is_sim_mode() else "OFF"}
     """
     )
 
@@ -57,7 +55,11 @@ def setup_lab_cli():
 @click.option("--debug", default=False, is_flag=True)
 def launch_lab_cli(host, port, debug):
     """Start to run the lab."""
+    from alab_management.config import AlabOSConfig
+
+    click.echo(f'Simulation mode: {"ON" if AlabOSConfig().is_sim_mode() else "OFF"}')
     click.echo(f"The dashboard will be served on http://{host}:{port}")
+
     launch_lab(host, port, debug)
 
 

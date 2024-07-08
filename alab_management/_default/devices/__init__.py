@@ -1,3 +1,1 @@
-# from alab_management import import_device_definitions
-
-# import_device_definitions(__file__, __name__)
+"""You don't have to modify this file. It is used to make Python treat the directory as containing packages."""

@@ -1,9 +1,7 @@
-.. _development:
-
 Development
------------
+--------------
 
-=============================
+
 Development Environment Setup
 =============================
 
