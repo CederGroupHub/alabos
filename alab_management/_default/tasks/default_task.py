@@ -12,6 +12,13 @@ class DefaultTask(BaseTask):
         self.sample = sample
 
     def run(self):
+        """
+        The main logic of the task.
+
+        You can request resources, move samples, and communicate with devices in this method.
+        Finally, the return value of this method will be stored as the result of the task (valiated
+        by `result_specification`).
+        """
         with self.lab_view.request_resources({None: {"DefaultSamplePosition": 1}}) as (
             _,
             sample_positions,
@@ -31,4 +38,17 @@ class DefaultTask(BaseTask):
 
     @property
     def result_specification(self) -> type[BaseModel]:
-        pass
+        """
+        The result specification of the task.
+
+        The method should return a pydantic model that defines the result of the task. The result
+        will be validated using the result_specification.
+        """
+
+        class DefaultTaskResult(BaseModel):
+            """The result of the default task."""
+
+            mass: float
+            temperature: float
+
+        return DefaultTaskResult

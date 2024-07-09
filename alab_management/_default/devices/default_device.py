@@ -56,7 +56,7 @@ class DefaultDevice(BaseDevice):
         """
         Check if the device is running.
 
-        Returns:
+        Returns
         -------
             bool: True if the device is running, False otherwise.
         """
