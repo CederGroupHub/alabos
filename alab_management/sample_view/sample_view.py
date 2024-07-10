@@ -3,7 +3,7 @@
 import re
 import time
 from datetime import datetime
-from enum import auto, Enum
+from enum import Enum, auto
 from typing import Any, cast
 
 import pymongo  # type: ignore
@@ -11,6 +11,7 @@ from bson import ObjectId  # type: ignore
 from pydantic import BaseModel, conint
 
 from alab_management.utils.data_objects import get_collection, get_lock
+
 from .sample import Sample, SamplePosition
 
 

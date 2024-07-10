@@ -5,7 +5,7 @@ from alab_management.sample_view import SamplePosition
 
 
 class DefaultDevice(BaseDevice):
-    """Default device definition, refer to https://idocx.github.io/alab_management/device_definition.html. # TODO"""
+    """Default device definition, refer to https://idocx.github.io/alab_management/device_definition.html. # TODO."""
 
     # You can add a description to the device.
     description: ClassVar[str] = "Default device"

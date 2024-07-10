@@ -114,6 +114,10 @@ class TaskView:
         Args:
             task_id: the task_id of interest. If not found, will return ``None``
             encode: whether to encode the task using ``self.encode_task`` method
+
+        Returns
+        -------
+            the task entry
         """
         task_id = ObjectId(task_id)
 

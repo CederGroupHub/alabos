@@ -5,7 +5,7 @@ from alab_management.task_view.task import BaseTask
 
 
 class DefaultTask(BaseTask):
-    """The default task, refer to https://idocx.github.io/alab_management/task_definition.html for more details. #TODO"""
+    """The default task, refer to https://idocx.github.io/alab_management/task_definition.html for more details. #TODO."""
 
     def __init__(self, sample: ObjectId, *args, **kwargs):
         super().__init__(*args, **kwargs)

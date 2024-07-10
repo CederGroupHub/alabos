@@ -255,7 +255,7 @@ class LabView:
         )
         try:
             subtask: BaseTask = task(
-                simulation=False,
+                offline_mode=False,
                 task_id=task_id,
                 lab_view=lab_view,
                 samples=samples,
