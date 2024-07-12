@@ -11,7 +11,7 @@ from .moving import Moving
 class Heating(BaseTask):
     def __init__(
         self,
-        samples: list[ObjectId],
+        samples: list[str | ObjectId],
         setpoints: list[tuple[float, float]],
         *args,
         **kwargs,
@@ -19,7 +19,7 @@ class Heating(BaseTask):
         """Heating task.
 
         Args:
-            samples (list[ObjectId]): List of sample ids.
+            samples (list[str|ObjectId]): List of sample names or ids.
             setpoints (list[tuple[float, float]]): List of setpoints as the heating profile. Since it is a fake
                 lab, the setpoints are just a list of tuples, each tuple contains two float numbers, the first
                 number is the temperature, and the second number is the time in seconds.
