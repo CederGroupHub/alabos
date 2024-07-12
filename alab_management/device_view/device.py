@@ -30,63 +30,80 @@ def mock(
     A decorator used for mocking functions during simulation.
 
     Args:
-    - return_constant (Any, optional): The constant value to be returned by the mocked function.
-        It can be a value (str, int, float, bool), list of values, or a dictionary specifying
-        return values for keys. Default is None.
-    - object_type (Union[List[Any], Any], optional): The type or list of types to mock if the
-        function returns an object. Default is None.
+        return_constant (Any, optional): The constant value to be returned by the mocked function.
+            It can be a value (str, int, float, bool), list of values, or a dictionary specifying
+            return values for keys. Default is None.
+        object_type (Union[List[Any], Any], optional): The type or list of types to mock if the
+            function returns an object. Default is None.
 
     Returns
     -------
-    - decorator: Decorator function used to mock other functions during simulation.
+        Decorator function used to mock other functions during simulation.
 
     Raises
     ------
-    - ValueError: If both `return_constant` and `object_type` are specified.
-    - ValueError: If `return_constant` is not of types: str, int, float, bool, list, or dict.
-    - ValueError: If `object_type` is specified and not a list or a class type.
+        ValueError: If both `return_constant` and `object_type` are specified.
+        ValueError: If `return_constant` is not of types: str, int, float, bool, list, or dict.
+        ValueError: If `object_type` is specified and not a list or a class type.
 
-    Note:
-    - The decorator mocks the function during simulation based on specified constant values
-        or object types.
+    .. note ::
+
+        The decorator mocks the function during simulation based on specified constant values or object types.
 
     Examples
     --------
     1. Mocking a function with a constant return value:
-    @mock(return_constant=42)
-    def get_data() -> int:
-        ...
-        a = some_integer
-        return a
+
+    .. code-block:: python
+
+        @mock(return_constant=42)
+        def get_data() -> int:
+            ...
+            a = some_integer
+            return a
 
     2. Mocking a function that returns multiple values in a dictionary:
-    @mock(return_constant={"twotheta": [0.1, 0.2, 0.3], "counts": [100, 200, 300]})
-    def run_simulation() -> dict:
-        ...
-        a = {twotheta: [0.1, 0.2, 0.3]}
-        b = {counts: [100, 200, 300]}
-        return {**a, **b}
+
+    .. code-block:: python
+
+        @mock(return_constant={"twotheta": [0.1, 0.2, 0.3], "counts": [100, 200, 300]})
+        def run_simulation() -> dict:
+            ...
+            a = {twotheta: [0.1, 0.2, 0.3]}
+            b = {counts: [100, 200, 300]}
+            return {**a, **b}
 
     3. Mocking a function that returns a specific object type:
-    @mock(object_type=str)
-    def create_mock_string() -> str:
-        return "Mocked String"
+
+    .. code-block:: python
+
+        @mock(object_type=str)
+        def create_mock_string() -> str:
+            return "Mocked String"
 
     4. Mocking a function that returns a single object type:
-    from alab_control.ohaus_scale import OhausScale as ScaleDriver
-    @mock(object_type=ScaleDriver)
-    def get_driver(self):
-        self.driver = ScaleDriver(ip=self.ip_address, timeout=self.TIMEOUT)
-        self.driver.set_unit_to_mg()
-        return self.driver
+
+    .. code-block:: python
+
+        from alab_control.ohaus_scale import OhausScale as ScaleDriver
+
+        @mock(object_type=ScaleDriver)
+        def get_driver(self):
+            self.driver = ScaleDriver(ip=self.ip_address, timeout=self.TIMEOUT)
+            self.driver.set_unit_to_mg()
+            return self.driver
 
     5. Mocking a function that returns a list of object types:
-    from alab_control.furnace_2416 import FurnaceController
-    from alab_control.door_controller import DoorController
-    @mock(object_type=[FurnaceController, DoorController])
-    def get_driver(self):
-        self.driver = FurnaceController(port=self.com_port)
-        return self.driver, self.door_controller
+
+    .. code-block:: python
+
+        from alab_control.furnace_2416 import FurnaceController
+        from alab_control.door_controller import DoorController
+
+        @mock(object_type=[FurnaceController, DoorController])
+        def get_driver(self):
+            self.driver = FurnaceController(port=self.com_port)
+            return self.driver, self.door_controller
     """
 
     def decorator(f: Callable[..., Any]):

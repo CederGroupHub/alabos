@@ -52,6 +52,7 @@ extensions = [
     "sphinx.ext.githubpages",
     "myst_nb",
     "sphinx_autodoc_typehints",
+    "sphinx_design",
 ]
 
 add_module_names = False

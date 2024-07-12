@@ -1,5 +1,19 @@
 Set up configuration folder
-========================
+===========================
+
+In AlabOS framework, the autonomous lab is represented as a combination of samples, experiments, devices, and tasks.
+The samples and experiments are defined and submitted by the users during runtime, while the devices and tasks are
+predefined in the lab.
+
+The devices and tasks define the basic functions and operations of the lab. The devices represent the physical equipment
+in the autonomous lab, such as the robot arm, the furnaces, etc. The tasks represent the operations that can be performed
+with the devices on the samples, such as the annealing, the grinding, etc.
+
+To set up an autonomous lab with AlabOS, you need to define the devices and tasks you want to use in the lab, along with
+some database configurations. The project folder is a Python package, where you can define the devices and tasks as Python,
+with the helper classes provided by AlabOS. The database configurations are stored in a TOML file, which will be
+read by the system at starting.
+
 
 Initiate a project via command line
 ----------------------------------------------
