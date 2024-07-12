@@ -8,7 +8,7 @@ from typing import Any, cast
 
 import pymongo  # type: ignore
 from bson import ObjectId  # type: ignore
-from pydantic import BaseModel, conint
+from pydantic import BaseModel, ConfigDict, conint
 
 from alab_management.utils.data_objects import get_collection, get_lock
 
@@ -23,10 +23,8 @@ class SamplePositionRequest(BaseModel):
     the number you request. By default, the number is set to be 1.
     """
 
-    class Config:
-        """raise error when extra kwargs."""
-
-        extra = "forbid"
+    # raise error when extra kwargs are passed
+    model_config = ConfigDict(extra="forbid")
 
     prefix: str
     number: conint(ge=0) = 1  # type: ignore

@@ -5,6 +5,7 @@ import json
 from abc import ABC, abstractmethod
 from datetime import datetime
 from enum import Enum
+from pathlib import Path
 
 import numpy as np
 import pika
@@ -115,6 +116,8 @@ def make_bsonable(obj):
     elif isinstance(obj, str):
         with contextlib.suppress(Exception):
             obj = ObjectId(obj)
+    elif isinstance(obj, Path):
+        obj = str(obj)
 
     return obj
 
