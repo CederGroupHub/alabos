@@ -1,26 +1,28 @@
 """Define the base class of task, which will be used for defining more tasks."""
 
 import inspect
+import time
 from abc import ABC, abstractmethod
 from inspect import getfullargspec
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Optional
 
 import gridfs
-from bson import BSON
-from bson.errors import InvalidBSON
 from bson.objectid import ObjectId
-from pydantic import BaseModel, root_validator
+from pydantic import BaseModel, ConfigDict, model_validator
 
 from alab_management.builders.experimentbuilder import ExperimentBuilder
 from alab_management.builders.samplebuilder import SampleBuilder
 from alab_management.config import AlabOSConfig
-from alab_management.device_view.device import BaseDevice
 from alab_management.task_view.task_enums import TaskPriority
 from alab_management.utils.data_objects import _GetMongoCollection
 
 if TYPE_CHECKING:
+    from alab_management.device_view.device import BaseDevice
     from alab_management.lab_view import LabView
+
+config = AlabOSConfig()
+default_storage_type = str(config["large_result_storage"]["default_storage_type"])
 
 
 class LargeResult(BaseModel):
@@ -29,17 +31,19 @@ class LargeResult(BaseModel):
     Stored in either gridFS or other filesystems (Cloud AWS S3, etc.).
     """
 
-    storage_type: str
+    storage_type: str = default_storage_type
     # The path to the local file, used for uploading
-    local_path: str | Path | None
+    local_path: str | Path | None = None
     # The identifier of the file in the storage system, can be a path or a key (e.g., gridfs id)
     # Obtained after storing the file, used for retrieving
-    identifier: str | None
+    identifier: str | ObjectId | None = None
     # alternative to local path, used for uploading, local path has higher priority
-    file_like_data: Any | None
+    file_like_data: Any | None = None
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     # if file_like_data is provided check if it has .read() method
-    @root_validator(pre=True)
+    @model_validator(mode="before")
     def check_file_like_data(cls, values):
         """Check if file_like_data has a .read() method."""
         file_like_data = values.get("file_like_data")
@@ -48,11 +52,20 @@ class LargeResult(BaseModel):
         return values
 
     def store(self):
-        """Store the large result in the storage system."""
+        """
+        Store the large result in the storage system.
+        This method should block until the result is confirmed to be stored.
+        This method should have a timeout regardless of the storage system to not block indefinitely.
+        """
         if self.storage_type == "gridfs":
             _GetMongoCollection.init()
             config = AlabOSConfig()
-            db = _GetMongoCollection.client.get_database(config["general"]["name"])
+            if config.is_sim_mode():
+                db = _GetMongoCollection.client.get_database(
+                    config["general"]["name"] + "_sim"
+                )
+            else:
+                db = _GetMongoCollection.client.get_database(config["general"]["name"])
             fs = gridfs.GridFS(db)
             if self.local_path:
                 with open(self.local_path, "rb") as file:
@@ -64,16 +77,35 @@ class LargeResult(BaseModel):
                     "Either local_path or serializable_data must be provided for storing in gridfs."
                 )
             self.identifier = file_id
+            # check if the file is stored, wait until it is stored for maximum 10 seconds
+            for _ in range(10):
+                if fs.exists(file_id):
+                    return
+                time.sleep(1)
+            raise ValueError(f"File with identifier {file_id} failed to be stored.")
         else:
             raise ValueError("Only gridfs storage is supported for now.")
 
     def retrieve(self):
         """Retrieve the large result from the storage system."""
         if self.storage_type == "gridfs":
+            if self.identifier is None:
+                raise ValueError(
+                    "Identifier is not provided for retrieving from gridfs."
+                )
             _GetMongoCollection.init()
             config = AlabOSConfig()
-            db = _GetMongoCollection.client.get_database(config["general"]["name"])
+            if config.is_sim_mode():
+                db = _GetMongoCollection.client.get_database(
+                    config["general"]["name"] + "_sim"
+                )
+            else:
+                db = _GetMongoCollection.client.get_database(config["general"]["name"])
             fs = gridfs.GridFS(db)
+            if fs.get(self.identifier) is None:
+                raise ValueError(
+                    f"File with identifier {self.identifier} does not exist."
+                )
             return fs.get(self.identifier).read()
         else:
             raise ValueError("Only gridfs storage is supported for now.")
@@ -81,9 +113,16 @@ class LargeResult(BaseModel):
     def check_if_stored(self):
         """Check if the large result is stored in the storage system."""
         if self.storage_type == "gridfs":
+            if self.identifier is None:
+                return False
             _GetMongoCollection.init()
             config = AlabOSConfig()
-            db = _GetMongoCollection.client.get_database(config["general"]["name"])
+            if config.is_sim_mode():
+                db = _GetMongoCollection.client.get_database(
+                    config["general"]["name"] + "_sim"
+                )
+            else:
+                db = _GetMongoCollection.client.get_database(config["general"]["name"])
             fs = gridfs.GridFS(db)
             return fs.exists(self.identifier)
         else:
@@ -177,6 +216,7 @@ class BaseTask(ABC):
             return 0
         return self.lab_view._resource_requester.priority
 
+    @property
     def result_specification(self) -> BaseModel | None:
         """
         Returns a pydantic model describing the results to be generated by this task.
@@ -194,63 +234,68 @@ class BaseTask(ABC):
         """
         return None
 
-    def update_result(self, key: str, value: Any):
-        """Attach a result to the task. This will be saved in the database and
-        can be accessed later. Subsequent calls to this function with the same
-        key will overwrite the previous value.
+    # TODO: Delete these two methods because task_view are better suited
+    # since both requires DB access
 
-        Args:
-            key (str): The name of the result.
-            value (Any): The value of the result.
-        """
-        if key not in self.result_specification:
-            raise ValueError(
-                f"Result key {key} is not included in the result specification for this task!"
-            )
+    # def update_result(self, key: str, value: Any):
+    #     """Attach a result to the task. This will be saved in the database and
+    #     can be accessed later. Subsequent calls to this function with the same
+    #     key will overwrite the previous value.
 
-        # check if value is bson serializable
-        try:
-            BSON.encode({key: value})
-        except (InvalidBSON, TypeError) as e:
-            raise ValueError(
-                f"Value {value} for key {key} is not BSON serializable!"
-            ) from e
+    #     Args:
+    #         key (str): The name of the result.
+    #         value (Any): The value of the result.
+    #     """
+    #     if key not in self.result_specification:
+    #         raise ValueError(
+    #             f"Result key {key} is not included in the result specification for this task!"
+    #         )
 
-        if not self.__offline:
-            self.lab_view.update_result(name=key, value=value)
-        else:
-            raise ValueError("Cannot update a result for an offline task!")
+    #     # check if value is bson serializable
+    #     try:
+    #         BSON.encode({key: value})
+    #     except (InvalidBSON, TypeError) as e:
+    #         raise ValueError(
+    #             f"Value {value} for key {key} is not BSON serializable!"
+    #         ) from e
 
-    def export_result(self, encode: bool = False) -> type[BaseModel]:
-        """
-        Export all data from the result.
+    #     if not self.__offline:
+    #         self.lab_view.update_result(name=key, value=value)
+    #     else:
+    #         raise ValueError("Cannot update a result for an offline task!")
 
-        Args
-        ----
-        encode: bool, optional. If True, the result will be encoded into the Pydantic model defined in result_specification.
-        If False, the raw result will be returned.
+    # def export_result(self, encode: bool = False) -> type[BaseModel]:
+    #     """
+    #     Export all data from the result.
 
-        Returns
-        -------
-        BaseModel: A Pydantic model describing the results generated by this task.
-        """
-        if self._is_taskid_generated:
-            raise ValueError(
-                "Cannot export a result from a task with an automatically generated task_id!"
-            )
-        if not self.__offline:
-            results = self.lab_view._task_view.get_task(task_id=self.task_id)["results"]
-            if encode:
-                try:
-                    return self.result_specification(**results)
-                except Exception as e:
-                    raise ValueError(
-                        f"Task result is inconsistent with the task result specification: {e}"
-                    ) from e
-            else:
-                return results
-        else:
-            raise ValueError("Cannot export a result from an offline task!")
+    #     Args
+    #     ----
+    #     encode: bool, optional. If True, the result will be encoded into the Pydantic model defined in result_specification.
+    #     If False, the raw result will be returned.
+
+    #     Returns
+    #     -------
+    #     BaseModel: A Pydantic model describing the results generated by this task.
+    #     """
+    #     if self._is_taskid_generated:
+    #         raise ValueError(
+    #             "Cannot export a result from a task with an automatically generated task_id!"
+    #         )
+    #     if not self.__offline:
+    #         results = self.lab_view._task_view.get_task(task_id=self.task_id)["result"]
+    #         if encode:
+    #             try:
+    #                 model=self.result_specification
+    #                 return model(**results)
+    #             except Exception as e:
+    #                 raise ValueError(
+    #                     f"Task result is inconsistent with the task result specification."
+    #                     f"{format_exc()}"
+    #                 ) from e
+    #         else:
+    #             return results
+    #     else:
+    #         raise ValueError("Cannot export a result from an offline task!")
 
     @priority.setter
     def priority(self, value: int | TaskPriority):
@@ -377,7 +422,7 @@ class BaseTask(ABC):
 
 _task_registry: dict[str, type[BaseTask]] = {}
 
-SUPPORTED_SAMPLE_POSITIONS_TYPE = dict[type[BaseDevice] | str | None, str | list[str]]
+SUPPORTED_SAMPLE_POSITIONS_TYPE = dict[type["BaseDevice"] | str | None, str | list[str]]
 _reroute_task_registry: list[
     dict[str, type[BaseTask] | SUPPORTED_SAMPLE_POSITIONS_TYPE]
 ] = []

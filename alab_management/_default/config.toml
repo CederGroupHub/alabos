@@ -33,3 +33,11 @@ email_password = " "
 # the slack_bot_token is the token of the slack bot, you can get it from https://api.slack.com/apps
 slack_bot_token = " "
 slack_channel_id = " "
+
+[large_result_storage]
+# the default storage configuration for tasks that generate large results 
+# (>16 MB, cannot be contained in MongoDB)
+# currently only gridfs is supported
+# storage_type is defined by using LargeResult class located in alab_management/task_view/task.py
+# you can override this default configuration by setting the storage_type in the task definition
+default_storage_type = "gridfs"

@@ -13,7 +13,8 @@ from typing import Any, cast
 
 import dill
 from bson import ObjectId
-from pydantic import BaseModel, root_validator
+from pydantic import BaseModel, model_validator
+from pydantic.root_model import RootModel
 
 from alab_management.device_view.device import BaseDevice
 from alab_management.device_view.device_view import DeviceView
@@ -41,7 +42,21 @@ class CombinedTimeoutError(TimeoutError, concurrent.futures.TimeoutError):
     """
 
 
-class ResourcesRequest(BaseModel):
+class DeviceRequest(BaseModel):
+    """Pydantic model for device request."""
+
+    identifier: str
+    content: str
+
+
+class ResourceRequestItem(BaseModel):
+    """Pydantic model for resource request item."""
+
+    device: DeviceRequest
+    sample_positions: list[SamplePositionRequest]
+
+
+class ResourcesRequest(RootModel):
     """
     This class is used to validate the resource request. Each request should have a format of
     [
@@ -66,15 +81,11 @@ class ResourcesRequest(BaseModel):
         :py:class:`SamplePositionRequest <alab_management.sample_view.sample_view.SamplePositionRequest>`
     """
 
-    __root__: list[
-        dict[str, list[dict[str, str | int]] | dict[str, str]]
-    ]  # type: ignore
+    root: list[ResourceRequestItem]
 
-    @root_validator(pre=True, allow_reuse=True)
+    @model_validator(mode="before")
     def preprocess(cls, values):
         """Preprocess the request."""
-        values = values["__root__"]
-
         new_values = []
         for request_dict in values:
             if request_dict["device"]["identifier"] not in [
@@ -94,7 +105,7 @@ class ResourcesRequest(BaseModel):
                     "sample_positions": request_dict["sample_positions"],
                 }
             )
-        return {"__root__": new_values}
+        return new_values
 
 
 class RequestMixin:
@@ -237,8 +248,8 @@ class ResourceRequester(RequestMixin):
             )
 
         if not isinstance(formatted_resource_request, ResourcesRequest):
-            formatted_resource_request = ResourcesRequest(__root__=formatted_resource_request)  # type: ignore
-        formatted_resource_request = formatted_resource_request.dict()["__root__"]
+            formatted_resource_request = ResourcesRequest(root=formatted_resource_request)  # type: ignore
+        formatted_resource_request = formatted_resource_request.model_dump(mode="json")
 
         result = self._request_collection.insert_one(
             {

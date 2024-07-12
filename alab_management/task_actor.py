@@ -15,6 +15,7 @@ from alab_management.logger import DBLogger
 from alab_management.sample_view import SampleView
 from alab_management.task_view import BaseTask, TaskStatus, TaskView
 from alab_management.task_view.task import LargeResult
+from alab_management.utils.data_objects import make_bsonable
 from alab_management.utils.middleware import register_abortable_middleware
 from alab_management.utils.module_ops import load_definition
 
@@ -170,6 +171,7 @@ def run_task(task_id_str: str):
             # assume that all field are replaced by the value if the result is a pydantic model
             # convert pydantic model to dict
             dict_result = result.model_dump(mode="python")
+            bsonable_value = make_bsonable(dict_result)
             for key, value in dict_result.items():
                 task_view.update_result(task_id=task_id, name=key, value=value)
         elif isinstance(result, dict):
@@ -189,25 +191,37 @@ def run_task(task_id_str: str):
             result = task_view.get_task(task_id=task_id)["result"]
             if isinstance(result, dict):
                 try:
-                    encoded_result = task.result_specification(**result)
-                    # if it is consistent, check if any field is a LargeResult
-                    # if so, ensure that it is stored properly
-                    for key, value in encoded_result.items():
-                        if (
-                            isinstance(value, LargeResult)
-                            and not value.check_if_stored()
-                        ):
-                            try:
-                                value.store()
-                            except Exception as e:
-                                # if storing fails, log the error and continue
-                                print(
-                                    f"WARNING: Failed to store LargeResult {key} for task_id {task_id_str}: {e}"
-                                )
-                except Exception as e:
+                    model = task.result_specification
+                    encoded_result = model(**result)
+                    # if it is consistent, check which fields are LargeResults
+                    # if so, ensure that they are stored properly
+                    for key, value in dict(encoded_result).items():
+                        if isinstance(value, LargeResult):
+                            if not value.check_if_stored():
+                                try:
+                                    # get storage type from the config file
+                                    value.store()
+                                    # update the LargeResult entry in the MongoDB for the corresponding field in the task result
+                                    value_as_dict = value.model_dump(mode="python")
+                                    # ensure bson serializable
+                                    bsonable_value = make_bsonable(value_as_dict)
+                                    task_view.update_result(
+                                        task_id=task_id, name=key, value=bsonable_value
+                                    )
+                                except Exception:
+                                    # if storing fails, log the error and continue
+                                    print(
+                                        f"WARNING: Failed to store LargeResult {key} for task_id {task_id_str}."
+                                        f"{format_exc()}"
+                                    )
+                        else:
+                            pass
+                except Exception:
                     print(
-                        f"WARNING: Task result for task_id {task_id_str} is inconsistent with the task result specification: {e}"
+                        f"WARNING: Task result for task_id {task_id_str} is inconsistent with the task result specification."
+                        f"{format_exc()}"
                     )
+                    print()
             else:
                 print(
                     f"WARNING: Task result for task_id {task_id_str} is not a dictionary, but a {type(result)}."

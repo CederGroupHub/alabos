@@ -260,9 +260,13 @@ class TaskView:
         """
         Update result to completed job.
 
-        Args: task_id: the id of task to be updated name: the name of the result to be updated. If ``None``,
-        will update the entire ``result`` field. Otherwise, will update the field ``result.name``. value: the value
-        to be stored. This must be bson-encodable (ie can be written into MongoDB!)
+        Args:
+            task_id: the id of task to be updated name: the name of the result to be updated. If ``None``,
+                    will update the entire ``result`` field. Otherwise, will update the field ``result.name``. value: the value
+                    to be stored. This must be bson-encodable (ie can be written into MongoDB!)
+            name: the name of the result to be updated. If ``None``, will update the entire ``result`` field.
+                    Otherwise, will update the field ``result.name``.
+            value: the value to be stored. This must be bson-encodable (i.e. can be written into MongoDB!)
         """
         _ = self.get_task(
             task_id=task_id

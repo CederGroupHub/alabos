@@ -8,7 +8,7 @@ from ..devices.robot_arm import RobotArm  # noqa
 
 
 class Moving(BaseTask):
-    def __init__(self, samples: list[ObjectId], dest: str, *args, **kwargs):
+    def __init__(self, samples: list[str | ObjectId], dest: str, *args, **kwargs):
         super().__init__(samples=samples, *args, **kwargs)
         self.sample = samples[0]
         self.dest = dest
