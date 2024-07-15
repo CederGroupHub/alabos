@@ -5,7 +5,7 @@ import smtplib
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
-from .config import AlabOSConfig
+from alab_management.config import AlabOSConfig
 
 
 def format_message_to_codeblock(message: str) -> str:
@@ -74,20 +74,33 @@ class Alarm:
             slack_channel_id: The slack channel id to send the alert to.
         """
         self.sim_mode_flag = AlabOSConfig().is_sim_mode()
-        self.email_alert = False
-        self.slack_alert = False
-        if email_receivers is not None and self.sim_mode_flag is False:
-            try:
-                self.setup_email(email_sender, email_receivers, email_password)
-                self.email_alert = True
-            except:  # noqa: E722
-                print("Email setup failed, please recheck config file")
-        if slack_bot_token is not None and self.sim_mode_flag is False:
-            try:
-                self.setup_slackbot(slack_bot_token, slack_channel_id)
-                self.slack_alert = True
-            except:  # noqa: E722
-                print("Slackbot setup failed, please recheck config file")
+        if (
+            email_receivers is not None
+            and self.sim_mode_flag is False
+            and email_sender is not None
+            and email_password is not None
+        ):
+            self.setup_email(email_sender, email_receivers, email_password)
+        else:
+            self.email_alert = False
+            print(
+                "Email alert is not set up due to either missing"
+                "email_receivers, email_sender or email_password. "
+                "Please recheck the config file if this is not expected."
+            )
+        if (
+            slack_bot_token is not None
+            and self.sim_mode_flag is False
+            and slack_channel_id is not None
+        ):
+            self.setup_slackbot(slack_bot_token, slack_channel_id)
+        else:
+            self.slack_alert = False
+            print(
+                "Slack alert is not set up due to either missing"
+                "slack_bot_token or slack_channel_id. "
+                "Please recheck the config file if this is not expected."
+            )
         self.platforms = {"email": self.email_alert, "slack": self.slack_alert}
 
     def setup_email(
@@ -101,14 +114,10 @@ class Alarm:
             email_sender: The email address to send the alert from.
             email_password: The password for the email address to send the alert from.
         """
-        try:
-            self.email_receivers = email_receivers
-            self.email_sender = email_sender
-            self.email_password = email_password
-            self.email_alert = True
-            self.platforms = {"email": self.email_alert, "slack": self.slack_alert}
-        except:  # noqa: E722
-            print("Email setup failed, please recheck config file")
+        self.email_receivers = email_receivers
+        self.email_sender = email_sender
+        self.email_password = email_password
+        self.email_alert = True
 
     def setup_slackbot(self, slack_bot_token: str, slack_channel_id: str):
         """
@@ -118,13 +127,9 @@ class Alarm:
             slack_bot_token: The token from slackbot app
             slack_channel_id: The slack channel id where the slackbot app is deployed.
         """
-        try:
-            self.slack_bot_token = slack_bot_token
-            self.slack_channel_id = slack_channel_id
-            self.slack_alert = True
-            self.platforms = {"email": self.email_alert, "slack": self.slack_alert}
-        except:  # noqa: E722
-            print("Slackbot setup failed, please recheck config file")
+        self.slack_bot_token = slack_bot_token
+        self.slack_channel_id = slack_channel_id
+        self.slack_alert = True
 
     def alert(self, message: str, category: str):
         """
@@ -135,14 +140,33 @@ class Alarm:
             category: The category of the message.
         """
         if not self.sim_mode_flag:
-            try:
-                if self.platforms["email"]:
-                    self.send_email(message, category)
-                if self.platforms["slack"]:
-                    self.send_slack_notification(message, category)
-            except:  # noqa: E722
-                if self.platforms["slack"]:
-                    self.send_slack_notification(message, category)
+            for platform in self.platforms:
+                if self.platforms[platform] is True:
+                    try:
+                        if platform == "email":
+                            # try twice to send email as it may fail due to network issue
+                            try:
+                                self.send_email(message, category)
+                            except Exception as e:
+                                print(
+                                    f"Error sending alert to {platform}: {e}."
+                                    f"Retrying..."
+                                )
+                                self.send_email(message, category)
+                        if platform == "slack":
+                            # try twice to send slack notification as it may fail due to network issue
+                            try:
+                                self.send_slack_notification(message, category)
+                            except SlackApiError as e:
+                                print(
+                                    f"Error sending alert to {platform}: {e}."
+                                    f"Retrying..."
+                                )
+                                self.send_slack_notification(message, category)
+                    except Exception as e:
+                        print(
+                            f"Error sending alert to {platform} even after retry: {e}"
+                        )
 
     def send_email(self, message: str, category: str):
         """
@@ -181,10 +205,7 @@ class Alarm:
             category = "Error"
             # Automatically format to code block
             message = format_message_to_codeblock(message)
-        try:
-            client = WebClient(token=self.slack_bot_token)
-            client.chat_postMessage(
-                channel=self.slack_channel_id, text=category + ": " + message
-            )
-        except SlackApiError as e:
-            print(f"Error : {e}")
+        client = WebClient(token=self.slack_bot_token)
+        client.chat_postMessage(
+            channel=self.slack_channel_id, text=category + ": " + message
+        )
