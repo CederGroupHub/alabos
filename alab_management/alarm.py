@@ -84,8 +84,9 @@ class Alarm:
         else:
             self.email_alert = False
             print(
-                "Email alert is not set up due to either missing"
+                "Email alert is not set up due to either missing "
                 "email_receivers, email_sender or email_password. "
+                "It is also possible that the system is in simulation mode. "
                 "Please recheck the config file if this is not expected."
             )
         if (
@@ -99,6 +100,7 @@ class Alarm:
             print(
                 "Slack alert is not set up due to either missing"
                 "slack_bot_token or slack_channel_id. "
+                "It is also possible that the system is in simulation mode. "
                 "Please recheck the config file if this is not expected."
             )
         self.platforms = {"email": self.email_alert, "slack": self.slack_alert}
