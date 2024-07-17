@@ -1,5 +1,14 @@
 """Initialize tasks and devices for the ALab_One system."""
 
+import os
+from pathlib import Path
+
+# set the config path to the default config file
+# keep this line at the top of the file
+os.environ["ALABOS_CONFIG_PATH"] = (
+    Path(__file__).parent.absolute() / "config.toml"
+).as_posix()
+
 from alab_control.door_controller import DoorController
 
 from alab_management import (

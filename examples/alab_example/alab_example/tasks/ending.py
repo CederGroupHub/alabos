@@ -10,16 +10,14 @@ from traceback import format_exc, print_exc
 
 import cv2
 import zxingcpp
+from pydantic import BaseModel, Extra, Field, ValidationError
+
 from alab_example.devices.robot_arm_characterization import RobotArmCharacterization
 from alab_example.devices.vial_labeler import VialLabeler
 from alab_example.tasks.moving import Moving
-from pydantic import BaseModel, Extra, Field, ValidationError
-
 from alab_management import BaseTask
-from alab_management.config import AlabOSConfig
 from alab_management.device_view.device import mock
 
-IS_SIM_MODE = AlabOSConfig().is_sim_mode()
 REMOTE_PHOTO_FOLDER = "/programs/output"
 
 
@@ -216,15 +214,14 @@ class Ending(BaseTask):
             successful_labeling = False
             # Read the QR code from the photo using the (URCap) robot arm program directly
             installation_variables = arm.read_file("/programs/default.variables")
-            sample_id_from_photo = re.search(
-                r'(?<=current_code=").*(?=")', installation_variables
+
+            # assume QR code is always read correctly in simulation mode
+            sample_id_from_photo = mock(
+                return_constant=self.lab_view.get_sample(sample=self.sample).sample_id
+            )(re.search)(
+                (r'(?<=current_code=").*(?=")', installation_variables)
             ).group()
-            if (
-                IS_SIM_MODE
-            ):  # assume QR code is always read correctly in simulation mode
-                sample_id_from_photo = str(
-                    self.lab_view.get_sample(sample=self.sample).sample_id
-                )
+
             try:
                 # Download and remove the photo from the robot arm memory
                 arm.download_folder(

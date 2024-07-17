@@ -4,21 +4,23 @@ from __future__ import annotations
 
 import copy
 import time
-from typing import TYPE_CHECKING, Literal, TypedDict
+from typing import TYPE_CHECKING, Literal
 from unittest.mock import Mock
 
 from alab_control.labman import InputFile, LabmanView, QuadrantStatus
 from alab_control.labman.api.api import LabmanAPI
-from alab_example.devices.robot_arm_furnaces import RobotArmFurnaces
 from pydantic import BaseModel, Extra, Field, ValidationError
+from typing_extensions import TypedDict
 
+from alab_example.devices.robot_arm_furnaces import RobotArmFurnaces
 from alab_management import BaseTask
 from alab_management.device_view.device import mock
 from alab_management.task_view.task_enums import TaskPriority
 
 if TYPE_CHECKING:
-    from alab_example.devices.labman_quadrant import LabmanQuadrant
     from bson import ObjectId
+
+    from alab_example.devices.labman_quadrant import LabmanQuadrant
 
 
 class PowderItem(TypedDict):
