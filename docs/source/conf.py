@@ -53,6 +53,7 @@ extensions = [
     "myst_nb",
     "sphinx_autodoc_typehints",
     "sphinx_design",
+    "sphinxcontrib.mermaid",
 ]
 
 add_module_names = False

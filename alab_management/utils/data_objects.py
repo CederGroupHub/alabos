@@ -36,6 +36,12 @@ class _BaseGetMongoCollection(ABC):
         return cls.db[name]  # type: ignore # pylint: disable=unsubscriptable-object
 
     @classmethod
+    def get_db(cls) -> database.Database:
+        if cls.db is None:
+            cls.init()
+        return cls.db
+
+    @classmethod
     def get_lock(cls, name: str) -> MongoLock:
         if cls.db_lock is None:
             cls.db_lock = MongoLock(collection=cls.get_collection("_lock"), name=name)
@@ -157,9 +163,11 @@ def make_jsonable(obj):
 
 get_collection = _GetMongoCollection.get_collection
 get_lock = _GetMongoCollection.get_lock
+get_db = _GetMongoCollection.get_db
 
 get_completed_collection = _GetCompletedMongoCollection.get_collection
 get_completed_lock = _GetCompletedMongoCollection.get_lock
+get_completed_db = _GetCompletedMongoCollection.get_db
 
 
 class DocumentNotUpdatedError(Exception):

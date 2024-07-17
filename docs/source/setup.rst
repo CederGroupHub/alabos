@@ -94,6 +94,15 @@ configuration will be used as default. The configuration file will look like thi
     slack_bot_token = " "
     slack_channel_id = " "
 
+    [large_result_storage]
+    # the default storage configuration for tasks that generate large results
+    # (>16 MB, cannot be contained in MongoDB)
+    # currently only gridfs is supported
+    # storage_type is defined by using LargeResult class located in alab_management/task_view/task.py
+    # you can override this default configuration by setting the storage_type in the task definition
+    default_storage_type = "gridfs"
+
+
 
 The ``devices`` and ``tasks`` folders are for storing the definition files of devices and tasks, respectively, where
 you can define the devices and tasks you want to use in the lab.

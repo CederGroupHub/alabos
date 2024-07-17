@@ -1,4 +1,4 @@
-# Defining device and sample positions
+# Defining devices and sample positions
 The device refers to one piece of equipment in the lab, such as a box furnace, a robot arm, and etc. 
 In alabos, the device object is usually a wrapper around the real device that provide serveral methods to interact with the device.
 

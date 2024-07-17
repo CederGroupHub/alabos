@@ -9,20 +9,17 @@ from typing import TYPE_CHECKING, Any, Optional
 
 import gridfs
 from bson.objectid import ObjectId
-from pydantic import BaseModel, ConfigDict, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from alab_management.builders.experimentbuilder import ExperimentBuilder
 from alab_management.builders.samplebuilder import SampleBuilder
 from alab_management.config import AlabOSConfig
 from alab_management.task_view.task_enums import TaskPriority
-from alab_management.utils.data_objects import _GetMongoCollection
+from alab_management.utils.data_objects import get_db
 
 if TYPE_CHECKING:
     from alab_management.device_view.device import BaseDevice
     from alab_management.lab_view import LabView
-
-config = AlabOSConfig()
-default_storage_type = str(config["large_result_storage"]["default_storage_type"])
 
 
 class LargeResult(BaseModel):
@@ -31,7 +28,12 @@ class LargeResult(BaseModel):
     Stored in either gridFS or other filesystems (Cloud AWS S3, etc.).
     """
 
-    storage_type: str = default_storage_type
+    # to avoid import AlabOSConfig at the top level
+    storage_type: str = Field(
+        default_factory=lambda: AlabOSConfig()["large_result_storage"][
+            "default_storage_type"
+        ]
+    )
     # The path to the local file, used for uploading
     local_path: str | Path | None = None
     # The identifier of the file in the storage system, can be a path or a key (e.g., gridfs id)
@@ -58,14 +60,7 @@ class LargeResult(BaseModel):
         This method should have a timeout regardless of the storage system to not block indefinitely.
         """
         if self.storage_type == "gridfs":
-            _GetMongoCollection.init()
-            config = AlabOSConfig()
-            if config.is_sim_mode():
-                db = _GetMongoCollection.client.get_database(
-                    config["general"]["name"] + "_sim"
-                )
-            else:
-                db = _GetMongoCollection.client.get_database(config["general"]["name"])
+            db = get_db()
             fs = gridfs.GridFS(db)
             if self.local_path:
                 with open(self.local_path, "rb") as file:
@@ -93,14 +88,7 @@ class LargeResult(BaseModel):
                 raise ValueError(
                     "Identifier is not provided for retrieving from gridfs."
                 )
-            _GetMongoCollection.init()
-            config = AlabOSConfig()
-            if config.is_sim_mode():
-                db = _GetMongoCollection.client.get_database(
-                    config["general"]["name"] + "_sim"
-                )
-            else:
-                db = _GetMongoCollection.client.get_database(config["general"]["name"])
+            db = get_db()
             fs = gridfs.GridFS(db)
             if fs.get(self.identifier) is None:
                 raise ValueError(
@@ -115,14 +103,7 @@ class LargeResult(BaseModel):
         if self.storage_type == "gridfs":
             if self.identifier is None:
                 return False
-            _GetMongoCollection.init()
-            config = AlabOSConfig()
-            if config.is_sim_mode():
-                db = _GetMongoCollection.client.get_database(
-                    config["general"]["name"] + "_sim"
-                )
-            else:
-                db = _GetMongoCollection.client.get_database(config["general"]["name"])
+            db = get_db()
             fs = gridfs.GridFS(db)
             return fs.exists(self.identifier)
         else:
