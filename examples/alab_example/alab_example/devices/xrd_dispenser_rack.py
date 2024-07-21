@@ -26,7 +26,9 @@ class XRDDispenserRack(BaseDevice):
             [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 14, 15, 16],
         )
         self.dirty_slots = self.list_in_database("dirty_slots", [])
-        self.pending_slotcleaning_requests = self.list_in_database("pending_slotcleaning_requests", [])
+        self.pending_slotcleaning_requests = self.list_in_database(
+            "pending_slotcleaning_requests", []
+        )
         self.connected = False
 
     def connect(self):
@@ -52,7 +54,10 @@ class XRDDispenserRack(BaseDevice):
                     userrequest_id,
                 ) in self.pending_slotcleaning_requests:
                     request = self._userinputview.get_request(userrequest_id)
-                    if UserRequestStatus(request["status"]) == UserRequestStatus.FULLFILLED:
+                    if (
+                        UserRequestStatus(request["status"])
+                        == UserRequestStatus.FULLFILLED
+                    ):
                         self.mark_slot_available(slot_idx)
                         to_be_removed.append([slot_idx, userrequest_id])
 
@@ -102,7 +107,7 @@ class XRDDispenserRack(BaseDevice):
         self.dirty_slots.append(slot)
         requestid = self._userinputview.insert_request(
             prompt=f"Clean the XRD sample holder in slot {slot} of {self.name}. Remove the sample {sample_name} on the "
-            "XRD holder or put the sample back into the vial at {sample_position} (might also be in the collective "
+            f"XRD holder or put the sample back into the vial at {sample_position} (might also be in the collective "
             "short-term storage)",
             options=["ok"],
             maintenance=True,
@@ -116,7 +121,9 @@ class XRDDispenserRack(BaseDevice):
         self.dirty_slots.remove(slot)
 
         # if a sample was left on the XRD holder, consider it removed from the ALab.
-        sample = self._sampleview._sample_collection.find_one({"position": f"{self.name}/slot/{slot}"})
+        sample = self._sampleview._sample_collection.find_one(
+            {"position": f"{self.name}/slot/{slot}"}
+        )
         if sample is not None:
             self._sampleview.move_sample(sample_id=sample["_id"], position=None)
 

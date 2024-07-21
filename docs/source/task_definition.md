@@ -4,19 +4,75 @@ execute a series of operations, and save results. Each task can also have a set 
 the task behavior. To define a task, we need to inherit the [`BaseTask`](alab_management.task_view.task.BaseTask) class
 and implement all the necessary methods to define the task behavior.
 
-## API Overview
 `BaseTask` serves two roles in alabos. First, it is used as a data object to compose the experiment during submission.
 Second, it is used as a base class to define a task with a specific behavior. In AlabOS, multiple APIs are provided to
-help you write a task. Most API are wrapped into a helper class named `Labview`. You can access the APIs by
-referring to the `BaseTask.labview` attribute in each task.
+help you write a task. 
+## Task parameters
+To define a task, first thing you will need to do is to define the input parameters. To do you, you can override the
+`__init__` method in the inherited class. The `__init__` method should take in all the necessary parameters to define the
+task behavior.
 
-The task logic are defined in `BaseTask.run` method, where you can get your .
+For example, for the heating task, you want to define the ramping temperature rate, the target temperautre, and the duration.
 
-The APIs can fall into two categories: `sample` and `resources`.
+```python
+from alab_management import BaseTask    
 
-### Sample
-The data apis help you to interact with the database, for example, to read the information about one sample, 
-to write the results of the task, etc. This includes:
+class Heating(BaseTask):
+  def __init__(self, temperature_C, duration_min, ramping_rate_C_permin = 5, **kwargs):
+    super().__init__(**kwargs)
+    self.temperature = temperature_C
+    self.duration = duration_min
+    self.ramping_rate = ramping_rate_C_permin
+```
+
+You can refer to these parameters later for validation and task logic.
+
+### Parameter validation
+AlabOS provides optional support for validating the input parameters. You can define a validation 
+function to check the input parameters. The validation function should return a boolean value 
+to indicate whether the input data is valid. 
+
+For example, for the `Heating` task, you would like to check whether there are less than 8 samples
+(less than the number of slots in the furnace), as well as whether the temperature is within
+100 ~ 1100 C range. 
+
+```python
+from alab_management import BaseTask
+
+class Heating(BaseTask):
+  def __init__(self, temperature_C, duration_min, ramping_rate_C_permin = 5, **kwargs):
+    super().__init__(**kwargs)
+    self.temperature = temperature_C
+    self.duration = duration_min
+    self.ramping_rate = ramping_rate_C_permin
+
+  def validate(self):
+    # check the input sample
+    if len(self.samples) > 8:
+        self.set_message("The number of samples should be less than 8.")
+        return False
+
+    # check the temperature
+    if not 100 <= self.temperature <= 1100:
+        self.set_message("The temperature should be within 100 ~ 1100 C.")
+        return False
+    return True
+```
+
+The validation function will be called before the task is submitted to the system, as well as before the task is run, to
+ensure the input data is valid.
+
+## `Run` method
+Each `BaseTask` class should implement the `run` method to define the task behavior. The `run` method is the entry point
+of the task logic execution. In each task, there is a helper class named `labview` that provides a set of APIs to help you
+interact with the system. The `labview` object is an instance of the [`LabView`](alab_management.lab_view.LabView) class.
+
+### Samples under the task
+For `run` method, apart from the parameters defined in the `__init__` method, you can also access `self.samples` which 
+specifies the name of the samples that are passed in the task. It is done by AlabOS at the creation of the task. You can
+refer to the samples at any time in the `run` method
+
+To get/update the information of the sample, you can use the following methods:
 - `BaseTask.labview.get_sample`: this method is used to get the information about one sample. The sample is identified by
   the sample id or the sample name (disambiguate from other same-name samples by task_id). A sample data class will be
   returned as [`Sample`](alab_management.sample_view.sample.Sample) object.
@@ -50,16 +106,18 @@ class MyTask(BaseTask):
     self.labview.update_sample_metadata("sample_1", {"mass": {"value": 2.59434, "unit": "g"}})
 ```
 
-### Resource
-The resource apis help you to interact with the resources, for example, to request a resource, to release a
-resource, etc. This includes
-- `BaseTask.labview.request_resources`: this method is used to request a list of resources. In alabos, a ownership model is 
-  used to manage the resources. The resources include device and sample position where the task can use to perform 
-  operations and place samples.
-The resource request is the most frequently used API when defining a task. Generally, it works as a context manager to
-request resources, wait for the resources to be available, and release the resources after the task is done. 
+### Requesting resources
+In alabos, a ownership model is used to manage the resources. The resources include device and sample position 
+where the task can use to perform operations and place samples. Before doing any operations in the autonomous lab,
+one task has to request the resources it needs so that the system knows the resources are occupied and will not be
+used by other tasks. In this way, we can minimize the conflict between tasks.
 
-The resource request is a dictionary with structure like this:
+The resource requesting API is called `BaseTask.labview.request_resources` in alabos. This method is used to 
+request a list of resources which is the most frequently used API when defining a task. To automate the resource release
+when the resource is no longer needed, the `request_resources` method is used as a context manager. The resources will be
+released automatically when the context manager exits.
+
+`resource_request` method receive a dictionary as the input. It has the following format:
 ```python
 # you can request multiple devices in one request
 with BaseTask.labview.request_resources({ 
@@ -101,7 +159,7 @@ positions like this:
 ```python
 from alab_management import BaseTask
 
-from ..devices.box_furnace import BoxFurnace
+from alabos_project.devices.box_furnace import BoxFurnace
 
 
 class Heating(BaseTask):
@@ -141,11 +199,7 @@ the method decorated by `@property` will not be available in the device object s
 the device object is a RPC proxy object that forwards the method call to the actual device.
 ```
 
-## Run Method
-Each `BaseTask` class should implement the `run` method to define the task behavior. The `run` method is the entry point
-of the task logic execution. The method should be implemented to perform the task operation on the given `self.samples`,
-with the parameters defined in the task.
-
+## Result storage
 At the end of the `run` method, the task should return a BSON serializable dictionary that contains the results of the task.
 
 For example, you would like to define a task that takes in a sample, heats it up, and returns the temperature of the sample.
@@ -153,7 +207,7 @@ For example, you would like to define a task that takes in a sample, heats it up
 ```python
 from alab_management import BaseTask
 
-from ..devices.box_furnace import BoxFurnace
+from alabos_project.devices.box_furnace import BoxFurnace
 
 
 class Heating(BaseTask):
@@ -177,11 +231,39 @@ class Heating(BaseTask):
         return {"temperatures": temperatures}
 ```
 
-### Set dashboard message
+### Validate the output
+AlabOS also provides optional support for validating the result output with `pydantic` library. To enable the validation,
+you can override the `BaseTask.result_specification` method to return a pydantic model that specifies the structure of the
+result output.
+
+For example, for the `Heating` task, you would like to validate the result output to ensure that the result contains a list
+of temperatures.
+
+```python
+from pydantic import BaseModel
+
+from alab_management import BaseTask
+
+class Heating(BaseTask):
+  def run(self):
+    ...
+    return {"temperatures": [1.0, 2.0, 3.0]}
+    
+  @property
+  def result_specification(self):
+    class Result(BaseModel):
+        temperatures: list[float]
+    return Result
+```
+
+Once defined, the model will be used when saving the result to the database. If the result does not match the model, a warning
+will be printed to the console to notify the lab manager.
+
+## Set dashboard message
 `BaseTask.set_message` / `BaseTask.get_message`: these methods are used to set and get the message of the task. The message is
 a string that will be displayed in the dashboard to show the status of the task.
 
-### Run subtask
+## Run subtask
 `BaseTask.run_subtask`: in alabos, a task can initiate another `BaseTask` as a subtask. All the requested resources are
 shared between the parent task and the subtask.
 
@@ -191,7 +273,7 @@ For example, you would like to run a `Moving` subtask to move the sample into th
 from alab_management import BaseTask
 
 from .moving import Moving
-from ..devices.box_furnace import BoxFurnace
+from alabos_project.devices.box_furnace import BoxFurnace
 
 
 class Heating(BaseTask):
@@ -233,7 +315,7 @@ catch the error and initiate a `user_input` to ask the user to check the connect
 ```python
 from alab_management import BaseTask
 
-from ..devices.box_furnace import BoxFurnace
+from alabos_project.devices.box_furnace import BoxFurnace
 
 
 class FurnaceNotConnectedError(Exception):

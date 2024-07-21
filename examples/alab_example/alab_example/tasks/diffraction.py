@@ -76,7 +76,6 @@ class Diffraction(BaseTask):
         super().__init__(priority=TaskPriority.HIGH, *args, **kwargs)  # noqa
         self.scan_schema = schema
         self.min_powder_mass: float = min_powder_mass
-        self.sample = self.samples[0]
 
     def validate(self):
         """Validate the Diffraction task."""
@@ -86,6 +85,8 @@ class Diffraction(BaseTask):
 
     def run(self):
         """Run the Diffraction task."""
+        self.sample = self.samples[0]  # only one sample
+
         preparation_results = self.run_subtask(
             PrepareSampleforXRD,
             sample=self.sample,

@@ -20,7 +20,13 @@ from sphinx.builders.html import StandaloneHTMLBuilder
 sys.path.insert(0, os.path.abspath("../../"))
 
 os.environ["ALABOS_CONFIG_PATH"] = (
-    Path(__file__).parent / ".." / ".." / "alab_management" / "_default" / "config.toml"
+    Path(__file__).parent
+    / ".."
+    / ".."
+    / "alab_management"
+    / "_default"
+    / "alabos_project"
+    / "config.toml"
 ).as_posix()
 
 # -- Project information -----------------------------------------------------

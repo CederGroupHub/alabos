@@ -25,7 +25,7 @@ RIGHT_BOX_DIM = (440, 120)
 BOTTOM_BOX_DIM = (500, 44)
 
 
-@mock(return_constant=Path(__file__).parent / "QR_codes")
+@mock(return_constant=Path(__file__).parent.parent / "tasks" / "QR_codes")
 def QR_CODE_FOLDER():
     """Return the path to the folder where the QR codes are stored."""
     return Path("D:\\QR_codes")

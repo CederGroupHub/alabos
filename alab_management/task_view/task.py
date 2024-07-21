@@ -11,13 +11,13 @@ import gridfs
 from bson.objectid import ObjectId
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from alab_management.builders.experimentbuilder import ExperimentBuilder
 from alab_management.builders.samplebuilder import SampleBuilder
 from alab_management.config import AlabOSConfig
 from alab_management.task_view.task_enums import TaskPriority
 from alab_management.utils.data_objects import get_db
 
 if TYPE_CHECKING:
+    from alab_management.builders.experimentbuilder import ExperimentBuilder
     from alab_management.device_view.device import BaseDevice
     from alab_management.lab_view import LabView
 
@@ -177,9 +177,6 @@ class BaseTask(ABC):
             self.priority = priority
             self.lab_view.priority = priority
 
-            if not self.validate():
-                raise ValueError("Task validation failed!")
-
     @property
     def is_offline(self) -> bool:
         """Returns True if this task is in offline, False if it is a live task."""
@@ -309,6 +306,25 @@ class BaseTask(ABC):
             samples = [samples]
         return self.lab_view.run_subtask(task=task, samples=samples, **kwargs)
 
+    @classmethod
+    def from_kwargs(
+        cls, samples: list[str | ObjectId], task_id: ObjectId, **subclass_kwargs
+    ) -> "BaseTask":
+        """
+        Used to create a new task object from the provided arguments.
+
+        This is used in the `add_to` and `ExperimentBuilder.add_task` method to
+        create a new task object and validate it before adding it to an experiment
+        or sample builder.
+        """
+        task_obj = cls(
+            samples=samples,
+            task_id=task_id,
+            offline_mode=True,
+            **subclass_kwargs,
+        )
+        return task_obj
+
     def add_to(
         self,
         samples: SampleBuilder | list[SampleBuilder],
@@ -323,19 +339,36 @@ class BaseTask(ABC):
                 "Cannot add a live BaseTask instance to a SampleBuilder. BaseTask must be instantiated with "
                 "`offline_mode=True` to enable this method."
             )
+
         if isinstance(samples, SampleBuilder):
             samples = [samples]
 
         experiment: ExperimentBuilder = samples[0].experiment
-        task_id = str(ObjectId())
+        task_id = self.task_id
+
+        task_obj = self.__class__.from_kwargs(
+            samples=[sample.name for sample in samples],
+            task_id=ObjectId(task_id),
+            **self.subclass_kwargs,
+        )
+        if not task_obj.validate():
+            raise ValueError(
+                "Task input validation failed!"
+                + (
+                    f"\nError message: {task_obj.get_message()}"
+                    if task_obj.get_message()
+                    else ""
+                )
+            )
+
         experiment.add_task(
-            task_id=task_id,
+            task_id=str(task_id),
             task_name=self.__class__.__name__,
             task_kwargs=self.subclass_kwargs,
             samples=samples,
         )
         for sample in samples:
-            sample.add_task(task_id=task_id)
+            sample.add_task(task_id=str(task_id))
 
 
 _task_registry: dict[str, type[BaseTask]] = {}
@@ -356,6 +389,11 @@ def add_task(task: type[BaseTask]):
 def get_all_tasks() -> dict[str, type[BaseTask]]:
     """Get all the tasks in the registry."""
     return _task_registry.copy()
+
+
+def get_task_by_name(name: str) -> type[BaseTask]:
+    """Get a task by name."""
+    return _task_registry[name]
 
 
 def add_reroute_task(

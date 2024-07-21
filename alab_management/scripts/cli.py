@@ -81,7 +81,7 @@ def launch_worker_cli(ctx):
 @cli.command("clean", short_help="Clean up the database")
 @click.option("-a", "--all-collections", is_flag=True, default=False)
 @click.option("-f", "--_force_i_know_its_dangerous", is_flag=True, default=False)
-@click.option("--database_name", default="Alab_sim")
+@click.option("--database_name")
 def cleanup_lab_cli(
     all_collections: bool, _force_i_know_its_dangerous: bool, database_name: str
 ):

@@ -90,7 +90,12 @@ def run_task(task_id_str: str):
             offline_mode=False,
             **task_entry["parameters"],
         )
+        if not task.validate():
+            raise ValueError(
+                f"Task input validation failed! Error message: {task.get_message()}"
+            )
     except Exception as exception:
+        task_view.update_status(task_id=task_id, status=TaskStatus.FINISHING)
         logger.system_log(
             level="ERROR",
             log_data={
@@ -105,6 +110,10 @@ def run_task(task_id_str: str):
         raise Exception(
             f"Failed to create task {task_id} of type {task_type!s}"
         ) from exception
+    finally:
+        ## if there is early termination, set the task status to ERROR
+        if task_view.get_status(task_id) == TaskStatus.FINISHING:
+            task_view.update_status(task_id=task_id, status=TaskStatus.ERROR)
 
     try:
         task_view.update_status(task_id=task_id, status=TaskStatus.RUNNING)

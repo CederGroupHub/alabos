@@ -21,6 +21,7 @@ def cleanup_lab(
 
     _GetMongoCollection.init()
     config = AlabOSConfig()
+
     task_count_new = (
         _GetMongoCollection.client.get_database(config["general"]["name"])
         .get_collection("tasks")

@@ -38,7 +38,7 @@ class _Sample(BaseModel):
         except Exception as exc:
             raise ValueError(
                 "An experiment received over the API contained a sample with invalid metadata. The metadata was set "
-                "to {v}, which is not BSON-serializable."
+                f"to {v}, which is not BSON-serializable."
             ) from exc
 
 
@@ -59,7 +59,7 @@ class _Task(BaseModel):
         except Exception as exc:
             raise ValueError(
                 "An experiment received over the API contained a task with an invalid task_id. The task_id was set to "
-                "{v}, which is not a valid ObjectId."
+                f"{v}, which is not a valid ObjectId."
             ) from exc
 
     @field_validator("parameters")
@@ -70,8 +70,8 @@ class _Task(BaseModel):
             return v
         except Exception as exc:
             raise ValueError(
-                "An experiment received over the API contained a sample with invalid metadata. The metadata was set "
-                "to {v}, which is not BSON-serializable."
+                "An experiment received over the API contained a task with invalid parameters. The parameters was set "
+                f"to {v}, which is not BSON-serializable."
             ) from exc
 
 

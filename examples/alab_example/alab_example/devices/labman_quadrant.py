@@ -68,7 +68,6 @@ class LabmanQuadrant(BaseDevice):
     def get_driver(self):
         """Return the driver for the Labman."""
         self.driver = LabmanDriver(url=self.ip_address, port=self.port)
-        self.start_cleanup_daemon()
         return self.driver
 
     def connect(self):
@@ -77,7 +76,6 @@ class LabmanQuadrant(BaseDevice):
 
     def disconnect(self):
         """Disconnect from the Labman."""
-        self.stop_cleanup_daemon()
         del self.driver
 
     @mock(return_constant="mock is running")
@@ -151,61 +149,6 @@ class LabmanQuadrant(BaseDevice):
         self.set_message(f"Working on workflow: {name}.")
         return workflow.name, mixingpot_to_sample
 
-    def start_cleanup_daemon(self):
-        """Starts a daemon thread that monitors the Labman for completed workflows and
-        requests cleanup when necessary.
-        """
-        if self.__daemon_running:
-            return
-        self.__daemon_running = True
-        self.__daemon_thread = threading.Thread(target=self.__cleanup_daemon)
-        self.__daemon_thread.start()
-
-    def stop_cleanup_daemon(self):
-        """Stops the daemon thread that monitors the Labman for completed workflows and
-        requests cleanup when necessary.
-        """
-        if not self.__daemon_running:
-            return
-        self.__daemon_running = False
-        self.__daemon_thread.join()
-
-    @mock(return_constant=None)
-    def __cleanup_daemon(self):
-        while self.__daemon_running:
-            current_status = self.get_status()
-
-            if (
-                current_status == QuadrantStatus.COMPLETE
-                and not self.waiting_for_cleanup
-            ):
-                # TODO: AttributeError: 'LabmanQuadrant' object has no attribute 'get_samples_in_quadrant'
-                # the quadrant has a completed workflow. We need to wait for all samples to be removed from the
-                # quadrant. At that point, we can request maintenance for an operator to clean it up
-                if len(self.samples_currently_in_quadrant) == 0:
-                    self.waiting_for_cleanup = True
-                    self.set_message("Waiting for operator to clean up quadrant...")
-                    self.request_maintenance(
-                        f"Please refill Labman Quadrant {self.quadrant_index} with fresh vials and jars. You must stop "
-                        "the Labman on the GUI to do this. Then, clear the quadrant on the GUI.",
-                        options=["Mark as Completed"],
-                    )
-                else:
-                    self.set_message(
-                        f"A workflow has recently completed on this quadrant. Waiting for all "
-                        f"{len(self.samples_currently_in_quadrant)} samples to be removed from quadrant before "
-                        "requesting cleanup."
-                    )
-
-            elif current_status == QuadrantStatus.EMPTY:
-                # Once the operator cleans up the quadrant and clears it on the Labman GUI, the quadrantstatus will be
-                # EMPTY. At that point, we are no longer waiting for cleanup, and the quadrant is available for a new
-                # workflow.
-                self.set_message("Quadrant is now available for a new workflow.")
-                self.waiting_for_cleanup = False
-
-            time.sleep(5)
-
     @mock(return_constant=False)
     def has_error(self) -> bool:
         """Returns True if the Labman is displaying a process error. This error is not necessarily isolated to this
@@ -220,16 +163,6 @@ class LabmanQuadrant(BaseDevice):
     def get_error_message(self) -> str | None:
         """Returns the error message displayed on the Labman GUI, if any. If none, returns None."""
         return self.driver.error_message
-
-    @property
-    def samples_currently_in_quadrant(self):
-        """Returns a list of samples currently in the quadrant."""
-        samples = []
-        for samples_in_position in self._device_view.get_samples_on_device(
-            self.name
-        ).values():
-            samples += samples_in_position
-        return samples
 
     @property
     def sample_positions(self):

@@ -50,7 +50,6 @@ class Ending(BaseTask):
         """Initialize the Ending task."""
         super().__init__(*args, **kwargs)
         self.decoded_sample_id = None
-        self.sample = self.samples[0]
         self.filled_vial_position = None
 
     def validate(self):
@@ -63,6 +62,8 @@ class Ending(BaseTask):
 
     def run(self):
         """Run the Ending task."""
+        self.sample = self.samples[0]
+
         self.filled_vial_position = self.lab_view.get_sample(
             sample=self.sample
         ).position
@@ -217,10 +218,12 @@ class Ending(BaseTask):
 
             # assume QR code is always read correctly in simulation mode
             sample_id_from_photo = mock(
-                return_constant=self.lab_view.get_sample(sample=self.sample).sample_id
-            )(re.search)(
+                return_constant=str(
+                    self.lab_view.get_sample(sample=self.sample).sample_id
+                )
+            )(lambda reg, s: re.search(reg, s).group())(
                 (r'(?<=current_code=").*(?=")', installation_variables)
-            ).group()
+            )
 
             try:
                 # Download and remove the photo from the robot arm memory

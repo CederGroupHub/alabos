@@ -2,9 +2,9 @@
 
 import smtplib
 
+from retry.api import retry_call
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
-
 from alab_management.config import AlabOSConfig
 
 
@@ -141,30 +141,28 @@ class Alarm:
             message: The message to print in the platform
             category: The category of the message.
         """
+        # if system is in simulation mode, do not send alert
         if not self.sim_mode_flag:
             for platform in self.platforms:
-                if self.platforms[platform] is True:
+                message_dict = {"message": message, "category": category}
+                if self.platforms[platform]:
                     try:
+                        # try twice to send email as it may fail due to network issue
                         if platform == "email":
-                            # try twice to send email as it may fail due to network issue
-                            try:
-                                self.send_email(message, category)
-                            except Exception as e:
-                                print(
-                                    f"Error sending alert to {platform}: {e}."
-                                    f"Retrying..."
-                                )
-                                self.send_email(message, category)
+                            retry_call(
+                                self.send_email,
+                                fkwargs=message_dict,
+                                tries=2,
+                                exceptions=Exception,
+                            )
                         if platform == "slack":
                             # try twice to send slack notification as it may fail due to network issue
-                            try:
-                                self.send_slack_notification(message, category)
-                            except SlackApiError as e:
-                                print(
-                                    f"Error sending alert to {platform}: {e}."
-                                    f"Retrying..."
-                                )
-                                self.send_slack_notification(message, category)
+                            retry_call(
+                                self.send_slack_notification,
+                                fkwargs=message_dict,
+                                tries=2,
+                                exceptions=SlackApiError,
+                            )
                     except Exception as e:
                         print(
                             f"Error sending alert to {platform} even after retry: {e}"

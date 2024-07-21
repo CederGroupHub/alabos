@@ -41,18 +41,45 @@ After the command is run, you will see multiple files and folders generated in t
 .. code-block:: none
 
   <project_root>
-  ├── devices
-  │   ├── default_device.py
-  │   └── __init__.py
-  │
-  ├── tasks
-  │   ├── default_task.py
-  │   └── __init__.py
-  │
-  ├── config.toml
-  └── __init__.py
+    |-- alabos_project
+    |   |-- __init__.py
+    |   |-- config.toml
+    |   |-- devices
+    |   |   |-- __init__.py
+    |   |   `-- default_device.py
+    |   `-- tasks
+    |       |-- __init__.py
+    |       `-- default_task.py
+    `-- pyproject.toml
 
-There will be a ``config.toml`` file, which contains the configurations of the lab, including the database connection information,
+
+You will need to install the project as a package so that you can import the devices and tasks in the future. Beofore
+doing this, you may want to modify the name of the project in the ``pyproject.toml`` file as well as the folder's name.
+Both name should be the same. The ``pyproject.toml`` file will look like this:
+
+.. code-block:: toml
+
+    [project]
+    name = "alabos_project"  # <--- change this to the name of your project
+    version = "0.1.0"
+    requires-python = ">=3.10"
+    dependencies = []
+
+
+After that, you can install the project as a package by running the following command in the root folder:
+
+.. code-block:: sh
+
+  pip install -e .
+
+
+This command will install the project as a package in the editable mode, which means you can modify the code and the
+changes will be applied immediately.
+
+Config file
+++++++++++++++++++++++++
+
+After setting up the package, we will focus on the project folder. There will be a ``config.toml`` file, which contains the configurations of the lab, including the database connection information,
 the working directory of the lab, etc. In this tutorial, we will create a mini A-Lab named ``Mini-Alab``. All the DB
 configuration will be used as default. The configuration file will look like this:
 
@@ -105,9 +132,9 @@ configuration will be used as default. The configuration file will look like thi
 
 
 The ``devices`` and ``tasks`` folders are for storing the definition files of devices and tasks, respectively, where
-you can define the devices and tasks you want to use in the lab.
-
-The whole project is a Python package, so you will need to create a ``__init__.py`` file in the root folder to make it a package.
+you can define the devices and tasks you want to use in the lab. You will notice that there is a ``default_device.py``
+and a ``default_task.py`` file in the folders. These are the default device and task definitions. We will show
+how to make your own devices and tasks in the next tutorial.
 
 What's next
 ------------------

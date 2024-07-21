@@ -220,6 +220,19 @@ class DeviceView:
                             idle_devices[device] = device_
             return idle_devices
 
+    def get_sample_on_device(self, device_name: str) -> dict[str, list[ObjectId]]:
+        """
+        Get all the samples on a device.
+
+        This function will directly call the ``SampleView.get_samples_on_device`` method for
+        backward compatibility.
+
+        .. note::
+
+            (in version 1.0.1) This function has been moved to ``SampleView`` class.
+        """
+        return self._sample_view.get_samples_on_device(device_name)
+
     def get_available_devices(
         self, device_str: str, type_or_name: str, task_id: ObjectId | None = None
     ) -> list[dict[str, str | bool]]:

@@ -49,7 +49,6 @@ class RecoverPowder(BaseTask):
             **kwargs: Arbitrary keyword arguments.
         """
         super().__init__(*args, **kwargs)
-        self.sample = self.samples[0]
 
     def validate(self):
         """Validate the RecoverPowder task."""
@@ -60,6 +59,8 @@ class RecoverPowder(BaseTask):
         Assumes the crucible starts in the tranfer_rack. Ends by disposing of the crucible, and moving the capped vial
         to the filled_vial_rack.
         """
+        self.sample = self.samples[0]
+
         if (
             self.lab_view.get_sample(self.sample).position
             != "powdertransfer_crucible_position"
@@ -297,7 +298,6 @@ class RecoverPowder(BaseTask):
                 None: {"powdertransfer_crucible_position": 1},
             }
         ) as (devices, positions):
-            print("Method RobotArmCharacterization:", RobotArmCharacterization)
             arm: RobotArmCharacterization = devices[RobotArmCharacterization]
             shaker: Shaker = devices["shaker"]
             capdispenser: CapDispenser = devices["dispenser_caps"]
