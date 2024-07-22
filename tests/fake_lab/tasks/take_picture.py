@@ -29,7 +29,7 @@ class TakePicture(BaseTask):
         self.sample = samples[0]
 
     @property
-    def result_specification(self) -> BaseModel:
+    def result_specification(self) -> type[BaseModel]:
         return TakePictureResult
 
     def run(self):
@@ -41,12 +41,37 @@ class TakePicture(BaseTask):
             robot_arm.run_program("take_picture.urp")
             sample_id = self.lab_view.get_sample(self.sample).sample_id
             picture_location = robot_arm.get_most_recent_picture_location()
-            picture = LargeResult(local_path=picture_location)
+            picture = LargeResult.from_local_file(local_path=picture_location)
+            print(picture)
         # by doing this, checking is done during running.
         # this can lead to task being marked as failed if result does not meet the specification.
         return TakePictureResult(
             sample_id=sample_id, picture=picture, timestamp=datetime.datetime.now()
         )
+
+
+class TakePictureWithoutSpecifiedResult(TakePicture):
+    @property
+    def result_specification(self):
+        return None
+
+    def run(self):
+        with self.lab_view.request_resources({RobotArm: {}}) as (
+            devices,
+            sample_positions,
+        ):
+            robot_arm: RobotArm = devices[RobotArm]
+            robot_arm.run_program("take_picture.urp")
+            sample_id = self.lab_view.get_sample(self.sample).sample_id
+            picture_location = robot_arm.get_most_recent_picture_location()
+            picture = LargeResult.from_local_file(local_path=picture_location)
+        # by doing this, checking is done during running.
+        # this can lead to task being marked as failed if result does not meet the specification.
+        return {
+            "sample_id": sample_id,
+            "picture": picture,
+            "timestamp": datetime.datetime.now(),
+        }
 
 
 class TakePictureMissingResult(BaseTask):

@@ -260,9 +260,6 @@ class TaskView:
         """
         Update result to completed job.
 
-        If the value is a LargeResult, it will be stored in the LargeResult collection and the value will be replaced
-        with the model dump of the LargeResult.
-
         Args:
             task_id: the id of task to be updated name: the name of the result to be updated. If ``None``,
                     will update the entire ``result`` field. Otherwise, will update the field ``result.name``. value: the value
@@ -274,13 +271,6 @@ class TaskView:
         _ = self.get_task(
             task_id=task_id
         )  # just to confirm that task_id exists in collection
-
-        # if value is a LargeResult, store it in the LargeResult collection and update the value to be the model dump
-        if isinstance(value, LargeResult):
-            if not value.check_if_stored():
-                value.store()
-            value = value.model_dump(mode="python")
-            value = make_bsonable(value)
 
         update_path = "result" if name is None else f"result.{name}"
         self._task_collection.update_one(

@@ -22,6 +22,9 @@ if TYPE_CHECKING:
     from alab_management.lab_view import LabView
 
 
+_UNSET = object()
+
+
 class LargeResult(BaseModel):
     """
     A Pydantic model for a large result (file >16 MB).
@@ -52,6 +55,28 @@ class LargeResult(BaseModel):
         if file_like_data is not None and not hasattr(file_like_data, "read"):
             raise ValueError("file_like_data must have a .read() method")
         return values
+
+    @classmethod
+    def from_local_file(cls, local_path: str | Path, storage_type: str = _UNSET):
+        """Create a LargeResult object from a local file."""
+        if storage_type is _UNSET:
+            storage_type = AlabOSConfig()["large_result_storage"][
+                "default_storage_type"
+            ]
+        large_file = cls(local_path=local_path, storage_type=storage_type)
+        large_file.store()
+        return large_file
+
+    @classmethod
+    def from_file_like_data(cls, file_like_data: Any, storage_type: str = _UNSET):
+        """Create a LargeResult object from a file-like object."""
+        if storage_type is _UNSET:
+            storage_type = AlabOSConfig()["large_result_storage"][
+                "default_storage_type"
+            ]
+        large_result = cls(file_like_data=file_like_data, storage_type=storage_type)
+        large_result.store()
+        return large_result
 
     def store(self):
         """

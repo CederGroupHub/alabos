@@ -120,6 +120,73 @@ class TestTaskActor(unittest.TestCase):
             LargeResult(**task["result"]["picture"]).retrieve(), file_content
         )
 
+    def test_no_specification(self):
+        # run an experiment with large result
+        def compose_exp(exp_name):
+            return {
+                "name": exp_name,
+                "tags": [],
+                "metadata": {},
+                "samples": [{"name": "test_sample", "tags": [], "metadata": {}}],
+                "tasks": [
+                    {
+                        "type": "Starting",
+                        "prev_tasks": [],
+                        "parameters": {
+                            "dest": "furnace_temp",
+                        },
+                        "samples": ["test_sample"],
+                    },
+                    {
+                        "type": "TakePictureWithoutSpecifiedResult",
+                        "prev_tasks": [0],
+                        "parameters": {},
+                        "samples": ["test_sample"],
+                    },
+                ],
+            }
+
+        exp_name = "Experiment with large result"
+        experiment = compose_exp(exp_name)
+        resp = requests.post(SUBMISSION_API, json=experiment)
+        resp_json = resp.json()
+        exp_id = ObjectId(resp_json["data"]["exp_id"])
+        self.assertTrue("success", resp_json["status"])
+        time.sleep(15)
+        # check if large result is stored successfully in database and can be retrieved
+        ## get the experiment
+        experiment = self.experiment_view.get_experiment(exp_id)
+        ## get the task
+        tasks = experiment["tasks"]
+        ## find the task with type "TakePicture"
+        task_id = next(
+            task["task_id"]
+            for task in tasks
+            if task["type"] == "TakePictureWithoutSpecifiedResult"
+        )
+        task = self.task_view.get_task(task_id)
+        ## check if the result is stored correctly
+        self.assertTrue(task["result"]["picture"]["local_path"] is not None)
+        self.assertTrue(task["result"]["picture"]["storage_type"] == "gridfs")
+        self.assertTrue(task["result"]["picture"]["identifier"] is not None)
+        self.assertTrue(task["result"]["picture"]["file_like_data"] is None)
+        # try to retrieve the large result
+        self.assertTrue(LargeResult(**task["result"]["picture"]).check_if_stored())
+        # read the zip file
+        file_path = (
+            Path(
+                util.find_spec("alab_management").origin.split("__init__.py")[0]
+            ).parent
+            / "tests"
+            / "fake_lab"
+            / "large_file_example.zip"
+        )
+        with open(file_path, "rb") as f:
+            file_content = f.read()
+        self.assertEqual(
+            LargeResult(**task["result"]["picture"]).retrieve(), file_content
+        )
+
     def test_incorrect_schema(self):
         # check if the result is not consistent with the schema
         ## run an experiment with large result

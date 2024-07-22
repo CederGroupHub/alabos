@@ -131,7 +131,6 @@ def run_task(task_id_str: str):
         # Following is the line of code that actually runs the task
         # from Alab_one, for eg: Powder dosing. Powder dosing class will have a method "run".
         result = task.run()
-
     except Abort:
         task_status = TaskStatus.CANCELLED
         task_view.update_status(task_id=task_id, status=TaskStatus.FINISHING)
@@ -194,7 +193,7 @@ def run_task(task_id_str: str):
         # check if the task result is consistent with the task result specification
         # get result from the task entry
         if task.result_specification is not None:
-            result = task_view.get_task(task_id=task_id)["result"]
+            result = task_view.get_task(task_id=task_id).get("result", {})
             if isinstance(result, dict):
                 try:
                     model = task.result_specification

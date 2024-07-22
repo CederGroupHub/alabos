@@ -11,6 +11,7 @@ import numpy as np
 import pika
 import pymongo
 from bson import ObjectId
+from pydantic import BaseModel
 from pymongo import collection, database
 
 from alab_management.config import AlabOSConfig
@@ -124,7 +125,11 @@ def make_bsonable(obj):
             obj = ObjectId(obj)
     elif isinstance(obj, Path):
         obj = str(obj)
-
+    elif isinstance(obj, BaseModel):
+        obj = {
+            str(key): make_bsonable(value)
+            for key, value in obj.model_dump(mode="python").items()
+        }
     return obj
 
 

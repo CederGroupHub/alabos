@@ -11,6 +11,7 @@ from traceback import format_exc
 from typing import Any
 
 from bson import ObjectId
+from pydantic import BaseModel
 
 from alab_management.device_manager import DevicesClient
 from alab_management.device_view.device import BaseDevice
@@ -19,7 +20,7 @@ from alab_management.logger import DBLogger
 from alab_management.resource_manager.resource_requester import ResourceRequester
 from alab_management.sample_view.sample import Sample
 from alab_management.sample_view.sample_view import SampleView
-from alab_management.task_view.task import BaseTask
+from alab_management.task_view.task import BaseTask, LargeResult
 from alab_management.task_view.task_enums import TaskPriority, TaskStatus
 from alab_management.task_view.task_view import TaskView
 from alab_management.user_input import request_user_input, request_user_input_with_note

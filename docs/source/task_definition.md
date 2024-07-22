@@ -233,10 +233,9 @@ class Heating(BaseTask):
 
 ### Large file storage
 Considering the size limit of each MongoDB document (< 16MB), it is not recommended to store large files in the result.
-Instead, we provide a class called `LargeResult` to store the large file in GridFS in MongoDB. To use, you can return the
-`LargeResult` object in the result dictionary.
+Instead, we provide a class called `LargeResult` to store the large file in GridFS in MongoDB.
 
-For example, you would like to store a large file in the result. You can do it like this:
+For example, you would like to store a large result. You can do it like this:
 
 ```python
 from alab_management import BaseTask, LargeResult
@@ -262,14 +261,16 @@ class Heating(BaseTask):
         # this can be large if the temperature is recorded frequently (e.g., every 0.1 second)
         temperatures = furnace.get_temperature_log(furnace_slot, frequency=0.1)
         
-        # store the large file
-        with open("temperature_log_large.txt", "w") as f:
-            f.write("\n".join(temperatures))
+        large_result = LargeResult.from_file_like_data(temperatures)
         
-        large_file = LargeResult(local_path="temperature_log_large.txt")
+        # you can also store the large file in the result
+        with open(r"large_file.txt", "w") as f:
+            f.write("This is a large file.")
+            
+        large_file = LargeResult.from_local_file("large_file.txt")
         
         # return the result
-        return {"temperatures": temperatures, "large_file": large_file}
+        return {"temperatures": temperatures, "large_result": large_result, "large_file": large_file}
 ```
 
 ### Validate the output
