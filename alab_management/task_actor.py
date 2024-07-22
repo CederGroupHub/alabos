@@ -9,7 +9,7 @@ from traceback import format_exc
 import dramatiq
 from bson import ObjectId
 from dramatiq_abort import Abort
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from alab_management.logger import DBLogger
 from alab_management.sample_view import SampleView
@@ -180,7 +180,6 @@ def run_task(task_id_str: str):
             # assume that all field are replaced by the value if the result is a pydantic model
             # convert pydantic model to dict
             dict_result = result.model_dump(mode="python")
-            bsonable_value = make_bsonable(dict_result)
             for key, value in dict_result.items():
                 task_view.update_result(task_id=task_id, name=key, value=value)
         elif isinstance(result, dict):
@@ -201,36 +200,11 @@ def run_task(task_id_str: str):
             if isinstance(result, dict):
                 try:
                     model = task.result_specification
-                    encoded_result = model(**result)
-                    # if it is consistent, check which fields are LargeResults
-                    # if so, ensure that they are stored properly
-                    for key, value in dict(encoded_result).items():
-                        if isinstance(value, LargeResult):
-                            if not value.check_if_stored():
-                                try:
-                                    # get storage type from the config file
-                                    value.store()
-                                    # update the LargeResult entry in the MongoDB for the
-                                    # corresponding field in the task result
-                                    value_as_dict = value.model_dump(mode="python")
-                                    # ensure bson serializable
-                                    bsonable_value = make_bsonable(value_as_dict)
-                                    task_view.update_result(
-                                        task_id=task_id,
-                                        name=key,
-                                        value=bsonable_value,
-                                    )
-                                except Exception:
-                                    # if storing fails, log the error and continue
-                                    print(
-                                        f"WARNING: Failed to store LargeResult {key} for task_id {task_id_str}."
-                                        f"{format_exc()}"
-                                    )
-                        else:
-                            pass
-                except Exception:
+                    model(**result)
+                except ValidationError:
                     print(
-                        f"WARNING: Task result for task_id {task_id_str} is inconsistent with the task result specification."
+                        f"WARNING: Task result for task_id {task_id_str} is "
+                        f"inconsistent with the task result specification."
                         f"{format_exc()}"
                     )
                     print()
