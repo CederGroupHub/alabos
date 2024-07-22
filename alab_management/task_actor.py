@@ -233,6 +233,7 @@ def run_task(task_id_str: str):
                         f"WARNING: Task result for task_id {task_id_str} is inconsistent with the task result specification."
                         f"{format_exc()}"
                     )
+                    print()
             else:
                 print(
                     f"WARNING: Task result for task_id {task_id_str} is not a dictionary, but a {type(result)}."

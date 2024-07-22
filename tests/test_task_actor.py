@@ -56,17 +56,6 @@ class TestTaskActor(unittest.TestCase):
         )
 
     def test_experiment_with_large_result(self):
-        # clean up lab and task collection
-        cleanup_lab(
-            all_collections=True,
-            _force_i_know_its_dangerous=True,
-            sim_mode=True,
-            database_name="Alab_sim",
-            user_confirmation="y",
-        )
-        # setup lab
-        setup_lab()
-
         # run an experiment with large result
         def compose_exp(exp_name):
             return {
@@ -130,30 +119,8 @@ class TestTaskActor(unittest.TestCase):
         self.assertEqual(
             LargeResult(**task["result"]["picture"]).retrieve(), file_content
         )
-        # clean up lab and task collection
-        cleanup_lab(
-            all_collections=True,
-            _force_i_know_its_dangerous=True,
-            sim_mode=True,
-            database_name="Alab_sim",
-            user_confirmation="y",
-        )
-        # setup lab
-        setup_lab()
-        pass
 
     def test_incorrect_schema(self):
-        # clean up lab and task collection
-        cleanup_lab(
-            all_collections=True,
-            _force_i_know_its_dangerous=True,
-            sim_mode=True,
-            database_name="Alab_sim",
-            user_confirmation="y",
-        )
-        # setup lab
-        setup_lab()
-
         # check if the result is not consistent with the schema
         ## run an experiment with large result
         def compose_exp(exp_name):
@@ -201,17 +168,6 @@ class TestTaskActor(unittest.TestCase):
         task = self.task_view.get_task(task_id)
         ## check if the result is still stored correctly
         self.assertTrue(task["result"]["timestamp"] is not None)
-        self.assertTrue(set(task["result"].keys()) == set("timestamp"))
+        self.assertSetEqual(set(task["result"].keys()), {"timestamp"})
         ## check that the task is completed
-        self.assertTrue(task["status"] == "COMPLETED")
-        # clean up lab and task collection
-        cleanup_lab(
-            all_collections=True,
-            _force_i_know_its_dangerous=True,
-            sim_mode=True,
-            database_name="Alab_sim",
-            user_confirmation="y",
-        )
-        # setup lab
-        setup_lab()
-        pass
+        self.assertEqual(task["status"], "COMPLETED")
