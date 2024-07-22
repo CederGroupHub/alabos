@@ -231,6 +231,47 @@ class Heating(BaseTask):
         return {"temperatures": temperatures}
 ```
 
+### Large file storage
+Considering the size limit of each MongoDB document (< 16MB), it is not recommended to store large files in the result.
+Instead, we provide a class called `LargeResult` to store the large file in GridFS in MongoDB. To use, you can return the
+`LargeResult` object in the result dictionary.
+
+For example, you would like to store a large file in the result. You can do it like this:
+
+```python
+from alab_management import BaseTask, LargeResult
+
+from alabos_project.devices.box_furnace import BoxFurnace
+
+
+class Heating(BaseTask):
+  def run(self):
+    # request the furnace
+    with self.labview.request_resources({
+        BoxFurnace: {
+            "slot": 1
+        }
+    }) as (devices, sample_positions):
+        furnace = devices[BoxFurnace]
+        furnace_slot = sample_positions[BoxFurnace]["slot"][0]
+        
+        # run the furnace
+        furnace.run_program(...)
+        
+        # get the temperature log of the sample
+        # this can be large if the temperature is recorded frequently (e.g., every 0.1 second)
+        temperatures = furnace.get_temperature_log(furnace_slot, frequency=0.1)
+        
+        # store the large file
+        with open("temperature_log_large.txt", "w") as f:
+            f.write("\n".join(temperatures))
+        
+        large_file = LargeResult(local_path="temperature_log_large.txt")
+        
+        # return the result
+        return {"temperatures": temperatures, "large_file": large_file}
+```
+
 ### Validate the output
 AlabOS also provides optional support for validating the result output with `pydantic` library. To enable the validation,
 you can override the `BaseTask.result_specification` method to return a pydantic model that specifies the structure of the
@@ -375,7 +416,6 @@ from .tasks.heating import Heating
 
 add_task(Heating)
 ```
-
 
 ## Lifecycle of a task
 Although the task is defined in the `BaseTask` class and will be run as an `BaseTask` instance.
