@@ -55,7 +55,7 @@ class TakePictureMissingResult(BaseTask):
         self.sample = samples[0]
 
     @property
-    def result_specification(self) -> BaseModel:
+    def result_specification(self) -> type[BaseModel]:
         return TakePictureResult
 
     def run(self):

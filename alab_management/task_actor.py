@@ -87,7 +87,7 @@ def run_task(task_id_str: str):
             ],  # only the sample names are sent
             task_id=task_id,
             lab_view=lab_view,
-            offline_mode=False,
+            _offline_mode=False,
             **task_entry["parameters"],
         )
         if not task.validate():
@@ -111,7 +111,7 @@ def run_task(task_id_str: str):
             f"Failed to create task {task_id} of type {task_type!s}"
         ) from exception
     finally:
-        ## if there is early termination, set the task status to ERROR
+        # if there is early termination, set the task status to ERROR
         if task_view.get_status(task_id) == TaskStatus.FINISHING:
             task_view.update_status(task_id=task_id, status=TaskStatus.ERROR)
 
@@ -152,7 +152,7 @@ def run_task(task_id_str: str):
             },
         )
         lab_view.request_cleanup()
-    except Exception:
+    except:  # noqa: E722
         task_status = TaskStatus.ERROR
         task_view.update_status(task_id=task_id, status=TaskStatus.FINISHING)
         formatted_exception = format_exc()
@@ -210,12 +210,15 @@ def run_task(task_id_str: str):
                                 try:
                                     # get storage type from the config file
                                     value.store()
-                                    # update the LargeResult entry in the MongoDB for the corresponding field in the task result
+                                    # update the LargeResult entry in the MongoDB for the
+                                    # corresponding field in the task result
                                     value_as_dict = value.model_dump(mode="python")
                                     # ensure bson serializable
                                     bsonable_value = make_bsonable(value_as_dict)
                                     task_view.update_result(
-                                        task_id=task_id, name=key, value=bsonable_value
+                                        task_id=task_id,
+                                        name=key,
+                                        value=bsonable_value,
                                     )
                                 except Exception:
                                     # if storing fails, log the error and continue
@@ -230,11 +233,11 @@ def run_task(task_id_str: str):
                         f"WARNING: Task result for task_id {task_id_str} is inconsistent with the task result specification."
                         f"{format_exc()}"
                     )
-                    print()
             else:
                 print(
                     f"WARNING: Task result for task_id {task_id_str} is not a dictionary, but a {type(result)}."
-                    f"Therefore, the task result specification is invalid. Please ensure that the task result is a dictionary."
+                    f"Therefore, the task result specification is invalid. "
+                    f"Please ensure that the task result is a dictionary."
                 )
 
         logger.system_log(

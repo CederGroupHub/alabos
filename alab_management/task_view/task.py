@@ -123,7 +123,7 @@ class BaseTask(ABC):
         task_id: ObjectId | None = None,
         lab_view: Optional["LabView"] = None,
         priority: TaskPriority | int | None = TaskPriority.NORMAL,
-        offline_mode: bool = True,
+        _offline_mode: bool = True,
         *args,
         **kwargs,
     ):
@@ -132,7 +132,7 @@ class BaseTask(ABC):
             task_id: the identifier of task
             lab_view: a lab_view corresponding to the task_id
             samples: a list of sample_id's corresponding to samples involvend in the task.
-            offline_mode: whether the task is run in offline mode or not. It is in offline mode when you
+            _offline_mode: whether the task is run in offline mode or not. It is in offline mode when you
               are trying to build an experiment out of it or get the task result.
 
         Here is an example about how to define a custom task
@@ -146,7 +146,7 @@ class BaseTask(ABC):
               self.setpoints = setpoints
               self.samples = [sample_1, sample_2, sample_3, sample_4]
         """
-        self.__offline = offline_mode
+        self.__offline = _offline_mode
         self._is_taskid_generated = (
             False  # whether the task_id is generated using ObjectId() here or not
         )

@@ -106,7 +106,7 @@ class TestTaskActor(unittest.TestCase):
         tasks = experiment["tasks"]
         ## find the task with type "TakePicture"
         task_id = next(
-            [task["task_id"] for task in tasks if task["type"] == "TakePicture"]
+            task["task_id"] for task in tasks if task["type"] == "TakePicture"
         )
         task = self.task_view.get_task(task_id)
         ## check if the result is stored correctly
@@ -194,11 +194,9 @@ class TestTaskActor(unittest.TestCase):
         tasks = experiment["tasks"]
         ## find the task with type "TakePictureMissingResult"
         task_id = next(
-            [
-                task["task_id"]
-                for task in tasks
-                if task["type"] == "TakePictureMissingResult"
-            ]
+            task["task_id"]
+            for task in tasks
+            if task["type"] == "TakePictureMissingResult"
         )
         task = self.task_view.get_task(task_id)
         ## check if the result is still stored correctly

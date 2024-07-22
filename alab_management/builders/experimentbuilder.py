@@ -8,6 +8,35 @@ from alab_management.task_view.task import get_task_by_name
 from .samplebuilder import SampleBuilder
 
 
+def get_experiment_status(
+    exp_id: ObjectId | str, address: str = "http://localhost:8895"
+):
+    """
+    Get the status of the experiment.
+
+    Args:
+        exp_id (ObjectId): The object id of the experiment.
+        address (str): The address of the server. It is defaulted to `http://localhost:8895`,
+            which is the default address of the alabos server.
+
+    Returns
+    -------
+        The status of the experiment.
+
+    .. seealso::
+        See the dashboard code for the response format. :func:`alab_management.dashboard.routes.experiment.query_experiment`
+    """
+    import requests
+
+    # convert exp_id to string while validating the ObjectId format
+    exp_id = str(ObjectId(exp_id))
+
+    url = f"{address}/api/experiment/{exp_id}"
+    response = requests.get(url)
+    response.raise_for_status()
+    return response.json()
+
+
 class ExperimentBuilder:
     """
     It takes a list of samples and a list of tasks, and returns a dictionary

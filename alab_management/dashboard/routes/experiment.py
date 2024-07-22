@@ -102,11 +102,10 @@ def query_experiment(exp_id: str):
         ],
         "tasks": [],
         "progress": progress,
+        "status": (
+            experiment["status"] if not error_state else ExperimentStatus.ERROR.name
+        ),
     }
-
-    return_dict["status"] = (
-        experiment["status"] if not error_state else ExperimentStatus.ERROR.name
-    )
 
     for task in experiment["tasks"]:
         task_entry = task_view.get_task(task["task_id"])

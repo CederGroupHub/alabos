@@ -166,6 +166,49 @@ experiment will be submitted to the default server address `http://localhost:889
 exp.submit(address="http://localhost:8895")
 ```
 
+### See the status of the experiment
+To monitor the status of the experiment, you can go to the alabos dashboard at `http://localhost:8895` (default address)
+and see the status.
+
+![Experiment status](./_static/status_dashboard.png)
+
+#### Check the status via API
+AlabOS also provide API to query individual experiment status. You can call `get_experiment_status` method to get the status
+of the experiment.
+
+```python
+from alab_management import get_experiment_status
+import time
+
+exp_id = exp.submit(address="http://localhost:8895")
+
+while True:
+    status = get_experiment_status(exp_id)
+    ## Both "COMPLETED" and "ERROR" are the final status
+    if status["status"] == "COMPLETED" or status["status"] == "ERROR":
+        break
+    time.sleep(5)
+```
+
+The format of the status is as follows:
+```json
+{
+  "id": "experiment_id",
+  "name": "experiment_name",
+  "progress": 0.5,  // indicating the ratio of finished tasks
+  "status": "running",
+  "submitted_at": "2021-09-01T12:00:00",
+  "samples": [
+    {"id":  "sample_id", "name": "sample_name", "position": "sample_position"},
+    ...
+  ],
+  "tasks": [
+    {"id": "task_id", "type": "TaskType", "status": "RUNNING", "message": "Complete. Measured 0 mg of powder."},
+    ...
+  ]
+}
+```
+
 ## Advanced submission
 Since alabos can accept any DAG as the task graph, the limitation of the builder is that it can only define an experiment
 with a tree-like structure, i.e., it cannot define a task with multiple downstream tasks. However, you can still define
