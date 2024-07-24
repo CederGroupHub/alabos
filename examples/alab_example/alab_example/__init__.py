@@ -185,13 +185,6 @@ add_device(
 )
 
 # Sample Positions
-add_standalone_sample_position(
-    SamplePosition(
-        name="labman_rack",
-        number=16,
-        description="Rack to hold crucibles between the labman and furnace area.",
-    )
-)
 add_device(
     TransferRack(
         name="transfer_rack",

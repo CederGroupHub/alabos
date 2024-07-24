@@ -73,13 +73,7 @@ class XRDDispenserRack(BaseDevice):
     @property
     def sample_positions(self):
         """Return the sample positions of the XRDDispenserRack."""
-        return [
-            SamplePosition(
-                "slot",
-                description=self.description,
-                number=self.num_slots,
-            ),
-        ]
+        return []
 
     def is_running(self) -> bool:
         """Return whether the XRDDispenserRack is running."""
