@@ -34,7 +34,7 @@ to indicate whether the input data is valid.
 
 For example, for the `Heating` task, you would like to check whether there are less than 8 samples
 (less than the number of slots in the furnace), as well as whether the temperature is within
-100 ~ 1100 C range. 
+100°C - 1100°C range. 
 
 ```python
 from alab_management import BaseTask
@@ -54,7 +54,7 @@ class Heating(BaseTask):
 
     # check the temperature
     if not 100 <= self.temperature <= 1100:
-        self.set_message("The temperature should be within 100 ~ 1100 C.")
+        self.set_message("The temperature should be within 100 - 1100 C.")
         return False
     return True
 ```
