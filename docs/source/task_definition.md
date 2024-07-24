@@ -237,7 +237,8 @@ class Heating(BaseTask):
 Considering the size limit of each MongoDB document (< 16MB), it is not recommended to store large files in the result.
 Instead, we provide a class called `LargeResult` to store the large file in GridFS in MongoDB.
 
-For example, you would like to store a large result. You can do it like this:
+For example, when dealing with tasks that can generate very large files, you should store them directly in GridFS 
+to ensure consistency and avoid querying issues. Here’s how you can do it:
 
 ```python
 from alab_management import BaseTask, LargeResult
