@@ -54,7 +54,7 @@ class Heating(BaseTask):
 
     # check the temperature
     if not 100 <= self.temperature <= 1100:
-        self.set_message("The temperature should be within 100 - 1100 C.")
+        self.set_message("The temperature should be within 100 - 1100 °C.")
         return False
     return True
 ```
