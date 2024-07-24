@@ -11,14 +11,14 @@ help you write a task.
 
 # Table of Contents
 1. [Task parameters](#Task-parameters)
-2. [Run method](#`Run`-method)
+2. [Run method](#Run-method)
 3. [Result storage](#Result-storage)
 4. [Set dashboard message](#Set-dashboard-message)
 5. [Run subtask](#Run-subtask)
 6. [Error handling](#Error-handling)
 7. [Mocking](#Mocking)
 8. [Lifecycle of a task](#Lifecycle-of-a-task)
-9. [What's next](#What's-next)
+9. [What's next](#Whats-next)
 
 ## Task parameters
 To define a task, first thing you will need to do is to define the input parameters. To do you, you can override the
