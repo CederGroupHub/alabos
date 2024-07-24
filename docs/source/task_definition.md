@@ -9,17 +9,6 @@ Second, it is used as a base class to define a task with a specific behavior. In
 help you write a task. 
 
 
-# Table of Contents
-1. [Task parameters](#Task-parameters)
-2. [Run method](#Run-method)
-3. [Result storage](#Result-storage)
-4. [Set dashboard message](#Set-dashboard-message)
-5. [Run subtask](#Run-subtask)
-6. [Error handling](#Error-handling)
-7. [Mocking](#Mocking)
-8. [Lifecycle of a task](#Lifecycle-of-a-task)
-9. [What's next](#Whats-next)
-
 ## Task parameters
 To define a task, first thing you will need to do is to define the input parameters. To do you, you can override the
 `__init__` method in the inherited class. The `__init__` method should take in all the necessary parameters to define the
