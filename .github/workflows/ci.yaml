@@ -37,7 +37,7 @@ jobs:
       - name: Set up environment
         run: |
           pip install --upgrade pip
-          pip install '.[dev]'
+          pip install -e '.[dev]'
       - name: Set up pyright
         run: |
           npm install -g pyright
