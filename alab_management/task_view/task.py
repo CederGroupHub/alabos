@@ -58,7 +58,19 @@ class LargeResult(BaseModel):
 
     @classmethod
     def from_local_file(cls, local_path: str | Path, storage_type: str = _UNSET):
-        """Create a LargeResult object from a local file."""
+        """
+        Create a LargeResult object from a local file and store it.
+        If file is failed to be stored, will raise a ValueError.
+
+        Args:
+            local_path: the path to the local file
+            storage_type: the storage type, default to the default storage type in the config
+
+        Returns
+        -------
+            LargeResult: the LargeResult object
+
+        """
         if storage_type is _UNSET:
             storage_type = AlabOSConfig()["large_result_storage"][
                 "default_storage_type"
@@ -69,7 +81,19 @@ class LargeResult(BaseModel):
 
     @classmethod
     def from_file_like_data(cls, file_like_data: Any, storage_type: str = _UNSET):
-        """Create a LargeResult object from a file-like object."""
+        """
+        Create a LargeResult object from a file-like object.
+        File-like object must have a .read() method.
+        If file is failed to be stored, will raise a ValueError.
+
+        Args:
+            file_like_data: the file-like data
+            storage_type: the storage type, default to the default storage type in the config
+
+        Returns
+        -------
+            LargeResult: the LargeResult object
+        """
         if storage_type is _UNSET:
             storage_type = AlabOSConfig()["large_result_storage"][
                 "default_storage_type"

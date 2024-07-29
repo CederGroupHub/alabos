@@ -11,7 +11,9 @@ from alab_management.sample_view import SamplePosition
 class Scale(BaseDevice):
     """A device for weighing jars/crucibles on the characterization side of the ALab."""
 
-    description: ClassVar[str] = "Ohaus scale for weighing jars/crucibles on the characterization side of the ALab."
+    description: ClassVar[str] = (
+        "Ohaus scale for weighing jars/crucibles on the characterization side of the ALab."
+    )
     TIMEOUT: int = 15  # seconds to timeout if no response from scale
 
     def __init__(self, ip_address: str, *args, **kwargs):

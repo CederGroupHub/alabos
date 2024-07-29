@@ -6,5 +6,5 @@ from pathlib import Path
 os.putenv("ALABOS_CONFIG_PATH", Path(__file__).parent.absolute() / "config.toml")
 
 # import/add devices and task from here
-
-from alab_management import add_device, add_standalone_sample_position, add_task
+# Remember to import these following packages in the __init__.py file of the package:
+# from alab_management import add_device, add_standalone_sample_position, add_task

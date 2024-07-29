@@ -28,7 +28,9 @@ class VialDispenserRack(BaseDevice):
 
     RACKS = ["A", "B"]
     NUM_SLOTS = 16
-    REFILL_EVERY = 8  # number of vials to refill at a time, should be a factor of NUM_SLOTS
+    REFILL_EVERY = (
+        8  # number of vials to refill at a time, should be a factor of NUM_SLOTS
+    )
 
     SLOTS_PER_RACK = [str(i + 1) for i in range(NUM_SLOTS)]
 
@@ -38,7 +40,9 @@ class VialDispenserRack(BaseDevice):
         self.vial_status = self.dict_in_database(
             name="vial_status",
             default_value={
-                f"{rack}{slot}": VialState.AVAILABLE.value for rack in self.RACKS for slot in self.SLOTS_PER_RACK
+                f"{rack}{slot}": VialState.AVAILABLE.value
+                for rack in self.RACKS
+                for slot in self.SLOTS_PER_RACK
             },
         )  # assume fully stocked at startup
         self.refill_daemon_thread = None
@@ -72,9 +76,14 @@ class VialDispenserRack(BaseDevice):
         while self._refill_daemon_running:
             for rack in self.RACKS:
                 for i in range(0, self.NUM_SLOTS, self.REFILL_EVERY):
-                    slot_keys = [f"{rack}{slot}" for slot in self.SLOTS_PER_RACK[i : i + self.REFILL_EVERY]]
+                    slot_keys = [
+                        f"{rack}{slot}"
+                        for slot in self.SLOTS_PER_RACK[i : i + self.REFILL_EVERY]
+                    ]
                     if self._check_refill(slot_keys):
-                        self._request_refill(slot_keys)  # daemon blocks until refilled  TODO: non-blocking
+                        self._request_refill(
+                            slot_keys
+                        )  # daemon blocks until refilled  TODO: non-blocking
                     time.sleep(5)
 
     @property
@@ -84,7 +93,9 @@ class VialDispenserRack(BaseDevice):
 
     def num_remaining(self):
         """Return the number of remaining vials."""
-        return len([v for v in self.vial_status.values() if v == VialState.AVAILABLE.value])
+        return len(
+            [v for v in self.vial_status.values() if v == VialState.AVAILABLE.value]
+        )
 
     def emergent_stop(self):
         """Stop the VialDispenserRack."""
@@ -122,7 +133,9 @@ class VialDispenserRack(BaseDevice):
         raise EmptyError("No vials available")
 
     def _check_refill(self, slot_keys: list[str]) -> bool:
-        return all(self.vial_status[key] != VialState.AVAILABLE.value for key in slot_keys)
+        return all(
+            self.vial_status[key] != VialState.AVAILABLE.value for key in slot_keys
+        )
 
     def _request_refill(self, slot_keys: list[str]):
         self.request_maintenance(

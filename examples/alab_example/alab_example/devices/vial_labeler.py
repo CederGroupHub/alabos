@@ -1,7 +1,6 @@
 """Device class for the REINER jetStamp 1025 injket printer used for labeling filled vials."""
 
 import time
-from importlib import util
 from pathlib import Path
 from traceback import print_exc
 from typing import ClassVar

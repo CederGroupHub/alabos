@@ -9,7 +9,7 @@ from typing import Any, cast
 from bson import ObjectId
 
 from alab_management.task_view import CompletedTaskView
-from alab_management.task_view.task import BaseTask, get_all_tasks, LargeResult
+from alab_management.task_view.task import BaseTask, get_all_tasks
 from alab_management.task_view.task_enums import CancelingProgress, TaskStatus
 from alab_management.utils.data_objects import get_collection, make_bsonable
 

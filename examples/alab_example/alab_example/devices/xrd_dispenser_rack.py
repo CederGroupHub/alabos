@@ -4,7 +4,7 @@ import time
 from threading import Thread
 
 from alab_management.device_view import BaseDevice
-from alab_management.sample_view import SamplePosition, SampleView
+from alab_management.sample_view import SampleView
 from alab_management.user_input import UserInputView, UserRequestStatus
 
 

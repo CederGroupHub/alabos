@@ -1,4 +1,5 @@
 """This module contains the code for robot arm characterization."""
+
 import time
 
 from alab_control.robot_arm_ur5e.robots import BaseURRobot
@@ -43,6 +44,7 @@ place_key = {
 
 class RobotArmCharacterization(BaseDevice):
     """A device for characterizing the UR5e robot arm."""
+
     description: str = "UR5e robot arm"
 
     def __init__(self, ip: str, *args, **kwargs):
@@ -72,13 +74,18 @@ class RobotArmCharacterization(BaseDevice):
             raise Exception("Device is not connected!")
         while not self.driver.is_remote_mode():
             self._device_view.pause_device(self.name)
-            self.set_message("The arm is not under remote control. Please set to remote control and try again.")
+            self.set_message(
+                "The arm is not under remote control. Please set to remote control and try again."
+            )
             self.request_maintenance(
-                prompt=f"Please set {self.name} to remote control, then press OK to continue.", options=["OK"]
+                prompt=f"Please set {self.name} to remote control, then press OK to continue.",
+                options=["OK"],
             )
             if self.driver.is_remote_mode():
                 self._device_view.unpause_device(self.name)
-                self.set_message(f"Successfully connected to {self.name} in remote control mode!")
+                self.set_message(
+                    f"Successfully connected to {self.name} in remote control mode!"
+                )
 
     @property
     def sample_positions(self):
@@ -102,7 +109,7 @@ class RobotArmCharacterization(BaseDevice):
                 return self.driver.is_running()
             except (ConnectionError, URRobotError):
                 if i == 3:
-                    raise Exception #TODO this raise statement is not tested
+                    raise Exception  # TODO this raise statement is not tested
                 if i != 0:
                     response = request_user_input(
                         task_id=None,
@@ -111,7 +118,7 @@ class RobotArmCharacterization(BaseDevice):
                         maintenance=True,
                     )
                     if response == "Cancel":
-                        raise Exception #TODO this raise statement is not tested
+                        raise Exception  # TODO this raise statement is not tested
                 self.disconnect()
                 self.connect()
         return None
@@ -180,9 +187,16 @@ class RobotArmCharacterization(BaseDevice):
         return self.driver.ssh.read_file(path)
 
     @mock(return_constant=None)
-    def download_folder(self, remote_folder_path: str, local_folder_path: str, remove_remote_files: bool = False):
+    def download_folder(
+        self,
+        remote_folder_path: str,
+        local_folder_path: str,
+        remove_remote_files: bool = False,
+    ):
         """
         Download files in a folder from the robot arm if they are not in the local folder.
         Remove files from the remote folder if remove_remote_files is True.
         """
-        self.driver.ssh.download_folder(remote_folder_path, local_folder_path, remove_remote_files)
+        self.driver.ssh.download_folder(
+            remote_folder_path, local_folder_path, remove_remote_files
+        )

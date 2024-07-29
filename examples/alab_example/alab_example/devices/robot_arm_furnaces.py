@@ -1,4 +1,5 @@
 """This module contains the code for controlling robot arm furnaces."""
+
 import time
 
 from alab_control.robot_arm_ur5e.robots import BaseURRobot
@@ -50,6 +51,7 @@ box_furnace_key = {
 
 class RobotArmFurnaces(BaseDevice):
     """A device for controlling the UR5e robot arm."""
+
     description: str = "UR5e robot arm"
 
     def __init__(self, ip: str, *args, **kwargs):
@@ -81,13 +83,18 @@ class RobotArmFurnaces(BaseDevice):
             raise Exception("Device is not connected!")
         while not self.driver.is_remote_mode():
             self._device_view.pause_device(self.name)
-            self.set_message("The arm is not under remote control. Please set to remote control and try again.")
+            self.set_message(
+                "The arm is not under remote control. Please set to remote control and try again."
+            )
             self.request_maintenance(
-                prompt=f"Please set {self.name} to remote control, then press OK to continue.", options=["OK"]
+                prompt=f"Please set {self.name} to remote control, then press OK to continue.",
+                options=["OK"],
             )
             if self.driver.is_remote_mode():
                 self._device_view.unpause_device(self.name)
-                self.set_message(f"Successfully connected to {self.name} in remote control mode!")
+                self.set_message(
+                    f"Successfully connected to {self.name} in remote control mode!"
+                )
 
     @property
     def sample_positions(self):
@@ -180,7 +187,9 @@ class RobotArmFurnaces(BaseDevice):
         """Move the rack into the box furnace."""
         program_dict = box_furnace_key.get(box_furnace_name)
         if program_dict is None:
-            raise ValueError(f"No program found for box furnace by name {box_furnace_name}")
+            raise ValueError(
+                f"No program found for box furnace by name {box_furnace_name}"
+            )
         self.set_message(f"Putting rack inside box furnace {box_furnace_name}")
         self.driver.run_programs(program_dict["inside"])
 
@@ -188,16 +197,22 @@ class RobotArmFurnaces(BaseDevice):
         """Take the rack out of the box furnace."""
         program_dict = box_furnace_key.get(box_furnace_name)
         if program_dict is None:
-            raise ValueError(f"No program found for box furnace by name {box_furnace_name}")
+            raise ValueError(
+                f"No program found for box furnace by name {box_furnace_name}"
+            )
         self.set_message(f"Taking rack out of box furnace {box_furnace_name}")
         self.driver.run_programs(program_dict["outside"])
 
     def open_box_furnace(self, box_furnace_name: str):
         """Open the box furnace door."""
         if box_furnace_name not in box_furnace_key:
-            raise ValueError(f'No rack positions defined for box furnace name "{box_furnace_name}"')
+            raise ValueError(
+                f'No rack positions defined for box furnace name "{box_furnace_name}"'
+            )
         if box_furnace_key[box_furnace_name]["open_door"] == "":
-            raise ValueError(f'No open door program defined for box furnace name "{box_furnace_name}"')
+            raise ValueError(
+                f'No open door program defined for box furnace name "{box_furnace_name}"'
+            )
 
         programs = box_furnace_key[box_furnace_name]["open_door"]
 
@@ -208,9 +223,13 @@ class RobotArmFurnaces(BaseDevice):
     def close_box_furnace(self, box_furnace_name: str):
         """Close the box furnace door."""
         if box_furnace_name not in box_furnace_key:
-            raise ValueError(f'No rack positions defined for box furnace name "{box_furnace_name}"')
+            raise ValueError(
+                f'No rack positions defined for box furnace name "{box_furnace_name}"'
+            )
         if box_furnace_key[box_furnace_name]["close_door"] == "":
-            raise ValueError(f'No close door program defined for box furnace name "{box_furnace_name}"')
+            raise ValueError(
+                f'No close door program defined for box furnace name "{box_furnace_name}"'
+            )
 
         programs = box_furnace_key[box_furnace_name]["close_door"]
 
@@ -218,9 +237,16 @@ class RobotArmFurnaces(BaseDevice):
         self.driver.run_programs(programs)
         self.set_message("")
 
-    def download_folder(self, remote_folder_path: str, local_folder_path: str, remove_remote_files: bool = False):
+    def download_folder(
+        self,
+        remote_folder_path: str,
+        local_folder_path: str,
+        remove_remote_files: bool = False,
+    ):
         """
         Download files in a folder from the robot arm if they are not in the local folder.
         Remove files from the remote folder if remove_remote_files is True.
         """
-        self.driver.ssh.download_folder(remote_folder_path, local_folder_path, remove_remote_files)
+        self.driver.ssh.download_folder(
+            remote_folder_path, local_folder_path, remove_remote_files
+        )

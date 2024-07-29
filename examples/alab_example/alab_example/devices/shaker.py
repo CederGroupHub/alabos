@@ -11,7 +11,9 @@ from alab_management.sample_view import SamplePosition
 class Shaker(BaseDevice):
     """A device for controlling a vertical shaker."""
 
-    description: ClassVar[str] = "Vertical shaker for grinding powders in a crucible or plastic vial."
+    description: ClassVar[str] = (
+        "Vertical shaker for grinding powders in a crucible or plastic vial."
+    )
 
     def __init__(self, ip_address: str, port: int = 80, *args, **kwargs):
         """Initialize the Shaker object."""

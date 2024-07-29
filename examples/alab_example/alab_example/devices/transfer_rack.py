@@ -1,4 +1,5 @@
 """This module contains the TransferRack class."""
+
 from typing import ClassVar
 
 from alab_management.device_view import BaseDevice
@@ -7,9 +8,10 @@ from alab_management.sample_view import SamplePosition
 
 class TransferRack(BaseDevice):
     """A rack that can hold vials or crucible."""
-    description: ClassVar[
-        str
-    ] = "A rack that can hold vials or crucible. The slots are arranged in a grid on a flat surface, and the robot has "
+
+    description: ClassVar[str] = (
+        "A rack that can hold vials or crucible. The slots are arranged in a grid on a flat surface, and the robot has "
+    )
     "to be told which position to retrieve an unused vial from."
 
     def __init__(self, num_slots: int, *args, **kwargs):

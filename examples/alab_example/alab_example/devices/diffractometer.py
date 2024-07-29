@@ -50,14 +50,18 @@ class Diffractometer(BaseDevice):
         try:
             while not self.driver.is_under_remote_control:
                 self._device_view.pause_device(self.name)
-                self.set_message("The Aeris is not under remote control. Please set to remote control and try again.")
+                self.set_message(
+                    "The Aeris is not under remote control. Please set to remote control and try again."
+                )
                 self.request_maintenance(
                     prompt="Please set the Aeris XRD to remote control, then press OK to continue.",
                     options=["OK"],
                 )
                 if self.driver.is_under_remote_control:
                     self._device_view.unpause_device(self.name)
-                    self.set_message("Successfully connected to the Aeris in remote control mode!")
+                    self.set_message(
+                        "Successfully connected to the Aeris in remote control mode!"
+                    )
         except TimeoutError:
             self.set_message("Connection to Aeris has timed out.")
             response = self.request_maintenance(
@@ -109,7 +113,9 @@ class Diffractometer(BaseDevice):
         try:
             self.set_message(f'Scanning with schema "{schema}"')
             # TODO default schema if not valid?
-            twotheta, counts = self.driver.scan_and_return_results(sample_id=sampleid, program=schema)
+            twotheta, counts = self.driver.scan_and_return_results(
+                sample_id=sampleid, program=schema
+            )
             self.set_message(f"Scan of {sample_name} is complete.")
         except:
             self.set_message(f"Scan of {sample_name} has failed.")
