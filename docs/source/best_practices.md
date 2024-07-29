@@ -65,3 +65,19 @@ class Solid_Wet_Mixing_and_Pipetting(BaseTask):
             robot_arm.move(sample,destination)
 ```
 In this solution, before running any of the time-sensitive process, all the devices and sample positions involved in the process is booked. Then, the robot begins the series of processes until it finishes everything, ensuring minimum time is achieved for this specific sample. The next sample will run once this specific sample is done. Note that all resources are available because the booking ensures the devices and sample positions are exclusively available for this task.
+
+## 2. Sharing device/instrument between automated workflow and manual usage
+Oftentimes due to scarcity of availability of some device/instrument, an automated system has to pause a part of its operation and allow human experimentalist to use the instrument. 
+
+### Case study: SEM
+Let's take a look at the following case study for a scanning electron microscope (SEM) instrument that is fully integrated into an autonomous laboratory running on AlabOS. The SEM is placed such that it can be fully operated by human, given the robots that usually loads the samples into the SEM do not interact with it while the human operator is using it.
+
+User X wants to use the SEM under manual mode because their sample requires a special scanning parameters and steps not implemented yet in the automated laboratory. They want to manually load their sample because it comes in an irregular shape. Essentially, they want to use the SEM for a certain duration. Note that the person also do not want to interrupt any work that is being done on the other samples inside the autonomous workflow.
+
+### Solution: Pausing SEM
+User X can just click "Pause" in the AlabOS user interface to request pause to the running task that is currently operating on the samples inside the SEM. Once the task can be interrupted gracefully, AlabOS will pause the device and not run any task requiring such device. This includes pausing SEM and any robots that interacts with SEM because in the automatic SEM sample preparation, loading, data collection, and analysis, all the corresponding devices are booked in advance before running the tasks. If any task is still running, AlabOS will keep the device in "requesting pause" state. Hence, User X can wait until the SEM status is "Paused" and then directly use the SEM, worry-free, as long as they return the SEM back to one of the expected states according to the automated SEM program/task.
+
+## 3. Cancelling samples and removing them out of the automated workflow gracefully
+
+TODO
+
