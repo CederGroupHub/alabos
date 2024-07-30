@@ -87,8 +87,14 @@ We will use `MongoDB <https://www.mongodb.com/>`_ as our database. We communicat
 via `pymongo <https://pymongo.readthedocs.io/en/stable/>`_ package.
 
 
+What's in this documentation
+'''''''''''''''''''''''''''''
+
+In the following sections, we will show you how to install the package, how to use the package, and some best practices
+when using the package.
+
 .. toctree::
-    :maxdepth: -1
+    :maxdepth: 1
     :hidden:
 
     installation
