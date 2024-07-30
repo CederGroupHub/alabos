@@ -58,7 +58,7 @@ class ResourceRequestItem(BaseModel):
 
 class ResourcesRequest(RootModel):
     """
-    This class is used to validate the resource request. Each request should have a format of
+    This class is used to validate the resource request. Each request should have a format like this.
 
     .. code-block::
 
