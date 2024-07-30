@@ -48,10 +48,10 @@ Lab status manages all the information required to describe alab. It have five i
   ``RUNNING``, ``COMPLETED``.
 
 - **Task view**: task view holds task data, which is represented by a DAG (directed acyclic graph). Each vertex is an
-  operation, which has a status of ``WAITING``, ``READY``, ``RUNNING`` and ``COMPLETED``.
+  operation, which has a status of ``WAITING``, ``READY``, ``RUNNING``, ``COMPLETED``, ``ERROR``, and ``CANCELED``.
 
 - **Device view**: device view records the status of devices, which has the value of
-  ``IDLE``, ``RUNNING``, ``STOPPED`` and ``HOLD``.
+  ``IDLE`` and ``RUNNING``.
 
 - **Sample view**: sample view tracks the position of each sample in the lab. User will need to define the
   ``sample position`` in the device definitions, which is a position that can place samples.
