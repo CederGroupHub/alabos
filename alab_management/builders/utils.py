@@ -23,10 +23,10 @@ def append_task(
         samples (Union[SampleBuilder, List[SampleBuilder]]): One or more SampleBuilder's which will
         have this task appended to their tasklists.
     """
-    if not task.is_simulation:
+    if not task.is_offline:
         raise RuntimeError(
             "Cannot add a live BaseTask instance to a SampleBuilder. BaseTask must be instantiated with "
-            "`simulation=True` to enable this method."
+            "`offline_mode=True` to enable this method."
         )
     if isinstance(samples, SampleBuilder):
         samples = [samples]

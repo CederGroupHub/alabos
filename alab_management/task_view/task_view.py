@@ -114,6 +114,10 @@ class TaskView:
         Args:
             task_id: the task_id of interest. If not found, will return ``None``
             encode: whether to encode the task using ``self.encode_task`` method
+
+        Returns
+        -------
+            the task entry
         """
         task_id = ObjectId(task_id)
 
@@ -256,16 +260,17 @@ class TaskView:
         """
         Update result to completed job.
 
-        Args: task_id: the id of task to be updated name: the name of the result to be updated. If ``None``,
-        will update the entire ``result`` field. Otherwise, will update the field ``result.name``. value: the value
-        to be stored. This must be bson-encodable (ie can be written into MongoDB!)
+        Args:
+            task_id: the id of task to be updated name: the name of the result to be updated. If ``None``,
+                    will update the entire ``result`` field. Otherwise, will update the field ``result.name``. value: the value
+                    to be stored. This must be bson-encodable (ie can be written into MongoDB!)
+            name: the name of the result to be updated. If ``None``, will update the entire ``result`` field.
+                    Otherwise, will update the field ``result.name``.
+            value: the value to be stored. This must be bson-encodable (i.e. can be written into MongoDB!)
         """
         _ = self.get_task(
             task_id=task_id
         )  # just to confirm that task_id exists in collection
-
-        # if value is None:
-        #     raise ValueError("Must provide a value to update result with!")
 
         update_path = "result" if name is None else f"result.{name}"
         self._task_collection.update_one(

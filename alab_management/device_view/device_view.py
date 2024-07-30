@@ -60,8 +60,8 @@ class DeviceView:
         self._device_collection.create_index([("name", pymongo.HASHED)])
         self._device_list = get_all_devices()
         self._lock = get_lock(self._device_collection.name)
-        self._sample_view = SampleView()
         self.__connected_to_devices = False
+        self._sample_view = SampleView()
 
         if connect_to_devices:
             self.__connect_all_devices()
@@ -209,7 +209,9 @@ class DeviceView:
                     # if no device is held by the same task, pick the device with least samples
                     minimum_number_of_samples = 999999999
                     for device_ in result:
-                        samples_on_device_ = self.get_samples_on_device(device_["name"])
+                        samples_on_device_ = self._sample_view.get_samples_on_device(
+                            device_["name"]
+                        )
                         number_of_samples_in_device_ = sum(
                             len(samples) for samples in samples_on_device_.values()
                         )
@@ -217,6 +219,19 @@ class DeviceView:
                             minimum_number_of_samples = number_of_samples_in_device_
                             idle_devices[device] = device_
             return idle_devices
+
+    def get_sample_on_device(self, device_name: str) -> dict[str, list[ObjectId]]:
+        """
+        Get all the samples on a device.
+
+        This function will directly call the ``SampleView.get_samples_on_device`` method for
+        backward compatibility.
+
+        .. note::
+
+            (in version 1.0.1) This function has been moved to ``SampleView`` class.
+        """
+        return self._sample_view.get_samples_on_device(device_name)
 
     def get_available_devices(
         self, device_str: str, type_or_name: str, task_id: ObjectId | None = None
@@ -342,17 +357,6 @@ class DeviceView:
         # wait until the device status has been updated to IDLE
         while self.get_status(device_name=device_name).name != "IDLE":
             time.sleep(0.5)
-
-    def get_samples_on_device(self, device_name: str):
-        """Get all samples on a device."""
-        device = self.get_device(device_name=device_name)
-        _sample_collection = get_collection("samples")
-
-        samples_per_position = {}
-        for position in device["sample_positions"]:
-            samples = _sample_collection.find({"position": {"$regex": position}})
-            samples_per_position[position] = [sample["_id"] for sample in samples]
-        return samples_per_position
 
     def _update_status(
         self,

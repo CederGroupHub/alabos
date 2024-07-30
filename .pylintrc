@@ -139,10 +139,13 @@ disable=fixme,
         ; dict-keys-not-iterating,
         ; dict-values-not-iterating,
         ; xreadlines-attribute,
+        missing-timeout,
+        broad-exception-caught,
+        broad-exception-raised,
         E0001, R0902, W0702, W1114, W0201, R0401, R0801, R0022, W0613, E0213, C0209, R1720,
         W0105, R0914, R0912, R0915, R1720, R1705, W1113, W0613, W0107, W0212, R1705, W0212,
         R0904, W0212, C0103, E1101, W0621, W0404, C0103, E1101, C0200, W0237, R0911, W0612, 
-        R1710 
+        R1710
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
@@ -588,11 +591,3 @@ known-third-party=enchant
 
 # Couples of modules and preferred modules, separated by a comma.
 preferred-modules=
-
-
-[EXCEPTIONS]
-
-# Exceptions that will emit a warning when being caught. Defaults to
-# "BaseException, Exception".
-overgeneral-exceptions=BaseException,
-                       Exception

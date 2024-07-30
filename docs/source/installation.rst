@@ -1,15 +1,19 @@
-.. _installation:
-
-============
 Installation
 ============
 
 Prerequisites
 -------------
 
+MongoDB
+~~~~~~~
 You must have access to at least one `MongoDB database <https://www.mongodb.com/>`_ (locally or remotely).
 
 To install MongoDB locally, refer to `this <https://docs.mongodb.com/manual/installation/>`_.
+
+RabbitMQ
+~~~~~~~~
+
+You must have RabbitMQ installed on your machine. To install RabbitMQ, refer to `this <https://www.rabbitmq.com/download.html>`_.
 
 Install via pip
 ----------------
@@ -24,23 +28,12 @@ Install from source code
 
 .. code-block:: sh
 
-  git clone https://github.com/CederGroupHub/alab_management
+  git clone https://github.com/CederGroupHub/alabos
   cd alab_management
   pip install -e .
-  brew install rabbitmq
-  brew services start rabbitmq
-
-(Only for Mac OS) Additional installation for RabbitMQ
-------------------------
-
-.. code-block:: sh
-
-  brew install rabbitmq
-  brew services start rabbitmq
 
 
 What's next
 ------------------
 
-Next, we will discuss how to set up a definition folder for custom devices and tasks.
-
+Next, we will show you a tutorial on how to setup the package for an autonomous lab.

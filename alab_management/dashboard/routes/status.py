@@ -40,7 +40,7 @@ def get_all_status():
                     }
                     for sample_id in samples
                 ]
-                for position, samples in device_view.get_samples_on_device(
+                for position, samples in sample_view.get_samples_on_device(
                     device["name"]
                 ).items()
             },

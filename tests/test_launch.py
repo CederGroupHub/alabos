@@ -33,7 +33,7 @@ class TestLaunch(unittest.TestCase):
             ["alabos", "launch_worker", "--processes", "8", "--threads", "16"],
             shell=False,
         )
-        time.sleep(2)  # waiting for starting up
+        time.sleep(5)  # waiting for starting up
 
         if self.main_process.poll() is not None:
             raise RuntimeError("Main process failed to start")

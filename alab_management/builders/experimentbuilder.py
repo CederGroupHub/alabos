@@ -1,7 +1,41 @@
 from pathlib import Path
 from typing import Any, Literal
 
+from bson import ObjectId
+
+from alab_management.task_view.task import get_task_by_name
+
 from .samplebuilder import SampleBuilder
+
+
+def get_experiment_status(
+    exp_id: ObjectId | str, address: str = "http://localhost:8895", **kwargs
+):
+    """
+    Get the status of the experiment.
+
+    Args:
+        exp_id (ObjectId): The object id of the experiment.
+        address (str): The address of the server. It is defaulted to `http://localhost:8895`,
+            which is the default address of the alabos server.
+        **kwargs: Additional keyword arguments to be passed to the `requests.get` function.
+
+    Returns
+    -------
+        The status of the experiment.
+
+    .. seealso::
+        See the dashboard code for the response format. :func:`alab_management.dashboard.routes.experiment.query_experiment`
+    """
+    import requests
+
+    # convert exp_id to string while validating the ObjectId format
+    exp_id = str(ObjectId(exp_id))
+
+    url = f"{address}/api/experiment/{exp_id}"
+    response = requests.get(url, **kwargs)
+    response.raise_for_status()
+    return response.json()
 
 
 class ExperimentBuilder:
@@ -72,6 +106,22 @@ class ExperimentBuilder:
         """
         if task_id in self._tasks:
             return
+
+        task_obj = get_task_by_name(task_name).from_kwargs(
+            samples=[sample.name for sample in samples],
+            task_id=ObjectId(task_id),
+            **task_kwargs,
+        )
+        if not task_obj.validate():
+            raise ValueError(
+                "Task input validation failed!"
+                + (
+                    f"\nError message: {task_obj.get_message()}"
+                    if task_obj.get_message()
+                    else ""
+                )
+            )
+
         self._tasks[task_id] = {
             "type": task_name,
             "parameters": task_kwargs,
@@ -193,6 +243,31 @@ class ExperimentBuilder:
             pos=pos,
             ax=ax,
         )
+
+    def submit(self, address: str = "http://localhost:8895", **kwargs) -> ObjectId:
+        """
+        Submit the experiment to server.
+
+        Args:
+            address (str): The address of the server. It is defaulted to `http://localhost:8895`,
+                which is the default address of the alabos server.
+            **kwargs: Additional keyword arguments to be passed to the `requests.post` function.
+
+        Returns
+        -------
+            The object id of the experiment.
+        """
+        import requests
+
+        url = f"{address}/api/experiment/submit"
+
+        data = self.to_dict()
+        response = requests.post(url, json=data, **kwargs)
+
+        if response.status_code != 200:
+            raise ValueError(f"Error submitting experiment: {response.text}")
+
+        return ObjectId(response.json()["data"]["exp_id"])
 
     def __repr__(self):
         """Return a string representation of the ExperimentBuilder."""

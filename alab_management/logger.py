@@ -112,7 +112,7 @@ class DBLogger:
         if isinstance(level, str):
             level = cast(int, LoggingLevel[level].value)
         elif isinstance(level, LoggingLevel):
-            level = cast(int, LoggingLevel.value)
+            level = cast(int, level.value)
 
         return self._logging_collection.find(
             {"level": {"$gte": level}, "created_at": {"$gte": datetime.now() - within}}

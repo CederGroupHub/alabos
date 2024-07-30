@@ -8,7 +8,7 @@ from typing import Any, cast
 
 import pymongo  # type: ignore
 from bson import ObjectId  # type: ignore
-from pydantic import BaseModel, conint
+from pydantic import BaseModel, ConfigDict, conint
 
 from alab_management.utils.data_objects import get_collection, get_lock
 
@@ -23,10 +23,8 @@ class SamplePositionRequest(BaseModel):
     the number you request. By default, the number is set to be 1.
     """
 
-    class Config:
-        """raise error when extra kwargs."""
-
-        extra = "forbid"
+    # raise error when extra kwargs are passed
+    model_config = ConfigDict(extra="forbid")
 
     prefix: str
     number: conint(ge=0) = 1  # type: ignore
@@ -486,6 +484,21 @@ class SampleView:
                 }
             },
         )
+
+    def get_samples_on_device(self, device_name: str) -> dict[str, list[ObjectId]]:
+        """Get all the samples on a device."""
+        samples = self._sample_collection.find(
+            {"position": {"$regex": f"^{device_name}{SamplePosition.SEPARATOR}"}}
+        )
+
+        all_samples = {}
+        for sample in samples:
+            # remove the suffix of the sample position (e.g. remove /1, /2, etc.)
+            position_name = re.sub(
+                f"{SamplePosition.SEPARATOR}\\d+$", "", sample["position"]
+            )
+            all_samples.setdefault(position_name, []).append(sample["_id"])
+        return all_samples
 
     def exists(self, sample_id: ObjectId | str) -> bool:
         """Check if a sample exists in the database.

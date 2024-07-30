@@ -9,6 +9,7 @@ from traceback import format_exc
 import dramatiq
 from bson import ObjectId
 from dramatiq_abort import Abort
+from pydantic import BaseModel, ValidationError
 
 from alab_management.logger import DBLogger
 from alab_management.sample_view import SampleView
@@ -84,10 +85,15 @@ def run_task(task_id_str: str):
             ],  # only the sample names are sent
             task_id=task_id,
             lab_view=lab_view,
-            simulation=False,
+            _offline_mode=False,
             **task_entry["parameters"],
         )
+        if not task.validate():
+            raise ValueError(
+                f"Task input validation failed! Error message: {task.get_message()}"
+            )
     except Exception as exception:
+        task_view.update_status(task_id=task_id, status=TaskStatus.FINISHING)
         logger.system_log(
             level="ERROR",
             log_data={
@@ -102,10 +108,13 @@ def run_task(task_id_str: str):
         raise Exception(
             f"Failed to create task {task_id} of type {task_type!s}"
         ) from exception
+    finally:
+        # if there is early termination, set the task status to ERROR
+        if task_view.get_status(task_id) == TaskStatus.FINISHING:
+            task_view.update_status(task_id=task_id, status=TaskStatus.ERROR)
 
     try:
         task_view.update_status(task_id=task_id, status=TaskStatus.RUNNING)
-
         for sample in task_entry["samples"]:
             sample_view.update_sample_task_id(
                 task_id=task_id, sample_id=sample["sample_id"]
@@ -140,7 +149,7 @@ def run_task(task_id_str: str):
             },
         )
         lab_view.request_cleanup()
-    except Exception:
+    except:  # noqa: E722
         task_status = TaskStatus.ERROR
         task_view.update_status(task_id=task_id, status=TaskStatus.FINISHING)
         formatted_exception = format_exc()
@@ -164,6 +173,12 @@ def run_task(task_id_str: str):
         task_view.update_status(task_id=task_id, status=TaskStatus.FINISHING)
         if result is None:
             pass
+        elif isinstance(result, BaseModel):
+            # assume that all field are replaced by the value if the result is a pydantic model
+            # convert pydantic model to dict
+            dict_result = result.model_dump(mode="python")
+            for key, value in dict_result.items():
+                task_view.update_result(task_id=task_id, name=key, value=value)
         elif isinstance(result, dict):
             for key, value in result.items():
                 # we do this per item to avoid overwriting existing results. Its possible that some results were
@@ -173,6 +188,29 @@ def run_task(task_id_str: str):
             task_view.update_result(
                 task_id=task_id, name=None, value=result
             )  # put result directly in the result field, no nesting.
+
+        # if the task result specification is defined,
+        # check if the task result is consistent with the task result specification
+        # get result from the task entry
+        if task.result_specification is not None:
+            result = task_view.get_task(task_id=task_id).get("result", {})
+            if isinstance(result, dict):
+                try:
+                    model = task.result_specification
+                    model(**result)
+                except ValidationError:
+                    print(
+                        f"WARNING: Task result for task_id {task_id_str} is "
+                        f"inconsistent with the task result specification."
+                        f"{format_exc()}"
+                    )
+                    print()
+            else:
+                print(
+                    f"WARNING: Task result for task_id {task_id_str} is not a dictionary, but a {type(result)}."
+                    f"Therefore, the task result specification is invalid. "
+                    f"Please ensure that the task result is a dictionary."
+                )
 
         logger.system_log(
             level="INFO",

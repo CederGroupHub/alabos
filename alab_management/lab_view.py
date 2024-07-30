@@ -11,8 +11,6 @@ from traceback import format_exc
 from typing import Any
 
 from bson import ObjectId
-from pydantic import root_validator
-from pydantic.main import BaseModel
 
 from alab_management.device_manager import DevicesClient
 from alab_management.device_view.device import BaseDevice
@@ -20,7 +18,7 @@ from alab_management.experiment_view.experiment_view import ExperimentView
 from alab_management.logger import DBLogger
 from alab_management.resource_manager.resource_requester import ResourceRequester
 from alab_management.sample_view.sample import Sample
-from alab_management.sample_view.sample_view import SamplePositionRequest, SampleView
+from alab_management.sample_view.sample_view import SampleView
 from alab_management.task_view.task import BaseTask
 from alab_management.task_view.task_enums import TaskPriority, TaskStatus
 from alab_management.task_view.task_view import TaskView
@@ -29,33 +27,6 @@ from alab_management.user_input import request_user_input, request_user_input_wi
 
 class DeviceRunningException(Exception):
     """Raise when a task try to release a device that is still running."""
-
-
-class ResourcesRequest(BaseModel):
-    """
-    This class is used to validate the resource request. Each request should have a format of
-    [DeviceType: List of SamplePositionRequest].
-
-    See Also
-    --------
-        :py:class:`SamplePositionRequest <alab_management.sample_view.sample_view.SamplePositionRequest>`
-    """
-
-    __root__: dict[type[BaseDevice] | None, list[SamplePositionRequest]]  # type: ignore
-
-    @root_validator(pre=True, allow_reuse=True)
-    def preprocess(cls, values):
-        """Preprocess the request to make sure the request is in the correct format."""
-        values = values["__root__"]
-        # if the sample position request is string, we will automatically add a number attribute = 1.
-        values = {
-            k: [
-                SamplePositionRequest.from_str(v_) if isinstance(v_, str) else v_
-                for v_ in v
-            ]
-            for k, v in values.items()
-        }
-        return {"__root__": values}
 
 
 class LabView:
@@ -255,7 +226,7 @@ class LabView:
         )
         try:
             subtask: BaseTask = task(
-                simulation=False,
+                _offline_mode=False,
                 task_id=task_id,
                 lab_view=lab_view,
                 samples=samples,

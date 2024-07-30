@@ -5,11 +5,13 @@ import json
 from abc import ABC, abstractmethod
 from datetime import datetime
 from enum import Enum
+from pathlib import Path
 
 import numpy as np
 import pika
 import pymongo
 from bson import ObjectId
+from pydantic import BaseModel
 from pymongo import collection, database
 
 from alab_management.config import AlabOSConfig
@@ -33,6 +35,12 @@ class _BaseGetMongoCollection(ABC):
             cls.init()
 
         return cls.db[name]  # type: ignore # pylint: disable=unsubscriptable-object
+
+    @classmethod
+    def get_db(cls) -> database.Database:
+        if cls.db is None:
+            cls.init()
+        return cls.db
 
     @classmethod
     def get_lock(cls, name: str) -> MongoLock:
@@ -115,7 +123,13 @@ def make_bsonable(obj):
     elif isinstance(obj, str):
         with contextlib.suppress(Exception):
             obj = ObjectId(obj)
-
+    elif isinstance(obj, Path):
+        obj = str(obj)
+    elif isinstance(obj, BaseModel):
+        obj = {
+            str(key): make_bsonable(value)
+            for key, value in obj.model_dump(mode="python").items()
+        }
     return obj
 
 
@@ -154,9 +168,11 @@ def make_jsonable(obj):
 
 get_collection = _GetMongoCollection.get_collection
 get_lock = _GetMongoCollection.get_lock
+get_db = _GetMongoCollection.get_db
 
 get_completed_collection = _GetCompletedMongoCollection.get_collection
 get_completed_lock = _GetCompletedMongoCollection.get_lock
+get_completed_db = _GetCompletedMongoCollection.get_db
 
 
 class DocumentNotUpdatedError(Exception):
