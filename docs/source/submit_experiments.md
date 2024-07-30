@@ -191,7 +191,7 @@ while True:
 ```
 
 The format of the status is as follows:
-```json
+```
 {
   "id": "experiment_id",
   "name": "experiment_name",

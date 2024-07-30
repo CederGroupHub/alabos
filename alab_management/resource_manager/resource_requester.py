@@ -59,22 +59,25 @@ class ResourceRequestItem(BaseModel):
 class ResourcesRequest(RootModel):
     """
     This class is used to validate the resource request. Each request should have a format of
-    [
-        {
-            "device":{
-                "identifier": "name" or "type" or "nodevice",
-                "content": string corresponding to identifier
-            },
-            "sample_positions": [
-                {
-                    "prefix": prefix of sample position,
-                    "number": integer number of such positions requested.
-                },
-                ...
-            ]
-        },
-        ...
-    ].
+
+    .. code-block::
+
+      [
+          {
+              "device":{
+                  "identifier": "name" or "type" or "nodevice",
+                  "content": string corresponding to identifier
+              },
+              "sample_positions": [
+                  {
+                      "prefix": prefix of sample position,
+                      "number": integer number of such positions requested.
+                  },
+                  ...
+              ]
+          },
+          ...
+      ].
 
     See Also
     --------

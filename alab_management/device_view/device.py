@@ -202,7 +202,8 @@ class BaseDevice(ABC):
     @property
     @abstractmethod
     def description(self) -> str:
-        """A short description of the device. This will be stored in the database + displayed in the dashboard. This
+        """
+        A short description of the device. This will be stored in the database + displayed in the dashboard. This
         must be declared in subclasses of BaseDevice!.
         """
         return self._description
@@ -380,18 +381,21 @@ class BaseDevice(ABC):
     def retrieve_signal(
         self, signal_name: str, within: datetime.timedelta | None = None
     ):
-        """Retrieve a signal from the database.
+        """
+        Retrieve a signal from the database.
 
-        Args: signal_name (str): device signal name. This should match the signal_name passed to the
-        `@log_device_signal` decorator within (Optional[datetime.timedelta], optional): timedelta defining how far
-        back to pull logs from (relative to current time). Defaults to None.
+        Args:
+            signal_name (str): device signal name. This should match the signal_name passed to the
+              ``@log_device_signal`` decorator
+            within (Optional[datetime.timedelta], optional):
+              timedelta defining how far back to pull logs from (relative to current time). Defaults to None.
 
-        Returns ------- Dict: Dictionary of signal result. Single value vs lists depends on whether `within` was None
-        or not, respectively. Form is: { "device_name": "device_name", "signal_name": "signal_name",
-        "value": "signal_value" or ["signal_value_1", "signal_value_2", ...]], "timestamp": "timestamp" or [
-        "timestamp_1", "timestamp_2", ...] }
-
-
+        Returns
+        -------
+            Dict: Dictionary of signal result. Single value vs lists depends on whether ``within`` was None
+            or not, respectively. Form is: { "device_name": "device_name", "signal_name": "signal_name",
+            "value": "signal_value" or ["signal_value_1", "signal_value_2", ...]], "timestamp": "timestamp" or [
+            "timestamp_1", "timestamp_2", ...] }
         """
         return self._signalemitter.retrieve_signal(signal_name, within)
 
@@ -441,11 +445,12 @@ class DeviceSignalEmitter:
 
     def get_methods_to_log(self):
         """
-        Log the data from all methods decorated with `@log_signal` to the database.
+        Log the data from all methods decorated with ``@log_signal`` to the database.
 
-        Collected all the methods that are decorated with `@log_signal` and return a dictionary of the form:
+        Collected all the methods that are decorated with ``@log_signal`` and return a dictionary of the form:
 
         .. code-block::
+
             {
                 <method_name>: {
                     "interval": <interval_seconds>,

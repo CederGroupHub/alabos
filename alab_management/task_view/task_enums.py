@@ -47,7 +47,7 @@ class CancelingProgress(Enum):
 
     PENDING: The canceling process has been initiated.
     WORKER_NOTIFIED: The worker has been notified to cancel the request, which means an
-        abort error has been raised in the worker.
+      abort error has been raised in the worker.
     """
 
     PENDING = auto()

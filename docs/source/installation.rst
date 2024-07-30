@@ -8,12 +8,12 @@ MongoDB
 ~~~~~~~
 You must have access to at least one `MongoDB database <https://www.mongodb.com/>`_ (locally or remotely).
 
-To install MongoDB locally, refer to `this <https://docs.mongodb.com/manual/installation/>`_.
+To install MongoDB locally, refer to `MongoDB website <https://docs.mongodb.com/manual/installation/>`_.
 
 RabbitMQ
 ~~~~~~~~
 
-You must have RabbitMQ installed on your machine. To install RabbitMQ, refer to `this <https://www.rabbitmq.com/download.html>`_.
+You must have RabbitMQ installed on your machine. To install RabbitMQ, refer to `Rabbitmq website <https://www.rabbitmq.com/download.html>`_.
 
 Install via pip
 ----------------

@@ -1,19 +1,22 @@
-### To ensure a seamless installation and robust testing of the software system, several key processes have
-been implemented:
+# Testing for Alab Definition
 
-1. Testing Framework:
-   - We have implemented a suite of unit tests using the pytest framework. These tests cover
+
+To ensure a seamless installation and robust testing of the software system, several key processes have been implemented.
+
+1. Testing Framework
+   - a suite of unit tests using the pytest framework. These tests cover
 all functionalities of tasks and devices, ensuring that each component works as expected
 in isolation.
    - In addition to unit tests, integration tests are also developed. These tests validate the
 interactions between different components of the system. Integration tests are simulating
 real-world scenarios which help us to ensure that the system works correctly as a whole.
 
-2. Continuous Integration (CI):
+2. Continuous Integration (CI)
    - A CI pipeline is set up using tools like GitHub Actions. This pipeline automatically runs
 the entire test suite (both unit and integration tests) whenever new code is committed.
 This ensures that any changes introduced do not break existing functionalities.
-Methodology:
+
+## Methodology
 
 Before writing the unit tests, one needs to modify the files under devices & tasks by adding the ``@mock decorator`` to all the places that require connections to all the hardware in Alab.
 
@@ -37,37 +40,35 @@ Once all the methods that talk to alab_control are mocked, we can now move on to
 
 - **Step 6**: The unittests for tasks are also similar. They have certain pytest fixtures that can be used by the downstream unittests. These unit tests provide a set of dummy config, path and input files and checks whether the expected outcomes are met.
 
-### Example:
+## Example
 
-## Device Class: BoxFurnace:
+### Device Class: BoxFurnace
 Key functionalities of the BoxFurnace class:
 
-   - initialization: Sets up communication port, driver, door controller, and furnace letter.
-   - connect/disconnect: Manages connection to the furnace driver.
-   - run_program: Executes heating programs with specified parameters or profiles.
-   - emergent_stop: Immediately stops the furnace operation.
-   - get_temperature: Retrieves the current temperature.
-   - open_door/close_door: Manages the furnace door operations.
-   - is_running: Checks if the furnace is currently running a program.
+   - `initialization`: Sets up communication port, driver, door controller, and furnace letter.
+   - `connect/disconnect`: Manages connection to the furnace driver.
+   - `run_program`: Executes heating programs with specified parameters or profiles.
+   - `emergent_stop`: Immediately stops the furnace operation.
+   - `get_temperature`: Retrieves the current temperature.
+   - `open_door/close_door`: Manages the furnace door operations.
+   - `is_running`: Checks if the furnace is currently running a program.
 
-## Unit Tests for BoxFurnace:
-
-## Fixtures
+#### Fixtures
 Fixtures set up the necessary preconditions for the tests:
 
-   - door_controller_ab and door_controller_cd: Create instances of DoorController
+   - `door_controller_ab` and `door_controller_cd`: Create instances of DoorController
 for different sets of furnaces.
-   - box_furnace: Parameterized fixture to create BoxFurnace instances with various
+   - `box_furnace`: Parameterized fixture to create BoxFurnace instances with various
 configurations.
-   - mock_drivers: Mocks the furnace and door controller drivers to isolate and test
+   - `mock_drivers`: Mocks the furnace and door controller drivers to isolate and test
 BoxFurnace methods without real hardware.
 
-## Tests
+#### Tests
 
 1. Basic Connection Tests:
-   - test_connect: Verifies that the connect method correctly initializes the
+   - `test_connect`: Verifies that the connect method correctly initializes the
 furnace and door controller drivers.
-   - test_disconnect: Ensures that the disconnect method properly sets the
+   - `test_disconnect:` Ensures that the disconnect method properly sets the
 furnace driver to None.
 
 ```python
@@ -83,9 +84,9 @@ def test_disconnect(box_furnace, mock_drivers):
 ```
 
 2. Functional Tests:
-   - test_sample_positions: Checks the sample_positions property to ensure it
+   - `test_sample_positions`: Checks the sample_positions property to ensure it
 returns expected slot details.
-   - test_emergent_stop: Confirms that the emergent_stop method calls the
+   - `test_emergent_stop`: Confirms that the emergent_stop method calls the
 driver’s stop function.
 
 ```python
@@ -103,17 +104,17 @@ def test_sample_positions(box_furnace):
 ```
 
 3. Program Execution Tests:
-   - test_run_program: Validates the run_program method for specified heating
+   - `test_run_program`: Validates the run_program method for specified heating
 times and temperatures, ensuring segments are correctly constructed and
 sent to the driver.
-   - test_run_program_with_profiles: Tests running custom heating profiles to
+   - `test_run_program_with_profiles`: Tests running custom heating profiles to
 verify segment creation and driver invocation.
 
 4. Utility Tests:
-   - test_is_running: Checks if the is_running method correctly returns the
+   - `test_is_running`: Checks if the is_running method correctly returns the
 furnace’s running state based on environment variables.
-   - test_get_temperature: Ensures the get_temperature method fetches the
+   - `test_get_temperature`: Ensures the get_temperature method fetches the
 current temperature from the driver.
 
-   - test_open_door and test_close_door: Verify that the open_door and close_door methods invoke
+   - `test_open_door` and `test_close_door`: Verify that the open_door and close_door methods invoke
    - the door controller’s methods with the correct parameters.

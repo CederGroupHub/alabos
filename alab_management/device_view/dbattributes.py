@@ -21,28 +21,27 @@ def value_in_database(name: str, default_value: Any) -> property:
     Example usage when defining a new Device:
 
         .. code-block:: python
-        from alab_management.device_view import BaseDevice, value_in_database
 
-        class MyDevice(BaseDevice):
-            my_attribute = value_in_database("my_attribute", 0)
+          from alab_management.device_view import BaseDevice, value_in_database
 
-            def __init__(self, name: str, **kwargs):
-                super().__init__(name, **kwargs)
-                self.name = name
-                self.my_attribute #initial call to the property, which sets the default value in the database
+          class MyDevice(BaseDevice):
+              my_attribute = value_in_database("my_attribute", 0)
 
-        ....
-        #first instantiation
+              def __init__(self, name: str, **kwargs):
+                  super().__init__(name, **kwargs)
+                  self.name = name
+                  self.my_attribute #initial call to the property, which sets the default value in the database
 
-        mydevice = MyDevice(name = "mydevice_1")
-        mydevice.my_attribute = 5 #sets the value in the database
+          ....
+          #first instantiation
 
-        ....
-        #future instantiation
-        mydevice = MyDevice(name = "mydevice_1")
-        mydevice.my_attribute #retrieves value from db and returns 5
+          mydevice = MyDevice(name = "mydevice_1")
+          mydevice.my_attribute = 5 #sets the value in the database
 
-
+          ....
+          #future instantiation
+          mydevice = MyDevice(name = "mydevice_1")
+          mydevice.my_attribute #retrieves value from db and returns 5
     """
 
     def getter(self) -> Any:

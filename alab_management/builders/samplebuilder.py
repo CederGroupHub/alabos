@@ -53,12 +53,15 @@ class SampleBuilder:
         """Return Sample as a dictionary.
 
         This looks like:
-        {
-            "_id": str(ObjectId),
-            "name": str,
-            "tags": List[str],
-            "metadata": Dict[str, Any],
-        }
+
+        .. code-block::
+
+            {
+                "_id": str(ObjectId),
+                "name": str,
+                "tags": List[str],
+                "metadata": Dict[str, Any],
+            }
 
         Returns
         -------

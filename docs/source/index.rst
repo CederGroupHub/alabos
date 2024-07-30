@@ -106,7 +106,8 @@ via `pymongo <https://pymongo.readthedocs.io/en/stable/>`_ package.
 
     installation
     tutorial
-    bestpractice
+    best_practices
+    advance_topics
     Development<development>
     API Docs<modules>
 

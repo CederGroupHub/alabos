@@ -324,14 +324,14 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
 
     def call(self, device_name: str, method: str, *args, **kwargs) -> Any:
         """
-        Call a method inside the device with name ``device_name``. *args, **kwargs will be feeded into
+        Call a method inside the device with name ``device_name``. args, kwargs will be feeded into
         the method directly.
 
         Args:
             device_name: the name of device, which is defined by administer.
             method: the class method to call
-            *args: positional arguments to feed into the method function
-            **kwargs: keyword arguments to feed into the method function
+            args: positional arguments to feed into the method function
+            kwargs: keyword arguments to feed into the method function
 
         Returns
         -------

@@ -132,6 +132,9 @@ class DBLogger:
             Optional[Any]: dictionary with result.
 
             dict example:
+
+            .. code-block::
+
                 {
                     "device_name": device_name,
                     "signal_name": signal_name,
