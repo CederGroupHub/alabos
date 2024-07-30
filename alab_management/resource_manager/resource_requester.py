@@ -249,7 +249,9 @@ class ResourceRequester(RequestMixin):
 
         if not isinstance(formatted_resource_request, ResourcesRequest):
             formatted_resource_request = ResourcesRequest(root=formatted_resource_request)  # type: ignore
-        formatted_resource_request = formatted_resource_request.model_dump(mode="json")
+        formatted_resource_request = formatted_resource_request.model_dump(  # pylint: disable=assignment-from-no-return
+            mode="json"
+        )
 
         result = self._request_collection.insert_one(
             {

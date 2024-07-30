@@ -9,7 +9,7 @@ from .samplebuilder import SampleBuilder
 
 
 def get_experiment_status(
-    exp_id: ObjectId | str, address: str = "http://localhost:8895"
+    exp_id: ObjectId | str, address: str = "http://localhost:8895", **kwargs
 ):
     """
     Get the status of the experiment.
@@ -18,6 +18,7 @@ def get_experiment_status(
         exp_id (ObjectId): The object id of the experiment.
         address (str): The address of the server. It is defaulted to `http://localhost:8895`,
             which is the default address of the alabos server.
+        **kwargs: Additional keyword arguments to be passed to the `requests.get` function.
 
     Returns
     -------
@@ -32,7 +33,7 @@ def get_experiment_status(
     exp_id = str(ObjectId(exp_id))
 
     url = f"{address}/api/experiment/{exp_id}"
-    response = requests.get(url)
+    response = requests.get(url, **kwargs)
     response.raise_for_status()
     return response.json()
 

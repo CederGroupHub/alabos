@@ -144,7 +144,9 @@ class Alarm:
         """
         # if system is in simulation mode, do not send alert
         if not self.sim_mode_flag:
-            for platform in self.platforms:
+            for (
+                platform
+            ) in self.platforms.items():  # pylint: disable=consider-using-dict-items
                 message_dict = {"message": message, "category": category}
                 if self.platforms[platform]:
                     try:
