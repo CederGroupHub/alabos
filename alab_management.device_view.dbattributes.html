@@ -1,713 +1,456 @@
+
 <!DOCTYPE html>
 
-<html lang="en">
+
+<html lang="en" data-content_root="./" >
+
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>alab_management.device_view.dbattributes module &#8212; Alab Management</title>
-    
-  <link rel="stylesheet" href="_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+    <title>alab_management.device_view.dbattributes module &#8212; Alab Management 1.0.1</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
-    
-  <link rel="stylesheet"
-    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    
-      
-  <link rel="stylesheet"
-    href="_static/vendor/open-sans_all/1.44.1/index.css">
-  <link rel="stylesheet"
-    href="_static/vendor/lato_latin-ext/1.44.1/index.css">
-
-    
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinx-book-theme.40e2e510f6b7d1648584402491bb10fe.css?v=a123c646" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=32297c5f" />
-    
-  <link rel="preload" as="script" href="_static/js/index.d3f166471bb80abb5163.js">
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=c5b77fbd"></script>
+    <script src="_static/documentation_options.js?v=423d4ce3"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
-    <script src="_static/sphinx_highlight.js?v=4825356b"></script>
-    <script src="_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js?v=dbd2e957"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'alab_management.device_view.dbattributes';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="alab_management.device_view.device module" href="alab_management.device_view.device.html" />
     <link rel="prev" title="alab_management.device_view package" href="alab_management.device_view.html" />
-
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
-
-
-
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
-    
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-    <div class="container-xl">
-      <div class="row">
-          
-<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
     
-        <div class="navbar-brand-box">
-<a class="navbar-brand text-wrap" href="index.html">
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
   
   
-  <h1 class="site-logo" id="site-title">Alab Management</h1>
   
+  
+  
+  
+    <p class="title logo__title">Alab Management 1.0.1</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="index.html">
+                    Overview
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="tutorial.html">Tutorial</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="setup.html">Set up configuration folder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device_definition.html">Defining devices and sample positions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="task_definition.html">Defining tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="start_lab.html">Launching lab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submit_experiments.html">Submitting the synthesis experiments</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html">Best Practices</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="advance_topics.html">Advance Topics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="test.html">Testing for Alab Definition</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="modules.html">API Docs</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="alab_management.html">alab_management package</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.builders.html">alab_management.builders package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.builders.experimentbuilder.html">alab_management.builders.experimentbuilder module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.builders.samplebuilder.html">alab_management.builders.samplebuilder module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="alab_management.device_view.html">alab_management.device_view package</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l4 current active"><a class="current reference internal" href="#">alab_management.device_view.dbattributes module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.device_view.device.html">alab_management.device_view.device module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.device_view.device_view.html">alab_management.device_view.device_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.experiment_view.html">alab_management.experiment_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.experiment_view.completed_experiment_view.html">alab_management.experiment_view.completed_experiment_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.experiment_view.experiment.html">alab_management.experiment_view.experiment module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.experiment_view.experiment_view.html">alab_management.experiment_view.experiment_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.resource_manager.html">alab_management.resource_manager package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.resource_manager.enums.html">alab_management.resource_manager.enums module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.resource_manager.resource_manager.html">alab_management.resource_manager.resource_manager module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.resource_manager.resource_requester.html">alab_management.resource_manager.resource_requester module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.sample_view.html">alab_management.sample_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.sample_view.completed_sample_view.html">alab_management.sample_view.completed_sample_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.sample_view.sample.html">alab_management.sample_view.sample module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.sample_view.sample_view.html">alab_management.sample_view.sample_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.task_manager.html">alab_management.task_manager package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_manager.task_manager.html">alab_management.task_manager.task_manager module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.task_view.html">alab_management.task_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_view.completed_task_view.html">alab_management.task_view.completed_task_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_view.task.html">alab_management.task_view.task module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_view.task_enums.html">alab_management.task_view.task_enums module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_view.task_view.html">alab_management.task_view.task_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.alarm.html">alab_management.alarm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.config.html">alab_management.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.device_manager.html">alab_management.device_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.experiment_manager.html">alab_management.experiment_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.lab_view.html">alab_management.lab_view module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.logger.html">alab_management.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.task_actor.html">alab_management.task_actor module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.user_input.html">alab_management.user_input module</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/idocx/alab_management" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
 </a>
-</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form>
-<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-    <ul class="nav sidenav_l1">
- <li class="toctree-l1">
-  <a class="reference internal" href="index.html">
-   Overview
-  </a>
- </li>
-</ul>
-<p class="caption collapsible-parent" role="heading">
- <span class="caption-text">
-  Quickstart
- </span>
- <i class="fas fa-chevron-down">
- </i>
-</p>
-<ul class="collapse-ul nav sidenav_l1">
- <li class="toctree-l1">
-  <a class="reference internal" href="installation.html">
-   Installation
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="setup.html">
-   Setup definition folder
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="device_definition.html">
-   Defining new devices
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="task_definition.html">
-   Defining new tasks
-  </a>
- </li>
-</ul>
-<ul class="current nav sidenav_l1">
- <li class="toctree-l1">
-  <a class="reference internal" href="development.html">
-   Development
-  </a>
- </li>
- <li class="toctree-l1 current active collapsible-parent">
-  <a class="reference internal" href="modules.html">
-   API Docs
-  </a>
-  <ul class="current collapse-ul">
-   <li class="toctree-l2 current active collapsible-parent">
-    <a class="reference internal" href="alab_management.html">
-     alab_management package
-    </a>
-    <ul class="current collapse-ul">
-     <li class="toctree-l3 collapsible-parent">
-      <a class="reference internal" href="alab_management.builders.html">
-       alab_management.builders package
-      </a>
-      <ul class="collapse-ul">
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.builders.experimentbuilder.html">
-         alab_management.builders.experimentbuilder module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.builders.samplebuilder.html">
-         alab_management.builders.samplebuilder module
-        </a>
-       </li>
-      </ul>
-      <i class="fas fa-chevron-down">
-      </i>
-     </li>
-     <li class="toctree-l3 current active collapsible-parent">
-      <a class="reference internal" href="alab_management.device_view.html">
-       alab_management.device_view package
-      </a>
-      <ul class="current collapse-ul">
-       <li class="toctree-l4 current active">
-        <a class="current reference internal" href="#">
-         alab_management.device_view.dbattributes module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.device_view.device.html">
-         alab_management.device_view.device module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.device_view.device_view.html">
-         alab_management.device_view.device_view module
-        </a>
-       </li>
-      </ul>
-      <i class="fas fa-chevron-down">
-      </i>
-     </li>
-     <li class="toctree-l3 collapsible-parent">
-      <a class="reference internal" href="alab_management.experiment_view.html">
-       alab_management.experiment_view package
-      </a>
-      <ul class="collapse-ul">
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.experiment_view.completed_experiment_view.html">
-         alab_management.experiment_view.completed_experiment_view module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.experiment_view.experiment.html">
-         alab_management.experiment_view.experiment module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.experiment_view.experiment_view.html">
-         alab_management.experiment_view.experiment_view module
-        </a>
-       </li>
-      </ul>
-      <i class="fas fa-chevron-down">
-      </i>
-     </li>
-     <li class="toctree-l3 collapsible-parent">
-      <a class="reference internal" href="alab_management.sample_view.html">
-       alab_management.sample_view package
-      </a>
-      <ul class="collapse-ul">
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.sample_view.completed_sample_view.html">
-         alab_management.sample_view.completed_sample_view module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.sample_view.sample.html">
-         alab_management.sample_view.sample module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.sample_view.sample_view.html">
-         alab_management.sample_view.sample_view module
-        </a>
-       </li>
-      </ul>
-      <i class="fas fa-chevron-down">
-      </i>
-     </li>
-     <li class="toctree-l3 collapsible-parent">
-      <a class="reference internal" href="alab_management.task_manager.html">
-       alab_management.task_manager package
-      </a>
-      <ul class="collapse-ul">
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.task_manager.enums.html">
-         alab_management.task_manager.enums module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.task_manager.resource_requester.html">
-         alab_management.task_manager.resource_requester module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.task_manager.task_manager.html">
-         alab_management.task_manager.task_manager module
-        </a>
-       </li>
-      </ul>
-      <i class="fas fa-chevron-down">
-      </i>
-     </li>
-     <li class="toctree-l3 collapsible-parent">
-      <a class="reference internal" href="alab_management.task_view.html">
-       alab_management.task_view package
-      </a>
-      <ul class="collapse-ul">
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.task_view.completed_task_view.html">
-         alab_management.task_view.completed_task_view module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.task_view.task.html">
-         alab_management.task_view.task module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.task_view.task_enums.html">
-         alab_management.task_view.task_enums module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.task_view.task_view.html">
-         alab_management.task_view.task_view module
-        </a>
-       </li>
-      </ul>
-      <i class="fas fa-chevron-down">
-      </i>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.alarm.html">
-       alab_management.alarm module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.config.html">
-       alab_management.config module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.device_manager.html">
-       alab_management.device_manager module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.experiment_manager.html">
-       alab_management.experiment_manager module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.lab_view.html">
-       alab_management.lab_view module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.logger.html">
-       alab_management.logger module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.task_actor.html">
-       alab_management.task_actor module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.user_input.html">
-       alab_management.user_input module
-      </a>
-     </li>
-    </ul>
-    <i class="fas fa-chevron-down">
-    </i>
-   </li>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/alab_management.device_view.dbattributes.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
   </ul>
-  <i class="fas fa-chevron-down">
-  </i>
- </li>
-</ul>
-
-</nav> <!-- To handle the deprecated key -->
-
-<div class="navbar_extra_footer">
-  Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
-</div>
-
 </div>
 
 
-          
 
 
-          
-<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
-    
-    <div class="row topbar fixed-top container-xl">
-    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
     </div>
-    <div class="col pl-2 topbar-main">
-        
-        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-            <i class="fas fa-bars"></i>
-            <i class="fas fa-arrow-left"></i>
-            <i class="fas fa-arrow-up"></i>
-        </button>
-        
-        
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
-            class="fas fa-download"></i></button>
-
-    <div class="dropdown-buttons">
-        <!-- ipynb file if we had a myst markdown file -->
-        
-        <!-- Download raw file -->
-        <a class="dropdown-buttons" href="_sources/alab_management.device_view.dbattributes.rst.txt"><button type="button"
-                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
-                data-placement="left">.rst</button></a>
-        <!-- Download PDF via print -->
-        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
-    </div>
+  
 </div>
-
-        <!-- Source interaction buttons -->
-
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
-        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
-    <div class="dropdown-buttons sourcebuttons">
-        <a class="repository-button"
-            href="https://github.com/idocx/alab_management"><button type="button" class="btn btn-secondary topbarbtn"
-                data-toggle="tooltip" data-placement="left" title="Source repository"><i
-                    class="fab fa-github"></i>repository</button></a>
-        
-        
-    </div>
 </div>
+              
+              
 
-
-        <!-- Full screen (wrap in <a> to have style consistency -->
-        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-                title="Fullscreen mode"><i
-                    class="fas fa-expand"></i></button></a>
-
-        <!-- Launch buttons -->
-
-    </div>
-
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>alab_management.device_view.dbattributes module</h1>
     <!-- Table of contents -->
-    <div class="d-none d-md-block col-md-2 bd-toc show">
-        
-        <div class="tocsection onthispage pt-5 pb-3">
-            <i class="fas fa-list"></i> Contents
-        </div>
-        <nav id="bd-toc-nav">
-            <ul class="nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     DictInDatabase
-    </span>
-   </code>
-  </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.apply_default_value">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       DictInDatabase.apply_default_value()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.as_normal_dict">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       DictInDatabase.as_normal_dict()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.clear">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       DictInDatabase.clear()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.copy">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       DictInDatabase.copy()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.db_filter">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       DictInDatabase.db_filter
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.db_projection">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       DictInDatabase.db_projection
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.fromkeys">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       DictInDatabase.fromkeys()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.get">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       DictInDatabase.get()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.items">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       DictInDatabase.items()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.keys">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       DictInDatabase.keys()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.pop">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       DictInDatabase.pop()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.popitem">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       DictInDatabase.popitem()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.setdefault">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       DictInDatabase.setdefault()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.update">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       DictInDatabase.update()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.values">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       DictInDatabase.values()
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     ListInDatabase
-    </span>
-   </code>
-  </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.append">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ListInDatabase.append()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.apply_default_value">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ListInDatabase.apply_default_value()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.clear">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ListInDatabase.clear()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.copy">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ListInDatabase.copy()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.count">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ListInDatabase.count()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.db_filter">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ListInDatabase.db_filter
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.db_projection">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ListInDatabase.db_projection
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.extend">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ListInDatabase.extend()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.index">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ListInDatabase.index()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.insert">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ListInDatabase.insert()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.pop">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ListInDatabase.pop()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.remove">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ListInDatabase.remove()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.reverse">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ListInDatabase.reverse()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.sort">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ListInDatabase.sort()
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.value_in_database">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     value_in_database()
-    </span>
-   </code>
-  </a>
- </li>
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase"><code class="docutils literal notranslate"><span class="pre">DictInDatabase</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.apply_default_value"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.apply_default_value()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.as_normal_dict"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.as_normal_dict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.clear"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.clear()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.copy"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.copy()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.db_filter"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.db_filter</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.db_projection"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.db_projection</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.fromkeys"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.fromkeys()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.get"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.get()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.items"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.items()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.keys"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.keys()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.pop"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.pop()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.popitem"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.popitem()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.setdefault"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.setdefault()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.update"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.update()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.values"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.values()</span></code></a></li>
 </ul>
-
-        </nav>
-        
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase"><code class="docutils literal notranslate"><span class="pre">ListInDatabase</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.append"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.append()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.apply_default_value"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.apply_default_value()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.clear"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.clear()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.copy"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.copy()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.count"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.count()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.db_filter"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.db_filter</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.db_projection"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.db_projection</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.extend"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.extend()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.index"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.index()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.insert"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.insert()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.pop"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.pop()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.remove"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.remove()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.reverse"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.reverse()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.sort"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.sort()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.value_in_database"><code class="docutils literal notranslate"><span class="pre">value_in_database()</span></code></a></li>
+</ul>
+            </nav>
+        </div>
     </div>
 </div>
-    <div id="main-content" class="row">
-        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
-        
-              <div>
+
+              
                 
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
   <section id="module-alab_management.device_view.dbattributes">
-<span id="alab-management-device-view-dbattributes-module"></span><h1>alab_management.device_view.dbattributes module<a class="headerlink" href="#module-alab_management.device_view.dbattributes" title="Permalink to this heading">¶</a></h1>
+<span id="alab-management-device-view-dbattributes-module"></span><h1>alab_management.device_view.dbattributes module<a class="headerlink" href="#module-alab_management.device_view.dbattributes" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DictInDatabase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DictInDatabase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class that emulates a dict, but stores the dict in the device database. Useful for working with Device
 attributes that are dict, so values persist across alabos sessions. This should be instantiated using
 <cite>alab_management.device_view.device.BaseDevice.dict_in_database</cite>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.apply_default_value">
-<span class="sig-name descname"><span class="pre">apply_default_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.apply_default_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.apply_default_value" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">apply_default_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.apply_default_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.apply_default_value" title="Link to this definition">#</a></dt>
 <dd><p>This is called within <cite>alab_management.scripts.setup_lab()</cite> to ensure that all devices have the correct
 default values for their attributes. This should not be called manually.</p>
 <p>Raises —— ValueError: Device is not found in the database. This should only occur if this function is
@@ -716,7 +459,7 @@ called out of order (i.e. before the device is created in the db).</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.as_normal_dict">
-<span class="sig-name descname"><span class="pre">as_normal_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.as_normal_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.as_normal_dict" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">as_normal_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.as_normal_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.as_normal_dict" title="Link to this definition">#</a></dt>
 <dd><p>Return a normal dict representation of the DictInDatabase. This will not update the database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -727,79 +470,79 @@ called out of order (i.e. before the device is created in the db).</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.clear">
-<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.clear" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.clear" title="Link to this definition">#</a></dt>
 <dd><p>Clear the dict. This will update the database with the new value.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.copy">
-<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.copy" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.copy" title="Link to this definition">#</a></dt>
 <dd><p>Return a copy of the dict. This will not update the database.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.db_filter">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">db_filter</span></span><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.db_filter" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">db_filter</span></span><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.db_filter" title="Link to this definition">#</a></dt>
 <dd><p>The filter used to retrieve the attribute from the database. This is used internally by the class.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.db_projection">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">db_projection</span></span><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.db_projection" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">db_projection</span></span><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.db_projection" title="Link to this definition">#</a></dt>
 <dd><p>The projection used to retrieve the attribute from the database. This is used internally by the class.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.fromkeys">
-<span class="sig-name descname"><span class="pre">fromkeys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.fromkeys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.fromkeys" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">fromkeys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.fromkeys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.fromkeys" title="Link to this definition">#</a></dt>
 <dd><p>Return a copy of the dict. This will not update the database.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.get">
-<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.get" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.get" title="Link to this definition">#</a></dt>
 <dd><p>Return a copy of the dict. This will not update the database.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.items">
-<span class="sig-name descname"><span class="pre">items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.items" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.items" title="Link to this definition">#</a></dt>
 <dd><p>Return a copy of the dict. This will not update the database.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.keys">
-<span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.keys" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.keys" title="Link to this definition">#</a></dt>
 <dd><p>Return a copy of the dict. This will not update the database.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.pop">
-<span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'be8b61ee-48b1-4624-bf7a-2ca31f7c5ef4'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.pop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.pop" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'be8b61ee-48b1-4624-bf7a-2ca31f7c5ef4'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.pop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.pop" title="Link to this definition">#</a></dt>
 <dd><p>Return a copy of the dict. This will not update the database.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.popitem">
-<span class="sig-name descname"><span class="pre">popitem</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.popitem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.popitem" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">popitem</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.popitem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.popitem" title="Link to this definition">#</a></dt>
 <dd><p>Return a copy of the dict. This will not update the database.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.setdefault">
-<span class="sig-name descname"><span class="pre">setdefault</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.setdefault"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.setdefault" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">setdefault</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.setdefault"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.setdefault" title="Link to this definition">#</a></dt>
 <dd><p>Return a copy of the dict. This will not update the database.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.update" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.update" title="Link to this definition">#</a></dt>
 <dd><p>Return a copy of the dict. This will not update the database.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.DictInDatabase.values">
-<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.values" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#DictInDatabase.values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.DictInDatabase.values" title="Link to this definition">#</a></dt>
 <dd><p>Return a copy of the dict. This will not update the database.</p>
 </dd></dl>
 
@@ -807,20 +550,20 @@ called out of order (i.e. before the device is created in the db).</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ListInDatabase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ListInDatabase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class that emulates a list, but stores the list in the device database. Useful for working with Device
 attributes that are lists, so values persist across alabos sessions. This should be instantiated using
 <cite>alab_management.device_view.device.BaseDevice.list_in_database</cite>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.append">
-<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.append" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.append" title="Link to this definition">#</a></dt>
 <dd><p>Append an element to the list. This will update the database with the new value.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.apply_default_value">
-<span class="sig-name descname"><span class="pre">apply_default_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.apply_default_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.apply_default_value" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">apply_default_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.apply_default_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.apply_default_value" title="Link to this definition">#</a></dt>
 <dd><p>This is called within <cite>alab_management.scripts.setup_lab()</cite> to ensure that all devices have the correct
 default values for their attributes. This should not be called manually.</p>
 <p>Raises —— ValueError: Device is not found in the database. This should only occur if this function is
@@ -829,73 +572,73 @@ called out of order (i.e. before the device is created in the db).</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.clear">
-<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.clear" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.clear" title="Link to this definition">#</a></dt>
 <dd><p>Clear the list. This will update the database with the new value.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.copy">
-<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.copy" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.copy" title="Link to this definition">#</a></dt>
 <dd><p>Return a copy of the list. This will not update the database.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.count">
-<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.count" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.count" title="Link to this definition">#</a></dt>
 <dd><p>Return the number of occurrences of x in the list. This will not update the database.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.db_filter">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">db_filter</span></span><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.db_filter" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">db_filter</span></span><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.db_filter" title="Link to this definition">#</a></dt>
 <dd><p>The filter used to retrieve the attribute from the database. This is used internally by the class.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.db_projection">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">db_projection</span></span><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.db_projection" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">db_projection</span></span><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.db_projection" title="Link to this definition">#</a></dt>
 <dd><p>The projection used to retrieve the attribute from the database. This is used internally by the class.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.extend">
-<span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.extend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.extend" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.extend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.extend" title="Link to this definition">#</a></dt>
 <dd><p>Extend the list with another iterable. This will update the database with the new value.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.index">
-<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.index" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.index" title="Link to this definition">#</a></dt>
 <dd><p>Return the index of the first occurrence of x in the list. This will not update the database.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.insert">
-<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.insert" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.insert" title="Link to this definition">#</a></dt>
 <dd><p>Insert an element at a given position. This will update the database with the new value.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.pop">
-<span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.pop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.pop" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.pop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.pop" title="Link to this definition">#</a></dt>
 <dd><p>Remove the element at a given position. This will update the database with the new value.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.remove">
-<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.remove"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.remove" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.remove"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.remove" title="Link to this definition">#</a></dt>
 <dd><p>Remove the first item from the list whose value is equal to x. This will update the database with the new.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.reverse">
-<span class="sig-name descname"><span class="pre">reverse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.reverse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.reverse" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">reverse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.reverse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.reverse" title="Link to this definition">#</a></dt>
 <dd><p>Reverse the elements of the list in place. This will update the database with the new value.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.ListInDatabase.sort">
-<span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.sort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.sort" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#ListInDatabase.sort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.ListInDatabase.sort" title="Link to this definition">#</a></dt>
 <dd><p>Sort the items of the list in place. This will update the database with the new value.</p>
 </dd></dl>
 
@@ -903,7 +646,7 @@ called out of order (i.e. before the device is created in the db).</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="alab_management.device_view.dbattributes.value_in_database">
-<span class="sig-name descname"><span class="pre">value_in_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#value_in_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.value_in_database" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">value_in_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/dbattributes.html#value_in_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.dbattributes.value_in_database" title="Link to this definition">#</a></dt>
 <dd><p>Property factory to mirror a Device attribute in the ALab database. This must be declared as a Class Variable
 under a Device subclass of BaseDevice!.</p>
 <p>Args: name (str): attribute name default_value (Any): default value for the attribute. Note that this value is
@@ -919,64 +662,166 @@ it is set to this value.</p>
 </dl>
 <p>Example usage when defining a new Device:</p>
 <blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alab_management.device_view</span> <span class="kn">import</span> <span class="n">BaseDevice</span><span class="p">,</span> <span class="n">value_in_database</span>
+
+<span class="k">class</span> <span class="nc">MyDevice</span><span class="p">(</span><span class="n">BaseDevice</span><span class="p">):</span>
+    <span class="n">my_attribute</span> <span class="o">=</span> <span class="n">value_in_database</span><span class="p">(</span><span class="s2">&quot;my_attribute&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">my_attribute</span> <span class="c1">#initial call to the property, which sets the default value in the database</span>
+
+<span class="o">....</span>
+<span class="c1">#first instantiation</span>
+
+<span class="n">mydevice</span> <span class="o">=</span> <span class="n">MyDevice</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;mydevice_1&quot;</span><span class="p">)</span>
+<span class="n">mydevice</span><span class="o">.</span><span class="n">my_attribute</span> <span class="o">=</span> <span class="mi">5</span> <span class="c1">#sets the value in the database</span>
+
+<span class="o">....</span>
+<span class="c1">#future instantiation</span>
+<span class="n">mydevice</span> <span class="o">=</span> <span class="n">MyDevice</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;mydevice_1&quot;</span><span class="p">)</span>
+<span class="n">mydevice</span><span class="o">.</span><span class="n">my_attribute</span> <span class="c1">#retrieves value from db and returns 5</span>
 </pre></div>
 </div>
-<p>from alab_management.device_view import BaseDevice, attribute_in_database</p>
-<dl>
-<dt>class MyDevice(BaseDevice):</dt><dd><p>my_attribute = attribute_in_database(“my_attribute”, 0)</p>
-<dl class="simple">
-<dt>def __init__(self, name: str, <a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs):</dt><dd><p>super().__init__(name, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs)
-self.name = name
-self.my_attribute #initial call to the property, which sets the default value in the database</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p>#first instantiation</p>
-<p>mydevice = MyDevice(name = “mydevice_1”)
-mydevice.my_attribute = 5 #sets the value in the database</p>
-<p>#future instantiation
-mydevice = MyDevice(name = “mydevice_1”)
-mydevice.my_attribute #retrieves value from db and returns 5</p>
 </div></blockquote>
 </dd></dl>
 
 </section>
 
 
-              </div>
+                </article>
               
-        </div>
-    </div>
-    
-    
-    <div class='prev-next-bottom'>
-        
-    <a class='left-prev' id="prev-link" href="alab_management.device_view.html" title="previous page">alab_management.device_view package</a>
-    <a class='right-next' id="next-link" href="alab_management.device_view.device.html" title="next page">alab_management.device_view.device module</a>
 
-    </div>
-    <footer class="footer mt-5 mt-md-0">
-    <div class="container">
-      <p>
-        
-          By Alab Project Team<br/>
-        
-            &copy; Copyright 2024, Alab Project Team.<br/>
-      </p>
-    </div>
-  </footer>
-</main>
-
-
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="alab_management.device_view.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">alab_management.device_view package</p>
       </div>
+    </a>
+    <a class="right-next"
+       href="alab_management.device_view.device.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">alab_management.device_view.device module</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase"><code class="docutils literal notranslate"><span class="pre">DictInDatabase</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.apply_default_value"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.apply_default_value()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.as_normal_dict"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.as_normal_dict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.clear"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.clear()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.copy"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.copy()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.db_filter"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.db_filter</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.db_projection"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.db_projection</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.fromkeys"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.fromkeys()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.get"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.get()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.items"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.items()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.keys"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.keys()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.pop"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.pop()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.popitem"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.popitem()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.setdefault"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.setdefault()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.update"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.update()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.DictInDatabase.values"><code class="docutils literal notranslate"><span class="pre">DictInDatabase.values()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase"><code class="docutils literal notranslate"><span class="pre">ListInDatabase</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.append"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.append()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.apply_default_value"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.apply_default_value()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.clear"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.clear()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.copy"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.copy()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.count"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.count()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.db_filter"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.db_filter</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.db_projection"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.db_projection</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.extend"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.extend()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.index"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.index()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.insert"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.insert()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.pop"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.pop()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.remove"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.remove()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.reverse"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.reverse()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.ListInDatabase.sort"><code class="docutils literal notranslate"><span class="pre">ListInDatabase.sort()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.dbattributes.value_in_database"><code class="docutils literal notranslate"><span class="pre">value_in_database()</span></code></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Alab Project Team
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Ceder group.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
     </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    
-  <script src="_static/js/index.d3f166471bb80abb5163.js"></script>
-
-
-    
+  <footer class="bd-footer">
+  </footer>
   </body>
 </html>

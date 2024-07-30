@@ -1,0 +1,645 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Best Practices &#8212; Alab Management 1.0.1</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=423d4ce3"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'best_practices';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Advance Topics" href="advance_topics.html" />
+    <link rel="prev" title="Submitting the synthesis experiments" href="submit_experiments.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Alab Management 1.0.1</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="index.html">
+                    Overview
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="tutorial.html">Tutorial</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="setup.html">Set up configuration folder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device_definition.html">Defining devices and sample positions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="task_definition.html">Defining tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="start_lab.html">Launching lab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submit_experiments.html">Submitting the synthesis experiments</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Best Practices</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="advance_topics.html">Advance Topics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="test.html">Testing for Alab Definition</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="modules.html">API Docs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="alab_management.html">alab_management package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.builders.html">alab_management.builders package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.builders.experimentbuilder.html">alab_management.builders.experimentbuilder module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.builders.samplebuilder.html">alab_management.builders.samplebuilder module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.device_view.html">alab_management.device_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.device_view.dbattributes.html">alab_management.device_view.dbattributes module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.device_view.device.html">alab_management.device_view.device module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.device_view.device_view.html">alab_management.device_view.device_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.experiment_view.html">alab_management.experiment_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.experiment_view.completed_experiment_view.html">alab_management.experiment_view.completed_experiment_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.experiment_view.experiment.html">alab_management.experiment_view.experiment module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.experiment_view.experiment_view.html">alab_management.experiment_view.experiment_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.resource_manager.html">alab_management.resource_manager package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.resource_manager.enums.html">alab_management.resource_manager.enums module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.resource_manager.resource_manager.html">alab_management.resource_manager.resource_manager module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.resource_manager.resource_requester.html">alab_management.resource_manager.resource_requester module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.sample_view.html">alab_management.sample_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.sample_view.completed_sample_view.html">alab_management.sample_view.completed_sample_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.sample_view.sample.html">alab_management.sample_view.sample module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.sample_view.sample_view.html">alab_management.sample_view.sample_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.task_manager.html">alab_management.task_manager package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_manager.task_manager.html">alab_management.task_manager.task_manager module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.task_view.html">alab_management.task_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_view.completed_task_view.html">alab_management.task_view.completed_task_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_view.task.html">alab_management.task_view.task module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_view.task_enums.html">alab_management.task_view.task_enums module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_view.task_view.html">alab_management.task_view.task_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.alarm.html">alab_management.alarm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.config.html">alab_management.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.device_manager.html">alab_management.device_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.experiment_manager.html">alab_management.experiment_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.lab_view.html">alab_management.lab_view module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.logger.html">alab_management.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.task_actor.html">alab_management.task_actor module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.user_input.html">alab_management.user_input module</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/idocx/alab_management" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/best_practices.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Best Practices</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#minimizing-duration-for-time-sensitive-samples">1. Minimizing duration for time-sensitive samples</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-system">Example system:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#solution-implementation-for-the-system">Solution implementation for the system:</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sharing-device-instrument-between-automated-workflow-and-manual-usage">2. Sharing device/instrument between automated workflow and manual usage</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#case-study-sem">Case study: SEM</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#solution-pausing-sem">Solution: Pausing SEM</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cancelling-samples-and-removing-them-out-of-the-automated-workflow-gracefully">3. Cancelling samples and removing them out of the automated workflow gracefully</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="best-practices">
+<h1>Best Practices<a class="headerlink" href="#best-practices" title="Link to this heading">#</a></h1>
+<p>To ease the deployment of AlabOS, below are several example solutions to common problems or challenges found during
+implementation:</p>
+<section id="minimizing-duration-for-time-sensitive-samples">
+<h2>1. Minimizing duration for time-sensitive samples<a class="headerlink" href="#minimizing-duration-for-time-sensitive-samples" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Solution</span></code>: To ensure the time-sensitive samples are processed with minimum duration, one can first reserve all devices
+before running the first process that starts the timer for the sample.</p>
+<section id="example-system">
+<h3>Example system:<a class="headerlink" href="#example-system" title="Link to this heading">#</a></h3>
+<p>Take this scenario for <code class="docutils literal notranslate"><span class="pre">solid_wet_mixing_and_pipetting</span></code> task. The objective is to mix solids with ethanol and pipette
+the slurry into another container. The sample starts as unmixed solids dispensed inside a polypropylene mixing pot with
+pressence of zirconia balls (to transfer energy during mixing) and ends as slurry inside an alumina crucible container
+as illustrated in the figure below.
+<img alt="Time Sensitive Operation" src="_images/time-sensitive.png" /></p>
+<p>For this process, the timer starts when the first ethanol drop hits the solid mix. The challenge present in this system
+is that the solid mix can densify if given enough time under ethanol pressence. Therefore, the series of
+process <code class="docutils literal notranslate"><span class="pre">ethanol_dispensing</span></code>, <code class="docutils literal notranslate"><span class="pre">mixing</span></code>, and <code class="docutils literal notranslate"><span class="pre">slurry_pipetting</span></code> have to be done as fast as possible for each sample. To
+do this, one have to ensure that all device are always available for the sample whenever the sample needs it.</p>
+</section>
+<section id="solution-implementation-for-the-system">
+<h3>Solution implementation for the system:<a class="headerlink" href="#solution-implementation-for-the-system" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Solid_Wet_Mixing_and_Pipetting</span><span class="p">(</span><span class="n">BaseTask</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">ethanol_amount</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5000</span><span class="p">,</span>  <span class="c1"># in ul, 5 mL by default</span>
+            <span class="n">mixing_duration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">600</span><span class="p">,</span>  <span class="c1"># in seconds, 10 minutes by default</span>
+            <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">priority</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;priority&quot;</span><span class="p">,</span> <span class="n">TaskPriority</span><span class="o">.</span><span class="n">HIGH</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="n">priority</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ethanol_amount</span> <span class="o">=</span> <span class="n">ethanol_amount</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mixing_duration</span> <span class="o">=</span> <span class="n">mixing_duration</span>
+
+    <span class="k">def</span> <span class="nf">run</span><span class="p">():</span>
+        <span class="n">sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">request_resources</span><span class="p">({</span>
+            <span class="n">IndexingQuadrant</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;crucible/slot&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+            <span class="n">EthanolDispenser</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="n">Mixer</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="n">SlurryPipette</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="n">RobotArm</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="kc">None</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;slurry_transfer_crucible_position&quot;</span><span class="p">:</span> <span class="mi">1</span>
+            <span class="p">}</span>
+        <span class="p">})</span> <span class="k">as</span> <span class="p">(</span>
+                <span class="n">devices</span><span class="p">,</span>
+                <span class="n">sample_positions</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="n">indexing_quadrant</span><span class="p">:</span> <span class="n">IndexingQuadrant</span> <span class="o">=</span> <span class="n">devices</span><span class="p">[</span><span class="n">IndexingQuadrant</span><span class="p">]</span>
+            <span class="n">ethanol_dispenser</span><span class="p">:</span> <span class="n">EthanolDispenser</span> <span class="o">=</span> <span class="n">devices</span><span class="p">[</span><span class="n">EthanolDispenser</span><span class="p">]</span>
+            <span class="n">mixer</span><span class="p">:</span> <span class="n">Mixer</span> <span class="o">=</span> <span class="n">devices</span><span class="p">[</span><span class="n">Mixer</span><span class="p">]</span>
+            <span class="n">slurry_pipette</span><span class="p">:</span> <span class="n">SlurryPipette</span> <span class="o">=</span> <span class="n">devices</span><span class="p">[</span><span class="n">SlurryPipette</span><span class="p">]</span>
+            <span class="n">robot_arm</span><span class="p">:</span> <span class="n">RobotArm</span> <span class="o">=</span> <span class="n">devices</span><span class="p">[</span><span class="n">RobotArm</span><span class="p">]</span>
+            <span class="n">initial_position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">get_sample</span><span class="p">(</span><span class="n">sample</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="p">)</span><span class="o">.</span><span class="n">position</span>
+            <span class="n">destination</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sample_positions</span><span class="p">[</span><span class="n">EthanolDispenser</span><span class="p">][</span><span class="s2">&quot;slot&quot;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">robot_arm</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
+            <span class="n">ethanol_dispenser</span><span class="o">.</span><span class="n">dispense</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ethanol_amount</span><span class="p">)</span>
+            <span class="n">destination</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sample_positions</span><span class="p">[</span><span class="n">Mixer</span><span class="p">][</span><span class="s2">&quot;slot&quot;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">robot_arm</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
+            <span class="n">mixer</span><span class="o">.</span><span class="n">mix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mixing_duration</span><span class="p">)</span>
+            <span class="n">destination</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sample_positions</span><span class="p">[</span><span class="n">SlurryPipette</span><span class="p">][</span><span class="s2">&quot;slot&quot;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">robot_arm</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
+            <span class="n">slurry_pipette</span><span class="o">.</span><span class="n">transfer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ethanol_amount</span><span class="p">)</span>
+            <span class="c1"># move back empty mixing pot to rack</span>
+            <span class="n">destination</span> <span class="o">=</span> <span class="n">initial_position</span>
+            <span class="n">robot_arm</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
+            <span class="c1"># consider sample to be only in the crucible now</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">move_sample</span><span class="p">(</span>
+                <span class="n">sample</span><span class="o">=</span><span class="n">sample</span><span class="p">,</span>
+                <span class="n">position</span><span class="o">=</span><span class="n">positions</span><span class="p">[</span><span class="kc">None</span><span class="p">][</span><span class="s2">&quot;powdertransfer_crucible_position&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">destination</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sample_positions</span><span class="p">[</span><span class="n">IndexingQuadrant</span><span class="p">][</span><span class="s2">&quot;crucible/slot&quot;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">robot_arm</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this solution, before running any of the time-sensitive process, all the devices and sample positions involved in the
+process is booked. Then, the robot begins the series of processes until it finishes everything, ensuring minimum time is
+achieved for this specific sample. The next sample will run once this specific sample is done. Note that all resources
+are available because the booking ensures the devices and sample positions are exclusively available for this task.</p>
+</section>
+</section>
+<section id="sharing-device-instrument-between-automated-workflow-and-manual-usage">
+<h2>2. Sharing device/instrument between automated workflow and manual usage<a class="headerlink" href="#sharing-device-instrument-between-automated-workflow-and-manual-usage" title="Link to this heading">#</a></h2>
+<p>Oftentimes due to scarcity of availability of some device/instrument, an automated system has to pause a part of its
+operation and allow human experimentalist to use the instrument.</p>
+<section id="case-study-sem">
+<h3>Case study: SEM<a class="headerlink" href="#case-study-sem" title="Link to this heading">#</a></h3>
+<p>Let’s take a look at the following case study for a scanning electron microscope (SEM) instrument that is fully
+integrated into an autonomous laboratory running on AlabOS. The SEM is placed such that it can be fully operated by
+human, given the robots that usually loads the samples into the SEM do not interact with it while the human operator is
+using it.</p>
+<p>User X wants to use the SEM under manual mode because their sample requires a special scanning parameters and steps not
+implemented yet in the automated laboratory. They want to manually load their sample because it comes in an irregular
+shape. Essentially, they want to use the SEM for a certain duration. Note that the person also do not want to interrupt
+any work that is being done on the other samples inside the autonomous workflow.</p>
+</section>
+<section id="solution-pausing-sem">
+<h3>Solution: Pausing SEM<a class="headerlink" href="#solution-pausing-sem" title="Link to this heading">#</a></h3>
+<p>User X can just click “Pause” in the AlabOS user interface to request pause to the running task that is currently
+operating on the samples inside the SEM. Once the task can be interrupted gracefully, AlabOS will pause the device and
+not run any task requiring such device. This includes pausing SEM and any robots that interacts with SEM because in the
+automatic SEM sample preparation, loading, data collection, and analysis, all the corresponding devices are booked in
+advance before running the tasks. If any task is still running, AlabOS will keep the device in “requesting pause” state.
+Hence, User X can wait until the SEM status is “Paused” and then directly use the SEM, worry-free, as long as they
+return the SEM back to one of the expected states according to the automated SEM program/task.</p>
+</section>
+</section>
+<section id="cancelling-samples-and-removing-them-out-of-the-automated-workflow-gracefully">
+<h2>3. Cancelling samples and removing them out of the automated workflow gracefully<a class="headerlink" href="#cancelling-samples-and-removing-them-out-of-the-automated-workflow-gracefully" title="Link to this heading">#</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>More content will be added soon.</p>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="submit_experiments.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Submitting the synthesis experiments</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="advance_topics.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Advance Topics</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#minimizing-duration-for-time-sensitive-samples">1. Minimizing duration for time-sensitive samples</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-system">Example system:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#solution-implementation-for-the-system">Solution implementation for the system:</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sharing-device-instrument-between-automated-workflow-and-manual-usage">2. Sharing device/instrument between automated workflow and manual usage</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#case-study-sem">Case study: SEM</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#solution-pausing-sem">Solution: Pausing SEM</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cancelling-samples-and-removing-them-out-of-the-automated-workflow-gracefully">3. Cancelling samples and removing them out of the automated workflow gracefully</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Alab Project Team
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Ceder group.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

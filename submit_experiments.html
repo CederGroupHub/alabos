@@ -1,0 +1,749 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Submitting the synthesis experiments &#8212; Alab Management 1.0.1</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=423d4ce3"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'submit_experiments';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Best Practices" href="best_practices.html" />
+    <link rel="prev" title="Launching lab" href="start_lab.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Alab Management 1.0.1</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="index.html">
+                    Overview
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="tutorial.html">Tutorial</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="setup.html">Set up configuration folder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device_definition.html">Defining devices and sample positions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="task_definition.html">Defining tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="start_lab.html">Launching lab</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Submitting the synthesis experiments</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html">Best Practices</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="advance_topics.html">Advance Topics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="test.html">Testing for Alab Definition</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="modules.html">API Docs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="alab_management.html">alab_management package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.builders.html">alab_management.builders package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.builders.experimentbuilder.html">alab_management.builders.experimentbuilder module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.builders.samplebuilder.html">alab_management.builders.samplebuilder module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.device_view.html">alab_management.device_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.device_view.dbattributes.html">alab_management.device_view.dbattributes module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.device_view.device.html">alab_management.device_view.device module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.device_view.device_view.html">alab_management.device_view.device_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.experiment_view.html">alab_management.experiment_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.experiment_view.completed_experiment_view.html">alab_management.experiment_view.completed_experiment_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.experiment_view.experiment.html">alab_management.experiment_view.experiment module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.experiment_view.experiment_view.html">alab_management.experiment_view.experiment_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.resource_manager.html">alab_management.resource_manager package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.resource_manager.enums.html">alab_management.resource_manager.enums module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.resource_manager.resource_manager.html">alab_management.resource_manager.resource_manager module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.resource_manager.resource_requester.html">alab_management.resource_manager.resource_requester module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.sample_view.html">alab_management.sample_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.sample_view.completed_sample_view.html">alab_management.sample_view.completed_sample_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.sample_view.sample.html">alab_management.sample_view.sample module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.sample_view.sample_view.html">alab_management.sample_view.sample_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.task_manager.html">alab_management.task_manager package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_manager.task_manager.html">alab_management.task_manager.task_manager module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.task_view.html">alab_management.task_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_view.completed_task_view.html">alab_management.task_view.completed_task_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_view.task.html">alab_management.task_view.task module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_view.task_enums.html">alab_management.task_view.task_enums module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_view.task_view.html">alab_management.task_view.task_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.alarm.html">alab_management.alarm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.config.html">alab_management.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.device_manager.html">alab_management.device_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.experiment_manager.html">alab_management.experiment_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.lab_view.html">alab_management.lab_view module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.logger.html">alab_management.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.task_actor.html">alab_management.task_actor module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.user_input.html">alab_management.user_input module</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/idocx/alab_management" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/submit_experiments.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Submitting the synthesis experiments</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#builder-class">Builder class</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#add-samples">Add samples</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#add-tasks">Add tasks</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#add-task-to-the-sample">Add task to the sample</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-build-the-alab-experiment-with-16-samples">Example: Build the alab experiment with 16 samples</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#submit-the-experiment">Submit the experiment</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#see-the-status-of-the-experiment">See the status of the experiment</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#check-the-status-via-api">Check the status via API</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-submission">Advanced submission</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="submitting-the-synthesis-experiments">
+<h1>Submitting the synthesis experiments<a class="headerlink" href="#submitting-the-synthesis-experiments" title="Link to this heading">#</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">alabos</span></code> manages each user submission as a separate experiment. Each experiment will define a list of samples you would
+like to synthesize, along with the sequence of tasks that need to be performed to synthesize the samples. To ensure the order
+of execution, the tasks are defined within a directed acyclic graph (DAG), where the vertices represent the tasks and the edges
+represent the dependencies between the tasks.</p>
+<p>In typical autonomous lab, there are some tasks that can hold one or multiple samples. For example, one furnace can hold up to
+8 samples, while the powder recovery can hold only one sample. So, the task DAG can have multiple incoming/outgoing edges,
+indicating that one task can be dependent on multiple tasks or multiple tasks can be dependent on one task.</p>
+<p>One typical task DAG for A-Lab is shown below, where 16 samples are synthesized in one powder dosing task, followed by two heating task, and
+finally passing through the powder recovery and diffraction tasks one by one.</p>
+<figure class="align-default" id="id1">
+<div class="mermaid">
+            %%{init:{'flowchart':{'nodeSpacing': 10, 'rankSpacing': 50}}}%%
+flowchart LR
+  A[PowderDosing]--&gt; B[Heating]
+  A --&gt; C[Heating]
+  B --&gt; D1[PowderRecovery]
+  B --&gt; F1[PowderRecovery]
+  B --&gt; G1[PowderRecovery]
+  B --&gt; E1[PowderRecovery]
+  B --&gt; H1[PowderRecovery]
+  B --&gt; I1[PowderRecovery]
+  B --&gt; J1[PowderRecovery]
+  B --&gt; K1[PowderRecovery]
+  C --&gt; D2[PowderRecovery]
+  C --&gt; F2[PowderRecovery]
+  C --&gt; G2[PowderRecovery]
+  C --&gt; E2[PowderRecovery]
+  C --&gt; H2[PowderRecovery]
+  C --&gt; I2[PowderRecovery]
+  C --&gt; J2[PowderRecovery]
+  C --&gt; K2[PowderRecovery]
+  D1 --&gt; D3[Diffraction]
+  F1 --&gt; F3[Diffraction]
+  G1 --&gt; G3[Diffraction]
+  E1 --&gt; E3[Diffraction]
+  H1 --&gt; H3[Diffraction]
+  I1 --&gt; I3[Diffraction]
+  J1 --&gt; J3[Diffraction]
+  K1 --&gt; K3[Diffraction]
+  D2 --&gt; D4[Diffraction]
+  F2 --&gt; F4[Diffraction]
+  G2 --&gt; G4[Diffraction]
+  E2 --&gt; E4[Diffraction]
+  H2 --&gt; H4[Diffraction]
+  I2 --&gt; I4[Diffraction]
+  J2 --&gt; J4[Diffraction]
+  K2 --&gt; K4[Diffraction]
+  D3 --&gt; D6[Ending]
+  F3 --&gt; F6[Ending]
+  G3 --&gt; G6[Ending]
+  E3 --&gt; E6[Ending]
+  H3 --&gt; H6[Ending]
+  I3 --&gt; I6[Ending]
+  J3 --&gt; J6[Ending]
+  K3 --&gt; K6[Ending]
+  D4 --&gt; D7[Ending]
+  F4 --&gt; F7[Ending]
+  G4 --&gt; G7[Ending]
+  E4 --&gt; E7[Ending]
+  H4 --&gt; H7[Ending]
+  I4 --&gt; I7[Ending]
+  J4 --&gt; J7[Ending]
+  K4 --&gt; K7[Ending]
+        </div><figcaption>
+<p><span class="caption-text">Task DAG for A-Lab</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<section id="builder-class">
+<h2>Builder class<a class="headerlink" href="#builder-class" title="Link to this heading">#</a></h2>
+<p>AlabOS offers users a <a class="reference internal" href="alab_management.builders.experimentbuilder.html#alab_management.builders.experimentbuilder.ExperimentBuilder" title="alab_management.builders.experimentbuilder.ExperimentBuilder"><span class="xref myst py py-class"><code class="docutils literal notranslate"><span class="pre">ExperimentBuilder</span></code></span></a> class to define the
+experiment.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alab_management.builders</span> <span class="kn">import</span> <span class="n">ExperimentBuilder</span>
+
+<span class="c1"># you need a name for the experiment</span>
+<span class="c1"># you can also provide tags for better organization</span>
+<span class="c1"># You can also provide arbitrary kwargs to the builder</span>
+<span class="c1"># it will be stored as metadata (e.g., description)</span>
+<span class="n">exp</span> <span class="o">=</span> <span class="n">ExperimentBuilder</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyExperiment&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;tag1&quot;</span><span class="p">,</span> <span class="s2">&quot;tag2&quot;</span><span class="p">],</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;My first experiment&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="add-samples">
+<h3>Add samples<a class="headerlink" href="#add-samples" title="Link to this heading">#</a></h3>
+<p>You can add samples to the experiment using the <code class="docutils literal notranslate"><span class="pre">add_sample</span></code> method. The method will takes the input information and
+returns a sample object.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sample</span> <span class="o">=</span> <span class="n">exp</span><span class="o">.</span><span class="n">add_sample</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;my_sample_1&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;project&quot;</span><span class="p">],</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;My first sample&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="add-tasks">
+<h3>Add tasks<a class="headerlink" href="#add-tasks" title="Link to this heading">#</a></h3>
+<p>To add a task, you can directly import the task from your project package. For example, your package is called
+<code class="docutils literal notranslate"><span class="pre">alabos_project</span></code> and you have a task called <code class="docutils literal notranslate"><span class="pre">Heating</span></code> in the <code class="docutils literal notranslate"><span class="pre">tasks</span></code> module. You can add the task as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alabos_project.tasks</span> <span class="kn">import</span> <span class="n">Heating</span>
+
+<span class="n">task</span> <span class="o">=</span> <span class="n">Heating</span><span class="p">(</span><span class="n">heating_time</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span> <span class="n">heating_temperature</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="add-task-to-the-sample">
+<h3>Add task to the sample<a class="headerlink" href="#add-task-to-the-sample" title="Link to this heading">#</a></h3>
+<p>You can add the task to the sample using the <code class="docutils literal notranslate"><span class="pre">add_to</span></code> method in the <code class="docutils literal notranslate"><span class="pre">BaseTask</span></code> class.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># you can also do task.add_to([sample1, sample2, ...]) to add multiple samples to the task</span>
+<span class="n">task</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In alabos, the experiment contains a task graph. The order you add the tasks to the samples will define the order of execution.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">task1</span> <span class="o">=</span> <span class="n">Task1</span><span class="p">()</span>
+<span class="n">task2</span> <span class="o">=</span> <span class="n">Task2</span><span class="p">()</span>
+
+<span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">sample1</span><span class="p">,</span> <span class="n">sample2</span><span class="p">,</span> <span class="n">sample3</span><span class="p">]</span>
+
+<span class="c1"># task1 will be executed before task2</span>
+<span class="n">task1</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+<span class="n">task2</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="example-build-the-alab-experiment-with-16-samples">
+<h3>Example: Build the alab experiment with 16 samples<a class="headerlink" href="#example-build-the-alab-experiment-with-16-samples" title="Link to this heading">#</a></h3>
+<p>If you would like to build the task graph as shown in the above diagram, you can do it as follows. (Assuming your project
+package is called <code class="docutils literal notranslate"><span class="pre">alab_example</span></code> and you have defined the tasks in the <code class="docutils literal notranslate"><span class="pre">tasks</span></code> module.)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alab_example.tasks</span> <span class="kn">import</span> <span class="n">PowderDosing</span><span class="p">,</span> <span class="n">Heating</span><span class="p">,</span> <span class="n">RecoverPowder</span><span class="p">,</span> <span class="n">Diffraction</span><span class="p">,</span> <span class="n">Ending</span>
+<span class="kn">from</span> <span class="nn">alab_control.labman</span> <span class="kn">import</span> <span class="n">InputFile</span>
+<span class="kn">from</span> <span class="nn">alab_management.builders</span> <span class="kn">import</span> <span class="n">ExperimentBuilder</span>
+
+<span class="n">exp</span> <span class="o">=</span> <span class="n">ExperimentBuilder</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;tutorial&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;tutorial&quot;</span><span class="p">])</span>
+
+<span class="c1"># Define the samples</span>
+<span class="n">samples</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">exp</span><span class="o">.</span><span class="n">add_sample</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;tutorial_sample_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;tutorial&quot;</span><span class="p">],</span> <span class="n">precursors</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Li2CO3&quot;</span><span class="p">:</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">i</span><span class="p">})</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">17</span><span class="p">)</span>
+<span class="p">]</span>
+
+<span class="c1"># Define the steps</span>
+<span class="n">powder_dosing</span> <span class="o">=</span> <span class="n">PowderDosing</span><span class="p">(</span><span class="n">inputfiles</span><span class="o">=</span><span class="p">{</span><span class="n">sample</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">InputFile</span><span class="p">(</span><span class="n">powder_dispenses</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;precursors&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span> <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">samples</span><span class="p">})</span>
+<span class="n">powder_dosing</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+
+<span class="n">heating_1</span> <span class="o">=</span> <span class="n">Heating</span><span class="p">(</span><span class="n">heating_time</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span> <span class="n">heating_temperature</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="n">heating_1</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="n">samples</span><span class="p">[:</span><span class="mi">8</span><span class="p">])</span>
+
+<span class="n">heating_2</span> <span class="o">=</span> <span class="n">Heating</span><span class="p">(</span><span class="n">heating_time</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span> <span class="n">heating_temperature</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
+<span class="n">heating_2</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="n">samples</span><span class="p">[</span><span class="mi">8</span><span class="p">:])</span>
+
+<span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">samples</span><span class="p">:</span>
+    <span class="n">powder_recovery</span> <span class="o">=</span> <span class="n">RecoverPowder</span><span class="p">()</span>
+    <span class="n">powder_recovery</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+
+    <span class="n">diffraction</span> <span class="o">=</span> <span class="n">Diffraction</span><span class="p">()</span>
+    <span class="n">diffraction</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+
+    <span class="n">ending</span> <span class="o">=</span> <span class="n">Ending</span><span class="p">()</span>
+    <span class="n">ending</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="submit-the-experiment">
+<h3>Submit the experiment<a class="headerlink" href="#submit-the-experiment" title="Link to this heading">#</a></h3>
+<p>Once you have defined the experiment, you can submit it to the alabos server using the <code class="docutils literal notranslate"><span class="pre">submit</span></code> method. By default, the
+experiment will be submitted to the default server address <code class="docutils literal notranslate"><span class="pre">http://localhost:8895</span></code>. You can also provide a custom address.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">exp</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="s2">&quot;http://localhost:8895&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="see-the-status-of-the-experiment">
+<h3>See the status of the experiment<a class="headerlink" href="#see-the-status-of-the-experiment" title="Link to this heading">#</a></h3>
+<p>To monitor the status of the experiment, you can go to the alabos dashboard at <code class="docutils literal notranslate"><span class="pre">http://localhost:8895</span></code> (default address)
+and see the status.</p>
+<p><img alt="Experiment status" src="_images/status_dashboard.png" /></p>
+<section id="check-the-status-via-api">
+<h4>Check the status via API<a class="headerlink" href="#check-the-status-via-api" title="Link to this heading">#</a></h4>
+<p>AlabOS also provide API to query individual experiment status. You can call <code class="docutils literal notranslate"><span class="pre">get_experiment_status</span></code> method to get the status
+of the experiment.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alab_management</span> <span class="kn">import</span> <span class="n">get_experiment_status</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">exp_id</span> <span class="o">=</span> <span class="n">exp</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="s2">&quot;http://localhost:8895&quot;</span><span class="p">)</span>
+
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">get_experiment_status</span><span class="p">(</span><span class="n">exp_id</span><span class="p">)</span>
+    <span class="c1">## Both &quot;COMPLETED&quot; and &quot;ERROR&quot; are the final status</span>
+    <span class="k">if</span> <span class="n">status</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;COMPLETED&quot;</span> <span class="ow">or</span> <span class="n">status</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">:</span>
+        <span class="k">break</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The format of the status is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;experiment_id&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;experiment_name&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;progress&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>  <span class="o">//</span> <span class="n">indicating</span> <span class="n">the</span> <span class="n">ratio</span> <span class="n">of</span> <span class="n">finished</span> <span class="n">tasks</span>
+  <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;running&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;submitted_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2021-09-01T12:00:00&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;samples&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span>  <span class="s2">&quot;sample_id&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;sample_name&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="s2">&quot;sample_position&quot;</span><span class="p">},</span>
+    <span class="o">...</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;tasks&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;task_id&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;TaskType&quot;</span><span class="p">,</span> <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;RUNNING&quot;</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Complete. Measured 0 mg of powder.&quot;</span><span class="p">},</span>
+    <span class="o">...</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="advanced-submission">
+<h2>Advanced submission<a class="headerlink" href="#advanced-submission" title="Link to this heading">#</a></h2>
+<p>Since alabos can accept any DAG as the task graph, the limitation of the builder is that it can only define an experiment
+with a tree-like structure, i.e., it cannot define a task with multiple downstream tasks. However, you can still define
+the task graph using some graph package like <code class="docutils literal notranslate"><span class="pre">networkx</span></code> and submit the experiment to the server.</p>
+<p>We will provide a more detailed example in the future.</p>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="start_lab.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Launching lab</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="best_practices.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Best Practices</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#builder-class">Builder class</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#add-samples">Add samples</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#add-tasks">Add tasks</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#add-task-to-the-sample">Add task to the sample</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-build-the-alab-experiment-with-16-samples">Example: Build the alab experiment with 16 samples</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#submit-the-experiment">Submit the experiment</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#see-the-status-of-the-experiment">See the status of the experiment</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#check-the-status-via-api">Check the status via API</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-submission">Advanced submission</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Alab Project Team
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Ceder group.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

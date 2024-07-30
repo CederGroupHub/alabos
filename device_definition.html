@@ -1,633 +1,835 @@
+
 <!DOCTYPE html>
 
-<html lang="en">
+
+<html lang="en" data-content_root="./" >
+
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Defining a new device &#8212; Alab Management</title>
-    
-  <link rel="stylesheet" href="_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+    <title>Defining devices and sample positions &#8212; Alab Management 1.0.1</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
-    
-  <link rel="stylesheet"
-    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    
-      
-  <link rel="stylesheet"
-    href="_static/vendor/open-sans_all/1.44.1/index.css">
-  <link rel="stylesheet"
-    href="_static/vendor/lato_latin-ext/1.44.1/index.css">
-
-    
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinx-book-theme.40e2e510f6b7d1648584402491bb10fe.css?v=a123c646" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=32297c5f" />
-    
-  <link rel="preload" as="script" href="_static/js/index.d3f166471bb80abb5163.js">
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=c5b77fbd"></script>
+    <script src="_static/documentation_options.js?v=423d4ce3"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
-    <script src="_static/sphinx_highlight.js?v=4825356b"></script>
-    <script src="_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js?v=dbd2e957"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'device_definition';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Defining a new task" href="task_definition.html" />
-    <link rel="prev" title="Set up definition folder" href="setup.html" />
-
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
-
-
-
+    <link rel="next" title="Defining tasks" href="task_definition.html" />
+    <link rel="prev" title="Set up configuration folder" href="setup.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
-    
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-    <div class="container-xl">
-      <div class="row">
-          
-<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
     
-        <div class="navbar-brand-box">
-<a class="navbar-brand text-wrap" href="index.html">
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
   
   
-  <h1 class="site-logo" id="site-title">Alab Management</h1>
   
+  
+  
+  
+    <p class="title logo__title">Alab Management 1.0.1</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="index.html">
+                    Overview
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="tutorial.html">Tutorial</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="setup.html">Set up configuration folder</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Defining devices and sample positions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="task_definition.html">Defining tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="start_lab.html">Launching lab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submit_experiments.html">Submitting the synthesis experiments</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html">Best Practices</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="advance_topics.html">Advance Topics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="test.html">Testing for Alab Definition</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="modules.html">API Docs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="alab_management.html">alab_management package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.builders.html">alab_management.builders package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.builders.experimentbuilder.html">alab_management.builders.experimentbuilder module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.builders.samplebuilder.html">alab_management.builders.samplebuilder module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.device_view.html">alab_management.device_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.device_view.dbattributes.html">alab_management.device_view.dbattributes module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.device_view.device.html">alab_management.device_view.device module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.device_view.device_view.html">alab_management.device_view.device_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.experiment_view.html">alab_management.experiment_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.experiment_view.completed_experiment_view.html">alab_management.experiment_view.completed_experiment_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.experiment_view.experiment.html">alab_management.experiment_view.experiment module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.experiment_view.experiment_view.html">alab_management.experiment_view.experiment_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.resource_manager.html">alab_management.resource_manager package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.resource_manager.enums.html">alab_management.resource_manager.enums module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.resource_manager.resource_manager.html">alab_management.resource_manager.resource_manager module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.resource_manager.resource_requester.html">alab_management.resource_manager.resource_requester module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.sample_view.html">alab_management.sample_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.sample_view.completed_sample_view.html">alab_management.sample_view.completed_sample_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.sample_view.sample.html">alab_management.sample_view.sample module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.sample_view.sample_view.html">alab_management.sample_view.sample_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.task_manager.html">alab_management.task_manager package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_manager.task_manager.html">alab_management.task_manager.task_manager module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.task_view.html">alab_management.task_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_view.completed_task_view.html">alab_management.task_view.completed_task_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_view.task.html">alab_management.task_view.task module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_view.task_enums.html">alab_management.task_view.task_enums module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_view.task_view.html">alab_management.task_view.task_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.alarm.html">alab_management.alarm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.config.html">alab_management.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.device_manager.html">alab_management.device_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.experiment_manager.html">alab_management.experiment_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.lab_view.html">alab_management.lab_view module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.logger.html">alab_management.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.task_actor.html">alab_management.task_actor module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.user_input.html">alab_management.user_input module</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/idocx/alab_management" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
 </a>
-</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form>
-<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-    <ul class="nav sidenav_l1">
- <li class="toctree-l1">
-  <a class="reference internal" href="index.html">
-   Overview
-  </a>
- </li>
-</ul>
-<p class="caption collapsible-parent" role="heading">
- <span class="caption-text">
-  Quickstart
- </span>
- <i class="fas fa-chevron-down">
- </i>
-</p>
-<ul class="current collapse-ul nav sidenav_l1">
- <li class="toctree-l1">
-  <a class="reference internal" href="installation.html">
-   Installation
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="setup.html">
-   Setup definition folder
-  </a>
- </li>
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
-   Defining new devices
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="task_definition.html">
-   Defining new tasks
-  </a>
- </li>
-</ul>
-<ul class="nav sidenav_l1">
- <li class="toctree-l1">
-  <a class="reference internal" href="development.html">
-   Development
-  </a>
- </li>
- <li class="toctree-l1 collapsible-parent">
-  <a class="reference internal" href="modules.html">
-   API Docs
-  </a>
-  <ul class="collapse-ul">
-   <li class="toctree-l2 collapsible-parent">
-    <a class="reference internal" href="alab_management.html">
-     alab_management package
-    </a>
-    <ul class="collapse-ul">
-     <li class="toctree-l3 collapsible-parent">
-      <a class="reference internal" href="alab_management.builders.html">
-       alab_management.builders package
-      </a>
-      <ul class="collapse-ul">
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.builders.experimentbuilder.html">
-         alab_management.builders.experimentbuilder module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.builders.samplebuilder.html">
-         alab_management.builders.samplebuilder module
-        </a>
-       </li>
-      </ul>
-      <i class="fas fa-chevron-down">
-      </i>
-     </li>
-     <li class="toctree-l3 collapsible-parent">
-      <a class="reference internal" href="alab_management.device_view.html">
-       alab_management.device_view package
-      </a>
-      <ul class="collapse-ul">
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.device_view.dbattributes.html">
-         alab_management.device_view.dbattributes module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.device_view.device.html">
-         alab_management.device_view.device module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.device_view.device_view.html">
-         alab_management.device_view.device_view module
-        </a>
-       </li>
-      </ul>
-      <i class="fas fa-chevron-down">
-      </i>
-     </li>
-     <li class="toctree-l3 collapsible-parent">
-      <a class="reference internal" href="alab_management.experiment_view.html">
-       alab_management.experiment_view package
-      </a>
-      <ul class="collapse-ul">
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.experiment_view.completed_experiment_view.html">
-         alab_management.experiment_view.completed_experiment_view module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.experiment_view.experiment.html">
-         alab_management.experiment_view.experiment module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.experiment_view.experiment_view.html">
-         alab_management.experiment_view.experiment_view module
-        </a>
-       </li>
-      </ul>
-      <i class="fas fa-chevron-down">
-      </i>
-     </li>
-     <li class="toctree-l3 collapsible-parent">
-      <a class="reference internal" href="alab_management.sample_view.html">
-       alab_management.sample_view package
-      </a>
-      <ul class="collapse-ul">
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.sample_view.completed_sample_view.html">
-         alab_management.sample_view.completed_sample_view module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.sample_view.sample.html">
-         alab_management.sample_view.sample module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.sample_view.sample_view.html">
-         alab_management.sample_view.sample_view module
-        </a>
-       </li>
-      </ul>
-      <i class="fas fa-chevron-down">
-      </i>
-     </li>
-     <li class="toctree-l3 collapsible-parent">
-      <a class="reference internal" href="alab_management.task_manager.html">
-       alab_management.task_manager package
-      </a>
-      <ul class="collapse-ul">
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.task_manager.enums.html">
-         alab_management.task_manager.enums module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.task_manager.resource_requester.html">
-         alab_management.task_manager.resource_requester module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.task_manager.task_manager.html">
-         alab_management.task_manager.task_manager module
-        </a>
-       </li>
-      </ul>
-      <i class="fas fa-chevron-down">
-      </i>
-     </li>
-     <li class="toctree-l3 collapsible-parent">
-      <a class="reference internal" href="alab_management.task_view.html">
-       alab_management.task_view package
-      </a>
-      <ul class="collapse-ul">
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.task_view.completed_task_view.html">
-         alab_management.task_view.completed_task_view module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.task_view.task.html">
-         alab_management.task_view.task module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.task_view.task_enums.html">
-         alab_management.task_view.task_enums module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="alab_management.task_view.task_view.html">
-         alab_management.task_view.task_view module
-        </a>
-       </li>
-      </ul>
-      <i class="fas fa-chevron-down">
-      </i>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.alarm.html">
-       alab_management.alarm module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.config.html">
-       alab_management.config module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.device_manager.html">
-       alab_management.device_manager module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.experiment_manager.html">
-       alab_management.experiment_manager module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.lab_view.html">
-       alab_management.lab_view module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.logger.html">
-       alab_management.logger module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.task_actor.html">
-       alab_management.task_actor module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="alab_management.user_input.html">
-       alab_management.user_input module
-      </a>
-     </li>
-    </ul>
-    <i class="fas fa-chevron-down">
-    </i>
-   </li>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/device_definition.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
   </ul>
-  <i class="fas fa-chevron-down">
-  </i>
- </li>
-</ul>
-
-</nav> <!-- To handle the deprecated key -->
-
-<div class="navbar_extra_footer">
-  Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
-</div>
-
 </div>
 
 
-          
 
 
-          
-<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
-    
-    <div class="row topbar fixed-top container-xl">
-    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
     </div>
-    <div class="col pl-2 topbar-main">
-        
-        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-            <i class="fas fa-bars"></i>
-            <i class="fas fa-arrow-left"></i>
-            <i class="fas fa-arrow-up"></i>
-        </button>
-        
-        
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
-            class="fas fa-download"></i></button>
-
-    <div class="dropdown-buttons">
-        <!-- ipynb file if we had a myst markdown file -->
-        
-        <!-- Download raw file -->
-        <a class="dropdown-buttons" href="_sources/device_definition.rst.txt"><button type="button"
-                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
-                data-placement="left">.rst</button></a>
-        <!-- Download PDF via print -->
-        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
-    </div>
+  
 </div>
-
-        <!-- Source interaction buttons -->
-
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
-        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
-    <div class="dropdown-buttons sourcebuttons">
-        <a class="repository-button"
-            href="https://github.com/idocx/alab_management"><button type="button" class="btn btn-secondary topbarbtn"
-                data-toggle="tooltip" data-placement="left" title="Source repository"><i
-                    class="fab fa-github"></i>repository</button></a>
-        
-        
-    </div>
 </div>
+              
+              
 
-
-        <!-- Full screen (wrap in <a> to have style consistency -->
-        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-                title="Fullscreen mode"><i
-                    class="fas fa-expand"></i></button></a>
-
-        <!-- Launch buttons -->
-
-    </div>
-
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Defining devices and sample positions</h1>
     <!-- Table of contents -->
-    <div class="d-none d-md-block col-md-2 bd-toc show">
-        
-        <div class="tocsection onthispage pt-5 pb-3">
-            <i class="fas fa-list"></i> Contents
-        </div>
-        <nav id="bd-toc-nav">
-            <ul class="nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#alab_management.device_view.device.BaseDevice">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     BaseDevice
-    </span>
-   </code>
-  </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.device.BaseDevice.name">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       BaseDevice.name
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.device.BaseDevice.description">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       BaseDevice.description
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.device.BaseDevice.args">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       BaseDevice.args
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.device.BaseDevice.kwargs">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       BaseDevice.kwargs
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.device.BaseDevice.__init__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       BaseDevice.__init__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.device.BaseDevice.emergent_stop">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       BaseDevice.emergent_stop()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#alab_management.device_view.device.BaseDevice.sample_positions">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       BaseDevice.sample_positions
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementing-boxfurnace">Implementing <code class="docutils literal notranslate"><span class="pre">BoxFurnace</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementing-all-abstract-methods">Implementing all abstract methods</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-the-device-interface">Defining the device interface</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-message">Setting up the message</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#error-handling">Error handling</a></li>
 </ul>
-
-        </nav>
-        
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mocking-the-device">Mocking the device</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registering-the-device">Registering the device</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registering-standalone-sample-positions">Registering standalone sample positions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-s-next">What’s next</a></li>
+</ul>
+            </nav>
+        </div>
     </div>
 </div>
-    <div id="main-content" class="row">
-        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
-        
-              <div>
+
+              
                 
-  <section id="defining-a-new-device">
-<span id="defining-device"></span><h1>Defining a new device<a class="headerlink" href="#defining-a-new-device" title="Permalink to this heading">¶</a></h1>
-<p>To define a device, you should inherit from <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDevice</span></code>.
-Here is the code sample. For more, please refer to <a class="reference external" href="https://github.com/idocx/alab_management/tree/master/example/devices">example</a> in the repo .</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseDevice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice" title="Permalink to this definition">¶</a></dt>
-<dd><p>The abstract class of device.</p>
-<p>All the devices should be inherited from this class</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice.name">
-<span class="sig-name descname"><span class="pre">name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.name" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>the name of device, which is the unique identifier of this device</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice.description">
-<span class="sig-name descname"><span class="pre">description</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">Optional[str]</span></em><span class="sig-paren">)</span><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.description" title="Permalink to this definition">¶</a></dt>
-<dd><p>the device type, how to set up and so on.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>description of this kind of device, which can include</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice.args">
-<span class="sig-name descname"><span class="pre">args</span></span><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.args" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>arguments that will be passed to the device class</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice.kwargs">
-<span class="sig-name descname"><span class="pre">kwargs</span></span><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.kwargs" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>keyword arguments that will be passed to the device class</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize a device object, you can set up connection to
-the device in this method. The device will only be initialized
-once in the system. So if your connection to driver need to be
-renewed from time to time, you can write a custom function to
-connect to the device when needed.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – the name of device, which is the unique identifier of this device</p></li>
-<li><p><strong>description</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – description of this kind of device</p></li>
-</ul>
-</dd>
-</dl>
-<p>Here is an example of how to write a new device</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">502</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">(</span><span class="n">Furnace</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">address</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="n">FurnaceController</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice.emergent_stop">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">emergent_stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice.emergent_stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.emergent_stop" title="Permalink to this definition">¶</a></dt>
-<dd><p>Specify how the device should stop when emergency.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="alab_management.device_view.device.BaseDevice.sample_positions">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample_positions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="alab_management.sample_view.sample.html#alab_management.sample_view.sample.SamplePosition" title="alab_management.sample_view.sample.SamplePosition"><span class="pre">SamplePosition</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.sample_positions" title="Permalink to this definition">¶</a></dt>
-<dd><p>The sample positions describe the position that can hold a sample. The name of sample
-position will be the unique identifier of this sample position. It does not store any
-coordinates information about where the position is in the lab. Users need to map the
-sample positions to real lab coordinates manually.</p>
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="defining-devices-and-sample-positions">
+<h1>Defining devices and sample positions<a class="headerlink" href="#defining-devices-and-sample-positions" title="Link to this heading">#</a></h1>
+<p>The device refers to one piece of equipment in the lab, such as a box furnace, a robot arm, and etc.
+In alabos, the device object is usually a wrapper around the real device that provide serveral methods to interact with the device.</p>
+<p>In each device object, there can be multiple sample positions associated with the device. The sample positions are the positions
+where the samples are placed. For example, in a box furnace, there are multiple sample positions where the samples can be placed
+and heated. In alabos, the position of each sample is recorded in the sample position which currently holds the sample.
+If one sample occupies a sample position, the sample position cannot be used by other samples until the sample is moved.</p>
+<p>The sample positions can also be standalone, which means that the sample positions are not associated with any device.</p>
+<p>In this tutorial, we will show you how to define a new device and sample positions in alabos.</p>
+<p>To define a device, you should inherit from <a class="reference internal" href="alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice" title="alab_management.device_view.device.BaseDevice"><span class="xref myst py py-class"><code class="docutils literal notranslate"><span class="pre">BaseDevice</span></code></span></a>. <code class="docutils literal notranslate"><span class="pre">BaseDevice</span></code>
+provides a basic interface for a device, with a few abstract methods that should be implemented in the derived class.</p>
+<p>Other than the required abstract methods, you can also define additional methods that are specific to the device. For
+example, you can define a <code class="docutils literal notranslate"><span class="pre">.do_powder_dosing</span></code> function for a powder dosing station, or a <code class="docutils literal notranslate"><span class="pre">.move_to</span></code> function for a robot arm.
+The defined methods will be accessible to the task that uses the device.</p>
+<p>We will take the box furnace as an example to show how to define a new device.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>It doesn’t matter in which device class a sample position is defined.
-We use <code class="docutils literal notranslate"><span class="pre">name</span></code> attribute to identify them.</p>
+<p>If you are interested in how the communication can be implemented, you can check <a class="reference external" href="https://github.com/CederGroupHub/alab_control"><code class="docutils literal notranslate"><span class="pre">alab_control</span></code></a>
+where all the communication with the device is implemented for A-Lab.</p>
 </div>
-<p>Here is an example of how to define some sample positions</p>
+<section id="implementing-boxfurnace">
+<h2>Implementing <code class="docutils literal notranslate"><span class="pre">BoxFurnace</span></code><a class="headerlink" href="#implementing-boxfurnace" title="Link to this heading">#</a></h2>
+<p>First of all, we need to create a new class <code class="docutils literal notranslate"><span class="pre">BoxFurnace</span></code> that inherits from <code class="docutils literal notranslate"><span class="pre">BaseDevice</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alab_management</span> <span class="kn">import</span> <span class="n">BaseDevice</span>
+
+<span class="k">class</span> <span class="nc">BoxFurnace</span><span class="p">(</span><span class="n">BaseDevice</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<section id="implementing-all-abstract-methods">
+<h3>Implementing all abstract methods<a class="headerlink" href="#implementing-all-abstract-methods" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">BaseDevice</span></code> requires some of the basic metadata to be defined in the derived class. These include <code class="docutils literal notranslate"><span class="pre">sample_positions</span></code>, <code class="docutils literal notranslate"><span class="pre">connect</span></code>,
+<code class="docutils literal notranslate"><span class="pre">disconnect</span></code>, <code class="docutils literal notranslate"><span class="pre">is_running</span></code>.</p>
+<p>First we need to import some dependencies:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">ClassVar</span>
+
+<span class="kn">from</span> <span class="nn">alab_control.door_controller</span> <span class="kn">import</span> <span class="n">DoorController</span>
+<span class="kn">from</span> <span class="nn">alab_control.furnace_2416</span> <span class="kn">import</span> <span class="n">FurnaceController</span><span class="p">,</span> <span class="n">Segment</span>
+<span class="kn">from</span> <span class="nn">alab_control.furnace_2416.furnace_driver</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">FurnaceError</span><span class="p">,</span>
+    <span class="n">ProgramEndType</span><span class="p">,</span>
+    <span class="n">SegmentType</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">alab_management</span> <span class="kn">import</span> <span class="n">BaseDevice</span>
+<span class="kn">from</span> <span class="nn">alab_management</span> <span class="kn">import</span> <span class="n">SamplePosition</span>
+</pre></div>
+</div>
+<p>The description of the device should be defined as a class variable. This description can provide some useful information
+about the deivce.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">BoxFurnace</span><span class="p">(</span><span class="n">BaseDevice</span><span class="p">):</span>
+    <span class="n">description</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;The box furnace is a device that can heat samples up to 1200 degrees Celsius. &quot;</span>
+        <span class="s2">&quot;It is used for heat treatment of samples. In current setting, one box furnace &quot;</span>
+        <span class="s2">&quot;can hold up to 8 samples. Due to the limitation of the power supply, the &quot;</span>
+        <span class="s2">&quot;max ramping rate is 10 degrees Celsius per minute.&quot;</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method should be implemented to store the information about the device. For example, if the device is
+communicated through a serial port, you can store the serial port information here.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">com_port_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    You can customize this method to store more information about the device. For example,</span>
+<span class="sd">    if the device is communicated through a serial port, you can store the serial port information here.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        com_port_id: The ID of the COM port that the device is connected to.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">com_port_id</span> <span class="o">=</span> <span class="n">com_port_id</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">door_controller</span> <span class="o">=</span> <span class="n">DoorController</span><span class="p">(</span>
+        <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">],</span> <span class="n">ip_address</span><span class="o">=</span><span class="s2">&quot;192.168.0.51&quot;</span>
+    <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">sample_positions</span></code> property should be implemented to return the sample positions of the device. The sample positions
+are the positions inside the device where the samples are placed. It is used to track the samples in the system. When
+setting up the system, all the sample positions will be created and stored in the database.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@property</span>
-<span class="k">def</span> <span class="nf">sample_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">sample_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SamplePosition</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the sample positions of the BoxFurnace.</span>
+
+<span class="sd">    Sample positions are the positions inside the device where the samples are placed.</span>
+<span class="sd">    It is used to track the samples in the system. When setting up the system,</span>
+<span class="sd">    all the sample positions will be created and stored in the database.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">[</span>
         <span class="n">SamplePosition</span><span class="p">(</span>
-            <span class="s2">&quot;inside&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The position inside the furnace, where the samples are heated&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;slot&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The position inside the box furnace, where the samples are heated&quot;</span><span class="p">,</span>
             <span class="n">number</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
-        <span class="p">),</span>
-        <span class="n">SamplePosition</span><span class="p">(</span>
-            <span class="s2">&quot;furnace_table&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Temporary position to transfer samples&quot;</span><span class="p">,</span>
-            <span class="n">number</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
         <span class="p">),</span>
     <span class="p">]</span>
 </pre></div>
 </div>
-</dd></dl>
+<p>The <code class="docutils literal notranslate"><span class="pre">connect</span></code>, <code class="docutils literal notranslate"><span class="pre">disconnect</span></code>, and <code class="docutils literal notranslate"><span class="pre">is_running</span></code> methods should be implemented to connect to the device, disconnect from the
+device, and check if the device is running, respectively.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_driver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the driver of the device. It is a helper method to get the driver of the device.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">FurnaceController</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">com_port_id</span><span class="p">)</span>
 
-</dd></dl>
+<span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Connect to the BoxFurnace.&quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_driver</span><span class="p">()</span>
 
+<span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Disconnect from the BoxFurnace.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">driver</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="k">def</span> <span class="nf">is_running</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if the device is running.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">is_running</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="defining-the-device-interface">
+<h3>Defining the device interface<a class="headerlink" href="#defining-the-device-interface" title="Link to this heading">#</a></h3>
+<p>Apart from the required methods, you will need to define some additional methods that are specific to the device. For
+example, for this type of the furnace, you will need a <code class="docutils literal notranslate"><span class="pre">run_program</span></code> method that will start the heating process. Also,
+there is a <code class="docutils literal notranslate"><span class="pre">get_temperature</span></code> method that will return the current temperature of the furnace.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">BoxFurnace</span><span class="p">(</span><span class="n">BaseDevice</span><span class="p">):</span>
+    <span class="o">...</span>
+    
+    <span class="k">def</span> <span class="nf">run_program</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">profiles</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run a heating program on the BoxFurnace.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            profiles: A list of profiles. Each profile is a list of three elements:</span>
+<span class="sd">                - The target temperature in Celsius.</span>
+<span class="sd">                - The ramping rate in Celsius per minute.</span>
+<span class="sd">                - The duration in minutes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">segments</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">profile</span> <span class="ow">in</span> <span class="n">profiles</span><span class="p">:</span>
+            <span class="n">segments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">Segment</span><span class="p">(</span>
+                    <span class="n">segment_type</span><span class="o">=</span><span class="n">SegmentType</span><span class="o">.</span><span class="n">RAMP_RATE</span><span class="p">,</span>
+                    <span class="n">target_setpoint</span><span class="o">=</span><span class="n">profile</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="n">ramp_rate_per_min</span><span class="o">=</span><span class="n">profile</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">segments</span> <span class="o">=</span> <span class="n">segments</span> <span class="o">+</span> <span class="p">[</span>
+                <span class="n">Segment</span><span class="p">(</span>
+                    <span class="n">segment_type</span><span class="o">=</span><span class="n">SegmentType</span><span class="o">.</span><span class="n">DWELL</span><span class="p">,</span>
+                    <span class="c1"># the upper limit of heating is 900 minutes</span>
+                    <span class="n">duration</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span>
+                        <span class="n">minutes</span><span class="o">=</span><span class="mi">900</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">profile</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">//</span> <span class="mi">900</span><span class="p">)</span> <span class="k">else</span> <span class="n">profile</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">%</span> <span class="mi">900</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">((</span><span class="n">profile</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="mi">899</span><span class="p">)</span> <span class="o">//</span> <span class="mi">900</span><span class="p">)</span>
+            <span class="p">]</span>
+
+        <span class="n">segments</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="o">*</span><span class="n">segments</span><span class="p">,</span>
+            <span class="n">Segment</span><span class="p">(</span><span class="n">segment_type</span><span class="o">=</span><span class="n">SegmentType</span><span class="o">.</span><span class="n">END</span><span class="p">,</span> <span class="n">endt</span><span class="o">=</span><span class="n">ProgramEndType</span><span class="o">.</span><span class="n">RESET</span><span class="p">),</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_message</span><span class="p">(</span>
+            <span class="s2">&quot;Running a program with profiles:</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="sa">f</span><span class="s2">&quot;Setpoint: </span><span class="si">{</span><span class="n">profile</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> C, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Ramp rate: </span><span class="si">{</span><span class="n">profile</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> C/min, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Dwelling duration: </span><span class="si">{</span><span class="n">profile</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2"> min&quot;</span>
+                    <span class="k">for</span> <span class="n">profile</span> <span class="ow">in</span> <span class="n">profiles</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">run_program</span><span class="p">(</span><span class="o">*</span><span class="n">segments</span><span class="p">)</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">FurnaceError</span><span class="p">:</span>  <span class="c1"># if there is an error, prompt the user to retry</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_maintenance</span><span class="p">(</span>
+                    <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;There is an error running the program. Do you want to retry?&quot;</span><span class="p">,</span>
+                    <span class="n">options</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Yes&quot;</span><span class="p">,</span> <span class="s2">&quot;No&quot;</span><span class="p">],</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">response</span> <span class="o">==</span> <span class="s2">&quot;No&quot;</span><span class="p">:</span>
+                    <span class="k">raise</span>  <span class="c1"># if the user chooses not to retry, raise the error</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">break</span>
+
+    <span class="k">def</span> <span class="nf">get_temperature</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the current temperature of the BoxFurnace.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">get_temperature</span><span class="p">()</span>
+</pre></div>
+</div>
+<section id="setting-up-the-message">
+<h4>Setting up the message<a class="headerlink" href="#setting-up-the-message" title="Link to this heading">#</a></h4>
+<p>In the <code class="docutils literal notranslate"><span class="pre">run_program</span></code> method, we set a message using <code class="docutils literal notranslate"><span class="pre">self.set_message()</span></code>. The message will be displayed in the UI.
+This message will be used to inform the user about the current state of the device. For example,
+when the device is heating, the message can be</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Running</span> <span class="n">a</span> <span class="n">program</span> <span class="k">with</span> <span class="n">profiles</span><span class="p">:</span> 
+<span class="n">Setpoint</span><span class="p">:</span> <span class="mi">1000</span> <span class="n">C</span><span class="p">,</span> <span class="n">Ramp</span> <span class="n">rate</span><span class="p">:</span> <span class="mi">5</span> <span class="n">C</span><span class="o">/</span><span class="nb">min</span><span class="p">,</span> <span class="n">Dwelling</span> <span class="n">duration</span><span class="p">:</span> <span class="mi">60</span> <span class="nb">min</span>
+</pre></div>
+</div>
+</section>
+<section id="error-handling">
+<h4>Error handling<a class="headerlink" href="#error-handling" title="Link to this heading">#</a></h4>
+<p>Sometimes there can be an error when using the device. To handle the error, we can use the <code class="docutils literal notranslate"><span class="pre">request_maintenance</span></code> method
+to prompt the user to check the device and retry the operation. If the user chooses not to retry, the error will be raised.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">BaseDevice.request_maintenance</span></code> is part of the user notification system in alabos. The user notification system is used as
+a way for human-in-the-loop to interact with the system. At the moment when the system needs human intervention, it will
+create a notification with a message and options for the user to choose. The system will react based on the user’s choice.</p>
+</div>
+<p>In the <code class="docutils literal notranslate"><span class="pre">run_program</span></code> method, if there is an error when starting the program in the furnace,
+the user will be prompted to check the device and retry the operation. If the user chooses not to retry,
+the error will be raised and the task that uses the device will be stopped.</p>
+</section>
+</section>
+<section id="mocking-the-device">
+<h3>Mocking the device<a class="headerlink" href="#mocking-the-device" title="Link to this heading">#</a></h3>
+<p>When the code is made, it will be necessary to test it without connecting to the real device so that
+we can detect any bugs in the workflow. For this purpose, alabos provides a <code class="docutils literal notranslate"><span class="pre">&#64;mock</span></code> decorator to
+mock the device.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">&#64;mock</span></code> decorator can skip the method call and return a predefined value. For example, if you want to mock the
+<code class="docutils literal notranslate"><span class="pre">get_temperature</span></code> method, you can use the following code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alab_management</span> <span class="kn">import</span> <span class="n">mock</span>
+
+<span class="k">class</span> <span class="nc">BoxFurnace</span><span class="p">(</span><span class="n">BaseDevice</span><span class="p">):</span>
+    <span class="o">...</span>
+    
+    <span class="nd">@mock</span><span class="p">(</span><span class="n">return_constant</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_temperature</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">get_temperature</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If it is in the simulation mode, the <code class="docutils literal notranslate"><span class="pre">get_temperature</span></code> method will return 30 without calling the real method to read
+the furnace sensor.</p>
+<p>What’s more, you can also use the <code class="docutils literal notranslate"><span class="pre">&#64;mock</span></code> decorator to return a mocked object. For example, if you want to mock the
+<code class="docutils literal notranslate"><span class="pre">FurnaceController</span></code> object in the <code class="docutils literal notranslate"><span class="pre">get_driver</span></code> method, you can use the following code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alab_management</span> <span class="kn">import</span> <span class="n">mock</span>
+
+<span class="k">class</span> <span class="nc">BoxFurnace</span><span class="p">(</span><span class="n">BaseDevice</span><span class="p">):</span>
+    <span class="o">...</span>
+    
+    <span class="nd">@mock</span><span class="p">(</span><span class="n">object_type</span><span class="o">=</span><span class="n">FurnaceController</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_driver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">FurnaceController</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">com_port_id</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If the system is in the simulation mode, the <code class="docutils literal notranslate"><span class="pre">get_driver</span></code> method will return a mocked <code class="docutils literal notranslate"><span class="pre">FurnaceController</span></code> object. You can
+still call the methods of the <code class="docutils literal notranslate"><span class="pre">FurnaceController</span></code> object, but the real methods will not be called.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For more information about the <code class="docutils literal notranslate"><span class="pre">&#64;mock</span></code> decorator, you can check its docstring at <a class="reference internal" href="alab_management.device_view.device.html#alab_management.device_view.device.mock" title="alab_management.device_view.device.mock"><span class="xref myst py py-func"><code class="docutils literal notranslate"><span class="pre">&#64;mock</span></code></span></a>.</p>
+</div>
+</section>
+</section>
+<section id="registering-the-device">
+<h2>Registering the device<a class="headerlink" href="#registering-the-device" title="Link to this heading">#</a></h2>
+<p>After defining the device, you will also need to register the device in the system. To do so,
+you can use the <code class="docutils literal notranslate"><span class="pre">add_device</span></code> method in the <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file at the root of the folder.</p>
+<p><code class="docutils literal notranslate"><span class="pre">add_device</span></code> takes a device object as an argument and registers the device in the system. You will need to
+pass a unique device name as well as other arguments that are required by the device when creating the device object.</p>
+<p>You can create multiple devices in the <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file. For example, if you have four box furnaces, you can create
+four box furnaces in the <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alab_management</span> <span class="kn">import</span> <span class="n">add_device</span>
+
+<span class="kn">from</span> <span class="nn">.devices.box_furnace</span> <span class="kn">import</span> <span class="n">BoxFurnace</span>
+
+<span class="n">add_device</span><span class="p">(</span><span class="n">BoxFurnace</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;box_1&quot;</span><span class="p">,</span> <span class="n">com_port_id</span><span class="o">=</span><span class="s2">&quot;COM3&quot;</span><span class="p">))</span>
+<span class="n">add_device</span><span class="p">(</span><span class="n">BoxFurnace</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;box_2&quot;</span><span class="p">,</span> <span class="n">com_port_id</span><span class="o">=</span><span class="s2">&quot;COM4&quot;</span><span class="p">))</span>
+<span class="n">add_device</span><span class="p">(</span><span class="n">BoxFurnace</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;box_3&quot;</span><span class="p">,</span> <span class="n">com_port_id</span><span class="o">=</span><span class="s2">&quot;COM5&quot;</span><span class="p">))</span>
+<span class="n">add_device</span><span class="p">(</span><span class="n">BoxFurnace</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;box_4&quot;</span><span class="p">,</span> <span class="n">com_port_id</span><span class="o">=</span><span class="s2">&quot;COM6&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="registering-standalone-sample-positions">
+<h2>Registering standalone sample positions<a class="headerlink" href="#registering-standalone-sample-positions" title="Link to this heading">#</a></h2>
+<p>Sometimes, the sample positions may not be associated with any device. For example, you may have serveral sample positions
+that are served as a buffer area for the crucibles. In this case, you can register the standalone sample positions in the
+<code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file as well:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alab_management</span> <span class="kn">import</span> <span class="n">add_standalone_sample_position</span><span class="p">,</span> <span class="n">SamplePosition</span>
+
+<span class="n">add_standalone_sample_position</span><span class="p">(</span>
+    <span class="n">SamplePosition</span><span class="p">(</span>
+        <span class="s2">&quot;crucible_buffer&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The buffer area for the crucibles&quot;</span><span class="p">,</span>
+        <span class="n">number</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="what-s-next">
+<h2>What’s next<a class="headerlink" href="#what-s-next" title="Link to this heading">#</a></h2>
+<p>After defining the device, you can use the device in the task. In the next tutorial, we will show you how to create a task
+that will request the device and sample positions to perform the experiment.</p>
+</section>
 </section>
 
 
-              </div>
+                </article>
               
-        </div>
-    </div>
-    
-    
-    <div class='prev-next-bottom'>
-        
-    <a class='left-prev' id="prev-link" href="setup.html" title="previous page">Set up definition folder</a>
-    <a class='right-next' id="next-link" href="task_definition.html" title="next page">Defining a new task</a>
 
-    </div>
-    <footer class="footer mt-5 mt-md-0">
-    <div class="container">
-      <p>
-        
-          By Alab Project Team<br/>
-        
-            &copy; Copyright 2024, Alab Project Team.<br/>
-      </p>
-    </div>
-  </footer>
-</main>
-
-
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="setup.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Set up configuration folder</p>
       </div>
+    </a>
+    <a class="right-next"
+       href="task_definition.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Defining tasks</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementing-boxfurnace">Implementing <code class="docutils literal notranslate"><span class="pre">BoxFurnace</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementing-all-abstract-methods">Implementing all abstract methods</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-the-device-interface">Defining the device interface</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-message">Setting up the message</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#error-handling">Error handling</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mocking-the-device">Mocking the device</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registering-the-device">Registering the device</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registering-standalone-sample-positions">Registering standalone sample positions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-s-next">What’s next</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Alab Project Team
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Ceder group.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
     </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    
-  <script src="_static/js/index.d3f166471bb80abb5163.js"></script>
-
-
-    
+  <footer class="bd-footer">
+  </footer>
   </body>
 </html>

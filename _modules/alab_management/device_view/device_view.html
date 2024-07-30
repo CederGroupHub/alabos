@@ -1,386 +1,360 @@
+
 <!DOCTYPE html>
 
-<html lang="en">
+
+<html lang="en" data-content_root="../../../" >
+
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>alab_management.device_view.device_view &#8212; Alab Management</title>
-    
-  <link rel="stylesheet" href="../../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+    <title>alab_management.device_view.device_view &#8212; Alab Management 1.0.1</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
-    
-  <link rel="stylesheet"
-    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    
-      
-  <link rel="stylesheet"
-    href="../../../_static/vendor/open-sans_all/1.44.1/index.css">
-  <link rel="stylesheet"
-    href="../../../_static/vendor/lato_latin-ext/1.44.1/index.css">
-
-    
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-book-theme.40e2e510f6b7d1648584402491bb10fe.css?v=a123c646" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=32297c5f" />
-    
-  <link rel="preload" as="script" href="../../../_static/js/index.d3f166471bb80abb5163.js">
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=87e54e7c" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=c5b77fbd"></script>
+    <script src="../../../_static/documentation_options.js?v=423d4ce3"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
-    <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
-    <script src="../../../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js?v=dbd2e957"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/alab_management/device_view/device_view';</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
-
-
-
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
-    
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-    <div class="container-xl">
-      <div class="row">
-          
-<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
     
-        <div class="navbar-brand-box">
-<a class="navbar-brand text-wrap" href="../../../index.html">
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
   
   
-  <h1 class="site-logo" id="site-title">Alab Management</h1>
   
+  
+  
+  
+    <p class="title logo__title">Alab Management 1.0.1</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../../index.html">
+                    Overview
+                </a>
+            </li>
+        </ul>
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorial.html">Tutorial</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../setup.html">Set up configuration folder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../device_definition.html">Defining devices and sample positions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../task_definition.html">Defining tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../start_lab.html">Launching lab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../submit_experiments.html">Submitting the synthesis experiments</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html">Best Practices</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../advance_topics.html">Advance Topics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../test.html">Testing for Alab Definition</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../development.html">Development</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../modules.html">API Docs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../alab_management.html">alab_management package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../alab_management.builders.html">alab_management.builders package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.builders.experimentbuilder.html">alab_management.builders.experimentbuilder module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.builders.samplebuilder.html">alab_management.builders.samplebuilder module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../alab_management.device_view.html">alab_management.device_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.device_view.dbattributes.html">alab_management.device_view.dbattributes module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.device_view.device.html">alab_management.device_view.device module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.device_view.device_view.html">alab_management.device_view.device_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../alab_management.experiment_view.html">alab_management.experiment_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.experiment_view.completed_experiment_view.html">alab_management.experiment_view.completed_experiment_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.experiment_view.experiment.html">alab_management.experiment_view.experiment module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.experiment_view.experiment_view.html">alab_management.experiment_view.experiment_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../alab_management.resource_manager.html">alab_management.resource_manager package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.resource_manager.enums.html">alab_management.resource_manager.enums module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.resource_manager.resource_manager.html">alab_management.resource_manager.resource_manager module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.resource_manager.resource_requester.html">alab_management.resource_manager.resource_requester module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../alab_management.sample_view.html">alab_management.sample_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.sample_view.completed_sample_view.html">alab_management.sample_view.completed_sample_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.sample_view.sample.html">alab_management.sample_view.sample module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.sample_view.sample_view.html">alab_management.sample_view.sample_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../alab_management.task_manager.html">alab_management.task_manager package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.task_manager.task_manager.html">alab_management.task_manager.task_manager module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../alab_management.task_view.html">alab_management.task_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.task_view.completed_task_view.html">alab_management.task_view.completed_task_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.task_view.task.html">alab_management.task_view.task module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.task_view.task_enums.html">alab_management.task_view.task_enums module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.task_view.task_view.html">alab_management.task_view.task_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.alarm.html">alab_management.alarm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.config.html">alab_management.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.device_manager.html">alab_management.device_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.experiment_manager.html">alab_management.experiment_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.lab_view.html">alab_management.lab_view module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.logger.html">alab_management.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.task_actor.html">alab_management.task_actor module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.user_input.html">alab_management.user_input module</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/idocx/alab_management" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
 </a>
-</div><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form>
-<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-    <ul class="nav sidenav_l1">
- <li class="toctree-l1">
-  <a class="reference internal" href="../../../index.html">
-   Overview
-  </a>
- </li>
-</ul>
-<p class="caption collapsible-parent" role="heading">
- <span class="caption-text">
-  Quickstart
- </span>
- <i class="fas fa-chevron-down">
- </i>
-</p>
-<ul class="collapse-ul nav sidenav_l1">
- <li class="toctree-l1">
-  <a class="reference internal" href="../../../installation.html">
-   Installation
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../../setup.html">
-   Setup definition folder
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../../device_definition.html">
-   Defining new devices
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../../task_definition.html">
-   Defining new tasks
-  </a>
- </li>
-</ul>
-<ul class="nav sidenav_l1">
- <li class="toctree-l1">
-  <a class="reference internal" href="../../../development.html">
-   Development
-  </a>
- </li>
- <li class="toctree-l1 collapsible-parent">
-  <a class="reference internal" href="../../../modules.html">
-   API Docs
-  </a>
-  <ul class="collapse-ul">
-   <li class="toctree-l2 collapsible-parent">
-    <a class="reference internal" href="../../../alab_management.html">
-     alab_management package
-    </a>
-    <ul class="collapse-ul">
-     <li class="toctree-l3 collapsible-parent">
-      <a class="reference internal" href="../../../alab_management.builders.html">
-       alab_management.builders package
-      </a>
-      <ul class="collapse-ul">
-       <li class="toctree-l4">
-        <a class="reference internal" href="../../../alab_management.builders.experimentbuilder.html">
-         alab_management.builders.experimentbuilder module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="../../../alab_management.builders.samplebuilder.html">
-         alab_management.builders.samplebuilder module
-        </a>
-       </li>
-      </ul>
-      <i class="fas fa-chevron-down">
-      </i>
-     </li>
-     <li class="toctree-l3 collapsible-parent">
-      <a class="reference internal" href="../../../alab_management.device_view.html">
-       alab_management.device_view package
-      </a>
-      <ul class="collapse-ul">
-       <li class="toctree-l4">
-        <a class="reference internal" href="../../../alab_management.device_view.dbattributes.html">
-         alab_management.device_view.dbattributes module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="../../../alab_management.device_view.device.html">
-         alab_management.device_view.device module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="../../../alab_management.device_view.device_view.html">
-         alab_management.device_view.device_view module
-        </a>
-       </li>
-      </ul>
-      <i class="fas fa-chevron-down">
-      </i>
-     </li>
-     <li class="toctree-l3 collapsible-parent">
-      <a class="reference internal" href="../../../alab_management.experiment_view.html">
-       alab_management.experiment_view package
-      </a>
-      <ul class="collapse-ul">
-       <li class="toctree-l4">
-        <a class="reference internal" href="../../../alab_management.experiment_view.completed_experiment_view.html">
-         alab_management.experiment_view.completed_experiment_view module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="../../../alab_management.experiment_view.experiment.html">
-         alab_management.experiment_view.experiment module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="../../../alab_management.experiment_view.experiment_view.html">
-         alab_management.experiment_view.experiment_view module
-        </a>
-       </li>
-      </ul>
-      <i class="fas fa-chevron-down">
-      </i>
-     </li>
-     <li class="toctree-l3 collapsible-parent">
-      <a class="reference internal" href="../../../alab_management.sample_view.html">
-       alab_management.sample_view package
-      </a>
-      <ul class="collapse-ul">
-       <li class="toctree-l4">
-        <a class="reference internal" href="../../../alab_management.sample_view.completed_sample_view.html">
-         alab_management.sample_view.completed_sample_view module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="../../../alab_management.sample_view.sample.html">
-         alab_management.sample_view.sample module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="../../../alab_management.sample_view.sample_view.html">
-         alab_management.sample_view.sample_view module
-        </a>
-       </li>
-      </ul>
-      <i class="fas fa-chevron-down">
-      </i>
-     </li>
-     <li class="toctree-l3 collapsible-parent">
-      <a class="reference internal" href="../../../alab_management.task_manager.html">
-       alab_management.task_manager package
-      </a>
-      <ul class="collapse-ul">
-       <li class="toctree-l4">
-        <a class="reference internal" href="../../../alab_management.task_manager.enums.html">
-         alab_management.task_manager.enums module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="../../../alab_management.task_manager.resource_requester.html">
-         alab_management.task_manager.resource_requester module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="../../../alab_management.task_manager.task_manager.html">
-         alab_management.task_manager.task_manager module
-        </a>
-       </li>
-      </ul>
-      <i class="fas fa-chevron-down">
-      </i>
-     </li>
-     <li class="toctree-l3 collapsible-parent">
-      <a class="reference internal" href="../../../alab_management.task_view.html">
-       alab_management.task_view package
-      </a>
-      <ul class="collapse-ul">
-       <li class="toctree-l4">
-        <a class="reference internal" href="../../../alab_management.task_view.completed_task_view.html">
-         alab_management.task_view.completed_task_view module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="../../../alab_management.task_view.task.html">
-         alab_management.task_view.task module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="../../../alab_management.task_view.task_enums.html">
-         alab_management.task_view.task_enums module
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="../../../alab_management.task_view.task_view.html">
-         alab_management.task_view.task_view module
-        </a>
-       </li>
-      </ul>
-      <i class="fas fa-chevron-down">
-      </i>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../alab_management.alarm.html">
-       alab_management.alarm module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../alab_management.config.html">
-       alab_management.config module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../alab_management.device_manager.html">
-       alab_management.device_manager module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../alab_management.experiment_manager.html">
-       alab_management.experiment_manager module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../alab_management.lab_view.html">
-       alab_management.lab_view module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../alab_management.logger.html">
-       alab_management.logger module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../alab_management.task_actor.html">
-       alab_management.task_actor module
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../alab_management.user_input.html">
-       alab_management.user_input module
-      </a>
-     </li>
-    </ul>
-    <i class="fas fa-chevron-down">
-    </i>
-   </li>
-  </ul>
-  <i class="fas fa-chevron-down">
-  </i>
- </li>
-</ul>
-
-</nav> <!-- To handle the deprecated key -->
-
-<div class="navbar_extra_footer">
-  Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
-</div>
-
-</div>
 
 
-          
 
 
-          
-<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
-    
-    <div class="row topbar fixed-top container-xl">
-    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
     </div>
-    <div class="col pl-2 topbar-main">
-        
-        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-            <i class="fas fa-bars"></i>
-            <i class="fas fa-arrow-left"></i>
-            <i class="fas fa-arrow-up"></i>
-        </button>
-        
-        
-        <!-- Source interaction buttons -->
-
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
-        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
-    <div class="dropdown-buttons sourcebuttons">
-        <a class="repository-button"
-            href="https://github.com/idocx/alab_management"><button type="button" class="btn btn-secondary topbarbtn"
-                data-toggle="tooltip" data-placement="left" title="Source repository"><i
-                    class="fab fa-github"></i>repository</button></a>
-        
-        
-    </div>
+  
 </div>
+</div>
+              
+              
 
-
-        <!-- Full screen (wrap in <a> to have style consistency -->
-        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-                title="Fullscreen mode"><i
-                    class="fas fa-expand"></i></button></a>
-
-        <!-- Launch buttons -->
-
-    </div>
-
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
     <!-- Table of contents -->
-    <div class="d-none d-md-block col-md-2 bd-toc show">
-        
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
     </div>
 </div>
-    <div id="main-content" class="row">
-        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
-        
-              <div>
+
+              
                 
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
   <h1>Source code for alab_management.device_view.device_view</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Wrapper over the ``devices`` collection.&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Collection</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span><span class="p">,</span> <span class="n">unique</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">import</span> <span class="nn">pymongo</span>  <span class="c1"># type: ignore</span>
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>  <span class="c1"># type: ignore</span>
@@ -393,11 +367,16 @@
 <span class="n">_DeviceType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_DeviceType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">BaseDevice</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
 
 
-<div class="viewcode-block" id="DeviceConnectionError"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceConnectionError">[docs]</a><span class="k">class</span> <span class="nc">DeviceConnectionError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="DeviceConnectionError">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceConnectionError">[docs]</a>
+<span class="k">class</span> <span class="nc">DeviceConnectionError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generic error signifying that connection to a device has failed.&quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="DeviceTaskStatus"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceTaskStatus">[docs]</a><span class="nd">@unique</span>
+
+<div class="viewcode-block" id="DeviceTaskStatus">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceTaskStatus">[docs]</a>
+<span class="nd">@unique</span>
 <span class="k">class</span> <span class="nc">DeviceTaskStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The Task status of devices. Used by TaskManager to decide whether a Device is available for to execute a Task.&quot;&quot;&quot;</span>
 
@@ -407,7 +386,10 @@
     <span class="n">ERROR</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="DevicePauseStatus"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DevicePauseStatus">[docs]</a><span class="nd">@unique</span>
+
+<div class="viewcode-block" id="DevicePauseStatus">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DevicePauseStatus">[docs]</a>
+<span class="nd">@unique</span>
 <span class="k">class</span> <span class="nc">DevicePauseStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Pause status of the Device. This is used to pause the device outside of the typical Task queue (like by an</span>
 <span class="sd">    operator for maintenance or refilling consumables).</span>
@@ -418,7 +400,10 @@
     <span class="n">PAUSED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="DeviceView"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView">[docs]</a><span class="k">class</span> <span class="nc">DeviceView</span><span class="p">:</span>
+
+<div class="viewcode-block" id="DeviceView">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView">[docs]</a>
+<span class="k">class</span> <span class="nc">DeviceView</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Device view provides API to get/set the status</span>
 <span class="sd">    of a device as well as request ownership of one device.</span>
@@ -436,8 +421,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">create_index</span><span class="p">([(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">HASHED</span><span class="p">)])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_list</span> <span class="o">=</span> <span class="n">get_all_devices</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">get_lock</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span> <span class="o">=</span> <span class="n">SampleView</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__connected_to_devices</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span> <span class="o">=</span> <span class="n">SampleView</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">connect_to_devices</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__connect_all_devices</span><span class="p">()</span>
@@ -447,7 +432,9 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">device</span><span class="o">.</span><span class="n">_connect_wrapper</span><span class="p">()</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">DeviceConnectionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not connect to </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+                <span class="k">raise</span> <span class="n">DeviceConnectionError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Could not connect to </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">!&quot;</span>
+                <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connected to </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__connected_to_devices</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -456,11 +443,15 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">device</span><span class="o">.</span><span class="n">_disconnect_wrapper</span><span class="p">()</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">DeviceConnectionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not disconnect from </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+                <span class="k">raise</span> <span class="n">DeviceConnectionError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Could not disconnect from </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">!&quot;</span>
+                <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Disconnected from </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__connected_to_devices</span> <span class="o">=</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="DeviceView.sync_device_status"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.sync_device_status">[docs]</a>    <span class="k">def</span> <span class="nf">sync_device_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DeviceView.sync_device_status">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.sync_device_status">[docs]</a>
+    <span class="k">def</span> <span class="nf">sync_device_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sync the device status (usually when the system is set up).</span>
 
@@ -468,7 +459,11 @@
 <span class="sd">        status to ``OCCUPIED``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_list</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="n">status</span> <span class="o">=</span> <span class="n">DeviceTaskStatus</span><span class="o">.</span><span class="n">OCCUPIED</span> <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">is_running</span><span class="p">()</span> <span class="k">else</span> <span class="n">DeviceTaskStatus</span><span class="o">.</span><span class="n">IDLE</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">DeviceTaskStatus</span><span class="o">.</span><span class="n">OCCUPIED</span>
+                <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">is_running</span><span class="p">()</span>
+                <span class="k">else</span> <span class="n">DeviceTaskStatus</span><span class="o">.</span><span class="n">IDLE</span>
+            <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_status</span><span class="p">(</span>
                 <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="n">target_status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
@@ -476,7 +471,10 @@
                 <span class="n">task_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="DeviceView.add_devices_to_db"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.add_devices_to_db">[docs]</a>    <span class="k">def</span> <span class="nf">add_devices_to_db</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DeviceView.add_devices_to_db">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.add_devices_to_db">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_devices_to_db</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Insert device definitions to db, which includes devices&#39; name, descriptions, parameters,</span>
 <span class="sd">        type (class name).</span>
@@ -486,14 +484,17 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_list</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">})</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Duplicated device name </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, did you cleanup the database?&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Duplicated device name </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, did you cleanup the database?&quot;</span>
+                <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span>
                 <span class="p">{</span>
                     <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="n">device</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
                     <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">device</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
                     <span class="s2">&quot;sample_positions&quot;</span><span class="p">:</span> <span class="p">[</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}{</span><span class="n">SamplePosition</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="si">}{</span><span class="n">sample_pos</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">sample_pos</span> <span class="ow">in</span> <span class="n">device</span><span class="o">.</span><span class="n">sample_positions</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}{</span><span class="n">SamplePosition</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="si">}{</span><span class="n">sample_pos</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="k">for</span> <span class="n">sample_pos</span> <span class="ow">in</span> <span class="n">device</span><span class="o">.</span><span class="n">sample_positions</span>
                     <span class="p">],</span>
                     <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">DeviceTaskStatus</span><span class="o">.</span><span class="n">IDLE</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="s2">&quot;pause_status&quot;</span><span class="p">:</span> <span class="n">DevicePauseStatus</span><span class="o">.</span><span class="n">RELEASED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
@@ -505,20 +506,28 @@
                 <span class="p">}</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="DeviceView.get_all"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_all">[docs]</a>    <span class="k">def</span> <span class="nf">get_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+
+<div class="viewcode-block" id="DeviceView.get_all">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_all">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all the devices in the database, used for dashboard.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">find</span><span class="p">())</span></div>
+        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">find</span><span class="p">())</span></div>
+
 
     <span class="k">def</span> <span class="nf">_clean_up_device_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Clean up the device collection.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">drop</span><span class="p">()</span>
 
-<div class="viewcode-block" id="DeviceView.request_devices"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.request_devices">[docs]</a>    <span class="k">def</span> <span class="nf">request_devices</span><span class="p">(</span>
+<div class="viewcode-block" id="DeviceView.request_devices">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.request_devices">[docs]</a>
+    <span class="k">def</span> <span class="nf">request_devices</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span>
-        <span class="n">device_names_str</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Collection</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">device_types_str</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Collection</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=unsubscriptable-object</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]]]:</span>
+        <span class="n">device_names_str</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">device_types_str</span><span class="p">:</span> <span class="p">(</span>
+            <span class="n">Collection</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=unsubscriptable-object</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Request a list of device, this function will return the name of devices if all the requested device is ready.</span>
 
@@ -543,29 +552,68 @@
             <span class="n">device_types_str</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">device_types_str</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">device_types_str</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Currently we do not allow duplicated device types in one request.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Currently we do not allow duplicated device types in one request.&quot;</span>
+            <span class="p">)</span>
 
-        <span class="n">idle_devices</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">idle_devices</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">():</span>  <span class="c1"># pylint: disable=not-callable</span>
             <span class="k">for</span> <span class="n">device_name</span> <span class="ow">in</span> <span class="n">device_names_str</span><span class="p">:</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_available_devices</span><span class="p">(</span><span class="n">device_str</span><span class="o">=</span><span class="n">device_name</span><span class="p">,</span> <span class="n">type_or_name</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_available_devices</span><span class="p">(</span>
+                    <span class="n">device_str</span><span class="o">=</span><span class="n">device_name</span><span class="p">,</span> <span class="n">type_or_name</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span>
+                <span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
                     <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># cannot meet all requirement, return None</span>
                 <span class="n">idle_devices</span><span class="p">[</span><span class="n">device_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">device_types_str</span><span class="p">:</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_available_devices</span><span class="p">(</span><span class="n">device_str</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">type_or_name</span><span class="o">=</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_available_devices</span><span class="p">(</span>
+                    <span class="n">device_str</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">type_or_name</span><span class="o">=</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span>
+                <span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
                     <span class="k">return</span> <span class="kc">None</span>
-                <span class="c1"># just pick the first device</span>
-                <span class="n">idle_devices</span><span class="p">[</span><span class="n">device</span><span class="p">]</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
-                    <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">device_</span><span class="p">:</span> <span class="ow">not</span> <span class="n">device_</span><span class="p">[</span><span class="s2">&quot;need_release&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">),</span>
-                    <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">same_task_devices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+                    <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">device_</span><span class="p">:</span> <span class="ow">not</span> <span class="n">device_</span><span class="p">[</span><span class="s2">&quot;need_release&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">)</span>
                 <span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">same_task_devices</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># just pick the first device</span>
+                    <span class="n">idle_devices</span><span class="p">[</span><span class="n">device</span><span class="p">]</span> <span class="o">=</span> <span class="n">same_task_devices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># if no device is held by the same task, pick the device with least samples</span>
+                    <span class="n">minimum_number_of_samples</span> <span class="o">=</span> <span class="mi">999999999</span>
+                    <span class="k">for</span> <span class="n">device_</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+                        <span class="n">samples_on_device_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span><span class="o">.</span><span class="n">get_samples_on_device</span><span class="p">(</span>
+                            <span class="n">device_</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                        <span class="p">)</span>
+                        <span class="n">number_of_samples_in_device_</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+                            <span class="nb">len</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span> <span class="k">for</span> <span class="n">samples</span> <span class="ow">in</span> <span class="n">samples_on_device_</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="n">number_of_samples_in_device_</span> <span class="o">&lt;</span> <span class="n">minimum_number_of_samples</span><span class="p">:</span>
+                            <span class="n">minimum_number_of_samples</span> <span class="o">=</span> <span class="n">number_of_samples_in_device_</span>
+                            <span class="n">idle_devices</span><span class="p">[</span><span class="n">device</span><span class="p">]</span> <span class="o">=</span> <span class="n">device_</span>
             <span class="k">return</span> <span class="n">idle_devices</span></div>
 
-<div class="viewcode-block" id="DeviceView.get_available_devices"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_available_devices">[docs]</a>    <span class="k">def</span> <span class="nf">get_available_devices</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">device_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">type_or_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]]:</span>
+
+<div class="viewcode-block" id="DeviceView.get_sample_on_device">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_sample_on_device">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_sample_on_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all the samples on a device.</span>
+
+<span class="sd">        This function will directly call the ``SampleView.get_samples_on_device`` method for</span>
+<span class="sd">        backward compatibility.</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">            (in version 1.0.1) This function has been moved to ``SampleView`` class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span><span class="o">.</span><span class="n">get_samples_on_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DeviceView.get_available_devices">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_available_devices">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_available_devices</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">device_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">type_or_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bool</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given device type, it will return all the device with this type.</span>
 
@@ -621,33 +669,57 @@
             <span class="k">for</span> <span class="n">device_entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">request_dict</span><span class="p">)</span>
         <span class="p">]</span></div>
 
-<div class="viewcode-block" id="DeviceView.get_device"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_device">[docs]</a>    <span class="k">def</span> <span class="nf">get_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+
+<div class="viewcode-block" id="DeviceView.get_device">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_device">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get device by device name, if not found, raises ``ValueError``.&quot;&quot;&quot;</span>
         <span class="n">device_entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">device_name</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">device_entry</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find device with name: </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">device_entry</span></div>
 
-<div class="viewcode-block" id="DeviceView.get_status"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DeviceTaskStatus</span><span class="p">:</span>
+
+<div class="viewcode-block" id="DeviceView.get_status">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_status">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DeviceTaskStatus</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get device status by device name, if not found, raise ``ValueError``.&quot;&quot;&quot;</span>
         <span class="n">device_entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_device</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">)</span>
-
         <span class="k">return</span> <span class="n">DeviceTaskStatus</span><span class="p">[</span><span class="n">device_entry</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]]</span></div>
 
-<div class="viewcode-block" id="DeviceView.occupy_device"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.occupy_device">[docs]</a>    <span class="k">def</span> <span class="nf">occupy_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DeviceView.occupy_device">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.occupy_device">[docs]</a>
+    <span class="k">def</span> <span class="nf">occupy_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">BaseDevice</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Occupy a device with given task id.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_status</span><span class="p">(</span>
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
             <span class="n">required_status</span><span class="o">=</span><span class="n">DeviceTaskStatus</span><span class="o">.</span><span class="n">IDLE</span><span class="p">,</span>
             <span class="n">target_status</span><span class="o">=</span><span class="n">DeviceTaskStatus</span><span class="o">.</span><span class="n">OCCUPIED</span><span class="p">,</span>
             <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
+        <span class="n">device_name</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">BaseDevice</span><span class="p">)</span> <span class="k">else</span> <span class="n">device</span>
+        <span class="c1"># Wait until the device status has been updated to OCCUPIED</span>
+        <span class="k">while</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+            <span class="o">!=</span> <span class="n">DeviceTaskStatus</span><span class="o">.</span><span class="n">OCCUPIED</span><span class="o">.</span><span class="n">name</span>
+        <span class="p">):</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DeviceView.get_devices_by_task"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_devices_by_task">[docs]</a>    <span class="k">def</span> <span class="nf">get_devices_by_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">]:</span>
+
+<div class="viewcode-block" id="DeviceView.get_devices_by_task">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_devices_by_task">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_devices_by_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get devices given a task id (regardless of its status!).&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_device_list</span><span class="p">[</span><span class="n">device</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span> <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">})]</span></div>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_device_list</span><span class="p">[</span><span class="n">device</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span>
+            <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">})</span>
+        <span class="p">]</span></div>
 
-<div class="viewcode-block" id="DeviceView.release_device"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.release_device">[docs]</a>    <span class="k">def</span> <span class="nf">release_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DeviceView.release_device">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.release_device">[docs]</a>
+    <span class="k">def</span> <span class="nf">release_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Release a device.</span>
 
@@ -661,7 +733,10 @@
             <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">DeviceTaskStatus</span><span class="o">.</span><span class="n">IDLE</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
         <span class="p">}</span>
 
-        <span class="k">if</span> <span class="n">DevicePauseStatus</span><span class="p">[</span><span class="n">device_entry</span><span class="p">[</span><span class="s2">&quot;pause_status&quot;</span><span class="p">]]</span> <span class="o">==</span> <span class="n">DevicePauseStatus</span><span class="o">.</span><span class="n">REQUESTED</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">DevicePauseStatus</span><span class="p">[</span><span class="n">device_entry</span><span class="p">[</span><span class="s2">&quot;pause_status&quot;</span><span class="p">]]</span>
+            <span class="o">==</span> <span class="n">DevicePauseStatus</span><span class="o">.</span><span class="n">REQUESTED</span>
+        <span class="p">):</span>
             <span class="n">update_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                 <span class="p">{</span>
                     <span class="s2">&quot;pause_status&quot;</span><span class="p">:</span> <span class="n">DevicePauseStatus</span><span class="o">.</span><span class="n">PAUSED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
@@ -671,25 +746,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
             <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">device_name</span><span class="p">},</span>
             <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="n">update_dict</span><span class="p">},</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
+        <span class="c1"># wait until the device status has been updated to IDLE</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">&quot;IDLE&quot;</span><span class="p">:</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DeviceView.get_samples_on_device"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_samples_on_device">[docs]</a>    <span class="k">def</span> <span class="nf">get_samples_on_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all samples on a device.&quot;&quot;&quot;</span>
-        <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_device</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">)</span>
-        <span class="n">_sample_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;samples&quot;</span><span class="p">)</span>
-
-        <span class="n">samples_per_position</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">position</span> <span class="ow">in</span> <span class="n">device</span><span class="p">[</span><span class="s2">&quot;sample_positions&quot;</span><span class="p">]:</span>
-            <span class="n">samples</span> <span class="o">=</span> <span class="n">_sample_collection</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$regex&quot;</span><span class="p">:</span> <span class="n">position</span><span class="p">}})</span>
-            <span class="n">samples_per_position</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">sample</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">samples</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">samples_per_position</span></div>
 
     <span class="k">def</span> <span class="nf">_update_status</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">device</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-        <span class="n">required_status</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">DeviceTaskStatus</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">DeviceTaskStatus</span><span class="p">]]],</span>
+        <span class="n">device</span><span class="p">:</span> <span class="n">BaseDevice</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">required_status</span><span class="p">:</span> <span class="n">DeviceTaskStatus</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">DeviceTaskStatus</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">target_status</span><span class="p">:</span> <span class="n">DeviceTaskStatus</span><span class="p">,</span>
-        <span class="n">task_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">],</span>
+        <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A method that check and update the status of a device.</span>
@@ -702,21 +770,29 @@
         <span class="n">device_entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">device_name</span><span class="p">})</span>
 
         <span class="k">if</span> <span class="n">device_entry</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find device (</span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">). Did you run `setup` command?&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Cannot find device (</span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">). Did you run `setup` command?&quot;</span>
+            <span class="p">)</span>
 
-        <span class="n">required_status</span> <span class="o">=</span> <span class="p">[</span><span class="n">required_status</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">required_status</span><span class="p">,</span> <span class="n">DeviceTaskStatus</span><span class="p">)</span> <span class="k">else</span> <span class="n">required_status</span>
+        <span class="n">required_status</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">[</span><span class="n">required_status</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">required_status</span><span class="p">,</span> <span class="n">DeviceTaskStatus</span><span class="p">)</span>
+            <span class="k">else</span> <span class="n">required_status</span>
+        <span class="p">)</span>
 
         <span class="c1"># if task_id has the same value, we will not check the current status</span>
         <span class="k">if</span> <span class="n">device_entry</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">task_id</span><span class="p">:</span>
             <span class="n">required_status</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="k">if</span> <span class="n">required_status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">DeviceTaskStatus</span><span class="p">[</span><span class="n">device_entry</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">required_status</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">required_status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">DeviceTaskStatus</span><span class="p">[</span><span class="n">device_entry</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">required_status</span>
+        <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Device&#39;s current status (</span><span class="si">{</span><span class="n">device_entry</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">) is &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;not in allowed set of statuses </span><span class="si">{</span><span class="p">[</span><span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">required_status</span><span class="p">]</span><span class="si">}</span><span class="s2">. &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;Cannot change status to </span><span class="si">{</span><span class="n">target_status</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
             <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">device_name</span><span class="p">},</span>
             <span class="p">{</span>
@@ -728,7 +804,9 @@
             <span class="p">},</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="DeviceView.query_property"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.query_property">[docs]</a>    <span class="k">def</span> <span class="nf">query_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prop</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="DeviceView.query_property">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.query_property">[docs]</a>
+    <span class="k">def</span> <span class="nf">query_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prop</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Query the property value of a device (with ``device_name``) with ``prop``.</span>
 
@@ -740,18 +818,28 @@
         <span class="n">device</span><span class="p">:</span> <span class="n">BaseDevice</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_list</span><span class="p">[</span><span class="n">device_name</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">prop</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find method with name: </span><span class="si">{</span><span class="n">prop</span><span class="si">}</span><span class="s2"> on </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Cannot find method with name: </span><span class="si">{</span><span class="n">prop</span><span class="si">}</span><span class="s2"> on </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">prop</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DeviceView.execute_command"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.execute_command">[docs]</a>    <span class="k">def</span> <span class="nf">execute_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DeviceView.execute_command">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.execute_command">[docs]</a>
+    <span class="k">def</span> <span class="nf">execute_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Call a callable function (``method``) with ``*args`` and ``**kwargs`` on ``device_name``.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__connected_to_devices</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;DeviceView cannot execute device commands without first connecting to the devices!&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="s2">&quot;DeviceView cannot execute device commands without first connecting to the devices!&quot;</span>
+            <span class="p">)</span>
         <span class="n">device_method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_property</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">device_method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DeviceView.set_message"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.set_message">[docs]</a>    <span class="k">def</span> <span class="nf">set_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DeviceView.set_message">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.set_message">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the device message. Message is used to communicate device state with the user dashboard.</span>
 
 <span class="sd">        Args:</span>
@@ -759,10 +847,15 @@
 <span class="sd">            message (str): message to be set</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">get_device</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">device_name</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span> <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()}},</span>
+        <span class="p">)</span></div>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">device_name</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">message</span><span class="p">}})</span></div>
 
-<div class="viewcode-block" id="DeviceView.get_message"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_message">[docs]</a>    <span class="k">def</span> <span class="nf">get_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="DeviceView.get_message">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_message">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets the current device message. Message is used to communicate device state with the user dashboard.</span>
 
 <span class="sd">        Args:</span>
@@ -770,7 +863,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_device</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">)[</span><span class="s2">&quot;message&quot;</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="DeviceView.get_all_attributes"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_all_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DeviceView.get_all_attributes">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_all_attributes">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_all_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the device attributes.</span>
 
 <span class="sd">        Args:</span>
@@ -783,7 +879,10 @@
         <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_device</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">device</span><span class="p">[</span><span class="s2">&quot;attributes&quot;</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="DeviceView.get_attribute"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">get_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DeviceView.get_attribute">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_attribute">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets a device attribute. Attributes are used to store device-specific values in the database.</span>
 
 <span class="sd">        Args:</span>
@@ -796,10 +895,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_device</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">attribute</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">device</span><span class="p">[</span><span class="s2">&quot;attributes&quot;</span><span class="p">]:</span>
-            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> does not have attribute </span><span class="si">{</span><span class="n">attribute</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> does not have attribute </span><span class="si">{</span><span class="n">attribute</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="n">device</span><span class="p">[</span><span class="s2">&quot;attributes&quot;</span><span class="p">][</span><span class="n">attribute</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="DeviceView.set_all_attributes"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.set_all_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">set_all_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DeviceView.set_all_attributes">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.set_all_attributes">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_all_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the device attributes.</span>
 
 <span class="sd">        Args:</span>
@@ -807,7 +911,6 @@
 <span class="sd">            attributes (dict): attributes to be set</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">get_device</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
             <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">device_name</span><span class="p">},</span>
             <span class="p">{</span>
@@ -818,7 +921,10 @@
             <span class="p">},</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="DeviceView.set_attribute"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.set_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">set_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DeviceView.set_attribute">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.set_attribute">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets a device attribute. Attributes are used to store device-specific values in the database.</span>
 
 <span class="sd">        Args:</span>
@@ -828,7 +934,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">attributes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_attributes</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">)</span>
         <span class="n">attributes</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
             <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">device_name</span><span class="p">},</span>
             <span class="p">{</span>
@@ -839,14 +944,18 @@
             <span class="p">},</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="DeviceView.pause_device"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.pause_device">[docs]</a>    <span class="k">def</span> <span class="nf">pause_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DeviceView.pause_device">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.pause_device">[docs]</a>
+    <span class="k">def</span> <span class="nf">pause_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Request pause for a specific device.&quot;&quot;&quot;</span>
         <span class="c1"># with self._lock():</span>
         <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_device</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">device</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">DeviceTaskStatus</span><span class="o">.</span><span class="n">IDLE</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-            <span class="n">new_pause_status</span> <span class="o">=</span> <span class="n">DevicePauseStatus</span><span class="o">.</span><span class="n">PAUSED</span><span class="o">.</span><span class="n">name</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">new_pause_status</span> <span class="o">=</span> <span class="n">DevicePauseStatus</span><span class="o">.</span><span class="n">REQUESTED</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">new_pause_status</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">DevicePauseStatus</span><span class="o">.</span><span class="n">PAUSED</span><span class="o">.</span><span class="n">name</span>
+            <span class="k">if</span> <span class="n">device</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">DeviceTaskStatus</span><span class="o">.</span><span class="n">IDLE</span><span class="o">.</span><span class="n">name</span>
+            <span class="k">else</span> <span class="n">DevicePauseStatus</span><span class="o">.</span><span class="n">REQUESTED</span><span class="o">.</span><span class="n">name</span>
+        <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
             <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">device_name</span><span class="p">},</span>
@@ -858,7 +967,10 @@
             <span class="p">},</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="DeviceView.unpause_device"><a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.unpause_device">[docs]</a>    <span class="k">def</span> <span class="nf">unpause_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DeviceView.unpause_device">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.unpause_device">[docs]</a>
+    <span class="k">def</span> <span class="nf">unpause_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Unpause a device.&quot;&quot;&quot;</span>
         <span class="c1"># with self._lock():</span>
         <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_device</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">)</span>
@@ -880,42 +992,78 @@
             <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="n">update_dict</span><span class="p">},</span>
         <span class="p">)</span></div>
 
+
     <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Disconnect from all devices when exiting the context manager.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__connected_to_devices</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__disconnect_all_devices</span><span class="p">()</span></div>
+
 </pre></div>
 
-              </div>
+                </article>
               
-        </div>
-    </div>
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
     
+<p class="component-author">
+By Alab Project Team
+</p>
+
+  </div>
+  
+  <div class="footer-item">
     
-    <div class='prev-next-bottom'>
+
+  <p class="copyright">
+    
+      © Copyright 2024, Ceder group.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
         
 
+      </main>
     </div>
-    <footer class="footer mt-5 mt-md-0">
-    <div class="container">
-      <p>
-        
-          By Alab Project Team<br/>
-        
-            &copy; Copyright 2024, Alab Project Team.<br/>
-      </p>
-    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
   </footer>
-</main>
-
-
-      </div>
-    </div>
-
-    
-  <script src="../../../_static/js/index.d3f166471bb80abb5163.js"></script>
-
-
-    
   </body>
 </html>

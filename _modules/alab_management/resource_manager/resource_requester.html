@@ -1,0 +1,964 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>alab_management.resource_manager.resource_requester &#8212; Alab Management 1.0.1</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=87e54e7c" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../_static/documentation_options.js?v=423d4ce3"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/alab_management/resource_manager/resource_requester';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Alab Management 1.0.1</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../../index.html">
+                    Overview
+                </a>
+            </li>
+        </ul>
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorial.html">Tutorial</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../setup.html">Set up configuration folder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../device_definition.html">Defining devices and sample positions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../task_definition.html">Defining tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../start_lab.html">Launching lab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../submit_experiments.html">Submitting the synthesis experiments</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html">Best Practices</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../advance_topics.html">Advance Topics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../test.html">Testing for Alab Definition</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../development.html">Development</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../modules.html">API Docs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../alab_management.html">alab_management package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../alab_management.builders.html">alab_management.builders package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.builders.experimentbuilder.html">alab_management.builders.experimentbuilder module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.builders.samplebuilder.html">alab_management.builders.samplebuilder module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../alab_management.device_view.html">alab_management.device_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.device_view.dbattributes.html">alab_management.device_view.dbattributes module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.device_view.device.html">alab_management.device_view.device module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.device_view.device_view.html">alab_management.device_view.device_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../alab_management.experiment_view.html">alab_management.experiment_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.experiment_view.completed_experiment_view.html">alab_management.experiment_view.completed_experiment_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.experiment_view.experiment.html">alab_management.experiment_view.experiment module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.experiment_view.experiment_view.html">alab_management.experiment_view.experiment_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../alab_management.resource_manager.html">alab_management.resource_manager package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.resource_manager.enums.html">alab_management.resource_manager.enums module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.resource_manager.resource_manager.html">alab_management.resource_manager.resource_manager module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.resource_manager.resource_requester.html">alab_management.resource_manager.resource_requester module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../alab_management.sample_view.html">alab_management.sample_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.sample_view.completed_sample_view.html">alab_management.sample_view.completed_sample_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.sample_view.sample.html">alab_management.sample_view.sample module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.sample_view.sample_view.html">alab_management.sample_view.sample_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../alab_management.task_manager.html">alab_management.task_manager package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.task_manager.task_manager.html">alab_management.task_manager.task_manager module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../alab_management.task_view.html">alab_management.task_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.task_view.completed_task_view.html">alab_management.task_view.completed_task_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.task_view.task.html">alab_management.task_view.task module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.task_view.task_enums.html">alab_management.task_view.task_enums module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.task_view.task_view.html">alab_management.task_view.task_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.alarm.html">alab_management.alarm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.config.html">alab_management.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.device_manager.html">alab_management.device_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.experiment_manager.html">alab_management.experiment_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.lab_view.html">alab_management.lab_view module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.logger.html">alab_management.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.task_actor.html">alab_management.task_actor module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.user_input.html">alab_management.user_input module</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/idocx/alab_management" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for alab_management.resource_manager.resource_requester</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">TaskLauncher is the core module of the system,</span>
+<span class="sd">which actually executes the tasks.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">concurrent</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="kn">import</span> <span class="n">Future</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Thread</span>
+<span class="kn">from</span> <span class="nn">traceback</span> <span class="kn">import</span> <span class="n">print_exc</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="kn">import</span> <span class="nn">dill</span>
+<span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">ObjectId</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">model_validator</span>
+<span class="kn">from</span> <span class="nn">pydantic.root_model</span> <span class="kn">import</span> <span class="n">RootModel</span>
+
+<span class="kn">from</span> <span class="nn">alab_management.device_view.device</span> <span class="kn">import</span> <span class="n">BaseDevice</span>
+<span class="kn">from</span> <span class="nn">alab_management.device_view.device_view</span> <span class="kn">import</span> <span class="n">DeviceView</span>
+<span class="kn">from</span> <span class="nn">alab_management.resource_manager.enums</span> <span class="kn">import</span> <span class="n">_EXTRA_REQUEST</span><span class="p">,</span> <span class="n">RequestStatus</span>
+<span class="kn">from</span> <span class="nn">alab_management.sample_view.sample</span> <span class="kn">import</span> <span class="n">SamplePosition</span>
+<span class="kn">from</span> <span class="nn">alab_management.sample_view.sample_view</span> <span class="kn">import</span> <span class="n">SamplePositionRequest</span>
+<span class="kn">from</span> <span class="nn">alab_management.task_view</span> <span class="kn">import</span> <span class="n">TaskPriority</span>
+<span class="kn">from</span> <span class="nn">alab_management.utils.data_objects</span> <span class="kn">import</span> <span class="n">DocumentNotUpdatedError</span><span class="p">,</span> <span class="n">get_collection</span>
+
+<span class="n">_SampleRequestDict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+<span class="n">_ResourceRequestDict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">[</span>
+    <span class="nb">type</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_SampleRequestDict</span>
+<span class="p">]</span>  <span class="c1"># the raw request sent by task process</span>
+
+
+<div class="viewcode-block" id="RequestCanceledError">
+<a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.RequestCanceledError">[docs]</a>
+<span class="k">class</span> <span class="nc">RequestCanceledError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Request Canceled Error.&quot;&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="CombinedTimeoutError">
+<a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.CombinedTimeoutError">[docs]</a>
+<span class="k">class</span> <span class="nc">CombinedTimeoutError</span><span class="p">(</span><span class="ne">TimeoutError</span><span class="p">,</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Combined TimeoutError.</span>
+
+<span class="sd">    If you catch either TimeoutError or concurrent.futures.TimeoutError, this will catch both.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="DeviceRequest">
+<a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.DeviceRequest">[docs]</a>
+<span class="k">class</span> <span class="nc">DeviceRequest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pydantic model for device request.&quot;&quot;&quot;</span>
+
+    <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">content</span><span class="p">:</span> <span class="nb">str</span></div>
+
+
+
+<div class="viewcode-block" id="ResourceRequestItem">
+<a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.ResourceRequestItem">[docs]</a>
+<span class="k">class</span> <span class="nc">ResourceRequestItem</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pydantic model for resource request item.&quot;&quot;&quot;</span>
+
+    <span class="n">device</span><span class="p">:</span> <span class="n">DeviceRequest</span>
+    <span class="n">sample_positions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SamplePositionRequest</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="ResourcesRequest">
+<a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.ResourcesRequest">[docs]</a>
+<span class="k">class</span> <span class="nc">ResourcesRequest</span><span class="p">(</span><span class="n">RootModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class is used to validate the resource request. Each request should have a format of</span>
+
+<span class="sd">    .. code-block::</span>
+
+<span class="sd">      [</span>
+<span class="sd">          {</span>
+<span class="sd">              &quot;device&quot;:{</span>
+<span class="sd">                  &quot;identifier&quot;: &quot;name&quot; or &quot;type&quot; or &quot;nodevice&quot;,</span>
+<span class="sd">                  &quot;content&quot;: string corresponding to identifier</span>
+<span class="sd">              },</span>
+<span class="sd">              &quot;sample_positions&quot;: [</span>
+<span class="sd">                  {</span>
+<span class="sd">                      &quot;prefix&quot;: prefix of sample position,</span>
+<span class="sd">                      &quot;number&quot;: integer number of such positions requested.</span>
+<span class="sd">                  },</span>
+<span class="sd">                  ...</span>
+<span class="sd">              ]</span>
+<span class="sd">          },</span>
+<span class="sd">          ...</span>
+<span class="sd">      ].</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">        :py:class:`SamplePositionRequest &lt;alab_management.sample_view.sample_view.SamplePositionRequest&gt;`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">root</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ResourceRequestItem</span><span class="p">]</span>
+
+<div class="viewcode-block" id="ResourcesRequest.preprocess">
+<a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.ResourcesRequest.preprocess">[docs]</a>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Preprocess the request.&quot;&quot;&quot;</span>
+        <span class="n">new_values</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">request_dict</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">request_dict</span><span class="p">[</span><span class="s2">&quot;device&quot;</span><span class="p">][</span><span class="s2">&quot;identifier&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">,</span>
+                <span class="n">_EXTRA_REQUEST</span><span class="p">,</span>
+            <span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;device identifier must be one of &#39;name&#39;, &#39;type&#39;, or </span><span class="si">{</span><span class="n">_EXTRA_REQUEST</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="n">new_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;device&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;identifier&quot;</span><span class="p">:</span> <span class="n">request_dict</span><span class="p">[</span><span class="s2">&quot;device&quot;</span><span class="p">][</span><span class="s2">&quot;identifier&quot;</span><span class="p">],</span>
+                        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">request_dict</span><span class="p">[</span><span class="s2">&quot;device&quot;</span><span class="p">][</span><span class="s2">&quot;content&quot;</span><span class="p">],</span>
+                    <span class="p">},</span>
+                    <span class="s2">&quot;sample_positions&quot;</span><span class="p">:</span> <span class="n">request_dict</span><span class="p">[</span><span class="s2">&quot;sample_positions&quot;</span><span class="p">],</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_values</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="RequestMixin">
+<a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.RequestMixin">[docs]</a>
+<span class="k">class</span> <span class="nc">RequestMixin</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simple wrapper for the request collection.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;requests&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RequestMixin.update_request_status">
+<a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.RequestMixin.update_request_status">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_request_status</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span>
+        <span class="n">status</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="p">,</span>
+        <span class="n">original_status</span><span class="p">:</span> <span class="n">RequestStatus</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">RequestStatus</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the status of a request by request_id.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">original_status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">original_status</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">value_returned</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">,</span>
+                        <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$in&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">status</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">original_status</span><span class="p">]},</span>
+                    <span class="p">},</span>
+                    <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="p">}},</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">value_returned</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+                    <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">,</span> <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">original_status</span><span class="o">.</span><span class="n">name</span><span class="p">},</span>
+                    <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="p">}},</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">value_returned</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+                <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="p">}}</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">value_returned</span><span class="o">.</span><span class="n">modified_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DocumentNotUpdatedError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Request </span><span class="si">{</span><span class="n">request_id</span><span class="si">}</span><span class="s2"> was not updated to </span><span class="si">{</span><span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;because it is not in </span><span class="si">{</span><span class="n">original_status</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> status.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">value_returned</span></div>
+
+
+<div class="viewcode-block" id="RequestMixin.get_request">
+<a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.RequestMixin.get_request">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a request by request_id.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">},</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>  <span class="c1"># DB_ACCESS_OUTSIDE_VIEW</span></div>
+
+
+<div class="viewcode-block" id="RequestMixin.get_requests_by_status">
+<a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.RequestMixin.get_requests_by_status">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_requests_by_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all requests by status.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
+        <span class="p">)</span>  <span class="c1"># DB_ACCESS_OUTSIDE_VIEW</span></div>
+
+
+<div class="viewcode-block" id="RequestMixin.get_requests_by_task_id">
+<a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.RequestMixin.get_requests_by_task_id">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_requests_by_task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all requests by task_id.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">})</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ResourceRequester">
+<a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.ResourceRequester">[docs]</a>
+<span class="k">class</span> <span class="nc">ResourceRequester</span><span class="p">(</span><span class="n">RequestMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for request lab resources easily. This class will insert a request into the database,</span>
+<span class="sd">    and then the task manager will read from the database and assign the resources.</span>
+
+<span class="sd">    It is used in :py:class:`~alab_management.lab_view.LabView`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;requests&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span> <span class="o">=</span> <span class="n">task_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device_view</span> <span class="o">=</span> <span class="n">DeviceView</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">priority</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">TaskPriority</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">TaskPriority</span><span class="o">.</span><span class="n">NORMAL</span>
+        <span class="p">)</span>  <span class="c1"># will usually be overwritten by BaseTask instantiation.</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stop</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span>
+            <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_check_request_status_loop</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;CheckRequestStatus&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__close__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the thread.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stop</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+    <span class="fm">__del__</span> <span class="o">=</span> <span class="n">__close__</span>
+
+<div class="viewcode-block" id="ResourceRequester.request_resources">
+<a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.ResourceRequester.request_resources">[docs]</a>
+    <span class="k">def</span> <span class="nf">request_resources</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">resource_request</span><span class="p">:</span> <span class="n">_ResourceRequestDict</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">priority</span><span class="p">:</span> <span class="n">TaskPriority</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Request lab resources.</span>
+
+<span class="sd">        Write the request into the database, and then the task manager will read from the</span>
+<span class="sd">        database and assign the resources.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">Future</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">priority</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">priority</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">priority</span>
+
+        <span class="n">formatted_resource_request</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">device_str_to_request</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">device</span><span class="p">,</span> <span class="n">position_dict</span> <span class="ow">in</span> <span class="n">resource_request</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">identifier</span> <span class="o">=</span> <span class="n">_EXTRA_REQUEST</span>
+                <span class="n">content</span> <span class="o">=</span> <span class="n">_EXTRA_REQUEST</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">identifier</span> <span class="o">=</span> <span class="s2">&quot;name&quot;</span>
+                <span class="n">content</span> <span class="o">=</span> <span class="n">device</span>
+            <span class="k">elif</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">BaseDevice</span><span class="p">):</span>
+                <span class="n">identifier</span> <span class="o">=</span> <span class="s2">&quot;type&quot;</span>
+                <span class="n">content</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="vm">__name__</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;device must be a name of a specific device, a class of type BaseDevice, or None&quot;</span>
+                <span class="p">)</span>
+            <span class="n">device_str_to_request</span><span class="p">[</span><span class="n">content</span><span class="p">]</span> <span class="o">=</span> <span class="n">device</span>
+
+            <span class="n">positions</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="nb">dict</span><span class="p">(</span><span class="n">SamplePositionRequest</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="n">number</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">number</span> <span class="ow">in</span> <span class="n">position_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">]</span>  <span class="c1"># immediate dict conversion - SamplePositionRequest is only used to check request format.</span>
+            <span class="n">formatted_resource_request</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;device&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;identifier&quot;</span><span class="p">:</span> <span class="n">identifier</span><span class="p">,</span>
+                        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">content</span><span class="p">,</span>
+                    <span class="p">},</span>
+                    <span class="s2">&quot;sample_positions&quot;</span><span class="p">:</span> <span class="n">positions</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">formatted_resource_request</span><span class="p">,</span> <span class="n">ResourcesRequest</span><span class="p">):</span>
+            <span class="n">formatted_resource_request</span> <span class="o">=</span> <span class="n">ResourcesRequest</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">formatted_resource_request</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="n">formatted_resource_request</span> <span class="o">=</span> <span class="n">formatted_resource_request</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span>  <span class="c1"># pylint: disable=assignment-from-no-return</span>
+            <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;json&quot;</span>
+        <span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;request&quot;</span><span class="p">:</span> <span class="n">formatted_resource_request</span><span class="p">,</span>
+                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span>
+                <span class="s2">&quot;priority&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">priority</span><span class="p">),</span>
+                <span class="s2">&quot;submitted_at&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+            <span class="p">}</span>
+        <span class="p">)</span>  <span class="c1"># DB_ACCESS_OUTSIDE_VIEW</span>
+        <span class="n">_id</span><span class="p">:</span> <span class="n">ObjectId</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">ObjectId</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;f&quot;</span><span class="p">:</span> <span class="n">f</span><span class="p">,</span> <span class="s2">&quot;device_str_to_request&quot;</span><span class="p">:</span> <span class="n">device_str_to_request</span><span class="p">}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_concurrent_result</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">TimeoutError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># if the request is not fulfilled, cancel it to make sure the resources are released</span>
+            <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">find_one_and_update</span><span class="p">(</span>
+                <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">_id</span><span class="p">,</span> <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$ne&quot;</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">FULFILLED</span><span class="o">.</span><span class="n">name</span><span class="p">}},</span>
+                <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="o">.</span><span class="n">name</span><span class="p">}},</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">request</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">CombinedTimeoutError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Request </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span><span class="si">}</span><span class="s2"> timed out after </span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s2"> seconds.&quot;</span>
+                <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># if the request is fulfilled, return the result normally, wrong timeout</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_concurrent_result</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_post_process_requested_resource</span><span class="p">(</span>
+                <span class="n">devices</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;devices&quot;</span><span class="p">],</span>
+                <span class="n">sample_positions</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;sample_positions&quot;</span><span class="p">],</span>
+                <span class="n">resource_request</span><span class="o">=</span><span class="n">resource_request</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;request_id&quot;</span><span class="p">:</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;request_id&quot;</span><span class="p">],</span>
+        <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="ResourceRequester.get_concurrent_result">
+<a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.ResourceRequester.get_concurrent_result">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_concurrent_result</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">Future</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the result of a future with a timeout.</span>
+<span class="sd">        If the request is canceled, we will catch a RequestCanceledError and hang the program.</span>
+<span class="sd">        The hanged program will be killed by the abort exception in the task actor, which will</span>
+<span class="sd">        be handled in the task actor to clean up the lab.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">result</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">RequestCanceledError</span><span class="p">:</span>
+            <span class="c1"># if there is an abort signal, we will just hang the program</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="c1"># abort signal here. It should be handled in the task actor</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ResourceRequester.release_resources">
+<a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.ResourceRequester.release_resources">[docs]</a>
+    <span class="k">def</span> <span class="nf">release_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Release a request by request_id.&quot;&quot;&quot;</span>
+        <span class="c1"># For the requests that were CANCELED or ERROR, but have assigned resources, release them</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">request</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="n">RequestStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">name</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;assigned_devices&quot;</span> <span class="ow">in</span> <span class="n">request</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+                <span class="s2">&quot;assigned_sample_positions&quot;</span> <span class="ow">in</span> <span class="n">request</span>
+            <span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update_request_status</span><span class="p">(</span>
+                    <span class="n">request_id</span><span class="p">,</span>
+                    <span class="n">RequestStatus</span><span class="o">.</span><span class="n">NEED_RELEASE</span><span class="p">,</span>
+                    <span class="n">original_status</span><span class="o">=</span><span class="p">[</span><span class="n">RequestStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="p">,</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="p">],</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># If it doesn&#39;t have assigned resources, just leave it as CANCELED or ERROR</span>
+                <span class="k">return</span>
+        <span class="c1"># For the requests that were fulfilled, definitely have assigned resources, release them</span>
+        <span class="k">elif</span> <span class="n">request</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">FULFILLED</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_request_status</span><span class="p">(</span>
+                <span class="n">request_id</span><span class="p">,</span>
+                <span class="n">RequestStatus</span><span class="o">.</span><span class="n">NEED_RELEASE</span><span class="p">,</span>
+                <span class="n">original_status</span><span class="o">=</span><span class="n">RequestStatus</span><span class="o">.</span><span class="n">FULFILLED</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># wait for the request to be released or canceled or errored during the release</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">request_id</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">])[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="n">RequestStatus</span><span class="o">.</span><span class="n">RELEASED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">RequestStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">RequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="p">]:</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ResourceRequester.release_all_resources">
+<a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.ResourceRequester.release_all_resources">[docs]</a>
+    <span class="k">def</span> <span class="nf">release_all_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Release all requests by task_id, used for error recovery.</span>
+
+<span class="sd">        For the requests that are not fulfilled, they will be marked as CANCELED.</span>
+
+<span class="sd">        For the request that have been fulfilled, they will be marked as NEED_RELEASE.</span>
+
+<span class="sd">        For the request that have been errored, release assigned resources.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># For the requests that were fulfilled, definitely have assigned resources, release them</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">update_many</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span>
+                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">FULFILLED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">NEED_RELEASE</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="c1"># For the requests that were CANCELED or ERROR, but have assigned resources, release them</span>
+        <span class="n">assigned_cancel_error_requests_id</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">request</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_requests_by_task_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">request</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="n">RequestStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">RequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="p">]</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="p">(</span><span class="s2">&quot;assigned_devices&quot;</span> <span class="ow">in</span> <span class="n">request</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;assigned_sample_positions&quot;</span> <span class="ow">in</span> <span class="n">request</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update_request_status</span><span class="p">(</span>
+                    <span class="n">request</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span>
+                    <span class="n">RequestStatus</span><span class="o">.</span><span class="n">NEED_RELEASE</span><span class="p">,</span>
+                    <span class="n">original_status</span><span class="o">=</span><span class="p">[</span><span class="n">RequestStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="p">,</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="p">],</span>
+                <span class="p">)</span>
+                <span class="n">assigned_cancel_error_requests_id</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">request</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">])</span>
+
+        <span class="c1"># wait for all the requests to be released or canceled or errored during the release</span>
+        <span class="k">while</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">request</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span>
+                <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
+                    <span class="n">RequestStatus</span><span class="o">.</span><span class="n">RELEASED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">RequestStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">RequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">request</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_requests_by_task_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_check_request_status_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stop</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">request_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="o">.</span><span class="n">copy</span><span class="p">():</span>
+                    <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">request_id</span><span class="o">=</span><span class="n">request_id</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">])[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+                    <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">FULFILLED</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_fulfilled_request</span><span class="p">(</span><span class="n">request_id</span><span class="o">=</span><span class="n">request_id</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_error_request</span><span class="p">(</span><span class="n">request_id</span><span class="o">=</span><span class="n">request_id</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_canceled_request</span><span class="p">(</span><span class="n">request_id</span><span class="o">=</span><span class="n">request_id</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">print_exc</span><span class="p">()</span>  <span class="c1"># for debugging in the test</span>
+                <span class="k">raise</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_handle_fulfilled_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
+        <span class="n">entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">FULFILLED</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+            <span class="k">return</span>
+
+        <span class="n">assigned_devices</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;assigned_devices&quot;</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+        <span class="n">assigned_sample_positions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;assigned_sample_positions&quot;</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+
+        <span class="n">request</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>
+
+        <span class="n">f</span><span class="p">:</span> <span class="n">Future</span> <span class="o">=</span> <span class="n">request</span><span class="p">[</span><span class="s2">&quot;f&quot;</span><span class="p">]</span>
+        <span class="n">device_str_to_request</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="n">request</span><span class="p">[</span>
+            <span class="s2">&quot;device_str_to_request&quot;</span>
+        <span class="p">]</span>
+
+        <span class="n">f</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;devices&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="n">device_str_to_request</span><span class="p">[</span><span class="n">device_str</span><span class="p">]:</span> <span class="n">device_dict</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">device_str</span><span class="p">,</span> <span class="n">device_dict</span> <span class="ow">in</span> <span class="n">assigned_devices</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;sample_positions&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="n">name</span><span class="p">:</span> <span class="p">[</span>
+                        <span class="n">sample_position</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                        <span class="k">for</span> <span class="n">sample_position</span> <span class="ow">in</span> <span class="n">sample_positions_list</span>
+                    <span class="p">]</span>
+                    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">sample_positions_list</span> <span class="ow">in</span> <span class="n">assigned_sample_positions</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;request_id&quot;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_handle_error_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
+        <span class="n">entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+            <span class="k">return</span>
+
+        <span class="n">error</span><span class="p">:</span> <span class="ne">Exception</span> <span class="o">=</span> <span class="n">dill</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;error&quot;</span><span class="p">])</span>  <span class="c1"># type: ignore</span>
+        <span class="n">request</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>
+        <span class="n">f</span><span class="p">:</span> <span class="n">Future</span> <span class="o">=</span> <span class="n">request</span><span class="p">[</span><span class="s2">&quot;f&quot;</span><span class="p">]</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">set_exception</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_handle_canceled_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
+        <span class="n">entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+            <span class="k">return</span>
+
+        <span class="n">request</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>
+        <span class="n">f</span><span class="p">:</span> <span class="n">Future</span> <span class="o">=</span> <span class="n">request</span><span class="p">[</span><span class="s2">&quot;f&quot;</span><span class="p">]</span>
+
+        <span class="c1"># for the canceled request, we will return an empty result</span>
+        <span class="c1"># and wait for the abort to be handled by the task actor</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">set_exception</span><span class="p">(</span><span class="n">RequestCanceledError</span><span class="p">(</span><span class="s2">&quot;Abort signal received.&quot;</span><span class="p">))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_post_process_requested_resource</span><span class="p">(</span>
+        <span class="n">devices</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">sample_positions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+        <span class="n">resource_request</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="nb">type</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span>
+    <span class="p">):</span>
+        <span class="n">processed_sample_positions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span>
+            <span class="nb">type</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">device_request</span><span class="p">,</span> <span class="n">sample_position_dict</span> <span class="ow">in</span> <span class="n">resource_request</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sample_position_dict</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">processed_sample_positions</span><span class="p">[</span><span class="n">device_request</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="n">sample_position_dict</span><span class="p">:</span>
+                <span class="n">reply_prefix</span> <span class="o">=</span> <span class="n">prefix</span>
+                <span class="k">if</span> <span class="n">device_request</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># no device name to prepend</span>
+                    <span class="k">pass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">device_prefix</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">devices</span><span class="p">[</span><span class="n">device_request</span><span class="p">]</span><span class="si">}{</span><span class="n">SamplePosition</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">reply_prefix</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
+                        <span class="n">device_prefix</span>
+                    <span class="p">):</span>  <span class="c1"># dont extra prepend for nested requests</span>
+                        <span class="n">reply_prefix</span> <span class="o">=</span> <span class="n">device_prefix</span> <span class="o">+</span> <span class="n">reply_prefix</span>
+                <span class="n">processed_sample_positions</span><span class="p">[</span><span class="n">device_request</span><span class="p">][</span><span class="n">prefix</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample_positions</span><span class="p">[</span>
+                    <span class="n">reply_prefix</span>
+                <span class="p">]</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;devices&quot;</span><span class="p">:</span> <span class="n">devices</span><span class="p">,</span>
+            <span class="s2">&quot;sample_positions&quot;</span><span class="p">:</span> <span class="n">processed_sample_positions</span><span class="p">,</span>
+        <span class="p">}</span></div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Alab Project Team
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Ceder group.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
