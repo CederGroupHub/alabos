@@ -1,4 +1,4 @@
-# Testing for Alab Definition
+# Testing for AlabOS Project
 
 
 To ensure a seamless installation and robust testing of the software system, several key processes have been implemented.
