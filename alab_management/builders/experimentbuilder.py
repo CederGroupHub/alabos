@@ -38,6 +38,34 @@ def get_experiment_status(
     return response.json()
 
 
+def get_experiment_result(
+    exp_id: ObjectId | str, address: str = "http://localhost:8895", **kwargs
+):
+    """
+    Get the result of the experiment.
+
+    Args:
+        exp_id: The object id of the experiment.
+        address: The address of the server. It is defaulted to `http://localhost:8895`,
+            which is the default address of the alabos server.
+        **kwargs: Additional keyword arguments to be passed to the `requests.get` function.
+
+    Returns
+    -------
+        See the dashboard code for the response format.
+        :func:`alab_management.dashboard.routes.experiment.query_experiment_results`
+    """
+    import requests
+
+    # convert exp_id to string while validating the ObjectId format
+    exp_id = str(ObjectId(exp_id))
+
+    url = f"{address}/api/experiment/results/{exp_id}"
+    response = requests.get(url, **kwargs)
+    response.raise_for_status()
+    return response.json()
+
+
 class ExperimentBuilder:
     """
     It takes a list of samples and a list of tasks, and returns a dictionary
