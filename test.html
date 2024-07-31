@@ -397,6 +397,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#device-class-boxfurnace">Device Class: BoxFurnace</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#fixtures">Fixtures</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tests">Tests</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#source-code">Source code</a></li>
 </ul>
 </li>
 </ul>
@@ -550,6 +551,211 @@ current temperature from the driver.</p></li>
 </li>
 </ol>
 </section>
+<section id="source-code">
+<h4>Source code<a class="headerlink" href="#source-code" title="Link to this heading">#</a></h4>
+<p>The whole source code for the BoxFurnace class is attached below:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;This module contains unit tests for the BoxFurnace class.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
+<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">MagicMock</span>
+
+<span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">alab_control.door_controller</span> <span class="kn">import</span> <span class="n">DoorController</span>
+<span class="kn">from</span> <span class="nn">alab_control.furnace_2416</span> <span class="kn">import</span> <span class="n">FurnaceController</span><span class="p">,</span> <span class="n">Segment</span>
+<span class="kn">from</span> <span class="nn">alab_control.furnace_2416.furnace_driver</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ProgramEndType</span><span class="p">,</span>
+    <span class="n">SegmentType</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">alab_example.devices.box_furnace</span> <span class="kn">import</span> <span class="n">BoxFurnace</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">door_controller_ab</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fixture for DoorController instance for furnaces A and B.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">DoorController</span><span class="p">(</span><span class="n">ip_address</span><span class="o">=</span><span class="s2">&quot;192.168.0.41&quot;</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">])</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">door_controller_cd</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fixture for DoorController instance for furnaces C and D.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">DoorController</span><span class="p">(</span><span class="n">ip_address</span><span class="o">=</span><span class="s2">&quot;192.168.0.42&quot;</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">])</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;COM17&quot;</span><span class="p">,</span> <span class="n">door_controller_ab</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;COM15&quot;</span><span class="p">,</span> <span class="n">door_controller_ab</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;COM14&quot;</span><span class="p">,</span> <span class="n">door_controller_cd</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="s2">&quot;COM13&quot;</span><span class="p">,</span> <span class="n">door_controller_cd</span><span class="p">)])</span>
+<span class="k">def</span> <span class="nf">box_furnace</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fixture to create a BoxFurnace instance for each test case.&quot;&quot;&quot;</span>
+    <span class="n">furnace_letter</span><span class="p">,</span> <span class="n">com_port</span><span class="p">,</span> <span class="n">door_controller</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">param</span>
+    <span class="k">return</span> <span class="n">BoxFurnace</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;box_</span><span class="si">{</span><span class="n">furnace_letter</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                      <span class="n">com_port</span><span class="o">=</span><span class="n">com_port</span><span class="p">,</span>
+                      <span class="n">door_controller</span><span class="o">=</span><span class="n">door_controller</span><span class="p">,</span>
+                      <span class="n">furnace_letter</span><span class="o">=</span><span class="n">furnace_letter</span><span class="p">)</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">mock_drivers</span><span class="p">(</span><span class="n">monkeypatch</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fixture to mock the drivers for furnace and door controller.&quot;&quot;&quot;</span>
+    <span class="n">mock_furnace_driver</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">spec</span><span class="o">=</span><span class="n">FurnaceController</span><span class="p">)</span>
+    <span class="n">mock_door_controller</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">spec</span><span class="o">=</span><span class="n">DoorController</span><span class="p">)</span>
+    <span class="c1"># Correctly mock get_driver to return both mocks as a tuple</span>
+    <span class="n">monkeypatch</span><span class="o">.</span><span class="n">setattr</span><span class="p">(</span><span class="s2">&quot;alab_one.devices.box_furnace.BoxFurnace.get_driver&quot;</span><span class="p">,</span>
+                        <span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="p">(</span><span class="n">mock_furnace_driver</span><span class="p">,</span> <span class="n">mock_door_controller</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">mock_furnace_driver</span><span class="p">,</span> <span class="n">mock_door_controller</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">autouse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">isolate_env_vars</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fixture to isolate the environment variables.&quot;&quot;&quot;</span>
+    <span class="n">old_value</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SIM_MODE_FLAG&quot;</span><span class="p">)</span>
+    <span class="k">yield</span>
+    <span class="k">if</span> <span class="n">old_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">unsetenv</span><span class="p">(</span><span class="s2">&quot;SIM_MODE_FLAG&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;SIM_MODE_FLAG&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">old_value</span>
+
+<span class="k">def</span> <span class="nf">test_connect</span><span class="p">(</span><span class="n">box_furnace</span><span class="p">,</span> <span class="n">mock_drivers</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test the connect method.&quot;&quot;&quot;</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">box_furnace</span><span class="o">.</span><span class="n">driver</span> <span class="ow">is</span> <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">box_furnace</span><span class="o">.</span><span class="n">door_controller</span> <span class="ow">is</span> <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">test_disconnect</span><span class="p">(</span><span class="n">box_furnace</span><span class="p">,</span> <span class="n">mock_drivers</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test the disconnect method.&quot;&quot;&quot;</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">box_furnace</span><span class="o">.</span><span class="n">driver</span> <span class="ow">is</span> <span class="kc">None</span>
+
+<span class="k">def</span> <span class="nf">test_sample_positions</span><span class="p">(</span><span class="n">box_furnace</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test the sample_positions property.&quot;&quot;&quot;</span>
+    <span class="n">positions</span> <span class="o">=</span> <span class="n">box_furnace</span><span class="o">.</span><span class="n">sample_positions</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">positions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="k">assert</span> <span class="n">positions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;slot&quot;</span>
+    <span class="k">assert</span> <span class="n">positions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">description</span> <span class="o">==</span> <span class="s2">&quot;The position inside the box furnace, where the samples are heated&quot;</span>
+    <span class="k">assert</span> <span class="n">positions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">number</span> <span class="o">==</span> <span class="mi">8</span>
+
+<span class="k">def</span> <span class="nf">test_emergent_stop</span><span class="p">(</span><span class="n">box_furnace</span><span class="p">,</span> <span class="n">mock_drivers</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test the emergency stop method.&quot;&quot;&quot;</span>
+    <span class="c1"># Ensure the furnace is connected, setting up the driver and door controller</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">emergent_stop</span><span class="p">()</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">stop</span><span class="o">.</span><span class="n">assert_called_once</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">test_run_program</span><span class="p">(</span><span class="n">box_furnace</span><span class="p">,</span> <span class="n">mock_drivers</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test running a heating program with specific parameters.&quot;&quot;&quot;</span>
+    <span class="n">heating_time_minutes</span> <span class="o">=</span> <span class="mi">120</span>
+    <span class="n">heating_temperatures</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1000</span><span class="p">,</span><span class="mi">200</span><span class="p">]</span>
+
+    <span class="c1"># Directly assign the mock_driver to the box_furnace&#39;s driver attribute</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">heating_temperature</span> <span class="ow">in</span> <span class="n">heating_temperatures</span><span class="p">:</span>
+        <span class="n">box_furnace</span><span class="o">.</span><span class="n">run_program</span><span class="p">(</span><span class="n">heating_time_minutes</span><span class="o">=</span><span class="n">heating_time_minutes</span><span class="p">,</span> <span class="n">heating_temperature</span><span class="o">=</span><span class="n">heating_temperature</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">heating_temperature</span> <span class="o">&gt;</span> <span class="mi">300</span><span class="p">:</span>
+            <span class="n">heating_segment</span> <span class="o">=</span> <span class="p">[</span>
+                            <span class="n">Segment</span><span class="p">(</span>
+                                <span class="n">segment_type</span><span class="o">=</span><span class="n">SegmentType</span><span class="o">.</span><span class="n">RAMP_RATE</span><span class="p">,</span>
+                                <span class="n">target_setpoint</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+                                <span class="n">ramp_rate_per_min</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                            <span class="p">),</span>
+                        <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">heating_segment</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">segments</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">heating_segment</span>
+                    <span class="o">+</span> <span class="p">[</span>
+                        <span class="n">Segment</span><span class="p">(</span>
+                            <span class="n">segment_type</span><span class="o">=</span><span class="n">SegmentType</span><span class="o">.</span><span class="n">RAMP_RATE</span><span class="p">,</span>
+                            <span class="n">target_setpoint</span><span class="o">=</span><span class="n">heating_temperature</span><span class="p">,</span>
+                            <span class="n">ramp_rate_per_min</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">]</span>
+                    <span class="o">+</span> <span class="p">[</span>
+                        <span class="n">Segment</span><span class="p">(</span>
+                            <span class="n">segment_type</span><span class="o">=</span><span class="n">SegmentType</span><span class="o">.</span><span class="n">DWELL</span><span class="p">,</span>
+                            <span class="c1"># the upper limit of heating is 900 minutes</span>
+                            <span class="n">duration</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span>
+                                <span class="n">minutes</span><span class="o">=</span><span class="mi">900</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">heating_time_minutes</span> <span class="o">//</span> <span class="mi">900</span> <span class="k">else</span> <span class="n">heating_time_minutes</span> <span class="o">%</span> <span class="mi">900</span>
+                            <span class="p">),</span>
+                        <span class="p">)</span>
+                        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">((</span><span class="n">heating_time_minutes</span> <span class="o">+</span> <span class="mi">899</span><span class="p">)</span> <span class="o">//</span> <span class="mi">900</span><span class="p">)</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
+        <span class="n">segments</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="n">segments</span><span class="p">,</span> <span class="n">Segment</span><span class="p">(</span><span class="n">segment_type</span><span class="o">=</span><span class="n">SegmentType</span><span class="o">.</span><span class="n">END</span><span class="p">,</span> <span class="n">endt</span><span class="o">=</span><span class="n">ProgramEndType</span><span class="o">.</span><span class="n">RESET</span><span class="p">)]</span>
+        <span class="n">box_furnace</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">run_program</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="o">*</span><span class="n">segments</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">test_run_program_with_profiles</span><span class="p">(</span><span class="n">box_furnace</span><span class="p">,</span> <span class="n">mock_drivers</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test running a program with a custom profile.&quot;&quot;&quot;</span>
+    <span class="n">profiles</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">60</span><span class="p">],</span> <span class="p">[</span><span class="mi">1200</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">240</span><span class="p">]]</span>
+
+    <span class="c1"># Directly assign the mock_driver to the box_furnace&#39;s driver attribute</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Mock the run_program method to simulate successful box furnace operation</span>
+    <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">run_program</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># No exception raised</span>
+
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">run_program</span><span class="p">(</span><span class="n">profiles</span><span class="o">=</span><span class="n">profiles</span><span class="p">)</span>
+
+    <span class="c1"># Verify the correct segments were created and passed to run_program</span>
+    <span class="n">expected_segments</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">Segment</span><span class="p">(</span><span class="n">SegmentType</span><span class="o">.</span><span class="n">RAMP_RATE</span><span class="p">,</span> <span class="n">target_setpoint</span><span class="o">=</span><span class="n">profiles</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">ramp_rate_per_min</span><span class="o">=</span><span class="n">profiles</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]),</span>
+        <span class="n">Segment</span><span class="p">(</span><span class="n">SegmentType</span><span class="o">.</span><span class="n">DWELL</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">profiles</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">])),</span>
+        <span class="n">Segment</span><span class="p">(</span><span class="n">SegmentType</span><span class="o">.</span><span class="n">RAMP_RATE</span><span class="p">,</span> <span class="n">target_setpoint</span><span class="o">=</span><span class="n">profiles</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">ramp_rate_per_min</span><span class="o">=</span><span class="n">profiles</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]),</span>
+        <span class="n">Segment</span><span class="p">(</span><span class="n">SegmentType</span><span class="o">.</span><span class="n">DWELL</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">profiles</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">])),</span>
+        <span class="n">Segment</span><span class="p">(</span><span class="n">SegmentType</span><span class="o">.</span><span class="n">END</span><span class="p">,</span> <span class="n">endt</span><span class="o">=</span><span class="n">ProgramEndType</span><span class="o">.</span><span class="n">RESET</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="c1"># This is a simplified assertion. You should adjust it based on the exact behavior of your run_program method.</span>
+    <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">run_program</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="o">*</span><span class="n">expected_segments</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">test_is_running</span><span class="p">(</span><span class="n">box_furnace</span><span class="p">,</span> <span class="n">mock_drivers</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test the is_running method.&quot;&quot;&quot;</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;SIM_MODE_FLAG&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;False&quot;</span>
+    <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">is_running</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">assert</span> <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">is_running</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">True</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;SIM_MODE_FLAG&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;True&quot;</span>
+    <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">is_running</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">assert</span> <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">is_running</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">False</span>
+
+<span class="k">def</span> <span class="nf">test_get_temperature</span><span class="p">(</span><span class="n">box_furnace</span><span class="p">,</span> <span class="n">mock_drivers</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test the get_temperature method.&quot;&quot;&quot;</span>
+    <span class="c1"># Directly assign the mock_driver to the box_furnace&#39;s driver attribute</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Set a mock temperature to be returned by the driver</span>
+    <span class="n">mock_temperature</span> <span class="o">=</span> <span class="mf">30.0</span>
+    <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">current_temperature</span> <span class="o">=</span> <span class="n">mock_temperature</span>
+    <span class="c1"># Check if the get_temperature method correctly fetches the temperature</span>
+    <span class="k">assert</span> <span class="n">box_furnace</span><span class="o">.</span><span class="n">get_temperature</span><span class="p">()</span> <span class="o">==</span> <span class="n">mock_temperature</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;SIM_MODE_FLAG&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;False&quot;</span>
+    <span class="n">mock_temperature</span> <span class="o">=</span> <span class="mf">60.0</span>
+    <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">current_temperature</span> <span class="o">=</span> <span class="n">mock_temperature</span>
+    <span class="k">assert</span> <span class="n">box_furnace</span><span class="o">.</span><span class="n">get_temperature</span><span class="p">()</span> <span class="o">==</span> <span class="n">mock_temperature</span>
+
+
+<span class="k">def</span> <span class="nf">test_open_door</span><span class="p">(</span><span class="n">box_furnace</span><span class="p">,</span> <span class="n">mock_drivers</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test the open_door method.&quot;&quot;&quot;</span>
+    <span class="c1"># Directly assign the mock_driver to the door_controller&#39;s driver attribute</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">door_controller</span> <span class="o">=</span> <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Invoke the open_door method</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">open_door</span><span class="p">()</span>
+
+    <span class="c1"># Verify that the door_controller&#39;s open method was called with the correct parameters</span>
+    <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">open</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">box_furnace</span><span class="o">.</span><span class="n">furnace_letter</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">test_close_door</span><span class="p">(</span><span class="n">box_furnace</span><span class="p">,</span> <span class="n">mock_drivers</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test the close_door method.&quot;&quot;&quot;</span>
+    <span class="c1"># Directly assign the mock_driver to the door_controller&#39;s driver attribute</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">door_controller</span> <span class="o">=</span> <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Invoke the close_door method</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">close_door</span><span class="p">()</span>
+
+    <span class="c1"># Verify that the door_controller&#39;s close method was called with the correct parameters</span>
+    <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">box_furnace</span><span class="o">.</span><span class="n">furnace_letter</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 </section>
@@ -604,6 +810,7 @@ current temperature from the driver.</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#device-class-boxfurnace">Device Class: BoxFurnace</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#fixtures">Fixtures</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tests">Tests</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#source-code">Source code</a></li>
 </ul>
 </li>
 </ul>
