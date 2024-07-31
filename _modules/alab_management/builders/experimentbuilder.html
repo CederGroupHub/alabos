@@ -391,6 +391,37 @@ document.write(`
 
 
 
+<div class="viewcode-block" id="get_experiment_result">
+<a class="viewcode-back" href="../../../alab_management.builders.experimentbuilder.html#alab_management.builders.experimentbuilder.get_experiment_result">[docs]</a>
+<span class="k">def</span> <span class="nf">get_experiment_result</span><span class="p">(</span>
+    <span class="n">exp_id</span><span class="p">:</span> <span class="n">ObjectId</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:8895&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the result of the experiment.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        exp_id: The object id of the experiment.</span>
+<span class="sd">        address: The address of the server. It is defaulted to `http://localhost:8895`,</span>
+<span class="sd">            which is the default address of the alabos server.</span>
+<span class="sd">        **kwargs: Additional keyword arguments to be passed to the `requests.get` function.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        See the dashboard code for the response format.</span>
+<span class="sd">        :func:`alab_management.dashboard.routes.experiment.query_experiment_results`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">requests</span>
+
+    <span class="c1"># convert exp_id to string while validating the ObjectId format</span>
+    <span class="n">exp_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ObjectId</span><span class="p">(</span><span class="n">exp_id</span><span class="p">))</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">/api/experiment/results/</span><span class="si">{</span><span class="n">exp_id</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
+
+
+
 <div class="viewcode-block" id="ExperimentBuilder">
 <a class="viewcode-back" href="../../../alab_management.builders.experimentbuilder.html#alab_management.builders.experimentbuilder.ExperimentBuilder">[docs]</a>
 <span class="k">class</span> <span class="nc">ExperimentBuilder</span><span class="p">:</span>

@@ -401,6 +401,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.builders.experimentbuilder.ExperimentBuilder.to_dict"><code class="docutils literal notranslate"><span class="pre">ExperimentBuilder.to_dict()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.builders.experimentbuilder.get_experiment_result"><code class="docutils literal notranslate"><span class="pre">get_experiment_result()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.builders.experimentbuilder.get_experiment_status"><code class="docutils literal notranslate"><span class="pre">get_experiment_status()</span></code></a></li>
 </ul>
             </nav>
@@ -547,6 +548,26 @@ to run.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="alab_management.builders.experimentbuilder.get_experiment_result">
+<span class="sig-name descname"><span class="pre">get_experiment_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exp_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'http://localhost:8895'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/builders/experimentbuilder.html#get_experiment_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.builders.experimentbuilder.get_experiment_result" title="Link to this definition">#</a></dt>
+<dd><p>Get the result of the experiment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exp_id</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – The object id of the experiment.</p></li>
+<li><p><strong>address</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – The address of the server. It is defaulted to <cite>http://localhost:8895</cite>,
+which is the default address of the alabos server.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments to be passed to the <cite>requests.get</cite> function.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>See the dashboard code for the response format.
+<code class="xref py py-func docutils literal notranslate"><span class="pre">alab_management.dashboard.routes.experiment.query_experiment_results()</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="alab_management.builders.experimentbuilder.get_experiment_status">
 <span class="sig-name descname"><span class="pre">get_experiment_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exp_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'http://localhost:8895'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/builders/experimentbuilder.html#get_experiment_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.builders.experimentbuilder.get_experiment_status" title="Link to this definition">#</a></dt>
 <dd><p>Get the status of the experiment.</p>
@@ -625,6 +646,7 @@ which is the default address of the alabos server.</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.builders.experimentbuilder.ExperimentBuilder.to_dict"><code class="docutils literal notranslate"><span class="pre">ExperimentBuilder.to_dict()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.builders.experimentbuilder.get_experiment_result"><code class="docutils literal notranslate"><span class="pre">get_experiment_result()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.builders.experimentbuilder.get_experiment_status"><code class="docutils literal notranslate"><span class="pre">get_experiment_status()</span></code></a></li>
 </ul>
   </nav></div>

@@ -404,6 +404,7 @@ document.write(`
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#check-the-status-via-api">Check the status via API</a></li>
 </ul>
 </li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#get-the-results">Get the results</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-submission">Advanced submission</a></li>
@@ -624,6 +625,47 @@ of the experiment.</p>
 </div>
 </section>
 </section>
+<section id="get-the-results">
+<h3>Get the results<a class="headerlink" href="#get-the-results" title="Link to this heading">#</a></h3>
+<p>Once the experiment is completed, you can get the results of the experiment using the <code class="docutils literal notranslate"><span class="pre">get_experiment_results</span></code> method.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alab_management</span> <span class="kn">import</span> <span class="n">get_experiment_results</span>
+
+<span class="n">results</span> <span class="o">=</span> <span class="n">get_experiment_results</span><span class="p">(</span><span class="n">exp_id</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The format of the results is as follows. If the experiment has not been completed, it
+will still return the results from the completed tasks.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;experiment_id&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;experiment_name&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;COMPLETED&quot;</span><span class="p">,</span>  <span class="c1"># or &quot;RUNNING&quot; or &quot;ERROR&quot;</span>
+  <span class="s2">&quot;submitted_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2021-09-01T12:00:00&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;completed_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2021-09-01T12:30:00&quot;</span><span class="p">,</span>  <span class="c1"># can be None if not completed</span>
+  <span class="s2">&quot;progress&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>  <span class="c1"># indicating the ratio of finished tasks</span>
+  <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;tag1&quot;</span><span class="p">,</span> <span class="s2">&quot;tag2&quot;</span><span class="p">],</span>
+  <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;My first experiment&quot;</span><span class="p">},</span>
+  <span class="s2">&quot;samples&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span>  <span class="s2">&quot;sample_id&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;sample_name&quot;</span><span class="p">,</span> <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;My first sample&quot;</span><span class="p">},</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;sample_id&quot;</span><span class="p">}</span>
+    <span class="o">...</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;tasks&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;task_id&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;TaskType&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;COMPLETED&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Complete. Measured 0 mg of powder.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="s2">&quot;The result of the task&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;COMPLETED&quot;</span><span class="p">,</span>  <span class="c1"># or something else if not finished/error</span>
+        <span class="s2">&quot;started_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2021-09-01T12:00:00&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;completed_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2021-09-01T12:30:00&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;samples&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;sample_name_1&quot;</span><span class="p">,</span> <span class="s2">&quot;sample_name_2&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+    <span class="p">},</span>
+    <span class="o">...</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="advanced-submission">
 <h2>Advanced submission<a class="headerlink" href="#advanced-submission" title="Link to this heading">#</a></h2>
@@ -689,6 +731,7 @@ the task graph using some graph package like <code class="docutils literal notra
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#check-the-status-via-api">Check the status via API</a></li>
 </ul>
 </li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#get-the-results">Get the results</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-submission">Advanced submission</a></li>

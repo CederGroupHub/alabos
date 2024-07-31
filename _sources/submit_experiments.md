@@ -209,6 +209,48 @@ The format of the status is as follows:
 }
 ```
 
+### Get the results
+Once the experiment is completed, you can get the results of the experiment using the `get_experiment_results` method.
+
+```python
+from alab_management import get_experiment_results
+
+results = get_experiment_results(exp_id)
+```
+
+The format of the results is as follows. If the experiment has not been completed, it 
+will still return the results from the completed tasks.
+```
+{
+  "id": "experiment_id",
+  "name": "experiment_name",
+  "status": "COMPLETED",  # or "RUNNING" or "ERROR"
+  "submitted_at": "2021-09-01T12:00:00",
+  "completed_at": "2021-09-01T12:30:00",  # can be None if not completed
+  "progress": 1.0,  # indicating the ratio of finished tasks
+  "tags": ["tag1", "tag2"],
+  "metadata": {"description": "My first experiment"},
+  "samples": [
+    {"id":  "sample_id", "name": "sample_name", "metadata": {"description": "My first sample"}, "id": "sample_id"}
+    ...
+  ],
+  "tasks": [
+    {
+        "id": "task_id",
+        "type": "TaskType", 
+        "status": "COMPLETED", 
+        "message": "Complete. Measured 0 mg of powder.",
+        "result": "The result of the task",
+        "status": "COMPLETED",  # or something else if not finished/error
+        "started_at": "2021-09-01T12:00:00",
+        "completed_at": "2021-09-01T12:30:00",
+        "samples": ["sample_name_1", "sample_name_2", ...],
+    },
+    ...
+  ]
+}
+```
+
 ## Advanced submission
 Since alabos can accept any DAG as the task graph, the limitation of the builder is that it can only define an experiment
 with a tree-like structure, i.e., it cannot define a task with multiple downstream tasks. However, you can still define
