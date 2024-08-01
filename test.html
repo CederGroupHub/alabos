@@ -400,6 +400,7 @@ document.write(`
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#source-code">Source code</a></li>
 </ul>
 </li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#task-class-heating">Task Class: Heating</a></li>
 </ul>
 </li>
 </ul>
@@ -757,6 +758,178 @@ current temperature from the driver.</p></li>
 </div>
 </section>
 </section>
+<section id="task-class-heating">
+<h3>Task Class: Heating<a class="headerlink" href="#task-class-heating" title="Link to this heading">#</a></h3>
+<p>Similar to the CI of the box furnace, we can also use pytest fixtures and mock to test the tasks.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;This module contains unit tests for the Heating class.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span><span class="p">,</span> <span class="n">repeat</span>
+<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">patch</span>
+
+<span class="kn">import</span> <span class="nn">pytest</span>
+
+<span class="kn">from</span> <span class="nn">alab_example.devices.box_furnace</span> <span class="kn">import</span> <span class="n">BoxFurnace</span>
+<span class="kn">from</span> <span class="nn">alab_example.devices.labman_quadrant</span> <span class="kn">import</span> <span class="n">LabmanQuadrant</span>
+<span class="kn">from</span> <span class="nn">alab_example.devices.robot_arm_furnaces</span> <span class="kn">import</span> <span class="n">RobotArmFurnaces</span>
+<span class="kn">from</span> <span class="nn">alab_example.tasks</span> <span class="kn">import</span> <span class="n">Heating</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">lab_view_mock</span><span class="p">():</span>
+    <span class="n">mock</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+
+    <span class="n">mock_box_furnace</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">spec</span><span class="o">=</span><span class="n">BoxFurnace</span><span class="p">)</span>
+    <span class="n">mock_box_furnace</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;box_furnace_mock&quot;</span>
+
+    <span class="n">mock_box_furnace</span><span class="o">.</span><span class="n">get_temperature</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="mf">25.0</span>
+    <span class="n">mock_robot_arm</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">spec</span><span class="o">=</span><span class="n">RobotArmFurnaces</span><span class="p">)</span>
+    <span class="n">mock_labman_quadrant</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+    <span class="n">mock_labman_quadrant</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;labman_quadrant_mock&quot;</span>
+
+    <span class="n">devices_mock</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">BoxFurnace</span><span class="p">:</span> <span class="n">mock_box_furnace</span><span class="p">,</span>
+        <span class="n">RobotArmFurnaces</span><span class="p">:</span> <span class="n">mock_robot_arm</span><span class="p">,</span>
+        <span class="s2">&quot;labmanquadrant_1&quot;</span><span class="p">:</span> <span class="n">mock_labman_quadrant</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">sample_positions_mock</span> <span class="o">=</span> <span class="p">{</span><span class="n">BoxFurnace</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;slot&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;A/1&quot;</span><span class="p">,</span> <span class="s2">&quot;A/2&quot;</span><span class="p">]}}</span>
+
+    <span class="n">mock_request_resources_context</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+    <span class="n">mock_request_resources_context</span><span class="o">.</span><span class="fm">__enter__</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="n">devices_mock</span><span class="p">,</span> <span class="n">sample_positions_mock</span><span class="p">)</span>
+    <span class="n">mock_request_resources_context</span><span class="o">.</span><span class="fm">__exit__</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">mock</span><span class="o">.</span><span class="n">request_resources</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_request_resources_context</span>
+
+    <span class="n">mock</span><span class="o">.</span><span class="n">get_sample</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="s2">&quot;Position_1&quot;</span><span class="p">)</span>
+    <span class="n">mock</span><span class="o">.</span><span class="n">request_user_input</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;OK&quot;</span>
+    <span class="n">mock</span><span class="o">.</span><span class="n">get_sample_position_parent_device</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;labmanquadrant_1&quot;</span>
+    <span class="k">return</span> <span class="n">mock</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">heating</span><span class="p">(</span><span class="n">lab_view_mock</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Heating</span><span class="p">(</span><span class="n">heating_time</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">heating_temperature</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sample1&quot;</span><span class="p">,</span> <span class="s2">&quot;sample2&quot;</span><span class="p">],</span> <span class="n">lab_view</span><span class="o">=</span><span class="n">lab_view_mock</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">test_validate</span><span class="p">(</span><span class="n">heating</span><span class="p">):</span>
+    <span class="c1"># Test valid setup</span>
+    <span class="k">assert</span> <span class="n">heating</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span> <span class="o">==</span> <span class="kc">True</span>
+
+    <span class="c1"># Test invalid number of samples</span>
+    <span class="n">heating</span> <span class="o">=</span> <span class="n">Heating</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;sample</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">9</span><span class="p">)])</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="n">heating</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="o">.</span><span class="n">value</span><span class="p">))</span> <span class="o">==</span> <span class="s2">&quot;Number of samples must be between 1 and 8&quot;</span>
+
+    <span class="c1"># Test invalid heating temperature</span>
+    <span class="n">heating</span> <span class="o">=</span> <span class="n">Heating</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sample1&quot;</span><span class="p">,</span> <span class="s2">&quot;sample2&quot;</span><span class="p">])</span>
+    <span class="n">heating</span><span class="o">.</span><span class="n">heating_temperature</span> <span class="o">=</span> <span class="mi">1200</span>  <span class="c1"># Above MAX_TEMPERATURE</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="n">heating</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+    <span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;Heating temperature (</span><span class="si">{self.heating_temperature}</span><span class="s2">) must be less than </span><span class="si">{self.MAX_TEMPERATURE}</span><span class="s2"> C!&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">test_check_for_labman_quadrant_single_quadrant</span><span class="p">(</span><span class="n">heating</span><span class="p">,</span> <span class="n">lab_view_mock</span><span class="p">):</span>
+    <span class="n">heating</span> <span class="o">=</span> <span class="n">Heating</span><span class="p">(</span><span class="n">heating_time</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">heating_temperature</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sample1&quot;</span><span class="p">],</span> <span class="n">lab_view</span><span class="o">=</span><span class="n">lab_view_mock</span><span class="p">)</span>
+    <span class="n">heating</span><span class="o">.</span><span class="n">lab_view</span> <span class="o">=</span> <span class="n">lab_view_mock</span>
+    <span class="n">heating</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">get_sample</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="s2">&quot;Position_1&quot;</span><span class="p">)</span>
+    <span class="n">heating</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">get_sample_position_parent_device</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;labmanquadrant_1&quot;</span>
+    <span class="k">assert</span> <span class="n">heating</span><span class="o">.</span><span class="n">check_for_labman_quadrant</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;labmanquadrant_1&quot;</span>
+
+    <span class="n">heating</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">get_sample_position_parent_device</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">heating</span><span class="o">.</span><span class="n">check_for_labman_quadrant</span><span class="p">()</span> <span class="o">==</span> <span class="kc">None</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">furnace_and_log</span><span class="p">():</span>
+    <span class="c1"># Mock the BoxFurnace object</span>
+    <span class="n">furnace_mock</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+    <span class="n">furnace_mock</span><span class="o">.</span><span class="n">get_temperature</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="mi">100</span>
+
+    <span class="n">temperature_log</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;time_minutes&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;temperature_celsius&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+    <span class="k">return</span> <span class="n">furnace_mock</span><span class="p">,</span> <span class="n">temperature_log</span>
+
+
+<span class="k">def</span> <span class="nf">test_cooldown</span><span class="p">(</span><span class="n">furnace_and_log</span><span class="p">,</span> <span class="n">lab_view_mock</span><span class="p">):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;SIM_MODE_FLAG&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;False&quot;</span>
+    <span class="n">furnace_mock</span><span class="p">,</span> <span class="n">temperature_log</span> <span class="o">=</span> <span class="n">furnace_and_log</span>
+    <span class="n">heating_task</span> <span class="o">=</span> <span class="n">Heating</span><span class="p">(</span><span class="n">heating_time</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">heating_temperature</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sample1&quot;</span><span class="p">],</span> <span class="n">lab_view</span><span class="o">=</span><span class="n">lab_view_mock</span><span class="p">)</span>
+
+    <span class="n">start_time</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">fake_time</span><span class="p">():</span>
+        <span class="k">nonlocal</span> <span class="n">start_time</span>
+        <span class="n">start_time</span> <span class="o">+=</span> <span class="n">heating_task</span><span class="o">.</span><span class="n">LOGGING_INTERVAL_SECONDS</span> <span class="o">*</span> <span class="mi">60</span>
+        <span class="k">return</span> <span class="n">start_time</span>
+
+    <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s2">&quot;time.sleep&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="k">as</span> <span class="n">mock_sleep</span><span class="p">,</span> <span class="n">patch</span><span class="p">(</span><span class="s2">&quot;time.time&quot;</span><span class="p">,</span> <span class="n">side_effect</span><span class="o">=</span><span class="n">fake_time</span><span class="p">)</span> <span class="k">as</span> <span class="n">mock_time</span><span class="p">:</span>
+        <span class="n">updated_log</span> <span class="o">=</span> <span class="n">heating_task</span><span class="o">.</span><span class="n">cooldown</span><span class="p">(</span><span class="n">furnace_mock</span><span class="p">,</span> <span class="n">temperature_log</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">updated_log</span><span class="p">[</span><span class="s2">&quot;time_minutes&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">assert</span> <span class="n">updated_log</span><span class="p">[</span><span class="s2">&quot;temperature_celsius&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">100</span>
+    <span class="c1"># We need to return the flag to True since otherwise there will be leakage between tests!</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;SIM_MODE_FLAG&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;True&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">test_run</span><span class="p">(</span><span class="n">heating</span><span class="p">,</span> <span class="n">lab_view_mock</span><span class="p">):</span>
+    <span class="c1"># Set the initial time for the fake_time function</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">fake_time</span><span class="p">():</span>
+        <span class="n">start_time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">heating</span><span class="o">.</span><span class="n">LOGGING_INTERVAL_SECONDS</span> <span class="o">*</span> <span class="mi">6</span>
+        <span class="k">return</span> <span class="n">start_time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Create mocks for BoxFurnace, RobotArmFurnaces, and LabmanQuadrant</span>
+    <span class="n">box_furnace_mock</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">spec</span><span class="o">=</span><span class="n">BoxFurnace</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;box_furnace_mock&quot;</span><span class="p">)</span>
+    <span class="n">box_furnace_mock</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;box_furnace_mock&quot;</span>
+    <span class="n">robot_arm_mock</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">spec</span><span class="o">=</span><span class="n">RobotArmFurnaces</span><span class="p">)</span>
+    <span class="n">labman_quadrant_mock</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">spec</span><span class="o">=</span><span class="n">LabmanQuadrant</span><span class="p">)</span>
+    <span class="n">labman_quadrant_mock</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;labmanquadrant_mock&quot;</span>
+
+    <span class="c1"># Simulate is_running() being True twice, then False.</span>
+    <span class="n">is_running_side_effect</span> <span class="o">=</span> <span class="n">chain</span><span class="p">([</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">],</span> <span class="n">repeat</span><span class="p">(</span><span class="kc">False</span><span class="p">))</span>
+    <span class="n">box_furnace_mock</span><span class="o">.</span><span class="n">is_running</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">is_running_side_effect</span>
+    <span class="n">box_furnace_mock</span><span class="o">.</span><span class="n">get_temperature</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="mf">100.0</span>  <span class="c1"># Return a fixed temperature</span>
+
+    <span class="c1"># Simulate BoxFurnace, RobotArmFurnaces, and LabmanQuadrant being part of the resources returned by request_resources</span>
+    <span class="n">mock_context_manager</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+    <span class="n">mock_context_manager</span><span class="o">.</span><span class="fm">__enter__</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">{</span>
+            <span class="n">BoxFurnace</span><span class="p">:</span> <span class="n">box_furnace_mock</span><span class="p">,</span>
+            <span class="n">RobotArmFurnaces</span><span class="p">:</span> <span class="n">robot_arm_mock</span><span class="p">,</span>
+            <span class="s2">&quot;labmanquadrant_1&quot;</span><span class="p">:</span> <span class="n">labman_quadrant_mock</span><span class="p">,</span>
+        <span class="p">},</span>  <span class="c1"># Devices</span>
+        <span class="p">{</span><span class="n">BoxFurnace</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;slot&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]}},</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Assuming fake_time() is defined as before to simulate the passage of time</span>
+    <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s2">&quot;time.time&quot;</span><span class="p">,</span> <span class="n">side_effect</span><span class="o">=</span><span class="n">fake_time</span><span class="p">),</span> <span class="n">patch</span><span class="p">(</span><span class="s2">&quot;time.sleep&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">lab_view_mock</span><span class="o">.</span><span class="n">request_resources</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_context_manager</span>
+        <span class="n">heating</span><span class="o">.</span><span class="n">lab_view</span> <span class="o">=</span> <span class="n">lab_view_mock</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">heating</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+        <span class="n">lab_view_mock</span><span class="o">.</span><span class="n">request_resources</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span>
+        <span class="n">retrieved_box_furnace</span> <span class="o">=</span> <span class="n">mock_context_manager</span><span class="o">.</span><span class="fm">__enter__</span><span class="o">.</span><span class="n">return_value</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">BoxFurnace</span><span class="p">]</span>
+        <span class="n">retrieved_box_furnace</span><span class="o">.</span><span class="n">open_door</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span>
+        <span class="n">retrieved_robot_arm</span> <span class="o">=</span> <span class="n">mock_context_manager</span><span class="o">.</span><span class="fm">__enter__</span><span class="o">.</span><span class="n">return_value</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">RobotArmFurnaces</span><span class="p">]</span>
+        <span class="n">retrieved_robot_arm</span><span class="o">.</span><span class="n">move_rack_into_box_furnace</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span>
+        <span class="n">retrieved_labman_quadrant</span> <span class="o">=</span> <span class="n">mock_context_manager</span><span class="o">.</span><span class="fm">__enter__</span><span class="o">.</span><span class="n">return_value</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;labmanquadrant_1&quot;</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">result</span> <span class="o">==</span> <span class="p">{</span>  
+                            <span class="s2">&quot;heating_temperature&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>
+                            <span class="s2">&quot;heating_time&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
+                            <span class="s2">&quot;heating_profiles&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                            <span class="s2">&quot;cooling_rate&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                            <span class="s2">&quot;low_temperature_calcination&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                            <span class="s2">&quot;temperature_log&quot;</span><span class="p">:</span> 
+                            <span class="p">{</span><span class="s2">&quot;time_minutes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">18.0</span><span class="p">],</span> 
+                            <span class="s2">&quot;temperature_celsius&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">100.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">]}</span>
+                          <span class="p">}</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="n">box_furnace_mock</span><span class="o">.</span><span class="n">is_running</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -813,6 +986,7 @@ current temperature from the driver.</p></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#source-code">Source code</a></li>
 </ul>
 </li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#task-class-heating">Task Class: Heating</a></li>
 </ul>
 </li>
 </ul>

@@ -324,3 +324,176 @@ def test_close_door(box_furnace, mock_drivers):
     # Verify that the door_controller's close method was called with the correct parameters
     mock_drivers[1].close.assert_called_once_with(name=box_furnace.furnace_letter)
 ```
+
+### Task Class: Heating
+
+Similar to the CI of the box furnace, we can also use pytest fixtures and mock to test the tasks. 
+
+```python
+"""This module contains unit tests for the Heating class."""
+
+import os
+from itertools import chain, repeat
+from unittest.mock import MagicMock, patch
+
+import pytest
+
+from alab_example.devices.box_furnace import BoxFurnace
+from alab_example.devices.labman_quadrant import LabmanQuadrant
+from alab_example.devices.robot_arm_furnaces import RobotArmFurnaces
+from alab_example.tasks import Heating
+
+
+@pytest.fixture()
+def lab_view_mock():
+    mock = MagicMock()
+
+    mock_box_furnace = MagicMock(spec=BoxFurnace)
+    mock_box_furnace.name = "box_furnace_mock"
+
+    mock_box_furnace.get_temperature.return_value = 25.0
+    mock_robot_arm = MagicMock(spec=RobotArmFurnaces)
+    mock_labman_quadrant = MagicMock()
+    mock_labman_quadrant.name = "labman_quadrant_mock"
+
+    devices_mock = {
+        BoxFurnace: mock_box_furnace,
+        RobotArmFurnaces: mock_robot_arm,
+        "labmanquadrant_1": mock_labman_quadrant,
+    }
+
+    sample_positions_mock = {BoxFurnace: {"slot": ["A/1", "A/2"]}}
+
+    mock_request_resources_context = MagicMock()
+    mock_request_resources_context.__enter__.return_value = (devices_mock, sample_positions_mock)
+    mock_request_resources_context.__exit__.return_value = None
+    mock.request_resources.return_value = mock_request_resources_context
+
+    mock.get_sample.return_value = MagicMock(position="Position_1")
+    mock.request_user_input.return_value = "OK"
+    mock.get_sample_position_parent_device.return_value = "labmanquadrant_1"
+    return mock
+
+
+@pytest.fixture()
+def heating(lab_view_mock):
+    return Heating(heating_time=60, heating_temperature=500, samples=["sample1", "sample2"], lab_view=lab_view_mock)
+
+
+def test_validate(heating):
+    # Test valid setup
+    assert heating.validate() == True
+
+    # Test invalid number of samples
+    heating = Heating(10, 300, samples=[f"sample{i}" for i in range(9)])
+    with pytest.raises(ValueError) as ex:
+        heating.validate()
+    assert (str(ex.value)) == "Number of samples must be between 1 and 8"
+
+    # Test invalid heating temperature
+    heating = Heating(10, 300, samples=["sample1", "sample2"])
+    heating.heating_temperature = 1200  # Above MAX_TEMPERATURE
+    with pytest.raises(ValueError) as ex:
+        heating.validate()
+    assert (
+        str(ex.value)
+    ) == "Heating temperature ({self.heating_temperature}) must be less than {self.MAX_TEMPERATURE} C!"
+
+
+def test_check_for_labman_quadrant_single_quadrant(heating, lab_view_mock):
+    heating = Heating(heating_time=60, heating_temperature=500, samples=["sample1"], lab_view=lab_view_mock)
+    heating.lab_view = lab_view_mock
+    heating.lab_view.get_sample.return_value = MagicMock(position="Position_1")
+    heating.lab_view.get_sample_position_parent_device.return_value = "labmanquadrant_1"
+    assert heating.check_for_labman_quadrant() == "labmanquadrant_1"
+
+    heating.lab_view.get_sample_position_parent_device.return_value = ""
+    assert heating.check_for_labman_quadrant() == None
+
+
+@pytest.fixture()
+def furnace_and_log():
+    # Mock the BoxFurnace object
+    furnace_mock = MagicMock()
+    furnace_mock.get_temperature.return_value = 100
+
+    temperature_log = {"time_minutes": [], "temperature_celsius": []}
+    return furnace_mock, temperature_log
+
+
+def test_cooldown(furnace_and_log, lab_view_mock):
+    os.environ["SIM_MODE_FLAG"] = "False"
+    furnace_mock, temperature_log = furnace_and_log
+    heating_task = Heating(heating_time=60, heating_temperature=500, samples=["sample1"], lab_view=lab_view_mock)
+
+    start_time = 0
+
+    def fake_time():
+        nonlocal start_time
+        start_time += heating_task.LOGGING_INTERVAL_SECONDS * 60
+        return start_time
+
+    with patch("time.sleep", return_value=None) as mock_sleep, patch("time.time", side_effect=fake_time) as mock_time:
+        updated_log = heating_task.cooldown(furnace_mock, temperature_log)
+
+        assert len(updated_log["time_minutes"]) > 0
+        assert updated_log["temperature_celsius"][-1] == 100
+    # We need to return the flag to True since otherwise there will be leakage between tests!
+    os.environ["SIM_MODE_FLAG"] = "True"
+
+
+def test_run(heating, lab_view_mock):
+    # Set the initial time for the fake_time function
+    start_time = [0]
+
+    def fake_time():
+        start_time[0] += heating.LOGGING_INTERVAL_SECONDS * 6
+        return start_time[0]
+
+    # Create mocks for BoxFurnace, RobotArmFurnaces, and LabmanQuadrant
+    box_furnace_mock = MagicMock(spec=BoxFurnace, name="box_furnace_mock")
+    box_furnace_mock.name = "box_furnace_mock"
+    robot_arm_mock = MagicMock(spec=RobotArmFurnaces)
+    labman_quadrant_mock = MagicMock(spec=LabmanQuadrant)
+    labman_quadrant_mock.name = "labmanquadrant_mock"
+
+    # Simulate is_running() being True twice, then False.
+    is_running_side_effect = chain([True, True], repeat(False))
+    box_furnace_mock.is_running.side_effect = is_running_side_effect
+    box_furnace_mock.get_temperature.return_value = 100.0  # Return a fixed temperature
+
+    # Simulate BoxFurnace, RobotArmFurnaces, and LabmanQuadrant being part of the resources returned by request_resources
+    mock_context_manager = MagicMock()
+    mock_context_manager.__enter__.return_value = (
+        {
+            BoxFurnace: box_furnace_mock,
+            RobotArmFurnaces: robot_arm_mock,
+            "labmanquadrant_1": labman_quadrant_mock,
+        },  # Devices
+        {BoxFurnace: {"slot": [1, 2, 3, 4, 5, 6, 7, 8]}},
+    )
+
+    # Assuming fake_time() is defined as before to simulate the passage of time
+    with patch("time.time", side_effect=fake_time), patch("time.sleep", return_value=None):
+        lab_view_mock.request_resources.return_value = mock_context_manager
+        heating.lab_view = lab_view_mock
+        result = heating.run()
+
+        lab_view_mock.request_resources.assert_called()
+        retrieved_box_furnace = mock_context_manager.__enter__.return_value[0][BoxFurnace]
+        retrieved_box_furnace.open_door.assert_called()
+        retrieved_robot_arm = mock_context_manager.__enter__.return_value[0][RobotArmFurnaces]
+        retrieved_robot_arm.move_rack_into_box_furnace.assert_called()
+        retrieved_labman_quadrant = mock_context_manager.__enter__.return_value[0]["labmanquadrant_1"]
+        assert result == {  
+                            "heating_temperature": 500,
+                            "heating_time": 60,
+                            "heating_profiles": None,
+                            "cooling_rate": None,
+                            "low_temperature_calcination": False,
+                            "temperature_log": 
+                            {"time_minutes": [6.0, 18.0], 
+                            "temperature_celsius": [100.0, 100.0]}
+                          }
+        assert not box_furnace_mock.is_running()
+```
