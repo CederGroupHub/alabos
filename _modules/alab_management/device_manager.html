@@ -753,13 +753,17 @@ document.write(`
         <span class="n">_body</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Callback function to handle a returned message from Device Manager.&quot;&quot;&quot;</span>
-        <span class="n">body</span> <span class="o">=</span> <span class="n">dill</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">_body</span><span class="p">)</span>
-
         <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">ObjectId</span><span class="p">(</span><span class="n">properties</span><span class="o">.</span><span class="n">correlation_id</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">body</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;success&quot;</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="n">body</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">])</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">set_exception</span><span class="p">(</span><span class="n">body</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">])</span></div>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">body</span> <span class="o">=</span> <span class="n">dill</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">_body</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">body</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;success&quot;</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="n">body</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">set_exception</span><span class="p">(</span><span class="n">body</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">set_exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 </div>
 
 </pre></div>
