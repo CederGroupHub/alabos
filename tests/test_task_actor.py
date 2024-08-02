@@ -69,6 +69,7 @@ class TestTaskActor(unittest.TestCase):
                         "prev_tasks": [],
                         "parameters": {
                             "dest": "furnace_temp",
+                            "priority": 100,
                         },
                         "samples": ["test_sample"],
                     },

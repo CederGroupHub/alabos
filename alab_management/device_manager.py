@@ -372,10 +372,14 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
         _body: bytes,
     ):
         """Callback function to handle a returned message from Device Manager."""
-        body = dill.loads(_body)
-
         f = self._waiting.pop(ObjectId(properties.correlation_id))
-        if body["status"] == "success":
-            f.set_result(body["result"])
-        else:
-            f.set_exception(body["result"])
+
+        try:
+            body = dill.loads(_body)
+
+            if body["status"] == "success":
+                f.set_result(body["result"])
+            else:
+                f.set_exception(body["result"])
+        except Exception as e:
+            f.set_exception(e)
