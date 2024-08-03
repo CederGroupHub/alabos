@@ -9,7 +9,7 @@ export SIM_MODE_FLAG=TRUE  # this is the default value
 ```
 
 ```{danger}
-Run `export SIM_MODE_FLAG=TRUE` only when you are on the *production server*.
+Run `export SIM_MODE_FLAG=FALSE` only when you are on the *production server*.
 ```
 
 ```{note}
