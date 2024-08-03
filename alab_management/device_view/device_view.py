@@ -220,7 +220,7 @@ class DeviceView:
                             idle_devices[device] = device_
             return idle_devices
 
-    def get_sample_on_device(self, device_name: str) -> dict[str, list[ObjectId]]:
+    def get_samples_on_device(self, device_name: str) -> dict[str, list[ObjectId]]:
         """
         Get all the samples on a device.
 
