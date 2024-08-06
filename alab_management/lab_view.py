@@ -300,16 +300,33 @@ class LabView:
         return result
 
     def request_user_input(self, prompt: str, options: list[str]) -> str:
-        """Request user input from the user. This function will block until the user inputs something. Returns the
-        value returned by the user.
+        """
+        Request user input from the user. This function will block until the user inputs something.
+
+        Args:
+            prompt (str): The prompt to display to the user.
+            options (list[str]): A list of options to display to the user.
+
+        Returns
+        -------
+            response (str): The value returned by the user (from the buttons).
         """
         return request_user_input(task_id=self.task_id, prompt=prompt, options=options)
 
     def request_user_input_with_note(
         self, prompt: str, options: list[str]
     ) -> tuple[str, str]:
-        """Request user input from the user. This function will block until the user inputs something. Returns the
-        value returned by the user and the note.
+        """
+        Request user input from the user. This function will block until the user inputs something.
+
+        Args:
+            prompt (str): The prompt to display to the user.
+            options (list[str]): A list of options to display to the user.
+
+        Returns
+        -------
+            response (str): The value returned by the user (from the buttons).
+            note (str): The note returned by the user.
         """
         return request_user_input_with_note(
             task_id=self.task_id, prompt=prompt, options=options

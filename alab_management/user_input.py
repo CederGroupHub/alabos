@@ -175,12 +175,15 @@ def request_user_input(
     """
     Request user input through the dashboard. Blocks until response is given.
 
-    task_id (ObjectId): task id requesting user input
-    prompt (str): prompt to give user
-    options (List[str]): response options to give user
-    maintenance (bool): if true, mark this as a request for overall system maintenance
+    Args:
+        task_id (ObjectId): task id requesting user input
+        prompt (str): prompt to give user
+        options (List[str]): response options to give user
+        maintenance (bool): if true, mark this as a request for overall system maintenance
 
-    Returns user response as string.
+    Returns
+    -------
+        response (str): user response as string
     """
     user_input_view = UserInputView()
     request_id = user_input_view.insert_request(
@@ -195,11 +198,15 @@ def request_user_input(
 
 def request_maintenance_input(prompt: str, options: list[str]):
     """
-    Request user input through the dashboard. Blocks until response is given.
+    Request user input for maintenance through the dashboard. Blocks until response is given.
 
     Args:
-        prompt: prompt to give user
-        options: response options to give user
+        prompt (str): prompt to give user
+        options (List[str]): response options to give user
+
+    Returns
+    -------
+        response (str): user response as string
     """
     return request_user_input(
         task_id=None,
@@ -218,14 +225,18 @@ def request_user_input_with_note(
     category: str = "Unknown Category",
 ) -> tuple[str, str]:
     """
-    Request user input through the dashboard. Blocks until response is given.
+    Request user input through the dashboard. Blocks until response. Returns response and note.
 
-    task_id (ObjectId): task id requesting user input
-    prompt (str): prompt to give user
-    options (List[str]): response options to give user
-    maintenance (bool): if true, mark this as a request for overall system maintenance
+    Args:
+        task_id (ObjectId): task id requesting user input
+        prompt (str): prompt to give user
+        options (List[str]): response options to give user
+        maintenance (bool): if true, mark this as a request for overall system maintenance
 
-    Returns user response as string.
+    Returns
+    -------
+        response (str): user response as string
+        note (str): note from the user
     """
     user_input_view = UserInputView()
     request_id = user_input_view.insert_request(
