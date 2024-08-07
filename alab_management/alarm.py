@@ -75,35 +75,25 @@ class Alarm:
             slack_channel_id: The slack channel id to send the alert to.
         """
         self.sim_mode_flag = AlabOSConfig().is_sim_mode()
+        self.email_alert = False
+        self.slack_alert = False
+        self.email_receivers = email_receivers
+        self.email_sender = email_sender
+        self.email_password = email_password
+        self.slack_bot_token = slack_bot_token
+        self.slack_channel_id = slack_channel_id
+
         if (
-            email_receivers is not None
-            and self.sim_mode_flag is False
-            and email_sender is not None
-            and email_password is not None
+            self.email_receivers is not None
+            and self.email_sender is not None
+            and self.email_password is not None
         ):
-            self.setup_email(email_sender, email_receivers, email_password)
-        else:
-            self.email_alert = False
-            print(
-                "Email alert is not set up due to either missing "
-                "email_receivers, email_sender or email_password. "
-                "It is also possible that the system is in simulation mode. "
-                "Please recheck the config file if this is not expected."
-            )
+            self.setup_email(self.email_receivers, self.email_sender, self.email_password)
         if (
-            slack_bot_token is not None
-            and self.sim_mode_flag is False
-            and slack_channel_id is not None
+            self.slack_bot_token is not None
+            and self.slack_channel_id is not None
         ):
-            self.setup_slackbot(slack_bot_token, slack_channel_id)
-        else:
-            self.slack_alert = False
-            print(
-                "Slack alert is not set up due to either missing"
-                "slack_bot_token or slack_channel_id. "
-                "It is also possible that the system is in simulation mode. "
-                "Please recheck the config file if this is not expected."
-            )
+            self.setup_slackbot(self.slack_bot_token, self.slack_channel_id)
         self.platforms = {"email": self.email_alert, "slack": self.slack_alert}
 
     def setup_email(
@@ -212,3 +202,12 @@ class Alarm:
         client.chat_postMessage(
             channel=self.slack_channel_id, text=category + ": " + message
         )
+
+    def print_configuration(self):
+        """Print the configuration of the alarm."""
+        print("Alarm Configuration:")
+        print("Platforms: ", self.platforms)
+        print("Email Receivers: ", self.email_receivers)
+        print("Email Sender: ", self.email_sender)
+        print("Slack Channel ID: ", self.slack_channel_id)
+        print("Sim Mode Flag: ", str(self.sim_mode_flag) + ". Will not send alerts in sim mode." if self.sim_mode_flag else "")

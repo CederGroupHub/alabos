@@ -4,6 +4,10 @@ and write them to MongoDB, which will make it easier to query.
 """
 
 
+from alab_management.alarm import Alarm
+from alab_management.config import AlabOSConfig
+
+
 def setup_lab():
     """Cleanup the db and then import all the definitions and set up the db."""
     from alab_management.device_view import DeviceView, get_all_devices
@@ -32,4 +36,7 @@ def setup_lab():
             sample_positions=device.sample_positions, parent_device_name=device.name
         )
 
+    # print the alarm configuration
+    alarm_config = AlabOSConfig().get("alarm", {})
+    Alarm(**alarm_config).print_configuration()
     return True
