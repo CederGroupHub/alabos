@@ -430,35 +430,25 @@ document.write(`
 <span class="sd">            slack_channel_id: The slack channel id to send the alert to.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sim_mode_flag</span> <span class="o">=</span> <span class="n">AlabOSConfig</span><span class="p">()</span><span class="o">.</span><span class="n">is_sim_mode</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">email_alert</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slack_alert</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">email_receivers</span> <span class="o">=</span> <span class="n">email_receivers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">email_sender</span> <span class="o">=</span> <span class="n">email_sender</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">email_password</span> <span class="o">=</span> <span class="n">email_password</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slack_bot_token</span> <span class="o">=</span> <span class="n">slack_bot_token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slack_channel_id</span> <span class="o">=</span> <span class="n">slack_channel_id</span>
+
         <span class="k">if</span> <span class="p">(</span>
-            <span class="n">email_receivers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_mode_flag</span> <span class="ow">is</span> <span class="kc">False</span>
-            <span class="ow">and</span> <span class="n">email_sender</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="ow">and</span> <span class="n">email_password</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">email_receivers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_sender</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_password</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">setup_email</span><span class="p">(</span><span class="n">email_sender</span><span class="p">,</span> <span class="n">email_receivers</span><span class="p">,</span> <span class="n">email_password</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">email_alert</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="nb">print</span><span class="p">(</span>
-                <span class="s2">&quot;Email alert is not set up due to either missing &quot;</span>
-                <span class="s2">&quot;email_receivers, email_sender or email_password. &quot;</span>
-                <span class="s2">&quot;It is also possible that the system is in simulation mode. &quot;</span>
-                <span class="s2">&quot;Please recheck the config file if this is not expected.&quot;</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setup_email</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">email_receivers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_sender</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_password</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span>
-            <span class="n">slack_bot_token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_mode_flag</span> <span class="ow">is</span> <span class="kc">False</span>
-            <span class="ow">and</span> <span class="n">slack_channel_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">slack_bot_token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">slack_channel_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">setup_slackbot</span><span class="p">(</span><span class="n">slack_bot_token</span><span class="p">,</span> <span class="n">slack_channel_id</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">slack_alert</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="nb">print</span><span class="p">(</span>
-                <span class="s2">&quot;Slack alert is not set up due to either missing&quot;</span>
-                <span class="s2">&quot;slack_bot_token or slack_channel_id. &quot;</span>
-                <span class="s2">&quot;It is also possible that the system is in simulation mode. &quot;</span>
-                <span class="s2">&quot;Please recheck the config file if this is not expected.&quot;</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setup_slackbot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slack_bot_token</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slack_channel_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">platforms</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_alert</span><span class="p">,</span> <span class="s2">&quot;slack&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">slack_alert</span><span class="p">}</span>
 
 <div class="viewcode-block" id="Alarm.setup_email">
@@ -581,6 +571,18 @@ document.write(`
         <span class="n">client</span><span class="o">.</span><span class="n">chat_postMessage</span><span class="p">(</span>
             <span class="n">channel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">slack_channel_id</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">category</span> <span class="o">+</span> <span class="s2">&quot;: &quot;</span> <span class="o">+</span> <span class="n">message</span>
         <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Alarm.print_configuration">
+<a class="viewcode-back" href="../../alab_management.alarm.html#alab_management.alarm.Alarm.print_configuration">[docs]</a>
+    <span class="k">def</span> <span class="nf">print_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print the configuration of the alarm.&quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Alarm Configuration:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Platforms: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">platforms</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Email Receivers: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_receivers</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Email Sender: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_sender</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Slack Channel ID: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slack_channel_id</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sim Mode Flag: &quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim_mode_flag</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;. Will not send alerts in sim mode.&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_mode_flag</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 </div>
 
 </pre></div>
