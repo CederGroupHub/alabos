@@ -210,4 +210,4 @@ class Alarm:
         print("Email Receivers: ", self.email_receivers)
         print("Email Sender: ", self.email_sender)
         print("Slack Channel ID: ", self.slack_channel_id)
-        print("Sim Mode Flag: ", str(self.sim_mode_flag) + ". Will not send alerts in sim mode." if self.sim_mode_flag else "")
+        print("Sim Mode Flag: ", str(self.sim_mode_flag) + ". Will not send alerts in sim mode." if self.sim_mode_flag else "False")
