@@ -58,8 +58,7 @@ class ExperimentView:
         for sample in experiment["samples"]:
             if sample["sample_id"] is None:
                 continue  # ALabOS will assign a sample id, this is always safe
-            else:
-                sample["sample_id"] = ObjectId(sample["sample_id"])
+            sample["sample_id"] = ObjectId(sample["sample_id"])
             if self.sample_view.exists(sample_id=sample["sample_id"]):
                 raise ValueError(
                     f"Sample id {sample.sample_id} already exists in the database! Please use another id. This "
@@ -69,8 +68,7 @@ class ExperimentView:
         for task in experiment["tasks"]:
             if task["task_id"] is None:
                 continue
-            else:
-                task["task_id"] = ObjectId(task["task_id"])
+            task["task_id"] = ObjectId(task["task_id"])
             if self.task_view.exists(task_id=task["task_id"]):
                 raise ValueError(
                     f"Task id {task.task_id} already exists in the database! Please use another id. This experiment "
