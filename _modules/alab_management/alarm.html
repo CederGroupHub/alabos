@@ -497,9 +497,7 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># if system is in simulation mode, do not send alert</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_mode_flag</span><span class="p">:</span>
-            <span class="k">for</span> <span class="p">(</span>
-                <span class="n">platform</span>
-            <span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">platforms</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>  <span class="c1"># pylint: disable=consider-using-dict-items</span>
+            <span class="k">for</span> <span class="n">platform</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">platforms</span><span class="p">:</span>  <span class="c1"># pylint: disable=consider-using-dict-items</span>
                 <span class="n">message_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span> <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="n">category</span><span class="p">}</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">platforms</span><span class="p">[</span><span class="n">platform</span><span class="p">]:</span>
                     <span class="k">try</span><span class="p">:</span>
@@ -582,7 +580,8 @@ document.write(`
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Email Receivers: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_receivers</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Email Sender: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_sender</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Slack Channel ID: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slack_channel_id</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sim Mode Flag: &quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim_mode_flag</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;. Will not send alerts in sim mode.&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_mode_flag</span> <span class="k">else</span> <span class="s2">&quot;False&quot;</span><span class="p">)</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sim Mode Flag: &quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim_mode_flag</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;. Will not send alerts in sim mode.&quot;</span> 
+              <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_mode_flag</span> <span class="k">else</span> <span class="s2">&quot;False&quot;</span><span class="p">)</span></div>
 </div>
 
 </pre></div>
