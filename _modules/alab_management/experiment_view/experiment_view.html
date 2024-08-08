@@ -410,19 +410,25 @@ document.write(`
 
         <span class="c1"># confirm that no task/sample id&#39;s already exist in the database. This is possible when users manually set</span>
         <span class="c1"># these id&#39;s</span>
-        <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">experiment</span><span class="o">.</span><span class="n">samples</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">sample</span><span class="o">.</span><span class="n">sample_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">experiment</span><span class="o">=</span><span class="n">experiment</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;python&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">experiment</span><span class="p">[</span><span class="s2">&quot;samples&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;sample_id&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">continue</span>  <span class="c1"># ALabOS will assign a sample id, this is always safe</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_view</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">sample_id</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">sample_id</span><span class="p">):</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;sample_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">sample</span><span class="p">[</span><span class="s2">&quot;sample_id&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_view</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">sample_id</span><span class="o">=</span><span class="n">sample</span><span class="p">[</span><span class="s2">&quot;sample_id&quot;</span><span class="p">]):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;Sample id </span><span class="si">{</span><span class="n">sample</span><span class="o">.</span><span class="n">sample_id</span><span class="si">}</span><span class="s2"> already exists in the database! Please use another id. This &quot;</span>
                     <span class="sa">f</span><span class="s2">&quot;experiment was not submitted.&quot;</span>
                 <span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">experiment</span><span class="o">.</span><span class="n">tasks</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">task_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">experiment</span><span class="p">[</span><span class="s2">&quot;tasks&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">task</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">continue</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">task_id</span><span class="p">):</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">task</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;Task id </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">task_id</span><span class="si">}</span><span class="s2"> already exists in the database! Please use another id. This experiment &quot;</span>
                     <span class="sa">f</span><span class="s2">&quot;was not submitted.&quot;</span>
@@ -431,7 +437,7 @@ document.write(`
         <span class="c1"># all good, lets submit the experiment into ALabOS!</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="o">**</span><span class="n">experiment</span><span class="o">.</span><span class="n">dict</span><span class="p">(),</span>
+                <span class="o">**</span><span class="n">experiment</span><span class="p">,</span>
                 <span class="s2">&quot;submitted_at&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
                 <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="p">}</span>

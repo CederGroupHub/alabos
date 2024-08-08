@@ -372,11 +372,11 @@ document.write(`
             <span class="k">return</span>  <span class="c1"># management will autogenerate a valid objectid</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">ObjectId</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;An experiment received over the API contained a sample with an invalid sample_id. The sample_id was &quot;</span>
-                <span class="s2">&quot;set to </span><span class="si">{v}</span><span class="s2">, which is not a valid ObjectId.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;set to </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">, which is not a valid ObjectId.&quot;</span>
             <span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
 
     <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;metadata&quot;</span><span class="p">)</span>
@@ -405,7 +405,7 @@ document.write(`
             <span class="k">return</span>  <span class="c1"># management will autogenerate a valid objectid</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">ObjectId</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;An experiment received over the API contained a task with an invalid task_id. The task_id was set to &quot;</span>
