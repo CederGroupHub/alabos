@@ -410,7 +410,7 @@ document.write(`
 
         <span class="c1"># confirm that no task/sample id&#39;s already exist in the database. This is possible when users manually set</span>
         <span class="c1"># these id&#39;s</span>
-        <span class="n">experiment</span><span class="o">=</span><span class="n">experiment</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;python&quot;</span><span class="p">)</span>
+        <span class="n">experiment</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;python&quot;</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">experiment</span><span class="p">[</span><span class="s2">&quot;samples&quot;</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;sample_id&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
