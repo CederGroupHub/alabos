@@ -134,9 +134,7 @@ class Alarm:
         """
         # if system is in simulation mode, do not send alert
         if not self.sim_mode_flag:
-            for (
-                platform
-            ) in self.platforms.items():  # pylint: disable=consider-using-dict-items
+            for platform in self.platforms:  # pylint: disable=consider-using-dict-items
                 message_dict = {"message": message, "category": category}
                 if self.platforms[platform]:
                     try:
@@ -210,4 +208,5 @@ class Alarm:
         print("Email Receivers: ", self.email_receivers)
         print("Email Sender: ", self.email_sender)
         print("Slack Channel ID: ", self.slack_channel_id)
-        print("Sim Mode Flag: ", str(self.sim_mode_flag) + ". Will not send alerts in sim mode." if self.sim_mode_flag else "False")
+        print("Sim Mode Flag: ", str(self.sim_mode_flag) + ". Will not send alerts in sim mode." 
+              if self.sim_mode_flag else "False")
