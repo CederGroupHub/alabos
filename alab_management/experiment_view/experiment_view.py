@@ -53,7 +53,7 @@ class ExperimentView:
 
         # confirm that no task/sample id's already exist in the database. This is possible when users manually set
         # these id's
-        experiment=experiment.model_dump(mode="python")
+        experiment = experiment.model_dump(mode="python")
 
         for sample in experiment["samples"]:
             if sample["sample_id"] is None:
