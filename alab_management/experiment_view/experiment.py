@@ -22,11 +22,11 @@ class _Sample(BaseModel):
             return  # management will autogenerate a valid objectid
 
         try:
-            return ObjectId(v)
+            return str(ObjectId(v))
         except Exception as exc:
             raise ValueError(
                 "An experiment received over the API contained a sample with an invalid sample_id. The sample_id was "
-                "set to {v}, which is not a valid ObjectId."
+                f"set to {v}, which is not a valid ObjectId."
             ) from exc
 
     @field_validator("metadata")
@@ -55,7 +55,7 @@ class _Task(BaseModel):
             return  # management will autogenerate a valid objectid
 
         try:
-            return ObjectId(v)
+            return str(ObjectId(v))
         except Exception as exc:
             raise ValueError(
                 "An experiment received over the API contained a task with an invalid task_id. The task_id was set to "

@@ -53,19 +53,25 @@ class ExperimentView:
 
         # confirm that no task/sample id's already exist in the database. This is possible when users manually set
         # these id's
-        for sample in experiment.samples:
-            if sample.sample_id is None:
+        experiment=experiment.model_dump(mode="python")
+
+        for sample in experiment["samples"]:
+            if sample["sample_id"] is None:
                 continue  # ALabOS will assign a sample id, this is always safe
-            if self.sample_view.exists(sample_id=sample.sample_id):
+            else:
+                sample["sample_id"] = ObjectId(sample["sample_id"])
+            if self.sample_view.exists(sample_id=sample["sample_id"]):
                 raise ValueError(
                     f"Sample id {sample.sample_id} already exists in the database! Please use another id. This "
                     f"experiment was not submitted."
                 )
 
-        for task in experiment.tasks:
-            if task.task_id is None:
+        for task in experiment["tasks"]:
+            if task["task_id"] is None:
                 continue
-            if self.task_view.exists(task_id=task.task_id):
+            else:
+                task["task_id"] = ObjectId(task["task_id"])
+            if self.task_view.exists(task_id=task["task_id"]):
                 raise ValueError(
                     f"Task id {task.task_id} already exists in the database! Please use another id. This experiment "
                     f"was not submitted."
@@ -74,7 +80,7 @@ class ExperimentView:
         # all good, lets submit the experiment into ALabOS!
         result = self._experiment_collection.insert_one(
             {
-                **experiment.dict(),
+                **experiment,
                 "submitted_at": datetime.now(),
                 "status": ExperimentStatus.PENDING.name,
             }

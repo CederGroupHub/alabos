@@ -58,7 +58,7 @@ class TestExperimentView(TestCase):
         exp_id = self.experiment_view.create_experiment(exp_template)
         exp = self.experiment_view.get_experiment(exp_id)
 
-        exp_dict = exp_template.dict()
+        exp_dict = exp_template.model_dump(mode="python")
         exp_dict["_id"] = exp_id
         exp_dict["status"] = "PENDING"
 
