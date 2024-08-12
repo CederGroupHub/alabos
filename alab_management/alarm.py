@@ -88,11 +88,10 @@ class Alarm:
             and self.email_sender is not None
             and self.email_password is not None
         ):
-            self.setup_email(self.email_receivers, self.email_sender, self.email_password)
-        if (
-            self.slack_bot_token is not None
-            and self.slack_channel_id is not None
-        ):
+            self.setup_email(
+                self.email_receivers, self.email_sender, self.email_password
+            )
+        if self.slack_bot_token is not None and self.slack_channel_id is not None:
             self.setup_slackbot(self.slack_bot_token, self.slack_channel_id)
         self.platforms = {"email": self.email_alert, "slack": self.slack_alert}
 
@@ -208,5 +207,11 @@ class Alarm:
         print("Email Receivers: ", self.email_receivers)
         print("Email Sender: ", self.email_sender)
         print("Slack Channel ID: ", self.slack_channel_id)
-        print("Sim Mode Flag: ", str(self.sim_mode_flag) + ". Will not send alerts in sim mode." 
-              if self.sim_mode_flag else "False")
+        print(
+            "Sim Mode Flag: ",
+            (
+                str(self.sim_mode_flag) + ". Will not send alerts in sim mode."
+                if self.sim_mode_flag
+                else "False"
+            ),
+        )

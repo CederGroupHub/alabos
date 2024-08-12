@@ -177,23 +177,33 @@ class ResourceManager(RequestMixin):
             return
 
         # if both devices and sample positions can be satisfied
-        returned_value = self._request_collection.update_one(
-            {"_id": request_entry["_id"], "status": RequestStatus.PENDING.name},
-            {
-                "$set": {
-                    "assigned_devices": devices,
-                    "assigned_sample_positions": sample_positions,
-                    "status": RequestStatus.FULFILLED.name,
-                    "fulfilled_at": datetime.now(),
-                }
-            },
+        request_entry = self._request_collection.find_one(
+            {"_id": request_entry["_id"], "status": RequestStatus.PENDING.name}
         )
-        if returned_value.modified_count == 1:
+
+        if request_entry is not None:
             # label the resources as occupied
             self._occupy_devices(devices=devices, task_id=task_id)
             self._occupy_sample_positions(
                 sample_positions=sample_positions, task_id=task_id
             )
+
+            returned_value = self._request_collection.update_one(
+                {"_id": request_entry["_id"], "status": RequestStatus.PENDING.name},
+                {
+                    "$set": {
+                        "assigned_devices": devices,
+                        "assigned_sample_positions": sample_positions,
+                        "status": RequestStatus.FULFILLED.name,
+                        "fulfilled_at": datetime.now(),
+                    }
+                },
+            )
+
+            # if the request status cannot be updated (due to status change), release the resources
+            if returned_value.modified_count != 1:
+                self._release_devices(devices)
+                self._release_sample_positions(sample_positions)
 
     def _occupy_devices(self, devices: dict[str, dict[str, Any]], task_id: ObjectId):
         for device in devices.values():
