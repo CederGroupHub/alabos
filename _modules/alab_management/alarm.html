@@ -443,11 +443,10 @@ document.write(`
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_sender</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_password</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">setup_email</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">email_receivers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_sender</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_password</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">slack_bot_token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">slack_channel_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setup_email</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">email_receivers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_sender</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_password</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">slack_bot_token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">slack_channel_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">setup_slackbot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slack_bot_token</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slack_channel_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">platforms</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_alert</span><span class="p">,</span> <span class="s2">&quot;slack&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">slack_alert</span><span class="p">}</span>
 
@@ -580,8 +579,14 @@ document.write(`
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Email Receivers: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_receivers</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Email Sender: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_sender</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Slack Channel ID: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slack_channel_id</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sim Mode Flag: &quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim_mode_flag</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;. Will not send alerts in sim mode.&quot;</span> 
-              <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_mode_flag</span> <span class="k">else</span> <span class="s2">&quot;False&quot;</span><span class="p">)</span></div>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;Sim Mode Flag: &quot;</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim_mode_flag</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;. Will not send alerts in sim mode.&quot;</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_mode_flag</span>
+                <span class="k">else</span> <span class="s2">&quot;False&quot;</span>
+            <span class="p">),</span>
+        <span class="p">)</span></div>
 </div>
 
 </pre></div>
