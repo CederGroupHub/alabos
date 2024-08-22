@@ -133,18 +133,22 @@ from alab_management.builders import ExperimentBuilder
 exp = ExperimentBuilder(name="tutorial", tags=["tutorial"])
 
 # Define the samples
+# the experiment is to synthesize Li-Mn-O with different ratio of Li2CO3 and MnO
 samples = [
-    exp.add_sample(f"tutorial_sample_{i}", tags=["tutorial"], precursors={"Li2CO3": 0.5 * i}) for i in range(1, 17)
+    exp.add_sample(f"tutorial_sample_{i}", tags=["tutorial"], precursors={"Li2CO3": (i - 1) / 15, "MnO": 1 - (i - 1) / 15}) for i in range(1, 17)
 ]
 
 # Define the steps
 powder_dosing = PowderDosing(inputfiles={sample.name: InputFile(powder_dispenses=sample.metadata["precursors"]).to_json() for sample in samples})
 powder_dosing.add_to(samples)
 
-heating_1 = Heating(heating_time=120, heating_temperature=500)
+# The samples are divided into two groups for heating
+# The first group is heated at 600°C for 120 minutes
+# The second group is heated at 800°C for 120 minutes
+heating_1 = Heating(heating_time=120, heating_temperature=600)
 heating_1.add_to(samples[:8])
 
-heating_2 = Heating(heating_time=120, heating_temperature=600)
+heating_2 = Heating(heating_time=240, heating_temperature=800)
 heating_2.add_to(samples[8:])
 
 for sample in samples:
