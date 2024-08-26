@@ -28,4 +28,4 @@ ruff --fix
 
 ## Docs
 
-The docs is served at https://alab-management.readthedocs.io/en/latest/
+The docs is served at https://cedergrouphub.github.io/alabos/
