@@ -80,8 +80,8 @@ class Solid_Wet_Mixing_and_Pipetting(BaseTask):
 ```
 
 In this solution, before running any of the time-sensitive process, all the devices and sample positions involved in the
-process is booked. Then, the robot begins the series of processes until it finishes everything, ensuring minimum time is
-achieved for this specific sample. The next sample will run once this specific sample is done. Note that all resources
+process are booked. Then, the robot begins the series of processes until it finishes everything, ensuring minimum wait time is
+incurred for this specific sample. The next sample will run once this specific sample is done. Note that all resources
 are available because the booking ensures the devices and sample positions are exclusively available for this task.
 
 ## 2. Sharing device/instrument between automated workflow and manual usage
