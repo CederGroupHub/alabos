@@ -84,6 +84,31 @@ process are booked. Then, the robot begins the series of processes until it fini
 incurred for this specific sample. The next sample will run once this specific sample is done. Note that all resources
 are available because the booking ensures the devices and sample positions are exclusively available for this task.
 
+````{note}
+Sometimes, for the time-sensitive samples, you want to ensure that the sample is processed as soon as possible, from 
+task A to task B. In this case, you can use the `subtask` feature in AlabOS to reuse the code of task A and task B. 
+(See the [task definition](task_definition.md) for more information on how to use `subtask`.)
+
+To write the code, you will need to create a new task. For example, you can create a new task called `PrecursorMixingAndHeating`. 
+Then, you can request all the required resources for both tasks in the `run` method of the new task.
+
+```python
+class PrecursorMixingAndHeating(BaseTask):
+    def __init__(self, ...):
+        ... 
+       
+    def run(self):
+        # request all resources for both tasks, with priority=100 to 
+        # ensure that the resources are available as soon as possible
+        with self.lab_view.request_resources({<all resources for task A>, <all resources for task B>}, priority=100) as (
+            devices,
+            sample_positions,
+        ):
+            self.run_subtask(PrecursorMixing, **precursor_mixing_kwargs)
+            self.run_subtask(Heating, **heating_kwargs)
+```
+````
+
 ## 2. Sharing device/instrument between automated workflow and manual usage
 
 Oftentimes due to scarcity of availability of some device/instrument, an automated system has to pause a part of its
@@ -111,7 +136,50 @@ advance before running the tasks. If any task is still running, AlabOS will keep
 Hence, User X can wait until the SEM status is "Paused" and then directly use the SEM, worry-free, as long as they
 return the SEM back to one of the expected states according to the automated SEM program/task.
 
-## 3. Cancelling samples and removing them out of the automated workflow gracefully
+## 3. Ensuring the order of tasks that share a set of same devices
+As in AlabOS, if the resource request have the same priority, the assignment of resources is done in a first-come-first-serve
+manner. This can lead to a situation where task A and B share the same devices, where task A is a parent task of task B. In
+this case, as task A is submitted first, it will get the resources first, and task B will have to wait until all the task
+A's processes are done. This can be problematic if it leads to a delay in the completion of task B (either on throughput or
+for time-sensitive samples). The task graph for this scenario is shown below:
+
+```{mermaid}
+:caption: A task DAG with a situation where task A and B share the same devices, where task A is a parent task of task B. As task A is submitted first, it will get the resources first, and task B will have to wait until all the task A's processes are done.
+
+%%{init:{'flowchart':{'nodeSpacing': 10, 'rankSpacing': 50}}}%%
+flowchart LR
+ D1[A]
+ F1[A]
+ G1[A]
+ E1[A]
+D1 --> D3[B]
+F1 --> F3[B]
+G1 --> G3[B]
+E1 --> E3[B]
+```
+To solve this issue, at the time of experiment submission, the user can manually adjust the priority of the resource request
+for task B to be higher than the priority of the resource request for task A. This will ensure that task B gets the resources
+first and can be processed without waiting for task A to finish. Instead, you can also override the priority of resource request 
+inside the task definition of task B to ensure that task B gets the resources first.
+
+```python
+class TaskB(BaseTask):
+    def run(self):
+        with self.request_resources({<resources for task B>}, priority=40) as (
+            devices,
+            sample_positions,
+        ):
+            # run the task B
+            pass
+```
+
+```{admonition} Coming soon
+We are exploring algorithmic solutions to address such situations automatically. One approach under 
+consideration is to adjust resource request priorities based on the number of ancestor tasks (along
+ the longest route in the task DAG) in the experiment submission graph.
+```
+
+## 4. Cancelling samples and removing them out of the automated workflow gracefully
 
 ```{note}
 More content will be added soon.
