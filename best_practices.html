@@ -43,6 +43,8 @@
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'best_practices';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -402,7 +404,8 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#solution-pausing-sem">Solution: Pausing SEM</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cancelling-samples-and-removing-them-out-of-the-automated-workflow-gracefully">3. Cancelling samples and removing them out of the automated workflow gracefully</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ensuring-the-order-of-tasks-that-share-a-set-of-same-devices">3. Ensuring the order of tasks that share a set of same devices</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cancelling-samples-and-removing-them-out-of-the-automated-workflow-gracefully">4. Cancelling samples and removing them out of the automated workflow gracefully</a></li>
 </ul>
             </nav>
         </div>
@@ -495,6 +498,29 @@ do this, one have to ensure that all device are always available for the sample 
 process are booked. Then, the robot begins the series of processes until it finishes everything, ensuring minimum wait time is
 incurred for this specific sample. The next sample will run once this specific sample is done. Note that all resources
 are available because the booking ensures the devices and sample positions are exclusively available for this task.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Sometimes, for the time-sensitive samples, you want to ensure that the sample is processed as soon as possible, from
+task A to task B. In this case, you can use the <code class="docutils literal notranslate"><span class="pre">subtask</span></code> feature in AlabOS to reuse the code of task A and task B.
+(See the <a class="reference internal" href="task_definition.html"><span class="std std-doc">task definition</span></a> for more information on how to use <code class="docutils literal notranslate"><span class="pre">subtask</span></code>.)</p>
+<p>To write the code, you will need to create a new task. For example, you can create a new task called <code class="docutils literal notranslate"><span class="pre">PrecursorMixingAndHeating</span></code>.
+Then, you can request all the required resources for both tasks in the <code class="docutils literal notranslate"><span class="pre">run</span></code> method of the new task.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">PrecursorMixingAndHeating</span><span class="p">(</span><span class="n">BaseTask</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">...</span><span class="p">):</span>
+        <span class="o">...</span> 
+       
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># request all resources for both tasks, with priority=100 to </span>
+        <span class="c1"># ensure that the resources are available as soon as possible</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">request_resources</span><span class="p">({</span><span class="o">&lt;</span><span class="nb">all</span> <span class="n">resources</span> <span class="k">for</span> <span class="n">task</span> <span class="n">A</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="nb">all</span> <span class="n">resources</span> <span class="k">for</span> <span class="n">task</span> <span class="n">B</span><span class="o">&gt;</span><span class="p">},</span> <span class="n">priority</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span> <span class="k">as</span> <span class="p">(</span>
+            <span class="n">devices</span><span class="p">,</span>
+            <span class="n">sample_positions</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run_subtask</span><span class="p">(</span><span class="n">PrecursorMixing</span><span class="p">,</span> <span class="o">**</span><span class="n">precursor_mixing_kwargs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run_subtask</span><span class="p">(</span><span class="n">Heating</span><span class="p">,</span> <span class="o">**</span><span class="n">heating_kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </section>
 </section>
 <section id="sharing-device-instrument-between-automated-workflow-and-manual-usage">
@@ -523,8 +549,52 @@ Hence, User X can wait until the SEM status is “Paused” and then directly us
 return the SEM back to one of the expected states according to the automated SEM program/task.</p>
 </section>
 </section>
+<section id="ensuring-the-order-of-tasks-that-share-a-set-of-same-devices">
+<h2>3. Ensuring the order of tasks that share a set of same devices<a class="headerlink" href="#ensuring-the-order-of-tasks-that-share-a-set-of-same-devices" title="Link to this heading">#</a></h2>
+<p>As in AlabOS, if the resource request have the same priority, the assignment of resources is done in a first-come-first-serve
+manner. This can lead to a situation where task A and B share the same devices, where task A is a parent task of task B. In
+this case, as task A is submitted first, it will get the resources first, and task B will have to wait until all the task
+A’s processes are done. This can be problematic if it leads to a delay in the completion of task B (either on throughput or
+for time-sensitive samples). The task graph for this scenario is shown below:</p>
+<figure class="align-default" id="id1">
+<div class="mermaid">
+            %%{init:{'flowchart':{'nodeSpacing': 10, 'rankSpacing': 50}}}%%
+flowchart LR
+ D1[A]
+ F1[A]
+ G1[A]
+ E1[A]
+D1 --&gt; D3[B]
+F1 --&gt; F3[B]
+G1 --&gt; G3[B]
+E1 --&gt; E3[B]
+        </div><figcaption>
+<p><span class="caption-text">A task DAG with a situation where task A and B share the same devices, where task A is a parent task of task B. As task A is submitted first, it will get the resources first, and task B will have to wait until all the task A’s processes are done.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>To solve this issue, at the time of experiment submission, the user can manually adjust the priority of the resource request
+for task B to be higher than the priority of the resource request for task A. This will ensure that task B gets the resources
+first and can be processed without waiting for task A to finish. Instead, you can also override the priority of resource request
+inside the task definition of task B to ensure that task B gets the resources first.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TaskB</span><span class="p">(</span><span class="n">BaseTask</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_resources</span><span class="p">({</span><span class="o">&lt;</span><span class="n">resources</span> <span class="k">for</span> <span class="n">task</span> <span class="n">B</span><span class="o">&gt;</span><span class="p">},</span> <span class="n">priority</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span> <span class="k">as</span> <span class="p">(</span>
+            <span class="n">devices</span><span class="p">,</span>
+            <span class="n">sample_positions</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="c1"># run the task B</span>
+            <span class="k">pass</span>
+</pre></div>
+</div>
+<div class="admonition-coming-soon admonition">
+<p class="admonition-title">Coming soon</p>
+<p>We are exploring algorithmic solutions to address such situations automatically. One approach under
+consideration is to adjust resource request priorities based on the number of ancestor tasks (along
+the longest route in the task DAG) in the experiment submission graph.</p>
+</div>
+</section>
 <section id="cancelling-samples-and-removing-them-out-of-the-automated-workflow-gracefully">
-<h2>3. Cancelling samples and removing them out of the automated workflow gracefully<a class="headerlink" href="#cancelling-samples-and-removing-them-out-of-the-automated-workflow-gracefully" title="Link to this heading">#</a></h2>
+<h2>4. Cancelling samples and removing them out of the automated workflow gracefully<a class="headerlink" href="#cancelling-samples-and-removing-them-out-of-the-automated-workflow-gracefully" title="Link to this heading">#</a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>More content will be added soon.</p>
@@ -587,7 +657,8 @@ return the SEM back to one of the expected states according to the automated SEM
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#solution-pausing-sem">Solution: Pausing SEM</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cancelling-samples-and-removing-them-out-of-the-automated-workflow-gracefully">3. Cancelling samples and removing them out of the automated workflow gracefully</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ensuring-the-order-of-tasks-that-share-a-set-of-same-devices">3. Ensuring the order of tasks that share a set of same devices</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cancelling-samples-and-removing-them-out-of-the-automated-workflow-gracefully">4. Cancelling samples and removing them out of the automated workflow gracefully</a></li>
 </ul>
   </nav></div>
 
