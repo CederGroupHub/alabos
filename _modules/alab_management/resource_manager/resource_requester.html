@@ -387,14 +387,20 @@ document.write(`
 
 
 
+<span class="c1"># considering concurrent.futures.TimeoutError and TimeoutError becomes the same</span>
+<span class="c1"># from Python 3.11. We should determine the base class of this exception.</span>
+<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">,</span> <span class="ne">TimeoutError</span><span class="p">):</span>
+    <span class="n">CombinedTimeoutError</span> <span class="o">=</span> <span class="ne">TimeoutError</span>
+<span class="k">else</span><span class="p">:</span>
+
 <div class="viewcode-block" id="CombinedTimeoutError">
 <a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.CombinedTimeoutError">[docs]</a>
-<span class="k">class</span> <span class="nc">CombinedTimeoutError</span><span class="p">(</span><span class="ne">TimeoutError</span><span class="p">,</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Combined TimeoutError.</span>
+    <span class="k">class</span> <span class="nc">CombinedTimeoutError</span><span class="p">(</span><span class="ne">TimeoutError</span><span class="p">,</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Combined TimeoutError.</span>
 
-<span class="sd">    If you catch either TimeoutError or concurrent.futures.TimeoutError, this will catch both.</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
+<span class="sd">        If you catch either TimeoutError or concurrent.futures.TimeoutError, this will catch both.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
 
 
 
