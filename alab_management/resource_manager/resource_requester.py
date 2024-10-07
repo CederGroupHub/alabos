@@ -34,12 +34,18 @@ class RequestCanceledError(Exception):
     """Request Canceled Error."""
 
 
-class CombinedTimeoutError(TimeoutError, concurrent.futures.TimeoutError):
-    """
-    Combined TimeoutError.
+# considering concurrent.futures.TimeoutError and TimeoutError becomes the same
+# from Python 3.11. We should determine the base class of this exception.
+if isinstance(concurrent.futures.TimeoutError, TimeoutError):
+    CombinedTimeoutError = TimeoutError
+else:
 
-    If you catch either TimeoutError or concurrent.futures.TimeoutError, this will catch both.
-    """
+    class CombinedTimeoutError(TimeoutError, concurrent.futures.TimeoutError):
+        """
+        Combined TimeoutError.
+
+        If you catch either TimeoutError or concurrent.futures.TimeoutError, this will catch both.
+        """
 
 
 class DeviceRequest(BaseModel):
