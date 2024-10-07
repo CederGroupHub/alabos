@@ -36,11 +36,13 @@ class RequestCanceledError(Exception):
 
 # considering concurrent.futures.TimeoutError and TimeoutError becomes the same
 # from Python 3.11. We should determine the base class of this exception.
-if isinstance(concurrent.futures.TimeoutError, TimeoutError):
+if concurrent.futures.TimeoutError is TimeoutError:
     CombinedTimeoutError = TimeoutError
 else:
 
-    class CombinedTimeoutError(TimeoutError, concurrent.futures.TimeoutError):
+    class CombinedTimeoutError(
+        TimeoutError, concurrent.futures.TimeoutError
+    ):  # pylint: disable=duplicate-bases
         """
         Combined TimeoutError.
 
