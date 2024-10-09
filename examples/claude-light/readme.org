@@ -1,0 +1,170 @@
+#+title: Claude_alab
+
+* Setup the Alab
+
+Run these commands in this directory. This will install the lab and setup your database.
+
+#+BEGIN_SRC sh
+pip install -e .
+alabos setup
+#+END_SRC
+
+To start the server, run these commands.
+
+#+BEGIN_SRC sh
+export  ALABOS_CONFIG_PATH=`pwd`/claude_alab/config.toml
+export SIM_MODE_FLAG=FALSE
+
+alabos launch &
+alabos launch_worker &
+#+END_SRC
+
+Note: if you add a device, you have to rerun the setup to update your database.
+
+* Create and submit an experiment
+
+In this experiment, we run two tasks. One for the background, and one for the measurement in the green channel.
+
+Note that every time you run this, you get a new experiment.
+
+Note: there is probably a way to do this with no sample, but most experiments probably involve a sample, so for now I think this is ok.,
+
+#+BEGIN_SRC jupyter-python :tangle submit.py
+from alab_management.builders import ExperimentBuilder
+from claude_alab.tasks.claude import MeasureRGB
+
+exp = ExperimentBuilder(name="Claude [2024-10-08 Tue]",                       
+                        description="My first experiment")
+
+sample = exp.add_sample(name="sample_1",
+                        tags=["project"],
+                        description="There is not really a sample here, it just holds tasks.")
+
+# get the background
+task1 = MeasureRGB(R=0, G=0, B=0)
+
+# Measure at G=1
+task2 = MeasureRGB(R=0, G=1, B=0)
+
+task1.add_to(sample)
+task2.add_to(sample)
+
+exp_id = exp.submit(address="http://localhost:8895")
+print(exp_id)
+#+END_SRC
+
+#+RESULTS:
+: 6705736aa419b8c2271a7701
+
+The output is an experiment id.
+
+See http://localhost:8895 for the browser UI.
+
+* Checking experiment status
+
+You retrieve results by an ID. That means you need to have saved that ID in a variable, or to a file, or printed it somewhere.
+
+#+BEGIN_SRC jupyter-python
+from alab_management import get_experiment_status, get_experiment_result
+
+get_experiment_status(exp_id)
+#+END_SRC
+
+#+RESULTS:
+| id | : | 6705736aa419b8c2271a7701 | name | : | Claude [2024-10-08 Tue] | progress | : | 0.0 | samples | : | ((id : 6705736ba419b8c2271a7702 name : sample_1 position : None)) | status | : | RUNNING | submitted_at | : | Tue, 08 Oct 2024 14:01:14 GMT | tasks | : | ((id : 6705736ba419b8c2271a7703 message :  status : RUNNING type : MeasureRGB) (id : 6705736ba419b8c2271a7704 message :  status : WAITING type : MeasureRGB)) |
+
+You can also use a string id.
+
+#+BEGIN_SRC jupyter-python
+get_experiment_status('67056aeba419b8c2271a76ef')
+#+END_SRC
+
+#+RESULTS:
+| id | : | 67056aeba419b8c2271a76ef | name | : | Claude [2024-10-08 Tue] | progress | : | 1.0 | samples | : | ((id : 67056aeba419b8c2271a76f0 name : sample_1 position : None)) | status | : | COMPLETED | submitted_at | : | Tue, 08 Oct 2024 13:24:59 GMT | tasks | : | ((id : 67056aeba419b8c2271a76f1 message :  status : COMPLETED type : MeasureRGB) (id : 67056aeba419b8c2271a76f2 message :  status : COMPLETED type : MeasureRGB)) |
+
+
+
+* Retrieving results 
+
+You retrieve results by their ID.
+
+#+BEGIN_SRC jupyter-python 
+results = get_experiment_result(exp_id)
+results
+#+END_SRC
+
+#+RESULTS:
+| completed_at | : | 2024-10-08T14:01:20.197000 | id | : | 6705736aa419b8c2271a7701 | metadata | : | (description : My first experiment) | name | : | Claude [2024-10-08 Tue] | progress | : | 1.0 | samples | : | ((id : 6705736ba419b8c2271a7702 metadata : (description : There is not really a sample here, it just holds tasks.) name : sample_1 tags : (project))) | status | : | COMPLETED | submitted_at | : | 2024-10-08T14:01:14.542000 | tags | : | nil | tasks | : | ((completed_at : 2024-10-08T14:01:17.573000 id : 6705736ba419b8c2271a7703 message :  parameters : (B : 0 G : 0 R : 0) result : (in : (0.0 0.0 0.0) out : (415nm : 1033 445nm : 1714 480nm : 2083 515nm : 2485 555nm : 2679 590nm : 2684 630nm : 2546 680nm : 3036 clear : 22124 nir : 10013)) samples : (sample_1) started_at : 2024-10-08T14:01:15.681000 status : COMPLETED type : MeasureRGB) (completed_at : 2024-10-08T14:01:20.026000 id : 6705736ba419b8c2271a7704 message :  parameters : (B : 0 G : 1 R : 0) result : (in : (0.0 1.0 0.0) out : (415nm : 1962 445nm : 2054 480nm : 13624 515nm : 65397 555nm : 12640 590nm : 4001 630nm : 3853 680nm : 4309 clear : 65535 nir : 11294)) samples : (sample_1) started_at : 2024-10-08T14:01:17.730000 status : COMPLETED type : MeasureRGB)) |
+
+Here we subtract our background measurement to get the result we want.
+
+#+BEGIN_SRC jupyter-python
+results['tasks'][1]['result']['out']['515nm'] - results['tasks'][0]['result']['out']['515nm']
+#+END_SRC
+
+#+RESULTS:
+: 62912
+
+Maybe that could have been built into the task, but we show the explicit path here.
+
+
+* Get a list of known devices
+
+It would be a good idea to make this a little richer in output. These seem to be the registered names.
+
+#+BEGIN_SRC jupyter-python
+from alab_management.device_view.device import get_all_devices
+for device in get_all_devices():
+    print(device)
+#+END_SRC
+
+#+RESULTS:
+: rgb
+
+This is a little clunkier, but it does use the __str__ method defined on ClaudeLight.
+
+#+BEGIN_SRC jupyter-python  
+from alab_management.device_view.device import _device_registry
+for name in _device_registry:
+    print(_device_registry[name])
+#+END_SRC
+
+#+RESULTS:
+: An RGB Claude Light
+
+This would be used with a completion backend
+
+* Get a list of experiments
+
+#+BEGIN_SRC jupyter-python
+from alab_management.utils.data_objects import get_collection
+ec = get_collection("experiment")
+for exp in ec.find():
+    print(exp['name'])
+#+END_SRC
+
+#+RESULTS:
+: MyExperiment
+: MyExperiment
+: MyExperiment
+: Claude [2024-10-08 Tue]
+: Claude [2024-10-08 Tue]
+: Claude [2024-10-08 Tue]
+
+Obviously I should do a better job naming my experiments...
+
+* search for experiments
+
+You might want to search by sample id (see https://github.com/CederGroupHub/alabos/blob/b5618d25c8fa176d4f5716668be2fadf33fe8c31/alab_management/experiment_view/experiment_view.py#L175), parameters, etc.
+
+
+It looks like you can do something like this with a MongoDB like search syntax.
+
+#+BEGIN_SRC jupyter-python  
+print(ec.find_one({'name': 'Claude [2024-10-08 Tue]'}))
+#+END_SRC
+
+#+RESULTS:
+: {'_id': ObjectId('67056aeba419b8c2271a76ef'), 'name': 'Claude [2024-10-08 Tue]', 'samples': [{'name': 'sample_1', 'sample_id': ObjectId('67056aeba419b8c2271a76f0'), 'tags': ['project'], 'metadata': {'description': 'There is not really a sample here, it just holds tasks.'}}], 'tasks': [{'type': 'MeasureRGB', 'parameters': {'R': 0, 'G': 0, 'B': 0}, 'prev_tasks': [], 'samples': ['sample_1'], 'task_id': ObjectId('67056aeba419b8c2271a76f1')}, {'type': 'MeasureRGB', 'parameters': {'R': 0, 'G': 1, 'B': 0}, 'prev_tasks': [0], 'samples': ['sample_1'], 'task_id': ObjectId('67056aeba419b8c2271a76f2')}], 'tags': [], 'metadata': {'description': 'My first experiment'}, 'submitted_at': datetime.datetime(2024, 10, 8, 13, 24, 59, 550000), 'status': 'COMPLETED', 'completed_at': datetime.datetime(2024, 10, 8, 13, 25, 5, 962000)}
+
+
