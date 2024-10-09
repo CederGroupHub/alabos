@@ -1,9 +1,4 @@
-from bson import ObjectId  # type: ignore
-from pydantic import BaseModel
-
 from alab_management.task_view.task import BaseTask
-from claude_alab.devices.claude import ClaudeLight
-
 
 class MeasureRGB(BaseTask):
     """Measurement task definition."""
