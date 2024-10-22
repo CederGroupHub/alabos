@@ -4,6 +4,7 @@ The function will update the status of the task in the database and initiate the
 """
 
 import datetime
+import logging
 from traceback import format_exc
 
 import dramatiq
@@ -14,10 +15,14 @@ from pydantic import BaseModel, ValidationError
 from alab_management.logger import DBLogger
 from alab_management.sample_view import SampleView
 from alab_management.task_view import BaseTask, TaskStatus, TaskView
+from alab_management.utils.logger import set_up_rich_handler
 from alab_management.utils.middleware import register_abortable_middleware
 from alab_management.utils.module_ops import load_definition
 
 register_abortable_middleware()
+
+cli_logger = logging.getLogger(__name__)
+set_up_rich_handler(cli_logger)
 
 
 @dramatiq.actor(
@@ -40,6 +45,7 @@ def run_task(task_id_str: str):
     Args:
         task_id_str: The id of the task to run.
     """
+    cli_logger.info(f"Worker starts the task with id: {task_id_str}.")
     from .lab_view import LabView  # pylint: disable=cyclic-import
 
     load_definition()
@@ -128,6 +134,7 @@ def run_task(task_id_str: str):
                 "task_type": task_type.__name__,
             },
         )
+        cli_logger.debug(f"Task {task_id} of type {task_type.__name__} is running.")
         # Following is the line of code that actually runs the task
         # from Alab_one, for eg: Powder dosing. Powder dosing class will have a method "run".
         result = task.run()
@@ -148,6 +155,9 @@ def run_task(task_id_str: str):
                 "traceback": "Task was cancelled due to the abort signal",
             },
         )
+        cli_logger.info(
+            f"Task {task_type} ({task_id}) was cancelled due to the abort signal."
+        )
         lab_view.request_cleanup()
     except:  # noqa: E722
         task_status = TaskStatus.ERROR
@@ -166,6 +176,9 @@ def run_task(task_id_str: str):
                 "status": "ERROR",
                 "traceback": formatted_exception,
             },
+        )
+        cli_logger.error(
+            f"Task {task_type} ({task_id}) failed with the following exception: {formatted_exception}"
         )
         lab_view.request_cleanup()
     else:
@@ -222,6 +235,7 @@ def run_task(task_id_str: str):
                 "status": "COMPLETED",
             },
         )
+        cli_logger.info(f"Task {task_type} ({task_id}) completed successfully.")
     finally:
         for sample in task_entry["samples"]:
             sample_view.update_sample_task_id(

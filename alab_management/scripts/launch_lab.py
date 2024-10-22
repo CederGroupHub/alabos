@@ -69,7 +69,11 @@ def launch_resource_manager():
 
 def launch_lab(host, port, debug):
     """Start to run the lab."""
+    import logging
+
     from alab_management.device_view import DeviceView
+
+    logging.basicConfig(level=logging.INFO)
 
     dv = DeviceView()
 
