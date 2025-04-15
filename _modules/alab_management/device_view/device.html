@@ -15,27 +15,30 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-  
-  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=87e54e7c" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../../../_static/documentation_options.js?v=423d4ce3"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
@@ -49,6 +52,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -64,19 +68,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../../../search.html"
       method="get">
@@ -84,7 +77,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -92,8 +84,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -111,7 +103,8 @@
       
         
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -141,15 +134,11 @@
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -238,9 +227,14 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -304,24 +298,16 @@
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 
 </div></div>
       
@@ -350,31 +336,31 @@ document.write(`
   <h1>Source code for alab_management.device_view.device</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Define the base class of devices.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">datetime</span>
-<span class="kn">import</span> <span class="nn">functools</span>
-<span class="kn">import</span> <span class="nn">threading</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Callable</span>
-<span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">Empty</span><span class="p">,</span> <span class="n">PriorityQueue</span>
-<span class="kn">from</span> <span class="nn">traceback</span> <span class="kn">import</span> <span class="n">format_exc</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
-<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">Mock</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">queue</span><span class="w"> </span><span class="kn">import</span> <span class="n">Empty</span><span class="p">,</span> <span class="n">PriorityQueue</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">traceback</span><span class="w"> </span><span class="kn">import</span> <span class="n">format_exc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mock</span>
 
-<span class="kn">from</span> <span class="nn">alab_management.logger</span> <span class="kn">import</span> <span class="n">DBLogger</span>
-<span class="kn">from</span> <span class="nn">alab_management.sample_view.sample</span> <span class="kn">import</span> <span class="n">SamplePosition</span>
-<span class="kn">from</span> <span class="nn">alab_management.user_input</span> <span class="kn">import</span> <span class="n">request_maintenance_input</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBLogger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.sample_view.sample</span><span class="w"> </span><span class="kn">import</span> <span class="n">SamplePosition</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.user_input</span><span class="w"> </span><span class="kn">import</span> <span class="n">request_maintenance_input</span>
 
-<span class="kn">from</span> <span class="nn">.dbattributes</span> <span class="kn">import</span> <span class="n">DictInDatabase</span><span class="p">,</span> <span class="n">ListInDatabase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dbattributes</span><span class="w"> </span><span class="kn">import</span> <span class="n">DictInDatabase</span><span class="p">,</span> <span class="n">ListInDatabase</span>
 
 
-<span class="k">def</span> <span class="nf">_UNSPECIFIED</span><span class="p">(</span><span class="n">_</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_UNSPECIFIED</span><span class="p">(</span><span class="n">_</span><span class="p">):</span>
     <span class="k">return</span> <span class="kc">None</span>
 
 
 <div class="viewcode-block" id="mock">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.mock">[docs]</a>
-<span class="k">def</span> <span class="nf">mock</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">mock</span><span class="p">(</span>
     <span class="n">return_constant</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">_UNSPECIFIED</span><span class="p">,</span>
     <span class="n">object_type</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">_UNSPECIFIED</span><span class="p">,</span>
 <span class="p">):</span>
@@ -458,10 +444,10 @@ document.write(`
 <span class="sd">            return self.driver, self.door_controller</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">decorator</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-            <span class="kn">from</span> <span class="nn">alab_management.config</span> <span class="kn">import</span> <span class="n">AlabOSConfig</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">AlabOSConfig</span>
 
             <span class="k">if</span> <span class="n">AlabOSConfig</span><span class="p">()</span><span class="o">.</span><span class="n">is_sim_mode</span><span class="p">():</span>
                 <span class="k">if</span> <span class="p">(</span>
@@ -501,7 +487,7 @@ document.write(`
 <span class="c1"># Base Device class #</span>
 <div class="viewcode-block" id="BaseDevice">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice">[docs]</a>
-<span class="k">class</span> <span class="nc">BaseDevice</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseDevice</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The abstract class of device.</span>
 
@@ -516,7 +502,7 @@ document.write(`
 <span class="sd">        kwargs: keyword arguments that will be passed to the device class</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a device object, you can set up connection to</span>
 <span class="sd">        the device in this method. The device will only be initialized</span>
@@ -547,7 +533,7 @@ document.write(`
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;description must be a string&quot;</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">alab_management.device_view</span> <span class="kn">import</span> <span class="n">DeviceView</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.device_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">DeviceView</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span> <span class="o">=</span> <span class="n">DeviceView</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_signalemitter</span> <span class="o">=</span> <span class="n">DeviceSignalEmitter</span><span class="p">(</span>
@@ -556,7 +542,7 @@ document.write(`
 
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A short description of the device. This will be stored in the database + displayed in the dashboard. This</span>
 <span class="sd">        must be declared in subclasses of BaseDevice!.</span>
@@ -564,14 +550,14 @@ document.write(`
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_description</span>
 
     <span class="nd">@description</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;description must be a string&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_description</span> <span class="o">=</span> <span class="n">value</span>
 
 <div class="viewcode-block" id="BaseDevice.set_message">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.set_message">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the device message to be displayed on the dashboard.</span>
 
 <span class="sd">        Note: this method is used instead of python getter/setters because the DeviceWrapper can currently only</span>
@@ -583,7 +569,7 @@ document.write(`
 
 <div class="viewcode-block" id="BaseDevice.get_message">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.get_message">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_message</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_message</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the device message to be displayed on the dashboard.</span>
 
 <span class="sd">        Note: this method is used instead of python getter/setters because the DeviceWrapper can currently only</span>
@@ -593,7 +579,7 @@ document.write(`
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__message</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_connect_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_connect_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Connect to the device and execute any backend actions that are only possible when alabos is running + the</span>
 <span class="sd">        device is connected.</span>
@@ -608,7 +594,7 @@ document.write(`
 <div class="viewcode-block" id="BaseDevice.connect">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.connect">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Connect to any devices here. This will be called by alabos to make connections to devices at the appropriate</span>
 <span class="sd">        time.</span>
@@ -619,7 +605,7 @@ document.write(`
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_disconnect_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_disconnect_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Disconnect from the device and execute any backend actions that are only possible when alabos is running.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_signalemitter</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
@@ -627,7 +613,7 @@ document.write(`
 <div class="viewcode-block" id="BaseDevice.disconnect">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.disconnect">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Disconnect from devices here. This will be called by alabos to release connections to devices at the</span>
 <span class="sd">        appropriate time.</span>
@@ -639,7 +625,7 @@ document.write(`
 
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">sample_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SamplePosition</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SamplePosition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The sample positions describe the position that can hold a sample. The name of sample</span>
 <span class="sd">        position will be the unique identifier of this sample position. It does not store any</span>
@@ -675,7 +661,7 @@ document.write(`
 <div class="viewcode-block" id="BaseDevice.is_running">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.is_running">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">is_running</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_running</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check whether this device is running.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
@@ -683,7 +669,7 @@ document.write(`
     <span class="c1"># methods to store Device values inside the database. Lists and dictionaries are supported.</span>
 <div class="viewcode-block" id="BaseDevice.list_in_database">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.list_in_database">[docs]</a>
-    <span class="k">def</span> <span class="nf">list_in_database</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list_in_database</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default_value</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ListInDatabase</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -708,7 +694,7 @@ document.write(`
 
 <div class="viewcode-block" id="BaseDevice.dict_in_database">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.dict_in_database">[docs]</a>
-    <span class="k">def</span> <span class="nf">dict_in_database</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dict_in_database</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default_value</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DictInDatabase</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -731,7 +717,7 @@ document.write(`
         <span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_apply_default_db_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_apply_default_db_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply default values to attributes that are stored in the database.</span>
 
@@ -745,7 +731,7 @@ document.write(`
 
 <div class="viewcode-block" id="BaseDevice.request_maintenance">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.request_maintenance">[docs]</a>
-    <span class="k">def</span> <span class="nf">request_maintenance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">request_maintenance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Request maintenance input from the user. This will display a prompt to the user and wait for them to select</span>
 <span class="sd">        an option. The selected option will be returned.</span>
@@ -759,7 +745,7 @@ document.write(`
 
 <div class="viewcode-block" id="BaseDevice.retrieve_signal">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.retrieve_signal">[docs]</a>
-    <span class="k">def</span> <span class="nf">retrieve_signal</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_signal</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">within</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -786,7 +772,7 @@ document.write(`
 <span class="c1"># DeviceSignalEmitter and related decorator #</span>
 <div class="viewcode-block" id="log_signal">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.log_signal">[docs]</a>
-<span class="k">def</span> <span class="nf">log_signal</span><span class="p">(</span><span class="n">signal_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">interval_seconds</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">log_signal</span><span class="p">(</span><span class="n">signal_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">interval_seconds</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This is a decorator for methods within a `BaseDevice`. Methods decorated with this will be called at the</span>
 <span class="sd">    specified interval and the result will be logged to the database under the `signal_name` provided. The intended</span>
 <span class="sd">    use is to track process variables (like a furnace temperature, a pressure sensor, etc.) whenever the device is</span>
@@ -797,8 +783,8 @@ document.write(`
 <span class="sd">        interval_seconds (int): Interval at which to log this signal to the database.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-        <span class="k">def</span> <span class="nf">wrapper_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">wrapper_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">value</span>
 
@@ -813,14 +799,14 @@ document.write(`
 
 <div class="viewcode-block" id="DeviceSignalEmitter">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.DeviceSignalEmitter">[docs]</a>
-<span class="k">class</span> <span class="nc">DeviceSignalEmitter</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DeviceSignalEmitter</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class is responsible for periodically logging device signals to the database.</span>
 <span class="sd">    It is intended to be used as a singleton, and should be instantiated once per device.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">BaseDevice</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">alab_management.device_view</span> <span class="kn">import</span> <span class="n">DeviceView</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">BaseDevice</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.device_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">DeviceView</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="p">:</span> <span class="n">DeviceView</span> <span class="o">=</span> <span class="n">DeviceView</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dblogger</span> <span class="o">=</span> <span class="n">DBLogger</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
@@ -833,7 +819,7 @@ document.write(`
 
 <div class="viewcode-block" id="DeviceSignalEmitter.get_methods_to_log">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.DeviceSignalEmitter.get_methods_to_log">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_methods_to_log</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_methods_to_log</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Log the data from all methods decorated with ``@log_signal`` to the database.</span>
 
@@ -858,10 +844,10 @@ document.write(`
         <span class="k">return</span> <span class="n">methods_to_log</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_worker</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_worker</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This is the worker thread that will periodically log device signals to the database.&quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">wait_with_option_to_kill</span><span class="p">(</span><span class="n">time_to_wait</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">wait_with_option_to_kill</span><span class="p">(</span><span class="n">time_to_wait</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Waits until the next log is due, or until the logging is stopped. When stopping</span>
 <span class="sd">            the logging worker, the worker will complete its current logging task before</span>
@@ -915,7 +901,7 @@ document.write(`
 
 <div class="viewcode-block" id="DeviceSignalEmitter.log_method_to_db">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.DeviceSignalEmitter.log_method_to_db">[docs]</a>
-    <span class="k">def</span> <span class="nf">log_method_to_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_method_to_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Logs a method to the database. This is called by the worker thread.</span>
 
@@ -945,7 +931,7 @@ document.write(`
 
 <div class="viewcode-block" id="DeviceSignalEmitter.start">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.DeviceSignalEmitter.start">[docs]</a>
-    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start the logging worker thread. This will start logging all</span>
 <span class="sd">        methods decorated with `@log_signal` to the database.</span>
@@ -979,7 +965,7 @@ document.write(`
 
 <div class="viewcode-block" id="DeviceSignalEmitter.stop">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.DeviceSignalEmitter.stop">[docs]</a>
-    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop the logging worker thread. This will stop logging all.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_logging</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logging_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span></div>
@@ -987,7 +973,7 @@ document.write(`
 
 <div class="viewcode-block" id="DeviceSignalEmitter.retrieve_signal">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.DeviceSignalEmitter.retrieve_signal">[docs]</a>
-    <span class="k">def</span> <span class="nf">retrieve_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">,</span> <span class="n">within</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">,</span> <span class="n">within</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve a signal from the database.</span>
 
 <span class="sd">        Args:</span>
@@ -1026,7 +1012,7 @@ document.write(`
 
 <div class="viewcode-block" id="add_device">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.add_device">[docs]</a>
-<span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">BaseDevice</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">BaseDevice</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Register a device instance. It is stored in a global dictionary.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">_device_registry</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Duplicated device name </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1036,7 +1022,7 @@ document.write(`
 
 <div class="viewcode-block" id="get_all_devices">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.get_all_devices">[docs]</a>
-<span class="k">def</span> <span class="nf">get_all_devices</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BaseDevice</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_all_devices</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BaseDevice</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get all the device names in the device registry. This is a shallow copy of the registry.</span>
 
@@ -1085,7 +1071,7 @@ By Alab Project Team
 
   <p class="copyright">
     
-      © Copyright 2024, Ceder group.
+      © Copyright 2025, Ceder group.
       <br/>
     
   </p>
@@ -1109,8 +1095,8 @@ By Alab Project Team
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
   </footer>

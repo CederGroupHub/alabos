@@ -15,27 +15,30 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-  
-  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=87e54e7c" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../../../_static/documentation_options.js?v=423d4ce3"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
@@ -49,6 +52,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -64,19 +68,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../../../search.html"
       method="get">
@@ -84,7 +77,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -92,8 +84,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -111,7 +103,8 @@
       
         
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -141,15 +134,11 @@
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -238,9 +227,14 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -304,24 +298,16 @@
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 
 </div></div>
       
@@ -353,20 +339,25 @@ document.write(`
 <span class="sd">which actually executes the tasks.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 
-<span class="kn">from</span> <span class="nn">dramatiq_abort</span> <span class="kn">import</span> <span class="n">abort</span><span class="p">,</span> <span class="n">abort_requested</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dramatiq_abort</span><span class="w"> </span><span class="kn">import</span> <span class="n">abort</span><span class="p">,</span> <span class="n">abort_requested</span>
 
-<span class="kn">from</span> <span class="nn">alab_management.lab_view</span> <span class="kn">import</span> <span class="n">LabView</span>
-<span class="kn">from</span> <span class="nn">alab_management.logger</span> <span class="kn">import</span> <span class="n">DBLogger</span>
-<span class="kn">from</span> <span class="nn">alab_management.task_view</span> <span class="kn">import</span> <span class="n">TaskView</span>
-<span class="kn">from</span> <span class="nn">alab_management.task_view.task_enums</span> <span class="kn">import</span> <span class="n">CancelingProgress</span><span class="p">,</span> <span class="n">TaskStatus</span>
-<span class="kn">from</span> <span class="nn">alab_management.utils.module_ops</span> <span class="kn">import</span> <span class="n">load_definition</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.lab_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">LabView</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBLogger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.task_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskView</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.task_view.task_enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">CancelingProgress</span><span class="p">,</span> <span class="n">TaskStatus</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_up_rich_handler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.module_ops</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_definition</span>
+
+<span class="n">cli_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">set_up_rich_handler</span><span class="p">(</span><span class="n">cli_logger</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="TaskManager">
 <a class="viewcode-back" href="../../../alab_management.task_manager.task_manager.html#alab_management.task_manager.task_manager.TaskManager">[docs]</a>
-<span class="k">class</span> <span class="nc">TaskManager</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TaskManager</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    TaskManager will.</span>
 
@@ -374,7 +365,7 @@ document.write(`
 <span class="sd">    (2) handle all the resource requests</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">load_definition</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span> <span class="o">=</span> <span class="n">TaskView</span><span class="p">()</span>
 
@@ -384,20 +375,20 @@ document.write(`
 
 <div class="viewcode-block" id="TaskManager.run">
 <a class="viewcode-back" href="../../../alab_management.task_manager.task_manager.html#alab_management.task_manager.task_manager.TaskManager.run">[docs]</a>
-    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Start the loop.&quot;&quot;&quot;</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">()</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">handle_tasks_to_be_canceled</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">submit_ready_tasks</span><span class="p">()</span>
 
 <div class="viewcode-block" id="TaskManager.clean_up_tasks_from_previous_runs">
 <a class="viewcode-back" href="../../../alab_management.task_manager.task_manager.html#alab_management.task_manager.task_manager.TaskManager.clean_up_tasks_from_previous_runs">[docs]</a>
-    <span class="k">def</span> <span class="nf">clean_up_tasks_from_previous_runs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clean_up_tasks_from_previous_runs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Cleans up incomplete tasks that exist from the last time the taskmanager was running. Note that this will</span>
 <span class="sd">        block the task queue until all samples in these tasks have been removed from the physical lab (confirmed via</span>
 <span class="sd">        user requests on the dashboard).</span>
@@ -461,12 +452,12 @@ document.write(`
 
 <div class="viewcode-block" id="TaskManager.submit_ready_tasks">
 <a class="viewcode-back" href="../../../alab_management.task_manager.task_manager.html#alab_management.task_manager.task_manager.TaskManager.submit_ready_tasks">[docs]</a>
-    <span class="k">def</span> <span class="nf">submit_ready_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">submit_ready_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checking if there are any tasks that are ready to be submitted. (STATUS = READY)</span>
 <span class="sd">        If so, submit them to task actor (dramatiq worker).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">alab_management.task_actor</span> <span class="kn">import</span> <span class="n">run_task</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.task_actor</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_task</span>
 
         <span class="n">ready_task_entries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">get_ready_tasks</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">task_entry</span> <span class="ow">in</span> <span class="n">ready_task_entries</span><span class="p">:</span>
@@ -485,6 +476,11 @@ document.write(`
                 <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;task_id_str&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">])}</span>
             <span class="p">)</span>
             <span class="n">message_id</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">message_id</span>
+            <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Task </span><span class="si">{</span><span class="n">task_entry</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">task_entry</span><span class="p">[</span><span class="s1">&#39;task_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">) sent to actor with message_id </span><span class="si">{</span><span class="n">message_id</span><span class="si">}</span><span class="s2">. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;A message from Task Actor will be logged with this task_id in alabos launch_worker. If not, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;there can be an issue with the Dramatiq worker!&quot;</span>
+            <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">set_task_actor_id</span><span class="p">(</span>
                 <span class="n">task_id</span><span class="o">=</span><span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">],</span> <span class="n">message_id</span><span class="o">=</span><span class="n">message_id</span>
             <span class="p">)</span></div>
@@ -492,7 +488,7 @@ document.write(`
 
 <div class="viewcode-block" id="TaskManager.handle_tasks_to_be_canceled">
 <a class="viewcode-back" href="../../../alab_management.task_manager.task_manager.html#alab_management.task_manager.task_manager.TaskManager.handle_tasks_to_be_canceled">[docs]</a>
-    <span class="k">def</span> <span class="nf">handle_tasks_to_be_canceled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_tasks_to_be_canceled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if there are any tasks needs to be stopped.&quot;&quot;&quot;</span>
         <span class="n">tasks_to_be_cancelled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">get_tasks_to_be_canceled</span><span class="p">(</span>
             <span class="n">CancelingProgress</span><span class="o">.</span><span class="n">PENDING</span>
@@ -512,6 +508,10 @@ document.write(`
                 <span class="n">message_id</span> <span class="o">:=</span> <span class="n">task_entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;task_actor_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">abort_requested</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="n">message_id</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">abort</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="n">message_id</span><span class="p">)</span>
+                <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Task </span><span class="si">{</span><span class="n">task_entry</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">task_entry</span><span class="p">[</span><span class="s1">&#39;task_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">) is being cancelled. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Task Actor message_id: </span><span class="si">{</span><span class="n">message_id</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">update_canceling_progress</span><span class="p">(</span>
                     <span class="n">task_id</span><span class="o">=</span><span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">],</span>
                     <span class="n">canceling_progress</span><span class="o">=</span><span class="n">CancelingProgress</span><span class="o">.</span><span class="n">WORKER_NOTIFIED</span><span class="p">,</span>
@@ -559,7 +559,7 @@ By Alab Project Team
 
   <p class="copyright">
     
-      © Copyright 2024, Ceder group.
+      © Copyright 2025, Ceder group.
       <br/>
     
   </p>
@@ -583,8 +583,8 @@ By Alab Project Team
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
   </footer>

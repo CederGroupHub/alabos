@@ -16,27 +16,30 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-  
-  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
   
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="_static/documentation_options.js?v=423d4ce3"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
@@ -52,6 +55,7 @@
     <link rel="prev" title="Defining devices and sample positions" href="device_definition.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -67,19 +71,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="search.html"
       method="get">
@@ -87,7 +80,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -95,8 +87,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -112,7 +104,8 @@
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -142,15 +135,11 @@
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -239,9 +228,14 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -353,24 +347,16 @@
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -444,10 +430,10 @@ help you write a task.</p>
 <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method in the inherited class. The <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method should take in all the necessary parameters to define the
 task behavior.</p>
 <p>For example, for the heating task, you want to define the ramping temperature rate, the target temperautre, and the duration.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alab_management</span> <span class="kn">import</span> <span class="n">BaseTask</span>    
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">alab_management</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseTask</span>    
 
-<span class="k">class</span> <span class="nc">Heating</span><span class="p">(</span><span class="n">BaseTask</span><span class="p">):</span>
-  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">temperature_C</span><span class="p">,</span> <span class="n">duration_min</span><span class="p">,</span> <span class="n">ramping_rate_C_permin</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Heating</span><span class="p">(</span><span class="n">BaseTask</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">temperature_C</span><span class="p">,</span> <span class="n">duration_min</span><span class="p">,</span> <span class="n">ramping_rate_C_permin</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span> <span class="o">=</span> <span class="n">temperature_C</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration_min</span>
@@ -463,16 +449,16 @@ to indicate whether the input data is valid.</p>
 <p>For example, for the <code class="docutils literal notranslate"><span class="pre">Heating</span></code> task, you would like to check whether there are less than 8 samples
 (less than the number of slots in the furnace), as well as whether the temperature is within
 100°C - 1100°C range.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alab_management</span> <span class="kn">import</span> <span class="n">BaseTask</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">alab_management</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseTask</span>
 
-<span class="k">class</span> <span class="nc">Heating</span><span class="p">(</span><span class="n">BaseTask</span><span class="p">):</span>
-  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">temperature_C</span><span class="p">,</span> <span class="n">duration_min</span><span class="p">,</span> <span class="n">ramping_rate_C_permin</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Heating</span><span class="p">(</span><span class="n">BaseTask</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">temperature_C</span><span class="p">,</span> <span class="n">duration_min</span><span class="p">,</span> <span class="n">ramping_rate_C_permin</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span> <span class="o">=</span> <span class="n">temperature_C</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration_min</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">ramping_rate</span> <span class="o">=</span> <span class="n">ramping_rate_C_permin</span>
 
-  <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="c1"># check the input sample</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">samples</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">8</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_message</span><span class="p">(</span><span class="s2">&quot;The number of samples should be less than 8.&quot;</span><span class="p">)</span>
@@ -513,10 +499,10 @@ is specified by a dictionary.</p></li>
 </ul>
 <p>For example, you would like to get the information about a sample named <code class="docutils literal notranslate"><span class="pre">sample_1</span></code>, move it to a new position named
 <code class="docutils literal notranslate"><span class="pre">new_position</span></code>, and update the mass information of the sample. You can do it like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alab_management</span> <span class="kn">import</span> <span class="n">BaseTask</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">alab_management</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseTask</span>
 
-<span class="k">class</span> <span class="nc">MyTask</span><span class="p">(</span><span class="n">BaseTask</span><span class="p">):</span>
-  <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyTask</span><span class="p">(</span><span class="n">BaseTask</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="o">...</span>
     <span class="c1"># each task has a list of samples that are passed in</span>
     <span class="c1"># they are sample name so we will want to get the sample object</span>
@@ -580,13 +566,13 @@ in the <a class="reference internal" href="device_definition.html"><span class="
 name <code class="docutils literal notranslate"><span class="pre">slot</span></code> as well as method called <code class="docutils literal notranslate"><span class="pre">run_program</span></code>. There are also some standalone sample
 positions named <code class="docutils literal notranslate"><span class="pre">crucible_buffer</span></code>. You can request the furnace and the standalone sample
 positions like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alab_management</span> <span class="kn">import</span> <span class="n">BaseTask</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">alab_management</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseTask</span>
 
-<span class="kn">from</span> <span class="nn">alabos_project.devices.box_furnace</span> <span class="kn">import</span> <span class="n">BoxFurnace</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alabos_project.devices.box_furnace</span><span class="w"> </span><span class="kn">import</span> <span class="n">BoxFurnace</span>
 
 
-<span class="k">class</span> <span class="nc">Heating</span><span class="p">(</span><span class="n">BaseTask</span><span class="p">):</span>
-  <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Heating</span><span class="p">(</span><span class="n">BaseTask</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="o">...</span>
     <span class="k">with</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">labview</span><span class="o">.</span><span class="n">request_resources</span><span class="p">({</span>
         <span class="n">BoxFurnace</span><span class="p">:</span> <span class="p">{</span>
@@ -628,13 +614,13 @@ the device object is a RPC proxy object that forwards the method call to the act
 <h2>Result storage<a class="headerlink" href="#result-storage" title="Link to this heading">#</a></h2>
 <p>At the end of the <code class="docutils literal notranslate"><span class="pre">run</span></code> method, the task should return a BSON serializable dictionary that contains the results of the task.</p>
 <p>For example, you would like to define a task that takes in a sample, heats it up, and returns the temperature of the sample.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alab_management</span> <span class="kn">import</span> <span class="n">BaseTask</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">alab_management</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseTask</span>
 
-<span class="kn">from</span> <span class="nn">alabos_project.devices.box_furnace</span> <span class="kn">import</span> <span class="n">BoxFurnace</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alabos_project.devices.box_furnace</span><span class="w"> </span><span class="kn">import</span> <span class="n">BoxFurnace</span>
 
 
-<span class="k">class</span> <span class="nc">Heating</span><span class="p">(</span><span class="n">BaseTask</span><span class="p">):</span>
-  <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Heating</span><span class="p">(</span><span class="n">BaseTask</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="c1"># request the furnace</span>
     <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">labview</span><span class="o">.</span><span class="n">request_resources</span><span class="p">({</span>
         <span class="n">BoxFurnace</span><span class="p">:</span> <span class="p">{</span>
@@ -660,13 +646,13 @@ the device object is a RPC proxy object that forwards the method call to the act
 Instead, we provide a class called <code class="docutils literal notranslate"><span class="pre">LargeResult</span></code> to store the large file in GridFS in MongoDB.</p>
 <p>For example, when dealing with tasks that can generate very large files, you should store them directly in GridFS
 to ensure consistency and avoid querying issues. Here’s how you can do it:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alab_management</span> <span class="kn">import</span> <span class="n">BaseTask</span><span class="p">,</span> <span class="n">LargeResult</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">alab_management</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseTask</span><span class="p">,</span> <span class="n">LargeResult</span>
 
-<span class="kn">from</span> <span class="nn">alabos_project.devices.box_furnace</span> <span class="kn">import</span> <span class="n">BoxFurnace</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alabos_project.devices.box_furnace</span><span class="w"> </span><span class="kn">import</span> <span class="n">BoxFurnace</span>
 
 
-<span class="k">class</span> <span class="nc">Heating</span><span class="p">(</span><span class="n">BaseTask</span><span class="p">):</span>
-  <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Heating</span><span class="p">(</span><span class="n">BaseTask</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="c1"># request the furnace</span>
     <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">labview</span><span class="o">.</span><span class="n">request_resources</span><span class="p">({</span>
         <span class="n">BoxFurnace</span><span class="p">:</span> <span class="p">{</span>
@@ -703,18 +689,18 @@ you can override the <code class="docutils literal notranslate"><span class="pre
 result output.</p>
 <p>For example, for the <code class="docutils literal notranslate"><span class="pre">Heating</span></code> task, you would like to validate the result output to ensure that the result contains a list
 of temperatures.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
 
-<span class="kn">from</span> <span class="nn">alab_management</span> <span class="kn">import</span> <span class="n">BaseTask</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseTask</span>
 
-<span class="k">class</span> <span class="nc">Heating</span><span class="p">(</span><span class="n">BaseTask</span><span class="p">):</span>
-  <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Heating</span><span class="p">(</span><span class="n">BaseTask</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="o">...</span>
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;temperatures&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">]}</span>
     
   <span class="nd">@property</span>
-  <span class="k">def</span> <span class="nf">result_specification</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="k">class</span> <span class="nc">Result</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="nf">result_specification</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Result</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
         <span class="n">temperatures</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">Result</span>
 </pre></div>
@@ -733,14 +719,14 @@ a string that will be displayed in the dashboard to show the status of the task.
 <p><code class="docutils literal notranslate"><span class="pre">BaseTask.run_subtask</span></code>: in alabos, a task can initiate another <code class="docutils literal notranslate"><span class="pre">BaseTask</span></code> as a subtask. All the requested resources are
 shared between the parent task and the subtask.</p>
 <p>For example, you would like to run a <code class="docutils literal notranslate"><span class="pre">Moving</span></code> subtask to move the sample into the furnace before heating it up.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alab_management</span> <span class="kn">import</span> <span class="n">BaseTask</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">alab_management</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseTask</span>
 
-<span class="kn">from</span> <span class="nn">.moving</span> <span class="kn">import</span> <span class="n">Moving</span>
-<span class="kn">from</span> <span class="nn">alabos_project.devices.box_furnace</span> <span class="kn">import</span> <span class="n">BoxFurnace</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.moving</span><span class="w"> </span><span class="kn">import</span> <span class="n">Moving</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alabos_project.devices.box_furnace</span><span class="w"> </span><span class="kn">import</span> <span class="n">BoxFurnace</span>
 
 
-<span class="k">class</span> <span class="nc">Heating</span><span class="p">(</span><span class="n">BaseTask</span><span class="p">):</span>
-  <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Heating</span><span class="p">(</span><span class="n">BaseTask</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="c1"># request the furnace</span>
     <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">labview</span><span class="o">.</span><span class="n">request_resources</span><span class="p">({</span>
         <span class="n">BoxFurnace</span><span class="p">:</span> <span class="p">{</span>
@@ -774,17 +760,17 @@ handle it.</p>
 <p>For example, you would like to catch the error when the furnace is not connected
 (indicated by <code class="docutils literal notranslate"><span class="pre">FurnaceNotConnectedError</span></code>). You can
 catch the error and initiate a <code class="docutils literal notranslate"><span class="pre">user_input</span></code> to ask the user to check the connection.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alab_management</span> <span class="kn">import</span> <span class="n">BaseTask</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">alab_management</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseTask</span>
 
-<span class="kn">from</span> <span class="nn">alabos_project.devices.box_furnace</span> <span class="kn">import</span> <span class="n">BoxFurnace</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alabos_project.devices.box_furnace</span><span class="w"> </span><span class="kn">import</span> <span class="n">BoxFurnace</span>
 
 
-<span class="k">class</span> <span class="nc">FurnaceNotConnectedError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FurnaceNotConnectedError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span>
 
 
-<span class="k">class</span> <span class="nc">Heating</span><span class="p">(</span><span class="n">BaseTask</span><span class="p">):</span>
-  <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Heating</span><span class="p">(</span><span class="n">BaseTask</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">labview</span><span class="o">.</span><span class="n">request_resources</span><span class="p">({</span>
         <span class="n">BoxFurnace</span><span class="p">:</span> <span class="p">{</span>
             <span class="s2">&quot;slot&quot;</span><span class="p">:</span> <span class="mi">1</span>
@@ -826,9 +812,9 @@ removal, all the resources will be released so that other tasks can use them.</p
 <h2>Register the task<a class="headerlink" href="#register-the-task" title="Link to this heading">#</a></h2>
 <p>After defining the task, you need to register the task by calling <code class="docutils literal notranslate"><span class="pre">add_task</span></code> method to make it available in the system.</p>
 <p>You can call the <code class="docutils literal notranslate"><span class="pre">add_task</span></code> method in the <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file of the task package to register the task.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alab_management</span> <span class="kn">import</span> <span class="n">add_task</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">alab_management</span><span class="w"> </span><span class="kn">import</span> <span class="n">add_task</span>
 
-<span class="kn">from</span> <span class="nn">.tasks.heating</span> <span class="kn">import</span> <span class="n">Heating</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.tasks.heating</span><span class="w"> </span><span class="kn">import</span> <span class="n">Heating</span>
 
 <span class="n">add_task</span><span class="p">(</span><span class="n">Heating</span><span class="p">)</span>
 </pre></div>
@@ -914,7 +900,8 @@ start to launch the alabos system and submit the tasks to the system.</p>
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -971,7 +958,7 @@ By Alab Project Team
 
   <p class="copyright">
     
-      © Copyright 2024, Ceder group.
+      © Copyright 2025, Ceder group.
       <br/>
     
   </p>
@@ -995,8 +982,8 @@ By Alab Project Team
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
   </footer>
