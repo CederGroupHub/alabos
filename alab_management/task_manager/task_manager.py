@@ -3,6 +3,7 @@ TaskLauncher is the core module of the system,
 which actually executes the tasks.
 """
 
+import logging
 import time
 
 from dramatiq_abort import abort, abort_requested
@@ -11,7 +12,11 @@ from alab_management.lab_view import LabView
 from alab_management.logger import DBLogger
 from alab_management.task_view import TaskView
 from alab_management.task_view.task_enums import CancelingProgress, TaskStatus
+from alab_management.utils.logger import set_up_rich_handler
 from alab_management.utils.module_ops import load_definition
+
+cli_logger = logging.getLogger(__name__)
+set_up_rich_handler(cli_logger)
 
 
 class TaskManager:
@@ -125,6 +130,11 @@ class TaskManager:
                 kwargs={"task_id_str": str(task_entry["task_id"])}
             )
             message_id = result.message_id
+            cli_logger.info(
+                f"Task {task_entry['type']} ({task_entry['task_id']}) sent to actor with message_id {message_id}. "
+                f"A message from Task Actor will be logged with this task_id in alabos launch_worker. If not, "
+                f"there can be an issue with the Dramatiq worker!"
+            )
             self.task_view.set_task_actor_id(
                 task_id=task_entry["task_id"], message_id=message_id
             )
@@ -149,6 +159,10 @@ class TaskManager:
                 message_id := task_entry.get("task_actor_id", None)
             ) is not None and abort_requested(message_id=message_id) is None:
                 abort(message_id=message_id)
+                cli_logger.info(
+                    f"Task {task_entry['type']} ({task_entry['task_id']}) is being cancelled. "
+                    f"Task Actor message_id: {message_id}"
+                )
                 self.task_view.update_canceling_progress(
                     task_id=task_entry["task_id"],
                     canceling_progress=CancelingProgress.WORKER_NOTIFIED,
