@@ -214,12 +214,12 @@ The format of the status is as follows:
 ```
 
 ### Get the results
-Once the experiment is completed, you can get the results of the experiment using the `get_experiment_results` method.
+Once the experiment is completed, you can get the results of the experiment using the `get_experiment_result` method.
 
 ```python
-from alab_management import get_experiment_results
+from alab_management import get_experiment_result
 
-results = get_experiment_results(exp_id)
+results = get_experiment_result(exp_id)
 ```
 
 The format of the results is as follows. If the experiment has not been completed, it 
