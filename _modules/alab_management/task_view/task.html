@@ -344,13 +344,12 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">gridfs</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">bson.objectid</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectId</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">model_validator</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.builders.samplebuilder</span><span class="w"> </span><span class="kn">import</span> <span class="n">SampleBuilder</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">AlabOSConfig</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.task_view.task_enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskPriority</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.data_objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_db</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bson.objectid</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectId</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">model_validator</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.builders.experimentbuilder</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExperimentBuilder</span>
@@ -409,7 +408,7 @@
 <span class="sd">            local_path: the path to the local file</span>
 <span class="sd">            storage_type: the storage type, default to the default storage type in the config</span>
 
-<span class="sd">        Returns</span>
+<span class="sd">        Returns:</span>
 <span class="sd">        -------</span>
 <span class="sd">            LargeResult: the LargeResult object</span>
 
@@ -436,7 +435,7 @@
 <span class="sd">            file_like_data: the file-like data</span>
 <span class="sd">            storage_type: the storage type, default to the default storage type in the config</span>
 
-<span class="sd">        Returns</span>
+<span class="sd">        Returns:</span>
 <span class="sd">        -------</span>
 <span class="sd">            LargeResult: the LargeResult object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -476,8 +475,7 @@
                     <span class="k">return</span>
                 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File with identifier </span><span class="si">{</span><span class="n">file_id</span><span class="si">}</span><span class="s2"> failed to be stored.&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only gridfs storage is supported for now.&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only gridfs storage is supported for now.&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="LargeResult.retrieve">
@@ -496,8 +494,7 @@
                     <span class="sa">f</span><span class="s2">&quot;File with identifier </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span>
                 <span class="p">)</span>
             <span class="k">return</span> <span class="n">fs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only gridfs storage is supported for now.&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only gridfs storage is supported for now.&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="LargeResult.check_if_stored">
@@ -510,8 +507,7 @@
             <span class="n">db</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span>
             <span class="n">fs</span> <span class="o">=</span> <span class="n">gridfs</span><span class="o">.</span><span class="n">GridFS</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">fs</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only gridfs storage is supported for now.&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only gridfs storage is supported for now.&quot;</span><span class="p">)</span></div>
 </div>
 
 
@@ -558,6 +554,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_taskid_generated</span> <span class="o">=</span> <span class="p">(</span>
             <span class="kc">False</span>  <span class="c1"># whether the task_id is generated using ObjectId() here or not</span>
         <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_message</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__samples</span> <span class="o">=</span> <span class="n">samples</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_offline</span><span class="p">:</span>
@@ -610,11 +607,11 @@
 <span class="sd">        If any error occurs, a warning will be printed.</span>
 <span class="sd">        If there is a LargeResult in the result, it will ensured to be stored in the database.</span>
 
-<span class="sd">        Raises</span>
+<span class="sd">        Raises:</span>
 <span class="sd">        ------</span>
 <span class="sd">            NotImplementedError: The subclass must implement this method.</span>
 
-<span class="sd">        Returns</span>
+<span class="sd">        Returns:</span>
 <span class="sd">        -------</span>
 <span class="sd">            BaseModel: A Pydantic model type describing the results to be generated by this task.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
