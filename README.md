@@ -6,7 +6,7 @@
 ![python](https://img.shields.io/badge/Python-3.8%7C3.9%7C3.10-blueviolet)
 [![arXiv](https://img.shields.io/badge/arXiv-2405.13930-b31b1b.svg)](https://arxiv.org/abs/2405.13930)
 
-Managing the workflows in the **A**utonomous **Lab**.
+Managing the workflows in the **A**utonomous **Lab**. See [the manuscript in Digital Discovery](https://pubs.rsc.org/en/content/articlelanding/2024/dd/d4dd00129j).
 
 ## Installation
 ### Prerequisites
