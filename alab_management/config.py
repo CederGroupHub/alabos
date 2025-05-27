@@ -1,7 +1,7 @@
 # type: ignore
 
 """
-This file contains the configuration for the alab_management package.
+This file contains the configuration for the alabos package.
 It will read from a yaml file to get all the configurations.
 
 An example of the yaml file is as follows:
@@ -41,7 +41,7 @@ def freeze_config(config_: dict[str, Any]) -> FrozenDict:
 
     Returns
     -------
-        frozen_config, which can not be modified
+        frozen_config, which cannot be modified
     """
 
     def _frozen_collection(collection_or_element):

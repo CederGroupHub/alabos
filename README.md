@@ -17,9 +17,9 @@ You also need to install `Rabbitmq`.
 
 ### For development purpose
 ```shell
-python setup.py develop
+python -m pip install -e ".[dev]"
 ```
-Before any commit, please go to `alab_management` folder and run flake8, ruff, and black, and solve all the typing issues:
+Before any commit, please go to `alabos` folder and run flake8, ruff, and black, and solve all the typing issues:
 ```bash
 flake8
 black .

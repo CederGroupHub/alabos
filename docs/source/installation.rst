@@ -29,7 +29,7 @@ Install from source code
 .. code-block:: sh
 
   git clone https://github.com/CederGroupHub/alabos
-  cd alab_management
+  cd alabos
   pip install -e .
 
 
