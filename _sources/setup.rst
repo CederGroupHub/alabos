@@ -63,7 +63,9 @@ Both name should be the same. The ``pyproject.toml`` file will look like this:
     name = "alabos_project"  # <--- change this to the name of your project
     version = "0.1.0"
     requires-python = ">=3.10"
-    dependencies = []
+    dependencies = [
+        "alab-control@git+https://github.com/CederGroupHub/alab_control",
+    ]]
 
 
 After that, you can install the project as a package by running the following command in the root folder:
