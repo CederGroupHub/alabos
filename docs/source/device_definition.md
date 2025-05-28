@@ -23,6 +23,11 @@ We will take the box furnace as an example to show how to define a new device.
 ```{note}
 If you are interested in how the communication can be implemented, you can check [`alab_control`](https://github.com/CederGroupHub/alab_control)
 where all the communication with the device is implemented for A-Lab.
+
+To install `alab_control`, you can run:
+
+pip install git+https://github.com/CederGroupHub/alab_control
+
 ```
 
 ## Implementing `BoxFurnace`
