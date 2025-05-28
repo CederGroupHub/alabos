@@ -65,7 +65,7 @@ Both name should be the same. The ``pyproject.toml`` file will look like this:
     requires-python = ">=3.10"
     dependencies = [
         "alab-control@git+https://github.com/CederGroupHub/alab_control",
-    ]]
+    ]
 
 
 After that, you can install the project as a package by running the following command in the root folder:

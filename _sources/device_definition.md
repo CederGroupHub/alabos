@@ -26,7 +26,9 @@ where all the communication with the device is implemented for A-Lab.
 
 To install `alab_control`, you can run:
 
+```bash
 pip install git+https://github.com/CederGroupHub/alab_control
+```
 
 ```
 

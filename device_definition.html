@@ -378,16 +378,13 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementing-boxfurnace">Implementing <code class="docutils literal notranslate"><span class="pre">BoxFurnace</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementing-all-abstract-methods">Implementing all abstract methods</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-the-device-interface">Defining the device interface</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-message">Setting up the message</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#error-handling">Error handling</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementing-all-abstract-methods">Implementing all abstract methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-the-device-interface">Defining the device interface</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-message">Setting up the message</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#error-handling">Error handling</a></li>
 </ul>
 </li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mocking-the-device">Mocking the device</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mocking-the-device">Mocking the device</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registering-the-device">Registering the device</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registering-standalone-sample-positions">Registering standalone sample positions</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-s-next">What’s next</a></li>
@@ -423,19 +420,22 @@ The defined methods will be accessible to the task that uses the device.</p>
 <p>If you are interested in how the communication can be implemented, you can check <a class="reference external" href="https://github.com/CederGroupHub/alab_control"><code class="docutils literal notranslate"><span class="pre">alab_control</span></code></a>
 where all the communication with the device is implemented for A-Lab.</p>
 <p>To install <code class="docutils literal notranslate"><span class="pre">alab_control</span></code>, you can run:</p>
-<p>pip install git+https://github.com/CederGroupHub/alab_control</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/CederGroupHub/alab_control
+</pre></div>
 </div>
-<section id="implementing-boxfurnace">
-<h2>Implementing <code class="docutils literal notranslate"><span class="pre">BoxFurnace</span></code><a class="headerlink" href="#implementing-boxfurnace" title="Link to this heading">#</a></h2>
-<p>First of all, we need to create a new class <code class="docutils literal notranslate"><span class="pre">BoxFurnace</span></code> that inherits from <code class="docutils literal notranslate"><span class="pre">BaseDevice</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">alab_management</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseDevice</span>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
+## Implementing `BoxFurnace`
+First of all, we need to create a new class `BoxFurnace` that inherits from `BaseDevice`. 
+```python
+from alab_management import BaseDevice
 
-<span class="k">class</span><span class="w"> </span><span class="nc">BoxFurnace</span><span class="p">(</span><span class="n">BaseDevice</span><span class="p">):</span>
-    <span class="k">pass</span>
+class BoxFurnace(BaseDevice):
+    pass
 </pre></div>
 </div>
 <section id="implementing-all-abstract-methods">
-<h3>Implementing all abstract methods<a class="headerlink" href="#implementing-all-abstract-methods" title="Link to this heading">#</a></h3>
+<h2>Implementing all abstract methods<a class="headerlink" href="#implementing-all-abstract-methods" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">BaseDevice</span></code> requires some of the basic metadata to be defined in the derived class. These include <code class="docutils literal notranslate"><span class="pre">sample_positions</span></code>, <code class="docutils literal notranslate"><span class="pre">connect</span></code>,
 <code class="docutils literal notranslate"><span class="pre">disconnect</span></code>, <code class="docutils literal notranslate"><span class="pre">is_running</span></code>.</p>
 <p>First we need to import some dependencies:</p>
@@ -527,7 +527,7 @@ device, and check if the device is running, respectively.</p>
 </div>
 </section>
 <section id="defining-the-device-interface">
-<h3>Defining the device interface<a class="headerlink" href="#defining-the-device-interface" title="Link to this heading">#</a></h3>
+<h2>Defining the device interface<a class="headerlink" href="#defining-the-device-interface" title="Link to this heading">#</a></h2>
 <p>Apart from the required methods, you will need to define some additional methods that are specific to the device. For
 example, for this type of the furnace, you will need a <code class="docutils literal notranslate"><span class="pre">run_program</span></code> method that will start the heating process. Also,
 there is a <code class="docutils literal notranslate"><span class="pre">get_temperature</span></code> method that will return the current temperature of the furnace.</p>
@@ -602,7 +602,7 @@ there is a <code class="docutils literal notranslate"><span class="pre">get_temp
 </pre></div>
 </div>
 <section id="setting-up-the-message">
-<h4>Setting up the message<a class="headerlink" href="#setting-up-the-message" title="Link to this heading">#</a></h4>
+<h3>Setting up the message<a class="headerlink" href="#setting-up-the-message" title="Link to this heading">#</a></h3>
 <p>In the <code class="docutils literal notranslate"><span class="pre">run_program</span></code> method, we set a message using <code class="docutils literal notranslate"><span class="pre">self.set_message()</span></code>. The message will be displayed in the UI.
 This message will be used to inform the user about the current state of the device. For example,
 when the device is heating, the message can be</p>
@@ -612,7 +612,7 @@ when the device is heating, the message can be</p>
 </div>
 </section>
 <section id="error-handling">
-<h4>Error handling<a class="headerlink" href="#error-handling" title="Link to this heading">#</a></h4>
+<h3>Error handling<a class="headerlink" href="#error-handling" title="Link to this heading">#</a></h3>
 <p>Sometimes there can be an error when using the device. To handle the error, we can use the <code class="docutils literal notranslate"><span class="pre">request_maintenance</span></code> method
 to prompt the user to check the device and retry the operation. If the user chooses not to retry, the error will be raised.</p>
 <div class="admonition note">
@@ -627,7 +627,7 @@ the error will be raised and the task that uses the device will be stopped.</p>
 </section>
 </section>
 <section id="mocking-the-device">
-<h3>Mocking the device<a class="headerlink" href="#mocking-the-device" title="Link to this heading">#</a></h3>
+<h2>Mocking the device<a class="headerlink" href="#mocking-the-device" title="Link to this heading">#</a></h2>
 <p>When the code is made, it will be necessary to test it without connecting to the real device so that
 we can detect any bugs in the workflow. For this purpose, alabos provides a <code class="docutils literal notranslate"><span class="pre">&#64;mock</span></code> decorator to
 mock the device.</p>
@@ -663,7 +663,6 @@ still call the methods of the <code class="docutils literal notranslate"><span c
 <p class="admonition-title">Note</p>
 <p>For more information about the <code class="docutils literal notranslate"><span class="pre">&#64;mock</span></code> decorator, you can check its docstring at <a class="reference internal" href="alab_management.device_view.device.html#alab_management.device_view.device.mock" title="alab_management.device_view.device.mock"><span class="xref myst py py-func"><code class="docutils literal notranslate"><span class="pre">&#64;mock</span></code></span></a>.</p>
 </div>
-</section>
 </section>
 <section id="registering-the-device">
 <h2>Registering the device<a class="headerlink" href="#registering-the-device" title="Link to this heading">#</a></h2>
@@ -754,16 +753,13 @@ that will request the device and sample positions to perform the experiment.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementing-boxfurnace">Implementing <code class="docutils literal notranslate"><span class="pre">BoxFurnace</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementing-all-abstract-methods">Implementing all abstract methods</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-the-device-interface">Defining the device interface</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-message">Setting up the message</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#error-handling">Error handling</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementing-all-abstract-methods">Implementing all abstract methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-the-device-interface">Defining the device interface</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-message">Setting up the message</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#error-handling">Error handling</a></li>
 </ul>
 </li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mocking-the-device">Mocking the device</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mocking-the-device">Mocking the device</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registering-the-device">Registering the device</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registering-standalone-sample-positions">Registering standalone sample positions</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-s-next">What’s next</a></li>
