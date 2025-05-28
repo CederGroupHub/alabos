@@ -30,8 +30,6 @@ To install `alab_control`, you can run:
 pip install git+https://github.com/CederGroupHub/alab_control
 ```
 
-```
-
 ## Implementing `BoxFurnace`
 First of all, we need to create a new class `BoxFurnace` that inherits from `BaseDevice`. 
 ```python
