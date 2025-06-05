@@ -100,10 +100,26 @@ def get_rabbitmq_connection():
             host=rabbit_mq_config.get("host", "localhost"),
             port=rabbit_mq_config.get("port", 5672),
             heartbeat=600,
+            connection_attempts=5,
             blocked_connection_timeout=300,
         )
     )
     return _connection
+
+
+def get_rabbitmq_broker():
+    """Get a RabbitMQ broker connection for Dramatiq."""
+    from dramatiq.brokers.rabbitmq import RabbitmqBroker
+
+    rabbit_mq_config = AlabOSConfig()["rabbitmq"]
+    broker = RabbitmqBroker(
+        host=rabbit_mq_config.get("host", "localhost"),
+        port=rabbit_mq_config.get("port", 5672),
+        heartbeat=600,
+        connection_attempts=5,
+        blocked_connection_timeout=300,
+    )
+    return broker
 
 
 def make_bsonable(obj):

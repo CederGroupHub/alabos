@@ -13,6 +13,7 @@ from enum import Enum, auto
 from functools import partial
 from threading import Thread
 from typing import Any, NoReturn, cast
+from unittest.mock import Mock
 from uuid import uuid4
 
 import dill
@@ -159,6 +160,10 @@ class DeviceManager:
         """Execute a command on the device. Acknowledges completion on rabbitmq channel."""
 
         def callback_publish(channel, delivery_tag, props, response):
+            if isinstance(response, Mock):
+                raise RuntimeError(
+                    f"You are trying to call a method on a Mock device. Please specify a mock value for {response}."
+                )
             if props.reply_to is not None:
                 channel.basic_publish(
                     exchange="",
