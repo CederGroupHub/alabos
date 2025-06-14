@@ -8,6 +8,8 @@ import os.path
 import sys
 import threading
 from abc import ABCMeta
+
+import time
 from copy import copy
 from pathlib import Path
 from types import ModuleType
@@ -24,6 +26,7 @@ def hash_python_files_in_folder(folder_path: str | Path, file_exts=(".py",)):
         file_exts: tuple of file extensions to include (default: .py only)
 
     Returns:
+    -------
         SHA256 hash as hex digest
     """
     folder = Path(folder_path)
@@ -55,15 +58,38 @@ def hash_python_files_in_folder(folder_path: str | Path, file_exts=(".py",)):
 
 
 class MetaClassWithImportLock(ABCMeta):
-    """
-    Metaclass for classes that need to ensure that the import lock is acquired
-    """
+    """Metaclass for classes that need to ensure that the import lock is acquired."""
 
     def __new__(mcs, name, bases, attrs):
+        """Using locks to ensure that the import of the config folder does not happen while the class is being created."""
         # We need to avoid importing the config folder during creation of the class.
         with import_lock:
             new_class = super().__new__(mcs, name, bases, attrs)
         return new_class
+
+
+def deep_reload(module):
+    """
+    Recursively reloads a module and all its submodules.
+    """
+    if not isinstance(module, ModuleType):
+        raise TypeError("Expected a module object")
+    importlib.reload(module)
+
+    already_reloaded = set()
+    # Reload all submodules
+    for attribute_name in dir(module):
+        attribute = getattr(module, attribute_name)
+        if (
+            isinstance(attribute, ModuleType)
+            and attribute.__name__.startswith(module.__name__)
+            and attribute.__name__ not in already_reloaded
+        ):
+            deep_reload(attribute)
+            already_reloaded.add(attribute.__name__)
+
+    module = importlib.reload(module)
+    return module
 
 
 def import_module_from_path(path: str | Path, reload: bool = False) -> ModuleType:
@@ -85,10 +111,11 @@ def import_module_from_path(path: str | Path, reload: bool = False) -> ModuleTyp
     # Import the module
     with import_lock:
         if module_name in sys.modules and reload:
+            print("Reloading module:", module_name)
             # Set an environment variable to indicate reloading, used in add_device, add_task, add_sample_position
             os.environ["ALABOS_RELOAD"] = "1"
             try:
-                return importlib.reload(sys.modules[module_name])
+                return deep_reload(sys.modules[module_name])
             finally:
                 os.environ.pop("ALABOS_RELOAD", None)
         return importlib.import_module(module_name, module_name)

@@ -409,7 +409,6 @@ class ResourceRequester(RequestMixin):
             )
             for request in self.get_requests_by_task_id(self.task_id)
         ):
-            print(list(self.get_requests_by_task_id(self.task_id)))
             time.sleep(0.5)
 
     def _check_request_status_loop(self):

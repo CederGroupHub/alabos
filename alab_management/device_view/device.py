@@ -623,10 +623,8 @@ _device_registry: dict[str, BaseDevice] = {}
 
 def add_device(device: BaseDevice):
     """Register a device instance. It is stored in a global dictionary."""
-    if device.name in _device_registry:
-        if not os.environ.get("ALABOS_RELOAD", None):
-            raise KeyError(f"Duplicated device name {device.name}")
-        return
+    if device.name in _device_registry and not os.environ.get("ALABOS_RELOAD", None):
+        raise KeyError(f"Duplicated device name {device.name}")
     _device_registry[device.name] = device
 
 

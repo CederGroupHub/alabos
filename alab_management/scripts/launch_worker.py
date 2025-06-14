@@ -1,14 +1,17 @@
 """Launch Dramatiq worker to submit tasks."""
 
-from alab_management.task_manager.task_manager import TaskManager
-
 
 def launch_worker(args):
     """Launch a Dramatiq worker process to execute tasks."""
     from argparse import Namespace
 
+    from alab_management.task_manager.task_manager import TaskManager
     from dramatiq.cli import main as launch
     from dramatiq.cli import make_argument_parser
+
+    task_manager = TaskManager()
+    # Clean up any leftover tasks from previous runs. This blocks new workers until cleanup is done!
+    task_manager.clean_up_tasks_from_previous_runs()
 
     args = make_argument_parser().parse_args(
         args=["alab_management.task_actor", *args],

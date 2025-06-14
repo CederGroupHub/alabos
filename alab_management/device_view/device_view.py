@@ -7,9 +7,10 @@ from enum import Enum, auto, unique
 from typing import Any, TypeVar, cast
 
 import pymongo  # type: ignore
+from bson import ObjectId  # type: ignore
+
 from alab_management.sample_view import SamplePosition, SampleView
 from alab_management.utils.data_objects import get_collection, get_lock
-from bson import ObjectId  # type: ignore
 
 from .device import BaseDevice, get_all_devices
 
@@ -66,27 +67,27 @@ class DeviceView:
             self.__connect_all_devices()
 
     def __connect_all_devices(self):
-        print("Connecting to all devices...")
         for device_name, device in self._device_list.items():
-            print(f"Connecting to {device_name}...")
+            print(f"Connecting to {device_name}...", end=" ")
             try:
                 device._connect_wrapper()
             except Exception as e:
                 raise DeviceConnectionError(
                     f"Could not connect to {device_name}!"
                 ) from e
-            print(f"Connected to {device_name}")
+            print(f"Done")
         self.__connected_to_devices = True
 
     def __disconnect_all_devices(self):
         for device_name, device in self._device_list.items():
+            print(f"Disconnecting from {device_name}...", end=" ")
             try:
                 device._disconnect_wrapper()
             except Exception as e:
                 raise DeviceConnectionError(
                     f"Could not disconnect from {device_name}!"
                 ) from e
-            print(f"Disconnected from {device_name}")
+            print(f"Done")
         self.__connected_to_devices = False
 
     def sync_device_status(self):
@@ -170,7 +171,7 @@ class DeviceView:
             device_types_str (Optional[Collection[str]]): the requested
               device types. If None, no device type is requested
 
-        Returns:
+        Returns
         -------
             {"device_type_name": {"name": device_name, "need_release": need_release (bool)}} or None
         """
@@ -248,7 +249,7 @@ class DeviceView:
               Type(BaseDevice), or for a specific device by name
             task_id: the id of task that requests this device
 
-        Returns:
+        Returns
         -------
             [{"name": device_name, "need_release": bool}]
             The entry need_release indicates whether a device needs to be released
@@ -465,7 +466,7 @@ class DeviceView:
         Args:
             device_name (str): name of the device to get the attributes for
 
-        Returns:
+        Returns
         -------
             dict: device attributes
         """
@@ -479,7 +480,7 @@ class DeviceView:
             device_name (str): name of the device to get the attribute for
             attribute (str): attribute to be retrieved
 
-        Returns:
+        Returns
         -------
             Any: attribute value
         """
@@ -595,6 +596,7 @@ class DeviceView:
             self.__disconnect_all_devices()
 
     def close(self):
+        """Disconnect from all devices when closing the DeviceView."""
         if self.__connected_to_devices:
             self.__disconnect_all_devices()
 

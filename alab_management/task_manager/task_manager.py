@@ -7,13 +7,14 @@ import logging
 import time
 from contextlib import contextmanager
 
+from dramatiq_abort import abort, abort_requested
+
 from alab_management.lab_view import LabView
 from alab_management.logger import DBLogger
 from alab_management.task_view import TaskView
 from alab_management.task_view.task_enums import CancelingProgress, TaskStatus
 from alab_management.utils.logger import set_up_rich_handler
 from alab_management.utils.module_ops import load_definition
-from dramatiq_abort import abort, abort_requested
 
 cli_logger = logging.getLogger(__name__)
 set_up_rich_handler(cli_logger)
@@ -38,6 +39,7 @@ class TaskManager:
 
     @contextmanager
     def pause_new_task_launching(self):
+        """Context manager to pause new task launching."""
         try:
             self._pause_new_task_launching = True
             cli_logger.info("Pausing new task launching.")

@@ -6,8 +6,9 @@ import sys
 import time
 from threading import Thread
 
-from alab_management.utils.module_ops import calculate_package_hash
 from gevent.pywsgi import WSGIServer  # type: ignore
+
+from alab_management.utils.module_ops import calculate_package_hash
 
 with contextlib.suppress(RuntimeError):
     multiprocessing.set_start_method("spawn")
@@ -58,7 +59,6 @@ def launch_task_manager():
     load_definition()
     task_manager = TaskManager()
     # Clean up any leftover tasks from previous runs. This blocks new workers until cleanup is done!
-    task_manager.clean_up_tasks_from_previous_runs()
 
     task_manager.run()
 
@@ -88,6 +88,7 @@ def launch_resource_manager():
 
 
 def system_refresh():
+    """Refresh the system if the package fingerprint has changed and auto_refresh is configured."""
     from alab_management.config import AlabOSConfig
 
     config = AlabOSConfig()
@@ -179,6 +180,6 @@ def launch_lab(host, port, debug):
             sys.exit(1005)
 
         counter += 1
-        if counter % 40 == 0:  # check every minute
+        if counter % 10 == 0:  # check every minute
             system_refresh()
             counter = 0

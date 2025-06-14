@@ -131,10 +131,10 @@ class DeviceManager:
         self.threads = []
 
     def refresh_devices(self):
-        print("Refreshing devices...")
-        load_definition(reload=True)
+        """Re-connect the devices in the device view."""
         self._device_view.close()
         print("Connecting to devices again...")
+        load_definition(reload=True)
         self._device_view = DeviceView(
             connect_to_devices=True
         )  # create a new device view
