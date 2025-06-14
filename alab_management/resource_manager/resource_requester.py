@@ -369,6 +369,17 @@ class ResourceRequester(RequestMixin):
                 }
             },
         )
+        self._request_collection.update_many(
+            {
+                "task_id": self.task_id,
+                "status": RequestStatus.PENDING.name,
+            },
+            {
+                "$set": {
+                    "status": RequestStatus.CANCELED.name,
+                }
+            },
+        )
         # For the requests that were CANCELED or ERROR, but have assigned resources, release them
         assigned_cancel_error_requests_id = []
         for request in self.get_requests_by_task_id(self.task_id):
@@ -398,6 +409,7 @@ class ResourceRequester(RequestMixin):
             )
             for request in self.get_requests_by_task_id(self.task_id)
         ):
+            print(list(self.get_requests_by_task_id(self.task_id)))
             time.sleep(0.5)
 
     def _check_request_status_loop(self):

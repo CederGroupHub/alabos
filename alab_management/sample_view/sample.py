@@ -1,5 +1,6 @@
 """The definition of the Sample and SamplePosition classes."""
 
+import os
 from dataclasses import dataclass, field
 from typing import Any, ClassVar
 
@@ -64,7 +65,10 @@ def add_standalone_sample_position(position: SamplePosition):
             f"The type of position should be SamplePosition, but user provided {type(position)}"
         )
     if position.name in _standalone_sample_position_registry:
-        raise KeyError(f"Duplicated standalone sample position name {position.name}")
+        if not os.environ.get("ALABOS_RELOAD", None):
+            raise KeyError(
+                f"Duplicated standalone sample position name {position.name}"
+            )
     _standalone_sample_position_registry[position.name] = position
 
 

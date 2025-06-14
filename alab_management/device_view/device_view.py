@@ -7,10 +7,9 @@ from enum import Enum, auto, unique
 from typing import Any, TypeVar, cast
 
 import pymongo  # type: ignore
-from bson import ObjectId  # type: ignore
-
 from alab_management.sample_view import SamplePosition, SampleView
 from alab_management.utils.data_objects import get_collection, get_lock
+from bson import ObjectId  # type: ignore
 
 from .device import BaseDevice, get_all_devices
 
@@ -67,7 +66,9 @@ class DeviceView:
             self.__connect_all_devices()
 
     def __connect_all_devices(self):
+        print("Connecting to all devices...")
         for device_name, device in self._device_list.items():
+            print(f"Connecting to {device_name}...")
             try:
                 device._connect_wrapper()
             except Exception as e:
@@ -142,7 +143,7 @@ class DeviceView:
 
     def get_all(self) -> list[dict[str, Any]]:
         """Get all the devices in the database, used for dashboard."""
-        return cast(list[dict[str, Any]], self._device_collection.find())
+        return cast("list[dict[str, Any]]", self._device_collection.find())
 
     def _clean_up_device_collection(self):
         """Clean up the device collection."""
@@ -169,7 +170,7 @@ class DeviceView:
             device_types_str (Optional[Collection[str]]): the requested
               device types. If None, no device type is requested
 
-        Returns
+        Returns:
         -------
             {"device_type_name": {"name": device_name, "need_release": need_release (bool)}} or None
         """
@@ -247,7 +248,7 @@ class DeviceView:
               Type(BaseDevice), or for a specific device by name
             task_id: the id of task that requests this device
 
-        Returns
+        Returns:
         -------
             [{"name": device_name, "need_release": bool}]
             The entry need_release indicates whether a device needs to be released
@@ -464,7 +465,7 @@ class DeviceView:
         Args:
             device_name (str): name of the device to get the attributes for
 
-        Returns
+        Returns:
         -------
             dict: device attributes
         """
@@ -478,7 +479,7 @@ class DeviceView:
             device_name (str): name of the device to get the attribute for
             attribute (str): attribute to be retrieved
 
-        Returns
+        Returns:
         -------
             Any: attribute value
         """
@@ -569,7 +570,35 @@ class DeviceView:
             {"$set": update_dict},
         )
 
+    def get_paused_devices(
+        self, paused_status=(DevicePauseStatus.PAUSED, DevicePauseStatus.REQUESTED)
+    ) -> list[str]:
+        """Get a list of paused or waiting for paused devices."""
+        paused_devices = self._device_collection.find(
+            {"pause_status": {"$in": [status.name for status in paused_status]}}
+        )
+        return [device["name"] for device in paused_devices]
+
+    def pause_all_devices(self):
+        """Pause all devices."""
+        for device in self._device_list.values():
+            self.pause_device(device.name)
+
+    def unpause_all_devices(self):
+        """Unpause all devices."""
+        for device in self._device_list.values():
+            self.unpause_device(device.name)
+
     def __exit__(self, exc_type, exc_value, traceback):
         """Disconnect from all devices when exiting the context manager."""
+        if self.__connected_to_devices:
+            self.__disconnect_all_devices()
+
+    def close(self):
+        if self.__connected_to_devices:
+            self.__disconnect_all_devices()
+
+    def __del__(self):
+        """Ensure that we disconnect from all devices when the object is deleted."""
         if self.__connected_to_devices:
             self.__disconnect_all_devices()

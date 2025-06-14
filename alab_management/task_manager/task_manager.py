@@ -5,8 +5,7 @@ which actually executes the tasks.
 
 import logging
 import time
-
-from dramatiq_abort import abort, abort_requested
+from contextlib import contextmanager
 
 from alab_management.lab_view import LabView
 from alab_management.logger import DBLogger
@@ -14,6 +13,7 @@ from alab_management.task_view import TaskView
 from alab_management.task_view.task_enums import CancelingProgress, TaskStatus
 from alab_management.utils.logger import set_up_rich_handler
 from alab_management.utils.module_ops import load_definition
+from dramatiq_abort import abort, abort_requested
 
 cli_logger = logging.getLogger(__name__)
 set_up_rich_handler(cli_logger)
@@ -32,8 +32,30 @@ class TaskManager:
         self.task_view = TaskView()
 
         self.logger = DBLogger(task_id=None)
+        self._pause_new_task_launching = False
         super().__init__()
         time.sleep(1)  # allow some time for other modules to launch
+
+    @contextmanager
+    def pause_new_task_launching(self):
+        try:
+            self._pause_new_task_launching = True
+            cli_logger.info("Pausing new task launching.")
+            yield
+        finally:
+            self._pause_new_task_launching = False
+            cli_logger.info("Resuming new task launching.")
+
+    def check_number_of_running_tasks(self) -> int:
+        """Check the number of running tasks."""
+        running_tasks = self.task_view.get_tasks_by_status(TaskStatus.RUNNING)
+        return len(running_tasks)
+
+    def refresh_tasks(self):
+        """Refresh the tasks in the task view."""
+        print("Refreshing tasks in TaskManager...")
+        load_definition(reload=True)
+        self.task_view = TaskView()
 
     def run(self):
         """Start the loop."""
@@ -43,7 +65,8 @@ class TaskManager:
 
     def _loop(self):
         self.handle_tasks_to_be_canceled()
-        self.submit_ready_tasks()
+        if not self._pause_new_task_launching:
+            self.submit_ready_tasks()
 
     def clean_up_tasks_from_previous_runs(self):
         """Cleans up incomplete tasks that exist from the last time the taskmanager was running. Note that this will

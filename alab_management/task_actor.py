@@ -8,10 +8,6 @@ import logging
 from traceback import format_exc
 
 import dramatiq
-from bson import ObjectId
-from dramatiq_abort import Abort
-from pydantic import BaseModel, ValidationError
-
 from alab_management.logger import DBLogger
 from alab_management.sample_view import SampleView
 from alab_management.task_view import BaseTask, TaskStatus, TaskView
@@ -19,6 +15,9 @@ from alab_management.utils.data_objects import get_rabbitmq_broker
 from alab_management.utils.logger import set_up_rich_handler
 from alab_management.utils.middleware import register_abortable_middleware
 from alab_management.utils.module_ops import load_definition
+from bson import ObjectId
+from dramatiq_abort import Abort
+from pydantic import BaseModel, ValidationError
 
 dramatiq.set_broker(get_rabbitmq_broker())
 
@@ -49,9 +48,13 @@ def run_task(task_id_str: str):
         task_id_str: The id of the task to run.
     """
     cli_logger.info(f"Worker starts the task with id: {task_id_str}.")
+    from alab_management.config import AlabOSConfig
+
     from .lab_view import LabView  # pylint: disable=cyclic-import
 
-    load_definition()
+    config = AlabOSConfig()
+    reload = config["general"].get("auto_refresh", False)
+    load_definition(reload=reload)
     task_view = TaskView()
     sample_view = SampleView()
     logger = DBLogger(task_id=None)
