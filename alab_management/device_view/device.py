@@ -2,6 +2,7 @@
 
 import datetime
 import functools
+import os
 import threading
 import time
 from abc import ABC, abstractmethod
@@ -622,7 +623,7 @@ _device_registry: dict[str, BaseDevice] = {}
 
 def add_device(device: BaseDevice):
     """Register a device instance. It is stored in a global dictionary."""
-    if device.name in _device_registry:
+    if device.name in _device_registry and not os.environ.get("ALABOS_RELOAD", None):
         raise KeyError(f"Duplicated device name {device.name}")
     _device_registry[device.name] = device
 

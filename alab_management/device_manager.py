@@ -9,6 +9,7 @@ DeviceManager class, which will handle all the request to run certain methods on
 import time
 from collections.abc import Callable
 from concurrent.futures import Future
+from contextlib import contextmanager
 from enum import Enum, auto
 from functools import partial
 from threading import Thread
@@ -128,6 +129,27 @@ class DeviceManager:
         self._device_view = DeviceView(connect_to_devices=True)
         self._check_status = _check_status
         self.threads = []
+
+    def refresh_devices(self):
+        """Re-connect the devices in the device view."""
+        self._device_view.close()
+        print("Connecting to devices again...")
+        load_definition(reload=True)
+        self._device_view = DeviceView(
+            connect_to_devices=True
+        )  # create a new device view
+
+    @contextmanager
+    def pause_all_devices(self):
+        """Pause all devices, so that no device can be used during the context."""
+        already_paused = self._device_view.get_paused_devices()
+        try:
+            self._device_view.pause_all_devices()
+            yield
+        finally:
+            self._device_view.unpause_all_devices()
+            for device in already_paused:
+                self._device_view.pause_device(device)
 
     def run(self):
         """Start to listen on the device_rpc queue and conduct the command one by one."""

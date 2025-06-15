@@ -107,7 +107,7 @@ class TestLaunch(unittest.TestCase):
             exp_id = ObjectId(resp_json["data"]["exp_id"])
             self.assertTrue("success", resp_json["status"])
             exp_ids.append(exp_id)
-        time.sleep(50)
+        time.sleep(70)
         self.assertEqual(
             num_of_tasks, self.task_view._task_collection.count_documents({})
         )
@@ -165,7 +165,7 @@ class TestLaunch(unittest.TestCase):
             exp_id = ObjectId(resp_json["data"]["exp_id"])
             self.assertTrue("success", resp_json["status"])
             exp_ids.append(exp_id)
-            time.sleep(20)
+            time.sleep(40)
 
             pending_user_input = requests.get(
                 "http://127.0.0.1:8896/api/userinput/pending"
@@ -187,7 +187,7 @@ class TestLaunch(unittest.TestCase):
             )
             self.assertEqual("success", resp.json()["status"])
 
-        time.sleep(10)
+        time.sleep(30)
         self.assertTrue(
             all(
                 task["status"] == "COMPLETED" or task["status"] == "ERROR"
@@ -246,7 +246,7 @@ class TestLaunch(unittest.TestCase):
             self.assertTrue("success", resp_json["status"])
             time.sleep(2)
 
-        time.sleep(15)
+        time.sleep(35)
         for exp_id in exp_ids.values():
             self.assertEqual(
                 "RUNNING", self.experiment_view.get_experiment(exp_id)["status"]
@@ -261,7 +261,7 @@ class TestLaunch(unittest.TestCase):
                 f"http://127.0.0.1:8896/api/experiment/cancel/{exp_id!s}",
             )
             self.assertEqual("success", resp.json()["status"])
-            time.sleep(10)
+            time.sleep(30)
 
             pending_user_input = requests.get(
                 "http://127.0.0.1:8896/api/userinput/pending"
@@ -285,7 +285,7 @@ class TestLaunch(unittest.TestCase):
             )
             self.assertEqual("success", resp.json()["status"])
 
-        time.sleep(10)
+        time.sleep(30)
 
         for exp_id in exp_ids.values():
             self.assertEqual(

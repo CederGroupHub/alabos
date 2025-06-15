@@ -3,7 +3,9 @@ TaskLauncher is the core module of the system,
 which actually executes the tasks.
 """
 
+import logging
 import time
+from contextlib import contextmanager
 from datetime import datetime
 from traceback import format_exc
 from typing import Any, cast
@@ -23,7 +25,11 @@ from alab_management.sample_view.sample_view import SamplePositionRequest, Sampl
 from alab_management.task_view import TaskView
 from alab_management.task_view.task_enums import CancelingProgress, TaskStatus
 from alab_management.utils.data_objects import DocumentNotUpdatedError, get_collection
+from alab_management.utils.logger import set_up_rich_handler
 from alab_management.utils.module_ops import load_definition
+
+cli_logger = logging.getLogger(__name__)
+set_up_rich_handler(cli_logger)
 
 
 class ResourceManager(RequestMixin):
@@ -41,9 +47,22 @@ class ResourceManager(RequestMixin):
         self.device_view = DeviceView()
         self._request_collection = get_collection("requests")
 
+        self._pause_resource_assigning = False
+
         self.logger = DBLogger(task_id=None)
         super().__init__()
         time.sleep(1)  # allow some time for other modules to launch
+
+    @contextmanager
+    def pause_resource_assigning(self):
+        """Pause the resource assigning."""
+        try:
+            self._pause_resource_assigning = True
+            cli_logger.info("Pausing resource assigning.")
+            yield
+        finally:
+            self._pause_resource_assigning = False
+            cli_logger.info("Resuming resource assigning.")
 
     def run(self):
         """Start the loop."""
@@ -53,7 +72,8 @@ class ResourceManager(RequestMixin):
 
     def _loop(self):
         self.handle_released_resources()
-        self.handle_requested_resources()
+        if not self._pause_resource_assigning:
+            self.handle_requested_resources()
 
     def handle_released_resources(self):
         """Release the resources."""
