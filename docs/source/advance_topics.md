@@ -7,4 +7,5 @@ In this section, we will discuss some of the more advanced topics that can help 
 :hidden:
 
 test
+auto_refresh
 ```

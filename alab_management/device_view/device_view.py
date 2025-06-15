@@ -75,7 +75,7 @@ class DeviceView:
                 raise DeviceConnectionError(
                     f"Could not connect to {device_name}!"
                 ) from e
-            print(f"Done")
+            print("Done")
         self.__connected_to_devices = True
 
     def __disconnect_all_devices(self):
@@ -87,7 +87,7 @@ class DeviceView:
                 raise DeviceConnectionError(
                     f"Could not disconnect from {device_name}!"
                 ) from e
-            print(f"Done")
+            print("Done")
         self.__connected_to_devices = False
 
     def sync_device_status(self):

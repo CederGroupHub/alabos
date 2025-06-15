@@ -5,9 +5,10 @@ def launch_worker(args):
     """Launch a Dramatiq worker process to execute tasks."""
     from argparse import Namespace
 
-    from alab_management.task_manager.task_manager import TaskManager
     from dramatiq.cli import main as launch
     from dramatiq.cli import make_argument_parser
+
+    from alab_management.task_manager.task_manager import TaskManager
 
     task_manager = TaskManager()
     # Clean up any leftover tasks from previous runs. This blocks new workers until cleanup is done!

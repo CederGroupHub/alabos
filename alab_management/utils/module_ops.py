@@ -8,8 +8,6 @@ import os.path
 import sys
 import threading
 from abc import ABCMeta
-
-import time
 from copy import copy
 from pathlib import Path
 from types import ModuleType
@@ -25,7 +23,7 @@ def hash_python_files_in_folder(folder_path: str | Path, file_exts=(".py",)):
         folder_path: root directory path as string
         file_exts: tuple of file extensions to include (default: .py only)
 
-    Returns:
+    Returns
     -------
         SHA256 hash as hex digest
     """
@@ -69,9 +67,7 @@ class MetaClassWithImportLock(ABCMeta):
 
 
 def deep_reload(module):
-    """
-    Recursively reloads a module and all its submodules.
-    """
+    """Recursively reloads a module and all its submodules."""
     if not isinstance(module, ModuleType):
         raise TypeError("Expected a module object")
     importlib.reload(module)

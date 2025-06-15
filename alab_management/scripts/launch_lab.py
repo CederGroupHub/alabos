@@ -180,6 +180,6 @@ def launch_lab(host, port, debug):
             sys.exit(1005)
 
         counter += 1
-        if counter % 10 == 0:  # check every minute
+        if counter % 20 == 0:  # check every 30 s
             system_refresh()
             counter = 0
