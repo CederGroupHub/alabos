@@ -88,7 +88,7 @@ class TestTaskActor(unittest.TestCase):
         resp_json = resp.json()
         exp_id = ObjectId(resp_json["data"]["exp_id"])
         self.assertTrue("success", resp_json["status"])
-        time.sleep(35)
+        time.sleep(15)
         # check if large result is stored successfully in database and can be retrieved
         ## get the experiment
         experiment = self.experiment_view.get_experiment(exp_id)
@@ -153,7 +153,7 @@ class TestTaskActor(unittest.TestCase):
         resp_json = resp.json()
         exp_id = ObjectId(resp_json["data"]["exp_id"])
         self.assertTrue("success", resp_json["status"])
-        time.sleep(35)
+        time.sleep(15)
         # check if large result is stored successfully in database and can be retrieved
         ## get the experiment
         experiment = self.experiment_view.get_experiment(exp_id)
@@ -221,7 +221,7 @@ class TestTaskActor(unittest.TestCase):
         resp_json = resp.json()
         exp_id = ObjectId(resp_json["data"]["exp_id"])
         self.assertTrue("success", resp_json["status"])
-        time.sleep(35)
+        time.sleep(15)
         # check no exception is raised if the schema is not correct
         ## get the experiment
         experiment = self.experiment_view.get_experiment(exp_id)
