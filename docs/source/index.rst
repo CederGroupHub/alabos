@@ -100,6 +100,7 @@ when using the package.
     installation
     tutorial
     best_practices
+    version_management
     advance_topics
     Development<development>
     API Docs<modules>

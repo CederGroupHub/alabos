@@ -41,3 +41,11 @@ slack_channel_id = " "
 # storage_type is defined by using LargeResult class located in alab_management/task_view/task.py
 # you can override this default configuration by setting the storage_type in the task definition
 default_storage_type = "gridfs"
+
+[version_management]
+# Enable version recording and backup functionality
+# When enabled, the system will record hash versions of task definitions
+# after each task completion and create space-efficient backups
+enabled = true
+# Number of recent versions to keep (older versions will be cleaned up)
+keep_versions = 10

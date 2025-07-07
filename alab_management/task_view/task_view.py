@@ -173,6 +173,20 @@ class TaskView:
         elif status == TaskStatus.COMPLETED:
             update_dict["completed_at"] = datetime.now()
 
+            # Record version hash when task completes
+            try:
+                from alab_management.utils.version_manager import VersionManager
+
+                version_manager = VersionManager()
+                recorded_hash = version_manager.record_task_completion(
+                    str(task_id), task.get("type", "Unknown")
+                )
+                if recorded_hash:
+                    update_dict["version_hash"] = recorded_hash
+            except Exception as e:
+                # Log error but don't fail the task completion
+                print(f"Warning: Failed to record version hash for task {task_id}: {e}")
+
         self._task_collection.update_one(
             {"_id": task_id},
             {"$set": update_dict},

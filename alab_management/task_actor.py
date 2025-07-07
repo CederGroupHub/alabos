@@ -243,6 +243,41 @@ def run_task(task_id_str: str):
             },
         )
         cli_logger.info(f"Task {task_type} ({task_id}) completed successfully.")
+
+        # Record version hash after task completion
+        try:
+            from alab_management.utils.version_manager import VersionManager
+
+            version_manager = VersionManager()
+            recorded_hash = version_manager.record_task_completion(
+                str(task_id), task_type.__name__
+            )
+            if recorded_hash:
+                cli_logger.info(
+                    f"Version hash recorded for task {task_id}: {recorded_hash}"
+                )
+                logger.system_log(
+                    level="INFO",
+                    log_data={
+                        "logged_by": "TaskActor",
+                        "type": "VersionRecorded",
+                        "task_id": task_id,
+                        "task_type": task_type.__name__,
+                        "version_hash": recorded_hash,
+                    },
+                )
+        except Exception as e:
+            cli_logger.warning(f"Failed to record version hash for task {task_id}: {e}")
+            logger.system_log(
+                level="WARNING",
+                log_data={
+                    "logged_by": "TaskActor",
+                    "type": "VersionRecordFailed",
+                    "task_id": task_id,
+                    "task_type": task_type.__name__,
+                    "error": str(e),
+                },
+            )
     finally:
         for sample in task_entry["samples"]:
             sample_view.update_sample_task_id(
