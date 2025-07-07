@@ -162,6 +162,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../best_practices.html">Best Practices</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../advance_topics.html">Advance Topics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../test.html">Testing for AlabOS Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../auto_refresh.html">Auto Restart</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../../development.html">Development</a></li>
@@ -345,6 +346,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">Future</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">threading</span><span class="w"> </span><span class="kn">import</span> <span class="n">Thread</span>
@@ -478,6 +480,33 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span> <span class="o">=</span> <span class="n">DeviceView</span><span class="p">(</span><span class="n">connect_to_devices</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_status</span> <span class="o">=</span> <span class="n">_check_status</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">threads</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="DeviceManager.refresh_devices">
+<a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DeviceManager.refresh_devices">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">refresh_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Re-connect the devices in the device view.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Connecting to devices again...&quot;</span><span class="p">)</span>
+        <span class="n">load_definition</span><span class="p">(</span><span class="n">reload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span> <span class="o">=</span> <span class="n">DeviceView</span><span class="p">(</span>
+            <span class="n">connect_to_devices</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>  <span class="c1"># create a new device view</span></div>
+
+
+<div class="viewcode-block" id="DeviceManager.pause_all_devices">
+<a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DeviceManager.pause_all_devices">[docs]</a>
+    <span class="nd">@contextmanager</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pause_all_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pause all devices, so that no device can be used during the context.&quot;&quot;&quot;</span>
+        <span class="n">already_paused</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">get_paused_devices</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">pause_all_devices</span><span class="p">()</span>
+            <span class="k">yield</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">unpause_all_devices</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">already_paused</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">pause_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="DeviceManager.run">
 <a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DeviceManager.run">[docs]</a>

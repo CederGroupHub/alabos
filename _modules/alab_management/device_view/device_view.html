@@ -162,6 +162,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html">Best Practices</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../advance_topics.html">Advance Topics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../test.html">Testing for AlabOS Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../auto_refresh.html">Auto Restart</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../development.html">Development</a></li>
@@ -415,24 +416,26 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__connect_all_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">device_name</span><span class="p">,</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_list</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connecting to </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">device</span><span class="o">.</span><span class="n">_connect_wrapper</span><span class="p">()</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">DeviceConnectionError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;Could not connect to </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">!&quot;</span>
                 <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connected to </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Done&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__connected_to_devices</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__disconnect_all_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">device_name</span><span class="p">,</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_list</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Disconnecting from </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">device</span><span class="o">.</span><span class="n">_disconnect_wrapper</span><span class="p">()</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">DeviceConnectionError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;Could not disconnect from </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">!&quot;</span>
                 <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Disconnected from </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Done&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__connected_to_devices</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="DeviceView.sync_device_status">
@@ -497,7 +500,7 @@
 <a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_all">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all the devices in the database, used for dashboard.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">find</span><span class="p">())</span></div>
+        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;list[dict[str, Any]]&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">find</span><span class="p">())</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_clean_up_device_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -979,8 +982,49 @@
         <span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="DeviceView.get_paused_devices">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_paused_devices">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_paused_devices</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">paused_status</span><span class="o">=</span><span class="p">(</span><span class="n">DevicePauseStatus</span><span class="o">.</span><span class="n">PAUSED</span><span class="p">,</span> <span class="n">DevicePauseStatus</span><span class="o">.</span><span class="n">REQUESTED</span><span class="p">)</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a list of paused or waiting for paused devices.&quot;&quot;&quot;</span>
+        <span class="n">paused_devices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;pause_status&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$in&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">status</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">paused_status</span><span class="p">]}}</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">device</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">paused_devices</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="DeviceView.pause_all_devices">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.pause_all_devices">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pause_all_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pause all devices.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_list</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pause_device</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DeviceView.unpause_all_devices">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.unpause_all_devices">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unpause_all_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Unpause all devices.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_list</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unpause_device</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Disconnect from all devices when exiting the context manager.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__connected_to_devices</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__disconnect_all_devices</span><span class="p">()</span>
+
+<div class="viewcode-block" id="DeviceView.close">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.close">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Disconnect from all devices when closing the DeviceView.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__connected_to_devices</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__disconnect_all_devices</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ensure that we disconnect from all devices when the object is deleted.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__connected_to_devices</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__disconnect_all_devices</span><span class="p">()</span></div>
 

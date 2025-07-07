@@ -162,6 +162,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html">Best Practices</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../advance_topics.html">Advance Topics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../test.html">Testing for AlabOS Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../auto_refresh.html">Auto Restart</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../development.html">Development</a></li>
@@ -339,7 +340,9 @@
 <span class="sd">which actually executes the tasks.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">traceback</span><span class="w"> </span><span class="kn">import</span> <span class="n">format_exc</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span>
@@ -359,7 +362,11 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.task_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskView</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.task_view.task_enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">CancelingProgress</span><span class="p">,</span> <span class="n">TaskStatus</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.data_objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">DocumentNotUpdatedError</span><span class="p">,</span> <span class="n">get_collection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_up_rich_handler</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.module_ops</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_definition</span>
+
+<span class="n">cli_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">set_up_rich_handler</span><span class="p">(</span><span class="n">cli_logger</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="ResourceManager">
@@ -379,9 +386,25 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">device_view</span> <span class="o">=</span> <span class="n">DeviceView</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;requests&quot;</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pause_resource_assigning</span> <span class="o">=</span> <span class="kc">False</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">DBLogger</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># allow some time for other modules to launch</span>
+
+<div class="viewcode-block" id="ResourceManager.pause_resource_assigning">
+<a class="viewcode-back" href="../../../alab_management.resource_manager.resource_manager.html#alab_management.resource_manager.resource_manager.ResourceManager.pause_resource_assigning">[docs]</a>
+    <span class="nd">@contextmanager</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pause_resource_assigning</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pause the resource assigning.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pause_resource_assigning</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Pausing resource assigning.&quot;</span><span class="p">)</span>
+            <span class="k">yield</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pause_resource_assigning</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Resuming resource assigning.&quot;</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="ResourceManager.run">
 <a class="viewcode-back" href="../../../alab_management.resource_manager.resource_manager.html#alab_management.resource_manager.resource_manager.ResourceManager.run">[docs]</a>
@@ -394,7 +417,8 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">handle_released_resources</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">handle_requested_resources</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pause_resource_assigning</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handle_requested_resources</span><span class="p">()</span>
 
 <div class="viewcode-block" id="ResourceManager.handle_released_resources">
 <a class="viewcode-back" href="../../../alab_management.resource_manager.resource_manager.html#alab_management.resource_manager.resource_manager.ResourceManager.handle_released_resources">[docs]</a>

@@ -161,6 +161,7 @@
 <li class="toctree-l1"><a class="reference internal" href="best_practices.html">Best Practices</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="advance_topics.html">Advance Topics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="test.html">Testing for AlabOS Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="auto_refresh.html">Auto Restart</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
@@ -379,8 +380,11 @@
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_manager.task_manager.TaskManager"><code class="docutils literal notranslate"><span class="pre">TaskManager</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_manager.task_manager.TaskManager.check_number_of_running_tasks"><code class="docutils literal notranslate"><span class="pre">TaskManager.check_number_of_running_tasks()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_manager.task_manager.TaskManager.clean_up_tasks_from_previous_runs"><code class="docutils literal notranslate"><span class="pre">TaskManager.clean_up_tasks_from_previous_runs()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_manager.task_manager.TaskManager.handle_tasks_to_be_canceled"><code class="docutils literal notranslate"><span class="pre">TaskManager.handle_tasks_to_be_canceled()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_manager.task_manager.TaskManager.pause_new_task_launching"><code class="docutils literal notranslate"><span class="pre">TaskManager.pause_new_task_launching()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_manager.task_manager.TaskManager.refresh_tasks"><code class="docutils literal notranslate"><span class="pre">TaskManager.refresh_tasks()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_manager.task_manager.TaskManager.run"><code class="docutils literal notranslate"><span class="pre">TaskManager.run()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_manager.task_manager.TaskManager.submit_ready_tasks"><code class="docutils literal notranslate"><span class="pre">TaskManager.submit_ready_tasks()</span></code></a></li>
 </ul>
@@ -410,6 +414,17 @@ which actually executes the tasks.</p>
 <li><p>handle all the resource requests</p></li>
 </ol>
 <dl class="py method">
+<dt class="sig sig-object py" id="alab_management.task_manager.task_manager.TaskManager.check_number_of_running_tasks">
+<span class="sig-name descname"><span class="pre">check_number_of_running_tasks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_manager/task_manager.html#TaskManager.check_number_of_running_tasks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_manager.task_manager.TaskManager.check_number_of_running_tasks" title="Link to this definition">#</a></dt>
+<dd><p>Check the number of running tasks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="alab_management.task_manager.task_manager.TaskManager.clean_up_tasks_from_previous_runs">
 <span class="sig-name descname"><span class="pre">clean_up_tasks_from_previous_runs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_manager/task_manager.html#TaskManager.clean_up_tasks_from_previous_runs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_manager.task_manager.TaskManager.clean_up_tasks_from_previous_runs" title="Link to this definition">#</a></dt>
 <dd><p>Cleans up incomplete tasks that exist from the last time the taskmanager was running. Note that this will
@@ -423,6 +438,18 @@ still be in the RUNNING or CANCELLING state. These will be set to CANCELLED now.
 <dt class="sig sig-object py" id="alab_management.task_manager.task_manager.TaskManager.handle_tasks_to_be_canceled">
 <span class="sig-name descname"><span class="pre">handle_tasks_to_be_canceled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_manager/task_manager.html#TaskManager.handle_tasks_to_be_canceled"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_manager.task_manager.TaskManager.handle_tasks_to_be_canceled" title="Link to this definition">#</a></dt>
 <dd><p>Check if there are any tasks needs to be stopped.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.task_manager.task_manager.TaskManager.pause_new_task_launching">
+<span class="sig-name descname"><span class="pre">pause_new_task_launching</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_manager/task_manager.html#TaskManager.pause_new_task_launching"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_manager.task_manager.TaskManager.pause_new_task_launching" title="Link to this definition">#</a></dt>
+<dd><p>Context manager to pause new task launching.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.task_manager.task_manager.TaskManager.refresh_tasks">
+<span class="sig-name descname"><span class="pre">refresh_tasks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_manager/task_manager.html#TaskManager.refresh_tasks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_manager.task_manager.TaskManager.refresh_tasks" title="Link to this definition">#</a></dt>
+<dd><p>Refresh the tasks in the task view.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -489,8 +516,11 @@ If so, submit them to task actor (dramatiq worker).</p>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_manager.task_manager.TaskManager"><code class="docutils literal notranslate"><span class="pre">TaskManager</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_manager.task_manager.TaskManager.check_number_of_running_tasks"><code class="docutils literal notranslate"><span class="pre">TaskManager.check_number_of_running_tasks()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_manager.task_manager.TaskManager.clean_up_tasks_from_previous_runs"><code class="docutils literal notranslate"><span class="pre">TaskManager.clean_up_tasks_from_previous_runs()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_manager.task_manager.TaskManager.handle_tasks_to_be_canceled"><code class="docutils literal notranslate"><span class="pre">TaskManager.handle_tasks_to_be_canceled()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_manager.task_manager.TaskManager.pause_new_task_launching"><code class="docutils literal notranslate"><span class="pre">TaskManager.pause_new_task_launching()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_manager.task_manager.TaskManager.refresh_tasks"><code class="docutils literal notranslate"><span class="pre">TaskManager.refresh_tasks()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_manager.task_manager.TaskManager.run"><code class="docutils literal notranslate"><span class="pre">TaskManager.run()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_manager.task_manager.TaskManager.submit_ready_tasks"><code class="docutils literal notranslate"><span class="pre">TaskManager.submit_ready_tasks()</span></code></a></li>
 </ul>

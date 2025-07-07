@@ -162,6 +162,7 @@
 <li class="toctree-l1"><a class="reference internal" href="best_practices.html">Best Practices</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="advance_topics.html">Advance Topics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="test.html">Testing for AlabOS Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="auto_refresh.html">Auto Restart</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
@@ -676,6 +677,8 @@
 </li>
       <li><a href="alab_management.task_view.task.html#alab_management.task_view.task.LargeResult.check_if_stored">check_if_stored() (LargeResult method)</a>
 </li>
+      <li><a href="alab_management.task_manager.task_manager.html#alab_management.task_manager.task_manager.TaskManager.check_number_of_running_tasks">check_number_of_running_tasks() (TaskManager method)</a>
+</li>
       <li><a href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.clean_up_sample_position_collection">clean_up_sample_position_collection() (SampleView method)</a>
 </li>
       <li><a href="alab_management.task_manager.task_manager.html#alab_management.task_manager.task_manager.TaskManager.clean_up_tasks_from_previous_runs">clean_up_tasks_from_previous_runs() (TaskManager method)</a>
@@ -688,16 +691,18 @@
         <li><a href="alab_management.device_view.dbattributes.html#alab_management.device_view.dbattributes.ListInDatabase.clear">(ListInDatabase method)</a>
 </li>
       </ul></li>
+      <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.close">close() (DeviceView method)</a>
+</li>
       <li><a href="alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.CombinedTimeoutError">CombinedTimeoutError</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentStatus.COMPLETED">COMPLETED (ExperimentStatus attribute)</a>
 
       <ul>
         <li><a href="alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.TaskStatus.COMPLETED">(TaskStatus attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.experiment_view.completed_experiment_view.html#alab_management.experiment_view.completed_experiment_view.CompletedExperimentView">CompletedExperimentView (class in alab_management.experiment_view.completed_experiment_view)</a>
 </li>
       <li><a href="alab_management.sample_view.completed_sample_view.html#alab_management.sample_view.completed_sample_view.CompletedSampleView">CompletedSampleView (class in alab_management.sample_view.completed_sample_view)</a>
@@ -955,6 +960,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.device_view.device.html#alab_management.device_view.device.DeviceSignalEmitter.get_methods_to_log">get_methods_to_log() (DeviceSignalEmitter method)</a>
+</li>
+      <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_paused_devices">get_paused_devices() (DeviceView method)</a>
 </li>
       <li><a href="alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.get_ready_tasks">get_ready_tasks() (TaskView method)</a>
 </li>
@@ -1335,7 +1342,17 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.config.html#alab_management.config.AlabOSConfig.path">path (AlabOSConfig property)</a>
 </li>
+      <li><a href="alab_management.device_manager.html#alab_management.device_manager.DeviceManager.pause_all_devices">pause_all_devices() (DeviceManager method)</a>
+
+      <ul>
+        <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.pause_all_devices">(DeviceView method)</a>
+</li>
+      </ul></li>
       <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.pause_device">pause_device() (DeviceView method)</a>
+</li>
+      <li><a href="alab_management.task_manager.task_manager.html#alab_management.task_manager.task_manager.TaskManager.pause_new_task_launching">pause_new_task_launching() (TaskManager method)</a>
+</li>
+      <li><a href="alab_management.resource_manager.resource_manager.html#alab_management.resource_manager.resource_manager.ResourceManager.pause_resource_assigning">pause_resource_assigning() (ResourceManager method)</a>
 </li>
       <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DevicePauseStatus.PAUSED">PAUSED (DevicePauseStatus attribute)</a>
 </li>
@@ -1351,10 +1368,10 @@
         <li><a href="alab_management.user_input.html#alab_management.user_input.UserRequestStatus.PENDING">(UserRequestStatus attribute)</a>
 </li>
       </ul></li>
-      <li><a href="alab_management.builders.experimentbuilder.html#alab_management.builders.experimentbuilder.ExperimentBuilder.plot">plot() (ExperimentBuilder method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="alab_management.builders.experimentbuilder.html#alab_management.builders.experimentbuilder.ExperimentBuilder.plot">plot() (ExperimentBuilder method)</a>
+</li>
       <li><a href="alab_management.device_view.dbattributes.html#alab_management.device_view.dbattributes.DictInDatabase.pop">pop() (DictInDatabase method)</a>
 
       <ul>
@@ -1392,6 +1409,10 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.TaskStatus.READY">READY (TaskStatus attribute)</a>
+</li>
+      <li><a href="alab_management.device_manager.html#alab_management.device_manager.DeviceManager.refresh_devices">refresh_devices() (DeviceManager method)</a>
+</li>
+      <li><a href="alab_management.task_manager.task_manager.html#alab_management.task_manager.task_manager.TaskManager.refresh_tasks">refresh_tasks() (TaskManager method)</a>
 </li>
       <li><a href="alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.ResourceRequester.release_all_resources">release_all_resources() (ResourceRequester method)</a>
 </li>
@@ -1441,10 +1462,10 @@
 </li>
       <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DevicePauseStatus.REQUESTED">REQUESTED (DevicePauseStatus attribute)</a>
 </li>
-      <li><a href="alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.TaskStatus.REQUESTING_RESOURCES">REQUESTING_RESOURCES (TaskStatus attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.TaskStatus.REQUESTING_RESOURCES">REQUESTING_RESOURCES (TaskStatus attribute)</a>
+</li>
       <li><a href="alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.RequestMixin">RequestMixin (class in alab_management.resource_manager.resource_requester)</a>
 </li>
       <li><a href="alab_management.resource_manager.enums.html#alab_management.resource_manager.enums.RequestStatus">RequestStatus (class in alab_management.resource_manager.enums)</a>
@@ -1649,6 +1670,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceTaskStatus.UNKNOWN">UNKNOWN (DeviceTaskStatus attribute)</a>
 </li>
+      <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.unpause_all_devices">unpause_all_devices() (DeviceView method)</a>
+</li>
       <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.unpause_device">unpause_device() (DeviceView method)</a>
 </li>
       <li><a href="alab_management.device_view.dbattributes.html#alab_management.device_view.dbattributes.DictInDatabase.update">update() (DictInDatabase method)</a>
@@ -1669,14 +1692,14 @@
         <li><a href="alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.update_result">(TaskView method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.lab_view.html#alab_management.lab_view.LabView.update_sample_metadata">update_sample_metadata() (LabView method)</a>
 
       <ul>
         <li><a href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.update_sample_metadata">(SampleView method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.update_sample_task_id">update_sample_task_id() (ExperimentView method)</a>
 
       <ul>

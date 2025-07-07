@@ -162,6 +162,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html">Best Practices</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../advance_topics.html">Advance Topics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../test.html">Testing for AlabOS Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../auto_refresh.html">Auto Restart</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../development.html">Development</a></li>
@@ -748,6 +749,17 @@
             <span class="p">{</span>
                 <span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
                     <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">NEED_RELEASE</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">update_many</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span>
+                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="p">}</span>
             <span class="p">},</span>
         <span class="p">)</span>

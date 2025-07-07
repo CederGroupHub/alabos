@@ -161,6 +161,7 @@
 <li class="toctree-l1"><a class="reference internal" href="best_practices.html">Best Practices</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="advance_topics.html">Advance Topics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="test.html">Testing for AlabOS Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="auto_refresh.html">Auto Restart</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
@@ -381,6 +382,7 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.resource_manager.resource_manager.ResourceManager"><code class="docutils literal notranslate"><span class="pre">ResourceManager</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.resource_manager.resource_manager.ResourceManager.handle_released_resources"><code class="docutils literal notranslate"><span class="pre">ResourceManager.handle_released_resources()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.resource_manager.resource_manager.ResourceManager.handle_requested_resources"><code class="docutils literal notranslate"><span class="pre">ResourceManager.handle_requested_resources()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.resource_manager.resource_manager.ResourceManager.pause_resource_assigning"><code class="docutils literal notranslate"><span class="pre">ResourceManager.pause_resource_assigning()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.resource_manager.resource_manager.ResourceManager.run"><code class="docutils literal notranslate"><span class="pre">ResourceManager.run()</span></code></a></li>
 </ul>
 </li>
@@ -419,6 +421,12 @@ which actually executes the tasks.</p>
 <span class="sig-name descname"><span class="pre">handle_requested_resources</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/resource_manager/resource_manager.html#ResourceManager.handle_requested_resources"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.resource_manager.resource_manager.ResourceManager.handle_requested_resources" title="Link to this definition">#</a></dt>
 <dd><p>Check if there are any requests that are in PENDING status. If so,
 try to assign the resources to it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.resource_manager.resource_manager.ResourceManager.pause_resource_assigning">
+<span class="sig-name descname"><span class="pre">pause_resource_assigning</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/resource_manager/resource_manager.html#ResourceManager.pause_resource_assigning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.resource_manager.resource_manager.ResourceManager.pause_resource_assigning" title="Link to this definition">#</a></dt>
+<dd><p>Pause the resource assigning.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -480,6 +488,7 @@ try to assign the resources to it.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.resource_manager.resource_manager.ResourceManager"><code class="docutils literal notranslate"><span class="pre">ResourceManager</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.resource_manager.resource_manager.ResourceManager.handle_released_resources"><code class="docutils literal notranslate"><span class="pre">ResourceManager.handle_released_resources()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.resource_manager.resource_manager.ResourceManager.handle_requested_resources"><code class="docutils literal notranslate"><span class="pre">ResourceManager.handle_requested_resources()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.resource_manager.resource_manager.ResourceManager.pause_resource_assigning"><code class="docutils literal notranslate"><span class="pre">ResourceManager.pause_resource_assigning()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.resource_manager.resource_manager.ResourceManager.run"><code class="docutils literal notranslate"><span class="pre">ResourceManager.run()</span></code></a></li>
 </ul>
 </li>

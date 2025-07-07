@@ -161,6 +161,7 @@
 <li class="toctree-l1"><a class="reference internal" href="best_practices.html">Best Practices</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="advance_topics.html">Advance Topics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="test.html">Testing for AlabOS Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="auto_refresh.html">Auto Restart</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
@@ -380,6 +381,8 @@
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_manager.DeviceManager"><code class="docutils literal notranslate"><span class="pre">DeviceManager</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_manager.DeviceManager.on_message"><code class="docutils literal notranslate"><span class="pre">DeviceManager.on_message()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_manager.DeviceManager.pause_all_devices"><code class="docutils literal notranslate"><span class="pre">DeviceManager.pause_all_devices()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_manager.DeviceManager.refresh_devices"><code class="docutils literal notranslate"><span class="pre">DeviceManager.refresh_devices()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_manager.DeviceManager.run"><code class="docutils literal notranslate"><span class="pre">DeviceManager.run()</span></code></a></li>
 </ul>
 </li>
@@ -447,6 +450,18 @@ executes commands on the device drivers, as requested by the task process.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.device_manager.DeviceManager.pause_all_devices">
+<span class="sig-name descname"><span class="pre">pause_all_devices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_manager.html#DeviceManager.pause_all_devices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_manager.DeviceManager.pause_all_devices" title="Link to this definition">#</a></dt>
+<dd><p>Pause all devices, so that no device can be used during the context.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.device_manager.DeviceManager.refresh_devices">
+<span class="sig-name descname"><span class="pre">refresh_devices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_manager.html#DeviceManager.refresh_devices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_manager.DeviceManager.refresh_devices" title="Link to this definition">#</a></dt>
+<dd><p>Re-connect the devices in the device view.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -636,6 +651,8 @@ the method directly.</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_manager.DeviceManager"><code class="docutils literal notranslate"><span class="pre">DeviceManager</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_manager.DeviceManager.on_message"><code class="docutils literal notranslate"><span class="pre">DeviceManager.on_message()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_manager.DeviceManager.pause_all_devices"><code class="docutils literal notranslate"><span class="pre">DeviceManager.pause_all_devices()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_manager.DeviceManager.refresh_devices"><code class="docutils literal notranslate"><span class="pre">DeviceManager.refresh_devices()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_manager.DeviceManager.run"><code class="docutils literal notranslate"><span class="pre">DeviceManager.run()</span></code></a></li>
 </ul>
 </li>

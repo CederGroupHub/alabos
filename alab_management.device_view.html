@@ -161,6 +161,7 @@
 <li class="toctree-l1"><a class="reference internal" href="best_practices.html">Best Practices</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="advance_topics.html">Advance Topics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="test.html">Testing for AlabOS Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="auto_refresh.html">Auto Restart</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
@@ -486,6 +487,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView"><code class="docutils literal notranslate"><span class="pre">DeviceView</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.add_devices_to_db"><code class="docutils literal notranslate"><span class="pre">DeviceView.add_devices_to_db()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.close"><code class="docutils literal notranslate"><span class="pre">DeviceView.close()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.execute_command"><code class="docutils literal notranslate"><span class="pre">DeviceView.execute_command()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_all"><code class="docutils literal notranslate"><span class="pre">DeviceView.get_all()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_all_attributes"><code class="docutils literal notranslate"><span class="pre">DeviceView.get_all_attributes()</span></code></a></li>
@@ -494,9 +496,11 @@
 <li class="toctree-l3"><a class="reference internal" href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_device"><code class="docutils literal notranslate"><span class="pre">DeviceView.get_device()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_devices_by_task"><code class="docutils literal notranslate"><span class="pre">DeviceView.get_devices_by_task()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_message"><code class="docutils literal notranslate"><span class="pre">DeviceView.get_message()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_paused_devices"><code class="docutils literal notranslate"><span class="pre">DeviceView.get_paused_devices()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_samples_on_device"><code class="docutils literal notranslate"><span class="pre">DeviceView.get_samples_on_device()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_status"><code class="docutils literal notranslate"><span class="pre">DeviceView.get_status()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.occupy_device"><code class="docutils literal notranslate"><span class="pre">DeviceView.occupy_device()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.pause_all_devices"><code class="docutils literal notranslate"><span class="pre">DeviceView.pause_all_devices()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.pause_device"><code class="docutils literal notranslate"><span class="pre">DeviceView.pause_device()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.query_property"><code class="docutils literal notranslate"><span class="pre">DeviceView.query_property()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.release_device"><code class="docutils literal notranslate"><span class="pre">DeviceView.release_device()</span></code></a></li>
@@ -505,6 +509,7 @@
 <li class="toctree-l3"><a class="reference internal" href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.set_attribute"><code class="docutils literal notranslate"><span class="pre">DeviceView.set_attribute()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.set_message"><code class="docutils literal notranslate"><span class="pre">DeviceView.set_message()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.sync_device_status"><code class="docutils literal notranslate"><span class="pre">DeviceView.sync_device_status()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.unpause_all_devices"><code class="docutils literal notranslate"><span class="pre">DeviceView.unpause_all_devices()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.unpause_device"><code class="docutils literal notranslate"><span class="pre">DeviceView.unpause_device()</span></code></a></li>
 </ul>
 </li>
