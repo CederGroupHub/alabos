@@ -50,7 +50,7 @@ class TestDeviceManager(TestCase):
         furnace = self.devices_client["furnace_1"]
 
         self.assertEqual(300, furnace.get_temperature())
-        self.assertIs(None, furnace.run_program((1, 2)))
+        self.assertIs(None, furnace.run_program(((1, 2),)))
         with self.assertRaises(AttributeError):
             furnace.not_exist_func()
         f = furnace.sample_positions

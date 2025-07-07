@@ -180,8 +180,16 @@ pydocstyle.convention = "numpy"
 "**/dashboard/*" = ["D"]
 "**/tests/*" = ["D"]
 "**/fake_lab/*" = ["D", "B"]
+"tests/fake_lab/tasks/heating.py" = ["TID252"]
+"tests/fake_lab/tasks/moving.py" = ["TID252"]
 "docs/source/conf.py" = ["D"]
 
 [tool.pytest.ini_options]
-testpaths = "./tests"
-env = "ALABOS_CONFIG_PATH = ./tests/fake_lab/config.toml"
+env = [
+    "ALABOS_CONFIG_PATH = ./tests/fake_lab/config.toml"
+]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = ["-v", "--tb=short"]

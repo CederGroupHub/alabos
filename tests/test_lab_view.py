@@ -80,7 +80,7 @@ class TestLabView(TestCase):
                 },
             },
             timeout=1,
-        ) as (devices, sample_positions):
+        ) as (inner_devices, sample_positions):
             self.assertDictEqual(
                 {
                     Furnace: {"inside": ["furnace_1/inside/1"]},
@@ -123,6 +123,9 @@ class TestLabView(TestCase):
         )
         lab_view = LabView(task_id=task_id)
 
-        with lab_view.request_resources({}, timeout=1) as (devices, sample_positions):
-            self.assertDictEqual({}, devices)
+        with lab_view.request_resources({}, timeout=1) as (
+            inner_devices,
+            sample_positions,
+        ):
+            self.assertDictEqual({}, inner_devices)
             self.assertEqual({}, sample_positions)

@@ -68,24 +68,26 @@ class DeviceView:
 
     def __connect_all_devices(self):
         for device_name, device in self._device_list.items():
+            print(f"Connecting to {device_name}...", end=" ")
             try:
                 device._connect_wrapper()
             except Exception as e:
                 raise DeviceConnectionError(
                     f"Could not connect to {device_name}!"
                 ) from e
-            print(f"Connected to {device_name}")
+            print("Done")
         self.__connected_to_devices = True
 
     def __disconnect_all_devices(self):
         for device_name, device in self._device_list.items():
+            print(f"Disconnecting from {device_name}...", end=" ")
             try:
                 device._disconnect_wrapper()
             except Exception as e:
                 raise DeviceConnectionError(
                     f"Could not disconnect from {device_name}!"
                 ) from e
-            print(f"Disconnected from {device_name}")
+            print("Done")
         self.__connected_to_devices = False
 
     def sync_device_status(self):
@@ -142,7 +144,7 @@ class DeviceView:
 
     def get_all(self) -> list[dict[str, Any]]:
         """Get all the devices in the database, used for dashboard."""
-        return cast(list[dict[str, Any]], self._device_collection.find())
+        return cast("list[dict[str, Any]]", self._device_collection.find())
 
     def _clean_up_device_collection(self):
         """Clean up the device collection."""
@@ -569,7 +571,36 @@ class DeviceView:
             {"$set": update_dict},
         )
 
+    def get_paused_devices(
+        self, paused_status=(DevicePauseStatus.PAUSED, DevicePauseStatus.REQUESTED)
+    ) -> list[str]:
+        """Get a list of paused or waiting for paused devices."""
+        paused_devices = self._device_collection.find(
+            {"pause_status": {"$in": [status.name for status in paused_status]}}
+        )
+        return [device["name"] for device in paused_devices]
+
+    def pause_all_devices(self):
+        """Pause all devices."""
+        for device in self._device_list.values():
+            self.pause_device(device.name)
+
+    def unpause_all_devices(self):
+        """Unpause all devices."""
+        for device in self._device_list.values():
+            self.unpause_device(device.name)
+
     def __exit__(self, exc_type, exc_value, traceback):
         """Disconnect from all devices when exiting the context manager."""
+        if self.__connected_to_devices:
+            self.__disconnect_all_devices()
+
+    def close(self):
+        """Disconnect from all devices when closing the DeviceView."""
+        if self.__connected_to_devices:
+            self.__disconnect_all_devices()
+
+    def __del__(self):
+        """Ensure that we disconnect from all devices when the object is deleted."""
         if self.__connected_to_devices:
             self.__disconnect_all_devices()

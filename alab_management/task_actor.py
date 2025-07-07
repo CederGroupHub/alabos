@@ -49,9 +49,13 @@ def run_task(task_id_str: str):
         task_id_str: The id of the task to run.
     """
     cli_logger.info(f"Worker starts the task with id: {task_id_str}.")
+    from alab_management.config import AlabOSConfig
+
     from .lab_view import LabView  # pylint: disable=cyclic-import
 
-    load_definition()
+    config = AlabOSConfig()
+    reload = config["general"].get("auto_refresh", False)
+    load_definition(reload=reload)
     task_view = TaskView()
     sample_view = SampleView()
     logger = DBLogger(task_id=None)

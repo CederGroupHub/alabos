@@ -83,6 +83,10 @@ class SampleBuilder:
         """Check if two samples are equal."""
         return self._id == other._id
 
+    def __hash__(self):
+        """Do not hash the sample."""
+        raise TypeError("SampleBuilder objects are not hashable")
+
     def __repr__(self):
         """Return a string representation of the sample."""
         return f"<Sample: {self.name}>"

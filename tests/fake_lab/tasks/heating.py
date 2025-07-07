@@ -4,11 +4,10 @@ from bson import ObjectId
 
 from alab_management.task_view import BaseTask
 
-from ..devices.furnace import Furnace  # noqa
-from .moving import Moving
-
 
 class Heating(BaseTask):
+    """Heating task."""
+
     def __init__(
         self,
         samples: list[str | ObjectId],
@@ -28,11 +27,15 @@ class Heating(BaseTask):
         self.setpoints = setpoints
 
     def run(self):
+        """Run the heating task."""
+        # Import Furnace and Moving locally to avoid circular import
+        from .. import Furnace, Moving
+
         with self.lab_view.request_resources({Furnace: {"inside": 8}}) as (
-            devices,
+            inner_devices,
             sample_positions,
         ):
-            furnace = devices[Furnace]
+            furnace = inner_devices[Furnace]
             inside_furnaces = sample_positions[Furnace]["inside"]
 
             for sample, inside_furnace in zip(self.samples, inside_furnaces):

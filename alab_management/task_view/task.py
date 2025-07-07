@@ -1,6 +1,7 @@
 """Define the base class of task, which will be used for defining more tasks."""
 
 import inspect
+import os
 import time
 from abc import ABC, abstractmethod
 from inspect import getfullargspec
@@ -15,6 +16,7 @@ from alab_management.builders.samplebuilder import SampleBuilder
 from alab_management.config import AlabOSConfig
 from alab_management.task_view.task_enums import TaskPriority
 from alab_management.utils.data_objects import get_db
+from alab_management.utils.module_ops import MetaClassWithImportLock
 
 if TYPE_CHECKING:
     from alab_management.builders.experimentbuilder import ExperimentBuilder
@@ -156,7 +158,7 @@ class LargeResult(BaseModel):
         raise ValueError("Only gridfs storage is supported for now.")
 
 
-class BaseTask(ABC):
+class BaseTask(ABC, metaclass=MetaClassWithImportLock):
     """
     The abstract class of task.
 
@@ -428,7 +430,7 @@ _reroute_task_registry: list[
 
 def add_task(task: type[BaseTask]):
     """Register a task."""
-    if task.__name__ in _task_registry:
+    if task.__name__ in _task_registry and not os.environ.get("ALABOS_RELOAD", None):
         raise KeyError(f"Duplicated operation name {task.__name__}")
     _task_registry[task.__name__] = task
 
