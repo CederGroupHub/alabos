@@ -2,7 +2,7 @@ from bson import ObjectId
 
 from alab_management.task_view.task import BaseTask
 
-from ..devices.device_that_fails import DeviceThatFails  # noqa: TID252
+from .. import DeviceThatFails  # noqa: TID252
 
 
 class ErrorHandlingUnrecoverable(BaseTask):

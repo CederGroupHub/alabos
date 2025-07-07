@@ -2,8 +2,6 @@ from bson import ObjectId
 
 from alab_management.task_view.task import BaseTask
 
-from ..devices.robot_arm import RobotArm  # noqa
-
 
 class Moving(BaseTask):
     def __init__(self, samples: list[str | ObjectId], dest: str, *args, **kwargs):
@@ -13,6 +11,9 @@ class Moving(BaseTask):
         self.sample_position = self.lab_view.get_sample(sample=self.sample).position
 
     def run(self):
+        # Import RobotArm locally to avoid circular import
+        from .. import RobotArm
+        
         with self.lab_view.request_resources(
             {RobotArm: {}, None: {self.dest: 1, self.sample_position: 1}}
         ) as (inner_devices, sample_positions):

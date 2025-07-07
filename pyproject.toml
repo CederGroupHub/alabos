@@ -183,5 +183,11 @@ pydocstyle.convention = "numpy"
 "docs/source/conf.py" = ["D"]
 
 [tool.pytest.ini_options]
-testpaths = "./tests"
-env = "ALABOS_CONFIG_PATH = ./tests/fake_lab/config.toml"
+env = [
+    "ALABOS_CONFIG_PATH = ./tests/fake_lab/config.toml"
+]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = ["-v", "--tb=short"]
