@@ -6,7 +6,14 @@ from .. import DeviceThatFails  # noqa: TID252
 
 
 class ErrorHandlingUnrecoverable(BaseTask):
+    """Error handling unrecoverable task."""
+
     def __init__(self, samples: list[str | ObjectId], *args, **kwargs):
+        """Error handling unrecoverable task.
+
+        Args:
+            samples (list[str|ObjectId]): List of sample names or sample IDs.
+        """
         super().__init__(samples=samples, *args, **kwargs)
         self.sample = samples[0]
 
@@ -20,7 +27,14 @@ class ErrorHandlingUnrecoverable(BaseTask):
 
 
 class ErrorHandlingRecoverable(BaseTask):
+    """Error handling recoverable task."""
+
     def __init__(self, samples: list[str | ObjectId], *args, **kwargs):
+        """Error handling recoverable task.
+
+        Args:
+            samples (list[str|ObjectId]): List of sample names or sample IDs.
+        """
         super().__init__(samples=samples, *args, **kwargs)
         self.sample = samples[0]
 

@@ -2,22 +2,25 @@ from alab_management.device_view import add_device
 from alab_management.sample_view import SamplePosition, add_standalone_sample_position
 from alab_management.task_view import add_task
 
-from .devices import DeviceThatFails
-from .devices import DeviceThatNeverEnds
-from .devices import DeviceThatRunSlow
-from .devices import Furnace
-from .devices import RobotArm
-
-from .tasks import Ending
-from .tasks import ErrorHandlingRecoverable
-from .tasks import ErrorHandlingUnrecoverable
-from .tasks import Heating
-from .tasks import InfiniteTask
-from .tasks import Moving
-from .tasks import Starting
-from .tasks import TakePicture
-from .tasks import TakePictureMissingResult
-from .tasks import TakePictureWithoutSpecifiedResult
+from .devices import (
+    DeviceThatFails,
+    DeviceThatNeverEnds,
+    DeviceThatRunSlow,
+    Furnace,
+    RobotArm,
+)
+from .tasks import (
+    Ending,
+    ErrorHandlingRecoverable,
+    ErrorHandlingUnrecoverable,
+    Heating,
+    InfiniteTask,
+    Moving,
+    Starting,
+    TakePicture,
+    TakePictureMissingResult,
+    TakePictureWithoutSpecifiedResult,
+)
 
 add_device(Furnace(name="furnace_1"))
 add_device(Furnace(name="furnace_2"))

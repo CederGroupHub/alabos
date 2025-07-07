@@ -9,6 +9,8 @@ from .. import RobotArm  # noqa
 
 
 class TakePictureResult(BaseModel):
+    """Take picture result."""
+
     sample_name: str | None = None
     sample_id: ObjectId | None = None
     picture: LargeResult
@@ -24,15 +26,24 @@ class TakePictureResult(BaseModel):
 
 
 class TakePicture(BaseTask):
+    """Take picture task."""
+
     def __init__(self, samples: list[str | ObjectId], *args, **kwargs):
+        """Take picture task.
+
+        Args:
+            samples (list[str|ObjectId]): List of sample names or sample IDs.
+        """
         super().__init__(samples=samples, *args, **kwargs)
         self.sample = samples[0]
 
     @property
     def result_specification(self) -> type[BaseModel]:
+        """Take picture task result specification."""
         return TakePictureResult
 
     def run(self):
+        """Run the take picture task."""
         with self.lab_view.request_resources({RobotArm: {}}) as (
             inner_devices,
             sample_positions,
@@ -51,11 +62,15 @@ class TakePicture(BaseTask):
 
 
 class TakePictureWithoutSpecifiedResult(TakePicture):
+    """Take picture without specified result task."""
+
     @property
     def result_specification(self):
+        """Take picture without specified result task result specification."""
         return None
 
     def run(self):
+        """Run the take picture without specified result task."""
         with self.lab_view.request_resources({RobotArm: {}}) as (
             devices,
             sample_positions,
@@ -75,15 +90,24 @@ class TakePictureWithoutSpecifiedResult(TakePicture):
 
 
 class TakePictureMissingResult(BaseTask):
+    """Take picture missing result task."""
+
     def __init__(self, samples: list[str | ObjectId], *args, **kwargs):
+        """Take picture missing result task.
+
+        Args:
+            samples (list[str|ObjectId]): List of sample names or sample IDs.
+        """
         super().__init__(samples=samples, *args, **kwargs)
         self.sample = samples[0]
 
     @property
     def result_specification(self) -> type[BaseModel]:
+        """Take picture missing result task result specification."""
         return TakePictureResult
 
     def run(self):
+        """Run the take picture missing result task."""
         with self.lab_view.request_resources({RobotArm: {}}) as (
             devices,
             sample_positions,

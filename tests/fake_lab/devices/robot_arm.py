@@ -1,5 +1,5 @@
-from threading import Timer
 from pathlib import Path
+from threading import Timer
 from typing import ClassVar
 
 from alab_management.device_view import BaseDevice
@@ -7,6 +7,8 @@ from alab_management.sample_view import SamplePosition
 
 
 class RobotArm(BaseDevice):
+    """Fake robot arm device."""
+
     description: ClassVar[str] = "Fake robot arm"
 
     def __init__(self, *args, **kwargs):

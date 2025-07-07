@@ -7,6 +7,7 @@ from alab_management.sample_view import SamplePosition
 
 class ClaudeLight(BaseDevice):
     """Claude Light definition"""
+
     description: ClassVar[str] = "Claude-Light device"
 
     def __init__(self, *args, **kwargs):
@@ -14,7 +15,7 @@ class ClaudeLight(BaseDevice):
         self.running = None
 
     def __str__(self):
-        return 'An RGB Claude Light'
+        return "An RGB Claude Light"
 
     @property
     def sample_positions(self):
@@ -37,7 +38,8 @@ class ClaudeLight(BaseDevice):
         return self.running
 
     def measure(self, R=0, G=0, B=0):
-        resp = requests.get('https://claude-light.cheme.cmu.edu/api',
-                            params={'R': R, 'G': G, 'B': B})
+        resp = requests.get(
+            "https://claude-light.cheme.cmu.edu/api", params={"R": R, "G": G, "B": B}
+        )
         data = resp.json()
         return data

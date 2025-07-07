@@ -3,7 +3,6 @@ Generate device, sample position, task definitions from user defined files (task
 and write them to MongoDB, which will make it easier to query.
 """
 
-
 from alab_management.alarm import Alarm
 from alab_management.config import AlabOSConfig
 

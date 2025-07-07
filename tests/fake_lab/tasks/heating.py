@@ -6,6 +6,8 @@ from alab_management.task_view import BaseTask
 
 
 class Heating(BaseTask):
+    """Heating task."""
+
     def __init__(
         self,
         samples: list[str | ObjectId],
@@ -25,9 +27,10 @@ class Heating(BaseTask):
         self.setpoints = setpoints
 
     def run(self):
+        """Run the heating task."""
         # Import Furnace and Moving locally to avoid circular import
         from .. import Furnace, Moving
-        
+
         with self.lab_view.request_resources({Furnace: {"inside": 8}}) as (
             inner_devices,
             sample_positions,

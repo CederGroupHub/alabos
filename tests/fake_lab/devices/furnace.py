@@ -6,6 +6,8 @@ from alab_management.sample_view import SamplePosition
 
 
 class Furnace(BaseDevice):
+    """Fake furnace device."""
+
     description: ClassVar[str] = "Fake furnace"
 
     def __init__(self, *args, **kwargs):

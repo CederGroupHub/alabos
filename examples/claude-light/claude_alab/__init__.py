@@ -14,4 +14,3 @@ from .tasks.claude import MeasureRGB
 
 add_device(ClaudeLight(name="rgb"))
 add_task(MeasureRGB)
-
