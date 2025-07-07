@@ -30,10 +30,16 @@ class Furnace(BaseDevice):
     def run_program(self, *segments):
         self._is_running = True
 
+        # segments is expected to be a list of (temp, duration) tuples
+        # If segments is a tuple of tuples, flatten it
+        if len(segments) == 1 and isinstance(segments[0], list | tuple):
+            segments = segments[0]
+        total_duration = sum(float(seg[1]) for seg in segments)
+
         def finish():
             self._is_running = False
 
-        t = Timer(0.1, finish)
+        t = Timer(total_duration, finish)
         t.start()
 
     def is_running(self):
