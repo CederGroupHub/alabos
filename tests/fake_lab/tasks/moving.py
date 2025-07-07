@@ -1,5 +1,3 @@
-from typing import cast
-
 from bson import ObjectId
 
 from alab_management.task_view.task import BaseTask
@@ -17,8 +15,8 @@ class Moving(BaseTask):
     def run(self):
         with self.lab_view.request_resources(
             {RobotArm: {}, None: {self.dest: 1, self.sample_position: 1}}
-        ) as (devices, sample_positions):
-            robot_arm = cast(RobotArm, devices[RobotArm])
+        ) as (inner_devices, sample_positions):
+            robot_arm: RobotArm = inner_devices[RobotArm]
             robot_arm.run_program(
                 f"{sample_positions[None][self.sample_position][0]}-{self.dest}.urp"
             )

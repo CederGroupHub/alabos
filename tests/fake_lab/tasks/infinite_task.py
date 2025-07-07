@@ -16,6 +16,6 @@ class InfiniteTask(BaseTask):
         self.sample = samples[0]
 
     def run(self):
-        with self.lab_view.request_resources({DeviceThatNeverEnds: {}}) as (devices, _):
+        with self.lab_view.request_resources({DeviceThatNeverEnds: {}}) as (inner_devices, _):
             while True:
                 pass

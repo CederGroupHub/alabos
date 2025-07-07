@@ -12,10 +12,10 @@ class ErrorHandlingUnrecoverable(BaseTask):
 
     def run(self):
         with self.lab_view.request_resources({DeviceThatFails: {"failures": 1}}) as (
-            devices,
+            inner_devices,
             _,
         ):
-            device_that_fails = devices[DeviceThatFails]
+            device_that_fails = inner_devices[DeviceThatFails]
             device_that_fails.fail()
 
 

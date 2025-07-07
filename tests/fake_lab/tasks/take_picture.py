@@ -34,10 +34,10 @@ class TakePicture(BaseTask):
 
     def run(self):
         with self.lab_view.request_resources({RobotArm: {}}) as (
-            devices,
+            inner_devices,
             sample_positions,
         ):
-            robot_arm: RobotArm = devices[RobotArm]
+            robot_arm: RobotArm = inner_devices[RobotArm]
             robot_arm.run_program("take_picture.urp")
             sample_id = self.lab_view.get_sample(self.sample).sample_id
             picture_location = robot_arm.get_most_recent_picture_location()

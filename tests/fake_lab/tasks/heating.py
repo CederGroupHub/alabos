@@ -29,10 +29,10 @@ class Heating(BaseTask):
 
     def run(self):
         with self.lab_view.request_resources({Furnace: {"inside": 8}}) as (
-            devices,
+            inner_devices,
             sample_positions,
         ):
-            furnace = devices[Furnace]
+            furnace = inner_devices[Furnace]
             inside_furnaces = sample_positions[Furnace]["inside"]
 
             for sample, inside_furnace in zip(self.samples, inside_furnaces):
