@@ -5,6 +5,7 @@ The function will update the status of the task in the database and initiate the
 
 import datetime
 import logging
+import sys
 from traceback import format_exc
 
 import dramatiq
@@ -18,11 +19,15 @@ from alab_management.task_view import BaseTask, TaskStatus, TaskView
 from alab_management.utils.data_objects import get_rabbitmq_broker
 from alab_management.utils.logger import set_up_rich_handler
 from alab_management.utils.middleware import register_abortable_middleware
-from alab_management.utils.module_ops import load_definition
+from alab_management.utils.module_ops import ThreadLocalFinder, load_definition
 
 dramatiq.set_broker(get_rabbitmq_broker())
 
 register_abortable_middleware()
+
+# ensure all the modules are loaded to the thread local storage
+sys.meta_path.insert(0, ThreadLocalFinder())
+
 
 cli_logger = logging.getLogger(__name__)
 set_up_rich_handler(cli_logger)

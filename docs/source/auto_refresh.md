@@ -47,3 +47,4 @@ The `auto_refresh` feature has some limitations:
 - New devices and tasks: If you add new devices or tasks, you will need to manually restart the lab or there may be some unexpected behaviors.
 - For the tasks that are already running, the changes will not be reflected until the task is restarted.
   This means that if you change the device or task definition, the running tasks will continue to use the old definitions.
+- Only absolute import synatax is supported. Relative import syntax will not work.

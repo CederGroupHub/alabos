@@ -2,7 +2,7 @@ from bson import ObjectId
 
 from alab_management.task_view.task import BaseTask
 
-from .. import DeviceThatNeverEnds  # noqa: TID252
+from tests.fake_lab.devices import DeviceThatNeverEnds  # noqa: TID252
 
 
 class InfiniteTask(BaseTask):

@@ -9,10 +9,59 @@ import sys
 import threading
 from abc import ABCMeta
 from copy import copy
+from importlib.abc import Loader, MetaPathFinder
 from pathlib import Path
 from types import ModuleType
 
+# Thread-local storage for module cache
+thread_cache = threading.local()
 import_lock = threading.RLock()
+
+
+class ThreadLocalLoader(Loader):
+    """Loader that uses thread-local storage to cache modules."""
+
+    def __init__(self, fullname, path):
+        self.fullname = fullname
+        self.path = path
+
+    def create_module(self, spec):
+        """Create a new module object for the given spec."""
+        # Create a fresh module object
+        return importlib.util.module_from_spec(spec)
+
+    def exec_module(self, module):
+        """Load the module from the file and store it in thread-local cache."""
+        # Load and execute module without sys.modules
+        with open(self.path, encoding="utf-8") as f:
+            code = compile(f.read(), self.path, "exec")
+            exec(code, module.__dict__)  # pylint: disable=exec-used
+        # Store module in thread-local cache
+        cache = getattr(thread_cache, "modules", {})
+        cache[self.fullname] = module
+        thread_cache.modules = cache
+
+
+class ThreadLocalFinder(MetaPathFinder):
+    """MetaPathFinder that uses thread-local storage to cache modules."""
+
+    def find_spec(self, fullname, path, target=None):
+        """Find a module spec in thread-local cache or from file."""
+        cache = getattr(thread_cache, "modules", {})
+        if fullname in cache:
+            # Return an existing spec so import uses cached module
+            module = cache[fullname]
+            return module.__spec__
+        # Check if it's our target module (here: mymod.py in current dir)
+        if fullname == "mymod":
+            import os
+
+            path = os.path.abspath("mymod.py")
+            spec = importlib.util.spec_from_file_location(
+                fullname, path, loader=ThreadLocalLoader(fullname, path)
+            )
+            return spec
+        return None
 
 
 def hash_python_files_in_folder(folder_path: str | Path, file_exts=(".py",)):

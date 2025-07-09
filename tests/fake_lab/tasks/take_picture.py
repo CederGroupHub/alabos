@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from alab_management.task_view.task import BaseTask, LargeResult
 
-from .. import RobotArm  # noqa
+from tests.fake_lab.devices import RobotArm  # noqa
 
 
 class TakePictureResult(BaseModel):
