@@ -52,15 +52,6 @@ class ThreadLocalFinder(MetaPathFinder):
             # Return an existing spec so import uses cached module
             module = cache[fullname]
             return module.__spec__
-        # Check if it's our target module (here: mymod.py in current dir)
-        if fullname == "mymod":
-            import os
-
-            path = os.path.abspath("mymod.py")
-            spec = importlib.util.spec_from_file_location(
-                fullname, path, loader=ThreadLocalLoader(fullname, path)
-            )
-            return spec
         return None
 
 
