@@ -1,7 +1,6 @@
 from bson import ObjectId
 
 from alab_management.task_view.task import BaseTask
-
 from tests.fake_lab.devices import DeviceThatFails  # noqa: TID252
 
 

@@ -1,7 +1,6 @@
 from alab_management.device_view import add_device
 from alab_management.sample_view import SamplePosition, add_standalone_sample_position
 from alab_management.task_view import add_task
-
 from tests.fake_lab.devices import (
     DeviceThatFails,
     DeviceThatNeverEnds,
