@@ -55,7 +55,18 @@ class SamplePosition:
             )
 
 
-_standalone_sample_position_registry: dict[str, SamplePosition] = {}
+# _standalone_sample_position_registry is used to store all the standalone sample positions that are defined in the __init__.py
+# when setting up the lab.
+# it is only pooled with new sample positions that are added to the lab during reload.
+if not os.environ.get("ALABOS_RELOAD", None):
+    _standalone_sample_position_registry: dict[str, SamplePosition] = {}
+
+# _current_standalone_sample_position_registry is used to store all the standalone sample positions that are defined in the __init__.py
+# when alabos setup is called, regardless of whether it is a reload or not.
+# this is used to check if a sample position is still in the lab during reload.
+# if not, it will be removed from the lab once unoccupied and devices that are related to it are also not occupied.
+# this is not visible to the sample_view
+_current_standalone_sample_position_registry: dict[str, SamplePosition] = {}
 
 
 def add_standalone_sample_position(position: SamplePosition):
@@ -69,8 +80,25 @@ def add_standalone_sample_position(position: SamplePosition):
     ):
         raise KeyError(f"Duplicated standalone sample position name {position.name}")
     _standalone_sample_position_registry[position.name] = position
+    _current_standalone_sample_position_registry[position.name] = position
 
 
 def get_all_standalone_sample_positions() -> dict[str, SamplePosition]:
-    """Get all the device names in the device registry."""
+    """Get all the sample position names in the registry."""
     return _standalone_sample_position_registry.copy()
+
+
+def get_current_standalone_sample_positions() -> dict[str, SamplePosition]:
+    """Get all the current standalone sample positions in the registry."""
+    return _current_standalone_sample_position_registry.copy()
+
+
+def remove_standalone_sample_position(position_name: str):
+    """Remove a standalone sample position from the registry."""
+    _standalone_sample_position_registry.pop(position_name, None)
+    _current_standalone_sample_position_registry.pop(position_name, None)
+
+
+def reset_current_standalone_sample_position_registry():
+    """Reset the current standalone sample position registry."""
+    _current_standalone_sample_position_registry.clear()

@@ -12,7 +12,7 @@ from bson import ObjectId  # type: ignore
 from alab_management.sample_view import SamplePosition, SampleView
 from alab_management.utils.data_objects import get_collection, get_lock
 
-from .device import BaseDevice, get_all_devices
+from .device import BaseDevice, get_all_devices, remove_device
 
 _DeviceType = TypeVar("_DeviceType", bound=BaseDevice)  # pylint: disable=invalid-name
 
@@ -110,7 +110,7 @@ class DeviceView:
                 task_id=None,
             )
 
-    def add_devices_to_db(self):
+    def add_devices_to_db(self, devices: dict[str, BaseDevice] | None = None):
         """
         Insert device definitions to db, which includes devices' name, descriptions, parameters,
         type (class name).
@@ -118,7 +118,9 @@ class DeviceView:
         When one device's name has already appeared in the database, a ``NameError`` will be raised.
         Device name is a unique identifier for a device
         """
-        for device in self._device_list.values():
+        for device in (
+            devices.values() if devices is not None else self._device_list.values()
+        ):
             if self._device_collection.find_one({"name": device.name}) is not None:
                 raise NameError(
                     f"Duplicated device name {device.name}, did you cleanup the database?"
@@ -604,3 +606,16 @@ class DeviceView:
         """Ensure that we disconnect from all devices when the object is deleted."""
         if self.__connected_to_devices:
             self.__disconnect_all_devices()
+
+    def remove_device(self, device_name: str):
+        """Remove a device from the device view and the registry."""
+        # disconnect the device
+        print(f"Disconnecting from {device_name}...")
+        device = self._device_list[device_name]
+        device._disconnect_wrapper()
+        self._device_list.pop(device_name, None)
+        remove_device(device_name)
+        self._device_collection.delete_one({"name": device_name})
+        print(
+            f"Device {device_name} has been removed from the device view and the registry."
+        )

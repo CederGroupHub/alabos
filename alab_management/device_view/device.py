@@ -618,7 +618,16 @@ class DeviceSignalEmitter:
             )
 
 
+# _device_registry is used to store all the devices that are defined in the __init__.py when setting up the lab
+# it is only pooled with new devices that are added to the lab during reload.
 _device_registry: dict[str, BaseDevice] = {}
+
+# _current_device_registry is used to store all the devices that are defined in the __init__.py
+# when alabos setup is called, regardless of whether it is a reload or not.
+# this is used to check if a device is still in the lab during reload.
+# if not, it will be removed from the lab once unoccupied and samples positions that are related to it are also not occupied.
+# this is not visible to the device_manager
+_current_device_registry: dict[str, BaseDevice] = {}
 
 
 def add_device(device: BaseDevice):
@@ -626,6 +635,7 @@ def add_device(device: BaseDevice):
     if device.name in _device_registry and not os.environ.get("ALABOS_RELOAD", None):
         raise KeyError(f"Duplicated device name {device.name}")
     _device_registry[device.name] = device
+    _current_device_registry[device.name] = device
 
 
 def get_all_devices() -> dict[str, BaseDevice]:
@@ -638,3 +648,19 @@ def get_all_devices() -> dict[str, BaseDevice]:
           and the values are the device instances.
     """
     return _device_registry.copy()
+
+
+def get_current_devices() -> dict[str, BaseDevice]:
+    """Get all the current devices in the device registry."""
+    return _current_device_registry.copy()
+
+
+def remove_device(device_name: str):
+    """Remove a device from the device registry."""
+    _device_registry.pop(device_name, None)
+    _current_device_registry.pop(device_name, None)
+
+
+def reset_current_device_registry():
+    """Reset the current device registry."""
+    _current_device_registry.clear()

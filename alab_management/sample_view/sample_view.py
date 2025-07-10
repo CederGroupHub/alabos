@@ -12,7 +12,7 @@ from pydantic import BaseModel, ConfigDict, conint
 
 from alab_management.utils.data_objects import get_collection, get_lock
 
-from .sample import Sample, SamplePosition
+from .sample import Sample, SamplePosition, remove_standalone_sample_position
 
 
 class SamplePositionRequest(BaseModel):
@@ -485,6 +485,15 @@ class SampleView:
             },
         )
 
+    def get_sample_positions_names_by_device(self, device_name: str) -> list[str]:
+        """Get all the sample positions names that are related to a device."""
+        return [
+            sample_position["name"]
+            for sample_position in self._sample_positions_collection.find(
+                {"parent_device": device_name}
+            )
+        ]
+
     def get_samples_on_device(self, device_name: str) -> dict[str, list[ObjectId]]:
         """Get all the samples on a device."""
         samples = self._sample_collection.find(
@@ -511,3 +520,8 @@ class SampleView:
             bool: True if sample exists in the database
         """
         return self._sample_collection.count_documents({"_id": ObjectId(sample_id)}) > 0
+
+    def remove_sample_position(self, position_name: str):
+        """Remove a sample position from the database."""
+        remove_standalone_sample_position(position_name)
+        self._sample_positions_collection.delete_one({"name": position_name})
