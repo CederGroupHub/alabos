@@ -389,7 +389,9 @@ class TestAutoHotRestart(unittest.TestCase):
                 {
                     "type": "Heating",
                     "prev_tasks": [0],
-                    "parameters": {"setpoints": ((1, 10),)},  # 10 second heating
+                    "parameters": {
+                        "setpoints": ((1, 40),)
+                    },  # 40 second heating to trigger refresh during heating
                     "samples": ["long_sample"],
                 },
                 {
@@ -401,11 +403,12 @@ class TestAutoHotRestart(unittest.TestCase):
             ],
         }
 
-        # Submit the experiment
-        resp = requests.post(
-            "http://127.0.0.1:8897/api/experiment/submit", json=experiment
-        )
-        self.assertEqual(resp.status_code, 200)
+        # Submit sixteen times the experiment
+        for _ in range(16):
+            resp = requests.post(
+                "http://127.0.0.1:8897/api/experiment/submit", json=experiment
+            )
+            self.assertEqual(resp.status_code, 200)
 
         # Wait for tasks to start
         time.sleep(5)

@@ -55,4 +55,13 @@ class Heating(BaseTask):
                     signal_value=furnace.get_temperature(),
                 )
                 time.sleep(1)
+        # add a second request resource to help the test for reimporting the devices module and
+        # still being able to request resource via the device class
+        with self.lab_view.request_resources({Furnace: {"inside": 8}}) as (
+            inner_devices,
+            sample_positions,
+        ):
+            furnace = inner_devices[Furnace]
+            inside_furnaces = sample_positions[Furnace]["inside"]
+
         return self.task_id
