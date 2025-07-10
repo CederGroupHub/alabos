@@ -40,7 +40,7 @@ class TestAutoHotRestart(unittest.TestCase):
             ["alabos", "launch", "--port", "8897"], shell=False
         )
         self.worker_process = subprocess.Popen(
-            ["alabos", "launch_worker", "--processes", "4", "--threads", "8"],
+            ["alabos", "launch_worker", "--processes", "4", "--threads", "128"],
             shell=False,
         )
         time.sleep(5)  # waiting for starting up
@@ -52,8 +52,20 @@ class TestAutoHotRestart(unittest.TestCase):
 
     def tearDown(self) -> None:
         """Clean up the test environment."""
+        # Kill processes more robustly
         self.main_process.terminate()
         self.worker_process.terminate()
+        subprocess.run(
+            "lsof -ti :8897 | xargs kill -9 2>/dev/null || true",
+            check=False,
+            shell=True,
+        )
+        subprocess.run(
+            "ps aux | grep 'dramatiq' | grep 'alab_management.task_actor' | awk '{print $2}' | xargs -r kill",
+            check=False,
+            shell=True,
+        )
+        subprocess.run("pkill -f 'alabos launch_worker'", check=False, shell=True)
         time.sleep(5)
         cleanup_lab(
             all_collections=True,
@@ -442,7 +454,7 @@ class TestAutoHotRestart(unittest.TestCase):
                 ]
 
                 # Check if we have completed or failed tasks
-                if len(completed_tasks) > 0 or len(failed_tasks) > 0:
+                if len(completed_tasks) + len(failed_tasks) == 16:
                     break
 
                 time.sleep(1)  # Check every second

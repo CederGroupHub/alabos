@@ -30,7 +30,7 @@ class TestLaunch(unittest.TestCase):
             ["alabos", "launch", "--port", "8896"], shell=False
         )
         self.worker_process = subprocess.Popen(
-            ["alabos", "launch_worker", "--processes", "8", "--threads", "16"],
+            ["alabos", "launch_worker", "--processes", "4", "--threads", "128"],
             shell=False,
         )
         time.sleep(5)  # waiting for starting up
@@ -43,6 +43,17 @@ class TestLaunch(unittest.TestCase):
     def tearDown(self) -> None:
         self.main_process.terminate()
         self.worker_process.terminate()
+        subprocess.run(
+            "lsof -ti :8896 | xargs kill -9 2>/dev/null || true",
+            check=False,
+            shell=True,
+        )
+        subprocess.run(
+            "ps aux | grep 'dramatiq' | grep 'alab_management.task_actor' | awk '{print $2}' | xargs -r kill",
+            check=False,
+            shell=True,
+        )
+        subprocess.run("pkill -f 'alabos launch_worker'", check=False, shell=True)
         time.sleep(5)
         cleanup_lab(
             all_collections=True,
