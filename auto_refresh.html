@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Auto Restart &#8212; Alab Management 1.1.0</title>
+    <title>Auto Refresh &#8212; Alab Management 1.1.0</title>
   
   
   
@@ -161,7 +161,7 @@
 <li class="toctree-l1"><a class="reference internal" href="best_practices.html">Best Practices</a></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="advance_topics.html">Advance Topics</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="test.html">Testing for AlabOS Project</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Auto Restart</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Auto Refresh</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
@@ -369,7 +369,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Auto Restart</h1>
+    <h1>Auto Refresh</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -392,10 +392,10 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="auto-restart">
-<h1>Auto Restart<a class="headerlink" href="#auto-restart" title="Link to this heading">#</a></h1>
-<p>In daily operations, you may want to automatically restart the lab when some codes are changed.
-AlabOS provides a convinient way to do this by using the <code class="docutils literal notranslate"><span class="pre">auto_restart</span></code> configuration.</p>
+  <section id="auto-refresh">
+<h1>Auto Refresh<a class="headerlink" href="#auto-refresh" title="Link to this heading">#</a></h1>
+<p>In daily operations, you may want to automatically refresh the lab when some codes are changed.
+AlabOS provides a convinient way to do this by using the <code class="docutils literal notranslate"><span class="pre">auto_refresh</span></code> configuration.</p>
 <p>To do so, just add the following line to your AlabOS configuration yaml file:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">[</span><span class="nv">general</span><span class="p p-Indicator">]</span>
 <span class="nn">...</span>
@@ -403,7 +403,7 @@ AlabOS provides a convinient way to do this by using the <code class="docutils l
 </pre></div>
 </div>
 <p>By default, this feature is disabled. When enabled, AlabOS will monitor the source code files
-and automatically restart the lab when any changes are detected.</p>
+and automatically refresh the lab when any changes are detected.</p>
 <section id="how-it-works">
 <h2>How It Works<a class="headerlink" href="#how-it-works" title="Link to this heading">#</a></h2>
 <p><strong>Main AlabOS process (Device and Task Manager)</strong>: When there is a change in the device or task definition,
@@ -433,12 +433,14 @@ a problem as the new task launching should typically take a while before it star
 <h2>Limitations<a class="headerlink" href="#limitations" title="Link to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">auto_refresh</span></code> feature has some limitations:</p>
 <ul class="simple">
-<li><p>It only works for Python source code files. Changes to other types of files, such as configuration files or data files, will not trigger a restart.</p></li>
+<li><p>Refreshes cannot be done under multiple threads. This is due to the fact that the <code class="docutils literal notranslate"><span class="pre">auto_refresh</span></code> feature is not thread-safe (multiple definitions of the same module can occur). By default, the <code class="docutils literal notranslate"><span class="pre">launch_worker</span></code> uses 6 processes where each process usually use 140MB (total &lt; 1 GB of memory) with 128 threads each. This is not a problem when NOT using <code class="docutils literal notranslate"><span class="pre">auto_refresh</span></code> or the system refresh functionalities. However, when using <code class="docutils literal notranslate"><span class="pre">auto_refresh</span></code>, the <code class="docutils literal notranslate"><span class="pre">launch_worker</span></code> will default to running a single thread with 72 processes where each process usually use 140MB (total ~10 GB of memory), therefore only 72 tasks can be initiated and running in parallel. This can be overriden by launching the <code class="docutils literal notranslate"><span class="pre">launch_worker</span></code> with a different number of processes and threads. However, if using more than one thread, keep in mind that imports of devices and tasks in tasks definitions have to be done in the <code class="docutils literal notranslate"><span class="pre">.run()</span></code> method and any other methods that uses those devices and tasks in the task class due to the nature of <code class="docutils literal notranslate"><span class="pre">run_task</span></code> and <code class="docutils literal notranslate"><span class="pre">dramatiq</span></code>. Never import from the usual module level imports (top part of your file). See the <code class="docutils literal notranslate"><span class="pre">fake_lab</span></code> structure as reference, where <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">..</span> <span class="pre">import</span> <span class="pre">Furnace,</span> <span class="pre">Moving</span></code> is done in <code class="docutils literal notranslate"><span class="pre">.run()</span></code> of <code class="docutils literal notranslate"><span class="pre">heating.py</span></code> and <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">.devices</span> <span class="pre">import</span> <span class="pre">...</span></code> and <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">.tasks</span> <span class="pre">import</span> <span class="pre">...</span></code> is done in the <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> of <code class="docutils literal notranslate"><span class="pre">fake_lab</span></code> for an example.</p></li>
+<li><p>It only works for Python source code files. Changes to other types of files, such as configuration files or data files, will not trigger a refresh.</p></li>
 <li><p>External libraries or dependencies that are not part of the AlabOS codebase will not be monitored for changes.
-If you modify such libraries, you will need to manually restart the lab.</p></li>
-<li><p>New devices and tasks: If you add new devices or tasks, you will need to manually restart the lab or there may be some unexpected behaviors.</p></li>
-<li><p>For the tasks that are already running, the changes will not be reflected until the task is restarted.
-This means that if you change the device or task definition, the running tasks will continue to use the old definitions.</p></li>
+If you modify such libraries, you will need to manually refresh the lab.</p></li>
+<li><p>New devices and tasks: If you add new devices or tasks, you will need to manually refresh the lab or there may be some unexpected behaviors.</p></li>
+<li><p>For the tasks that are already running, the changes will not be reflected until the task is refreshed.
+This means that if you change the device or task definition, the running tasks will continue to use the old definitions.
+Keep in mind that the best practice is to ensure devices and tasks definitions are backward compatible to the older versions so that the running tasks can continue to run without any issues and not have a conflict with the new definitions.</p></li>
 </ul>
 </section>
 </section>
