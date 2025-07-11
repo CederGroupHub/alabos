@@ -23,7 +23,7 @@ the device and task manager will be re-imported. It is a process with the follow
 3. Device manager will try to pause all the devices.
 4. Wait for all the tasks are NOT in RUNNING state (no communication with the devices).
 5. All the devices will be disconnected.
-6. Device and task manager will be re-imported.
+6. Device, sample positions (including the ones defined inside the devices), and task manager will be re-imported. For device and sample positions, differences will be automatically calculated and applied (by the device manager) once the devices and sample positions are unoccupied. However, the system will continue with the following steps as the waiting for the unoccupation is done in parallel to the system running time.
 7. Connect to the devices again.
 8. Device manager will try to resume all the devices.
 9. Resource manager will resume to allocate new resources.
@@ -49,3 +49,4 @@ The `auto_refresh` feature has some limitations:
 - For the tasks that are already running, the changes will not be reflected until the task is refreshed.
   This means that if you change the device or task definition, the running tasks will continue to use the old definitions.
   Keep in mind that the best practice is to ensure devices and tasks definitions are backward compatible to the older versions so that the running tasks can continue to run without any issues and not have a conflict with the new definitions.
+- No user input should be done during the refresh process to avoid unexpected behaviors. No blocking is currently implemented.
