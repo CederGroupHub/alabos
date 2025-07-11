@@ -611,11 +611,12 @@ class DeviceView:
         """Remove a device from the device view and the registry."""
         # disconnect the device
         print(f"Disconnecting from {device_name}...")
-        device = self._device_list[device_name]
-        device._disconnect_wrapper()
-        self._device_list.pop(device_name, None)
-        remove_device(device_name)
-        self._device_collection.delete_one({"name": device_name})
-        print(
-            f"Device {device_name} has been removed from the device view and the registry."
-        )
+        with self._lock():
+            device = self._device_list[device_name]
+            device._disconnect_wrapper()
+            self._device_list.pop(device_name, None)
+            remove_device(device_name)
+            self._device_collection.delete_one({"name": device_name})
+            print(
+                f"Device {device_name} has been removed from the device view and the registry."
+            )

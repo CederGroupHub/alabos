@@ -58,8 +58,7 @@ class SamplePosition:
 # _standalone_sample_position_registry is used to store all the standalone sample positions that are defined in the __init__.py
 # when setting up the lab.
 # it is only pooled with new sample positions that are added to the lab during reload.
-if not os.environ.get("ALABOS_RELOAD", None):
-    _standalone_sample_position_registry: dict[str, SamplePosition] = {}
+_standalone_sample_position_registry: dict[str, SamplePosition] = {}
 
 # _current_standalone_sample_position_registry is used to store all the standalone sample positions that are defined in the __init__.py
 # when alabos setup is called, regardless of whether it is a reload or not.
@@ -93,10 +92,10 @@ def get_current_standalone_sample_positions() -> dict[str, SamplePosition]:
     return _current_standalone_sample_position_registry.copy()
 
 
-def remove_standalone_sample_position(position_name: str):
+def remove_standalone_sample_position(prefix: str):
     """Remove a standalone sample position from the registry."""
-    _standalone_sample_position_registry.pop(position_name, None)
-    _current_standalone_sample_position_registry.pop(position_name, None)
+    _standalone_sample_position_registry.pop(prefix, None)
+    _current_standalone_sample_position_registry.pop(prefix, None)
 
 
 def reset_current_standalone_sample_position_registry():

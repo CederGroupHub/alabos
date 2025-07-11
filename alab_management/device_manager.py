@@ -134,19 +134,39 @@ class DeviceManager:
         self._sample_view = SampleView()
         self._check_status = _check_status
         self.threads = []
+
         self.device_names_to_be_removed = []
+        self.device_names_to_be_removed_that_is_paused = []
         self.device_names_to_be_removed_thread = Thread(
             target=self._check_device_status_and_remove_if_not_occupied
         )
         self.device_names_to_be_removed_thread.daemon = True
         self.device_names_to_be_removed_thread.start()
-        self.device_names_to_be_removed_that_is_paused = []
-        self.sample_positions_to_be_removed = []
-        self.sample_positions_to_be_removed_thread = Thread(
-            target=self._check_sample_positions_status_and_remove_if_not_occupied
+
+        self.sample_positions_objects_to_be_updated = (
+            []
+        )  # this will be pooled by a list of sample positions objects
+        self.sample_positions_prefixes_to_be_removed = (
+            []
+        )  # this will be pooled by a list of sample positions prefixes, that is corresponding to SamplePosition.name
+        # (e.g., "Filled_vial_rack"), not the full name (Filled_vial_rack/1)
+        self.sample_positions_in_devices_to_be_updated = (
+            []
+        )  # this will be pooled by a dict[str,SamplePosition] where the key is the device name and the value is the sample position object
+        self.sample_positions_in_devices_to_be_updated_that_is_paused = (
+            []
+        )  # this will be pooled by a dict[str,SamplePosition] where the key is the device name and the value is the sample position object
+        self.sample_positions_in_devices_to_be_removed = (
+            []
+        )  # this will be pooled by a dict[str,SamplePosition] where the key is the device name and the value is the sample position object
+        self.sample_positions_in_devices_to_be_removed_that_is_paused = (
+            []
+        )  # this will be pooled by a dict[str,SamplePosition] where the key is the device name and the value is the sample position object
+        self.sample_positions_to_be_updated_or_removed_thread = Thread(
+            target=self._check_sample_positions_status_and_update_or_remove_if_not_occupied
         )
-        self.sample_positions_to_be_removed_thread.daemon = True
-        self.sample_positions_to_be_removed_thread.start()
+        self.sample_positions_to_be_updated_or_removed_thread.daemon = True
+        self.sample_positions_to_be_updated_or_removed_thread.start()
 
     def refresh_devices(self):
         """Re-connect the devices in the device view."""
@@ -156,19 +176,44 @@ class DeviceManager:
             "Installing new devices and sample positions. "
             "Adding discrepancies to the watchers for deletion once unoccupied."
         )
-        removed_devices_and_sample_positions_names = setup_lab(
-            reload=True, return_removed_devices_and_sample_positions_names=True
-        )
-        for device_name in removed_devices_and_sample_positions_names[
-            "removed_devices_names"
-        ]:
+        update_and_removal_todo = setup_lab(reload=True)
+        for device_name in update_and_removal_todo["removed_devices_names"]:
             if device_name not in self.device_names_to_be_removed:
                 self.device_names_to_be_removed.append(device_name)
-        for sample_position_name in removed_devices_and_sample_positions_names[
-            "removed_sample_positions_names"
+        for updated_sample_position in update_and_removal_todo[
+            "updated_sample_positions"
         ]:
-            if sample_position_name not in self.sample_positions_to_be_removed:
-                self.sample_positions_to_be_removed.append(sample_position_name)
+            if (
+                updated_sample_position
+                not in self.sample_positions_objects_to_be_updated
+            ):
+                self.sample_positions_objects_to_be_updated.append(
+                    updated_sample_position
+                )
+        for removed_sample_position_prefix in update_and_removal_todo[
+            "removed_sample_positions_prefixes"
+        ]:
+            if (
+                removed_sample_position_prefix
+                not in self.sample_positions_prefixes_to_be_removed
+            ):
+                self.sample_positions_prefixes_to_be_removed.append(
+                    removed_sample_position_prefix
+                )
+        if (
+            update_and_removal_todo["updated_sample_positions_in_devices"]
+            not in self.sample_positions_in_devices_to_be_updated
+        ):
+            self.sample_positions_in_devices_to_be_updated.append(
+                update_and_removal_todo["updated_sample_positions_in_devices"]
+            )
+        if (
+            update_and_removal_todo["removed_sample_positions_in_devices"]
+            not in self.sample_positions_in_devices_to_be_removed
+        ):
+            self.sample_positions_in_devices_to_be_removed.append(
+                update_and_removal_todo["removed_sample_positions_in_devices"]
+            )
         print("Connecting to devices again...")
         self._device_view = DeviceView(
             connect_to_devices=True
@@ -177,7 +222,7 @@ class DeviceManager:
     def _check_device_status_and_remove_if_not_occupied(self):
         """Check devices status and remove them if they are not occupied."""
         while True:
-            time.sleep(10)
+            time.sleep(5)
             for device_name in self.device_names_to_be_removed:
                 device_entry: dict[str, Any] | None = self._device_view.get_device(
                     device_name
@@ -205,7 +250,6 @@ class DeviceManager:
                     print(
                         f"Device {device_name} is in status {device_entry['status']}, skipping and waiting for it to be unoccupied."
                     )
-            time.sleep(10)
             for device_name in self.device_names_to_be_removed_that_is_paused:
                 device_entry: dict[str, Any] | None = self._device_view.get_device(
                     device_name
@@ -220,12 +264,7 @@ class DeviceManager:
                     )
                     self._device_view.remove_device(device_name)
                     # also remove the sample positions that are related to the device
-                    for (
-                        sample_position_name
-                    ) in self._sample_view.get_sample_positions_names_by_device(
-                        device_name
-                    ):
-                        self.sample_positions_to_be_removed.append(sample_position_name)
+                    self._sample_view.remove_sample_position_by_prefix(device_name)
                     self.device_names_to_be_removed_that_is_paused.remove(device_name)
                     print(
                         f"Device {device_name} has been removed from the device view."
@@ -234,32 +273,298 @@ class DeviceManager:
                     print(
                         f"Device {device_name} is occupied, skipping and waiting for it to be unoccupied."
                     )
+                    self._device_view.pause_device(device_name)
                 else:
                     print(
                         f"Device {device_name} is in status {device_entry['status']}, skipping and waiting for it to be unoccupied."
                     )
+                    self._device_view.pause_device(device_name)
 
-    def _check_sample_positions_status_and_remove_if_not_occupied(self):
+    def _check_sample_positions_status_and_update_or_remove_if_not_occupied(self):
         """Check the sample positions status and remove it if it is not occupied."""
         while True:
             time.sleep(10)
-            for sample_position in self.sample_positions_to_be_removed:
-                sample_position_status, _ = (
-                    self._sample_view.get_sample_position_status(sample_position)
+            for sample_position_object in self.sample_positions_objects_to_be_updated:
+                prefix = sample_position_object.name
+                sample_positions_full_names = (
+                    self._sample_view.get_sample_positions_names_by_prefix(prefix)
                 )
-                if sample_position_status == SamplePositionStatus.EMPTY:
-                    print(
-                        f"Sample position {sample_position} is empty, removing it from the sample view."
+                sample_positions_status = []
+                for sample_position_full_name in sample_positions_full_names:
+                    sample_positions_status.append(
+                        self._sample_view.get_sample_position_status(
+                            sample_position_full_name
+                        )[0]
                     )
-                    self._sample_view.remove_sample_position(sample_position)
-                    self.sample_positions_to_be_removed.remove(sample_position)
+                if all(
+                    status == SamplePositionStatus.EMPTY
+                    for status in sample_positions_status
+                ):
                     print(
-                        f"Sample position {sample_position} has been removed from the sample view."
+                        f"Sample position with prefix {prefix} is empty, removing it from the sample view and \
+                        adding it back with the new number of slots."
+                    )
+                    self._sample_view.remove_sample_position_by_prefix(prefix)
+                    self._sample_view.add_sample_positions_to_db(
+                        sample_positions=[sample_position_object],
+                        parent_device_name=None,
+                    )
+                    self.sample_positions_objects_to_be_updated.remove(
+                        sample_position_object
+                    )
+                    print(
+                        f"Sample position with prefix {prefix} has been updated in the sample view."
                     )
                 else:
                     print(
-                        f"Sample position {sample_position} is not empty, current status: {sample_position_status}, \
+                        f"Sample position with prefix {prefix} is not empty, current status of some sample positions: {sample_positions_status}, \
                         skipping and waiting for it to be empty."
+                    )
+            for prefix in self.sample_positions_prefixes_to_be_removed:
+                sample_positions_full_names = (
+                    self._sample_view.get_sample_positions_names_by_prefix(prefix)
+                )
+                sample_positions_status = []
+                for sample_position_full_name in sample_positions_full_names:
+                    sample_positions_status.append(
+                        self._sample_view.get_sample_position_status(
+                            sample_position_full_name
+                        )[0]
+                    )
+                if all(
+                    status == SamplePositionStatus.EMPTY
+                    for status in sample_positions_status
+                ):
+                    print(
+                        f"Sample position with prefix {prefix} is empty, removing it from the sample view."
+                    )
+                    self._sample_view.remove_sample_position_by_prefix(prefix)
+                    self.sample_positions_prefixes_to_be_removed.remove(prefix)
+                    print(
+                        f"Sample position with prefix {prefix} has been removed from the sample view."
+                    )
+                else:
+                    print(
+                        f"Sample position with prefix {prefix} is not empty, current status of some sample positions: {sample_positions_status}, \
+                        skipping and waiting for it to be empty."
+                    )
+
+            for (
+                device_sample_position_dict
+            ) in self.sample_positions_in_devices_to_be_updated:
+                processed = False
+                for device_name in list(device_sample_position_dict.keys()):
+                    sample_positions_names_in_device = (
+                        self._sample_view.get_sample_positions_names_by_device(
+                            device_name
+                        )
+                    )
+                    sample_positions_status = []
+                    for sample_position_name in sample_positions_names_in_device:
+                        sample_positions_status.append(
+                            self._sample_view.get_sample_position_status(
+                                sample_position_name
+                            )[0]
+                        )
+                    if all(
+                        status == SamplePositionStatus.EMPTY
+                        for status in sample_positions_status
+                    ):
+                        # pause the device
+                        device_entry: dict[str, Any] | None = (
+                            self._device_view.get_device(device_name)
+                        )
+                        # check if the device is not occupied, and sample positions that are related to the device are also not occupied
+                        if device_entry["status"] == DeviceTaskStatus.IDLE.name:
+                            print(
+                                f"Device {device_name} is not occupied and has no samples on it, pausing it to update the sample positions."
+                            )
+                            self._device_view.pause_device(device_name)
+                            self.sample_positions_in_devices_to_be_updated_that_is_paused.append(
+                                device_sample_position_dict
+                            )
+                            processed = True
+                            print(
+                                f"Device {device_name} has been paused to update the sample positions."
+                            )
+                        elif device_entry["status"] == DeviceTaskStatus.OCCUPIED.name:
+                            print(
+                                f"Device {device_name} is occupied, skipping and waiting for it to be unoccupied."
+                            )
+                            self._device_view.pause_device(device_name)
+                        else:
+                            print(
+                                f"Device {device_name} is in status {device_entry['status']}, skipping and waiting for it to be unoccupied."
+                            )
+                if processed:
+                    self.sample_positions_in_devices_to_be_updated.remove(
+                        device_sample_position_dict
+                    )
+
+            for (
+                device_sample_position_dict
+            ) in self.sample_positions_in_devices_to_be_updated_that_is_paused:
+                processed = False
+                for device_name in list(device_sample_position_dict.keys()):
+                    sample_positions_names_in_device = (
+                        self._sample_view.get_sample_positions_names_by_device(
+                            device_name
+                        )
+                    )
+                    sample_positions_status = []
+                    for sample_position_name in sample_positions_names_in_device:
+                        sample_positions_status.append(
+                            self._sample_view.get_sample_position_status(
+                                sample_position_name
+                            )[0]
+                        )
+                    if all(
+                        status == SamplePositionStatus.EMPTY
+                        for status in sample_positions_status
+                    ):
+                        if (
+                            device_entry["status"] == DeviceTaskStatus.IDLE.name
+                            and device_entry["pause_status"]
+                            == DevicePauseStatus.PAUSED.name
+                        ):
+                            print(
+                                f"Device {device_name} is not occupied, paused, and has no samples on it, updating the sample positions."
+                            )
+                            for sample_position_object in device_sample_position_dict[
+                                device_name
+                            ]:
+                                self._sample_view.remove_sample_position_by_prefix(
+                                    f"{device_name}{sample_position_object.SEPARATOR}{sample_position_object.name}"
+                                )
+                            # add the sample positions back to the device
+                            for sample_position_object in device_sample_position_dict[
+                                device_name
+                            ]:
+                                self._sample_view.add_sample_positions_to_db(
+                                    sample_positions=[sample_position_object],
+                                    parent_device_name=device_name,
+                                )
+                            processed = True
+                            print(
+                                f"Sample positions in device {device_name} have been updated."
+                            )
+                        elif device_entry["status"] == DeviceTaskStatus.OCCUPIED.name:
+                            print(
+                                f"Device {device_name} is occupied, skipping and waiting for it to be unoccupied."
+                            )
+                            self._device_view.pause_device(device_name)
+                        else:
+                            print(
+                                f"Device {device_name} is in status {device_entry['status']}, skipping and waiting for it to be unoccupied."
+                            )
+                            self._device_view.pause_device(device_name)
+                if processed:
+                    self.sample_positions_in_devices_to_be_updated_that_is_paused.remove(
+                        device_sample_position_dict
+                    )
+            for (
+                device_sample_position_dict
+            ) in self.sample_positions_in_devices_to_be_removed:
+                processed = False
+                for device_name in list(device_sample_position_dict.keys()):
+                    sample_positions_names_in_device = (
+                        self._sample_view.get_sample_positions_names_by_device(
+                            device_name
+                        )
+                    )
+                    sample_positions_status = []
+                    for sample_position_name in sample_positions_names_in_device:
+                        sample_positions_status.append(
+                            self._sample_view.get_sample_position_status(
+                                sample_position_name
+                            )[0]
+                        )
+                    if all(
+                        status == SamplePositionStatus.EMPTY
+                        for status in sample_positions_status
+                    ):
+                        # pause the device
+                        device_entry: dict[str, Any] | None = (
+                            self._device_view.get_device(device_name)
+                        )
+                        # check if the device is not occupied, and sample positions that are related to the device are also not occupied
+                        if device_entry["status"] == DeviceTaskStatus.IDLE.name:
+                            print(
+                                f"Device {device_name} is not occupied and has no samples on it, pausing it to update the sample positions."
+                            )
+                            self._device_view.pause_device(device_name)
+                            self.sample_positions_in_devices_to_be_removed_that_is_paused.append(
+                                device_sample_position_dict
+                            )
+                            processed = True
+                            print(
+                                f"Device {device_name} has been paused to update the sample positions."
+                            )
+                        elif device_entry["status"] == DeviceTaskStatus.OCCUPIED.name:
+                            print(
+                                f"Device {device_name} is occupied, skipping and waiting for it to be unoccupied."
+                            )
+                            self._device_view.pause_device(device_name)
+                        else:
+                            print(
+                                f"Device {device_name} is in status {device_entry['status']}, skipping and waiting for it to be unoccupied."
+                            )
+                if processed:
+                    self.sample_positions_in_devices_to_be_removed.remove(
+                        device_sample_position_dict
+                    )
+            for (
+                device_sample_position_dict
+            ) in self.sample_positions_in_devices_to_be_removed_that_is_paused:
+                processed = False
+                for device_name in list(device_sample_position_dict.keys()):
+                    sample_positions_names_in_device = (
+                        self._sample_view.get_sample_positions_names_by_device(
+                            device_name
+                        )
+                    )
+                    sample_positions_status = []
+                    for sample_position_name in sample_positions_names_in_device:
+                        sample_positions_status.append(
+                            self._sample_view.get_sample_position_status(
+                                sample_position_name
+                            )[0]
+                        )
+                    if all(
+                        status == SamplePositionStatus.EMPTY
+                        for status in sample_positions_status
+                    ):
+                        if (
+                            device_entry["status"] == DeviceTaskStatus.IDLE.name
+                            and device_entry["pause_status"]
+                            == DevicePauseStatus.PAUSED.name
+                        ):
+                            print(
+                                f"Device {device_name} is not occupied, paused, and has no samples on it, updating the sample positions."
+                            )
+                            for sample_position_object in device_sample_position_dict[
+                                device_name
+                            ]:
+                                self._sample_view.remove_sample_position_by_prefix(
+                                    f"{device_name}{sample_position_object.SEPARATOR}{sample_position_object.name}"
+                                )
+                            processed = True
+                            print(
+                                f"Sample positions in device {device_name} have been updated."
+                            )
+                        elif device_entry["status"] == DeviceTaskStatus.OCCUPIED.name:
+                            print(
+                                f"Device {device_name} is occupied, skipping and waiting for it to be unoccupied."
+                            )
+                            self._device_view.pause_device(device_name)
+                        else:
+                            print(
+                                f"Device {device_name} is in status {device_entry['status']}, skipping and waiting for it to be unoccupied."
+                            )
+                            self._device_view.pause_device(device_name)
+                if processed:
+                    self.sample_positions_in_devices_to_be_removed_that_is_paused.remove(
+                        device_sample_position_dict
                     )
 
     @contextmanager

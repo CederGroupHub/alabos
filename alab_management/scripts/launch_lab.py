@@ -120,8 +120,9 @@ def system_refresh():
             while task_manager.check_number_of_running_tasks():
                 time.sleep(10)
             time.sleep(10)  # give some time for tasks to finish
-            task_manager.refresh_tasks()
+            # important to refresh device first because device manager will compare current state with future state
             device_manager.refresh_devices()
+            task_manager.refresh_tasks()
             time.sleep(10)
 
 
@@ -180,6 +181,6 @@ def launch_lab(host, port, debug):
             sys.exit(1005)
 
         counter += 1
-        if counter % 20 == 0:  # check every 30 s
+        if counter % 10 == 0:  # check every 15 s
             system_refresh()
             counter = 0

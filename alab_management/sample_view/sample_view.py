@@ -521,7 +521,19 @@ class SampleView:
         """
         return self._sample_collection.count_documents({"_id": ObjectId(sample_id)}) > 0
 
-    def remove_sample_position(self, position_name: str):
+    def remove_sample_position_by_prefix(self, prefix: str):
         """Remove a sample position from the database."""
-        remove_standalone_sample_position(position_name)
-        self._sample_positions_collection.delete_one({"name": position_name})
+        with self._lock():
+            remove_standalone_sample_position(prefix)
+            self._sample_positions_collection.delete_many(
+                {"name": {"$regex": f"^{re.escape(prefix)}"}}
+            )
+
+    def get_sample_positions_names_by_prefix(self, prefix: str) -> list[str]:
+        """Get all the sample positions names that are related to a device."""
+        return [
+            sample_position["name"]
+            for sample_position in self._sample_positions_collection.find(
+                {"name": {"$regex": f"^{re.escape(prefix)}"}}
+            )
+        ]
