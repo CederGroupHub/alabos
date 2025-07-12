@@ -537,3 +537,44 @@ class SampleView:
                 {"name": {"$regex": f"^{re.escape(prefix)}"}}
             )
         ]
+
+    def get_all_sample_positions_from_db(self) -> dict[str, dict[str, Any]]:
+        """
+        Get all sample positions from the database directly.
+
+        Returns a dictionary mapping position names to their database entries.
+        This includes both standalone and device-associated sample positions.
+        """
+        sample_positions = {}
+        for position_doc in self._sample_positions_collection.find():
+            sample_positions[position_doc["name"]] = position_doc
+        return sample_positions
+
+    def get_sample_position_max_number_by_prefix(self, prefix: str) -> int:
+        """
+        Get the maximum number of sample positions for a given prefix from the database.
+
+        Args:
+            prefix: The prefix to search for (e.g., "furnace_temp")
+
+        Returns
+        -------
+            The maximum number found for positions with this prefix
+        """
+        positions = self._sample_positions_collection.find(
+            {"name": {"$regex": f"^{re.escape(prefix)}"}}
+        )
+
+        max_number = 0
+        for position in positions:
+            # Extract number from position name (e.g., "furnace_temp/1" -> 1)
+            name = position["name"]
+            try:
+                number_part = name.split(SamplePosition.SEPARATOR)[-1]
+                number = int(number_part)
+                max_number = max(max_number, number)
+            except (ValueError, IndexError):
+                # If we can't parse the number, count this as position 1
+                max_number = max(max_number, 1)
+
+        return max_number

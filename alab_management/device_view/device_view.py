@@ -620,3 +620,40 @@ class DeviceView:
             print(
                 f"Device {device_name} has been removed from the device view and the registry."
             )
+
+    def get_all_devices_from_db(self) -> dict[str, dict[str, Any]]:
+        """
+        Get all devices from the database directly.
+
+        Returns a dictionary mapping device names to their database entries.
+        """
+        devices = {}
+        for device_doc in self._device_collection.find():
+            devices[device_doc["name"]] = device_doc
+        return devices
+
+    def get_device_by_name_from_db(self, device_name: str) -> dict[str, Any] | None:
+        """
+        Get a specific device from the database by name.
+
+        Args:
+            device_name: The name of the device to find
+
+        Returns
+        -------
+            The device document from the database, or None if not found
+        """
+        return self._device_collection.find_one({"name": device_name})
+
+    def device_exists_in_db(self, device_name: str) -> bool:
+        """
+        Check if a device exists in the database.
+
+        Args:
+            device_name: The name of the device to check
+
+        Returns
+        -------
+            True if the device exists in the database, False otherwise
+        """
+        return self._device_collection.count_documents({"name": device_name}) > 0

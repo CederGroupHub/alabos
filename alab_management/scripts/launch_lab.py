@@ -2,6 +2,7 @@
 
 import contextlib
 import multiprocessing
+import os
 import sys
 import time
 from threading import Thread
@@ -117,6 +118,7 @@ def system_refresh():
             resource_manager.pause_resource_assigning(),
             device_manager.pause_all_devices(),
         ):
+            os.environ["ALABOS_RELOAD"] = "1"
             while task_manager.check_number_of_running_tasks():
                 time.sleep(10)
             time.sleep(10)  # give some time for tasks to finish
@@ -124,6 +126,7 @@ def system_refresh():
             device_manager.refresh_devices()
             task_manager.refresh_tasks()
             time.sleep(10)
+            os.environ.pop("ALABOS_RELOAD", None)
 
 
 def launch_lab(host, port, debug):
