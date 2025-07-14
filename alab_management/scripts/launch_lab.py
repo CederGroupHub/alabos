@@ -117,6 +117,7 @@ def system_refresh():
             task_manager.pause_new_task_launching(),
             resource_manager.pause_resource_assigning(),
             device_manager.pause_all_devices(),
+            experiment_manager.pause_handling_experiments(),
         ):
             os.environ["ALABOS_RELOAD"] = "1"
             while task_manager.check_number_of_running_tasks():
@@ -125,6 +126,7 @@ def system_refresh():
             # important to refresh device first because device manager will compare current state with future state
             device_manager.refresh_devices()
             task_manager.refresh_tasks()
+            experiment_manager.refresh_task_list()
             time.sleep(10)
             os.environ.pop("ALABOS_RELOAD", None)
 

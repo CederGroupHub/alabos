@@ -50,7 +50,7 @@ The `auto_refresh` feature has some limitations:
   This means that if you change the device or task definition, the running tasks will continue to use the old definitions.
   Keep in mind that the best practice is to ensure devices and tasks definitions are backward compatible to the older versions so that the running tasks can continue to run without any issues and not have a conflict with the new definitions.
 - No user input should be done during the refresh process to avoid unexpected behaviors. No blocking is currently implemented.
-- No support for task removal has been tested.
+- No support for task removal. It will require further implementation in checking running tasks and submitted experiments for the task being removed. But this is less important as removing a task is not a common operation.
 
 ## Tests
 The `auto_refresh` feature is tested by:
@@ -60,6 +60,7 @@ The `auto_refresh` feature is tested by:
 4. adding and removing a sample position prefix in a device
 5. changing the numbers in a sample position in a device
 6. changing the definition of a task.
-7. adding a new task.
+7. adding a new class of task.
+8. adding a new class of device.
 
 
