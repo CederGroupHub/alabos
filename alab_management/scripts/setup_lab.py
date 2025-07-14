@@ -12,12 +12,92 @@ from alab_management.sample_view.sample import (
 )
 
 
+def _process_device_sample_positions(
+    device_name,
+    devices_sample_positions_before_reload,
+    current_devices_sample_positions,
+):
+    """Process sample positions for a specific device."""
+    removed_positions = []
+    current_device_sample_positions = current_devices_sample_positions[device_name]
+    current_sample_position_names = [
+        pos.name for pos in current_device_sample_positions
+    ]
+
+    for sample_position in devices_sample_positions_before_reload[device_name]:
+        if sample_position.name not in current_sample_position_names:
+            removed_positions.append(sample_position)
+
+    return removed_positions
+
+
+def _find_removed_sample_positions_in_devices(
+    devices_sample_positions_before_reload, current_devices_sample_positions
+):
+    """Find sample positions in devices that have been removed."""
+    removed_sample_positions_in_devices = {}
+    for device_name in devices_sample_positions_before_reload:
+        for current_device_name in current_devices_sample_positions:
+            if current_device_name == device_name:
+                removed_positions = _process_device_sample_positions(
+                    device_name,
+                    devices_sample_positions_before_reload,
+                    current_devices_sample_positions,
+                )
+                if removed_positions:
+                    removed_sample_positions_in_devices[device_name] = removed_positions
+    return removed_sample_positions_in_devices
+
+
+def _process_device_sample_position_updates(
+    device_name,
+    devices_sample_positions_before_reload,
+    current_devices_sample_positions,
+):
+    """Process sample position updates for a specific device."""
+    updated_positions = []
+    for sample_position in devices_sample_positions_before_reload[device_name]:
+        for current_sample_position in current_devices_sample_positions[device_name]:
+            if (
+                sample_position.name == current_sample_position.name
+                and sample_position.number != current_sample_position.number
+            ):
+                updated_positions.append(current_sample_position)
+    return updated_positions
+
+
+def _find_updated_sample_positions_in_devices(
+    devices_sample_positions_before_reload, current_devices_sample_positions
+):
+    """Find sample positions in devices that have been updated."""
+    updated_sample_positions_in_devices = {}
+    for device_name in devices_sample_positions_before_reload:
+        for current_device_name in current_devices_sample_positions:
+            if current_device_name == device_name:
+                updated_positions = _process_device_sample_position_updates(
+                    device_name,
+                    devices_sample_positions_before_reload,
+                    current_devices_sample_positions,
+                )
+                if updated_positions:
+                    updated_sample_positions_in_devices[device_name] = updated_positions
+    return updated_sample_positions_in_devices
+
+
 def setup_lab(
     reload: bool = False,
 ) -> (
     dict[str, list[str] | list[SamplePosition] | dict[str, list[SamplePosition]]] | bool
 ):
-    """Cleanup the db and then import all the definitions and set up the db."""
+    """Setup the lab by adding devices and sample positions to the database.
+
+    Args:
+        reload (bool): If True, reload the definitions from the config file.
+
+    Returns
+    -------
+        dict or bool: If reload is True, returns a dict with the changes made. Otherwise returns True.
+    """
     from alab_management.device_view import (
         DeviceView,
         get_all_devices,
@@ -64,11 +144,11 @@ def setup_lab(
 
     # step 4: filter out the devices that are not in the db [positive delta of devices]
     filtered_devices = {}  # all device from the __init__.py that are not in the db
-    for device_name in device_dict:
+    for device_name, device in device_dict.items():
         if device_name not in available_devices_names:
-            filtered_devices[device_name] = device_dict[
-                device_name
-            ]  # all device from the __init__.py that are not in the db
+            filtered_devices[device_name] = (
+                device  # all device from the __init__.py that are not in the db
+            )
 
     # step 5: filter out the devices that are not in the __init__.py
     # [negative delta of devices, will be applied by device manager once the devices are not used anymore]
@@ -76,7 +156,7 @@ def setup_lab(
         []
     )  # all device names from the db that are not in the __init__.py
     for device_name in available_devices_names:
-        if device_name not in list(current_devices_dict.keys()):
+        if device_name not in current_devices_dict:
             removed_devices_names.append(device_name)
     print(f"Devices to be removed from the db and registry: {removed_devices_names}")
 
@@ -177,49 +257,18 @@ def setup_lab(
     current_devices_sample_positions = {
         device.name: device.sample_positions for device in current_devices
     }
-    removed_sample_positions_in_devices = {}
-    for device_name in devices_sample_positions_before_reload:
-        for current_device_name in current_devices_sample_positions:
-            if current_device_name == device_name:
-                for sample_position in devices_sample_positions_before_reload[
-                    device_name
-                ]:
-                    if sample_position.name not in [
-                        current_device_sample_position.name
-                        for current_device_sample_position in current_devices_sample_positions[
-                            current_device_name
-                        ]
-                    ]:
-                        if device_name not in removed_sample_positions_in_devices:
-                            removed_sample_positions_in_devices[device_name] = []
-                        removed_sample_positions_in_devices[device_name].append(
-                            sample_position
-                        )
+    removed_sample_positions_in_devices = _find_removed_sample_positions_in_devices(
+        devices_sample_positions_before_reload, current_devices_sample_positions
+    )
     print(f"Removed sample positions in devices: {removed_sample_positions_in_devices}")
 
     # step 14: check if there is any update of sample positions from the devices
     # [calculate negative delta of sample positions numbers]
     # positive is already handled in step 12, so we only need to calculate negative delta to be handled by device manager
     # once the devices are not used anymore
-    updated_sample_positions_in_devices = {}
-    for device_name in devices_sample_positions_before_reload:
-        for current_device_name in current_devices_sample_positions:
-            if current_device_name == device_name:
-                for sample_position in devices_sample_positions_before_reload[
-                    device_name
-                ]:
-                    for current_sample_position in current_devices_sample_positions[
-                        current_device_name
-                    ]:
-                        if (
-                            sample_position.name == current_sample_position.name
-                            and sample_position.number != current_sample_position.number
-                        ):
-                            if device_name not in updated_sample_positions_in_devices:
-                                updated_sample_positions_in_devices[device_name] = []
-                            updated_sample_positions_in_devices[device_name].append(
-                                current_sample_position
-                            )
+    updated_sample_positions_in_devices = _find_updated_sample_positions_in_devices(
+        devices_sample_positions_before_reload, current_devices_sample_positions
+    )
     print(f"Updated sample positions in devices: {updated_sample_positions_in_devices}")
 
     # print the alarm configuration

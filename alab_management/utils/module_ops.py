@@ -121,6 +121,53 @@ def import_module_from_path(path: str | Path, reload: bool = False) -> ModuleTyp
         return importlib.import_module(module_name, module_name)
 
 
+def _should_reload_package(package_name: str, reloaded_packages: set) -> bool:
+    """Check if a package should be reloaded."""
+    return (
+        package_name
+        and package_name not in reloaded_packages
+        and package_name in sys.modules
+    )
+
+
+def _reload_parent_package(package_name: str, reloaded_packages: set) -> None:
+    """Reload a parent package."""
+    print(f"Reloading parent package: {package_name}")
+    try:
+        deep_reload(sys.modules[package_name])
+        reloaded_packages.add(package_name)
+    except Exception as e:
+        print(f"Failed to reload parent package {package_name}: {e}")
+
+
+def _process_parent_packages(
+    py_file: Path, dir_path: Path, root_path: Path, reloaded_packages: set
+) -> None:
+    """Process parent packages for reloading."""
+    parent = py_file.parent
+    while True:
+        # Stop if we've reached above the working directory
+        if parent.resolve() < root_path:
+            break
+        # Only reload if __init__.py exists
+        init_file = parent / "__init__.py"
+        if not init_file.exists():
+            parent = parent.parent
+            continue
+        # Calculate the package name
+        try:
+            rel_parent = parent.relative_to(dir_path.parent)
+            package_name = ".".join(rel_parent.parts)
+            if _should_reload_package(package_name, reloaded_packages):
+                _reload_parent_package(package_name, reloaded_packages)
+        except ValueError:
+            # parent is not under dir_path.parent
+            break
+        if parent.resolve() == root_path:
+            break
+        parent = parent.parent
+
+
 def _scan_and_import_new_modules(root_path: Path) -> None:
     """
     Scan for new Python modules in the given path and import them.
@@ -161,39 +208,9 @@ def _scan_and_import_new_modules(root_path: Path) -> None:
                 importlib.import_module(module_name)
 
                 # After importing, reload each parent package up to the working directory
-                parent = py_file.parent
-                while True:
-                    # Stop if we've reached above the working directory
-                    if parent.resolve() < root_path:
-                        break
-                    # Only reload if __init__.py exists
-                    init_file = parent / "__init__.py"
-                    if not init_file.exists():
-                        parent = parent.parent
-                        continue
-                    # Calculate the package name
-                    try:
-                        rel_parent = parent.relative_to(dir_path.parent)
-                        package_name = ".".join(rel_parent.parts)
-                        if (
-                            package_name
-                            and package_name not in reloaded_packages
-                            and package_name in sys.modules
-                        ):
-                            print(f"Reloading parent package: {package_name}")
-                            try:
-                                deep_reload(sys.modules[package_name])
-                                reloaded_packages.add(package_name)
-                            except Exception as e:
-                                print(
-                                    f"Failed to reload parent package {package_name}: {e}"
-                                )
-                    except ValueError:
-                        # parent is not under dir_path.parent
-                        break
-                    if parent.resolve() == root_path:
-                        break
-                    parent = parent.parent
+                _process_parent_packages(
+                    py_file, dir_path, root_path, reloaded_packages
+                )
         except (ValueError, ImportError) as e:
             print(f"Skipping import of {py_file}: {e}")
             continue

@@ -611,7 +611,7 @@ class DeviceView:
         """Remove a device from the device view and the registry."""
         # disconnect the device
         print(f"Disconnecting from {device_name}...")
-        with self._lock():
+        with self._lock():  # pylint: disable=not-callable
             device = self._device_list[device_name]
             device._disconnect_wrapper()
             self._device_list.pop(device_name, None)

@@ -523,7 +523,7 @@ class SampleView:
 
     def remove_sample_position_by_prefix(self, prefix: str):
         """Remove a sample position from the database."""
-        with self._lock():
+        with self._lock():  # pylint: disable=not-callable
             remove_standalone_sample_position(prefix)
             self._sample_positions_collection.delete_many(
                 {"name": {"$regex": f"^{re.escape(prefix)}"}}
