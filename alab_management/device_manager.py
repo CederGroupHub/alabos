@@ -152,16 +152,20 @@ class DeviceManager:
         # (e.g., "Filled_vial_rack"), not the full name (Filled_vial_rack/1)
         self.sample_positions_in_devices_to_be_updated = (
             []
-        )  # this will be pooled by a dict[str,SamplePosition] where the key is the device name and the value is the sample position object
+        )  # this will be pooled by a dict[str,SamplePosition] where the key is the device name
+        # and the value is a list of sample position objects
         self.sample_positions_in_devices_to_be_updated_that_is_paused = (
             []
-        )  # this will be pooled by a dict[str,SamplePosition] where the key is the device name and the value is the sample position object
+        )  # this will be pooled by a dict[str,SamplePosition] where the key is the device name
+        # and the value is the sample position object
         self.sample_positions_in_devices_to_be_removed = (
             []
-        )  # this will be pooled by a dict[str,SamplePosition] where the key is the device name and the value is the sample position object
+        )  # this will be pooled by a dict[str,SamplePosition] where the key is the device name
+        # and the value is the sample position object
         self.sample_positions_in_devices_to_be_removed_that_is_paused = (
             []
-        )  # this will be pooled by a dict[str,SamplePosition] where the key is the device name and the value is the sample position object
+        )  # this will be pooled by a dict[str,SamplePosition] where the key is the device name
+        # and the value is the sample position object
         self.sample_positions_to_be_updated_or_removed_thread = Thread(
             target=self._check_sample_positions_status_and_update_or_remove_if_not_occupied
         )
@@ -234,7 +238,8 @@ class DeviceManager:
                     device_name
                 ):
                     print(
-                        f"Device {device_name} is not occupied and has no samples on it, pausing it and then removing it from the device view."
+                        f"Device {device_name} is not occupied and has no samples on it, "
+                        "pausing it and then removing it from the device view."
                     )
                     self._device_view.pause_device(device_name)
                     self.device_names_to_be_removed_that_is_paused.append(device_name)
@@ -248,7 +253,8 @@ class DeviceManager:
                     )
                 else:
                     print(
-                        f"Device {device_name} is in status {device_entry['status']}, skipping and waiting for it to be unoccupied."
+                        f"Device {device_name} is in status {device_entry['status']}, "
+                        "skipping and waiting for it to be unoccupied."
                     )
             for device_name in self.device_names_to_be_removed_that_is_paused:
                 device_entry: dict[str, Any] | None = self._device_view.get_device(
@@ -260,7 +266,8 @@ class DeviceManager:
                     and not self._sample_view.get_samples_on_device(device_name)
                 ):
                     print(
-                        f"Device {device_name} is not occupied, paused, and has no samples on it, removing it from the device view."
+                        f"Device {device_name} is not occupied, paused, and has no samples on it, "
+                        "removing it from the device view."
                     )
                     self._device_view.remove_device(device_name)
                     # also remove the sample positions that are related to the device
@@ -276,7 +283,8 @@ class DeviceManager:
                     self._device_view.pause_device(device_name)
                 else:
                     print(
-                        f"Device {device_name} is in status {device_entry['status']}, skipping and waiting for it to be unoccupied."
+                        f"Device {device_name} is in status {device_entry['status']}, "
+                        "skipping and waiting for it to be unoccupied."
                     )
                     self._device_view.pause_device(device_name)
 
@@ -374,10 +382,12 @@ class DeviceManager:
                         device_entry: dict[str, Any] | None = (
                             self._device_view.get_device(device_name)
                         )
-                        # check if the device is not occupied, and sample positions that are related to the device are also not occupied
+                        # check if the device is not occupied,
+                        # and sample positions that are related to the device are also not occupied
                         if device_entry["status"] == DeviceTaskStatus.IDLE.name:
                             print(
-                                f"Device {device_name} is not occupied and has no samples on it, pausing it to update the sample positions."
+                                f"Device {device_name} is not occupied and has no samples on it, "
+                                "pausing it to update the sample positions."
                             )
                             self._device_view.pause_device(device_name)
                             self.sample_positions_in_devices_to_be_updated_that_is_paused.append(
@@ -394,7 +404,8 @@ class DeviceManager:
                             self._device_view.pause_device(device_name)
                         else:
                             print(
-                                f"Device {device_name} is in status {device_entry['status']}, skipping and waiting for it to be unoccupied."
+                                f"Device {device_name} is in status {device_entry['status']}, "
+                                "skipping and waiting for it to be unoccupied."
                             )
                 if processed:
                     self.sample_positions_in_devices_to_be_updated.remove(
@@ -428,7 +439,8 @@ class DeviceManager:
                             == DevicePauseStatus.PAUSED.name
                         ):
                             print(
-                                f"Device {device_name} is not occupied, paused, and has no samples on it, updating the sample positions."
+                                f"Device {device_name} is not occupied, paused, "
+                                "and has no samples on it, updating the sample positions."
                             )
                             for sample_position_object in device_sample_position_dict[
                                 device_name
@@ -450,12 +462,14 @@ class DeviceManager:
                             )
                         elif device_entry["status"] == DeviceTaskStatus.OCCUPIED.name:
                             print(
-                                f"Device {device_name} is occupied, skipping and waiting for it to be unoccupied."
+                                f"Device {device_name} is occupied, skipping "
+                                "and waiting for it to be unoccupied."
                             )
                             self._device_view.pause_device(device_name)
                         else:
                             print(
-                                f"Device {device_name} is in status {device_entry['status']}, skipping and waiting for it to be unoccupied."
+                                f"Device {device_name} is in status {device_entry['status']}, "
+                                "skipping and waiting for it to be unoccupied."
                             )
                             self._device_view.pause_device(device_name)
                 if processed:
@@ -487,10 +501,12 @@ class DeviceManager:
                         device_entry: dict[str, Any] | None = (
                             self._device_view.get_device(device_name)
                         )
-                        # check if the device is not occupied, and sample positions that are related to the device are also not occupied
+                        # check if the device is not occupied,
+                        # and sample positions that are related to the device are also not occupied
                         if device_entry["status"] == DeviceTaskStatus.IDLE.name:
                             print(
-                                f"Device {device_name} is not occupied and has no samples on it, pausing it to update the sample positions."
+                                f"Device {device_name} is not occupied and has no samples on it, "
+                                "pausing it to update the sample positions."
                             )
                             self._device_view.pause_device(device_name)
                             self.sample_positions_in_devices_to_be_removed_that_is_paused.append(
@@ -507,7 +523,8 @@ class DeviceManager:
                             self._device_view.pause_device(device_name)
                         else:
                             print(
-                                f"Device {device_name} is in status {device_entry['status']}, skipping and waiting for it to be unoccupied."
+                                f"Device {device_name} is in status {device_entry['status']}, "
+                                "skipping and waiting for it to be unoccupied."
                             )
                 if processed:
                     self.sample_positions_in_devices_to_be_removed.remove(
@@ -540,7 +557,8 @@ class DeviceManager:
                             == DevicePauseStatus.PAUSED.name
                         ):
                             print(
-                                f"Device {device_name} is not occupied, paused, and has no samples on it, updating the sample positions."
+                                f"Device {device_name} is not occupied, paused, "
+                                "and has no samples on it, updating the sample positions."
                             )
                             for sample_position_object in device_sample_position_dict[
                                 device_name
@@ -559,7 +577,8 @@ class DeviceManager:
                             self._device_view.pause_device(device_name)
                         else:
                             print(
-                                f"Device {device_name} is in status {device_entry['status']}, skipping and waiting for it to be unoccupied."
+                                f"Device {device_name} is in status {device_entry['status']}, "
+                                "skipping and waiting for it to be unoccupied."
                             )
                             self._device_view.pause_device(device_name)
                 if processed:

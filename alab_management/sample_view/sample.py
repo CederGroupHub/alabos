@@ -60,7 +60,8 @@ class SamplePosition:
 # it is only pooled with new sample positions that are added to the lab during reload.
 _standalone_sample_position_registry: dict[str, SamplePosition] = {}
 
-# _current_standalone_sample_position_registry is used to store all the standalone sample positions that are defined in the __init__.py
+# _current_standalone_sample_position_registry is used to store
+# all the standalone sample positions that are defined in the __init__.py
 # when alabos setup is called, regardless of whether it is a reload or not.
 # this is used to check if a sample position is still in the lab during reload.
 # if not, it will be removed from the lab once unoccupied and devices that are related to it are also not occupied.

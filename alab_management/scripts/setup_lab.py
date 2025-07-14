@@ -88,7 +88,8 @@ def setup_lab(
         # because the device documents were not yet created within the Device collection.
     print(f"Devices added to the db and registry: {filtered_devices}")
 
-    # step 7: get all the standalone sample positions from the __init__.py and the ones that are currently active in the lab [current state]
+    # step 7: get all the standalone sample positions from the __init__.py
+    # and the ones that are currently active in the lab [current state]
     sample_view = SampleView()
     # get the standalone sample positions in the registry
     # note that a SamplePosition object consist of a name and a number
@@ -116,7 +117,8 @@ def setup_lab(
         sample_positions=sample_positions, parent_device_name=None
     )
     # TODO: calculate positive delta of sample positions to print out
-    # step 10: remove prefix of sample positions names that are not in the lab anymore [calculate negative delta of prefix of sample positions]
+    # step 10: remove prefix of sample positions names that are not in the lab anymore
+    # [calculate negative delta of prefix of sample positions]
     removed_sample_positions_prefixes = []
     for sample_position_name in sample_positions_names:
         if sample_position_name not in current_sample_positions_names:
@@ -130,7 +132,8 @@ def setup_lab(
     # than the ones in the sample_positions
     sample_positions_before_reload = list(
         sample_positions_dict_before_reload.values()
-    )  # all sample positions information not including __init__.py. This is used to check if there is any negative delta of sample positions numbers
+    )  # all sample positions information not including __init__.py.
+    # This is used to check if there is any negative delta of sample positions numbers
     sample_positions_names_before_reload = [
         sample_position.name for sample_position in sample_positions_before_reload
     ]
@@ -164,7 +167,8 @@ def setup_lab(
             sample_positions=device.sample_positions, parent_device_name=device.name
         )
 
-    # step 13: find the current sample positions in devices that are not in the db [calculate negative delta of device sample positions]
+    # step 13: find the current sample positions in devices that are not in the db
+    # [calculate negative delta of device sample positions]
     # positive is already handled in step 12, so we only need to calculate negative delta to be handled by device manager
     # once the devices are not used anymore
     devices_sample_positions_before_reload = {
@@ -193,7 +197,8 @@ def setup_lab(
                         )
     print(f"Removed sample positions in devices: {removed_sample_positions_in_devices}")
 
-    # step 14: check if there is any update of sample positions from the devices [calculate negative delta of sample positions numbers]
+    # step 14: check if there is any update of sample positions from the devices
+    # [calculate negative delta of sample positions numbers]
     # positive is already handled in step 12, so we only need to calculate negative delta to be handled by device manager
     # once the devices are not used anymore
     updated_sample_positions_in_devices = {}
