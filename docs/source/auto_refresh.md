@@ -30,7 +30,7 @@ the device and task manager will be re-imported. It is a process with the follow
 10. Task manager will resume to launch new tasks.
 
 **Task Actor**: Task actor is the function that actually runs the task. At the beginning of each task process,
-the device and task definition will be re-imported. This means that any changes made to the task definition
+the device and task definition will be re-imported in all managers (task, device, and experiment managers). This means that any changes made to the task definition
 or device code will be reflected in the task execution. If `auto_refresh` is not enabled or missing in the configuration,
 the task actor will not be re-imported, and any changes made to the task definition or device 
 code will not be reflected in the task execution. The re-import is done through the lowest level first (modules .py files) up to the highest level (__init__.py in the working directory).
