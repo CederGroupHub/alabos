@@ -6,8 +6,13 @@ tasks and samples and mark the finished tasks in the database when it is
 done.
 """
 
+import logging
 import time
+from contextlib import contextmanager
 from typing import Any
+
+from alab_management.utils.logger import set_up_rich_handler
+from alab_management.utils.module_ops import load_definition
 
 from .config import AlabOSConfig
 from .experiment_view import CompletedExperimentView, ExperimentStatus, ExperimentView
@@ -15,6 +20,9 @@ from .logger import DBLogger
 from .sample_view import SampleView
 from .task_view import TaskStatus, TaskView
 from .utils.graph_ops import Graph
+
+cli_logger = logging.getLogger(__name__)
+set_up_rich_handler(cli_logger)
 
 
 class ExperimentManager:
@@ -35,6 +43,7 @@ class ExperimentManager:
         )  # if this is not defined in the config, assume it this feature is not being used.
         if self.__copy_to_completed_db:
             self.completed_experiment_view = CompletedExperimentView()
+        self._pause_handling_experiments = False
 
     def run(self):
         """Start the event loop."""
@@ -50,8 +59,9 @@ class ExperimentManager:
             time.sleep(1)
 
     def _loop(self):
-        self.handle_pending_experiments()
-        self.mark_completed_experiments()
+        if not self._pause_handling_experiments:
+            self.handle_pending_experiments()
+            self.mark_completed_experiments()
 
     def handle_pending_experiments(self):
         """
@@ -194,3 +204,21 @@ class ExperimentManager:
                             "exp_id": experiment["_id"],
                         },
                     )
+
+    @contextmanager
+    def pause_handling_experiments(self):
+        """This method will pause the handle pending experiments."""
+        try:
+            self._pause_handling_experiments = True
+            cli_logger.info("Pausing handling experiments.")
+            yield
+        finally:
+            self._pause_handling_experiments = False
+            cli_logger.info("Resuming handling experiments.")
+
+    def refresh_task_list(self):
+        """This method will refresh the task list by reloading definition of tasks."""
+        print("Refreshing task view in ExperimentManager...")
+        load_definition(reload=True)
+        self.task_view = TaskView()
+        self.experiment_view = ExperimentView()

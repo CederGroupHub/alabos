@@ -26,17 +26,18 @@ class Moving(BaseTask):
         with self.lab_view.request_resources(
             {RobotArm: {}, None: {self.dest: 1, self.sample_position: 1}}
         ) as (inner_devices, sample_positions):
+            sample_destination = sample_positions[None][self.dest][0]
             robot_arm: RobotArm = inner_devices[RobotArm]
             robot_arm.run_program(
                 f"{sample_positions[None][self.sample_position][0]}-{self.dest}.urp"
             )
-            self.lab_view.move_sample(self.sample, self.dest)
+            self.lab_view.move_sample(self.sample, sample_destination)
             self.logger.log_device_signal(
                 device_name=robot_arm.name,
                 signal_name="MoveSample",
                 signal_value={
                     "src": sample_positions[None][self.sample_position][0],
-                    "dest": sample_positions[None][self.dest][0],
+                    "dest": sample_destination,
                 },
             )
         return self.task_id
