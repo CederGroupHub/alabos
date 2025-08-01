@@ -578,3 +578,41 @@ class SampleView:
                 max_number = max(max_number, 1)
 
         return max_number
+
+    def get_sample_name_by_position(self, position: str) -> str | None:
+        """
+        Get the sample name at a given position.
+
+        Args:
+            position: The position to search for
+
+        Returns
+        -------
+            The sample name if a sample exists at the position, None otherwise
+        """
+        sample = self._sample_collection.find_one({"position": position})
+        return sample["name"] if sample else None
+
+    def get_sample_by_position(self, position: str) -> Sample | None:
+        """
+        Get the sample object at a given position.
+
+        Args:
+            position: The position to search for
+
+        Returns
+        -------
+            The Sample object if a sample exists at the position, None otherwise
+        """
+        sample = self._sample_collection.find_one({"position": position})
+        if sample is None:
+            return None
+
+        return Sample(
+            sample_id=sample["_id"],
+            name=sample["name"],
+            position=sample["position"],
+            task_id=sample["task_id"],
+            metadata=sample.get("metadata", {}),
+            tags=sample.get("tags", []),
+        )
