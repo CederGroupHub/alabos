@@ -23,17 +23,17 @@ the device and task manager will be re-imported. It is a process with the follow
 3. Device manager will try to pause all the devices.
 4. Wait for all the tasks are NOT in RUNNING state (no communication with the devices).
 5. All the devices will be disconnected.
-6. Device and task manager will be re-imported.
+6. Device, sample positions (including the ones defined inside the devices), and task manager will be re-imported. For device and sample positions, differences will be automatically calculated and applied (by the device manager) once the devices and sample positions are unoccupied. However, the system will continue with the following steps as the waiting for the unoccupation is done in parallel to the system running time.
 7. Connect to the devices again.
 8. Device manager will try to resume all the devices.
 9. Resource manager will resume to allocate new resources.
 10. Task manager will resume to launch new tasks.
 
 **Task Actor**: Task actor is the function that actually runs the task. At the beginning of each task process,
-the device and task definition will be re-imported. This means that any changes made to the task definition
+the device and task definition will be re-imported in all managers (task, device, and experiment managers). This means that any changes made to the task definition
 or device code will be reflected in the task execution. If `auto_refresh` is not enabled or missing in the configuration,
 the task actor will not be re-imported, and any changes made to the task definition or device 
-code will not be reflected in the task execution.
+code will not be reflected in the task execution. The re-import is done through the lowest level first (modules .py files) up to the highest level (__init__.py in the working directory).
 
 Note that the change will be reflected in the newly launched tasks right away, at the importing time. But for 
 the device and task managers, it will check the file modification time every 30 s. This usually will not be 
@@ -49,3 +49,18 @@ The `auto_refresh` feature has some limitations:
 - For the tasks that are already running, the changes will not be reflected until the task is refreshed.
   This means that if you change the device or task definition, the running tasks will continue to use the old definitions.
   Keep in mind that the best practice is to ensure devices and tasks definitions are backward compatible to the older versions so that the running tasks can continue to run without any issues and not have a conflict with the new definitions.
+- No user input should be done during the refresh process to avoid unexpected behaviors. No blocking is currently implemented.
+- No support for task removal. It will require further implementation in checking running tasks and submitted experiments for the task being removed. But this is less important as removing a task is not a common operation.
+
+## Tests
+The `auto_refresh` feature is tested by:
+1. adding and removing slots on a standalone sample position/changing the numbers
+2. adding and removing a device and its sample position
+3. adding and removing whole sample position
+4. adding and removing a sample position prefix in a device
+5. changing the numbers in a sample position in a device
+6. changing the definition of a task.
+7. adding a new class of task.
+8. adding a new class of device.
+
+

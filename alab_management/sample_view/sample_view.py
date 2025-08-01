@@ -12,7 +12,7 @@ from pydantic import BaseModel, ConfigDict, conint
 
 from alab_management.utils.data_objects import get_collection, get_lock
 
-from .sample import Sample, SamplePosition
+from .sample import Sample, SamplePosition, remove_standalone_sample_position
 
 
 class SamplePositionRequest(BaseModel):
@@ -485,6 +485,15 @@ class SampleView:
             },
         )
 
+    def get_sample_positions_names_by_device(self, device_name: str) -> list[str]:
+        """Get all the sample positions names that are related to a device."""
+        return [
+            sample_position["name"]
+            for sample_position in self._sample_positions_collection.find(
+                {"parent_device": device_name}
+            )
+        ]
+
     def get_samples_on_device(self, device_name: str) -> dict[str, list[ObjectId]]:
         """Get all the samples on a device."""
         samples = self._sample_collection.find(
@@ -511,3 +520,99 @@ class SampleView:
             bool: True if sample exists in the database
         """
         return self._sample_collection.count_documents({"_id": ObjectId(sample_id)}) > 0
+
+    def remove_sample_position_by_prefix(self, prefix: str):
+        """Remove a sample position from the database."""
+        with self._lock():  # pylint: disable=not-callable
+            remove_standalone_sample_position(prefix)
+            self._sample_positions_collection.delete_many(
+                {"name": {"$regex": f"^{re.escape(prefix)}"}}
+            )
+
+    def get_sample_positions_names_by_prefix(self, prefix: str) -> list[str]:
+        """Get all the sample positions names that are related to a device."""
+        return [
+            sample_position["name"]
+            for sample_position in self._sample_positions_collection.find(
+                {"name": {"$regex": f"^{re.escape(prefix)}"}}
+            )
+        ]
+
+    def get_all_sample_positions_from_db(self) -> dict[str, dict[str, Any]]:
+        """
+        Get all sample positions from the database directly.
+
+        Returns a dictionary mapping position names to their database entries.
+        This includes both standalone and device-associated sample positions.
+        """
+        sample_positions = {}
+        for position_doc in self._sample_positions_collection.find():
+            sample_positions[position_doc["name"]] = position_doc
+        return sample_positions
+
+    def get_sample_position_max_number_by_prefix(self, prefix: str) -> int:
+        """
+        Get the maximum number of sample positions for a given prefix from the database.
+
+        Args:
+            prefix: The prefix to search for (e.g., "furnace_temp")
+
+        Returns
+        -------
+            The maximum number found for positions with this prefix
+        """
+        positions = self._sample_positions_collection.find(
+            {"name": {"$regex": f"^{re.escape(prefix)}"}}
+        )
+
+        max_number = 0
+        for position in positions:
+            # Extract number from position name (e.g., "furnace_temp/1" -> 1)
+            name = position["name"]
+            try:
+                number_part = name.split(SamplePosition.SEPARATOR)[-1]
+                number = int(number_part)
+                max_number = max(max_number, number)
+            except (ValueError, IndexError):
+                # If we can't parse the number, count this as position 1
+                max_number = max(max_number, 1)
+
+        return max_number
+
+    def get_sample_name_by_position(self, position: str) -> str | None:
+        """
+        Get the sample name at a given position.
+
+        Args:
+            position: The position to search for
+
+        Returns
+        -------
+            The sample name if a sample exists at the position, None otherwise
+        """
+        sample = self._sample_collection.find_one({"position": position})
+        return sample["name"] if sample else None
+
+    def get_sample_by_position(self, position: str) -> Sample | None:
+        """
+        Get the sample object at a given position.
+
+        Args:
+            position: The position to search for
+
+        Returns
+        -------
+            The Sample object if a sample exists at the position, None otherwise
+        """
+        sample = self._sample_collection.find_one({"position": position})
+        if sample is None:
+            return None
+
+        return Sample(
+            sample_id=sample["_id"],
+            name=sample["name"],
+            position=sample["position"],
+            task_id=sample["task_id"],
+            metadata=sample.get("metadata", {}),
+            tags=sample.get("tags", []),
+        )
