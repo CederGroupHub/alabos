@@ -6,7 +6,7 @@ It can also update the position of a sample in the lab.
 """
 
 import time
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from traceback import format_exc
 from typing import Any
 
@@ -90,30 +90,30 @@ class LabView:
             exact_positions: Set of position names that should be matched exactly (not by prefix).
               Position names should be specified as they appear in the resource_request dictionary,
               before device prefixes are added. For example:
-              
+
               - For {None: {"input_rack/slot/1": 1}}, use exact_positions={"input_rack/slot/1"}
               - For {Furnace: {"slot/1": 1}}, use exact_positions={"slot/1"} (device prefix added automatically)
-              
+
               **Important**: Exact matching only works when number=1. If you request multiple positions
               (e.g., {"slot": 11}), you cannot use exact matching for that position. Use exact_positions
               only for positions where number=1.
-              
+
               If None (default), all positions use prefix matching for backward compatibility.
 
         Example:
             .. code-block:: python
-                
+
                 # Prefix matching (default) - "slot/1" could match "slot/1" or "slot/10"
                 with self.lab_view.request_resources({Furnace: {"slot/1": 1}}) as (devices, positions):
                     ...
-                
+
                 # Exact matching - only matches "slot/1"
                 with self.lab_view.request_resources(
                     {Furnace: {"slot/1": 1}},
                     exact_positions={"slot/1"}
                 ) as (devices, positions):
                     ...
-                
+
                 # Mix of prefix and exact matching
                 with self.lab_view.request_resources(
                     {None: {"input_rack/slot/1": 1, "input_rack/slot/2": 1}},
@@ -121,7 +121,7 @@ class LabView:
                 ) as (devices, positions):
                     # slot/1 is exact, slot/2 uses prefix matching
                     ...
-                
+
                 # Invalid: Cannot use exact matching with number > 1
                 # This will raise ValueError:
                 # with self.lab_view.request_resources(
@@ -136,10 +136,10 @@ class LabView:
             task_id=self.task_id, status=TaskStatus.REQUESTING_RESOURCES
         )
         result = self._resource_requester.request_resources(
-            resource_request=resource_request, 
-            timeout=timeout, 
+            resource_request=resource_request,
+            timeout=timeout,
             priority=priority,
-            exact_positions=exact_positions
+            exact_positions=exact_positions,
         )
         request_id = result["request_id"]
         devices = result["devices"]
@@ -227,26 +227,27 @@ class LabView:
     def lock_sample_position(self, position: str):
         """
         Lock an exact sample position for this task.
-        
+
         Unlike ``request_resources``, this method locks an exact position name rather than
         using prefix matching. This is useful when you need to lock a specific position like
         "input_rack/slot/1" without it potentially matching "input_rack/slot/10".
-        
+
         Args:
             position: The exact name of the sample position to lock (e.g., "input_rack/slot/1")
-            
-        Raises:
+
+        Raises
+        ------
             ValueError: If the position is currently occupied or locked by another task.
-            
+
         Example:
             .. code-block:: python
-                
+
                 # Lock an exact position
                 self.lab_view.lock_sample_position("input_rack/slot/1")
-                
+
                 # Use the position
                 self.lab_view.move_sample(sample=self.sample, position="input_rack/slot/1")
-                
+
                 # Release when done
                 self.lab_view.release_sample_position("input_rack/slot/1")
         """
@@ -255,16 +256,17 @@ class LabView:
     def release_sample_position(self, position: str):
         """
         Release a locked sample position.
-        
+
         Args:
             position: The exact name of the sample position to release
-            
-        Raises:
+
+        Raises
+        ------
             ValueError: If the position is invalid
-            
+
         Example:
             .. code-block:: python
-                
+
                 self.lab_view.lock_sample_position("input_rack/slot/1")
                 try:
                     # Use the position
@@ -273,7 +275,9 @@ class LabView:
                     self.lab_view.release_sample_position("input_rack/slot/1")
         """
         # Verify the position is locked by this task before releasing
-        status, locked_by_task_id = self._sample_view.get_sample_position_status(position)
+        _status, locked_by_task_id = self._sample_view.get_sample_position_status(
+            position
+        )
         if locked_by_task_id != self._task_id:
             raise ValueError(
                 f"Cannot release position {position} - it is not locked by this task "
@@ -285,24 +289,26 @@ class LabView:
     def lock_exact_sample_positions(self, positions: list[str]):
         """
         Lock exact sample positions as a context manager.
-        
+
         This method locks exact position names (not prefixes) and automatically releases
         them when exiting the context. This is useful when you need to lock specific
         positions like "input_rack/slot/1" without prefix matching potentially selecting
         "input_rack/slot/10".
-        
+
         Args:
             positions: List of exact sample position names to lock
-            
-        Yields:
+
+        Yields
+        ------
             list[str]: The list of locked positions (same as input)
-            
-        Raises:
+
+        Raises
+        ------
             ValueError: If any position is currently occupied or locked by another task.
-            
+
         Example:
             .. code-block:: python
-                
+
                 # Lock exact positions
                 with self.lab_view.lock_exact_sample_positions([
                     "input_rack/slot/1",
@@ -324,12 +330,10 @@ class LabView:
         finally:
             # Release all positions that were successfully locked
             for position in locked_positions:
-                try:
-                    self.release_sample_position(position)
-                except ValueError:
+                with suppress(ValueError):
                     # Position might have been released already or doesn't exist
                     # Continue releasing other positions
-                    pass
+                    self.release_sample_position(position)
 
     def get_sample_position_parent_device(self, position: str) -> str | None:
         """Get the name of the device that owns the sample position."""

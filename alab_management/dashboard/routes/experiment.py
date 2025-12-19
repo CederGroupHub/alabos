@@ -130,7 +130,7 @@ def query_experiment_results(exp_id: str):
     if experiment is None:
         return {"status": "error", "errors": "Cannot find experiment with this exp id"}
 
-    progress, error_state = get_experiment_progress(exp_id)
+    progress, _error_state = get_experiment_progress(exp_id)
 
     return_dict = {
         "id": str(experiment["_id"]),

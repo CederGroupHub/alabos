@@ -188,7 +188,9 @@ class SampleView:
             for sample_position in sample_positions_request:
                 is_exact = sample_position.prefix in exact_positions
                 result = self.get_available_sample_position(
-                    task_id, position_prefix=sample_position.prefix, exact_match=is_exact
+                    task_id,
+                    position_prefix=sample_position.prefix,
+                    exact_match=is_exact,
                 )
                 if not result or len(result) < sample_position.number:
                     return None
@@ -289,17 +291,9 @@ class SampleView:
             position_prefix: The position name or prefix to match
             exact_match: If True, match the exact position name. If False, use prefix matching.
         """
-        if exact_match:
-            # Exact match: look for the exact position name
-            query = {"name": position_prefix}
-        else:
-            # Prefix match: use regex
-            query = {"name": {"$regex": f"^{re.escape(position_prefix)}"}}
+        query = {"name": position_prefix} if exact_match else {"name": {"$regex": f"^{re.escape(position_prefix)}"}}
 
-        if (
-            self._sample_positions_collection.find_one(query)
-            is None
-        ):
+        if self._sample_positions_collection.find_one(query) is None:
             if exact_match:
                 raise ValueError(f"Cannot find sample position: {position_prefix}")
             else:

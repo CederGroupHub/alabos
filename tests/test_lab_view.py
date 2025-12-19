@@ -222,11 +222,10 @@ class TestLabView(TestCase):
         )
         lab_view_4 = LabView(task_id=task_id_4)
 
-        with self.assertRaises(ValueError) as context:
-            with lab_view_4.request_resources(
-                {Furnace: {"inside": 2}}, exact_positions={"inside"}, timeout=1
-            ) as (devices, positions):
-                pass
+        with self.assertRaises(ValueError) as context, lab_view_4.request_resources(
+            {Furnace: {"inside": 2}}, exact_positions={"inside"}, timeout=1
+        ) as (devices, positions):
+            pass
         self.assertIn("Exact position matching can only be used with number=1", str(context.exception))
 
         # Test 5: Mix of prefix and exact matching
@@ -274,7 +273,7 @@ class TestLabView(TestCase):
             status, locked_by = self.sample_view.get_sample_position_status("furnace_1/inside/1")
             self.assertEqual(status.name, "LOCKED")
             self.assertEqual(locked_by, task_id_6)
-            
+
             # Now try to request with prefix matching - should get a different slot
             with lab_view_6.request_resources(
                 {"furnace_1": {"inside": 1}}, timeout=1  # Prefix matching
@@ -305,7 +304,7 @@ class TestLabView(TestCase):
             self.assertIn("furnace_1", devices)
             pos = positions["furnace_1"]["inside/1"][0]
             self.assertEqual(pos, "furnace_1/inside/1")
-            
+
             # Verify it's locked
             status, locked_by = self.sample_view.get_sample_position_status("furnace_1/inside/1")
             self.assertEqual(status.name, "LOCKED")
@@ -464,7 +463,7 @@ class TestLabView(TestCase):
             # Should get exactly "furnace_temp/1", not "furnace_temp/10" or "furnace_temp/11"
             pos = positions[None]["furnace_temp/1"][0]
             self.assertEqual(pos, "furnace_temp/1")
-            
+
         # Verify that prefix matching would have matched multiple positions
         task_id_8b = self.task_view.create_task(
             **{
@@ -474,7 +473,7 @@ class TestLabView(TestCase):
             }
         )
         lab_view_8b = LabView(task_id=task_id_8b)
-        
+
         with lab_view_8b.request_resources(
             {None: {"furnace_temp/1": 1}}, timeout=1  # No exact_positions - prefix match
         ) as (devices, positions):
@@ -499,11 +498,11 @@ class TestLabView(TestCase):
         status, locked_by = self.sample_view.get_sample_position_status("furnace_table")
         self.assertEqual(status.name, "LOCKED")
         self.assertEqual(locked_by, task_id)
-        
+
         # Verify it's in the locked positions list
         locked_positions = lab_view.get_locked_sample_positions()
         self.assertIn("furnace_table", locked_positions)
-        
+
         # Test 2: release_sample_position
         lab_view.release_sample_position("furnace_table")
         status, locked_by = self.sample_view.get_sample_position_status("furnace_table")
@@ -513,7 +512,7 @@ class TestLabView(TestCase):
         # Test 3: lock_exact_sample_positions context manager
         with lab_view.lock_exact_sample_positions(["furnace_table", "furnace_1/inside/1"]) as locked:
             self.assertEqual(locked, ["furnace_table", "furnace_1/inside/1"])
-            
+
             # Verify both are locked
             status1, locked_by1 = self.sample_view.get_sample_position_status("furnace_table")
             status2, locked_by2 = self.sample_view.get_sample_position_status("furnace_1/inside/1")
@@ -521,12 +520,12 @@ class TestLabView(TestCase):
             self.assertEqual(status2.name, "LOCKED")
             self.assertEqual(locked_by1, task_id)
             self.assertEqual(locked_by2, task_id)
-            
+
             # Verify they're in locked positions
             locked_positions = lab_view.get_locked_sample_positions()
             self.assertIn("furnace_table", locked_positions)
             self.assertIn("furnace_1/inside/1", locked_positions)
-        
+
         # After context exit, positions should be released
         status1, locked_by1 = self.sample_view.get_sample_position_status("furnace_table")
         status2, locked_by2 = self.sample_view.get_sample_position_status("furnace_1/inside/1")
@@ -545,7 +544,7 @@ class TestLabView(TestCase):
                 raise ValueError("Test exception")
         except ValueError:
             pass
-        
+
         # Should be released even after exception
         status, locked_by = self.sample_view.get_sample_position_status("furnace_table")
         self.assertEqual(status.name, "EMPTY")
@@ -560,14 +559,14 @@ class TestLabView(TestCase):
             }
         )
         other_lab_view = LabView(task_id=other_task_id)
-        
+
         # Lock with other task
         other_lab_view.lock_sample_position("furnace_table")
-        
+
         # Try to release with current task - should fail
         with self.assertRaises(ValueError) as context:
             lab_view.release_sample_position("furnace_table")
         self.assertIn("not locked by this task", str(context.exception))
-        
+
         # Clean up
         other_lab_view.release_sample_position("furnace_table")
