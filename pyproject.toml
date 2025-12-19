@@ -73,6 +73,7 @@ dev = [
     "pre-commit>=2.12.1",
     "pytest >= 6.2.5",
     "pytest_reraise >= 2.1.1",
+    "pytest-timeout >= 2.1.0",
     "pylint >= 2.11.1",
     "flake8 ~= 4.0.1",
     "pytest-env ~= 0.6.2",
@@ -193,3 +194,4 @@ python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = ["-v", "--tb=short"]
+timeout = 600

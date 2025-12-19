@@ -142,6 +142,10 @@ class ResourceManager(RequestMixin):
             # replace device placeholder in sample position request
             # and make it into a single list
             parsed_sample_positions_request = []
+            exact_positions_set: set[str] = set()
+            # Convert list from database back to set for easier lookup
+            exact_positions_raw = set(request_entry.get("exact_positions", []))
+            
             for request in resource_request:
                 if request["device"]["identifier"] == _EXTRA_REQUEST:
                     device_prefix = ""
@@ -157,6 +161,10 @@ class ResourceManager(RequestMixin):
                     parsed_sample_positions_request.append(
                         SamplePositionRequest(prefix=prefix, number=pos["number"])
                     )
+                    # If the original prefix (before device prefix) was in exact_positions, add the full path
+                    original_prefix = pos["prefix"]
+                    if original_prefix in exact_positions_raw:
+                        exact_positions_set.add(prefix)
 
             self._request_collection.update_one(
                 {"_id": request_entry["_id"]},
@@ -169,7 +177,9 @@ class ResourceManager(RequestMixin):
                 },
             )
             sample_positions = self.sample_view.request_sample_positions(
-                task_id=task_id, sample_positions=parsed_sample_positions_request
+                task_id=task_id, 
+                sample_positions=parsed_sample_positions_request,
+                exact_positions=exact_positions_set if exact_positions_set else None
             )
             if sample_positions is None:
                 return

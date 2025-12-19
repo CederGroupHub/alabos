@@ -65,3 +65,5 @@ class Heating(BaseTask):
             inside_furnaces = sample_positions[Furnace]["inside"]
 
         return self.task_id
+
+# Modification during running tasks

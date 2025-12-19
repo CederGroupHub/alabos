@@ -214,12 +214,23 @@ class ResourceRequester(RequestMixin):
         resource_request: _ResourceRequestDict,
         timeout: float | None = None,
         priority: TaskPriority | int | None = None,
+        exact_positions: set[str] | None = None,
     ) -> dict[str, Any]:
         """
         Request lab resources.
 
         Write the request into the database, and then the task manager will read from the
         database and assign the resources.
+
+        Args:
+            resource_request: Dictionary mapping devices to position requests
+            timeout: Optional timeout for the request
+            priority: Optional priority for the request
+            exact_positions: Set of position names that should be matched exactly (not by prefix).
+              Position names should be specified as they appear in the resource_request dictionary,
+              before device prefixes are added. For example, if requesting {None: {"input_rack/slot/1": 1}},
+              use exact_positions={"input_rack/slot/1"}. If requesting {Furnace: {"slot/1": 1}}, use
+              exact_positions={"slot/1"} (the device prefix will be added automatically).
         """
         f = Future()
         if priority is None:
@@ -271,6 +282,7 @@ class ResourceRequester(RequestMixin):
                 "task_id": self.task_id,
                 "priority": int(priority),
                 "submitted_at": datetime.now(),
+                "exact_positions": list(exact_positions) if exact_positions else [],
             }
         )  # DB_ACCESS_OUTSIDE_VIEW
         _id: ObjectId = cast(ObjectId, result.inserted_id)

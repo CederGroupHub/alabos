@@ -126,6 +126,7 @@ class SampleView:
         self,
         task_id: ObjectId,
         sample_positions: list[SamplePositionRequest | str | dict[str, Any]],
+        exact_positions: set[str] | None = None,
     ) -> dict[str, list[dict[str, Any]]] | None:
         """
         Request a list of sample positions, this function will return until all the sample positions are available.
@@ -135,7 +136,12 @@ class SampleView:
             sample_positions: the list of sample positions, which is requested by their names.
               The sample position name is actually the prefix of a sample position, which we
               will try to match all the sample positions will the name
+            exact_positions: Set of position names that should be matched exactly (not by prefix).
+              If None, all positions use prefix matching (default behavior).
         """
+        if exact_positions is None:
+            exact_positions = set()
+
         sample_positions_request: list[SamplePositionRequest] = [
             (
                 SamplePositionRequest.from_py_type(sample_position)
@@ -152,20 +158,37 @@ class SampleView:
 
         # check if there are enough positions
         for sample_position in sample_positions_request:
-            count = self._sample_positions_collection.count_documents(
-                {"name": {"$regex": f"^{re.escape(sample_position.prefix)}"}}
-            )
+            is_exact = sample_position.prefix in exact_positions
+            if is_exact:
+                # For exact match, only number=1 makes sense (can't have multiple positions with same exact name)
+                if sample_position.number > 1:
+                    raise ValueError(
+                        f"Exact position matching can only be used with number=1. "
+                        f"Position `{sample_position.prefix}` requests {sample_position.number} positions, "
+                        f"but exact matching only works for a single position."
+                    )
+                # For exact match, check if the position exists
+                count = self._sample_positions_collection.count_documents(
+                    {"name": sample_position.prefix}
+                )
+            else:
+                # For prefix match, count all matching positions
+                count = self._sample_positions_collection.count_documents(
+                    {"name": {"$regex": f"^{re.escape(sample_position.prefix)}"}}
+                )
             if count < sample_position.number:
+                match_type = "exact" if is_exact else "prefix"
                 raise ValueError(
-                    f"Position prefix `{sample_position.prefix}` can only "
+                    f"Position {match_type} `{sample_position.prefix}` can only "
                     f"have {count} matches, but requests {sample_position.number}"
                 )
 
         with self._lock():  # pylint: disable=not-callable
             available_positions: dict[str, list[dict[str, str | bool]]] = {}
             for sample_position in sample_positions_request:
+                is_exact = sample_position.prefix in exact_positions
                 result = self.get_available_sample_position(
-                    task_id, position_prefix=sample_position.prefix
+                    task_id, position_prefix=sample_position.prefix, exact_match=is_exact
                 )
                 if not result or len(result) < sample_position.number:
                     return None
@@ -252,7 +275,7 @@ class SampleView:
         return sample_position["task_id"] is not None
 
     def get_available_sample_position(
-        self, task_id: ObjectId, position_prefix: str
+        self, task_id: ObjectId, position_prefix: str, exact_match: bool = False
     ) -> list[dict[str, str | bool]]:
         """
         Check if the position is occupied.
@@ -260,18 +283,31 @@ class SampleView:
         The structure of returned list is ``{"name": str, "need_release": bool}``.
         The entry need_release indicates whether a sample position needs to be released
         when __exit__ method is called in the ``SamplePositionsLock``.
+
+        Args:
+            task_id: The task ID requesting the position
+            position_prefix: The position name or prefix to match
+            exact_match: If True, match the exact position name. If False, use prefix matching.
         """
+        if exact_match:
+            # Exact match: look for the exact position name
+            query = {"name": position_prefix}
+        else:
+            # Prefix match: use regex
+            query = {"name": {"$regex": f"^{re.escape(position_prefix)}"}}
+
         if (
-            self._sample_positions_collection.find_one(
-                {"name": {"$regex": f"^{re.escape(position_prefix)}"}}
-            )
+            self._sample_positions_collection.find_one(query)
             is None
         ):
-            raise ValueError(f"Cannot find device with prefix: {position_prefix}")
+            if exact_match:
+                raise ValueError(f"Cannot find sample position: {position_prefix}")
+            else:
+                raise ValueError(f"Cannot find device with prefix: {position_prefix}")
 
         available_sample_positions = self._sample_positions_collection.find(
             {
-                "name": {"$regex": f"^{re.escape(position_prefix)}"},
+                **query,
                 "$or": [
                     {
                         "task_id": None,
