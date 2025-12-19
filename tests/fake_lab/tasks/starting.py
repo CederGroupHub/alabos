@@ -16,7 +16,7 @@ class Starting(BaseTask):
     def run(self):
         """Run the starting task."""
         with self.lab_view.request_resources({None: {self.dest: 1}}) as (
-            inner_devices,
+            _inner_devices,
             sample_positions,
         ):
             self.lab_view.move_sample(self.sample, sample_positions[None][self.dest][0])

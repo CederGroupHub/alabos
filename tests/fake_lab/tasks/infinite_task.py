@@ -20,7 +20,7 @@ class InfiniteTask(BaseTask):
     def run(self):
         """Run the infinite task."""
         with self.lab_view.request_resources({DeviceThatNeverEnds: {}}) as (
-            inner_devices,
+            _inner_devices,
             _,
         ):
             while True:

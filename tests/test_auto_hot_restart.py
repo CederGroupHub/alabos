@@ -441,7 +441,7 @@ class TestAutoHotRestart(unittest.TestCase):
 
             # Tasks should still complete despite the refresh
             # Wait for tasks to complete with a maximum timeout
-            # 16 experiments × 3 tasks each = 48 tasks total
+            # 16 experiments x 3 tasks each = 48 tasks total
             # With 40-second heating tasks and parallel processing, allow sufficient time
             start_time = time.time()
             timeout = 300  # 300 seconds (5 minutes) timeout to allow all tasks to complete
@@ -456,7 +456,7 @@ class TestAutoHotRestart(unittest.TestCase):
                 ]
 
                 # Check if all tasks from all experiments have completed or failed
-                # 16 experiments × 3 tasks each = 48 tasks total
+                # 16 experiments x 3 tasks each = 48 tasks total
                 total_expected_tasks = 16 * 3
                 if len(completed_tasks) + len(failed_tasks) >= total_expected_tasks:
                     break

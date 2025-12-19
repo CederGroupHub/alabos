@@ -80,7 +80,7 @@ class TestLabView(TestCase):
                 },
             },
             timeout=1,
-        ) as (inner_devices, sample_positions):
+        ) as (_inner_devices, sample_positions):
             self.assertDictEqual(
                 {
                     Furnace: {"inside": ["furnace_1/inside/1"]},
@@ -150,7 +150,7 @@ class TestLabView(TestCase):
 
         with lab_view_1.request_resources(
             {Furnace: {"inside": 2}}, timeout=1
-        ) as (devices, positions):
+        ) as (_devices, positions):
             # Should get 2 positions matching prefix "furnace_X/inside"
             self.assertEqual(len(positions[Furnace]["inside"]), 2)
             # Both should start with "furnace_" and "/inside/"
@@ -171,7 +171,7 @@ class TestLabView(TestCase):
 
         with lab_view_2.request_resources(
             {None: {"furnace_table": 1}}, exact_positions={"furnace_table"}, timeout=1
-        ) as (devices, positions):
+        ) as (_devices, positions):
             # Should get exactly "furnace_table" (not "furnace_table_2" if it existed)
             self.assertEqual(positions[None]["furnace_table"], ["furnace_table"])
 
@@ -189,7 +189,7 @@ class TestLabView(TestCase):
         # First verify that prefix matching would match multiple positions
         with lab_view_3.request_resources(
             {None: {"furnace_temp": 2}}, timeout=1  # No exact_positions - uses prefix
-        ) as (devices, positions):
+        ) as (_devices, positions):
             # Should get 2 positions (could be furnace_temp/1, furnace_temp/2, etc.)
             self.assertEqual(len(positions[None]["furnace_temp"]), 2)
             # Both should start with "furnace_temp/"
@@ -208,7 +208,7 @@ class TestLabView(TestCase):
 
         with lab_view_3b.request_resources(
             {None: {"furnace_temp/1": 1}}, exact_positions={"furnace_temp/1"}, timeout=1
-        ) as (devices, positions):
+        ) as (_devices, positions):
             # Should get exactly "furnace_temp/1" (not "furnace_temp/10" or "furnace_temp/11")
             self.assertEqual(positions[None]["furnace_temp/1"], ["furnace_temp/1"])
 
@@ -224,7 +224,7 @@ class TestLabView(TestCase):
 
         with self.assertRaises(ValueError) as context, lab_view_4.request_resources(
             {Furnace: {"inside": 2}}, exact_positions={"inside"}, timeout=1
-        ) as (devices, positions):
+        ) as (_devices, _positions):
             pass
         self.assertIn("Exact position matching can only be used with number=1", str(context.exception))
 
@@ -247,7 +247,7 @@ class TestLabView(TestCase):
             },
             exact_positions={"furnace_table"},
             timeout=1,
-        ) as (devices, positions):
+        ) as (_devices, positions):
             # furnace_table should be exact (1 position)
             self.assertEqual(positions[None]["furnace_table"], ["furnace_table"])
             # furnace_temp should use prefix matching (2 positions)

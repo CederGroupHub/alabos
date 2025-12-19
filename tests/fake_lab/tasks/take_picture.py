@@ -46,7 +46,7 @@ class TakePicture(BaseTask):
         """Run the take picture task."""
         with self.lab_view.request_resources({RobotArm: {}}) as (
             inner_devices,
-            sample_positions,
+            _sample_positions,
         ):
             robot_arm: RobotArm = inner_devices[RobotArm]
             robot_arm.run_program("take_picture.urp")
@@ -73,7 +73,7 @@ class TakePictureWithoutSpecifiedResult(TakePicture):
         """Run the take picture without specified result task."""
         with self.lab_view.request_resources({RobotArm: {}}) as (
             devices,
-            sample_positions,
+            _sample_positions,
         ):
             robot_arm: RobotArm = devices[RobotArm]
             robot_arm.run_program("take_picture.urp")
@@ -110,7 +110,7 @@ class TakePictureMissingResult(BaseTask):
         """Run the take picture missing result task."""
         with self.lab_view.request_resources({RobotArm: {}}) as (
             devices,
-            sample_positions,
+            _sample_positions,
         ):
             robot_arm: RobotArm = devices[RobotArm]
             robot_arm.run_program("take_picture.urp")
