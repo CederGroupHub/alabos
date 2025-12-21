@@ -98,9 +98,10 @@ class LabView:
             for device_type, device_name in devices.items()
         }  # type: ignore
         self._task_view.update_status(task_id=self.task_id, status=TaskStatus.RUNNING)
-        yield devices, sample_positions
-
-        self._resource_requester.release_resources(request_id=request_id)
+        try:
+            yield devices, sample_positions
+        finally:
+            self._resource_requester.release_resources(request_id=request_id)
 
     def _sample_name_to_id(self, sample_name: str) -> ObjectId:
         """
