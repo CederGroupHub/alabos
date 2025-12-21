@@ -442,9 +442,10 @@
             <span class="k">for</span> <span class="n">device_type</span><span class="p">,</span> <span class="n">device_name</span> <span class="ow">in</span> <span class="n">devices</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="p">}</span>  <span class="c1"># type: ignore</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_task_view</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">)</span>
-        <span class="k">yield</span> <span class="n">devices</span><span class="p">,</span> <span class="n">sample_positions</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_resource_requester</span><span class="o">.</span><span class="n">release_resources</span><span class="p">(</span><span class="n">request_id</span><span class="o">=</span><span class="n">request_id</span><span class="p">)</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">devices</span><span class="p">,</span> <span class="n">sample_positions</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_resource_requester</span><span class="o">.</span><span class="n">release_resources</span><span class="p">(</span><span class="n">request_id</span><span class="o">=</span><span class="n">request_id</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_sample_name_to_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectId</span><span class="p">:</span>
