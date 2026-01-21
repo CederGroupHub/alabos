@@ -515,3 +515,30 @@ class TaskView:
     def exists(self, task_id: ObjectId | str) -> bool:
         """Check if a task id exists."""
         return self._task_collection.find_one({"_id": ObjectId(task_id)}) is not None
+
+    def get_all_tasks_from_db(self) -> dict[str, list[dict[str, Any]]]:
+        """
+        Get all tasks from the database directly.
+
+        Returns a dictionary mapping task types to lists of their database entries.
+        """
+        tasks = {}
+        for task_doc in self._task_collection.find():
+            task_type = task_doc.get("type", "unknown")
+            if task_type not in tasks:
+                tasks[task_type] = []
+            tasks[task_type].append(task_doc)
+        return tasks
+
+    def task_type_exists_in_db(self, task_type: str) -> bool:
+        """
+        Check if a task type exists in the database.
+
+        Args:
+            task_type: The type of task to check
+
+        Returns
+        -------
+            True if the task type exists in the database, False otherwise
+        """
+        return self._task_collection.count_documents({"type": task_type}) > 0
