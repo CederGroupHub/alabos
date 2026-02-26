@@ -401,9 +401,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.LargeResult.from_local_file"><code class="docutils literal notranslate"><span class="pre">LargeResult.from_local_file()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.LargeResult.identifier"><code class="docutils literal notranslate"><span class="pre">LargeResult.identifier</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.LargeResult.local_path"><code class="docutils literal notranslate"><span class="pre">LargeResult.local_path</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.LargeResult.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">LargeResult.model_computed_fields</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.LargeResult.model_config"><code class="docutils literal notranslate"><span class="pre">LargeResult.model_config</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.LargeResult.model_fields"><code class="docutils literal notranslate"><span class="pre">LargeResult.model_fields</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.LargeResult.retrieve"><code class="docutils literal notranslate"><span class="pre">LargeResult.retrieve()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.LargeResult.storage_type"><code class="docutils literal notranslate"><span class="pre">LargeResult.storage_type</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.LargeResult.store"><code class="docutils literal notranslate"><span class="pre">LargeResult.store()</span></code></a></li>
@@ -643,23 +641,9 @@ If file is failed to be stored, will raise a ValueError.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.task_view.task.LargeResult.model_computed_fields">
-<span class="sig-name descname"><span class="pre">model_computed_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[dict[str,</span> <span class="pre">ComputedFieldInfo]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#alab_management.task_view.task.LargeResult.model_computed_fields" title="Link to this definition">#</a></dt>
-<dd><p>A dictionary of computed field names and their corresponding <cite>ComputedFieldInfo</cite> objects.</p>
-</dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="alab_management.task_view.task.LargeResult.model_config">
 <span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'arbitrary_types_allowed':</span> <span class="pre">True}</span></em><a class="headerlink" href="#alab_management.task_view.task.LargeResult.model_config" title="Link to this definition">#</a></dt>
 <dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.task_view.task.LargeResult.model_fields">
-<span class="sig-name descname"><span class="pre">model_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[dict[str,</span> <span class="pre">FieldInfo]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'file_like_data':</span> <span class="pre">FieldInfo(annotation=Union[Any,</span> <span class="pre">NoneType],</span> <span class="pre">required=False,</span> <span class="pre">default=None),</span> <span class="pre">'identifier':</span> <span class="pre">FieldInfo(annotation=Union[str,</span> <span class="pre">ObjectId,</span> <span class="pre">NoneType],</span> <span class="pre">required=False,</span> <span class="pre">default=None),</span> <span class="pre">'local_path':</span> <span class="pre">FieldInfo(annotation=Union[str,</span> <span class="pre">Path,</span> <span class="pre">NoneType],</span> <span class="pre">required=False,</span> <span class="pre">default=None),</span> <span class="pre">'storage_type':</span> <span class="pre">FieldInfo(annotation=str,</span> <span class="pre">required=False,</span> <span class="pre">default_factory=&lt;lambda&gt;)}</span></em><a class="headerlink" href="#alab_management.task_view.task.LargeResult.model_fields" title="Link to this definition">#</a></dt>
-<dd><p>Metadata about the fields defined on the model,
-mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo].</p>
-<p>This replaces <cite>Model.__fields__</cite> from Pydantic V1.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -787,9 +771,7 @@ This method should have a timeout regardless of the storage system to not block 
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.LargeResult.from_local_file"><code class="docutils literal notranslate"><span class="pre">LargeResult.from_local_file()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.LargeResult.identifier"><code class="docutils literal notranslate"><span class="pre">LargeResult.identifier</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.LargeResult.local_path"><code class="docutils literal notranslate"><span class="pre">LargeResult.local_path</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.LargeResult.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">LargeResult.model_computed_fields</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.LargeResult.model_config"><code class="docutils literal notranslate"><span class="pre">LargeResult.model_config</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.LargeResult.model_fields"><code class="docutils literal notranslate"><span class="pre">LargeResult.model_fields</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.LargeResult.retrieve"><code class="docutils literal notranslate"><span class="pre">LargeResult.retrieve()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.LargeResult.storage_type"><code class="docutils literal notranslate"><span class="pre">LargeResult.storage_type</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.LargeResult.store"><code class="docutils literal notranslate"><span class="pre">LargeResult.store()</span></code></a></li>
@@ -823,7 +805,7 @@ By Alab Project Team
 
   <p class="copyright">
     
-      © Copyright 2025, Ceder group.
+      © Copyright 2026, Ceder group.
       <br/>
     
   </p>
