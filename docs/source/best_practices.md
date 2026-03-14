@@ -1,7 +1,5 @@
-# Best Practices
-
-To ease the deployment of AlabOS, below are several example solutions to common problems or challenges found during
-implementation:
+# Experimental processes definition best practices
+To ease the deployment of AlabOS, below are several example solutions to common problems or challenges found during implementation:
 
 ## 1. Minimizing duration for time-sensitive samples
 
@@ -184,3 +182,13 @@ consideration is to adjust resource request priorities based on the number of an
 ```{note}
 More content will be added soon.
 ```
+# File structure Best Practices
+## 1. Structuring your definition
+The type of the files define the structure. Device low-level control should be defined in a separate because all the functionality should only be called when the device is already booked by the task. If any functionality involves data generation, it should be directed to the PC where the alabos is running.
+
+## 
+It was not clear why we have device and alab_control. Two level: device and driver.
+1. Public sharing for drivers can be used for the same instrument at low-level. For example: loading SEM samples, controlling SEM operational mode.
+2. Define exception types in device. A device should only have few type of exception to be handled by alabOS if you need the user input request. If you have any error recovery routine that needs user input request, you shall define it in task and the exception is imported from device.
+3. Driver should be configuration agnostic. For any function that requires local configuration (e.g., saving directory to Sauron), you should define in Device instead of driver.
+
