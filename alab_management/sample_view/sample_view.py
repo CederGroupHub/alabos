@@ -412,7 +412,9 @@ class SampleView:
             "tags": tags or [],
             "metadata": metadata or {},
             "position": position,
+            "last_position": position,
             "task_id": None,
+            "in_transit": None,
             "created_at": datetime.now(),
             "last_updated": datetime.now(),
         }
@@ -455,6 +457,8 @@ class SampleView:
             task_id=result["task_id"],
             metadata=result.get("metadata", {}),
             tags=result.get("tags", []),
+            in_transit=result.get("in_transit"),
+            last_position=result.get("last_position", result.get("position")),
         )
 
     def update_sample_task_id(self, sample_id: ObjectId, task_id: ObjectId | None):
@@ -487,12 +491,22 @@ class SampleView:
         )
 
     def move_sample(self, sample_id: ObjectId, position: str | None):
-        """Update the sample with new position."""
+        """Update the sample with new position.
+
+        A successful move also clears any ``in_transit`` record, since the sample has arrived at a
+        well-defined position.
+        """
         result = self._sample_collection.find_one({"_id": sample_id})
         if result is None:
             raise ValueError(f"Cannot find sample with id: {sample_id}")
 
         if result["position"] == position:
+            # Position unchanged, but the sample is now at rest: clear any stale in-transit record.
+            if result.get("in_transit") is not None:
+                self._sample_collection.update_one(
+                    {"_id": sample_id},
+                    {"$set": {"in_transit": None, "last_updated": datetime.now()}},
+                )
             return
 
         if position is not None and not self.is_unoccupied_position(position):
@@ -505,15 +519,81 @@ class SampleView:
                 raise ValueError(
                     f"Requested position ({position}) is not EMPTY or LOCKED by other task."
                 )
+        update_fields = {
+            "position": position,
+            "in_transit": None,
+            "last_updated": datetime.now(),
+        }
+        # Keep last_position as the most recent *known* location: only update it when moving to a
+        # real position. When position becomes None (sample left the lab/position), retain the
+        # previous last_position so the "last known location" is never empty.
+        if position is not None:
+            update_fields["last_position"] = position
         self._sample_collection.update_one(
             {"_id": sample_id},
-            {
-                "$set": {
-                    "position": position,
-                    "last_updated": datetime.now(),
-                }
-            },
+            {"$set": update_fields},
         )
+
+    def set_sample_in_transit(
+        self, sample_id: ObjectId, source: str | None, destination: str | None
+    ):
+        """Mark a sample as being physically moved from ``source`` to ``destination``.
+
+        This is meant to be called right before a robot move begins. It does NOT change the
+        recorded ``position`` (the sample is still physically at/near ``source`` until the move
+        completes). If the move crashes mid-transfer, this record persists, so the last known
+        position plus the intended destination remain visible. ``move_sample`` clears it once the
+        sample arrives.
+        """
+        result = self._sample_collection.find_one({"_id": sample_id})
+        if result is None:
+            raise ValueError(f"Cannot find sample with id: {sample_id}")
+
+        update_fields = {
+            "in_transit": {
+                "source": source,
+                "destination": destination,
+                "started_at": datetime.now(),
+            },
+            "last_updated": datetime.now(),
+        }
+        # The sample is physically still at/near the source until the move completes, so record the
+        # source as the last known location.
+        if source is not None:
+            update_fields["last_position"] = source
+        self._sample_collection.update_one(
+            {"_id": sample_id},
+            {"$set": update_fields},
+        )
+
+    def clear_sample_in_transit(self, sample_id: ObjectId):
+        """Clear the in-transit record for a sample (e.g. for manual recovery)."""
+        result = self._sample_collection.find_one({"_id": sample_id})
+        if result is None:
+            raise ValueError(f"Cannot find sample with id: {sample_id}")
+        self._sample_collection.update_one(
+            {"_id": sample_id},
+            {"$set": {"in_transit": None, "last_updated": datetime.now()}},
+        )
+
+    def get_in_transit_samples(self) -> list[dict[str, Any]]:
+        """Return summary info for all samples currently recorded as in transit."""
+        in_transit_samples = []
+        for sample in self._sample_collection.find({"in_transit": {"$ne": None}}):
+            transit = sample.get("in_transit") or {}
+            in_transit_samples.append(
+                {
+                    "sample_id": sample["_id"],
+                    "name": sample["name"],
+                    "position": sample["position"],
+                    "last_position": sample.get("last_position", sample.get("position")),
+                    "task_id": sample.get("task_id"),
+                    "source": transit.get("source"),
+                    "destination": transit.get("destination"),
+                    "started_at": transit.get("started_at"),
+                }
+            )
+        return in_transit_samples
 
     def get_sample_positions_names_by_device(self, device_name: str) -> list[str]:
         """Get all the sample positions names that are related to a device."""
@@ -645,4 +725,6 @@ class SampleView:
             task_id=sample["task_id"],
             metadata=sample.get("metadata", {}),
             tags=sample.get("tags", []),
+            in_transit=sample.get("in_transit"),
+            last_position=sample.get("last_position", sample.get("position")),
         )

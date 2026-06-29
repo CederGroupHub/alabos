@@ -96,9 +96,17 @@ def query_experiment(exp_id: str):
             {
                 "name": sample["name"],
                 "id": str(sample["sample_id"]),
-                "position": sample_view.get_sample(sample["sample_id"]).position,
+                # Fall back to the last known location so the position field is never empty, even
+                # after a sample leaves a position or an error occurs mid-transfer.
+                "position": (
+                    _sample_obj.position
+                    if _sample_obj.position is not None
+                    else _sample_obj.last_position
+                ),
+                "last_position": _sample_obj.last_position,
             }
             for sample in experiment["samples"]
+            for _sample_obj in [sample_view.get_sample(sample["sample_id"])]
         ],
         "tasks": [],
         "progress": progress,

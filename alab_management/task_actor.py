@@ -16,6 +16,7 @@ from alab_management.logger import DBLogger
 from alab_management.sample_view import SampleView
 from alab_management.task_view import BaseTask, TaskStatus, TaskView
 from alab_management.utils.data_objects import get_rabbitmq_broker
+from alab_management.utils.error_context import format_error_report, get_error_origin
 from alab_management.utils.logger import set_up_rich_handler
 from alab_management.utils.middleware import register_abortable_middleware
 from alab_management.utils.module_ops import load_definition
@@ -107,6 +108,16 @@ def run_task(task_id_str: str):
             )
     except Exception as exception:
         task_view.update_status(task_id=task_id, status=TaskStatus.FINISHING)
+        origin = get_error_origin(exception)
+        error_report = format_error_report(
+            exc=exception,
+            task_type=task_type.__name__,
+            task_id=task_id,
+            samples=[sample["name"] for sample in task_entry["samples"]],
+            header="Task could not be created",
+        )
+        # Surface the rich error on the dashboard task message as well.
+        task_view.set_message(task_id=task_id, message=error_report)
         logger.system_log(
             level="ERROR",
             log_data={
@@ -115,9 +126,14 @@ def run_task(task_id_str: str):
                 "task_id": task_id,
                 "task_type": task_type.__name__,
                 "message": str(exception),
+                "error_type": origin["exc_type"],
+                "error_message": origin["exc_message"],
+                "error_location": origin["raised_at_str"],
+                "error_project_location": origin["project_frame_str"],
+                "traceback": error_report,
             },
         )
-        lab_view.request_cleanup()
+        lab_view.request_cleanup(error_message=error_report)
         raise Exception(
             f"Failed to create task {task_id} of type {task_type!s}"
         ) from exception
@@ -169,10 +185,23 @@ def run_task(task_id_str: str):
     except:  # noqa: E722
         task_status = TaskStatus.ERROR
         task_view.update_status(task_id=task_id, status=TaskStatus.FINISHING)
+        # Capture the process stage (the task's last status message) before we overwrite it.
+        try:
+            stage = task.get_message()
+        except Exception:  # noqa: BLE001
+            stage = None
+        origin = get_error_origin()
         formatted_exception = format_exc()
+        error_report = format_error_report(
+            task_type=task_type.__name__,
+            task_id=task_id,
+            samples=[sample["name"] for sample in task_entry["samples"]],
+            stage=stage,
+            header="Task failed",
+        )
         task_view.set_message(
-            task_id=task_id, message=formatted_exception
-        )  # display exception on the dashboard
+            task_id=task_id, message=error_report
+        )  # display rich error on the dashboard
         logger.system_log(
             level="ERROR",
             log_data={
@@ -181,13 +210,19 @@ def run_task(task_id_str: str):
                 "task_id": task_id,
                 "task_type": task_type.__name__,
                 "status": "ERROR",
+                "stage": stage,
+                "error_type": origin["exc_type"],
+                "error_message": origin["exc_message"],
+                "error_location": origin["raised_at_str"],
+                "error_project_location": origin["project_frame_str"],
                 "traceback": formatted_exception,
             },
         )
         cli_logger.error(
-            f"Task {task_type} ({task_id}) failed with the following exception: {formatted_exception}"
+            f"Task {task_type} ({task_id}) failed: {origin['exc_type']}: {origin['exc_message']} "
+            f"at {origin['raised_at_str']} (stage: {stage})"
         )
-        lab_view.request_cleanup()
+        lab_view.request_cleanup(error_message=error_report)
     else:
         task_status = TaskStatus.COMPLETED
         task_view.update_status(task_id=task_id, status=TaskStatus.FINISHING)

@@ -61,34 +61,95 @@ class DeviceView:
         self._device_list = get_all_devices()
         self._lock = get_lock(self._device_collection.name)
         self.__connected_to_devices = False
+        self._connected_device_names: set[str] = set()
         self._sample_view = SampleView()
 
         if connect_to_devices:
             self.__connect_all_devices()
 
     def __connect_all_devices(self):
+        """Connect to every device, tolerating individual connection failures.
+
+        If a device cannot be connected (e.g. it is powered off or unreachable), it is
+        disabled and paused instead of aborting the whole launch. This lets the lab run
+        everything that does not depend on the unreachable device, and the dashboard/UI can
+        show which devices were disabled because the connection could not be established.
+        """
         for device_name, device in self._device_list.items():
             print(f"Connecting to {device_name}...", end=" ")
             try:
                 device._connect_wrapper()
             except Exception as e:
-                raise DeviceConnectionError(
-                    f"Could not connect to {device_name}!"
-                ) from e
+                print("Failed!")
+                print(
+                    f"Could not connect to {device_name}: {e!r}. "
+                    "Disabling and pausing it so the rest of the lab can still launch."
+                )
+                self._mark_device_connection_failed(device_name, e)
+                continue
+            self._connected_device_names.add(device_name)
+            # If this device was previously auto-disabled due to a connection failure and is
+            # now reachable again, clear that flag so it becomes usable.
+            self._clear_connection_failed_flag(device_name)
             print("Done")
         self.__connected_to_devices = True
 
     def __disconnect_all_devices(self):
-        for device_name, device in self._device_list.items():
+        # Only disconnect devices that actually connected; devices that failed to connect
+        # never opened a connection and may not be safe to disconnect.
+        for device_name in list(self._connected_device_names):
+            device = self._device_list.get(device_name)
+            if device is None:
+                continue
             print(f"Disconnecting from {device_name}...", end=" ")
             try:
                 device._disconnect_wrapper()
             except Exception as e:
-                raise DeviceConnectionError(
-                    f"Could not disconnect from {device_name}!"
-                ) from e
+                print(f"Could not disconnect from {device_name}: {e!r}")
+                continue
             print("Done")
+        self._connected_device_names.clear()
         self.__connected_to_devices = False
+
+    def _mark_device_connection_failed(self, device_name: str, error: Exception):
+        """Flag a device as disabled because alabos could not connect to it.
+
+        The device stays registered (so it still appears on the dashboard) but is paused so
+        no task can acquire it, and its attributes record why it is disabled so the UI can
+        explain it to operators.
+        """
+        message = (
+            "DISABLED: alabos could not establish a connection to this device "
+            f"({type(error).__name__}: {error}). It is paused and cannot be used until the "
+            "connection is restored and the lab is relaunched."
+        )
+        try:
+            self.pause_device(device_name)
+            self.set_attribute(device_name, "disabled", True)
+            self.set_attribute(device_name, "disabled_reason", "connection_failed")
+            self.set_message(device_name, message)
+        except Exception as exc:  # best-effort bookkeeping; never block launch
+            print(f"Failed to flag {device_name} as disabled: {exc!r}")
+
+    def _clear_connection_failed_flag(self, device_name: str):
+        """Clear a previous connection-failure disable once a device connects again.
+
+        Manual disables (``disabled_reason`` other than ``"connection_failed"``) are left
+        untouched so intentionally disabled devices stay disabled.
+        """
+        try:
+            device_entry = self.get_device(device_name)
+        except Exception:
+            return
+        attributes = device_entry.get("attributes", {}) or {}
+        if (
+            attributes.get("disabled")
+            and attributes.get("disabled_reason") == "connection_failed"
+        ):
+            self.set_attribute(device_name, "disabled", False)
+            self.set_attribute(device_name, "disabled_reason", None)
+            self.unpause_device(device_name)
+            self.set_message(device_name, "")
 
     def sync_device_status(self):
         """

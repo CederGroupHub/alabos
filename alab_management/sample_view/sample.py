@@ -25,6 +25,17 @@ class Sample:
     position: str | None
     metadata: dict[str, Any] = field(default_factory=dict)
     tags: list[str] = field(default_factory=list)
+    # When a sample is being physically moved, ``in_transit`` records where it is coming from and
+    # going to, e.g. {"source": ..., "destination": ..., "started_at": ...}. It is None whenever the
+    # sample is at rest. compare/hash are disabled so existing Sample equality semantics are preserved.
+    in_transit: dict[str, Any] | None = field(
+        default=None, compare=False, hash=False
+    )
+    # ``last_position`` always holds the most recently recorded physical location of the sample. Unlike
+    # ``position`` (which becomes None when the sample leaves the lab / a position), this is never
+    # cleared once set, so the "last known location" is always available. compare/hash are disabled to
+    # preserve existing Sample equality semantics.
+    last_position: str | None = field(default=None, compare=False, hash=False)
 
 
 @dataclass(frozen=True)

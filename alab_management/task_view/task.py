@@ -278,6 +278,41 @@ class BaseTask(ABC, metaclass=MetaClassWithImportLock):
         """Gets the task message to be displayed on the dashboard."""
         return self._message
 
+    def format_error_report(
+        self,
+        *,
+        exc: BaseException | None = None,
+        stage: str | None = None,
+        header: str | None = None,
+        include_traceback: bool = True,
+    ) -> str:
+        """Build a rich, debuggable error report for this task.
+
+        Use this inside an ``except`` block to produce a message that identifies what failed, the
+        exact source location (file, line and function), the current process stage, the task and its
+        samples, plus the full traceback. The result is suitable for an operator prompt
+        (``request_user_input``), a dashboard message, or a Slack/email alert.
+
+        Args:
+            exc: The exception to report. If ``None``, the exception currently being handled is used.
+            stage: The process stage where it failed. Defaults to the task's last status message.
+            header: A short title for the report.
+            include_traceback: Whether to append the full traceback.
+        """
+        from alab_management.utils.error_context import (
+            format_error_report as _format_error_report,
+        )
+
+        return _format_error_report(
+            exc=exc,
+            task_type=type(self).__name__,
+            task_id=getattr(self, "task_id", None),
+            samples=list(getattr(self, "samples", []) or []),
+            stage=stage if stage is not None else self.get_message(),
+            header=header,
+            include_traceback=include_traceback,
+        )
+
     def validate(self) -> bool:
         """
         Validate the task.

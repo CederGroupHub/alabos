@@ -5,6 +5,7 @@ the lab resources (devices and sample positions).
 It can also update the position of a sample in the lab.
 """
 
+import sys
 import time
 from contextlib import contextmanager, suppress
 from traceback import format_exc
@@ -218,6 +219,30 @@ class LabView:
             raise ValueError("Cannot move a sample that does not belong to this task.")
         self._sample_view.move_sample(
             sample_id=sample_entry.sample_id, position=position
+        )
+
+    def set_sample_in_transit(
+        self, sample: ObjectId | str, source: str | None, destination: str | None
+    ):
+        """
+        Record that a sample is being physically moved from ``source`` to ``destination``.
+
+        Call this right before a robot move begins. It does not change the recorded position, so if
+        the move crashes mid-transfer the last known position plus intended destination remain
+        visible. A subsequent successful :py:meth:`move_sample` clears the record automatically.
+
+        See Also
+        --------
+        :py:meth:`set_sample_in_transit <alab_management.sample_view.sample_view.SampleView.set_sample_in_transit>`
+        """
+        # check if this sample is owned by current task
+        sample_entry = self.get_sample(sample=sample)
+        if sample_entry.task_id != self._task_id:
+            raise ValueError(
+                "Cannot set in-transit for a sample that does not belong to this task."
+            )
+        self._sample_view.set_sample_in_transit(
+            sample_id=sample_entry.sample_id, source=source, destination=destination
         )
 
     def get_locked_sample_positions(self) -> list[str]:
@@ -516,8 +541,15 @@ class LabView:
         """
         self._task_view.update_result(task_id=self.task_id, name=name, value=value)
 
-    def request_cleanup(self):
-        """Request cleanup of the task. This function will block until the task is cleaned up."""
+    def request_cleanup(self, error_message: str | None = None):
+        """Request cleanup of the task. This function will block until the task is cleaned up.
+
+        Args:
+            error_message: A pre-formatted, debuggable error report to show the operator (and send to
+                Slack/email). If not provided, a report is built from the exception currently being
+                handled so the prompt always identifies what failed, where (file/line/function), and
+                the full traceback.
+        """
         all_reserved_sample_positions = self._sample_view.get_sample_positions_by_task(
             self.task_id
         )
@@ -532,13 +564,26 @@ class LabView:
             each for each in all_positions_with_samples if each
         ]
 
-        self.request_user_input(
-            prompt="A unrecoverable error has occurred.\n"
+        if error_message is None and sys.exc_info()[0] is not None:
+            # Only build a report when there is an exception actively being handled (e.g. called from
+            # the task actor's except block). Planned cleanups (e.g. on restart) have no exception.
+            from alab_management.utils.error_context import format_error_report
+
+            error_message = format_error_report(
+                task_id=self.task_id,
+                samples=[sample_entry["name"] for sample_entry in all_samples],
+                header="Unrecoverable error",
+            )
+
+        prompt = (
+            "An unrecoverable error has occurred.\n"
             f"(1) remove samples on {', '.join(all_positions_with_samples)}\n"
-            f"(2) remove all other consumables on {', '.join(all_reserved_sample_positions)}\n"
-            f"The error information is {format_exc()}",
-            options=["OK"],
+            f"(2) remove all other consumables on {', '.join(all_reserved_sample_positions)}"
         )
+        if error_message:
+            prompt += f"\n\n{error_message}"
+
+        self.request_user_input(prompt=prompt, options=["OK"])
 
         # move the samples out of the lab
         for sample in all_samples:
