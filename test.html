@@ -1,0 +1,1086 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Testing for AlabOS Project &#8212; Alab Management 1.1.0</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
+
+    <script src="_static/documentation_options.js?v=051bfb12"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'test';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Auto Refresh" href="auto_refresh.html" />
+    <link rel="prev" title="Advance Topics" href="advance_topics.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Alab Management 1.1.0</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="index.html">
+                    Overview
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="tutorial.html">Tutorial</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="setup.html">Set up configuration folder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device_definition.html">Defining devices and sample positions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="task_definition.html">Defining tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="start_lab.html">Launching lab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submit_experiments.html">Submitting the synthesis experiments</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html">Experimental processes definition best practices</a></li>
+
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="advance_topics.html">Advance Topics</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Testing for AlabOS Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="auto_refresh.html">Auto Refresh</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="modules.html">API Docs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="alab_management.html">alab_management package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.builders.html">alab_management.builders package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.builders.experimentbuilder.html">alab_management.builders.experimentbuilder module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.builders.samplebuilder.html">alab_management.builders.samplebuilder module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.device_view.html">alab_management.device_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.device_view.dbattributes.html">alab_management.device_view.dbattributes module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.device_view.device.html">alab_management.device_view.device module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.device_view.device_view.html">alab_management.device_view.device_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.experiment_view.html">alab_management.experiment_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.experiment_view.completed_experiment_view.html">alab_management.experiment_view.completed_experiment_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.experiment_view.experiment.html">alab_management.experiment_view.experiment module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.experiment_view.experiment_view.html">alab_management.experiment_view.experiment_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.resource_manager.html">alab_management.resource_manager package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.resource_manager.enums.html">alab_management.resource_manager.enums module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.resource_manager.resource_manager.html">alab_management.resource_manager.resource_manager module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.resource_manager.resource_requester.html">alab_management.resource_manager.resource_requester module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.sample_view.html">alab_management.sample_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.sample_view.completed_sample_view.html">alab_management.sample_view.completed_sample_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.sample_view.sample.html">alab_management.sample_view.sample module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.sample_view.sample_view.html">alab_management.sample_view.sample_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.task_manager.html">alab_management.task_manager package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_manager.task_manager.html">alab_management.task_manager.task_manager module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.task_view.html">alab_management.task_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_view.completed_task_view.html">alab_management.task_view.completed_task_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_view.task.html">alab_management.task_view.task module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_view.task_enums.html">alab_management.task_view.task_enums module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_view.task_view.html">alab_management.task_view.task_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.alarm.html">alab_management.alarm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.config.html">alab_management.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.device_manager.html">alab_management.device_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.experiment_manager.html">alab_management.experiment_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.lab_view.html">alab_management.lab_view module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.logger.html">alab_management.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.task_actor.html">alab_management.task_actor module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.user_input.html">alab_management.user_input module</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/idocx/alab_management" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/test.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Testing for AlabOS Project</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methodology">Methodology</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#device-class-boxfurnace">Device Class: BoxFurnace</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#fixtures">Fixtures</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tests">Tests</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#source-code">Source code</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#task-class-heating">Task Class: Heating</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="testing-for-alabos-project">
+<h1>Testing for AlabOS Project<a class="headerlink" href="#testing-for-alabos-project" title="Link to this heading">#</a></h1>
+<p>To ensure a seamless installation and robust testing of the software system, several key processes have been implemented.</p>
+<ol class="arabic simple">
+<li><p>Testing Framework</p>
+<ul class="simple">
+<li><p>a suite of unit tests using the pytest framework. These tests cover
+all functionalities of tasks and devices, ensuring that each component works as expected
+in isolation.</p></li>
+<li><p>In addition to unit tests, integration tests are also developed. These tests validate the
+interactions between different components of the system. Integration tests are simulating
+real-world scenarios which help us to ensure that the system works correctly as a whole.</p></li>
+</ul>
+</li>
+<li><p>Continuous Integration (CI)</p>
+<ul class="simple">
+<li><p>A CI pipeline is set up using tools like GitHub Actions. This pipeline automatically runs
+the entire test suite (both unit and integration tests) whenever new code is committed.
+This ensures that any changes introduced do not break existing functionalities.</p></li>
+</ul>
+</li>
+</ol>
+<section id="methodology">
+<h2>Methodology<a class="headerlink" href="#methodology" title="Link to this heading">#</a></h2>
+<p>Before writing the unit tests, one needs to modify the files under devices &amp; tasks by adding the <code class="docutils literal notranslate"><span class="pre">&#64;mock</span> <span class="pre">decorator</span></code> to all the places that require connections to all the hardware in Alab.</p>
+<p>This decorator is defined in <code class="docutils literal notranslate"><span class="pre">alab_management/device_view/device</span></code>. The decorator uses the <code class="docutils literal notranslate"><span class="pre">Mock</span></code> class from <code class="docutils literal notranslate"><span class="pre">unittest.mock</span></code> to create dummy instances of all the objects that require API calls, including all the devices and their corresponding drivers. All the drivers of the devices are defined in alab_control which need to be mocked. Thus, the key to write good class definitions is to be able to identify the methods that talk to drivers. The mock decorator is activated by setting up the env variable — <code class="docutils literal notranslate"><span class="pre">SIM_MODE_FLAG</span> <span class="pre">=</span> <span class="pre">True</span></code>. If the SIM_MODE_FLAG is set to <code class="docutils literal notranslate"><span class="pre">False</span></code> then the code will try to connect to the real devices which will result in an error, unless you are running the code in Sauron — the computer that runs the real Alab!</p>
+<ul class="simple">
+<li><p><strong>Step 1</strong>: decorate the get_driver method inside the devices folder with &#64;mock, and specify the object type that needs to get mocked. Make sure that the object to be mocked is one of the return objects. You can also return a constant value if the return is a fixed value.</p></li>
+<li><p><strong>Step 2</strong>: most of the run_program methods have sub-methods that call in methods from alab_control in the form of <code class="docutils literal notranslate"><span class="pre">self.driver.is_running()</span></code> or any other method from self.driver</p></li>
+<li><p><strong>Step 3</strong>: look out for other methods that are communicating with the methods from alab_control, and decorate with &#64;mock by assigning a suitable return_value or return_type.</p></li>
+</ul>
+<p>Once all the methods that talk to alab_control are mocked, we can now move on to writing the actual unit tests. The unit tests make use of pytest testing framework for writing the unit-tests. We make use of <code class="docutils literal notranslate"><span class="pre">pytest.fixtures()</span></code> to create class level and module level fixtures that can be used by the individual unittests. By default, all the unittests start with <code class="docutils literal notranslate"><span class="pre">test_{name</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">method</span> <span class="pre">for</span> <span class="pre">which</span> <span class="pre">unit</span> <span class="pre">tests</span> <span class="pre">is</span> <span class="pre">written}</span></code>. Remember that a single method can have multiple unittests depending upon all the cases whose behaviour needs to be checked.</p>
+<ul class="simple">
+<li><p><strong>Step 4</strong>: one has to create pytest fixtures for all the objects that talk with the alab_control package. All the methods (ex: drivers) from alab_control need to be mocked using MagicMock from unittest.mock. Also, all the methods from alab_one that communicate with alab_control need to mocked by setting them to mocked methods using monkeypatch.setattr from pytest. Once done, these fixtures can now be used to test the methods from the classes defined in alab_one devices and tasks.</p></li>
+<li><p><strong>Step 5</strong>:  Each unittest primarly checks the following three things:</p>
+<ol class="arabic simple">
+<li><p>if the object type is the one that we were expecting</p></li>
+<li><p>if the return of the method is correct</p></li>
+<li><p>the number of times a particular method gets called</p></li>
+</ol>
+</li>
+<li><p><strong>Step 6</strong>: The unittests for tasks are also similar. They have certain pytest fixtures that can be used by the downstream unittests. These unit tests provide a set of dummy config, path and input files and checks whether the expected outcomes are met.</p></li>
+</ul>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Link to this heading">#</a></h2>
+<section id="device-class-boxfurnace">
+<h3>Device Class: BoxFurnace<a class="headerlink" href="#device-class-boxfurnace" title="Link to this heading">#</a></h3>
+<p>Key functionalities of the BoxFurnace class:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">initialization</span></code>: Sets up communication port, driver, door controller, and furnace letter.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">connect/disconnect</span></code>: Manages connection to the furnace driver.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">run_program</span></code>: Executes heating programs with specified parameters or profiles.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">emergent_stop</span></code>: Immediately stops the furnace operation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_temperature</span></code>: Retrieves the current temperature.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">open_door/close_door</span></code>: Manages the furnace door operations.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">is_running</span></code>: Checks if the furnace is currently running a program.</p></li>
+</ul>
+<section id="fixtures">
+<h4>Fixtures<a class="headerlink" href="#fixtures" title="Link to this heading">#</a></h4>
+<p>Fixtures set up the necessary preconditions for the tests:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">door_controller_ab</span></code> and <code class="docutils literal notranslate"><span class="pre">door_controller_cd</span></code>: Create instances of DoorController
+for different sets of furnaces.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">box_furnace</span></code>: Parameterized fixture to create BoxFurnace instances with various
+configurations.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mock_drivers</span></code>: Mocks the furnace and door controller drivers to isolate and test
+BoxFurnace methods without real hardware.</p></li>
+</ul>
+</section>
+<section id="tests">
+<h4>Tests<a class="headerlink" href="#tests" title="Link to this heading">#</a></h4>
+<ol class="arabic simple">
+<li><p>Basic Connection Tests:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">test_connect</span></code>: Verifies that the connect method correctly initializes the
+furnace and door controller drivers.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_disconnect:</span></code> Ensures that the disconnect method properly sets the
+furnace driver to None.</p></li>
+</ul>
+</li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_connect</span><span class="p">(</span><span class="n">box_furnace</span><span class="p">,</span> <span class="n">mock_drivers</span><span class="p">):</span>
+	<span class="n">box_furnace</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+	<span class="k">assert</span> <span class="n">box_furnace</span><span class="o">.</span><span class="n">driver</span> <span class="ow">is</span> <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+	<span class="k">assert</span> <span class="n">box_furnace</span><span class="o">.</span><span class="n">door_controller</span> <span class="ow">is</span> <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+	
+<span class="k">def</span><span class="w"> </span><span class="nf">test_disconnect</span><span class="p">(</span><span class="n">box_furnace</span><span class="p">,</span> <span class="n">mock_drivers</span><span class="p">):</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">box_furnace</span><span class="o">.</span><span class="n">driver</span> <span class="ow">is</span> <span class="kc">None</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Functional Tests:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">test_sample_positions</span></code>: Checks the sample_positions property to ensure it
+returns expected slot details.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_emergent_stop</span></code>: Confirms that the emergent_stop method calls the
+driver’s stop function.</p></li>
+</ul>
+</li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_sample_positions</span><span class="p">(</span><span class="n">box_furnace</span><span class="p">):</span>
+    <span class="n">positions</span> <span class="o">=</span> <span class="n">box_furnace</span><span class="o">.</span><span class="n">sample_positions</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">positions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="k">assert</span> <span class="n">positions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;slot&quot;</span>
+    <span class="k">assert</span> <span class="n">positions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">description</span> <span class="o">==</span> <span class="s2">&quot;The position inside the box furnace, where the samples are heated&quot;</span>
+    <span class="k">assert</span> <span class="n">positions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">number</span> <span class="o">==</span> <span class="mi">8</span>
+    
+ <span class="k">def</span><span class="w"> </span><span class="nf">test_emergent_stop</span><span class="p">(</span><span class="n">box_furnace</span><span class="p">,</span> <span class="n">mock_drivers</span><span class="p">):</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">emergent_stop</span><span class="p">()</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">stop</span><span class="o">.</span><span class="n">assert_called_once</span><span class="p">()</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Program Execution Tests:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">test_run_program</span></code>: Validates the run_program method for specified heating
+times and temperatures, ensuring segments are correctly constructed and
+sent to the driver.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_run_program_with_profiles</span></code>: Tests running custom heating profiles to
+verify segment creation and driver invocation.</p></li>
+</ul>
+</li>
+<li><p>Utility Tests:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">test_is_running</span></code>: Checks if the is_running method correctly returns the
+furnace’s running state based on environment variables.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_get_temperature</span></code>: Ensures the get_temperature method fetches the
+current temperature from the driver.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_open_door</span></code> and <code class="docutils literal notranslate"><span class="pre">test_close_door</span></code>: Verify that the open_door and close_door methods invoke</p></li>
+<li><p>the door controller’s methods with the correct parameters.</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="source-code">
+<h4>Source code<a class="headerlink" href="#source-code" title="Link to this heading">#</a></h4>
+<p>The whole source code for the BoxFurnace class is attached below:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;This module contains unit tests for the BoxFurnace class.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">timedelta</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">MagicMock</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_control.door_controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">DoorController</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_control.furnace_2416</span><span class="w"> </span><span class="kn">import</span> <span class="n">FurnaceController</span><span class="p">,</span> <span class="n">Segment</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_control.furnace_2416.furnace_driver</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ProgramEndType</span><span class="p">,</span>
+    <span class="n">SegmentType</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_example.devices.box_furnace</span><span class="w"> </span><span class="kn">import</span> <span class="n">BoxFurnace</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">door_controller_ab</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fixture for DoorController instance for furnaces A and B.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">DoorController</span><span class="p">(</span><span class="n">ip_address</span><span class="o">=</span><span class="s2">&quot;192.168.0.41&quot;</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">])</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">door_controller_cd</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fixture for DoorController instance for furnaces C and D.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">DoorController</span><span class="p">(</span><span class="n">ip_address</span><span class="o">=</span><span class="s2">&quot;192.168.0.42&quot;</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">])</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;COM17&quot;</span><span class="p">,</span> <span class="n">door_controller_ab</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;COM15&quot;</span><span class="p">,</span> <span class="n">door_controller_ab</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;COM14&quot;</span><span class="p">,</span> <span class="n">door_controller_cd</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="s2">&quot;COM13&quot;</span><span class="p">,</span> <span class="n">door_controller_cd</span><span class="p">)])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">box_furnace</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fixture to create a BoxFurnace instance for each test case.&quot;&quot;&quot;</span>
+    <span class="n">furnace_letter</span><span class="p">,</span> <span class="n">com_port</span><span class="p">,</span> <span class="n">door_controller</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">param</span>
+    <span class="k">return</span> <span class="n">BoxFurnace</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;box_</span><span class="si">{</span><span class="n">furnace_letter</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                      <span class="n">com_port</span><span class="o">=</span><span class="n">com_port</span><span class="p">,</span>
+                      <span class="n">door_controller</span><span class="o">=</span><span class="n">door_controller</span><span class="p">,</span>
+                      <span class="n">furnace_letter</span><span class="o">=</span><span class="n">furnace_letter</span><span class="p">)</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">mock_drivers</span><span class="p">(</span><span class="n">monkeypatch</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fixture to mock the drivers for furnace and door controller.&quot;&quot;&quot;</span>
+    <span class="n">mock_furnace_driver</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">spec</span><span class="o">=</span><span class="n">FurnaceController</span><span class="p">)</span>
+    <span class="n">mock_door_controller</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">spec</span><span class="o">=</span><span class="n">DoorController</span><span class="p">)</span>
+    <span class="c1"># Correctly mock get_driver to return both mocks as a tuple</span>
+    <span class="n">monkeypatch</span><span class="o">.</span><span class="n">setattr</span><span class="p">(</span><span class="s2">&quot;alab_one.devices.box_furnace.BoxFurnace.get_driver&quot;</span><span class="p">,</span>
+                        <span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="p">(</span><span class="n">mock_furnace_driver</span><span class="p">,</span> <span class="n">mock_door_controller</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">mock_furnace_driver</span><span class="p">,</span> <span class="n">mock_door_controller</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">autouse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">isolate_env_vars</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fixture to isolate the environment variables.&quot;&quot;&quot;</span>
+    <span class="n">old_value</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SIM_MODE_FLAG&quot;</span><span class="p">)</span>
+    <span class="k">yield</span>
+    <span class="k">if</span> <span class="n">old_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">unsetenv</span><span class="p">(</span><span class="s2">&quot;SIM_MODE_FLAG&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;SIM_MODE_FLAG&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">old_value</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_connect</span><span class="p">(</span><span class="n">box_furnace</span><span class="p">,</span> <span class="n">mock_drivers</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test the connect method.&quot;&quot;&quot;</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">box_furnace</span><span class="o">.</span><span class="n">driver</span> <span class="ow">is</span> <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">box_furnace</span><span class="o">.</span><span class="n">door_controller</span> <span class="ow">is</span> <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_disconnect</span><span class="p">(</span><span class="n">box_furnace</span><span class="p">,</span> <span class="n">mock_drivers</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test the disconnect method.&quot;&quot;&quot;</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">box_furnace</span><span class="o">.</span><span class="n">driver</span> <span class="ow">is</span> <span class="kc">None</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_sample_positions</span><span class="p">(</span><span class="n">box_furnace</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test the sample_positions property.&quot;&quot;&quot;</span>
+    <span class="n">positions</span> <span class="o">=</span> <span class="n">box_furnace</span><span class="o">.</span><span class="n">sample_positions</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">positions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="k">assert</span> <span class="n">positions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;slot&quot;</span>
+    <span class="k">assert</span> <span class="n">positions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">description</span> <span class="o">==</span> <span class="s2">&quot;The position inside the box furnace, where the samples are heated&quot;</span>
+    <span class="k">assert</span> <span class="n">positions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">number</span> <span class="o">==</span> <span class="mi">8</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_emergent_stop</span><span class="p">(</span><span class="n">box_furnace</span><span class="p">,</span> <span class="n">mock_drivers</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test the emergency stop method.&quot;&quot;&quot;</span>
+    <span class="c1"># Ensure the furnace is connected, setting up the driver and door controller</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">emergent_stop</span><span class="p">()</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">stop</span><span class="o">.</span><span class="n">assert_called_once</span><span class="p">()</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_run_program</span><span class="p">(</span><span class="n">box_furnace</span><span class="p">,</span> <span class="n">mock_drivers</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test running a heating program with specific parameters.&quot;&quot;&quot;</span>
+    <span class="n">heating_time_minutes</span> <span class="o">=</span> <span class="mi">120</span>
+    <span class="n">heating_temperatures</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1000</span><span class="p">,</span><span class="mi">200</span><span class="p">]</span>
+
+    <span class="c1"># Directly assign the mock_driver to the box_furnace&#39;s driver attribute</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">heating_temperature</span> <span class="ow">in</span> <span class="n">heating_temperatures</span><span class="p">:</span>
+        <span class="n">box_furnace</span><span class="o">.</span><span class="n">run_program</span><span class="p">(</span><span class="n">heating_time_minutes</span><span class="o">=</span><span class="n">heating_time_minutes</span><span class="p">,</span> <span class="n">heating_temperature</span><span class="o">=</span><span class="n">heating_temperature</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">heating_temperature</span> <span class="o">&gt;</span> <span class="mi">300</span><span class="p">:</span>
+            <span class="n">heating_segment</span> <span class="o">=</span> <span class="p">[</span>
+                            <span class="n">Segment</span><span class="p">(</span>
+                                <span class="n">segment_type</span><span class="o">=</span><span class="n">SegmentType</span><span class="o">.</span><span class="n">RAMP_RATE</span><span class="p">,</span>
+                                <span class="n">target_setpoint</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+                                <span class="n">ramp_rate_per_min</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                            <span class="p">),</span>
+                        <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">heating_segment</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">segments</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">heating_segment</span>
+                    <span class="o">+</span> <span class="p">[</span>
+                        <span class="n">Segment</span><span class="p">(</span>
+                            <span class="n">segment_type</span><span class="o">=</span><span class="n">SegmentType</span><span class="o">.</span><span class="n">RAMP_RATE</span><span class="p">,</span>
+                            <span class="n">target_setpoint</span><span class="o">=</span><span class="n">heating_temperature</span><span class="p">,</span>
+                            <span class="n">ramp_rate_per_min</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">]</span>
+                    <span class="o">+</span> <span class="p">[</span>
+                        <span class="n">Segment</span><span class="p">(</span>
+                            <span class="n">segment_type</span><span class="o">=</span><span class="n">SegmentType</span><span class="o">.</span><span class="n">DWELL</span><span class="p">,</span>
+                            <span class="c1"># the upper limit of heating is 900 minutes</span>
+                            <span class="n">duration</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span>
+                                <span class="n">minutes</span><span class="o">=</span><span class="mi">900</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">heating_time_minutes</span> <span class="o">//</span> <span class="mi">900</span> <span class="k">else</span> <span class="n">heating_time_minutes</span> <span class="o">%</span> <span class="mi">900</span>
+                            <span class="p">),</span>
+                        <span class="p">)</span>
+                        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">((</span><span class="n">heating_time_minutes</span> <span class="o">+</span> <span class="mi">899</span><span class="p">)</span> <span class="o">//</span> <span class="mi">900</span><span class="p">)</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
+        <span class="n">segments</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="n">segments</span><span class="p">,</span> <span class="n">Segment</span><span class="p">(</span><span class="n">segment_type</span><span class="o">=</span><span class="n">SegmentType</span><span class="o">.</span><span class="n">END</span><span class="p">,</span> <span class="n">endt</span><span class="o">=</span><span class="n">ProgramEndType</span><span class="o">.</span><span class="n">RESET</span><span class="p">)]</span>
+        <span class="n">box_furnace</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">run_program</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="o">*</span><span class="n">segments</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_run_program_with_profiles</span><span class="p">(</span><span class="n">box_furnace</span><span class="p">,</span> <span class="n">mock_drivers</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test running a program with a custom profile.&quot;&quot;&quot;</span>
+    <span class="n">profiles</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">60</span><span class="p">],</span> <span class="p">[</span><span class="mi">1200</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">240</span><span class="p">]]</span>
+
+    <span class="c1"># Directly assign the mock_driver to the box_furnace&#39;s driver attribute</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Mock the run_program method to simulate successful box furnace operation</span>
+    <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">run_program</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># No exception raised</span>
+
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">run_program</span><span class="p">(</span><span class="n">profiles</span><span class="o">=</span><span class="n">profiles</span><span class="p">)</span>
+
+    <span class="c1"># Verify the correct segments were created and passed to run_program</span>
+    <span class="n">expected_segments</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">Segment</span><span class="p">(</span><span class="n">SegmentType</span><span class="o">.</span><span class="n">RAMP_RATE</span><span class="p">,</span> <span class="n">target_setpoint</span><span class="o">=</span><span class="n">profiles</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">ramp_rate_per_min</span><span class="o">=</span><span class="n">profiles</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]),</span>
+        <span class="n">Segment</span><span class="p">(</span><span class="n">SegmentType</span><span class="o">.</span><span class="n">DWELL</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">profiles</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">])),</span>
+        <span class="n">Segment</span><span class="p">(</span><span class="n">SegmentType</span><span class="o">.</span><span class="n">RAMP_RATE</span><span class="p">,</span> <span class="n">target_setpoint</span><span class="o">=</span><span class="n">profiles</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">ramp_rate_per_min</span><span class="o">=</span><span class="n">profiles</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]),</span>
+        <span class="n">Segment</span><span class="p">(</span><span class="n">SegmentType</span><span class="o">.</span><span class="n">DWELL</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">profiles</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">])),</span>
+        <span class="n">Segment</span><span class="p">(</span><span class="n">SegmentType</span><span class="o">.</span><span class="n">END</span><span class="p">,</span> <span class="n">endt</span><span class="o">=</span><span class="n">ProgramEndType</span><span class="o">.</span><span class="n">RESET</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="c1"># This is a simplified assertion. You should adjust it based on the exact behavior of your run_program method.</span>
+    <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">run_program</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="o">*</span><span class="n">expected_segments</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_is_running</span><span class="p">(</span><span class="n">box_furnace</span><span class="p">,</span> <span class="n">mock_drivers</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test the is_running method.&quot;&quot;&quot;</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;SIM_MODE_FLAG&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;False&quot;</span>
+    <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">is_running</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">assert</span> <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">is_running</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">True</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;SIM_MODE_FLAG&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;True&quot;</span>
+    <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">is_running</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">assert</span> <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">is_running</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">False</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_get_temperature</span><span class="p">(</span><span class="n">box_furnace</span><span class="p">,</span> <span class="n">mock_drivers</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test the get_temperature method.&quot;&quot;&quot;</span>
+    <span class="c1"># Directly assign the mock_driver to the box_furnace&#39;s driver attribute</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Set a mock temperature to be returned by the driver</span>
+    <span class="n">mock_temperature</span> <span class="o">=</span> <span class="mf">30.0</span>
+    <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">current_temperature</span> <span class="o">=</span> <span class="n">mock_temperature</span>
+    <span class="c1"># Check if the get_temperature method correctly fetches the temperature</span>
+    <span class="k">assert</span> <span class="n">box_furnace</span><span class="o">.</span><span class="n">get_temperature</span><span class="p">()</span> <span class="o">==</span> <span class="n">mock_temperature</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;SIM_MODE_FLAG&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;False&quot;</span>
+    <span class="n">mock_temperature</span> <span class="o">=</span> <span class="mf">60.0</span>
+    <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">current_temperature</span> <span class="o">=</span> <span class="n">mock_temperature</span>
+    <span class="k">assert</span> <span class="n">box_furnace</span><span class="o">.</span><span class="n">get_temperature</span><span class="p">()</span> <span class="o">==</span> <span class="n">mock_temperature</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_open_door</span><span class="p">(</span><span class="n">box_furnace</span><span class="p">,</span> <span class="n">mock_drivers</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test the open_door method.&quot;&quot;&quot;</span>
+    <span class="c1"># Directly assign the mock_driver to the door_controller&#39;s driver attribute</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">door_controller</span> <span class="o">=</span> <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Invoke the open_door method</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">open_door</span><span class="p">()</span>
+
+    <span class="c1"># Verify that the door_controller&#39;s open method was called with the correct parameters</span>
+    <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">open</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">box_furnace</span><span class="o">.</span><span class="n">furnace_letter</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_close_door</span><span class="p">(</span><span class="n">box_furnace</span><span class="p">,</span> <span class="n">mock_drivers</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test the close_door method.&quot;&quot;&quot;</span>
+    <span class="c1"># Directly assign the mock_driver to the door_controller&#39;s driver attribute</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">door_controller</span> <span class="o">=</span> <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Invoke the close_door method</span>
+    <span class="n">box_furnace</span><span class="o">.</span><span class="n">close_door</span><span class="p">()</span>
+
+    <span class="c1"># Verify that the door_controller&#39;s close method was called with the correct parameters</span>
+    <span class="n">mock_drivers</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">box_furnace</span><span class="o">.</span><span class="n">furnace_letter</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="task-class-heating">
+<h3>Task Class: Heating<a class="headerlink" href="#task-class-heating" title="Link to this heading">#</a></h3>
+<p>Similar to the CI of the box furnace, we can also use pytest fixtures and mock to test the tasks.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;This module contains unit tests for the Heating class.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">chain</span><span class="p">,</span> <span class="n">repeat</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">patch</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_example.devices.box_furnace</span><span class="w"> </span><span class="kn">import</span> <span class="n">BoxFurnace</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_example.devices.labman_quadrant</span><span class="w"> </span><span class="kn">import</span> <span class="n">LabmanQuadrant</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_example.devices.robot_arm_furnaces</span><span class="w"> </span><span class="kn">import</span> <span class="n">RobotArmFurnaces</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_example.tasks</span><span class="w"> </span><span class="kn">import</span> <span class="n">Heating</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">lab_view_mock</span><span class="p">():</span>
+    <span class="n">mock</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+
+    <span class="n">mock_box_furnace</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">spec</span><span class="o">=</span><span class="n">BoxFurnace</span><span class="p">)</span>
+    <span class="n">mock_box_furnace</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;box_furnace_mock&quot;</span>
+
+    <span class="n">mock_box_furnace</span><span class="o">.</span><span class="n">get_temperature</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="mf">25.0</span>
+    <span class="n">mock_robot_arm</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">spec</span><span class="o">=</span><span class="n">RobotArmFurnaces</span><span class="p">)</span>
+    <span class="n">mock_labman_quadrant</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+    <span class="n">mock_labman_quadrant</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;labman_quadrant_mock&quot;</span>
+
+    <span class="n">devices_mock</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">BoxFurnace</span><span class="p">:</span> <span class="n">mock_box_furnace</span><span class="p">,</span>
+        <span class="n">RobotArmFurnaces</span><span class="p">:</span> <span class="n">mock_robot_arm</span><span class="p">,</span>
+        <span class="s2">&quot;labmanquadrant_1&quot;</span><span class="p">:</span> <span class="n">mock_labman_quadrant</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">sample_positions_mock</span> <span class="o">=</span> <span class="p">{</span><span class="n">BoxFurnace</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;slot&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;A/1&quot;</span><span class="p">,</span> <span class="s2">&quot;A/2&quot;</span><span class="p">]}}</span>
+
+    <span class="n">mock_request_resources_context</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+    <span class="n">mock_request_resources_context</span><span class="o">.</span><span class="fm">__enter__</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="n">devices_mock</span><span class="p">,</span> <span class="n">sample_positions_mock</span><span class="p">)</span>
+    <span class="n">mock_request_resources_context</span><span class="o">.</span><span class="fm">__exit__</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">mock</span><span class="o">.</span><span class="n">request_resources</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_request_resources_context</span>
+
+    <span class="n">mock</span><span class="o">.</span><span class="n">get_sample</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="s2">&quot;Position_1&quot;</span><span class="p">)</span>
+    <span class="n">mock</span><span class="o">.</span><span class="n">request_user_input</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;OK&quot;</span>
+    <span class="n">mock</span><span class="o">.</span><span class="n">get_sample_position_parent_device</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;labmanquadrant_1&quot;</span>
+    <span class="k">return</span> <span class="n">mock</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">heating</span><span class="p">(</span><span class="n">lab_view_mock</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Heating</span><span class="p">(</span><span class="n">heating_time</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">heating_temperature</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sample1&quot;</span><span class="p">,</span> <span class="s2">&quot;sample2&quot;</span><span class="p">],</span> <span class="n">lab_view</span><span class="o">=</span><span class="n">lab_view_mock</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_validate</span><span class="p">(</span><span class="n">heating</span><span class="p">):</span>
+    <span class="c1"># Test valid setup</span>
+    <span class="k">assert</span> <span class="n">heating</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span> <span class="o">==</span> <span class="kc">True</span>
+
+    <span class="c1"># Test invalid number of samples</span>
+    <span class="n">heating</span> <span class="o">=</span> <span class="n">Heating</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;sample</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">9</span><span class="p">)])</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="n">heating</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="o">.</span><span class="n">value</span><span class="p">))</span> <span class="o">==</span> <span class="s2">&quot;Number of samples must be between 1 and 8&quot;</span>
+
+    <span class="c1"># Test invalid heating temperature</span>
+    <span class="n">heating</span> <span class="o">=</span> <span class="n">Heating</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sample1&quot;</span><span class="p">,</span> <span class="s2">&quot;sample2&quot;</span><span class="p">])</span>
+    <span class="n">heating</span><span class="o">.</span><span class="n">heating_temperature</span> <span class="o">=</span> <span class="mi">1200</span>  <span class="c1"># Above MAX_TEMPERATURE</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="n">heating</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+    <span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;Heating temperature (</span><span class="si">{self.heating_temperature}</span><span class="s2">) must be less than </span><span class="si">{self.MAX_TEMPERATURE}</span><span class="s2"> C!&quot;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_check_for_labman_quadrant_single_quadrant</span><span class="p">(</span><span class="n">heating</span><span class="p">,</span> <span class="n">lab_view_mock</span><span class="p">):</span>
+    <span class="n">heating</span> <span class="o">=</span> <span class="n">Heating</span><span class="p">(</span><span class="n">heating_time</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">heating_temperature</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sample1&quot;</span><span class="p">],</span> <span class="n">lab_view</span><span class="o">=</span><span class="n">lab_view_mock</span><span class="p">)</span>
+    <span class="n">heating</span><span class="o">.</span><span class="n">lab_view</span> <span class="o">=</span> <span class="n">lab_view_mock</span>
+    <span class="n">heating</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">get_sample</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="s2">&quot;Position_1&quot;</span><span class="p">)</span>
+    <span class="n">heating</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">get_sample_position_parent_device</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;labmanquadrant_1&quot;</span>
+    <span class="k">assert</span> <span class="n">heating</span><span class="o">.</span><span class="n">check_for_labman_quadrant</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;labmanquadrant_1&quot;</span>
+
+    <span class="n">heating</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">get_sample_position_parent_device</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">heating</span><span class="o">.</span><span class="n">check_for_labman_quadrant</span><span class="p">()</span> <span class="o">==</span> <span class="kc">None</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">furnace_and_log</span><span class="p">():</span>
+    <span class="c1"># Mock the BoxFurnace object</span>
+    <span class="n">furnace_mock</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+    <span class="n">furnace_mock</span><span class="o">.</span><span class="n">get_temperature</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="mi">100</span>
+
+    <span class="n">temperature_log</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;time_minutes&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;temperature_celsius&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+    <span class="k">return</span> <span class="n">furnace_mock</span><span class="p">,</span> <span class="n">temperature_log</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_cooldown</span><span class="p">(</span><span class="n">furnace_and_log</span><span class="p">,</span> <span class="n">lab_view_mock</span><span class="p">):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;SIM_MODE_FLAG&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;False&quot;</span>
+    <span class="n">furnace_mock</span><span class="p">,</span> <span class="n">temperature_log</span> <span class="o">=</span> <span class="n">furnace_and_log</span>
+    <span class="n">heating_task</span> <span class="o">=</span> <span class="n">Heating</span><span class="p">(</span><span class="n">heating_time</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">heating_temperature</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sample1&quot;</span><span class="p">],</span> <span class="n">lab_view</span><span class="o">=</span><span class="n">lab_view_mock</span><span class="p">)</span>
+
+    <span class="n">start_time</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">fake_time</span><span class="p">():</span>
+        <span class="k">nonlocal</span> <span class="n">start_time</span>
+        <span class="n">start_time</span> <span class="o">+=</span> <span class="n">heating_task</span><span class="o">.</span><span class="n">LOGGING_INTERVAL_SECONDS</span> <span class="o">*</span> <span class="mi">60</span>
+        <span class="k">return</span> <span class="n">start_time</span>
+
+    <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s2">&quot;time.sleep&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="k">as</span> <span class="n">mock_sleep</span><span class="p">,</span> <span class="n">patch</span><span class="p">(</span><span class="s2">&quot;time.time&quot;</span><span class="p">,</span> <span class="n">side_effect</span><span class="o">=</span><span class="n">fake_time</span><span class="p">)</span> <span class="k">as</span> <span class="n">mock_time</span><span class="p">:</span>
+        <span class="n">updated_log</span> <span class="o">=</span> <span class="n">heating_task</span><span class="o">.</span><span class="n">cooldown</span><span class="p">(</span><span class="n">furnace_mock</span><span class="p">,</span> <span class="n">temperature_log</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">updated_log</span><span class="p">[</span><span class="s2">&quot;time_minutes&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">assert</span> <span class="n">updated_log</span><span class="p">[</span><span class="s2">&quot;temperature_celsius&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">100</span>
+    <span class="c1"># We need to return the flag to True since otherwise there will be leakage between tests!</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;SIM_MODE_FLAG&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;True&quot;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_run</span><span class="p">(</span><span class="n">heating</span><span class="p">,</span> <span class="n">lab_view_mock</span><span class="p">):</span>
+    <span class="c1"># Set the initial time for the fake_time function</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">fake_time</span><span class="p">():</span>
+        <span class="n">start_time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">heating</span><span class="o">.</span><span class="n">LOGGING_INTERVAL_SECONDS</span> <span class="o">*</span> <span class="mi">6</span>
+        <span class="k">return</span> <span class="n">start_time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Create mocks for BoxFurnace, RobotArmFurnaces, and LabmanQuadrant</span>
+    <span class="n">box_furnace_mock</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">spec</span><span class="o">=</span><span class="n">BoxFurnace</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;box_furnace_mock&quot;</span><span class="p">)</span>
+    <span class="n">box_furnace_mock</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;box_furnace_mock&quot;</span>
+    <span class="n">robot_arm_mock</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">spec</span><span class="o">=</span><span class="n">RobotArmFurnaces</span><span class="p">)</span>
+    <span class="n">labman_quadrant_mock</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">spec</span><span class="o">=</span><span class="n">LabmanQuadrant</span><span class="p">)</span>
+    <span class="n">labman_quadrant_mock</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;labmanquadrant_mock&quot;</span>
+
+    <span class="c1"># Simulate is_running() being True twice, then False.</span>
+    <span class="n">is_running_side_effect</span> <span class="o">=</span> <span class="n">chain</span><span class="p">([</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">],</span> <span class="n">repeat</span><span class="p">(</span><span class="kc">False</span><span class="p">))</span>
+    <span class="n">box_furnace_mock</span><span class="o">.</span><span class="n">is_running</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">is_running_side_effect</span>
+    <span class="n">box_furnace_mock</span><span class="o">.</span><span class="n">get_temperature</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="mf">100.0</span>  <span class="c1"># Return a fixed temperature</span>
+
+    <span class="c1"># Simulate BoxFurnace, RobotArmFurnaces, and LabmanQuadrant being part of the resources returned by request_resources</span>
+    <span class="n">mock_context_manager</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+    <span class="n">mock_context_manager</span><span class="o">.</span><span class="fm">__enter__</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">{</span>
+            <span class="n">BoxFurnace</span><span class="p">:</span> <span class="n">box_furnace_mock</span><span class="p">,</span>
+            <span class="n">RobotArmFurnaces</span><span class="p">:</span> <span class="n">robot_arm_mock</span><span class="p">,</span>
+            <span class="s2">&quot;labmanquadrant_1&quot;</span><span class="p">:</span> <span class="n">labman_quadrant_mock</span><span class="p">,</span>
+        <span class="p">},</span>  <span class="c1"># Devices</span>
+        <span class="p">{</span><span class="n">BoxFurnace</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;slot&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]}},</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Assuming fake_time() is defined as before to simulate the passage of time</span>
+    <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s2">&quot;time.time&quot;</span><span class="p">,</span> <span class="n">side_effect</span><span class="o">=</span><span class="n">fake_time</span><span class="p">),</span> <span class="n">patch</span><span class="p">(</span><span class="s2">&quot;time.sleep&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">lab_view_mock</span><span class="o">.</span><span class="n">request_resources</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_context_manager</span>
+        <span class="n">heating</span><span class="o">.</span><span class="n">lab_view</span> <span class="o">=</span> <span class="n">lab_view_mock</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">heating</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+        <span class="n">lab_view_mock</span><span class="o">.</span><span class="n">request_resources</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span>
+        <span class="n">retrieved_box_furnace</span> <span class="o">=</span> <span class="n">mock_context_manager</span><span class="o">.</span><span class="fm">__enter__</span><span class="o">.</span><span class="n">return_value</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">BoxFurnace</span><span class="p">]</span>
+        <span class="n">retrieved_box_furnace</span><span class="o">.</span><span class="n">open_door</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span>
+        <span class="n">retrieved_robot_arm</span> <span class="o">=</span> <span class="n">mock_context_manager</span><span class="o">.</span><span class="fm">__enter__</span><span class="o">.</span><span class="n">return_value</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">RobotArmFurnaces</span><span class="p">]</span>
+        <span class="n">retrieved_robot_arm</span><span class="o">.</span><span class="n">move_rack_into_box_furnace</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span>
+        <span class="n">retrieved_labman_quadrant</span> <span class="o">=</span> <span class="n">mock_context_manager</span><span class="o">.</span><span class="fm">__enter__</span><span class="o">.</span><span class="n">return_value</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;labmanquadrant_1&quot;</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">result</span> <span class="o">==</span> <span class="p">{</span>  
+                            <span class="s2">&quot;heating_temperature&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>
+                            <span class="s2">&quot;heating_time&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
+                            <span class="s2">&quot;heating_profiles&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                            <span class="s2">&quot;cooling_rate&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                            <span class="s2">&quot;low_temperature_calcination&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                            <span class="s2">&quot;temperature_log&quot;</span><span class="p">:</span> 
+                            <span class="p">{</span><span class="s2">&quot;time_minutes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">18.0</span><span class="p">],</span> 
+                            <span class="s2">&quot;temperature_celsius&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">100.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">]}</span>
+                          <span class="p">}</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="n">box_furnace_mock</span><span class="o">.</span><span class="n">is_running</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="advance_topics.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Advance Topics</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="auto_refresh.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Auto Refresh</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methodology">Methodology</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#device-class-boxfurnace">Device Class: BoxFurnace</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#fixtures">Fixtures</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tests">Tests</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#source-code">Source code</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#task-class-heating">Task Class: Heating</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Alab Project Team
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026, Ceder group.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
