@@ -627,7 +627,7 @@ class DeviceManager:
             channel.queue_declare(
                 queue=self._rpc_queue_name,
                 auto_delete=True,
-                exclusive=False,
+                exclusive=True,
             )
             channel.basic_consume(
                 queue=self._rpc_queue_name,
@@ -783,7 +783,7 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
         self._conn = get_rabbitmq_connection()
         self._channel = self._conn.channel()
         self._channel.queue_declare(
-            self._rpc_reply_queue_name, exclusive=False, auto_delete=True
+            self._rpc_reply_queue_name, exclusive=True, auto_delete=True
         )
 
         self._thread: Thread | None = None
