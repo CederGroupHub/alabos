@@ -1,8 +1,6 @@
 import React from 'react';
 import Paper from '@mui/material/Paper';
-import styled from 'styled-components';
 import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
@@ -11,6 +9,9 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import ButtonGroup from '@mui/material/ButtonGroup';
+import Stack from '@mui/material/Stack';
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Grow from '@mui/material/Grow';
@@ -21,7 +22,6 @@ import { useEffect } from 'react';
 import { get_pending_userinputrequests, respond_to_userinputrequest } from '../../api_routes';
 import { HoverText } from '../../utils';
 import Badge from '@mui/material/Badge';
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 // import Icon from '@mui/material/Icon';
 
 // import * as React from 'react';
@@ -204,22 +204,107 @@ function UserInputs({ hoverForId }) {
   //https://upmostly.com/tutorials/how-to-post-requests-react
   const [pending, setPending] = React.useState({});
   const [idToName, setIdToName] = React.useState({});
+  const [bulkSubmitting, setBulkSubmitting] = React.useState(false);
+  const [message, setMessage] = React.useState(null);
+
+  const refreshPendingRequests = React.useCallback(() => {
+    get_pending_userinputrequests().then(requests => {
+      setPending(requests.pending);
+      setIdToName(requests.experiment_id_to_name)
+    })
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      get_pending_userinputrequests().then(requests => {
-        setPending(requests.pending);
-        setIdToName(requests.experiment_id_to_name)
-      })
+      refreshPendingRequests();
     }, 250);
     return () => clearInterval(interval);
-  }, []);
+  }, [refreshPendingRequests]);
+
+  useEffect(() => {
+    refreshPendingRequests();
+  }, [refreshPendingRequests]);
+
+  const allRequests = Object.values(pending).flat();
+  const getCompletedOption = (request) =>
+    (request.options || []).find((option) => option === "Mark as Completed") || null;
+
+  const handleMarkAllCompleted = async () => {
+    const completableRequests = allRequests
+      .map((request) => ({
+        request,
+        completedOption: getCompletedOption(request),
+      }))
+      .filter(({ completedOption }) => completedOption !== null);
+    const skippedCount = allRequests.length - completableRequests.length;
+
+    if (completableRequests.length === 0) {
+      setMessage({
+        severity: "warning",
+        text: skippedCount > 0
+          ? "No pending requests offer the exact 'Mark as Completed' option."
+          : "There are no pending requests to complete.",
+      });
+      return;
+    }
+
+    setBulkSubmitting(true);
+    try {
+      await Promise.all(
+        completableRequests.map(async ({ request, completedOption }) => {
+          const response = await respond_to_userinputrequest(request.id, completedOption, "");
+          if (!response.ok) {
+            throw new Error(`Failed to update request ${request.id}`);
+          }
+        })
+      );
+      setMessage({
+        severity: "success",
+        text: skippedCount > 0
+          ? `Marked ${completableRequests.length} request(s) as completed. Skipped ${skippedCount} request(s) without the exact 'Mark as Completed' option.`
+          : `Marked ${completableRequests.length} request(s) as completed.`,
+      });
+      refreshPendingRequests();
+    } catch (error) {
+      setMessage({
+        severity: "error",
+        text: "Failed to mark all eligible requests as completed.",
+      });
+    } finally {
+      setBulkSubmitting(false);
+    }
+  };
 
 
   return (
-    Object.entries(pending).map(([experiment_id, requests]) => (
-      <UserInputAccordion experiment_id={experiment_id} experiment_name={idToName[experiment_id]} requests={requests} key={experiment_id} hoverForId={hoverForId} />
-    )))
+    <Stack spacing={2}>
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <div>
+          <Typography variant="h5">User Input Requests</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Resolve pending operator prompts individually or complete them in bulk when appropriate.
+          </Typography>
+        </div>
+        <Button
+          variant="contained"
+          onClick={handleMarkAllCompleted}
+          disabled={bulkSubmitting || allRequests.length === 0}
+        >
+          Mark all as completed
+        </Button>
+      </Stack>
+      {Object.entries(pending).map(([experiment_id, requests]) => (
+        <UserInputAccordion experiment_id={experiment_id} experiment_name={idToName[experiment_id]} requests={requests} key={experiment_id} hoverForId={hoverForId} />
+      ))}
+      <Snackbar
+        open={message !== null}
+        autoHideDuration={5000}
+        onClose={() => setMessage(null)}
+      >
+        {message ? <Alert severity={message.severity}>{message.text}</Alert> : null}
+      </Snackbar>
+    </Stack>
+  )
 }
 
 

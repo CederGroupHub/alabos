@@ -87,6 +87,16 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange }) {
         </LinkedButton>
       </ListItem>
       <ListItem>
+        <LinkedButton to="/#device-control">
+          <ListItemButton className={hash === "#device-control" ? "active list-button-round" : "list-button-round"}>
+            <ListItemIcon>
+              <SettingsRemoteIcon />
+            </ListItemIcon>
+            <ListItemText primary="Device Control" />
+          </ListItemButton>
+        </LinkedButton>
+      </ListItem>
+      <ListItem>
         <LinkedButton to="/#sample-positions">
           <ListItemButton className={hash === "#sample-positions" ? "active list-button-round" : "list-button-round"}>
             <ListItemIcon>
@@ -103,16 +113,6 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange }) {
               <TableChartIcon />
             </ListItemIcon>
             <ListItemText primary="Data" />
-          </ListItemButton>
-        </LinkedButton>
-      </ListItem>
-      <ListItem>
-        <LinkedButton to="/#device-control">
-          <ListItemButton className={hash === "#device-control" ? "active list-button-round" : "list-button-round"}>
-            <ListItemIcon>
-              <SettingsRemoteIcon />
-            </ListItemIcon>
-            <ListItemText primary="Device Control" />
           </ListItemButton>
         </LinkedButton>
       </ListItem>
