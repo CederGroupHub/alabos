@@ -4,7 +4,7 @@ import { AppBar, CssBaseline, Typography } from "@mui/material";
 import styled from "styled-components";
 import { Routes, Route, NavLink, BrowserRouter } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import alabLogo from "./logo512.png";
+import alabLogo from "./alab_logo.png";
 
 const theme = createTheme({
   palette: {
@@ -57,7 +57,7 @@ const theme = createTheme({
 });
 
 const StyledAppBar = styled(AppBar)`
-  height: 76px !important;
+  height: 88px !important;
   background: linear-gradient(135deg, #183245 0%, #24465d 52%, #31556d 100%) !important;
   box-shadow: 0 18px 40px rgba(14, 29, 40, 0.18) !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -65,7 +65,7 @@ const StyledAppBar = styled(AppBar)`
   flex-direction: row !important;
   align-items: center;
   font-family: "Roboto", sans-serif;
-  padding: 0 28px;
+  padding: 0 30px;
 
   a {
     color: inherit;
@@ -74,12 +74,24 @@ const StyledAppBar = styled(AppBar)`
 `;
 
 const StyledLogo = styled.img`
-  height: 48px;
-  width: 48px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.12);
+  height: 100%;
+  width: 100%;
+  border-radius: 0;
+  object-fit: contain;
+`;
+
+const StyledLogoTile = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  width: 56px;
+  border-radius: 16px;
+  background-color: rgb(230, 240, 247) !important;
   padding: 6px;
-  margin-right: 24px;
+  box-sizing: border-box;
+  overflow: hidden;
+  margin-right: 26px;
 `;
 
 function App() {
@@ -89,7 +101,11 @@ function App() {
         <CssBaseline />
         <StyledAppBar position="sticky">
           <div style={{ display: "flex", alignItems: "center" }}>
-            <NavLink to="/"><StyledLogo src={alabLogo} /></NavLink>
+            <NavLink to="/">
+              <StyledLogoTile>
+                <StyledLogo src={alabLogo} />
+              </StyledLogoTile>
+            </NavLink>
             <Typography
               variant="h5"
               sx={{
@@ -98,7 +114,7 @@ function App() {
                 ml: 0.5,
                 color: "#f5fbff",
                 textTransform: "uppercase",
-                fontSize: { xs: "1.2rem", sm: "1.45rem" },
+                fontSize: { xs: "1.35rem", sm: "1.62rem" },
               }}
             >
               A-Lab
