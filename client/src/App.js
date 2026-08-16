@@ -6,14 +6,15 @@ import { Routes, Route, NavLink, BrowserRouter } from "react-router-dom";
 import alabLogo from "./logo512.png";
 
 const StyledAppBar = styled(AppBar)`
-  height: 60px !important;
-  box-shadow: 0px 2px 4px -1px rgb(0 0 0 / 14%),
-    0px 4px 5px 0px rgb(0 0 0 / 10%), 0px 1px 5px 0px rgb(0 0 0 / 6%) !important;
+  height: 76px !important;
+  background: linear-gradient(135deg, #183245 0%, #24465d 52%, #31556d 100%) !important;
+  box-shadow: 0 18px 40px rgba(14, 29, 40, 0.18) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: row !important;
   align-items: center;
-  font-family: roboto;
-  padding: 0 20px;
+  font-family: "Roboto", sans-serif;
+  padding: 0 28px;
 
   a {
     color: inherit;
@@ -22,8 +23,12 @@ const StyledAppBar = styled(AppBar)`
 `;
 
 const StyledLogo = styled.img`
-  height: 45px;
-  margin-right: 22px;
+  height: 48px;
+  width: 48px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 6px;
+  margin-right: 24px;
 `;
 
 function App() {
@@ -32,7 +37,17 @@ function App() {
       <StyledAppBar position="sticky">
         <div style={{ display: "flex", alignItems: "center" }}>
           <NavLink to="/"><StyledLogo src={alabLogo} /></NavLink>
-          <Typography variant="h5" sx={{ fontWeight: 700, letterSpacing: "0.02em", ml: 0.5 }}>
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: 700,
+              letterSpacing: "0.08em",
+              ml: 0.5,
+              color: "#f5fbff",
+              textTransform: "uppercase",
+              fontSize: { xs: "1.2rem", sm: "1.45rem" },
+            }}
+          >
             A-Lab
           </Typography>
         </div>

@@ -1,6 +1,20 @@
 # TODO
 
-- Verify whether the Sample Positions UI should derive slot availability and occupancy from `devices` documents, especially device `attributes.available_slots`, instead of relying on the current `sample_positions` plus live `samples` collections.
-- Confirm the exact MongoDB source of truth for DASH rack occupancy on the production system:
-  `devices` collection, `sample_positions` collection, or both.
-- If `devices.attributes.available_slots` is authoritative, update the Sample Positions backend to read from that structure and document the mapping between device attributes and rack slot labels shown in the UI.
+1. Finish `Device Control`.
+   Use the device-command examples in the `alab_one` README as the starting reference for what should be exposed in the new Device Control tab.
+   On the Sauron computer, inspect the cached browser commands that Jessica and Tudor have been using to send requests directly to device IP addresses.
+   Those cached IP-address command patterns are the minimum set that should be exposed in the Device Control UI.
+
+2. Fix `Sample Positions`.
+   Check with Tudor exactly how he currently adds and removes samples in MongoDB, including how slots are numbered and how positions are represented.
+   Ensure the Sample Positions tab matches Tudor's real MongoDB workflow closely enough that operators no longer need to open MongoDB directly.
+   Re-check whether the production source of truth is `devices.attributes.available_slots`, `sample_positions`, live `samples`, or some combination of them.
+
+3. Refine `Data` exports.
+   Decide what operators and experimenters actually need in the CSV outputs at the end of an experiment.
+   Keep the exports to the minimum genuinely useful fields rather than exposing extra MongoDB data by default.
+   Re-check which summary fields are essential for powder dosing, heating, and end-of-run sample tracking.
+
+4. Continue dashboard visual cleanup.
+   Keep the overall layout and arrangement unchanged, but continue refining the color system.
+   Secondary colors in the Devices tab, especially the bright blue, bright orange, and pause-state red, should be muted so they match the sleeker minimal shell.

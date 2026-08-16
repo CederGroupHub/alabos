@@ -15,12 +15,14 @@ import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import SettingsRemoteIcon from '@mui/icons-material/SettingsRemote';
 import UserInputs from './components/UserInput';
 import Badge from '@mui/material/Badge';
-import { grey } from '@mui/material/colors';
 import { get_pending_userinputrequests } from '../api_routes';
 
 const StyledDashboardDiv = styled.div`
-  height: calc(100vh - 60px);
+  min-height: calc(100vh - 76px);
   display: flex;
+  background:
+    radial-gradient(circle at top left, rgba(117, 181, 214, 0.12), transparent 30%),
+    linear-gradient(180deg, #f4f8fb 0%, #eef3f7 100%);
 `;
 
 const LinkedButton = styled(Link)`
@@ -29,12 +31,37 @@ const LinkedButton = styled(Link)`
   text-decoration: inherit;
   cursor: inherit;
 
-  .active {
-    background-color: #eaeaea;
+  .list-button-round.active {
+    background: linear-gradient(135deg, #203d51 0%, #2f5970 100%);
+    color: #f8fcff;
+    box-shadow: 0 10px 24px rgba(31, 61, 79, 0.18);
+  }
+
+  .list-button-round.active .MuiListItemIcon-root {
+    color: #f8fcff;
+  }
+
+  .list-button-round.active:hover,
+  .list-button-round.active.MuiListItemButton-root:hover {
+    background: linear-gradient(135deg, #203d51 0%, #2f5970 100%);
+    color: #f8fcff;
+    box-shadow: 0 10px 24px rgba(31, 61, 79, 0.18);
+  }
+
+  .list-button-round.active:hover .MuiListItemIcon-root,
+  .list-button-round.active.MuiListItemButton-root:hover .MuiListItemIcon-root {
+    color: #f8fcff;
   }
 
   .list-button-round {
-    border-radius: 12px;
+    border-radius: 14px;
+    min-height: 48px;
+    transition: background-color 160ms ease, box-shadow 160ms ease, color 160ms ease;
+  }
+
+  .list-button-round:hover,
+  .list-button-round.MuiListItemButton-root:hover {
+    background: rgba(35, 72, 93, 0.08);
   }
 `;
 
@@ -42,19 +69,15 @@ const pullerWidth = 12;
 const drawerWidth = 240;
 
 const StyledBox = styled(Box)(() => ({
-  // backgroundColor: theme.palette.mode === 'light' ? '#fff' : grey[800],
-  // backgroundColor: grey[50],
+  backdropFilter: 'blur(8px)',
 }));
 
 const Puller = styled(Box)(() => ({
   width: pullerWidth / 2,
   height: 60,
-  // backgroundColor: theme.palette.mode === 'light' ? grey[300] : grey[900],
-  backgroundColor: grey[800],
+  backgroundColor: '#28475c',
   borderRadius: 3,
   position: 'absolute',
-  // left: 8,
-  // top: 'calc(50% - 15px)',
 }));
 
 function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange }) {
@@ -163,13 +186,12 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange }) {
       <StyledBox
         sx={{
           position: 'absolute',
-          borderTopLeftRadius: 8,
-          borderTopRightRadius: 8,
+          borderTopLeftRadius: 10,
+          borderTopRightRadius: 10,
           visibility: 'visible',
           width: pullerWidth,
-          height: 'calc(100% - 60px)',
-          top: 60,
-          // right: -,
+          height: 'calc(100% - 76px)',
+          top: 76,
           left: 0,
           display: { xs: "block", sm: "none" },
         }}
@@ -199,8 +221,13 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange }) {
         variant='permanent'
         sx={{
           display: { xs: "none", sm: "block" },
-          width: drawerWidth, minWidth: "15%", flexShrink: 0, margin: "12px 0",
-          [`& .MuiDrawer-paper`]: { width: 300, boxSizing: 'border-box', display: "contents", padding: "8px" }
+          width: drawerWidth, minWidth: "15%", flexShrink: 0, margin: "20px 0",
+          [`& .MuiDrawer-paper`]: {
+            width: 300,
+            boxSizing: 'border-box',
+            display: "contents",
+            padding: "14px 12px",
+          }
         }}>
         {drawerContents}
       </Drawer>
@@ -240,7 +267,19 @@ function Dashboard() {
   return (
     <StyledDashboardDiv>
       <Sidebar hoverForId={hoverForId} setHoverForId={setHoverForId} handleHoverForIdChange={(event) => { handleHoverForIdChange(event.target.checked) }} />
-      <Box component="main" sx={{ flexGrow: 1, margin: "16px 12px" }}>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          margin: "20px 18px 22px 8px",
+          p: { xs: 1.5, sm: 2.5 },
+          borderRadius: "24px",
+          background: "rgba(255, 255, 255, 0.72)",
+          border: "1px solid rgba(34, 62, 81, 0.08)",
+          boxShadow: "0 18px 44px rgba(33, 58, 75, 0.08)",
+          backdropFilter: "blur(10px)",
+        }}
+      >
         <SwitchContent />
       </Box>
     </StyledDashboardDiv>
