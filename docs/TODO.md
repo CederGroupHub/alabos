@@ -26,3 +26,13 @@
 6. Reintroduce `Ruff` checks later.
    The current `alabos` repo does not pass repo-wide Ruff linting because of broad pre-existing issues in scaffold and example files.
    Re-implement Ruff checks once the relevant files have been cleaned up and the intended lint scope has been agreed.
+
+7. Validate `Device Control` against real hardware.
+   Check every new Device Control button on the real DASH devices before trusting the UI in production.
+   Confirm that the mixed safety model, where reads are direct but actuation requires an ALabOS claim, matches the actual operator workflow in the lab.
+   Re-check timeout values and operator-facing error text against real failure behavior on hardware.
+   After hardware behavior is confirmed, add automated backend and frontend tests that lock in the validated command flows and error handling.
+
+8. Clean up the `Device Control` UI.
+   Improve readability once the backend behavior is settled and the real command set is confirmed.
+   Revisit spacing, grouping, and result presentation so manual control is easier to scan during operation.

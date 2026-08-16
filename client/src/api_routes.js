@@ -169,3 +169,47 @@ export const DATA_DOWNLOADS = {
     powderDosing: DATA_API + "/powder_dosing_actuals.csv",
     taskOutcome: DATA_API + "/task_outcome_log.csv",
 };
+
+// Device control
+const DEVICE_CONTROL_API = process.env.NODE_ENV === "production" ? "/api/device-control" : URL + "/api/device-control";
+
+export async function get_device_control_catalog() {
+    const res = await fetch(DEVICE_CONTROL_API + "/catalog", { mode: 'cors' });
+    return await res.json();
+}
+
+export async function claim_device_control(device_name) {
+    const res = await fetch(DEVICE_CONTROL_API + "/claim", {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ device_name }),
+    });
+    return await res.json();
+}
+
+export async function release_device_control(device_name, manual_task_id) {
+    const res = await fetch(DEVICE_CONTROL_API + "/release", {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ device_name, manual_task_id }),
+    });
+    return await res.json();
+}
+
+export async function execute_device_control_command(device_name, command_name, manual_task_id = null, params = {}) {
+    const res = await fetch(DEVICE_CONTROL_API + "/command", {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ device_name, command_name, manual_task_id, params }),
+    });
+    return await res.json();
+}
