@@ -56,10 +56,6 @@ const DEVICE_ACCENTS = {
   pauseRequestedText: '#7a6146',
   pausedBg: '#dce6ec',
   pausedText: '#27485c',
-  pauseButtonBg: '#d32f2f',
-  pauseButtonHover: '#b71c1c',
-  actionButtonBg: '#1976d2',
-  actionButtonHover: '#1565c0',
   badgeBg: '#45697c',
   badgeText: '#ffffff',
 };
@@ -117,11 +113,8 @@ function Row({ device, hoverForId }) {
         return (
           <Button
             variant="contained"
+            color="error"
             onClick={() => { request_device_pause(device_name) }}
-            sx={{
-              backgroundColor: DEVICE_ACCENTS.pauseButtonBg,
-              '&:hover': { backgroundColor: DEVICE_ACCENTS.pauseButtonHover },
-            }}
           >
             Pause
           </Button>
@@ -130,11 +123,8 @@ function Row({ device, hoverForId }) {
         return (
           <Button
             variant="contained"
+            color="primary"
             onClick={() => release_device_pause(device_name)}
-            sx={{
-              backgroundColor: DEVICE_ACCENTS.actionButtonBg,
-              '&:hover': { backgroundColor: DEVICE_ACCENTS.actionButtonHover },
-            }}
           >
             Cancel Pause Request
           </Button>
@@ -143,11 +133,8 @@ function Row({ device, hoverForId }) {
         return (
           <Button
             variant="contained"
+            color="primary"
             onClick={() => release_device_pause(device_name)}
-            sx={{
-              backgroundColor: DEVICE_ACCENTS.actionButtonBg,
-              '&:hover': { backgroundColor: DEVICE_ACCENTS.actionButtonHover },
-            }}
           >
             Release
           </Button>
