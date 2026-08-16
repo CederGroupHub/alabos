@@ -98,7 +98,8 @@ configuration will be used as default. The configuration file will look like thi
     username = ''
 
     # all the completed experiments are stored in this database
-    # the db name will be the lab name + '_completed'
+    # the db name will be the lab name + '(completed)'
+    # in simulation mode this becomes the lab name + '(completed)_sim'
     [mongodb_completed]
     host = "localhost"
     password = ""

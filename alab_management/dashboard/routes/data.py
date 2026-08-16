@@ -10,14 +10,66 @@ from typing import Any
 from flask import Blueprint, Response, jsonify
 
 from alab_management.dashboard.lab_views import sample_view, task_view
-from alab_management.utils.data_objects import make_jsonable
+from alab_management.utils.data_objects import (
+    get_completed_collection,
+    make_jsonable,
+)
 
 data_bp = Blueprint("/data", __name__, url_prefix="/api/data")
 
 
+def _get_history_collection(name: str):
+    """Prefer the completed DB for historical exports, falling back to the working DB."""
+    try:
+        completed = get_completed_collection(name)
+        if completed.count_documents({}) > 0:
+            return completed
+    except ValueError:
+        pass
+
+    if name == "samples":
+        return sample_view._sample_collection
+    if name == "tasks":
+        return task_view._task_collection
+    raise ValueError(f"Unsupported history collection: {name}")
+
+
+def _sample_id_str(sample_id: Any) -> str | None:
+    return str(sample_id) if sample_id is not None else None
+
+
+def _completed_sample_docs() -> dict[str, dict[str, Any]]:
+    return {
+        str(sample["_id"]): sample
+        for sample in _get_history_collection("samples").find()
+    }
+
+
+def _tasks_by_sample_id() -> dict[str, list[dict[str, Any]]]:
+    by_sample_id: dict[str, list[dict[str, Any]]] = {}
+    for task in _get_history_collection("tasks").find():
+        for sample in task.get("samples", []):
+            sample_id = _sample_id_str(sample.get("sample_id"))
+            if sample_id is None:
+                continue
+            by_sample_id.setdefault(sample_id, []).append(task)
+    return by_sample_id
+
+
+def _sample_metadata(sample_doc: dict[str, Any] | None) -> dict[str, Any]:
+    return (sample_doc or {}).get("metadata") or {}
+
+
+def _find_first_task_of_type(tasks: list[dict[str, Any]], task_type: str) -> dict[str, Any] | None:
+    for task in tasks:
+        if task.get("type") == task_type:
+            return task
+    return None
+
+
 def _sample_summary_rows() -> list[dict[str, Any]]:
     rows = []
-    for sample in sample_view._sample_collection.find().sort("created_at", 1):
+    for sample in _get_history_collection("samples").find().sort("created_at", 1):
         rows.append(
             {
                 "sample_id": str(sample["_id"]),
@@ -36,57 +88,137 @@ def _sample_summary_rows() -> list[dict[str, Any]]:
 
 def _powder_dosing_rows() -> list[dict[str, Any]]:
     rows = []
-    for sample in sample_view._sample_collection.find(
-        {"metadata.powderdosing_results": {"$exists": True}}
-    ).sort("created_at", 1):
-        dosing = (sample.get("metadata") or {}).get("powderdosing_results") or {}
-        powders = dosing.get("Powders") or []
-        if not powders:
-            rows.append(
-                {
-                    "sample_id": str(sample["_id"]),
-                    "sample_name": sample["name"],
-                    "position": sample.get("position"),
-                    "last_position": sample.get("last_position"),
-                    "mixing_pot_position": dosing.get("MixingPotPosition"),
-                    "actual_transfer_mass": dosing.get("ActualTransferMass"),
-                    "target_transfer_volume": dosing.get("TargetTransferVolume"),
-                    "ethanol_dispense_volume": dosing.get("EthanolDispenseVolume"),
-                    "powder_name": None,
-                    "target_mass": None,
-                    "dose_head_position": None,
-                    "dose_mass": None,
-                    "dose_timestamp": None,
+    sample_docs = _completed_sample_docs()
+    tasks_by_sample_id = _tasks_by_sample_id()
+    for task in _get_history_collection("tasks").find({"type": "PowderDosing"}).sort(
+        "created_at", 1
+    ):
+        sample_lookup = {}
+        for sample in task.get("samples", []):
+            sample_name = sample.get("name")
+            sample_id = _sample_id_str(sample.get("sample_id"))
+            if sample_name:
+                sample_lookup[sample_name] = {
+                    "sample_id": sample_id,
+                    "sample_doc": sample_docs.get(sample_id) if sample_id else None,
                 }
+        results_per_sample = (task.get("result") or {}).get("results_per_sample") or {}
+        for sample_name, dosing in results_per_sample.items():
+            task_sample = sample_lookup.get(sample_name, {})
+            sample_id = task_sample.get("sample_id")
+            sample_doc = task_sample.get("sample_doc")
+            sample_metadata = _sample_metadata(sample_doc)
+            related_tasks = tasks_by_sample_id.get(sample_id, []) if sample_id else []
+            heating_task = _find_first_task_of_type(related_tasks, "Heating")
+            heating_parameters = (heating_task or {}).get("parameters") or {}
+            powder_input = (
+                ((task.get("parameters") or {}).get("inputfiles") or {}).get(sample_name)
+                or {}
             )
-            continue
-
-        for powder in powders:
-            doses = powder.get("Doses") or [None]
-            for dose in doses:
+            powders = dosing.get("Powders") or []
+            if not powders:
                 rows.append(
                     {
-                        "sample_id": str(sample["_id"]),
-                        "sample_name": sample["name"],
-                        "position": sample.get("position"),
-                        "last_position": sample.get("last_position"),
+                        "task_id": str(task["_id"]),
+                        "task_status": task.get("status"),
+                        "sample_id": sample_id,
+                        "sample_name": sample_doc.get("name", sample_name)
+                        if sample_doc
+                        else sample_name,
+                        "sample_target": sample_metadata.get("target"),
+                        "elements_present": sample_metadata.get("elements_present"),
                         "mixing_pot_position": dosing.get("MixingPotPosition"),
+                        "crucible_position": dosing.get("CruciblePosition"),
+                        "crucible_subrack": dosing.get("CrucibleSubRack"),
                         "actual_transfer_mass": dosing.get("ActualTransferMass"),
+                        "actual_heat_duration": dosing.get("ActualHeatDuration"),
+                        "heating_duration": powder_input.get("HeatingDuration"),
+                        "heating_time": heating_parameters.get("heating_time"),
+                        "heating_temperature": heating_parameters.get("heating_temperature"),
+                        "ramping_rate": heating_parameters.get("ramping_rate"),
+                        "cooling_rate": heating_parameters.get("cooling_rate"),
                         "target_transfer_volume": dosing.get("TargetTransferVolume"),
                         "ethanol_dispense_volume": dosing.get("EthanolDispenseVolume"),
-                        "powder_name": powder.get("PowderName"),
-                        "target_mass": powder.get("TargetMass"),
-                        "dose_head_position": None if dose is None else dose.get("HeadPosition"),
-                        "dose_mass": None if dose is None else dose.get("Mass"),
-                        "dose_timestamp": None if dose is None else dose.get("TimeStamp"),
+                        "transfer_time": dosing.get("TransferTime"),
+                        "end_reason": dosing.get("EndReason"),
+                        "powder_name": None,
+                        "target_mass": None,
+                        "actual_dispensed_mass_total": None,
+                        "actual_minus_target_mass": None,
+                        "dose_count": 0,
+                        "dose_head_positions": [],
+                        "dose_masses": [],
+                        "dose_timestamps": [],
+                        "dose_head_position": None,
+                        "dose_mass": None,
+                        "dose_timestamp": None,
                     }
                 )
+                continue
+
+            for powder in powders:
+                doses = powder.get("Doses") or [None]
+                dose_masses = [dose.get("Mass") for dose in doses if dose is not None]
+                total_actual_mass = sum(
+                    mass for mass in dose_masses if isinstance(mass, (int, float))
+                )
+                target_mass = powder.get("TargetMass")
+                for dose in doses:
+                    rows.append(
+                        {
+                            "task_id": str(task["_id"]),
+                            "task_status": task.get("status"),
+                            "sample_id": sample_id,
+                            "sample_name": sample_doc.get("name", sample_name)
+                            if sample_doc
+                            else sample_name,
+                            "sample_target": sample_metadata.get("target"),
+                            "elements_present": sample_metadata.get("elements_present"),
+                            "mixing_pot_position": dosing.get("MixingPotPosition"),
+                            "crucible_position": dosing.get("CruciblePosition"),
+                            "crucible_subrack": dosing.get("CrucibleSubRack"),
+                            "actual_transfer_mass": dosing.get("ActualTransferMass"),
+                            "actual_heat_duration": dosing.get("ActualHeatDuration"),
+                            "heating_duration": powder_input.get("HeatingDuration"),
+                            "heating_time": heating_parameters.get("heating_time"),
+                            "heating_temperature": heating_parameters.get("heating_temperature"),
+                            "ramping_rate": heating_parameters.get("ramping_rate"),
+                            "cooling_rate": heating_parameters.get("cooling_rate"),
+                            "target_transfer_volume": dosing.get("TargetTransferVolume"),
+                            "ethanol_dispense_volume": dosing.get("EthanolDispenseVolume"),
+                            "transfer_time": dosing.get("TransferTime"),
+                            "end_reason": dosing.get("EndReason"),
+                            "powder_name": powder.get("PowderName"),
+                            "target_mass": target_mass,
+                            "actual_dispensed_mass_total": total_actual_mass,
+                            "actual_minus_target_mass": None
+                            if not isinstance(target_mass, (int, float))
+                            else total_actual_mass - target_mass,
+                            "dose_count": len(dose_masses),
+                            "dose_head_positions": [
+                                dose_entry.get("HeadPosition")
+                                for dose_entry in doses
+                                if dose_entry is not None
+                            ],
+                            "dose_masses": dose_masses,
+                            "dose_timestamps": [
+                                dose_entry.get("TimeStamp")
+                                for dose_entry in doses
+                                if dose_entry is not None
+                            ],
+                            "dose_head_position": None
+                            if dose is None
+                            else dose.get("HeadPosition"),
+                            "dose_mass": None if dose is None else dose.get("Mass"),
+                            "dose_timestamp": None if dose is None else dose.get("TimeStamp"),
+                        }
+                    )
     return rows
 
 
 def _task_outcome_rows() -> list[dict[str, Any]]:
     rows = []
-    for task in task_view._task_collection.find().sort("created_at", -1):
+    for task in _get_history_collection("tasks").find().sort("created_at", -1):
         rows.append(
             {
                 "task_id": str(task["_id"]),
