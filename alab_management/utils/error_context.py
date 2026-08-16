@@ -17,7 +17,8 @@ from __future__ import annotations
 
 import sys
 import traceback
-from typing import Any, Iterable
+from collections.abc import Iterable
+from typing import Any
 
 # Substrings identifying frames that belong to this project's own code (as opposed to third-party
 # libraries or the standard library). Used to point operators at the most relevant source location.
@@ -65,7 +66,8 @@ def get_error_origin(exc: BaseException | None = None) -> dict[str, Any]:
         exc: The exception to inspect. If ``None``, the exception currently being handled
             (``sys.exc_info()``) is used.
 
-    Returns:
+    Returns
+    -------
         A dict with the exception type/message, the deepest frame (``raised_at``), and the deepest
         frame that belongs to this project's own code (``project_frame``), each rendered as a
         ``file:line in function()`` string.

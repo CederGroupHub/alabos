@@ -6,10 +6,10 @@ from datetime import datetime, timedelta
 
 from bson import ObjectId
 
-from alab_management.experiment_view.experiment_view import ExperimentStatus, ExperimentView
 from alab_management.experiment_view.completed_experiment_view import (
     CompletedExperimentView,
 )
+from alab_management.experiment_view.experiment_view import ExperimentStatus, ExperimentView
 from alab_management.sample_view import SampleView
 from alab_management.task_view import TaskView
 from alab_management.task_view.task_enums import TaskStatus
@@ -70,7 +70,6 @@ def seed_demo_data(replace_existing: bool = True):
 
     The inserted documents are tagged with ``alabos_demo_seed`` so they can be removed and recreated safely.
     """
-
     sample_view = SampleView()
     task_view = TaskView()
     experiment_view = ExperimentView()

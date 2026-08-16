@@ -32,6 +32,14 @@ Do **not** drop `_tmp_*` folders, `*.bak_*` next to source, or experiment dumps 
 - If the remote default branch has moved, rebase or merge as the human prefers; do not rewrite published history.
 - Treat other checkouts and remotes as separate: commit and push each repo on its own; do not assume write access to every remote.
 
+## CI hygiene
+
+- Before asking to commit or push, run the repo's relevant quality checks for the files you changed.
+- Prefer fast, local checks first, especially Ruff or other configured linters on changed Python files.
+- If a formatter or linter can auto-fix an issue safely, apply the fix before committing.
+- If a change causes a CI-relevant check to fail, either fix it in the same session or call it out clearly before pushing.
+- Do not knowingly push code that fails the repo's configured lint or test gates unless the human explicitly asks you to.
+
 ## Working style
 
 - Keep diffs scoped to the request. Do not drive-by reformat or edit unrelated files.
