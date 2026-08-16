@@ -1,8 +1,8 @@
 import SubmitExp from "./submit_exp/SubmitExp";
 import Dashboard from './dashboard/Dashboard';
-import { AppBar } from "@mui/material";
+import { AppBar, Typography } from "@mui/material";
 import styled from "styled-components";
-import { Routes, Route, Link, NavLink, BrowserRouter } from "react-router-dom";
+import { Routes, Route, NavLink, BrowserRouter } from "react-router-dom";
 import alabLogo from "./logo512.png";
 
 const StyledAppBar = styled(AppBar)`
@@ -13,62 +13,29 @@ const StyledAppBar = styled(AppBar)`
   flex-direction: row !important;
   align-items: center;
   font-family: roboto;
+  padding: 0 20px;
 
   a {
     color: inherit;
     text-decoration: none;
   }
-
-  .nav-link {
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0 24px;
-    box-sizing: border-box;
-    filter: brightness(90%);
-    border-bottom: 4px solid transparent;
-  }
-
-  .nav-link: hover {
-    filter: brightness(85%);
-  }
-
-  .nav-link: active {
-    filter: brightness(75%);
-  }
-
-  .link-active {
-    text-shadow: .25px 0px .5px,
-    -.25px 0px .5px;  
-    border-bottom: 4px solid;
-    filter: brightness(100%) !important;
-  }
-`;
-
-const StyledNav = styled.nav`
-  margin: 0 12px;
-  display: flex;
-  height: 100%;
-  align-items: center
 `;
 
 const StyledLogo = styled.img`
   height: 45px;
-  margin: 0 10px
+  margin-right: 22px;
 `;
 
 function App() {
   return (
     <BrowserRouter>
       <StyledAppBar position="sticky">
-        <div>
+        <div style={{ display: "flex", alignItems: "center" }}>
           <NavLink to="/"><StyledLogo src={alabLogo} /></NavLink>
+          <Typography variant="h5" sx={{ fontWeight: 700, letterSpacing: "0.02em", ml: 0.5 }}>
+            A-Lab
+          </Typography>
         </div>
-        <StyledNav>
-          <NavLink to="/" className={({ isActive }) => isActive ? 'link-active nav-link' : 'nav-link'}>Dashboard</NavLink>
-          {/* <NavLink to="/new-experiment" className={({ isActive }) => isActive ? 'link-active nav-link' : 'nav-link'}>New Experiment</NavLink> */}
-        </StyledNav>
       </StyledAppBar>
       <Routes>
         <Route path="/*" element={<Dashboard />} />
