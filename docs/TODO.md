@@ -18,3 +18,11 @@
 4. Continue dashboard visual cleanup.
    Keep the overall layout and arrangement unchanged, but continue refining the color system.
    Secondary colors in the Devices tab, especially the bright blue, bright orange, and pause-state red, should be muted so they match the sleeker minimal shell.
+
+5. Check repository visibility settings.
+   Confirm whether `alab_one`, `alabos`, `alab_gpss`, and `alab_control` should each be public or private.
+   Then set the GitHub repository visibility accordingly and document the intended state somewhere central.
+
+6. Reintroduce `Ruff` checks later.
+   The current `alabos` repo does not pass repo-wide Ruff linting because of broad pre-existing issues in scaffold and example files.
+   Re-implement Ruff checks once the relevant files have been cleaned up and the intended lint scope has been agreed.
