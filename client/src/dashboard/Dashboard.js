@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import Devices from './components/Devices';
+import DeviceControl from './components/DeviceControl';
+import Data from './components/Data';
 import Experiments from './components/Experiments';
+import SamplePositions from './components/SamplePositions';
 import styled from 'styled-components';
 import { useLocation, Link } from "react-router-dom";
 import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, FormControl, FormControlLabel, Switch } from '@mui/material';
 import PrecisionManufacturingIcon from '@mui/icons-material/PrecisionManufacturing';
 import FireplaceIcon from '@mui/icons-material/Fireplace';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import TableChartIcon from '@mui/icons-material/TableChart';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import SettingsRemoteIcon from '@mui/icons-material/SettingsRemote';
 import UserInputs from './components/UserInput';
 import Badge from '@mui/material/Badge';
 import { grey } from '@mui/material/colors';
@@ -77,6 +83,36 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange }) {
               <PrecisionManufacturingIcon />
             </ListItemIcon>
             <ListItemText primary="Devices" />
+          </ListItemButton>
+        </LinkedButton>
+      </ListItem>
+      <ListItem>
+        <LinkedButton to="/#sample-positions">
+          <ListItemButton className={hash === "#sample-positions" ? "active list-button-round" : "list-button-round"}>
+            <ListItemIcon>
+              <ViewModuleIcon />
+            </ListItemIcon>
+            <ListItemText primary="Sample Positions" />
+          </ListItemButton>
+        </LinkedButton>
+      </ListItem>
+      <ListItem>
+        <LinkedButton to="/#data">
+          <ListItemButton className={hash === "#data" ? "active list-button-round" : "list-button-round"}>
+            <ListItemIcon>
+              <TableChartIcon />
+            </ListItemIcon>
+            <ListItemText primary="Data" />
+          </ListItemButton>
+        </LinkedButton>
+      </ListItem>
+      <ListItem>
+        <LinkedButton to="/#device-control">
+          <ListItemButton className={hash === "#device-control" ? "active list-button-round" : "list-button-round"}>
+            <ListItemIcon>
+              <SettingsRemoteIcon />
+            </ListItemIcon>
+            <ListItemText primary="Device Control" />
           </ListItemButton>
         </LinkedButton>
       </ListItem>
@@ -185,6 +221,12 @@ function Dashboard() {
     switch (hash) {
       case "#device":
         return <Devices hoverForId={hoverForId} />;
+      case "#sample-positions":
+        return <SamplePositions />;
+      case "#data":
+        return <Data />;
+      case "#device-control":
+        return <DeviceControl />;
       case "#userinput":
         return <UserInputs hoverForId={hoverForId} />
       case "#experiment":

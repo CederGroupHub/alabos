@@ -93,3 +93,79 @@ export function release_device_pause(device_name) {
         })
     });
 }
+
+// Sample Positions
+const SAMPLE_POSITIONS_API = process.env.NODE_ENV === "production" ? "/api/sample-positions" : URL + "/api/sample-positions";
+
+export async function get_sample_position_racks() {
+    try {
+        const res = await fetch(SAMPLE_POSITIONS_API + "/racks", { mode: 'cors' });
+        return await res.json();
+    } catch (error) {
+        return console.warn(error);
+    }
+}
+
+export function place_sample_in_position(position, { sample_id = null, sample_name = "" } = {}) {
+    return fetch(SAMPLE_POSITIONS_API + "/place", {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            position,
+            sample_id,
+            sample_name,
+        }),
+    });
+}
+
+export function clear_sample_position(position) {
+    return fetch(SAMPLE_POSITIONS_API + "/clear", {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            position,
+        }),
+    });
+}
+
+// Data exports
+const DATA_API = process.env.NODE_ENV === "production" ? "/api/data" : URL + "/api/data";
+
+export async function get_sample_summary_rows() {
+    try {
+        const res = await fetch(DATA_API + "/sample_summary", { mode: 'cors' });
+        return await res.json();
+    } catch (error) {
+        return console.warn(error);
+    }
+}
+
+export async function get_powder_dosing_rows() {
+    try {
+        const res = await fetch(DATA_API + "/powder_dosing_actuals", { mode: 'cors' });
+        return await res.json();
+    } catch (error) {
+        return console.warn(error);
+    }
+}
+
+export async function get_task_outcome_rows() {
+    try {
+        const res = await fetch(DATA_API + "/task_outcome_log", { mode: 'cors' });
+        return await res.json();
+    } catch (error) {
+        return console.warn(error);
+    }
+}
+
+export const DATA_DOWNLOADS = {
+    sampleSummary: DATA_API + "/sample_summary.csv",
+    powderDosing: DATA_API + "/powder_dosing_actuals.csv",
+    taskOutcome: DATA_API + "/task_outcome_log.csv",
+};
