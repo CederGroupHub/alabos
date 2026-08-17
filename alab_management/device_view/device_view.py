@@ -202,7 +202,30 @@ class DeviceView:
                     "message": "",
                     "last_updated": datetime.now(),
                     "attributes": {},
+                    "dashboard_attributes": list(device.dashboard_attributes),
                 }
+            )
+
+    def sync_device_definitions(self, devices: dict[str, BaseDevice] | None = None):
+        """Refresh the definition-only fields of devices that are already in the database.
+
+        ``add_devices_to_db`` only ever inserts, so a device that already exists never picks up
+        changes made to its class. This copies across the fields that describe the device rather
+        than its state -- its description and which attributes the dashboard may show -- so editing
+        them in code and re-running ``alabos setup`` is enough. Nothing here touches status,
+        occupancy or attribute values.
+        """
+        for device in (
+            devices.values() if devices is not None else self._device_list.values()
+        ):
+            self._device_collection.update_one(
+                {"name": device.name},
+                {
+                    "$set": {
+                        "description": device.description,
+                        "dashboard_attributes": list(device.dashboard_attributes),
+                    }
+                },
             )
 
     def get_all(self) -> list[dict[str, Any]]:

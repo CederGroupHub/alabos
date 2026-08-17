@@ -9,7 +9,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from queue import Empty, PriorityQueue
 from traceback import format_exc
-from typing import Any
+from typing import TYPE_CHECKING, Any, ClassVar
 from unittest.mock import Mock
 
 from alab_management.logger import DBLogger
@@ -17,6 +17,9 @@ from alab_management.sample_view.sample import SamplePosition
 from alab_management.user_input import request_maintenance_input
 
 from .dbattributes import DictInDatabase, ListInDatabase
+
+if TYPE_CHECKING:
+    from bson import ObjectId
 
 
 def _UNSPECIFIED(_):
@@ -162,6 +165,18 @@ class BaseDevice(ABC):
         kwargs: keyword arguments that will be passed to the device class
     """
 
+    #: Names of database-backed attributes (those declared with :meth:`dict_in_database`,
+    #: :meth:`list_in_database` or ``value_in_database``) that the dashboard should show for this
+    #: device. Empty by default: a device's attributes often hold bulky internal bookkeeping, so
+    #: nothing is published until it is named here. The values appear under ``attributes`` in
+    #: ``/api/status`` and in the device's detail panel.
+    #:
+    #: .. code-block:: python
+    #:
+    #:     class MobileManipulator(BaseDevice):
+    #:         dashboard_attributes = ["battery_percentage", "current_mission", "carried_samples"]
+    dashboard_attributes: ClassVar[list[str]] = []
+
     def __init__(self, name: str, description: str | None = None, *args, **kwargs):
         """
         Initialize a device object, you can set up connection to
@@ -232,6 +247,26 @@ class BaseDevice(ABC):
         """
         self.__message = self._device_view.get_message(device_name=self.name)
         return self.__message
+
+    def get_occupying_task_id(self) -> "ObjectId | None":
+        """The id of the task currently holding this device, or ``None`` when it is free."""
+        return self._device_view.get_device(device_name=self.name).get("task_id")
+
+    def is_task_canceling(self) -> bool:
+        """Whether the task currently holding this device is being cancelled.
+
+        Device methods run in the DeviceManager process, not in the task's worker, so the abort
+        signal that cancels a task cannot interrupt a driver mid-call. Poll this inside any long
+        loop in a driver -- waiting on a robot program, waiting on another instrument -- and return
+        or raise when it becomes true, so a cancel is honoured promptly instead of after the motion
+        finishes.
+        """
+        task_id = self.get_occupying_task_id()
+        if task_id is None:
+            return False
+        from alab_management.task_view.task_view import TaskView
+
+        return TaskView().is_canceling(task_id=task_id)
 
     def _connect_wrapper(self):
         """

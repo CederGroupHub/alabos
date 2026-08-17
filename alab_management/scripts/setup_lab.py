@@ -168,6 +168,20 @@ def setup_lab(
         # because the device documents were not yet created within the Device collection.
     print(f"Devices added to the db and registry: {filtered_devices}")
 
+    # Devices already in the db never see edits to their class definition, so refresh the fields
+    # that only describe the device (description, dashboard_attributes).
+    DeviceView().sync_device_definitions(device_dict)
+
+    # Give every device its default attribute values, not only the ones just added. A device
+    # that gains a new database-backed attribute in a later version has no value for it in the
+    # db, and the first read raises instead of returning the default. Applying defaults only
+    # fills in what is missing, so this is safe to repeat.
+    for device_name, device_instance in device_dict.items():
+        try:
+            device_instance._apply_default_db_values()
+        except Exception as error:  # noqa: BLE001 - one bad device must not stop setup
+            print(f"Could not apply default attribute values for {device_name}: {error}")
+
     # step 7: get all the standalone sample positions from the __init__.py
     # and the ones that are currently active in the lab [current state]
     sample_view = SampleView()

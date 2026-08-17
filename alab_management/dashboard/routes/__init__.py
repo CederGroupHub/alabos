@@ -1,6 +1,7 @@
 """This is a dashboard that displays data from the ALab database."""
 
 from .basic_route import modules
+from .device import device_bp
 from .experiment import experiment_bp
 from .pause import pause_bp
 from .status import status_bp
@@ -16,3 +17,4 @@ def init_app(app):
     app.register_blueprint(userinput_bp)
     app.register_blueprint(pause_bp)
     app.register_blueprint(task_bp)
+    app.register_blueprint(device_bp)

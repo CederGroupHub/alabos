@@ -15,6 +15,9 @@ import ListSubheader from '@mui/material/ListSubheader';
 import Badge from '@mui/material/Badge';
 import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import IconButton from '@mui/material/IconButton';
 import { useEffect } from 'react';
 import { get_status } from '../../api_routes';
 import { HoverText } from '../../utils';
@@ -45,10 +48,71 @@ const StyledDevicesDiv = styled.div`
   h3 {
     padding: 4px 8px;
   }
+
+  .attribute-name {
+    font-family: Source Code Pro;
+    font-weight: 600;
+    white-space: nowrap;
+    vertical-align: top;
+  }
+
+  .attribute-value {
+    font-family: Source Code Pro;
+    white-space: pre-wrap;
+    margin: 0;
+    max-height: 260px;
+    overflow: auto;
+  }
+
+  .in-transit {
+    color: #1565c0;
+    font-family: Source Code Pro;
+  }
 `;
 
 
+// Attribute values come straight from the device's database document, so they can be anything from a
+// number to a nested mission plan. Primitives read best inline; anything structured is pretty-printed
+// so it stays truthful rather than being flattened into something ambiguous.
+function AttributeValue({ value }) {
+  if (value === null || value === undefined) {
+    return <Typography variant="caption" sx={{ color: "#9e9e9e" }}>—</Typography>;
+  }
+  if (typeof value === "object") {
+    return <pre className="attribute-value">{JSON.stringify(value, null, 2)}</pre>;
+  }
+  return <Typography variant="body2" className="attribute-value">{String(value)}</Typography>;
+}
+
+
+function DeviceAttributes({ attributes }) {
+  const entries = Object.entries(attributes || {});
+  if (entries.length === 0) {
+    return (
+      <Typography variant="caption" sx={{ color: "#9e9e9e" }}>
+        This device does not publish any attributes. Add names to its `dashboard_attributes` to show them here.
+      </Typography>
+    );
+  }
+  return (
+    <Table size="small" aria-label="device attributes">
+      <TableBody>
+        {entries.map(([name, value]) => (
+          <TableRow key={name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+            <TableCell className="attribute-name" width="220">{name}</TableCell>
+            <TableCell><AttributeValue value={value} /></TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
+
+
 function Row({ device, hoverForId }) {
+  const [open, setOpen] = React.useState(false);
+  const attributeCount = Object.keys(device.attributes || {}).length;
+
   const rowColor = () => {
     switch (device.status) {
       case "OCCUPIED":
@@ -98,44 +162,67 @@ function Row({ device, hoverForId }) {
 
 
   return (
-    <TableRow
-      key={device.name}
-      sx={{
-        '&:last-child td, &:last-child th': { border: 0 },
-        bgcolor: rowColor(device.status),
-      }}
-    >
-      <TableCell component="th" scope="row">
-        <Typography
-          variant="body1"
-          sx={{
+    <React.Fragment key={device.name}>
+      <TableRow
+        sx={{
+          '& > *': { borderBottom: attributeCount > 0 && open ? 'unset' : undefined },
+          bgcolor: rowColor(device.status),
+        }}
+      >
+        <TableCell align="center" padding="none" width="48">
+          {attributeCount > 0 &&
+            <IconButton
+              aria-label="show device details"
+              size="small"
+              onClick={() => setOpen(!open)}
+              sx={{ color: textColor(device.status) }}
+            >
+              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            </IconButton>
+          }
+        </TableCell>
+        <TableCell component="th" scope="row">
+          <Typography
+            variant="body1"
+            sx={{
+              color: textColor(device.status),
+            }}
+          >
+            {device.name}
+          </Typography>
+          <Typography variant="caption"
+            sx={{ color: subtextColor(device.status) }}
+          >{device.type}</Typography>
+        </TableCell>
+        {/* <TableCell align="center">{row.type}</TableCell> */}
+        <TableCell align="center" size="small">
+          <OccupiedSamplePositions samples={device.samples} name={device.name} key={String(device.name + "-samplepositions")} hoverForId={hoverForId} />
+        </TableCell>
+        <TableCell align="left" width="50%" >
+          <Typography variant="caption" sx={{
             color: textColor(device.status),
-          }}
-        >
-          {device.name}
-        </Typography>
-        <Typography variant="caption"
-          sx={{ color: subtextColor(device.status) }}
-        >{device.type}</Typography>
-      </TableCell>
-      {/* <TableCell align="center">{row.type}</TableCell> */}
-      <TableCell align="center" size="small">
-        <OccupiedSamplePositions samples={device.samples} name={device.name} key={String(device.name + "-samplepositions")} hoverForId={hoverForId} />
-      </TableCell>
-      <TableCell align="left" width="50%" >
-        <Typography variant="caption" sx={{
-          color: textColor(device.status),
-          whiteSpace: "pre-wrap",
-          display: '-webkit-box',
-          overflow: 'auto',
-          WebkitBoxOrient: 'vertical',
-          WebkitLineClamp: 3,
-        }}>{device.message}</Typography>
-      </TableCell>
-      <TableCell align="center">
-        <PauseButton pause_state={device.pause_status} device_name={device.name} />
-      </TableCell>
-    </TableRow >
+            whiteSpace: "pre-wrap",
+            display: '-webkit-box',
+            overflow: 'auto',
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: 3,
+          }}>{device.message}</Typography>
+        </TableCell>
+        <TableCell align="center">
+          <PauseButton pause_state={device.pause_status} device_name={device.name} />
+        </TableCell>
+      </TableRow>
+      <TableRow sx={{ bgcolor: rowColor(device.status) }}>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={5}>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <div style={{ margin: "8px 0 16px 0" }}>
+              <Typography variant="subtitle2" gutterBottom>Device state</Typography>
+              <DeviceAttributes attributes={device.attributes} />
+            </div>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    </React.Fragment>
   );
 }
 
@@ -211,9 +298,15 @@ class SingleOccupiedSamplePositionsList extends React.Component {
             <ListItem
               key={sample.id}
               disableGutters
+              sx={{ display: 'block' }}
             >
               {/* <ListItemText primary={sample} /> */}
               <HoverText defaultText={sample.name} hoverText={sample.id} variant="body2" active={this.props.hoverForId} />
+              {sample.in_transit &&
+                <Typography variant="caption" className="in-transit" display="block">
+                  {sample.in_transit.source} → {sample.in_transit.destination}
+                </Typography>
+              }
             </ListItem>
           ))}
         </Collapse>
@@ -271,6 +364,7 @@ function Devices({ hoverForId }) {
           <Table stickyHeader aria-label="device table">
             <TableHead>
               <TableRow>
+                <TableCell padding="none" width="48" />
                 <TableCell><b>Name</b></TableCell>
                 <TableCell align="center"><b>Samples</b></TableCell>
                 <TableCell align="center" width="50%"><b>Message</b></TableCell>

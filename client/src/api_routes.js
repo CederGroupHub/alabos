@@ -93,3 +93,35 @@ export function release_device_pause(device_name) {
         })
     });
 }
+
+const DEVICE_API = process.env.NODE_ENV === "production" ? "/api/device/" : URL + "/api/device/";
+
+export async function get_device(device_name) {
+    try {
+        const res = await fetch(DEVICE_API + encodeURIComponent(device_name), { mode: 'cors' });
+        const result_1 = await res.json();
+        return result_1.data;
+    } catch (error) {
+        return console.warn(error);
+    }
+}
+
+// Omit signal_names to get only the latest value of every signal the device has logged.
+export async function get_device_signals(device_name, signal_names, hours) {
+    try {
+        const params = new URLSearchParams();
+        (signal_names || []).forEach(name => params.append("signal", name));
+        if (hours) {
+            params.append("hours", hours);
+        }
+        const query = params.toString();
+        const res = await fetch(
+            DEVICE_API + encodeURIComponent(device_name) + "/signals" + (query ? "?" + query : ""),
+            { mode: 'cors' }
+        );
+        const result_1 = await res.json();
+        return result_1.data;
+    } catch (error) {
+        return console.warn(error);
+    }
+}
