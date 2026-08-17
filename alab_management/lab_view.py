@@ -6,6 +6,7 @@ It can also update the position of a sample in the lab.
 """
 
 import sys
+import threading
 import time
 from contextlib import contextmanager, suppress
 from traceback import format_exc
@@ -50,6 +51,9 @@ class LabView:
         self.logger = DBLogger(task_id=task_id)
 
         self._priority = TaskPriority.NORMAL.value
+
+        self.__cancellation_event: threading.Event | None = None
+        self.__cancellation_lock = threading.Lock()
 
     @property
     def task_id(self) -> ObjectId:
@@ -591,3 +595,70 @@ class LabView:
 
         # release all the resource that has not been fulfilled
         self._resource_requester.release_all_resources()
+
+    def release_all_resources(self):
+        """Give back every resource this task holds or has requested.
+
+        ``request_cleanup`` already does this as its last step. Call it directly when a task has
+        reconciled its own samples and only needs its devices and sample positions released, which
+        is what a task with ``cleanup_on_cancel = False`` needs after being cancelled.
+        """
+        self._resource_requester.release_all_resources()
+
+    def is_cancelling(self) -> bool:
+        """Whether someone has asked for this task to be cancelled.
+
+        A cancellation reaches a task as a ``dramatiq_abort.Abort`` raised in the worker thread, and
+        that cannot interrupt a thread already blocked inside a device call or a ``time.sleep``. Poll
+        this in long waits, and bail out cooperatively, so a cancel takes effect at the next safe
+        point instead of after the blocking call finally returns.
+
+        .. code-block:: python
+
+            while furnace.is_running():
+                if self.lab_view.is_cancelling():
+                    raise TaskCancelledError("cancelled while waiting for the furnace")
+                time.sleep(5)
+        """
+        return self._task_view.is_canceling(task_id=self._task_id)
+
+    @property
+    def cancellation_event(self) -> threading.Event:
+        """A :class:`threading.Event` that becomes set once this task is being cancelled.
+
+        Backed by a daemon thread polling the database once a second, started on first access, so a
+        task that never asks for it pays nothing. Use it where an ``Event`` is more convenient than
+        polling :meth:`is_cancelling` -- most usefully as a cancellable sleep, which wakes early
+        instead of sitting out the full delay:
+
+        .. code-block:: python
+
+            # returns True as soon as the task is cancelled, False if the full 30s elapsed
+            if self.lab_view.cancellation_event.wait(timeout=30):
+                raise TaskCancelledError("cancelled while waiting")
+        """
+        with self.__cancellation_lock:
+            if self.__cancellation_event is None:
+                self.__cancellation_event = threading.Event()
+                watcher = threading.Thread(
+                    target=self.__watch_for_cancellation,
+                    name=f"cancellation-watcher-{self._task_id}",
+                    daemon=True,
+                )
+                watcher.start()
+            return self.__cancellation_event
+
+    def __watch_for_cancellation(self):
+        """Set the cancellation event once the database says this task is being cancelled."""
+        event = self.__cancellation_event
+        if event is None:  # pragma: no cover - only reachable if the event was never created
+            return
+        while not event.is_set():
+            try:
+                if self._task_view.is_canceling(task_id=self._task_id):
+                    event.set()
+                    return
+            except Exception:  # noqa: BLE001
+                # A transient database hiccup must not kill the watcher; try again next tick.
+                pass
+            time.sleep(1)

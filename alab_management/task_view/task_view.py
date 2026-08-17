@@ -445,17 +445,38 @@ class TaskView:
             },
         )
 
+    #: Statuses where a worker is already executing the task, so cancelling means telling that
+    #: worker to abort and letting it unwind.
+    CANCELABLE_LIVE_STATUS = (
+        TaskStatus.RUNNING.name,
+        TaskStatus.REQUESTING_RESOURCES.name,
+    )
+
+    #: Statuses where no worker has started the task body yet, so cancelling is just a status flip.
+    #: ``INITIATED`` belongs here: the dramatiq message is out, but ``run_task`` refuses to start a
+    #: task that is no longer ``INITIATED``, so flipping the status is enough to stop it.
+    CANCELABLE_PENDING_STATUS = (
+        TaskStatus.WAITING.name,
+        TaskStatus.READY.name,
+        TaskStatus.INITIATED.name,
+    )
+
     def mark_task_as_canceling(self, task_id: ObjectId) -> bool:
-        """Try to cancel a task by setting the field "stopping" to True."""
+        """Cancel a task, whether or not it has started running.
+
+        A task that is already executing is marked for cancellation and left to the task manager,
+        which sends the abort signal to its worker. A task that has not started yet goes straight to
+        ``CANCELLED``, because waiting for a worker that will never pick it up would leave it queued
+        and free to run later -- the reason cancelling used to look like it had no effect and then
+        the next queued task started anyway.
+
+        Returns whether the task was in a state that could be cancelled at all. A task that has
+        already finished, errored or been cancelled returns ``False``.
+        """
         entry = self._task_collection.find_one_and_update(
             {
                 "_id": task_id,
-                "status": {
-                    "$in": [
-                        TaskStatus.RUNNING.name,
-                        TaskStatus.REQUESTING_RESOURCES.name,
-                    ],
-                },
+                "status": {"$in": list(self.CANCELABLE_LIVE_STATUS)},
             },
             {
                 "$set": {
@@ -464,7 +485,45 @@ class TaskView:
                 }
             },
         )
-        return entry is not None
+        if entry is not None:
+            return True
+
+        # Not running yet. Claim it atomically so it cannot be submitted between this check and the
+        # status write, then run the normal cancellation bookkeeping (which cascades downstream).
+        claimed = self._task_collection.find_one_and_update(
+            {
+                "_id": task_id,
+                "status": {"$in": list(self.CANCELABLE_PENDING_STATUS)},
+            },
+            {
+                "$set": {
+                    "status": TaskStatus.CANCELLED.name,
+                    "last_updated": datetime.now(),
+                }
+            },
+        )
+        if claimed is None:
+            return False
+        self.update_status(task_id=task_id, status=TaskStatus.CANCELLED)
+        self.set_message(
+            task_id=task_id,
+            message="Cancelled before it started running.",
+        )
+        return True
+
+    def is_canceling(self, task_id: ObjectId) -> bool:
+        """Whether a cancellation has been requested for a task and not yet finished.
+
+        Cheap enough to poll. Used by ``LabView.is_cancelling`` so a task can break out of a long
+        blocking wait instead of holding the lab until the wait returns on its own.
+        """
+        return (
+            self._task_collection.find_one(
+                {"_id": task_id, "canceling_progress": {"$exists": True}},
+                projection={"_id": 1},
+            )
+            is not None
+        )
 
     def update_canceling_progress(
         self,

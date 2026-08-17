@@ -15,6 +15,7 @@ from pydantic import BaseModel, ValidationError
 from alab_management.logger import DBLogger
 from alab_management.sample_view import SampleView
 from alab_management.task_view import BaseTask, TaskStatus, TaskView
+from alab_management.task_view.task import TaskCancelledError
 from alab_management.utils.data_objects import get_rabbitmq_broker
 from alab_management.utils.error_context import format_error_report, get_error_origin
 from alab_management.utils.logger import set_up_rich_handler
@@ -161,11 +162,19 @@ def run_task(task_id_str: str):
         # Following is the line of code that actually runs the task
         # from Alab_one, for eg: Powder dosing. Powder dosing class will have a method "run".
         result = task.run()
-    except Abort:
+    # A task that stopped itself because it was asked to is cancelled, not broken. Both arrive
+    # here: `Abort` when the worker thread could be interrupted, `TaskCancelledError` when it
+    # could not and the task had to bail out of a blocking call by itself.
+    except (Abort, TaskCancelledError) as cancellation:
         task_status = TaskStatus.CANCELLED
+        reason = (
+            str(cancellation)
+            if isinstance(cancellation, TaskCancelledError) and str(cancellation)
+            else "Task was cancelled due to the abort signal"
+        )
         task_view.update_status(task_id=task_id, status=TaskStatus.FINISHING)
         task_view.set_message(
-            task_id=task_id, message="Task was cancelled due to the abort signal"
+            task_id=task_id, message=reason
         )  # display exception on the dashboard
         logger.system_log(
             level="ERROR",
@@ -175,13 +184,43 @@ def run_task(task_id_str: str):
                 "task_id": task_id,
                 "task_type": task_type.__name__,
                 "status": TaskStatus.CANCELLED.name,
-                "traceback": "Task was cancelled due to the abort signal",
+                "traceback": reason,
             },
         )
-        cli_logger.info(
-            f"Task {task_type} ({task_id}) was cancelled due to the abort signal."
-        )
-        lab_view.request_cleanup()
+        cli_logger.info(f"Task {task_type} ({task_id}) was cancelled: {reason}")
+        # Give the task a chance to stop hardware and reconcile its samples while it still holds its
+        # resources. A failure here must not leave the task stuck part-way through cancelling, so it
+        # is logged and cancellation continues regardless.
+        try:
+            task.on_cancel()
+        except Exception as cancel_exception:  # noqa: BLE001
+            cancel_report = format_error_report(
+                exc=cancel_exception,
+                task_type=task_type.__name__,
+                task_id=task_id,
+                samples=[sample["name"] for sample in task_entry["samples"]],
+                header="on_cancel failed while cancelling the task",
+            )
+            task_view.set_message(task_id=task_id, message=cancel_report)
+            logger.system_log(
+                level="ERROR",
+                log_data={
+                    "logged_by": "TaskActor",
+                    "type": "TaskCancelCleanup",
+                    "task_id": task_id,
+                    "task_type": task_type.__name__,
+                    "message": str(cancel_exception),
+                    "traceback": cancel_report,
+                },
+            )
+            cli_logger.error(
+                f"on_cancel of task {task_type} ({task_id}) failed: {cancel_exception}"
+            )
+        if task.cleanup_on_cancel:
+            lab_view.request_cleanup()
+        else:
+            # The task reconciled its own samples, so only give the resources back.
+            lab_view.release_all_resources()
     except:  # noqa: E722
         task_status = TaskStatus.ERROR
         task_view.update_status(task_id=task_id, status=TaskStatus.FINISHING)

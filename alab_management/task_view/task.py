@@ -158,12 +158,30 @@ class LargeResult(BaseModel):
         raise ValueError("Only gridfs storage is supported for now.")
 
 
+class TaskCancelledError(Exception):
+    """Raise from ``run`` to end a task as CANCELLED rather than as ERROR.
+
+    A cancellation reaches a task as a ``dramatiq_abort.Abort``, which cannot interrupt a thread
+    already blocked inside a device call. So a task that polls :meth:`LabView.is_cancelling`, or
+    that asks a device to stop and gets told it stopped, has to end itself -- and if it does that
+    by raising anything else it is recorded as a failure. It was not a failure: somebody asked for
+    it. Raise this instead, and the task actor treats it exactly like an abort, including calling
+    :meth:`BaseTask.on_cancel`.
+    """
+
+
 class BaseTask(ABC, metaclass=MetaClassWithImportLock):
     """
     The abstract class of task.
 
     All the tasks should inherit from this class.
     """
+
+    #: Whether the task actor should run the default cleanup (prompt the operator, then move every
+    #: sample of this task out of the lab with ``position=None``) after the task is cancelled.
+    #: Set to ``False`` in a subclass that reconciles its own samples in :meth:`on_cancel`, e.g. a
+    #: transport task whose samples are still sitting at a known physical position.
+    cleanup_on_cancel: bool = True
 
     def __init__(
         self,
@@ -325,6 +343,25 @@ class BaseTask(ABC, metaclass=MetaClassWithImportLock):
         By default, this function returns True unless it is overridden by a subclass.
         """
         return True
+
+    def on_cancel(self):
+        """
+        Bring the lab to a safe, truthful state after this task has been cancelled.
+
+        The task actor calls this once, from its ``Abort`` handler, before any cleanup. Use it to
+        stop hardware, park it somewhere safe, and reconcile sample positions to where things
+        physically are. Two things are worth knowing:
+
+        - ``run`` has already been interrupted, so anything it was waiting on is gone. The resources
+          this task held are still held at this point and are released afterwards.
+        - Raising from here does not un-cancel the task. The exception is logged and the
+          cancellation proceeds, so a failure to clean up never leaves a task stuck.
+
+        Set :attr:`cleanup_on_cancel` to ``False`` alongside this method when the default cleanup
+        (which moves every sample of the task out of the lab) would lie about where samples are.
+
+        By default this does nothing.
+        """
 
     @abstractmethod
     def run(self):
