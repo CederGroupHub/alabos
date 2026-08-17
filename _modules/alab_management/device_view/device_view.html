@@ -603,7 +603,33 @@
                     <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
                     <span class="s2">&quot;attributes&quot;</span><span class="p">:</span> <span class="p">{},</span>
+                    <span class="s2">&quot;dashboard_attributes&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">dashboard_attributes</span><span class="p">),</span>
                 <span class="p">}</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DeviceView.sync_device_definitions">
+<a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.sync_device_definitions">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sync_device_definitions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">devices</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BaseDevice</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Refresh the definition-only fields of devices that are already in the database.</span>
+
+<span class="sd">        ``add_devices_to_db`` only ever inserts, so a device that already exists never picks up</span>
+<span class="sd">        changes made to its class. This copies across the fields that describe the device rather</span>
+<span class="sd">        than its state -- its description and which attributes the dashboard may show -- so editing</span>
+<span class="sd">        them in code and re-running ``alabos setup`` is enough. Nothing here touches status,</span>
+<span class="sd">        occupancy or attribute values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="n">devices</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">devices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_list</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+                <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="n">device</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+                        <span class="s2">&quot;dashboard_attributes&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">dashboard_attributes</span><span class="p">),</span>
+                    <span class="p">}</span>
+                <span class="p">},</span>
             <span class="p">)</span></div>
 
 

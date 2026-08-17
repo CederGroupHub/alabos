@@ -472,6 +472,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.DeviceView.set_all_attributes"><code class="docutils literal notranslate"><span class="pre">DeviceView.set_all_attributes()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.DeviceView.set_attribute"><code class="docutils literal notranslate"><span class="pre">DeviceView.set_attribute()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.DeviceView.set_message"><code class="docutils literal notranslate"><span class="pre">DeviceView.set_message()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.DeviceView.sync_device_definitions"><code class="docutils literal notranslate"><span class="pre">DeviceView.sync_device_definitions()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.DeviceView.sync_device_status"><code class="docutils literal notranslate"><span class="pre">DeviceView.sync_device_status()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.DeviceView.unpause_all_devices"><code class="docutils literal notranslate"><span class="pre">DeviceView.unpause_all_devices()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.DeviceView.unpause_device"><code class="docutils literal notranslate"><span class="pre">DeviceView.unpause_device()</span></code></a></li>
@@ -875,6 +876,17 @@ device types. If None, no device type is requested</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceView.sync_device_definitions">
+<span class="sig-name descname"><span class="pre">sync_device_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">devices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.sync_device_definitions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.sync_device_definitions" title="Link to this definition">#</a></dt>
+<dd><p>Refresh the definition-only fields of devices that are already in the database.</p>
+<p><code class="docutils literal notranslate"><span class="pre">add_devices_to_db</span></code> only ever inserts, so a device that already exists never picks up
+changes made to its class. This copies across the fields that describe the device rather
+than its state – its description and which attributes the dashboard may show – so editing
+them in code and re-running <code class="docutils literal notranslate"><span class="pre">alabos</span> <span class="pre">setup</span></code> is enough. Nothing here touches status,
+occupancy or attribute values.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceView.sync_device_status">
 <span class="sig-name descname"><span class="pre">sync_device_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceView.sync_device_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceView.sync_device_status" title="Link to this definition">#</a></dt>
 <dd><p>Sync the device status (usually when the system is set up).</p>
@@ -985,6 +997,7 @@ status to <code class="docutils literal notranslate"><span class="pre">OCCUPIED<
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.DeviceView.set_all_attributes"><code class="docutils literal notranslate"><span class="pre">DeviceView.set_all_attributes()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.DeviceView.set_attribute"><code class="docutils literal notranslate"><span class="pre">DeviceView.set_attribute()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.DeviceView.set_message"><code class="docutils literal notranslate"><span class="pre">DeviceView.set_message()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.DeviceView.sync_device_definitions"><code class="docutils literal notranslate"><span class="pre">DeviceView.sync_device_definitions()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.DeviceView.sync_device_status"><code class="docutils literal notranslate"><span class="pre">DeviceView.sync_device_status()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.DeviceView.unpause_all_devices"><code class="docutils literal notranslate"><span class="pre">DeviceView.unpause_all_devices()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.DeviceView.unpause_device"><code class="docutils literal notranslate"><span class="pre">DeviceView.unpause_device()</span></code></a></li>

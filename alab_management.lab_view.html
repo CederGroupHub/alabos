@@ -433,13 +433,16 @@
                 <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.DeviceRunningException"><code class="docutils literal notranslate"><span class="pre">DeviceRunningException</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView"><code class="docutils literal notranslate"><span class="pre">LabView</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.cancellation_event"><code class="docutils literal notranslate"><span class="pre">LabView.cancellation_event</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.get_locked_sample_positions"><code class="docutils literal notranslate"><span class="pre">LabView.get_locked_sample_positions()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.get_sample"><code class="docutils literal notranslate"><span class="pre">LabView.get_sample()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.get_sample_position_parent_device"><code class="docutils literal notranslate"><span class="pre">LabView.get_sample_position_parent_device()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.is_cancelling"><code class="docutils literal notranslate"><span class="pre">LabView.is_cancelling()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.lock_exact_sample_positions"><code class="docutils literal notranslate"><span class="pre">LabView.lock_exact_sample_positions()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.lock_sample_position"><code class="docutils literal notranslate"><span class="pre">LabView.lock_sample_position()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.move_sample"><code class="docutils literal notranslate"><span class="pre">LabView.move_sample()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.priority"><code class="docutils literal notranslate"><span class="pre">LabView.priority</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.release_all_resources"><code class="docutils literal notranslate"><span class="pre">LabView.release_all_resources()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.release_sample_position"><code class="docutils literal notranslate"><span class="pre">LabView.release_sample_position()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.request_cleanup"><code class="docutils literal notranslate"><span class="pre">LabView.request_cleanup()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.request_resources"><code class="docutils literal notranslate"><span class="pre">LabView.request_resources()</span></code></a></li>
@@ -482,6 +485,21 @@ the lab resources (devices and sample positions).</p>
 <p>LabView is a wrapper over device view and sample view.
 A task can get access to that to request resources, query sample and
 update sample positions.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="alab_management.lab_view.LabView.cancellation_event">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cancellation_event</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Event</span></em><a class="headerlink" href="#alab_management.lab_view.LabView.cancellation_event" title="Link to this definition">#</a></dt>
+<dd><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code> that becomes set once this task is being cancelled.</p>
+<p>Backed by a daemon thread polling the database once a second, started on first access, so a
+task that never asks for it pays nothing. Use it where an <code class="docutils literal notranslate"><span class="pre">Event</span></code> is more convenient than
+polling <a class="reference internal" href="#alab_management.lab_view.LabView.is_cancelling" title="alab_management.lab_view.LabView.is_cancelling"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_cancelling()</span></code></a> – most usefully as a cancellable sleep, which wakes early
+instead of sitting out the full delay:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># returns True as soon as the task is cancelled, False if the full 30s elapsed</span>
+<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">cancellation_event</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="n">TaskCancelledError</span><span class="p">(</span><span class="s2">&quot;cancelled while waiting&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.lab_view.LabView.get_locked_sample_positions">
 <span class="sig-name descname"><span class="pre">get_locked_sample_positions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_view.html#LabView.get_locked_sample_positions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_view.LabView.get_locked_sample_positions" title="Link to this definition">#</a></dt>
@@ -512,6 +530,27 @@ name within the experiment., see also <a class="reference internal" href="alab_m
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.lab_view.LabView.is_cancelling">
+<span class="sig-name descname"><span class="pre">is_cancelling</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_view.html#LabView.is_cancelling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_view.LabView.is_cancelling" title="Link to this definition">#</a></dt>
+<dd><p>Whether someone has asked for this task to be cancelled.</p>
+<p>A cancellation reaches a task as a <code class="docutils literal notranslate"><span class="pre">dramatiq_abort.Abort</span></code> raised in the worker thread, and
+that cannot interrupt a thread already blocked inside a device call or a <code class="docutils literal notranslate"><span class="pre">time.sleep</span></code>. Poll
+this in long waits, and bail out cooperatively, so a cancel takes effect at the next safe
+point instead of after the blocking call finally returns.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">while</span> <span class="n">furnace</span><span class="o">.</span><span class="n">is_running</span><span class="p">():</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">is_cancelling</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="n">TaskCancelledError</span><span class="p">(</span><span class="s2">&quot;cancelled while waiting for the furnace&quot;</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -594,6 +633,15 @@ or as a string corresponding to the sample’s name within the experiment.</p>
 <dt class="sig sig-object py" id="alab_management.lab_view.LabView.priority">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">priority</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#alab_management.lab_view.LabView.priority" title="Link to this definition">#</a></dt>
 <dd><p>Get the priority of the task.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.lab_view.LabView.release_all_resources">
+<span class="sig-name descname"><span class="pre">release_all_resources</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_view.html#LabView.release_all_resources"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_view.LabView.release_all_resources" title="Link to this definition">#</a></dt>
+<dd><p>Give back every resource this task holds or has requested.</p>
+<p><code class="docutils literal notranslate"><span class="pre">request_cleanup</span></code> already does this as its last step. Call it directly when a task has
+reconciled its own samples and only needs its devices and sample positions released, which
+is what a task with <code class="docutils literal notranslate"><span class="pre">cleanup_on_cancel</span> <span class="pre">=</span> <span class="pre">False</span></code> needs after being cancelled.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -852,13 +900,16 @@ or as a string corresponding to the sample’s name within the experiment.</p>
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.DeviceRunningException"><code class="docutils literal notranslate"><span class="pre">DeviceRunningException</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView"><code class="docutils literal notranslate"><span class="pre">LabView</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.cancellation_event"><code class="docutils literal notranslate"><span class="pre">LabView.cancellation_event</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.get_locked_sample_positions"><code class="docutils literal notranslate"><span class="pre">LabView.get_locked_sample_positions()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.get_sample"><code class="docutils literal notranslate"><span class="pre">LabView.get_sample()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.get_sample_position_parent_device"><code class="docutils literal notranslate"><span class="pre">LabView.get_sample_position_parent_device()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.is_cancelling"><code class="docutils literal notranslate"><span class="pre">LabView.is_cancelling()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.lock_exact_sample_positions"><code class="docutils literal notranslate"><span class="pre">LabView.lock_exact_sample_positions()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.lock_sample_position"><code class="docutils literal notranslate"><span class="pre">LabView.lock_sample_position()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.move_sample"><code class="docutils literal notranslate"><span class="pre">LabView.move_sample()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.priority"><code class="docutils literal notranslate"><span class="pre">LabView.priority</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.release_all_resources"><code class="docutils literal notranslate"><span class="pre">LabView.release_all_resources()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.release_sample_position"><code class="docutils literal notranslate"><span class="pre">LabView.release_sample_position()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.request_cleanup"><code class="docutils literal notranslate"><span class="pre">LabView.request_cleanup()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.request_resources"><code class="docutils literal notranslate"><span class="pre">LabView.request_resources()</span></code></a></li>

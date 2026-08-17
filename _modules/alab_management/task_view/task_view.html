@@ -880,19 +880,40 @@
         <span class="p">)</span></div>
 
 
+    <span class="c1">#: Statuses where a worker is already executing the task, so cancelling means telling that</span>
+    <span class="c1">#: worker to abort and letting it unwind.</span>
+    <span class="n">CANCELABLE_LIVE_STATUS</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">TaskStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">TaskStatus</span><span class="o">.</span><span class="n">REQUESTING_RESOURCES</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1">#: Statuses where no worker has started the task body yet, so cancelling is just a status flip.</span>
+    <span class="c1">#: ``INITIATED`` belongs here: the dramatiq message is out, but ``run_task`` refuses to start a</span>
+    <span class="c1">#: task that is no longer ``INITIATED``, so flipping the status is enough to stop it.</span>
+    <span class="n">CANCELABLE_PENDING_STATUS</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">TaskStatus</span><span class="o">.</span><span class="n">WAITING</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">TaskStatus</span><span class="o">.</span><span class="n">READY</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">TaskStatus</span><span class="o">.</span><span class="n">INITIATED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+    <span class="p">)</span>
+
 <div class="viewcode-block" id="TaskView.mark_task_as_canceling">
 <a class="viewcode-back" href="../../../alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.mark_task_as_canceling">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">mark_task_as_canceling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Try to cancel a task by setting the field &quot;stopping&quot; to True.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cancel a task, whether or not it has started running.</span>
+
+<span class="sd">        A task that is already executing is marked for cancellation and left to the task manager,</span>
+<span class="sd">        which sends the abort signal to its worker. A task that has not started yet goes straight to</span>
+<span class="sd">        ``CANCELLED``, because waiting for a worker that will never pick it up would leave it queued</span>
+<span class="sd">        and free to run later -- the reason cancelling used to look like it had no effect and then</span>
+<span class="sd">        the next queued task started anyway.</span>
+
+<span class="sd">        Returns whether the task was in a state that could be cancelled at all. A task that has</span>
+<span class="sd">        already finished, errored or been cancelled returns ``False``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_collection</span><span class="o">.</span><span class="n">find_one_and_update</span><span class="p">(</span>
             <span class="p">{</span>
                 <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">,</span>
-                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="s2">&quot;$in&quot;</span><span class="p">:</span> <span class="p">[</span>
-                        <span class="n">TaskStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                        <span class="n">TaskStatus</span><span class="o">.</span><span class="n">REQUESTING_RESOURCES</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                    <span class="p">],</span>
-                <span class="p">},</span>
+                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$in&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CANCELABLE_LIVE_STATUS</span><span class="p">)},</span>
             <span class="p">},</span>
             <span class="p">{</span>
                 <span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -901,7 +922,48 @@
                 <span class="p">}</span>
             <span class="p">},</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">entry</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+        <span class="k">if</span> <span class="n">entry</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="c1"># Not running yet. Claim it atomically so it cannot be submitted between this check and the</span>
+        <span class="c1"># status write, then run the normal cancellation bookkeeping (which cascades downstream).</span>
+        <span class="n">claimed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_collection</span><span class="o">.</span><span class="n">find_one_and_update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">,</span>
+                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$in&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CANCELABLE_PENDING_STATUS</span><span class="p">)},</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">CANCELLED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">claimed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">CANCELLED</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_message</span><span class="p">(</span>
+            <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span>
+            <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Cancelled before it started running.&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="TaskView.is_canceling">
+<a class="viewcode-back" href="../../../alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.is_canceling">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_canceling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether a cancellation has been requested for a task and not yet finished.</span>
+
+<span class="sd">        Cheap enough to poll. Used by ``LabView.is_cancelling`` so a task can break out of a long</span>
+<span class="sd">        blocking wait instead of holding the lab until the wait returns on its own.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_task_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span>
+                <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">,</span> <span class="s2">&quot;canceling_progress&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$exists&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}},</span>
+                <span class="n">projection</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+            <span class="p">)</span>
+            <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TaskView.update_canceling_progress">

@@ -433,10 +433,12 @@
                 <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask"><code class="docutils literal notranslate"><span class="pre">BaseTask</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.add_to"><code class="docutils literal notranslate"><span class="pre">BaseTask.add_to()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.cleanup_on_cancel"><code class="docutils literal notranslate"><span class="pre">BaseTask.cleanup_on_cancel</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.format_error_report"><code class="docutils literal notranslate"><span class="pre">BaseTask.format_error_report()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.from_kwargs"><code class="docutils literal notranslate"><span class="pre">BaseTask.from_kwargs()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.get_message"><code class="docutils literal notranslate"><span class="pre">BaseTask.get_message()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.is_offline"><code class="docutils literal notranslate"><span class="pre">BaseTask.is_offline</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.on_cancel"><code class="docutils literal notranslate"><span class="pre">BaseTask.on_cancel()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.priority"><code class="docutils literal notranslate"><span class="pre">BaseTask.priority</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.result_specification"><code class="docutils literal notranslate"><span class="pre">BaseTask.result_specification</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.run"><code class="docutils literal notranslate"><span class="pre">BaseTask.run()</span></code></a></li>
@@ -462,6 +464,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.LargeResult.store"><code class="docutils literal notranslate"><span class="pre">LargeResult.store()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.TaskCancelledError"><code class="docutils literal notranslate"><span class="pre">TaskCancelledError</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.add_reroute_task"><code class="docutils literal notranslate"><span class="pre">add_reroute_task()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.add_task"><code class="docutils literal notranslate"><span class="pre">add_task()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.get_all_tasks"><code class="docutils literal notranslate"><span class="pre">get_all_tasks()</span></code></a></li>
@@ -492,6 +495,15 @@
 <dd><p>Used to add basetask to a SampleBuilder’s tasklist during Experiment construction.</p>
 <p>Args: samples (Union[SampleBuilder, List[SampleBuilder]]): One or more SampleBuilder’s which will have this
 task appended to their tasklists.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.task_view.task.BaseTask.cleanup_on_cancel">
+<span class="sig-name descname"><span class="pre">cleanup_on_cancel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#alab_management.task_view.task.BaseTask.cleanup_on_cancel" title="Link to this definition">#</a></dt>
+<dd><p>Whether the task actor should run the default cleanup (prompt the operator, then move every
+sample of this task out of the lab with <code class="docutils literal notranslate"><span class="pre">position=None</span></code>) after the task is cancelled.
+Set to <code class="docutils literal notranslate"><span class="pre">False</span></code> in a subclass that reconciles its own samples in <a class="reference internal" href="#alab_management.task_view.task.BaseTask.on_cancel" title="alab_management.task_view.task.BaseTask.on_cancel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_cancel()</span></code></a>, e.g. a
+transport task whose samples are still sitting at a known physical position.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -541,6 +553,24 @@ or sample builder.</p>
 <dt class="sig sig-object py" id="alab_management.task_view.task.BaseTask.is_offline">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_offline</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#alab_management.task_view.task.BaseTask.is_offline" title="Link to this definition">#</a></dt>
 <dd><p>Returns True if this task is in offline, False if it is a live task.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.task_view.task.BaseTask.on_cancel">
+<span class="sig-name descname"><span class="pre">on_cancel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask.on_cancel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask.on_cancel" title="Link to this definition">#</a></dt>
+<dd><p>Bring the lab to a safe, truthful state after this task has been cancelled.</p>
+<p>The task actor calls this once, from its <code class="docutils literal notranslate"><span class="pre">Abort</span></code> handler, before any cleanup. Use it to
+stop hardware, park it somewhere safe, and reconcile sample positions to where things
+physically are. Two things are worth knowing:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">run</span></code> has already been interrupted, so anything it was waiting on is gone. The resources
+this task held are still held at this point and are released afterwards.</p></li>
+<li><p>Raising from here does not un-cancel the task. The exception is logged and the
+cancellation proceeds, so a failure to clean up never leaves a task stuck.</p></li>
+</ul>
+<p>Set <a class="reference internal" href="#alab_management.task_view.task.BaseTask.cleanup_on_cancel" title="alab_management.task_view.task.BaseTask.cleanup_on_cancel"><code class="xref py py-attr docutils literal notranslate"><span class="pre">cleanup_on_cancel</span></code></a> to <code class="docutils literal notranslate"><span class="pre">False</span></code> alongside this method when the default cleanup
+(which moves every sample of the task out of the lab) would lie about where samples are.</p>
+<p>By default this does nothing.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -759,6 +789,19 @@ This method should have a timeout regardless of the storage system to not block 
 
 </dd></dl>
 
+<dl class="py exception">
+<dt class="sig sig-object py" id="alab_management.task_view.task.TaskCancelledError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TaskCancelledError</span></span><a class="reference internal" href="_modules/alab_management/task_view/task.html#TaskCancelledError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.TaskCancelledError" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raise from <code class="docutils literal notranslate"><span class="pre">run</span></code> to end a task as CANCELLED rather than as ERROR.</p>
+<p>A cancellation reaches a task as a <code class="docutils literal notranslate"><span class="pre">dramatiq_abort.Abort</span></code>, which cannot interrupt a thread
+already blocked inside a device call. So a task that polls <code class="xref py py-meth docutils literal notranslate"><span class="pre">LabView.is_cancelling()</span></code>, or
+that asks a device to stop and gets told it stopped, has to end itself – and if it does that
+by raising anything else it is recorded as a failure. It was not a failure: somebody asked for
+it. Raise this instead, and the task actor treats it exactly like an abort, including calling
+<a class="reference internal" href="#alab_management.task_view.task.BaseTask.on_cancel" title="alab_management.task_view.task.BaseTask.on_cancel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BaseTask.on_cancel()</span></code></a>.</p>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="alab_management.task_view.task.add_reroute_task">
 <span class="sig-name descname"><span class="pre">add_reroute_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">supported_sample_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#add_reroute_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.add_reroute_task" title="Link to this definition">#</a></dt>
@@ -843,10 +886,12 @@ This method should have a timeout regardless of the storage system to not block 
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask"><code class="docutils literal notranslate"><span class="pre">BaseTask</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.add_to"><code class="docutils literal notranslate"><span class="pre">BaseTask.add_to()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.cleanup_on_cancel"><code class="docutils literal notranslate"><span class="pre">BaseTask.cleanup_on_cancel</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.format_error_report"><code class="docutils literal notranslate"><span class="pre">BaseTask.format_error_report()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.from_kwargs"><code class="docutils literal notranslate"><span class="pre">BaseTask.from_kwargs()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.get_message"><code class="docutils literal notranslate"><span class="pre">BaseTask.get_message()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.is_offline"><code class="docutils literal notranslate"><span class="pre">BaseTask.is_offline</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.on_cancel"><code class="docutils literal notranslate"><span class="pre">BaseTask.on_cancel()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.priority"><code class="docutils literal notranslate"><span class="pre">BaseTask.priority</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.result_specification"><code class="docutils literal notranslate"><span class="pre">BaseTask.result_specification</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.run"><code class="docutils literal notranslate"><span class="pre">BaseTask.run()</span></code></a></li>
@@ -872,6 +917,7 @@ This method should have a timeout regardless of the storage system to not block 
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.LargeResult.store"><code class="docutils literal notranslate"><span class="pre">LargeResult.store()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.TaskCancelledError"><code class="docutils literal notranslate"><span class="pre">TaskCancelledError</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.add_reroute_task"><code class="docutils literal notranslate"><span class="pre">add_reroute_task()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.add_task"><code class="docutils literal notranslate"><span class="pre">add_task()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.get_all_tasks"><code class="docutils literal notranslate"><span class="pre">get_all_tasks()</span></code></a></li>

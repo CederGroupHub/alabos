@@ -564,6 +564,21 @@
 
 
 
+<div class="viewcode-block" id="TaskCancelledError">
+<a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.TaskCancelledError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TaskCancelledError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raise from ``run`` to end a task as CANCELLED rather than as ERROR.</span>
+
+<span class="sd">    A cancellation reaches a task as a ``dramatiq_abort.Abort``, which cannot interrupt a thread</span>
+<span class="sd">    already blocked inside a device call. So a task that polls :meth:`LabView.is_cancelling`, or</span>
+<span class="sd">    that asks a device to stop and gets told it stopped, has to end itself -- and if it does that</span>
+<span class="sd">    by raising anything else it is recorded as a failure. It was not a failure: somebody asked for</span>
+<span class="sd">    it. Raise this instead, and the task actor treats it exactly like an abort, including calling</span>
+<span class="sd">    :meth:`BaseTask.on_cancel`.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+
 <div class="viewcode-block" id="BaseTask">
 <a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.BaseTask">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseTask</span><span class="p">(</span><span class="n">ABC</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">MetaClassWithImportLock</span><span class="p">):</span>
@@ -572,6 +587,12 @@
 
 <span class="sd">    All the tasks should inherit from this class.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#: Whether the task actor should run the default cleanup (prompt the operator, then move every</span>
+    <span class="c1">#: sample of this task out of the lab with ``position=None``) after the task is cancelled.</span>
+    <span class="c1">#: Set to ``False`` in a subclass that reconciles its own samples in :meth:`on_cancel`, e.g. a</span>
+    <span class="c1">#: transport task whose samples are still sitting at a known physical position.</span>
+    <span class="n">cleanup_on_cancel</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -744,6 +765,28 @@
 <span class="sd">        By default, this function returns True unless it is overridden by a subclass.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="BaseTask.on_cancel">
+<a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.BaseTask.on_cancel">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Bring the lab to a safe, truthful state after this task has been cancelled.</span>
+
+<span class="sd">        The task actor calls this once, from its ``Abort`` handler, before any cleanup. Use it to</span>
+<span class="sd">        stop hardware, park it somewhere safe, and reconcile sample positions to where things</span>
+<span class="sd">        physically are. Two things are worth knowing:</span>
+
+<span class="sd">        - ``run`` has already been interrupted, so anything it was waiting on is gone. The resources</span>
+<span class="sd">          this task held are still held at this point and are released afterwards.</span>
+<span class="sd">        - Raising from here does not un-cancel the task. The exception is logged and the</span>
+<span class="sd">          cancellation proceeds, so a failure to clean up never leaves a task stuck.</span>
+
+<span class="sd">        Set :attr:`cleanup_on_cancel` to ``False`` alongside this method when the default cleanup</span>
+<span class="sd">        (which moves every sample of the task out of the lab) would lie about where samples are.</span>
+
+<span class="sd">        By default this does nothing.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="BaseTask.run">

@@ -432,6 +432,8 @@
             <nav aria-label="Page">
                 <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView"><code class="docutils literal notranslate"><span class="pre">TaskView</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.CANCELABLE_LIVE_STATUS"><code class="docutils literal notranslate"><span class="pre">TaskView.CANCELABLE_LIVE_STATUS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.CANCELABLE_PENDING_STATUS"><code class="docutils literal notranslate"><span class="pre">TaskView.CANCELABLE_PENDING_STATUS</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.create_subtask"><code class="docutils literal notranslate"><span class="pre">TaskView.create_subtask()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.create_task"><code class="docutils literal notranslate"><span class="pre">TaskView.create_task()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.encode_task"><code class="docutils literal notranslate"><span class="pre">TaskView.encode_task()</span></code></a></li>
@@ -443,6 +445,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.get_task_with_sample"><code class="docutils literal notranslate"><span class="pre">TaskView.get_task_with_sample()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.get_tasks_by_status"><code class="docutils literal notranslate"><span class="pre">TaskView.get_tasks_by_status()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.get_tasks_to_be_canceled"><code class="docutils literal notranslate"><span class="pre">TaskView.get_tasks_to_be_canceled()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.is_canceling"><code class="docutils literal notranslate"><span class="pre">TaskView.is_canceling()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.mark_task_as_canceling"><code class="docutils literal notranslate"><span class="pre">TaskView.mark_task_as_canceling()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.set_message"><code class="docutils literal notranslate"><span class="pre">TaskView.set_message()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.set_task_actor_id"><code class="docutils literal notranslate"><span class="pre">TaskView.set_task_actor_id()</span></code></a></li>
@@ -476,6 +479,21 @@ provides some convenience methods to query and manipulate the tasks collection.<
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TaskView</span></span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Task view manages the status, parameters of a task.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskView.CANCELABLE_LIVE_STATUS">
+<span class="sig-name descname"><span class="pre">CANCELABLE_LIVE_STATUS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('RUNNING',</span> <span class="pre">'REQUESTING_RESOURCES')</span></em><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.CANCELABLE_LIVE_STATUS" title="Link to this definition">#</a></dt>
+<dd><p>Statuses where a worker is already executing the task, so cancelling means telling that
+worker to abort and letting it unwind.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskView.CANCELABLE_PENDING_STATUS">
+<span class="sig-name descname"><span class="pre">CANCELABLE_PENDING_STATUS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('WAITING',</span> <span class="pre">'READY',</span> <span class="pre">'INITIATED')</span></em><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.CANCELABLE_PENDING_STATUS" title="Link to this definition">#</a></dt>
+<dd><p>Statuses where no worker has started the task body yet, so cancelling is just a status flip.
+<code class="docutils literal notranslate"><span class="pre">INITIATED</span></code> belongs here: the dramatiq message is out, but <code class="docutils literal notranslate"><span class="pre">run_task</span></code> refuses to start a
+task that is no longer <code class="docutils literal notranslate"><span class="pre">INITIATED</span></code>, so flipping the status is enough to stop it.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskView.create_subtask">
 <span class="sig-name descname"><span class="pre">create_subtask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtask_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.create_subtask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.create_subtask" title="Link to this definition">#</a></dt>
@@ -632,9 +650,29 @@ If None, return all tasks that are in the process of being canceled.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskView.is_canceling">
+<span class="sig-name descname"><span class="pre">is_canceling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.is_canceling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.is_canceling" title="Link to this definition">#</a></dt>
+<dd><p>Whether a cancellation has been requested for a task and not yet finished.</p>
+<p>Cheap enough to poll. Used by <code class="docutils literal notranslate"><span class="pre">LabView.is_cancelling</span></code> so a task can break out of a long
+blocking wait instead of holding the lab until the wait returns on its own.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="alab_management.task_view.task_view.TaskView.mark_task_as_canceling">
 <span class="sig-name descname"><span class="pre">mark_task_as_canceling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task_view.html#TaskView.mark_task_as_canceling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task_view.TaskView.mark_task_as_canceling" title="Link to this definition">#</a></dt>
-<dd><p>Try to cancel a task by setting the field “stopping” to True.</p>
+<dd><p>Cancel a task, whether or not it has started running.</p>
+<p>A task that is already executing is marked for cancellation and left to the task manager,
+which sends the abort signal to its worker. A task that has not started yet goes straight to
+<code class="docutils literal notranslate"><span class="pre">CANCELLED</span></code>, because waiting for a worker that will never pick it up would leave it queued
+and free to run later – the reason cancelling used to look like it had no effect and then
+the next queued task started anyway.</p>
+<p>Returns whether the task was in a state that could be cancelled at all. A task that has
+already finished, errored or been cancelled returns <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
@@ -820,6 +858,8 @@ which will not overwrite old pre_task and next_tasks.</p>
   <nav class="bd-toc-nav page-toc">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView"><code class="docutils literal notranslate"><span class="pre">TaskView</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.CANCELABLE_LIVE_STATUS"><code class="docutils literal notranslate"><span class="pre">TaskView.CANCELABLE_LIVE_STATUS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.CANCELABLE_PENDING_STATUS"><code class="docutils literal notranslate"><span class="pre">TaskView.CANCELABLE_PENDING_STATUS</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.create_subtask"><code class="docutils literal notranslate"><span class="pre">TaskView.create_subtask()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.create_task"><code class="docutils literal notranslate"><span class="pre">TaskView.create_task()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.encode_task"><code class="docutils literal notranslate"><span class="pre">TaskView.encode_task()</span></code></a></li>
@@ -831,6 +871,7 @@ which will not overwrite old pre_task and next_tasks.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.get_task_with_sample"><code class="docutils literal notranslate"><span class="pre">TaskView.get_task_with_sample()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.get_tasks_by_status"><code class="docutils literal notranslate"><span class="pre">TaskView.get_tasks_by_status()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.get_tasks_to_be_canceled"><code class="docutils literal notranslate"><span class="pre">TaskView.get_tasks_to_be_canceled()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.is_canceling"><code class="docutils literal notranslate"><span class="pre">TaskView.is_canceling()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.mark_task_as_canceling"><code class="docutils literal notranslate"><span class="pre">TaskView.mark_task_as_canceling()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.set_message"><code class="docutils literal notranslate"><span class="pre">TaskView.set_message()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task_view.TaskView.set_task_actor_id"><code class="docutils literal notranslate"><span class="pre">TaskView.set_task_actor_id()</span></code></a></li>

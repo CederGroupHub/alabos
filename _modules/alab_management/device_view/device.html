@@ -394,7 +394,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">queue</span><span class="w"> </span><span class="kn">import</span> <span class="n">Empty</span><span class="p">,</span> <span class="n">PriorityQueue</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">traceback</span><span class="w"> </span><span class="kn">import</span> <span class="n">format_exc</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">ClassVar</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mock</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBLogger</span>
@@ -402,6 +402,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.user_input</span><span class="w"> </span><span class="kn">import</span> <span class="n">request_maintenance_input</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dbattributes</span><span class="w"> </span><span class="kn">import</span> <span class="n">DictInDatabase</span><span class="p">,</span> <span class="n">ListInDatabase</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">bson</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectId</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_UNSPECIFIED</span><span class="p">(</span><span class="n">_</span><span class="p">):</span>
@@ -552,6 +555,18 @@
 <span class="sd">        kwargs: keyword arguments that will be passed to the device class</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="c1">#: Names of database-backed attributes (those declared with :meth:`dict_in_database`,</span>
+    <span class="c1">#: :meth:`list_in_database` or ``value_in_database``) that the dashboard should show for this</span>
+    <span class="c1">#: device. Empty by default: a device&#39;s attributes often hold bulky internal bookkeeping, so</span>
+    <span class="c1">#: nothing is published until it is named here. The values appear under ``attributes`` in</span>
+    <span class="c1">#: ``/api/status`` and in the device&#39;s detail panel.</span>
+    <span class="c1">#:</span>
+    <span class="c1">#: .. code-block:: python</span>
+    <span class="c1">#:</span>
+    <span class="c1">#:     class MobileManipulator(BaseDevice):</span>
+    <span class="c1">#:         dashboard_attributes = [&quot;battery_percentage&quot;, &quot;current_mission&quot;, &quot;carried_samples&quot;]</span>
+    <span class="n">dashboard_attributes</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a device object, you can set up connection to</span>
@@ -627,6 +642,32 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__message</span></div>
+
+
+<div class="viewcode-block" id="BaseDevice.get_occupying_task_id">
+<a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.get_occupying_task_id">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_occupying_task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ObjectId | None&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The id of the task currently holding this device, or ``None`` when it is free.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">get_device</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;task_id&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseDevice.is_task_canceling">
+<a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.is_task_canceling">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_task_canceling</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether the task currently holding this device is being cancelled.</span>
+
+<span class="sd">        Device methods run in the DeviceManager process, not in the task&#39;s worker, so the abort</span>
+<span class="sd">        signal that cancels a task cannot interrupt a driver mid-call. Poll this inside any long</span>
+<span class="sd">        loop in a driver -- waiting on a robot program, waiting on another instrument -- and return</span>
+<span class="sd">        or raise when it becomes true, so a cancel is honoured promptly instead of after the motion</span>
+<span class="sd">        finishes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">task_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_occupying_task_id</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">task_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.task_view.task_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskView</span>
+
+        <span class="k">return</span> <span class="n">TaskView</span><span class="p">()</span><span class="o">.</span><span class="n">is_canceling</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_connect_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
