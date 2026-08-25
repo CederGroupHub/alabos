@@ -514,12 +514,12 @@ to indicate whether the input data is valid.</p>
   <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="c1"># check the input sample</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">samples</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">8</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_message</span><span class="p">(</span><span class="s2">&quot;The number of samples should be less than 8.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_message</span><span class="p">(</span><span class="s2">"The number of samples should be less than 8."</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
 
     <span class="c1"># check the temperature</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="mi">100</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span> <span class="o">&lt;=</span> <span class="mi">1100</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_message</span><span class="p">(</span><span class="s2">&quot;The temperature should be within 100 - 1100 °C.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_message</span><span class="p">(</span><span class="s2">"The temperature should be within 100 - 1100 °C."</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="k">return</span> <span class="kc">True</span>
 </pre></div>
@@ -565,10 +565,10 @@ is specified by a dictionary.</p></li>
     <span class="n">sample_position</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">position</span>
     
     <span class="c1"># you can get the metadata of the sample</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">labview</span><span class="o">.</span><span class="n">move_sample</span><span class="p">(</span><span class="s2">&quot;sample_1&quot;</span><span class="p">,</span> <span class="s2">&quot;new_position&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">labview</span><span class="o">.</span><span class="n">move_sample</span><span class="p">(</span><span class="s2">"sample_1"</span><span class="p">,</span> <span class="s2">"new_position"</span><span class="p">)</span>
     
     <span class="c1"># you can update the metadata of the sample</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">labview</span><span class="o">.</span><span class="n">update_sample_metadata</span><span class="p">(</span><span class="s2">&quot;sample_1&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;mass&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mf">2.59434</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;g&quot;</span><span class="p">}})</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">labview</span><span class="o">.</span><span class="n">update_sample_metadata</span><span class="p">(</span><span class="s2">"sample_1"</span><span class="p">,</span> <span class="p">{</span><span class="s2">"mass"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="mf">2.59434</span><span class="p">,</span> <span class="s2">"unit"</span><span class="p">:</span> <span class="s2">"g"</span><span class="p">}})</span>
 </pre></div>
 </div>
 </section>
@@ -589,18 +589,18 @@ released automatically when the context manager exits.</p>
   <span class="n">DeviceType</span><span class="p">:</span> <span class="p">{</span>
     <span class="c1"># in the dict, you can specify the quantity of sample positions under the device </span>
     <span class="c1"># you want to use you can request multiple sample positions under one device</span>
-    <span class="s2">&quot;&lt;sample_position_name&gt;&quot;</span><span class="p">:</span> <span class="n">QUANTITY</span><span class="p">,</span> 
-    <span class="s2">&quot;&lt;another_sample_position_name&gt;&quot;</span><span class="p">:</span> <span class="n">QUANTITY</span>
+    <span class="s2">"&lt;sample_position_name&gt;"</span><span class="p">:</span> <span class="n">QUANTITY</span><span class="p">,</span> 
+    <span class="s2">"&lt;another_sample_position_name&gt;"</span><span class="p">:</span> <span class="n">QUANTITY</span>
   <span class="p">},</span>
   
   <span class="c1"># you can also specify the device name to request a specific device if the </span>
   <span class="c1"># sample position is not specified, the system will only request the device</span>
-  <span class="s2">&quot;DeviceName&quot;</span><span class="p">:</span> <span class="p">{},</span>
+  <span class="s2">"DeviceName"</span><span class="p">:</span> <span class="p">{},</span>
   
   <span class="c1"># for the sample positions that do not belong to any device, </span>
   <span class="c1"># you can request them by setting the key to None.</span>
   <span class="kc">None</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">&quot;&lt;standalone_sample_position_name&gt;&quot;</span><span class="p">:</span> <span class="n">QUANTITY</span>
+    <span class="s2">"&lt;standalone_sample_position_name&gt;"</span><span class="p">:</span> <span class="n">QUANTITY</span>
   <span class="p">}</span>
 <span class="p">})</span> <span class="k">as</span> <span class="p">(</span><span class="n">devices</span><span class="p">,</span> <span class="n">sample_positions</span><span class="p">):</span>
     <span class="c1"># do actual operations here with the devices and sample_positions</span>
@@ -629,28 +629,28 @@ positions like this:</p>
     <span class="o">...</span>
     <span class="k">with</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">labview</span><span class="o">.</span><span class="n">request_resources</span><span class="p">({</span>
         <span class="n">BoxFurnace</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;slot&quot;</span><span class="p">:</span> <span class="mi">8</span>
+            <span class="s2">"slot"</span><span class="p">:</span> <span class="mi">8</span>
         <span class="p">},</span>
         <span class="kc">None</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;furnace_table&quot;</span><span class="p">:</span> <span class="mi">2</span>
+            <span class="s2">"furnace_table"</span><span class="p">:</span> <span class="mi">2</span>
         <span class="p">}</span>
     <span class="p">})</span> <span class="k">as</span> <span class="p">(</span><span class="n">devices</span><span class="p">,</span> <span class="n">sample_positions</span><span class="p">):</span>
         <span class="c1"># the furnace object you can call `run_program` method to run the program</span>
         <span class="c1"># since only the device type is specified, the system will find one available device</span>
-        <span class="c1"># for here, it can be &quot;box_2&quot;</span>
+        <span class="c1"># for here, it can be "box_2"</span>
         <span class="n">furnace</span> <span class="o">=</span> <span class="n">devices</span><span class="p">[</span><span class="n">BoxFurnace</span><span class="p">]</span>
         
         <span class="c1"># the furnace slots are a list of sample positions.</span>
         <span class="c1"># You can get it by query the dict with requested </span>
-        <span class="c1"># &quot;DeviceType&quot; and &quot;sample_position_name&quot;.</span>
+        <span class="c1"># "DeviceType" and "sample_position_name".</span>
         <span class="c1"># For here, it should look like:</span>
-        <span class="c1"># [&quot;box_2/slot_1&quot;, &quot;box_2/slot_2&quot;, ..., &quot;box_2/slot_8&quot;]</span>
-        <span class="n">furnace_slots</span> <span class="o">=</span> <span class="n">sample_positions</span><span class="p">[</span><span class="n">BoxFurnace</span><span class="p">][</span><span class="s2">&quot;slot&quot;</span><span class="p">]</span>
+        <span class="c1"># ["box_2/slot_1", "box_2/slot_2", ..., "box_2/slot_8"]</span>
+        <span class="n">furnace_slots</span> <span class="o">=</span> <span class="n">sample_positions</span><span class="p">[</span><span class="n">BoxFurnace</span><span class="p">][</span><span class="s2">"slot"</span><span class="p">]</span>
         
         <span class="c1"># Even only requesting one standalone sample position, the system </span>
         <span class="c1"># will return a list of sample positions with one element </span>
         <span class="c1"># You can get the standalone sample position by querying the dict with None key.</span>
-        <span class="n">furnace_table</span> <span class="o">=</span> <span class="n">sample_positions</span><span class="p">[</span><span class="kc">None</span><span class="p">][</span><span class="s2">&quot;crucible_buffer&quot;</span><span class="p">]</span>
+        <span class="n">furnace_table</span> <span class="o">=</span> <span class="n">sample_positions</span><span class="p">[</span><span class="kc">None</span><span class="p">][</span><span class="s2">"crucible_buffer"</span><span class="p">]</span>
              
         <span class="n">furnace</span><span class="o">.</span><span class="n">run_program</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 </pre></div>
@@ -677,11 +677,11 @@ the device object is a RPC proxy object that forwards the method call to the act
     <span class="c1"># request the furnace</span>
     <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">labview</span><span class="o">.</span><span class="n">request_resources</span><span class="p">({</span>
         <span class="n">BoxFurnace</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;slot&quot;</span><span class="p">:</span> <span class="mi">1</span>
+            <span class="s2">"slot"</span><span class="p">:</span> <span class="mi">1</span>
         <span class="p">}</span>
     <span class="p">})</span> <span class="k">as</span> <span class="p">(</span><span class="n">devices</span><span class="p">,</span> <span class="n">sample_positions</span><span class="p">):</span>
         <span class="n">furnace</span> <span class="o">=</span> <span class="n">devices</span><span class="p">[</span><span class="n">BoxFurnace</span><span class="p">]</span>
-        <span class="n">furnace_slot</span> <span class="o">=</span> <span class="n">sample_positions</span><span class="p">[</span><span class="n">BoxFurnace</span><span class="p">][</span><span class="s2">&quot;slot&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">furnace_slot</span> <span class="o">=</span> <span class="n">sample_positions</span><span class="p">[</span><span class="n">BoxFurnace</span><span class="p">][</span><span class="s2">"slot"</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         
         <span class="c1"># run the furnace</span>
         <span class="n">furnace</span><span class="o">.</span><span class="n">run_program</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
@@ -690,7 +690,7 @@ the device object is a RPC proxy object that forwards the method call to the act
         <span class="n">temperatures</span> <span class="o">=</span> <span class="n">furnace</span><span class="o">.</span><span class="n">get_temperature_log</span><span class="p">(</span><span class="n">furnace_slot</span><span class="p">)</span>
         
         <span class="c1"># return the result</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;temperatures&quot;</span><span class="p">:</span> <span class="n">temperatures</span><span class="p">}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"temperatures"</span><span class="p">:</span> <span class="n">temperatures</span><span class="p">}</span>
 </pre></div>
 </div>
 <section id="large-file-storage">
@@ -709,11 +709,11 @@ to ensure consistency and avoid querying issues. Here’s how you can do it:</p>
     <span class="c1"># request the furnace</span>
     <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">labview</span><span class="o">.</span><span class="n">request_resources</span><span class="p">({</span>
         <span class="n">BoxFurnace</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;slot&quot;</span><span class="p">:</span> <span class="mi">1</span>
+            <span class="s2">"slot"</span><span class="p">:</span> <span class="mi">1</span>
         <span class="p">}</span>
     <span class="p">})</span> <span class="k">as</span> <span class="p">(</span><span class="n">devices</span><span class="p">,</span> <span class="n">sample_positions</span><span class="p">):</span>
         <span class="n">furnace</span> <span class="o">=</span> <span class="n">devices</span><span class="p">[</span><span class="n">BoxFurnace</span><span class="p">]</span>
-        <span class="n">furnace_slot</span> <span class="o">=</span> <span class="n">sample_positions</span><span class="p">[</span><span class="n">BoxFurnace</span><span class="p">][</span><span class="s2">&quot;slot&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">furnace_slot</span> <span class="o">=</span> <span class="n">sample_positions</span><span class="p">[</span><span class="n">BoxFurnace</span><span class="p">][</span><span class="s2">"slot"</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         
         <span class="c1"># run the furnace</span>
         <span class="n">furnace</span><span class="o">.</span><span class="n">run_program</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
@@ -725,13 +725,13 @@ to ensure consistency and avoid querying issues. Here’s how you can do it:</p>
         <span class="n">large_result</span> <span class="o">=</span> <span class="n">LargeResult</span><span class="o">.</span><span class="n">from_file_like_data</span><span class="p">(</span><span class="n">temperatures</span><span class="p">)</span>
         
         <span class="c1"># you can also store the large file in the result</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;large_file.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;This is a large file.&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">r</span><span class="s2">"large_file.txt"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"This is a large file."</span><span class="p">)</span>
             
-        <span class="n">large_file</span> <span class="o">=</span> <span class="n">LargeResult</span><span class="o">.</span><span class="n">from_local_file</span><span class="p">(</span><span class="s2">&quot;large_file.txt&quot;</span><span class="p">)</span>
+        <span class="n">large_file</span> <span class="o">=</span> <span class="n">LargeResult</span><span class="o">.</span><span class="n">from_local_file</span><span class="p">(</span><span class="s2">"large_file.txt"</span><span class="p">)</span>
         
         <span class="c1"># return the result</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;temperatures&quot;</span><span class="p">:</span> <span class="n">temperatures</span><span class="p">,</span> <span class="s2">&quot;large_result&quot;</span><span class="p">:</span> <span class="n">large_result</span><span class="p">,</span> <span class="s2">&quot;large_file&quot;</span><span class="p">:</span> <span class="n">large_file</span><span class="p">}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"temperatures"</span><span class="p">:</span> <span class="n">temperatures</span><span class="p">,</span> <span class="s2">"large_result"</span><span class="p">:</span> <span class="n">large_result</span><span class="p">,</span> <span class="s2">"large_file"</span><span class="p">:</span> <span class="n">large_file</span><span class="p">}</span>
 </pre></div>
 </div>
 </section>
@@ -749,7 +749,7 @@ of temperatures.</p>
 <span class="k">class</span><span class="w"> </span><span class="nc">Heating</span><span class="p">(</span><span class="n">BaseTask</span><span class="p">):</span>
   <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="o">...</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;temperatures&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">]}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"temperatures"</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">]}</span>
     
   <span class="nd">@property</span>
   <span class="k">def</span><span class="w"> </span><span class="nf">result_specification</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -783,16 +783,16 @@ shared between the parent task and the subtask.</p>
     <span class="c1"># request the furnace</span>
     <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">labview</span><span class="o">.</span><span class="n">request_resources</span><span class="p">({</span>
         <span class="n">BoxFurnace</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;slot&quot;</span><span class="p">:</span> <span class="mi">1</span>
+            <span class="s2">"slot"</span><span class="p">:</span> <span class="mi">1</span>
         <span class="p">}</span>
     <span class="p">})</span> <span class="k">as</span> <span class="p">(</span><span class="n">devices</span><span class="p">,</span> <span class="n">sample_positions</span><span class="p">):</span>
       
         <span class="c1"># run the moving subtask</span>
-        <span class="k">for</span> <span class="n">sample</span><span class="p">,</span> <span class="n">position</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">samples</span><span class="p">,</span> <span class="n">sample_positions</span><span class="p">[</span><span class="n">BoxFurnace</span><span class="p">][</span><span class="s2">&quot;slot&quot;</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">sample</span><span class="p">,</span> <span class="n">position</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">samples</span><span class="p">,</span> <span class="n">sample_positions</span><span class="p">[</span><span class="n">BoxFurnace</span><span class="p">][</span><span class="s2">"slot"</span><span class="p">]):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">run_subtask</span><span class="p">(</span><span class="n">Moving</span><span class="p">,</span> <span class="n">sample</span><span class="o">=</span><span class="n">sample</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="n">position</span><span class="p">)</span>
             
         <span class="n">furnace</span> <span class="o">=</span> <span class="n">devices</span><span class="p">[</span><span class="n">BoxFurnace</span><span class="p">]</span>
-        <span class="n">furnace_slot</span> <span class="o">=</span> <span class="n">sample_positions</span><span class="p">[</span><span class="n">BoxFurnace</span><span class="p">][</span><span class="s2">&quot;slot&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">furnace_slot</span> <span class="o">=</span> <span class="n">sample_positions</span><span class="p">[</span><span class="n">BoxFurnace</span><span class="p">][</span><span class="s2">"slot"</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         
         <span class="c1"># run the furnace</span>
         <span class="n">furnace</span><span class="o">.</span><span class="n">run_program</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
@@ -801,7 +801,7 @@ shared between the parent task and the subtask.</p>
         <span class="n">temperatures</span> <span class="o">=</span> <span class="n">furnace</span><span class="o">.</span><span class="n">get_temperature_log</span><span class="p">(</span><span class="n">furnace_slot</span><span class="p">)</span>
         
         <span class="c1"># return the result</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;temperatures&quot;</span><span class="p">:</span> <span class="n">temperatures</span><span class="p">}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"temperatures"</span><span class="p">:</span> <span class="n">temperatures</span><span class="p">}</span>
 </pre></div>
 </div>
 </section>
@@ -826,7 +826,7 @@ catch the error and initiate a <code class="docutils literal notranslate"><span 
   <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">labview</span><span class="o">.</span><span class="n">request_resources</span><span class="p">({</span>
         <span class="n">BoxFurnace</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;slot&quot;</span><span class="p">:</span> <span class="mi">1</span>
+            <span class="s2">"slot"</span><span class="p">:</span> <span class="mi">1</span>
         <span class="p">}</span>
     <span class="p">})</span> <span class="k">as</span> <span class="p">(</span><span class="n">devices</span><span class="p">,</span> <span class="n">sample_positions</span><span class="p">):</span>
         <span class="n">furnace</span> <span class="o">=</span> <span class="n">devices</span><span class="p">[</span><span class="n">BoxFurnace</span><span class="p">]</span>
@@ -837,12 +837,12 @@ catch the error and initiate a <code class="docutils literal notranslate"><span 
           <span class="k">except</span> <span class="n">FurnaceNotConnectedError</span><span class="p">:</span>
               <span class="c1"># initiate a user request to ask the user to check the connection</span>
               <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labview</span><span class="o">.</span><span class="n">request_user_input</span><span class="p">(</span>
-                <span class="n">prompt</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Please check the connection of the furnace </span><span class="si">{</span><span class="n">furnace</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span>
-                <span class="n">options</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Retry&quot;</span><span class="p">,</span> <span class="s2">&quot;Abort&quot;</span><span class="p">]</span>            
+                <span class="n">prompt</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Please check the connection of the furnace </span><span class="si">{</span><span class="n">furnace</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">."</span><span class="p">,</span>
+                <span class="n">options</span><span class="o">=</span><span class="p">[</span><span class="s2">"Retry"</span><span class="p">,</span> <span class="s2">"Abort"</span><span class="p">]</span>            
               <span class="p">)</span>
               
               <span class="c1"># if the user chooses to retry, rerun the task</span>
-              <span class="k">if</span> <span class="n">response</span> <span class="o">==</span> <span class="s2">&quot;Abort&quot;</span><span class="p">:</span>
+              <span class="k">if</span> <span class="n">response</span> <span class="o">==</span> <span class="s2">"Abort"</span><span class="p">:</span>
                   <span class="k">raise</span> 
 </pre></div>
 </div>

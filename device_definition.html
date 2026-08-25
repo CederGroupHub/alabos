@@ -513,26 +513,26 @@ where all the communication with the device is implemented for A-Lab.</p>
 about the deivce.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">BoxFurnace</span><span class="p">(</span><span class="n">BaseDevice</span><span class="p">):</span>
     <span class="n">description</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;The box furnace is a device that can heat samples up to 1200 degrees Celsius. &quot;</span>
-        <span class="s2">&quot;It is used for heat treatment of samples. In current setting, one box furnace &quot;</span>
-        <span class="s2">&quot;can hold up to 8 samples. Due to the limitation of the power supply, the &quot;</span>
-        <span class="s2">&quot;max ramping rate is 10 degrees Celsius per minute.&quot;</span>
+        <span class="s2">"The box furnace is a device that can heat samples up to 1200 degrees Celsius. "</span>
+        <span class="s2">"It is used for heat treatment of samples. In current setting, one box furnace "</span>
+        <span class="s2">"can hold up to 8 samples. Due to the limitation of the power supply, the "</span>
+        <span class="s2">"max ramping rate is 10 degrees Celsius per minute."</span>
     <span class="p">)</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method should be implemented to store the information about the device. For example, if the device is
 communicated through a serial port, you can store the serial port information here.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">com_port_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    You can customize this method to store more information about the device. For example,</span>
 <span class="sd">    if the device is communicated through a serial port, you can store the serial port information here.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        com_port_id: The ID of the COM port that the device is connected to.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">com_port_id</span> <span class="o">=</span> <span class="n">com_port_id</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">door_controller</span> <span class="o">=</span> <span class="n">DoorController</span><span class="p">(</span>
-        <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">],</span> <span class="n">ip_address</span><span class="o">=</span><span class="s2">&quot;192.168.0.51&quot;</span>
+        <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">],</span> <span class="n">ip_address</span><span class="o">=</span><span class="s2">"192.168.0.51"</span>
     <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -543,17 +543,17 @@ are the positions inside the device where the samples are placed. It is used to 
 setting up the system, all the sample positions will be created and stored in the database.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@property</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">sample_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SamplePosition</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return the sample positions of the BoxFurnace.</span>
 
 <span class="sd">    Sample positions are the positions inside the device where the samples are placed.</span>
 <span class="sd">    It is used to track the samples in the system. When setting up the system,</span>
 <span class="sd">    all the sample positions will be created and stored in the database.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="p">[</span>
         <span class="n">SamplePosition</span><span class="p">(</span>
-            <span class="s2">&quot;slot&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The position inside the box furnace, where the samples are heated&quot;</span><span class="p">,</span>
+            <span class="s2">"slot"</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">"The position inside the box furnace, where the samples are heated"</span><span class="p">,</span>
             <span class="n">number</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
         <span class="p">),</span>
     <span class="p">]</span>
@@ -562,21 +562,21 @@ setting up the system, all the sample positions will be created and stored in th
 <p>The <code class="docutils literal notranslate"><span class="pre">connect</span></code>, <code class="docutils literal notranslate"><span class="pre">disconnect</span></code>, and <code class="docutils literal notranslate"><span class="pre">is_running</span></code> methods should be implemented to connect to the device, disconnect from the
 device, and check if the device is running, respectively.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">get_driver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the driver of the device. It is a helper method to get the driver of the device.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return the driver of the device. It is a helper method to get the driver of the device."""</span>
     <span class="k">return</span> <span class="n">FurnaceController</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">com_port_id</span><span class="p">)</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Connect to the BoxFurnace.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Connect to the BoxFurnace."""</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_driver</span><span class="p">()</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Disconnect from the BoxFurnace.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Disconnect from the BoxFurnace."""</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">driver</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="kc">None</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">is_running</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if the device is running.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Check if the device is running."""</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">is_running</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -593,7 +593,7 @@ there is a <code class="docutils literal notranslate"><span class="pre">get_temp
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">profiles</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Run a heating program on the BoxFurnace.</span>
 
 <span class="sd">        Args:</span>
@@ -601,7 +601,7 @@ there is a <code class="docutils literal notranslate"><span class="pre">get_temp
 <span class="sd">                - The target temperature in Celsius.</span>
 <span class="sd">                - The ramping rate in Celsius per minute.</span>
 <span class="sd">                - The duration in minutes</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">segments</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">profile</span> <span class="ow">in</span> <span class="n">profiles</span><span class="p">:</span>
             <span class="n">segments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
@@ -627,12 +627,12 @@ there is a <code class="docutils literal notranslate"><span class="pre">get_temp
             <span class="n">Segment</span><span class="p">(</span><span class="n">segment_type</span><span class="o">=</span><span class="n">SegmentType</span><span class="o">.</span><span class="n">END</span><span class="p">,</span> <span class="n">endt</span><span class="o">=</span><span class="n">ProgramEndType</span><span class="o">.</span><span class="n">RESET</span><span class="p">),</span>
         <span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_message</span><span class="p">(</span>
-            <span class="s2">&quot;Running a program with profiles:</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="s2">"Running a program with profiles:</span><span class="se">\n</span><span class="s2">"</span>
+            <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                 <span class="p">[</span>
-                    <span class="sa">f</span><span class="s2">&quot;Setpoint: </span><span class="si">{</span><span class="n">profile</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> C, &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;Ramp rate: </span><span class="si">{</span><span class="n">profile</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> C/min, &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;Dwelling duration: </span><span class="si">{</span><span class="n">profile</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2"> min&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Setpoint: </span><span class="si">{</span><span class="n">profile</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> C, "</span>
+                    <span class="sa">f</span><span class="s2">"Ramp rate: </span><span class="si">{</span><span class="n">profile</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> C/min, "</span>
+                    <span class="sa">f</span><span class="s2">"Dwelling duration: </span><span class="si">{</span><span class="n">profile</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2"> min"</span>
                     <span class="k">for</span> <span class="n">profile</span> <span class="ow">in</span> <span class="n">profiles</span>
                 <span class="p">]</span>
             <span class="p">)</span>
@@ -643,16 +643,16 @@ there is a <code class="docutils literal notranslate"><span class="pre">get_temp
                 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">FurnaceError</span><span class="p">:</span>  <span class="c1"># if there is an error, prompt the user to retry</span>
                 <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_maintenance</span><span class="p">(</span>
-                    <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;There is an error running the program. Do you want to retry?&quot;</span><span class="p">,</span>
-                    <span class="n">options</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Yes&quot;</span><span class="p">,</span> <span class="s2">&quot;No&quot;</span><span class="p">],</span>
+                    <span class="n">prompt</span><span class="o">=</span><span class="s2">"There is an error running the program. Do you want to retry?"</span><span class="p">,</span>
+                    <span class="n">options</span><span class="o">=</span><span class="p">[</span><span class="s2">"Yes"</span><span class="p">,</span> <span class="s2">"No"</span><span class="p">],</span>
                 <span class="p">)</span>
-                <span class="k">if</span> <span class="n">response</span> <span class="o">==</span> <span class="s2">&quot;No&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">response</span> <span class="o">==</span> <span class="s2">"No"</span><span class="p">:</span>
                     <span class="k">raise</span>  <span class="c1"># if the user chooses not to retry, raise the error</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">break</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_temperature</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the current temperature of the BoxFurnace.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Get the current temperature of the BoxFurnace."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">get_temperature</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -732,10 +732,10 @@ four box furnaces in the <code class="docutils literal notranslate"><span class=
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.devices.box_furnace</span><span class="w"> </span><span class="kn">import</span> <span class="n">BoxFurnace</span>
 
-<span class="n">add_device</span><span class="p">(</span><span class="n">BoxFurnace</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;box_1&quot;</span><span class="p">,</span> <span class="n">com_port_id</span><span class="o">=</span><span class="s2">&quot;COM3&quot;</span><span class="p">))</span>
-<span class="n">add_device</span><span class="p">(</span><span class="n">BoxFurnace</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;box_2&quot;</span><span class="p">,</span> <span class="n">com_port_id</span><span class="o">=</span><span class="s2">&quot;COM4&quot;</span><span class="p">))</span>
-<span class="n">add_device</span><span class="p">(</span><span class="n">BoxFurnace</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;box_3&quot;</span><span class="p">,</span> <span class="n">com_port_id</span><span class="o">=</span><span class="s2">&quot;COM5&quot;</span><span class="p">))</span>
-<span class="n">add_device</span><span class="p">(</span><span class="n">BoxFurnace</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;box_4&quot;</span><span class="p">,</span> <span class="n">com_port_id</span><span class="o">=</span><span class="s2">&quot;COM6&quot;</span><span class="p">))</span>
+<span class="n">add_device</span><span class="p">(</span><span class="n">BoxFurnace</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"box_1"</span><span class="p">,</span> <span class="n">com_port_id</span><span class="o">=</span><span class="s2">"COM3"</span><span class="p">))</span>
+<span class="n">add_device</span><span class="p">(</span><span class="n">BoxFurnace</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"box_2"</span><span class="p">,</span> <span class="n">com_port_id</span><span class="o">=</span><span class="s2">"COM4"</span><span class="p">))</span>
+<span class="n">add_device</span><span class="p">(</span><span class="n">BoxFurnace</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"box_3"</span><span class="p">,</span> <span class="n">com_port_id</span><span class="o">=</span><span class="s2">"COM5"</span><span class="p">))</span>
+<span class="n">add_device</span><span class="p">(</span><span class="n">BoxFurnace</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"box_4"</span><span class="p">,</span> <span class="n">com_port_id</span><span class="o">=</span><span class="s2">"COM6"</span><span class="p">))</span>
 </pre></div>
 </div>
 </section>
@@ -748,8 +748,8 @@ that are served as a buffer area for the crucibles. In this case, you can regist
 
 <span class="n">add_standalone_sample_position</span><span class="p">(</span>
     <span class="n">SamplePosition</span><span class="p">(</span>
-        <span class="s2">&quot;crucible_buffer&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The buffer area for the crucibles&quot;</span><span class="p">,</span>
+        <span class="s2">"crucible_buffer"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"The buffer area for the crucibles"</span><span class="p">,</span>
         <span class="n">number</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
     <span class="p">)</span>
 <span class="p">)</span>

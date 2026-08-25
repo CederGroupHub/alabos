@@ -396,9 +396,9 @@
 <div class="viewcode-block" id="get_experiment_status">
 <a class="viewcode-back" href="../../../alab_management.builders.experimentbuilder.html#alab_management.builders.experimentbuilder.get_experiment_status">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_experiment_status</span><span class="p">(</span>
-    <span class="n">exp_id</span><span class="p">:</span> <span class="n">ObjectId</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:8895&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="n">exp_id</span><span class="p">:</span> <span class="n">ObjectId</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"http://localhost:8895"</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Get the status of the experiment.</span>
 
 <span class="sd">    Args:</span>
@@ -413,13 +413,13 @@
 
 <span class="sd">    .. seealso::</span>
 <span class="sd">        See the dashboard code for the response format. :func:`alab_management.dashboard.routes.experiment.query_experiment`</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
 
     <span class="c1"># convert exp_id to string while validating the ObjectId format</span>
     <span class="n">exp_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ObjectId</span><span class="p">(</span><span class="n">exp_id</span><span class="p">))</span>
 
-    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">/api/experiment/</span><span class="si">{</span><span class="n">exp_id</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">/api/experiment/</span><span class="si">{</span><span class="n">exp_id</span><span class="si">}</span><span class="s2">"</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
@@ -429,9 +429,9 @@
 <div class="viewcode-block" id="get_experiment_result">
 <a class="viewcode-back" href="../../../alab_management.builders.experimentbuilder.html#alab_management.builders.experimentbuilder.get_experiment_result">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_experiment_result</span><span class="p">(</span>
-    <span class="n">exp_id</span><span class="p">:</span> <span class="n">ObjectId</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:8895&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="n">exp_id</span><span class="p">:</span> <span class="n">ObjectId</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"http://localhost:8895"</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Get the result of the experiment.</span>
 
 <span class="sd">    Args:</span>
@@ -444,13 +444,13 @@
 <span class="sd">    -------</span>
 <span class="sd">        See the dashboard code for the response format.</span>
 <span class="sd">        :func:`alab_management.dashboard.routes.experiment.query_experiment_results`</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
 
     <span class="c1"># convert exp_id to string while validating the ObjectId format</span>
     <span class="n">exp_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ObjectId</span><span class="p">(</span><span class="n">exp_id</span><span class="p">))</span>
 
-    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">/api/experiment/results/</span><span class="si">{</span><span class="n">exp_id</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">/api/experiment/results/</span><span class="si">{</span><span class="n">exp_id</span><span class="si">}</span><span class="s2">"</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
@@ -460,20 +460,20 @@
 <div class="viewcode-block" id="ExperimentBuilder">
 <a class="viewcode-back" href="../../../alab_management.builders.experimentbuilder.html#alab_management.builders.experimentbuilder.ExperimentBuilder">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ExperimentBuilder</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    It takes a list of samples and a list of tasks, and returns a dictionary</span>
 <span class="sd">    that can be used to generate an input file for the `experiment` to run.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">      name (str): The name of the experiment.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Args:</span>
 <span class="sd">          name (str): The name of the experiment.</span>
 <span class="sd">          tags (List[str]): A list of tags to attach to the experiment.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SampleBuilder</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -485,7 +485,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">add_sample</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SampleBuilder</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Add a sample to the batch. Each sample already has multiple tasks binded to it. Each</span>
 <span class="sd">        batch is a directed graph of tasks.</span>
 
@@ -497,9 +497,9 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">          A SampleBuilder object. This can be used to add tasks to the sample.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">name</span> <span class="o">==</span> <span class="n">sample</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sample by name </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> already exists.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Sample by name </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> already exists."</span><span class="p">)</span>
         <span class="n">sample</span> <span class="o">=</span> <span class="n">SampleBuilder</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">experiment</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">)</span>
 
         <span class="c1"># TODO ensure that the metadata is json/bson serializable</span>
@@ -516,7 +516,7 @@
         <span class="n">task_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
         <span class="n">samples</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SampleBuilder</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        This function adds a task to the sample. You should use this function only for special cases which</span>
 <span class="sd">        are not handled by the `add_sample` function.</span>
 
@@ -529,7 +529,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">            None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">:</span>
             <span class="k">return</span>
 
@@ -540,25 +540,25 @@
         <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">task_obj</span><span class="o">.</span><span class="n">validate</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Task input validation failed!&quot;</span>
+                <span class="s2">"Task input validation failed!"</span>
                 <span class="o">+</span> <span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Error message: </span><span class="si">{</span><span class="n">task_obj</span><span class="o">.</span><span class="n">get_message</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Error message: </span><span class="si">{</span><span class="n">task_obj</span><span class="o">.</span><span class="n">get_message</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span>
                     <span class="k">if</span> <span class="n">task_obj</span><span class="o">.</span><span class="n">get_message</span><span class="p">()</span>
-                    <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+                    <span class="k">else</span> <span class="s2">""</span>
                 <span class="p">)</span>
             <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">[</span><span class="n">task_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">task_name</span><span class="p">,</span>
-            <span class="s2">&quot;parameters&quot;</span><span class="p">:</span> <span class="n">task_kwargs</span><span class="p">,</span>
-            <span class="s2">&quot;samples&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">sample</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">samples</span><span class="p">],</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="n">task_name</span><span class="p">,</span>
+            <span class="s2">"parameters"</span><span class="p">:</span> <span class="n">task_kwargs</span><span class="p">,</span>
+            <span class="s2">"samples"</span><span class="p">:</span> <span class="p">[</span><span class="n">sample</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">samples</span><span class="p">],</span>
         <span class="p">}</span></div>
 
 
 <div class="viewcode-block" id="ExperimentBuilder.to_dict">
 <a class="viewcode-back" href="../../../alab_management.builders.experimentbuilder.html#alab_management.builders.experimentbuilder.ExperimentBuilder.to_dict">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return a dictionary that can be used to generate an input file for the `experiment`</span>
 <span class="sd">        to run.</span>
 
@@ -566,7 +566,7 @@
 <span class="sd">        -------</span>
 <span class="sd">            A dictionary that can be used to generate an input file for the `experiment` to run.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">samples</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="c1"># tasks = []</span>
         <span class="n">tasks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -577,52 +577,52 @@
             <span class="n">last_task_id</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">for</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="n">sample</span><span class="o">.</span><span class="n">tasks</span><span class="p">:</span>
                 <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">[</span><span class="n">task_id</span><span class="p">]</span>
-                <span class="n">task</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">task_id</span><span class="p">)</span>
+                <span class="n">task</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">task_id</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">task_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">task_ids</span><span class="p">:</span>
                     <span class="n">task_ids</span><span class="p">[</span><span class="n">task_id</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tasks</span><span class="p">)</span>
-                    <span class="c1"># task[&quot;next_tasks&quot;] = set()</span>
-                    <span class="n">task</span><span class="p">[</span><span class="s2">&quot;prev_tasks&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+                    <span class="c1"># task["next_tasks"] = set()</span>
+                    <span class="n">task</span><span class="p">[</span><span class="s2">"prev_tasks"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
                     <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">last_task_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="c1"># tasks[task_ids[last_task_id]][&quot;next_tasks&quot;].add(task_ids[task_id])</span>
-                    <span class="n">task</span><span class="p">[</span><span class="s2">&quot;prev_tasks&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">task_ids</span><span class="p">[</span><span class="n">last_task_id</span><span class="p">])</span>
+                    <span class="c1"># tasks[task_ids[last_task_id]]["next_tasks"].add(task_ids[task_id])</span>
+                    <span class="n">task</span><span class="p">[</span><span class="s2">"prev_tasks"</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">task_ids</span><span class="p">[</span><span class="n">last_task_id</span><span class="p">])</span>
                 <span class="n">last_task_id</span> <span class="o">=</span> <span class="n">task_id</span>
 
         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
-            <span class="c1"># task[&quot;next_tasks&quot;] = list(task[&quot;next_tasks&quot;])</span>
-            <span class="n">task</span><span class="p">[</span><span class="s2">&quot;prev_tasks&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;prev_tasks&quot;</span><span class="p">])</span>
+            <span class="c1"># task["next_tasks"] = list(task["next_tasks"])</span>
+            <span class="n">task</span><span class="p">[</span><span class="s2">"prev_tasks"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="s2">"prev_tasks"</span><span class="p">])</span>
 
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-            <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span>
-            <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span>
-            <span class="s2">&quot;samples&quot;</span><span class="p">:</span> <span class="n">samples</span><span class="p">,</span>
-            <span class="s2">&quot;tasks&quot;</span><span class="p">:</span> <span class="n">tasks</span><span class="p">,</span>
+            <span class="s2">"name"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s2">"tags"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span>
+            <span class="s2">"metadata"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span>
+            <span class="s2">"samples"</span><span class="p">:</span> <span class="n">samples</span><span class="p">,</span>
+            <span class="s2">"tasks"</span><span class="p">:</span> <span class="n">tasks</span><span class="p">,</span>
         <span class="p">}</span></div>
 
 
 <div class="viewcode-block" id="ExperimentBuilder.generate_input_file">
 <a class="viewcode-back" href="../../../alab_management.builders.experimentbuilder.html#alab_management.builders.experimentbuilder.ExperimentBuilder.generate_input_file">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">generate_input_file</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fmt</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="s2">&quot;yaml&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fmt</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"json"</span><span class="p">,</span> <span class="s2">"yaml"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"json"</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Genreate an input file for the `experiment` command.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            filename (str): The name of the file to be generated.</span>
-<span class="sd">            fmt (Literal[&quot;json&quot;, &quot;yaml&quot;]): The format of the file to be generated.</span>
+<span class="sd">            fmt (Literal["json", "yaml"]): The format of the file to be generated.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">            None.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"w"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">"json"</span><span class="p">:</span>
                 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 
                 <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">&quot;yaml&quot;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">"yaml"</span><span class="p">:</span>
                 <span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
 
                 <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="n">f</span><span class="p">,</span> <span class="n">default_flow_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
@@ -631,7 +631,7 @@
 <div class="viewcode-block" id="ExperimentBuilder.plot">
 <a class="viewcode-back" href="../../../alab_management.builders.experimentbuilder.html#alab_management.builders.experimentbuilder.ExperimentBuilder.plot">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Plot the directed graph of tasks.</span>
 
 <span class="sd">        Args:</span>
@@ -640,33 +640,33 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">            None.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>  <span class="c1"># type: ignore</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>  <span class="c1"># type: ignore</span>
 
         <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">_</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
 
-        <span class="n">task_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="s2">&quot;tasks&quot;</span><span class="p">]</span>
+        <span class="n">task_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="s2">"tasks"</span><span class="p">]</span>
 
-        <span class="n">unique_tasks</span> <span class="o">=</span> <span class="p">{</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">task_list</span><span class="p">}</span>
+        <span class="n">unique_tasks</span> <span class="o">=</span> <span class="p">{</span><span class="n">task</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">task_list</span><span class="p">}</span>
         <span class="n">color_key</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">nodetype</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">tab10</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">nodetype</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">unique_tasks</span><span class="p">)</span>
         <span class="p">}</span>
         <span class="n">node_colors</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">node_labels</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">task_list</span><span class="p">:</span>
-            <span class="n">node_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">color_key</span><span class="p">[</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]])</span>
-            <span class="n">node_labels</span><span class="p">[</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">task</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="s1">&#39;samples&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="n">node_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">color_key</span><span class="p">[</span><span class="n">task</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]])</span>
+            <span class="n">node_labels</span><span class="p">[</span><span class="n">task</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">task</span><span class="p">[</span><span class="s1">'type'</span><span class="p">]</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="s1">'samples'</span><span class="p">])</span><span class="si">}</span><span class="s2">)"</span>
 
         <span class="n">g</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">task_list</span><span class="p">:</span>
-            <span class="n">g</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span> <span class="n">samples</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;samples&quot;</span><span class="p">]))</span>
-            <span class="k">for</span> <span class="n">prev</span> <span class="ow">in</span> <span class="n">task</span><span class="p">[</span><span class="s2">&quot;prev_tasks&quot;</span><span class="p">]:</span>
-                <span class="n">g</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">task_list</span><span class="p">[</span><span class="n">prev</span><span class="p">][</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span> <span class="n">task</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">])</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="n">task</span><span class="p">[</span><span class="s2">"type"</span><span class="p">],</span> <span class="n">samples</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="s2">"samples"</span><span class="p">]))</span>
+            <span class="k">for</span> <span class="n">prev</span> <span class="ow">in</span> <span class="n">task</span><span class="p">[</span><span class="s2">"prev_tasks"</span><span class="p">]:</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">task_list</span><span class="p">[</span><span class="n">prev</span><span class="p">][</span><span class="s2">"_id"</span><span class="p">],</span> <span class="n">task</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">])</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">nx_agraph</span><span class="o">.</span><span class="n">graphviz_layout</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">prog</span><span class="o">=</span><span class="s2">&quot;dot&quot;</span><span class="p">)</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">nx_agraph</span><span class="o">.</span><span class="n">graphviz_layout</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">prog</span><span class="o">=</span><span class="s2">"dot"</span><span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>  <span class="c1"># noqa: E722</span>
             <span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">spring_layout</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
 
@@ -682,8 +682,8 @@
 
 <div class="viewcode-block" id="ExperimentBuilder.submit">
 <a class="viewcode-back" href="../../../alab_management.builders.experimentbuilder.html#alab_management.builders.experimentbuilder.ExperimentBuilder.submit">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">submit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:8895&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectId</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">submit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"http://localhost:8895"</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectId</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Submit the experiment to server.</span>
 
 <span class="sd">        Args:</span>
@@ -694,23 +694,23 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">            The object id of the experiment.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
 
-        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">/api/experiment/submit&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">/api/experiment/submit"</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error submitting experiment: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error submitting experiment: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">][</span><span class="s2">&quot;exp_id&quot;</span><span class="p">])</span></div>
+        <span class="k">return</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">"data"</span><span class="p">][</span><span class="s2">"exp_id"</span><span class="p">])</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a string representation of the ExperimentBuilder.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;ExperimentBuilder: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&gt;&quot;</span></div>
+<span class="w">        </span><span class="sd">"""Return a string representation of the ExperimentBuilder."""</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"&lt;ExperimentBuilder: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&gt;"</span></div>
 
 </pre></div>
 

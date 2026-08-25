@@ -383,10 +383,10 @@
                 <article class="bd-article">
                   
   <h1>Source code for alab_management.task_manager.task_manager</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">TaskLauncher is the core module of the system,</span>
 <span class="sd">which actually executes the tasks.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
@@ -408,12 +408,12 @@
 <div class="viewcode-block" id="TaskManager">
 <a class="viewcode-back" href="../../../alab_management.task_manager.task_manager.html#alab_management.task_manager.task_manager.TaskManager">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TaskManager</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    TaskManager will.</span>
 
 <span class="sd">    (1) find all the ready tasks and submit them,</span>
 <span class="sd">    (2) handle all the resource requests</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">load_definition</span><span class="p">()</span>
@@ -428,20 +428,20 @@
 <a class="viewcode-back" href="../../../alab_management.task_manager.task_manager.html#alab_management.task_manager.task_manager.TaskManager.pause_new_task_launching">[docs]</a>
     <span class="nd">@contextmanager</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">pause_new_task_launching</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Context manager to pause new task launching.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Context manager to pause new task launching."""</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_pause_new_task_launching</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Pausing new task launching.&quot;</span><span class="p">)</span>
+            <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Pausing new task launching."</span><span class="p">)</span>
             <span class="k">yield</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_pause_new_task_launching</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Resuming new task launching.&quot;</span><span class="p">)</span></div>
+            <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Resuming new task launching."</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TaskManager.check_number_of_running_tasks">
 <a class="viewcode-back" href="../../../alab_management.task_manager.task_manager.html#alab_management.task_manager.task_manager.TaskManager.check_number_of_running_tasks">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">check_number_of_running_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check the number of running tasks.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Check the number of running tasks."""</span>
         <span class="n">running_tasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">get_tasks_by_status</span><span class="p">(</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">running_tasks</span><span class="p">)</span></div>
 
@@ -449,8 +449,8 @@
 <div class="viewcode-block" id="TaskManager.refresh_tasks">
 <a class="viewcode-back" href="../../../alab_management.task_manager.task_manager.html#alab_management.task_manager.task_manager.TaskManager.refresh_tasks">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">refresh_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Refresh the tasks in the task view.&quot;&quot;&quot;</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Refreshing tasks in TaskManager...&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""Refresh the tasks in the task view."""</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Refreshing tasks in TaskManager..."</span><span class="p">)</span>
         <span class="n">load_definition</span><span class="p">(</span><span class="n">reload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span> <span class="o">=</span> <span class="n">TaskView</span><span class="p">()</span></div>
 
@@ -458,7 +458,7 @@
 <div class="viewcode-block" id="TaskManager.run">
 <a class="viewcode-back" href="../../../alab_management.task_manager.task_manager.html#alab_management.task_manager.task_manager.TaskManager.run">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start the loop.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Start the loop."""</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">()</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
@@ -472,13 +472,13 @@
 <div class="viewcode-block" id="TaskManager.clean_up_tasks_from_previous_runs">
 <a class="viewcode-back" href="../../../alab_management.task_manager.task_manager.html#alab_management.task_manager.task_manager.TaskManager.clean_up_tasks_from_previous_runs">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">clean_up_tasks_from_previous_runs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cleans up incomplete tasks that exist from the last time the taskmanager was running. Note that this will</span>
+<span class="w">        </span><span class="sd">"""Cleans up incomplete tasks that exist from the last time the taskmanager was running. Note that this will</span>
 <span class="sd">        block the task queue until all samples in these tasks have been removed from the physical lab (confirmed via</span>
 <span class="sd">        user requests on the dashboard).</span>
 
 <span class="sd">        This typically occurs if the taskmanager was exited using SIGTERM (ctrl-c), in which case some tasks may</span>
 <span class="sd">        still be in the RUNNING or CANCELLING state. These will be set to CANCELLED now.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">statuses_to_cancel</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">TaskStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">,</span>
             <span class="n">TaskStatus</span><span class="o">.</span><span class="n">REQUESTING_RESOURCES</span><span class="p">,</span>
@@ -494,31 +494,31 @@
 
         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks_to_restart</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span>
-                <span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">],</span> <span class="n">status</span><span class="o">=</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">READY</span>
+                <span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">],</span> <span class="n">status</span><span class="o">=</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">READY</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tasks_to_cancel</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No dangling tasks found from previous alabos workers. Nice!&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"No dangling tasks found from previous alabos workers. Nice!"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="nb">print</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+            <span class="sa">f</span><span class="s2">"""</span>
 <span class="s2">              Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">tasks_to_cancel</span><span class="p">)</span><span class="si">}</span><span class="s2"> dangling tasks leftover from previous alabos workers. These tasks were in</span>
 <span class="s2">              an unknown state (RUNNING or CANCELLING) when the alabos workers were stopped.</span>
 
 <span class="s2">              We will now cancel them and remove their physical components from the lab. We will go through each task</span>
 <span class="s2">              one by one. A user request will appear on the alabos dashboard for each task. Please acknowledge each</span>
 <span class="s2">              request to remove the samples from the lab. Once all tasks have been addressed, the alabos workers will</span>
-<span class="s2">              begin to process new tasks. Lets begin:&quot;&quot;&quot;</span>
+<span class="s2">              begin to process new tasks. Lets begin:"""</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">task_entry</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tasks_to_cancel</span><span class="p">):</span>
-            <span class="n">task_id</span> <span class="o">=</span> <span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span>
-            <span class="n">task_class</span> <span class="o">=</span> <span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span>
+            <span class="n">task_id</span> <span class="o">=</span> <span class="n">task_entry</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">]</span>
+            <span class="n">task_class</span> <span class="o">=</span> <span class="n">task_entry</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span>
             <span class="n">task_name</span> <span class="o">=</span> <span class="n">task_class</span><span class="o">.</span><span class="vm">__name__</span>
 
             <span class="nb">print</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">tasks_to_cancel</span><span class="p">)</span><span class="si">}</span><span class="s2">) please clean up task </span><span class="si">{</span><span class="n">task_name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">) using the ALabOS &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;dashboard...&quot;</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">tasks_to_cancel</span><span class="p">)</span><span class="si">}</span><span class="s2">) please clean up task </span><span class="si">{</span><span class="n">task_name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">) using the ALabOS "</span>
+                <span class="sa">f</span><span class="s2">"dashboard..."</span>
             <span class="p">)</span>
 
             <span class="c1"># puts a user request on the dashboard to remove all samples in this task from the physical lab,</span>
@@ -528,78 +528,78 @@
 
             <span class="c1"># mark task as successfully cancelled</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">CANCELLED</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> Task cancelled successfully.&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\t</span><span class="s2"> Task cancelled successfully."</span><span class="p">)</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cleanup is done, nice job. Lets get back to work!&quot;</span><span class="p">)</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Cleanup is done, nice job. Lets get back to work!"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TaskManager.submit_ready_tasks">
 <a class="viewcode-back" href="../../../alab_management.task_manager.task_manager.html#alab_management.task_manager.task_manager.TaskManager.submit_ready_tasks">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">submit_ready_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Checking if there are any tasks that are ready to be submitted. (STATUS = READY)</span>
 <span class="sd">        If so, submit them to task actor (dramatiq worker).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.task_actor</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_task</span>
 
         <span class="n">ready_task_entries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">get_ready_tasks</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">task_entry</span> <span class="ow">in</span> <span class="n">ready_task_entries</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">system_log</span><span class="p">(</span>
-                <span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
+                <span class="n">level</span><span class="o">=</span><span class="s2">"DEBUG"</span><span class="p">,</span>
                 <span class="n">log_data</span><span class="o">=</span><span class="p">{</span>
-                    <span class="s2">&quot;logged_by&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
-                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;SendingTaskToActor&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">],</span>
+                    <span class="s2">"logged_by"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                    <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"SendingTaskToActor"</span><span class="p">,</span>
+                    <span class="s2">"task_id"</span><span class="p">:</span> <span class="n">task_entry</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">],</span>
                 <span class="p">},</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span>
-                <span class="n">task_id</span><span class="o">=</span><span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">],</span> <span class="n">status</span><span class="o">=</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">INITIATED</span>
+                <span class="n">task_id</span><span class="o">=</span><span class="n">task_entry</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">],</span> <span class="n">status</span><span class="o">=</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">INITIATED</span>
             <span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">run_task</span><span class="o">.</span><span class="n">send_with_options</span><span class="p">(</span>
-                <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;task_id_str&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">])}</span>
+                <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">"task_id_str"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">task_entry</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">])}</span>
             <span class="p">)</span>
             <span class="n">message_id</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">message_id</span>
             <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Task </span><span class="si">{</span><span class="n">task_entry</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">task_entry</span><span class="p">[</span><span class="s1">&#39;task_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">) sent to actor with message_id </span><span class="si">{</span><span class="n">message_id</span><span class="si">}</span><span class="s2">. &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;A message from Task Actor will be logged with this task_id in alabos launch_worker. If not, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;there can be an issue with the Dramatiq worker!&quot;</span>
+                <span class="sa">f</span><span class="s2">"Task </span><span class="si">{</span><span class="n">task_entry</span><span class="p">[</span><span class="s1">'type'</span><span class="p">]</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">task_entry</span><span class="p">[</span><span class="s1">'task_id'</span><span class="p">]</span><span class="si">}</span><span class="s2">) sent to actor with message_id </span><span class="si">{</span><span class="n">message_id</span><span class="si">}</span><span class="s2">. "</span>
+                <span class="sa">f</span><span class="s2">"A message from Task Actor will be logged with this task_id in alabos launch_worker. If not, "</span>
+                <span class="sa">f</span><span class="s2">"there can be an issue with the Dramatiq worker!"</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">set_task_actor_id</span><span class="p">(</span>
-                <span class="n">task_id</span><span class="o">=</span><span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">],</span> <span class="n">message_id</span><span class="o">=</span><span class="n">message_id</span>
+                <span class="n">task_id</span><span class="o">=</span><span class="n">task_entry</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">],</span> <span class="n">message_id</span><span class="o">=</span><span class="n">message_id</span>
             <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TaskManager.handle_tasks_to_be_canceled">
 <a class="viewcode-back" href="../../../alab_management.task_manager.task_manager.html#alab_management.task_manager.task_manager.TaskManager.handle_tasks_to_be_canceled">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">handle_tasks_to_be_canceled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if there are any tasks needs to be stopped.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Check if there are any tasks needs to be stopped."""</span>
         <span class="n">tasks_to_be_cancelled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">get_tasks_to_be_canceled</span><span class="p">(</span>
             <span class="n">CancelingProgress</span><span class="o">.</span><span class="n">PENDING</span>
         <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">task_entry</span> <span class="ow">in</span> <span class="n">tasks_to_be_cancelled</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">system_log</span><span class="p">(</span>
-                <span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
+                <span class="n">level</span><span class="o">=</span><span class="s2">"DEBUG"</span><span class="p">,</span>
                 <span class="n">log_data</span><span class="o">=</span><span class="p">{</span>
-                    <span class="s2">&quot;logged_by&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
-                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;CancellingTask&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">],</span>
-                    <span class="s2">&quot;task_actor_id&quot;</span><span class="p">:</span> <span class="n">task_entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;task_actor_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                    <span class="s2">"logged_by"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                    <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"CancellingTask"</span><span class="p">,</span>
+                    <span class="s2">"task_id"</span><span class="p">:</span> <span class="n">task_entry</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">],</span>
+                    <span class="s2">"task_actor_id"</span><span class="p">:</span> <span class="n">task_entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"task_actor_id"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
                 <span class="p">},</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="p">(</span>
-                <span class="n">message_id</span> <span class="o">:=</span> <span class="n">task_entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;task_actor_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">message_id</span> <span class="o">:=</span> <span class="n">task_entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"task_actor_id"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">abort_requested</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="n">message_id</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">abort</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="n">message_id</span><span class="p">)</span>
                 <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Task </span><span class="si">{</span><span class="n">task_entry</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">task_entry</span><span class="p">[</span><span class="s1">&#39;task_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">) is being cancelled. &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;Task Actor message_id: </span><span class="si">{</span><span class="n">message_id</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Task </span><span class="si">{</span><span class="n">task_entry</span><span class="p">[</span><span class="s1">'type'</span><span class="p">]</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">task_entry</span><span class="p">[</span><span class="s1">'task_id'</span><span class="p">]</span><span class="si">}</span><span class="s2">) is being cancelled. "</span>
+                    <span class="sa">f</span><span class="s2">"Task Actor message_id: </span><span class="si">{</span><span class="n">message_id</span><span class="si">}</span><span class="s2">"</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">update_canceling_progress</span><span class="p">(</span>
-                    <span class="n">task_id</span><span class="o">=</span><span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">],</span>
+                    <span class="n">task_id</span><span class="o">=</span><span class="n">task_entry</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">],</span>
                     <span class="n">canceling_progress</span><span class="o">=</span><span class="n">CancelingProgress</span><span class="o">.</span><span class="n">WORKER_NOTIFIED</span><span class="p">,</span>
                     <span class="n">original_progress</span><span class="o">=</span><span class="n">CancelingProgress</span><span class="p">[</span>
-                        <span class="n">task_entry</span><span class="p">[</span><span class="s2">&quot;canceling_progress&quot;</span><span class="p">]</span>
+                        <span class="n">task_entry</span><span class="p">[</span><span class="s2">"canceling_progress"</span><span class="p">]</span>
                     <span class="p">],</span>
                 <span class="p">)</span></div>
 </div>

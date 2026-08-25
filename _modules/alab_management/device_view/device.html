@@ -383,7 +383,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for alab_management.device_view.device</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Define the base class of devices.&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""Define the base class of devices."""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
@@ -417,7 +417,7 @@
     <span class="n">return_constant</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">_UNSPECIFIED</span><span class="p">,</span>
     <span class="n">object_type</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">_UNSPECIFIED</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A decorator used for mocking functions during simulation.</span>
 
 <span class="sd">    Args:</span>
@@ -457,7 +457,7 @@
 
 <span class="sd">    .. code-block:: python</span>
 
-<span class="sd">        @mock(return_constant={&quot;twotheta&quot;: [0.1, 0.2, 0.3], &quot;counts&quot;: [100, 200, 300]})</span>
+<span class="sd">        @mock(return_constant={"twotheta": [0.1, 0.2, 0.3], "counts": [100, 200, 300]})</span>
 <span class="sd">        def run_simulation() -&gt; dict:</span>
 <span class="sd">            ...</span>
 <span class="sd">            a = {twotheta: [0.1, 0.2, 0.3]}</span>
@@ -470,7 +470,7 @@
 
 <span class="sd">        @mock(object_type=str)</span>
 <span class="sd">        def create_mock_string() -&gt; str:</span>
-<span class="sd">            return &quot;Mocked String&quot;</span>
+<span class="sd">            return "Mocked String"</span>
 
 <span class="sd">    4. Mocking a function that returns a single object type:</span>
 
@@ -495,7 +495,7 @@
 <span class="sd">        def get_driver(self):</span>
 <span class="sd">            self.driver = FurnaceController(port=self.com_port)</span>
 <span class="sd">            return self.driver, self.door_controller</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">decorator</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
@@ -508,7 +508,7 @@
                     <span class="ow">and</span> <span class="n">object_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">_UNSPECIFIED</span>
                 <span class="p">):</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">&quot;Cannot specify both return_constant and return_mock_call!&quot;</span>
+                        <span class="s2">"Cannot specify both return_constant and return_mock_call!"</span>
                     <span class="p">)</span>
                 <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">return_constant</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                     <span class="n">return_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">return_constant</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">return_constant</span><span class="p">}</span>
@@ -524,9 +524,9 @@
                         <span class="k">return</span> <span class="n">Mock</span><span class="p">(</span><span class="n">spec</span><span class="o">=</span><span class="n">object_type</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">&quot;Must specify either return_constant or object_type! return_constant should &quot;</span>
-                        <span class="s2">&quot;be of the type str, int, float, bool, list or dict. &quot;</span>
-                        <span class="s2">&quot;object_type should be any other class that you want to mock.&quot;</span>
+                        <span class="s2">"Must specify either return_constant or object_type! return_constant should "</span>
+                        <span class="s2">"be of the type str, int, float, bool, list or dict. "</span>
+                        <span class="s2">"object_type should be any other class that you want to mock."</span>
                     <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -541,7 +541,7 @@
 <div class="viewcode-block" id="BaseDevice">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseDevice</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    The abstract class of device.</span>
 
 <span class="sd">    All the devices should be inherited from this class</span>
@@ -553,22 +553,22 @@
 <span class="sd">              the device type, how to set up and so on.</span>
 <span class="sd">        args: arguments that will be passed to the device class</span>
 <span class="sd">        kwargs: keyword arguments that will be passed to the device class</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1">#: Names of database-backed attributes (those declared with :meth:`dict_in_database`,</span>
     <span class="c1">#: :meth:`list_in_database` or ``value_in_database``) that the dashboard should show for this</span>
-    <span class="c1">#: device. Empty by default: a device&#39;s attributes often hold bulky internal bookkeeping, so</span>
+    <span class="c1">#: device. Empty by default: a device's attributes often hold bulky internal bookkeeping, so</span>
     <span class="c1">#: nothing is published until it is named here. The values appear under ``attributes`` in</span>
-    <span class="c1">#: ``/api/status`` and in the device&#39;s detail panel.</span>
+    <span class="c1">#: ``/api/status`` and in the device's detail panel.</span>
     <span class="c1">#:</span>
     <span class="c1">#: .. code-block:: python</span>
     <span class="c1">#:</span>
     <span class="c1">#:     class MobileManipulator(BaseDevice):</span>
-    <span class="c1">#:         dashboard_attributes = [&quot;battery_percentage&quot;, &quot;current_mission&quot;, &quot;carried_samples&quot;]</span>
+    <span class="c1">#:         dashboard_attributes = ["battery_percentage", "current_mission", "carried_samples"]</span>
     <span class="n">dashboard_attributes</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Initialize a device object, you can set up connection to</span>
 <span class="sd">        the device in this method. The device will only be initialized</span>
 <span class="sd">        once in the system. So if your connection to driver need to be</span>
@@ -588,7 +588,7 @@
 <span class="sd">              self.address = address</span>
 <span class="sd">              self.port = port</span>
 <span class="sd">              self.driver = FurnaceController(address=address, port=port)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># override default class description if provided during device instantiation.</span>
         <span class="k">if</span> <span class="n">description</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>  <span class="c1"># TODO: change this</span>
@@ -596,7 +596,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;description must be a string&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"description must be a string"</span><span class="p">)</span>
 
         <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.device_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">DeviceView</span>
 
@@ -608,26 +608,26 @@
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        A short description of the device. This will be stored in the database + displayed in the dashboard. This</span>
 <span class="sd">        must be declared in subclasses of BaseDevice!.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_description</span>
 
     <span class="nd">@description</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;description must be a string&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"description must be a string"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_description</span> <span class="o">=</span> <span class="n">value</span>
 
 <div class="viewcode-block" id="BaseDevice.set_message">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.set_message">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the device message to be displayed on the dashboard.</span>
+<span class="w">        </span><span class="sd">"""Sets the device message to be displayed on the dashboard.</span>
 
 <span class="sd">        Note: this method is used instead of python getter/setters because the DeviceWrapper can currently only</span>
 <span class="sd">        access methods, not properties.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">set_message</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__message</span> <span class="o">=</span> <span class="n">message</span></div>
 
@@ -635,33 +635,33 @@
 <div class="viewcode-block" id="BaseDevice.get_message">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.get_message">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_message</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the device message to be displayed on the dashboard.</span>
+<span class="w">        </span><span class="sd">"""Returns the device message to be displayed on the dashboard.</span>
 
 <span class="sd">        Note: this method is used instead of python getter/setters because the DeviceWrapper can currently only</span>
 <span class="sd">        access methods, not properties.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__message</span></div>
 
 
 <div class="viewcode-block" id="BaseDevice.get_occupying_task_id">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.get_occupying_task_id">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_occupying_task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ObjectId | None&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The id of the task currently holding this device, or ``None`` when it is free.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">get_device</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;task_id&quot;</span><span class="p">)</span></div>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_occupying_task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"ObjectId | None"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The id of the task currently holding this device, or ``None`` when it is free."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">get_device</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"task_id"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BaseDevice.is_task_canceling">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.is_task_canceling">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_task_canceling</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether the task currently holding this device is being cancelled.</span>
+<span class="w">        </span><span class="sd">"""Whether the task currently holding this device is being cancelled.</span>
 
-<span class="sd">        Device methods run in the DeviceManager process, not in the task&#39;s worker, so the abort</span>
+<span class="sd">        Device methods run in the DeviceManager process, not in the task's worker, so the abort</span>
 <span class="sd">        signal that cancels a task cannot interrupt a driver mid-call. Poll this inside any long</span>
 <span class="sd">        loop in a driver -- waiting on a robot program, waiting on another instrument -- and return</span>
 <span class="sd">        or raise when it becomes true, so a cancel is honoured promptly instead of after the motion</span>
 <span class="sd">        finishes.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">task_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_occupying_task_id</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">task_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -671,13 +671,13 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_connect_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Connect to the device and execute any backend actions that are only possible when alabos is running + the</span>
 <span class="sd">        device is connected.</span>
 
-<span class="sd">        Note that device&#39;s only connect within `alabos launch`, so ExperimentManager, DeviceManager, and the API are</span>
+<span class="sd">        Note that device's only connect within `alabos launch`, so ExperimentManager, DeviceManager, and the API are</span>
 <span class="sd">        guaranteed to be running when this method is called.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">get_message</span><span class="p">()</span>  <span class="c1"># retrieve the most recent message from the database.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_signalemitter</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>  <span class="c1"># start the signal emitter thread</span>
@@ -686,18 +686,18 @@
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.connect">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Connect to any devices here. This will be called by alabos to make connections to devices at the appropriate</span>
 <span class="sd">        time.</span>
 
 <span class="sd">        This method must be defined even if no device connections are required! Just return in this case.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_disconnect_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Disconnect from the device and execute any backend actions that are only possible when alabos is running.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Disconnect from the device and execute any backend actions that are only possible when alabos is running."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_signalemitter</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 
@@ -705,26 +705,26 @@
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.disconnect">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Disconnect from devices here. This will be called by alabos to release connections to devices at the</span>
 <span class="sd">        appropriate time.</span>
 
 <span class="sd">        This method must be defined even if no device connections are required! Just return in this case.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">sample_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SamplePosition</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        The sample positions describe the position that can hold a sample. The name of sample</span>
 <span class="sd">        position will be the unique identifier of this sample position. It does not store any</span>
 <span class="sd">        coordinates information about where the position is in the lab. Users need to map the</span>
 <span class="sd">        sample positions to real lab coordinates manually.</span>
 
 <span class="sd">        .. note::</span>
-<span class="sd">          It doesn&#39;t matter in which device class a sample position is defined.</span>
+<span class="sd">          It doesn't matter in which device class a sample position is defined.</span>
 <span class="sd">          We use ``name`` attribute to identify them.</span>
 
 <span class="sd">        Here is an example of how to define some sample positions</span>
@@ -735,25 +735,25 @@
 <span class="sd">          def sample_positions(self):</span>
 <span class="sd">              return [</span>
 <span class="sd">                  SamplePosition(</span>
-<span class="sd">                      &quot;inside&quot;,</span>
-<span class="sd">                      description=&quot;The position inside the furnace, where the samples are heated&quot;,</span>
+<span class="sd">                      "inside",</span>
+<span class="sd">                      description="The position inside the furnace, where the samples are heated",</span>
 <span class="sd">                      number=8,</span>
 <span class="sd">                  ),</span>
 <span class="sd">                  SamplePosition(</span>
-<span class="sd">                      &quot;furnace_table&quot;,</span>
-<span class="sd">                      description=&quot;Temporary position to transfer samples&quot;,</span>
+<span class="sd">                      "furnace_table",</span>
+<span class="sd">                      description="Temporary position to transfer samples",</span>
 <span class="sd">                      number=16,</span>
 <span class="sd">                  ),</span>
 <span class="sd">              ]</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
 
 <div class="viewcode-block" id="BaseDevice.is_running">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.is_running">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_running</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check whether this device is running.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Check whether this device is running."""</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 
@@ -763,7 +763,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">list_in_database</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default_value</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ListInDatabase</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Create a list attribute that is stored in the database.</span>
 <span class="sd">        Note: nested dicts/lists are not supported!.</span>
 
@@ -774,7 +774,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">            Class instance to access the attribute. Acts like a normal List, but is stored in the database.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">ListInDatabase</span><span class="p">(</span>
             <span class="n">device_collection</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">_device_collection</span><span class="p">,</span>
             <span class="n">device_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
@@ -788,7 +788,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">dict_in_database</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default_value</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DictInDatabase</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Create a dict attribute that is stored in the database.</span>
 <span class="sd">        Note: nested dicts/lists are not supported!.</span>
 
@@ -799,7 +799,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">            Class instance to access the attribute. Acts like a normal Dict, but is stored in the database.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">DictInDatabase</span><span class="p">(</span>
             <span class="n">device_collection</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">_device_collection</span><span class="p">,</span>
             <span class="n">device_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
@@ -809,12 +809,12 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_apply_default_db_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Apply default values to attributes that are stored in the database.</span>
 
 <span class="sd">        This is called when the device is first added to the database, typically only when alabos is setting up a new</span>
 <span class="sd">        lab.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">attribute_name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="n">attribute</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">attribute</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="p">[</span><span class="n">ListInDatabase</span><span class="p">,</span> <span class="n">DictInDatabase</span><span class="p">]):</span>
@@ -823,14 +823,14 @@
 <div class="viewcode-block" id="BaseDevice.request_maintenance">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.request_maintenance">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">request_maintenance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Request maintenance input from the user. This will display a prompt to the user and wait for them to select</span>
 <span class="sd">        an option. The selected option will be returned.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            prompt: the text to display to the user</span>
 <span class="sd">            options: the options to display to the user. This should be a list of strings.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">request_maintenance_input</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span></div>
 
 
@@ -839,7 +839,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_signal</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">within</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieve a signal from the database.</span>
 
 <span class="sd">        Args:</span>
@@ -851,10 +851,10 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">            Dict: Dictionary of signal result. Single value vs lists depends on whether ``within`` was None</span>
-<span class="sd">            or not, respectively. Form is: { &quot;device_name&quot;: &quot;device_name&quot;, &quot;signal_name&quot;: &quot;signal_name&quot;,</span>
-<span class="sd">            &quot;value&quot;: &quot;signal_value&quot; or [&quot;signal_value_1&quot;, &quot;signal_value_2&quot;, ...]], &quot;timestamp&quot;: &quot;timestamp&quot; or [</span>
-<span class="sd">            &quot;timestamp_1&quot;, &quot;timestamp_2&quot;, ...] }</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">            or not, respectively. Form is: { "device_name": "device_name", "signal_name": "signal_name",</span>
+<span class="sd">            "value": "signal_value" or ["signal_value_1", "signal_value_2", ...]], "timestamp": "timestamp" or [</span>
+<span class="sd">            "timestamp_1", "timestamp_2", ...] }</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_signalemitter</span><span class="o">.</span><span class="n">retrieve_signal</span><span class="p">(</span><span class="n">signal_name</span><span class="p">,</span> <span class="n">within</span><span class="p">)</span></div>
 </div>
 
@@ -864,7 +864,7 @@
 <div class="viewcode-block" id="log_signal">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.log_signal">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">log_signal</span><span class="p">(</span><span class="n">signal_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">interval_seconds</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This is a decorator for methods within a `BaseDevice`. Methods decorated with this will be called at the</span>
+<span class="w">    </span><span class="sd">"""This is a decorator for methods within a `BaseDevice`. Methods decorated with this will be called at the</span>
 <span class="sd">    specified interval and the result will be logged to the database under the `signal_name` provided. The intended</span>
 <span class="sd">    use is to track process variables (like a furnace temperature, a pressure sensor, etc.) whenever the device is</span>
 <span class="sd">    connected to alabos.</span>
@@ -872,7 +872,7 @@
 <span class="sd">    Args:</span>
 <span class="sd">        signal_name (str): Name to attribute to this signal</span>
 <span class="sd">        interval_seconds (int): Interval at which to log this signal to the database.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">wrapper_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -891,10 +891,10 @@
 <div class="viewcode-block" id="DeviceSignalEmitter">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.DeviceSignalEmitter">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DeviceSignalEmitter</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This class is responsible for periodically logging device signals to the database.</span>
 <span class="sd">    It is intended to be used as a singleton, and should be instantiated once per device.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">BaseDevice</span><span class="p">):</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.device_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">DeviceView</span>
@@ -911,7 +911,7 @@
 <div class="viewcode-block" id="DeviceSignalEmitter.get_methods_to_log">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.DeviceSignalEmitter.get_methods_to_log">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_methods_to_log</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Log the data from all methods decorated with ``@log_signal`` to the database.</span>
 
 <span class="sd">        Collected all the methods that are decorated with ``@log_signal`` and return a dictionary of the form:</span>
@@ -920,26 +920,26 @@
 
 <span class="sd">            {</span>
 <span class="sd">                &lt;method_name&gt;: {</span>
-<span class="sd">                    &quot;interval&quot;: &lt;interval_seconds&gt;,</span>
-<span class="sd">                    &quot;signal_name&quot;: &lt;signal_name&gt;</span>
+<span class="sd">                    "interval": &lt;interval_seconds&gt;,</span>
+<span class="sd">                    "signal_name": &lt;signal_name&gt;</span>
 <span class="sd">                }</span>
 <span class="sd">            }</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">methods_to_log</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">method</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="s2">&quot;logging_interval_seconds&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">callable</span><span class="p">(</span><span class="n">method</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="s2">"logging_interval_seconds"</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">callable</span><span class="p">(</span><span class="n">method</span><span class="p">):</span>
                 <span class="n">methods_to_log</span><span class="p">[</span><span class="n">method_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-                    <span class="s2">&quot;interval&quot;</span><span class="p">:</span> <span class="n">method</span><span class="o">.</span><span class="n">logging_interval_seconds</span><span class="p">,</span>
-                    <span class="s2">&quot;signal_name&quot;</span><span class="p">:</span> <span class="n">method</span><span class="o">.</span><span class="n">signal_name</span><span class="p">,</span>
+                    <span class="s2">"interval"</span><span class="p">:</span> <span class="n">method</span><span class="o">.</span><span class="n">logging_interval_seconds</span><span class="p">,</span>
+                    <span class="s2">"signal_name"</span><span class="p">:</span> <span class="n">method</span><span class="o">.</span><span class="n">signal_name</span><span class="p">,</span>
                 <span class="p">}</span>
         <span class="k">return</span> <span class="n">methods_to_log</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_worker</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;This is the worker thread that will periodically log device signals to the database.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""This is the worker thread that will periodically log device signals to the database."""</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">wait_with_option_to_kill</span><span class="p">(</span><span class="n">time_to_wait</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">"""</span>
 <span class="sd">            Waits until the next log is due, or until the logging is stopped. When stopping</span>
 <span class="sd">            the logging worker, the worker will complete its current logging task before</span>
 <span class="sd">            stopping the worker thread. This may result in long blockages if the logging</span>
@@ -948,9 +948,9 @@
 
 <span class="sd">            Args:</span>
 <span class="sd">                time_to_wait (float): The total time to wait, assuming the logging worker is not stopped.</span>
-<span class="sd">            &quot;&quot;&quot;</span>
+<span class="sd">            """</span>
             <span class="k">if</span> <span class="n">time_to_wait</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="c1"># we are behind schedule, don&#39;t wait at all!</span>
+                <span class="c1"># we are behind schedule, don't wait at all!</span>
                 <span class="k">return</span>
 
             <span class="n">total_time_to_wait</span> <span class="o">=</span> <span class="n">time_to_wait</span>
@@ -964,7 +964,7 @@
                 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">time_to_wait</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_methods_to_log</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span>  <span class="c1"># no need to run if we aren&#39;t logging any methods</span>
+            <span class="k">return</span>  <span class="c1"># no need to run if we aren't logging any methods</span>
 
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="c1"># we check if logging is active within the loop. This is to allow the logging worker</span>
@@ -975,7 +975,7 @@
                     <span class="n">block</span><span class="o">=</span><span class="kc">False</span>
                 <span class="p">)</span>
             <span class="k">except</span> <span class="n">Empty</span><span class="p">:</span>
-                <span class="c1"># wait for queue to refill. We shouldn&#39;t reach this under normal circumstances</span>
+                <span class="c1"># wait for queue to refill. We shouldn't reach this under normal circumstances</span>
                 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
                 <span class="k">continue</span>
             <span class="n">time_until_this_log</span> <span class="o">=</span> <span class="p">(</span><span class="n">log_at</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
@@ -993,7 +993,7 @@
 <div class="viewcode-block" id="DeviceSignalEmitter.log_method_to_db">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.DeviceSignalEmitter.log_method_to_db">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">log_method_to_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Logs a method to the database. This is called by the worker thread.</span>
 
 <span class="sd">        Args:</span>
@@ -1002,15 +1002,15 @@
 
 <span class="sd">        Exceptions:</span>
 <span class="sd">            Any exceptions raised by the method call will be caught and raised directly.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">method_name</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">method</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Error reading </span><span class="si">{</span><span class="n">method_name</span><span class="si">}</span><span class="s2"> from device </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;The error message is: &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">format_exc</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"Error reading </span><span class="si">{</span><span class="n">method_name</span><span class="si">}</span><span class="s2"> from device </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">."</span>
+                <span class="sa">f</span><span class="s2">"The error message is: "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">format_exc</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">dblogger</span><span class="o">.</span><span class="n">log_device_signal</span><span class="p">(</span>
@@ -1023,10 +1023,10 @@
 <div class="viewcode-block" id="DeviceSignalEmitter.start">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.DeviceSignalEmitter.start">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Start the logging worker thread. This will start logging all</span>
 <span class="sd">        methods decorated with `@log_signal` to the database.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="n">PriorityQueue</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">logging_properties</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_methods_to_log</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="c1"># queue items are tuples of the form:</span>
@@ -1040,10 +1040,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
                 <span class="p">(</span>
                     <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
-                    <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">logging_properties</span><span class="p">[</span><span class="s2">&quot;interval&quot;</span><span class="p">]),</span>
+                    <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">logging_properties</span><span class="p">[</span><span class="s2">"interval"</span><span class="p">]),</span>
                     <span class="n">method_name</span><span class="p">,</span>
-                    <span class="n">logging_properties</span><span class="p">[</span><span class="s2">&quot;signal_name&quot;</span><span class="p">],</span>
-                    <span class="n">logging_properties</span><span class="p">[</span><span class="s2">&quot;interval&quot;</span><span class="p">],</span>
+                    <span class="n">logging_properties</span><span class="p">[</span><span class="s2">"signal_name"</span><span class="p">],</span>
+                    <span class="n">logging_properties</span><span class="p">[</span><span class="s2">"interval"</span><span class="p">],</span>
                     <span class="mi">1</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
@@ -1057,7 +1057,7 @@
 <div class="viewcode-block" id="DeviceSignalEmitter.stop">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.DeviceSignalEmitter.stop">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop the logging worker thread. This will stop logging all.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Stop the logging worker thread. This will stop logging all."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_logging</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logging_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span></div>
 
@@ -1065,7 +1065,7 @@
 <div class="viewcode-block" id="DeviceSignalEmitter.retrieve_signal">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.DeviceSignalEmitter.retrieve_signal">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">,</span> <span class="n">within</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve a signal from the database.</span>
+<span class="w">        </span><span class="sd">"""Retrieve a signal from the database.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            signal_name (str): device signal name. This should match the signal_name</span>
@@ -1080,12 +1080,12 @@
 
 <span class="sd">            .. code-block::</span>
 <span class="sd">            {</span>
-<span class="sd">                &quot;device_name&quot;: &quot;device_name&quot;,</span>
-<span class="sd">                &quot;signal_name&quot;: &quot;signal_name&quot;,</span>
-<span class="sd">                &quot;value&quot;: &quot;signal_value&quot; or [&quot;signal_value_1&quot;, &quot;signal_value_2&quot;, ...]],</span>
-<span class="sd">                &quot;timestamp&quot;: &quot;timestamp&quot; or [&quot;timestamp_1&quot;, &quot;timestamp_2&quot;, ...]</span>
+<span class="sd">                "device_name": "device_name",</span>
+<span class="sd">                "signal_name": "signal_name",</span>
+<span class="sd">                "value": "signal_value" or ["signal_value_1", "signal_value_2", ...]],</span>
+<span class="sd">                "timestamp": "timestamp" or ["timestamp_1", "timestamp_2", ...]</span>
 <span class="sd">            }</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">within</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dblogger</span><span class="o">.</span><span class="n">get_latest_device_signal</span><span class="p">(</span>
                 <span class="n">device_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">signal_name</span><span class="o">=</span><span class="n">signal_name</span>
@@ -1113,9 +1113,9 @@
 <div class="viewcode-block" id="add_device">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.add_device">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">BaseDevice</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Register a device instance. It is stored in a global dictionary.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">_device_registry</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ALABOS_RELOAD&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Duplicated device name </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">"""Register a device instance. It is stored in a global dictionary."""</span>
+    <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">_device_registry</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ALABOS_RELOAD"</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Duplicated device name </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="n">_device_registry</span><span class="p">[</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">device</span>
     <span class="n">_current_device_registry</span><span class="p">[</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">device</span></div>
 
@@ -1124,14 +1124,14 @@
 <div class="viewcode-block" id="get_all_devices">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.get_all_devices">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_all_devices</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BaseDevice</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Get all the device names in the device registry. This is a shallow copy of the registry.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">        A dictionary of all the devices in the registry. The keys are the device names,</span>
 <span class="sd">          and the values are the device instances.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">_device_registry</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
 
 
@@ -1139,7 +1139,7 @@
 <div class="viewcode-block" id="get_current_devices">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.get_current_devices">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_current_devices</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BaseDevice</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get all the current devices in the device registry.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Get all the current devices in the device registry."""</span>
     <span class="k">return</span> <span class="n">_current_device_registry</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
 
 
@@ -1147,7 +1147,7 @@
 <div class="viewcode-block" id="remove_device">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.remove_device">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">remove_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove a device from the device registry.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Remove a device from the device registry."""</span>
     <span class="n">_device_registry</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">device_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="n">_current_device_registry</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">device_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 
@@ -1156,7 +1156,7 @@
 <div class="viewcode-block" id="reset_current_device_registry">
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.reset_current_device_registry">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">reset_current_device_registry</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reset the current device registry.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Reset the current device registry."""</span>
     <span class="n">_current_device_registry</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
 
 </pre></div>

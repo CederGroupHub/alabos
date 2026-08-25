@@ -704,7 +704,7 @@ it is set to this value.</p>
 <div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.device_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseDevice</span><span class="p">,</span> <span class="n">value_in_database</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MyDevice</span><span class="p">(</span><span class="n">BaseDevice</span><span class="p">):</span>
-    <span class="n">my_attribute</span> <span class="o">=</span> <span class="n">value_in_database</span><span class="p">(</span><span class="s2">&quot;my_attribute&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">my_attribute</span> <span class="o">=</span> <span class="n">value_in_database</span><span class="p">(</span><span class="s2">"my_attribute"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -714,12 +714,12 @@ it is set to this value.</p>
 <span class="o">....</span>
 <span class="c1">#first instantiation</span>
 
-<span class="n">mydevice</span> <span class="o">=</span> <span class="n">MyDevice</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;mydevice_1&quot;</span><span class="p">)</span>
+<span class="n">mydevice</span> <span class="o">=</span> <span class="n">MyDevice</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s2">"mydevice_1"</span><span class="p">)</span>
 <span class="n">mydevice</span><span class="o">.</span><span class="n">my_attribute</span> <span class="o">=</span> <span class="mi">5</span> <span class="c1">#sets the value in the database</span>
 
 <span class="o">....</span>
 <span class="c1">#future instantiation</span>
-<span class="n">mydevice</span> <span class="o">=</span> <span class="n">MyDevice</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;mydevice_1&quot;</span><span class="p">)</span>
+<span class="n">mydevice</span> <span class="o">=</span> <span class="n">MyDevice</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s2">"mydevice_1"</span><span class="p">)</span>
 <span class="n">mydevice</span><span class="o">.</span><span class="n">my_attribute</span> <span class="c1">#retrieves value from db and returns 5</span>
 </pre></div>
 </div>

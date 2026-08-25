@@ -383,7 +383,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for alab_management.sample_view.sample_view</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;A wrapper over the ``samples`` and ``sample_positions`` collections.&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""A wrapper over the ``samples`` and ``sample_positions`` collections."""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
@@ -403,15 +403,15 @@
 <div class="viewcode-block" id="SamplePositionRequest">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SamplePositionRequest">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SamplePositionRequest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    The class is used to request sample position.</span>
 
 <span class="sd">    You need to specify the prefix of the sample position (will be used to match by `startwith` method) and</span>
 <span class="sd">    the number you request. By default, the number is set to be 1.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># raise error when extra kwargs are passed</span>
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
 
     <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">number</span><span class="p">:</span> <span class="n">conint</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># type: ignore</span>
@@ -419,8 +419,8 @@
 <div class="viewcode-block" id="SamplePositionRequest.from_str">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SamplePositionRequest.from_str">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">from_str</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sample_position_prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SamplePositionRequest&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a ``SamplePositionRequest`` from a string.&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_str</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sample_position_prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"SamplePositionRequest"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Create a ``SamplePositionRequest`` from a string."""</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">sample_position_prefix</span><span class="p">)</span></div>
 
 
@@ -428,7 +428,7 @@
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SamplePositionRequest.from_py_type">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_py_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sample_position</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a ``SamplePositionRequest`` from a string or a dict.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Create a ``SamplePositionRequest`` from a string or a dict."""</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sample_position</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="n">sample_position_prefix</span><span class="o">=</span><span class="n">sample_position</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">sample_position</span><span class="p">)</span></div>
@@ -439,13 +439,13 @@
 <div class="viewcode-block" id="SamplePositionStatus">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SamplePositionStatus">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SamplePositionStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    The status of a sample position.</span>
 
 <span class="sd">    - ``EMPTY``: the sample position is neither locked nor occupied</span>
 <span class="sd">    - ``OCCUPIED``: there is a sample in the sample position</span>
 <span class="sd">    - ``LOCKED``: the sample position is reserved by a task</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">EMPTY</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">OCCUPIED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
@@ -456,15 +456,15 @@
 <div class="viewcode-block" id="SampleView">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SampleView</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sample view manages the samples and their positions.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Sample view manages the samples and their positions."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;samples&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;sample_positions&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">"samples"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">"sample_positions"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span>
             <span class="p">[</span>
                 <span class="p">(</span>
-                    <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+                    <span class="s2">"name"</span><span class="p">,</span>
                     <span class="n">pymongo</span><span class="o">.</span><span class="n">HASHED</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">]</span>
@@ -478,52 +478,52 @@
         <span class="n">sample_positions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SamplePosition</span><span class="p">],</span>
         <span class="n">parent_device_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Insert sample positions info to db, which includes position name and description.</span>
 
-<span class="sd">        If one sample position&#39;s name has already appeared in the database,</span>
+<span class="sd">        If one sample position's name has already appeared in the database,</span>
 <span class="sd">        we will just skip it.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            sample_positions: some sample position instances</span>
 <span class="sd">            parent_device_name: name of the parent device to these sample_positions.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">sample_pos</span> <span class="ow">in</span> <span class="n">sample_positions</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sample_pos</span><span class="o">.</span><span class="n">number</span><span class="p">):</span>
                 <span class="c1"># we use &lt;name&gt;&lt;SEPARATOR&gt;&lt;number&gt; format to create multiple sample positions</span>
                 <span class="c1"># if there is only one sample position (sample_position.number == 1)</span>
-                <span class="c1"># the name of sample position will be directly used as the sample position&#39;s name in the database</span>
+                <span class="c1"># the name of sample position will be directly used as the sample position's name in the database</span>
                 <span class="n">name</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sample_pos</span><span class="o">.</span><span class="n">name</span><span class="si">}{</span><span class="n">SamplePosition</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="si">}{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># index from 1</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sample_pos</span><span class="o">.</span><span class="n">name</span><span class="si">}{</span><span class="n">SamplePosition</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="si">}{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span>  <span class="c1"># index from 1</span>
                     <span class="k">if</span> <span class="n">sample_pos</span><span class="o">.</span><span class="n">number</span> <span class="o">!=</span> <span class="mi">1</span>
                     <span class="k">else</span> <span class="n">sample_pos</span><span class="o">.</span><span class="n">name</span>
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="n">parent_device_name</span><span class="p">:</span>
-                    <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">parent_device_name</span><span class="si">}{</span><span class="n">SamplePosition</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="si">}{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">parent_device_name</span><span class="si">}{</span><span class="n">SamplePosition</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="si">}{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
 
-                <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[$.]&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">"[$.]"</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Unsupported sample position name: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">. &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;Sample position name should not contain &#39;.&#39; or &#39;$&#39;&quot;</span>
+                        <span class="sa">f</span><span class="s2">"Unsupported sample position name: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">. "</span>
+                        <span class="sa">f</span><span class="s2">"Sample position name should not contain '.' or '$'"</span>
                     <span class="p">)</span>
 
-                <span class="n">sample_pos_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">})</span>
+                <span class="n">sample_pos_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"name"</span><span class="p">:</span> <span class="n">name</span><span class="p">})</span>
                 <span class="k">if</span> <span class="n">sample_pos_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">new_entry</span> <span class="o">=</span> <span class="p">{</span>
-                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
-                        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="n">sample_pos</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
-                        <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-                        <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+                        <span class="s2">"name"</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                        <span class="s2">"description"</span><span class="p">:</span> <span class="n">sample_pos</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+                        <span class="s2">"task_id"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
                     <span class="p">}</span>
                     <span class="k">if</span> <span class="n">parent_device_name</span><span class="p">:</span>
-                        <span class="n">new_entry</span><span class="p">[</span><span class="s2">&quot;parent_device&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parent_device_name</span>
+                        <span class="n">new_entry</span><span class="p">[</span><span class="s2">"parent_device"</span><span class="p">]</span> <span class="o">=</span> <span class="n">parent_device_name</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">new_entry</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SampleView.clean_up_sample_position_collection">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.clean_up_sample_position_collection">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">clean_up_sample_position_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Drop the sample position collection.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Drop the sample position collection."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span><span class="o">.</span><span class="n">drop</span><span class="p">()</span></div>
 
 
@@ -535,7 +535,7 @@
         <span class="n">sample_positions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SamplePositionRequest</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
         <span class="n">exact_positions</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Request a list of sample positions, this function will return until all the sample positions are available.</span>
 
 <span class="sd">        Args:</span>
@@ -545,7 +545,7 @@
 <span class="sd">              will try to match all the sample positions will the name</span>
 <span class="sd">            exact_positions: Set of position names that should be matched exactly (not by prefix).</span>
 <span class="sd">              If None, all positions use prefix matching (default behavior).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">exact_positions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">exact_positions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
@@ -561,33 +561,33 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sample_positions_request</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span>
             <span class="p">{</span><span class="n">sample_position</span><span class="o">.</span><span class="n">prefix</span> <span class="k">for</span> <span class="n">sample_position</span> <span class="ow">in</span> <span class="n">sample_positions_request</span><span class="p">}</span>
         <span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Duplicated sample_positions in one request.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Duplicated sample_positions in one request."</span><span class="p">)</span>
 
         <span class="c1"># check if there are enough positions</span>
         <span class="k">for</span> <span class="n">sample_position</span> <span class="ow">in</span> <span class="n">sample_positions_request</span><span class="p">:</span>
             <span class="n">is_exact</span> <span class="o">=</span> <span class="n">sample_position</span><span class="o">.</span><span class="n">prefix</span> <span class="ow">in</span> <span class="n">exact_positions</span>
             <span class="k">if</span> <span class="n">is_exact</span><span class="p">:</span>
-                <span class="c1"># For exact match, only number=1 makes sense (can&#39;t have multiple positions with same exact name)</span>
+                <span class="c1"># For exact match, only number=1 makes sense (can't have multiple positions with same exact name)</span>
                 <span class="k">if</span> <span class="n">sample_position</span><span class="o">.</span><span class="n">number</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Exact position matching can only be used with number=1. &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;Position `</span><span class="si">{</span><span class="n">sample_position</span><span class="o">.</span><span class="n">prefix</span><span class="si">}</span><span class="s2">` requests </span><span class="si">{</span><span class="n">sample_position</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> positions, &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;but exact matching only works for a single position.&quot;</span>
+                        <span class="sa">f</span><span class="s2">"Exact position matching can only be used with number=1. "</span>
+                        <span class="sa">f</span><span class="s2">"Position `</span><span class="si">{</span><span class="n">sample_position</span><span class="o">.</span><span class="n">prefix</span><span class="si">}</span><span class="s2">` requests </span><span class="si">{</span><span class="n">sample_position</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> positions, "</span>
+                        <span class="sa">f</span><span class="s2">"but exact matching only works for a single position."</span>
                     <span class="p">)</span>
                 <span class="c1"># For exact match, check if the position exists</span>
                 <span class="n">count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span>
-                    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">sample_position</span><span class="o">.</span><span class="n">prefix</span><span class="p">}</span>
+                    <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="n">sample_position</span><span class="o">.</span><span class="n">prefix</span><span class="p">}</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># For prefix match, count all matching positions</span>
                 <span class="n">count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span>
-                    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$regex&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;^</span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">sample_position</span><span class="o">.</span><span class="n">prefix</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}}</span>
+                    <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$regex"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"^</span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">sample_position</span><span class="o">.</span><span class="n">prefix</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">}}</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="n">sample_position</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
-                <span class="n">match_type</span> <span class="o">=</span> <span class="s2">&quot;exact&quot;</span> <span class="k">if</span> <span class="n">is_exact</span> <span class="k">else</span> <span class="s2">&quot;prefix&quot;</span>
+                <span class="n">match_type</span> <span class="o">=</span> <span class="s2">"exact"</span> <span class="k">if</span> <span class="n">is_exact</span> <span class="k">else</span> <span class="s2">"prefix"</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Position </span><span class="si">{</span><span class="n">match_type</span><span class="si">}</span><span class="s2"> `</span><span class="si">{</span><span class="n">sample_position</span><span class="o">.</span><span class="n">prefix</span><span class="si">}</span><span class="s2">` can only &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;have </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> matches, but requests </span><span class="si">{</span><span class="n">sample_position</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Position </span><span class="si">{</span><span class="n">match_type</span><span class="si">}</span><span class="s2"> `</span><span class="si">{</span><span class="n">sample_position</span><span class="o">.</span><span class="n">prefix</span><span class="si">}</span><span class="s2">` can only "</span>
+                    <span class="sa">f</span><span class="s2">"have </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> matches, but requests </span><span class="si">{</span><span class="n">sample_position</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2">"</span>
                 <span class="p">)</span>
 
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">():</span>  <span class="c1"># pylint: disable=not-callable</span>
@@ -603,7 +603,7 @@
                     <span class="k">return</span> <span class="kc">None</span>
                 <span class="c1"># we try to choose the position that has already been locked by this task</span>
                 <span class="n">available_positions</span><span class="p">[</span><span class="n">sample_position</span><span class="o">.</span><span class="n">prefix</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
-                    <span class="n">result</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">task</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;need_release&quot;</span><span class="p">])</span>
+                    <span class="n">result</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">task</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="s2">"need_release"</span><span class="p">])</span>
                 <span class="p">)[:</span> <span class="n">sample_position</span><span class="o">.</span><span class="n">number</span><span class="p">]</span>
             <span class="k">return</span> <span class="n">available_positions</span></div>
 
@@ -611,12 +611,12 @@
 <div class="viewcode-block" id="SampleView.get_sample_position">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_sample_position">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_sample_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Get the sample position entry in the database.</span>
 
 <span class="sd">        if the position is not a valid position (not defined in the database), return None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">position</span><span class="p">})</span></div>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"name"</span><span class="p">:</span> <span class="n">position</span><span class="p">})</span></div>
 
 
 <div class="viewcode-block" id="SampleView.get_sample_position_status">
@@ -624,7 +624,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">get_sample_position_status</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">SamplePositionStatus</span><span class="p">,</span> <span class="n">ObjectId</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Get the status of a sample position.</span>
 
 <span class="sd">        If there is a sample in the position, return OCCUPIED;</span>
@@ -639,17 +639,17 @@
 <span class="sd">            if the position is occupied by a sample, return OCCUPIED and the task id of the sample</span>
 <span class="sd">            if the position is locked by a task, return LOCKED and the task id</span>
 <span class="sd">            else, return EMPTY and None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">sample_position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sample_position</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">position</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">sample_position</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid sample position: </span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Invalid sample position: </span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-        <span class="n">sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="n">position</span><span class="p">})</span>
+        <span class="n">sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"position"</span><span class="p">:</span> <span class="n">position</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">sample</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">SamplePositionStatus</span><span class="o">.</span><span class="n">OCCUPIED</span><span class="p">,</span> <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">SamplePositionStatus</span><span class="o">.</span><span class="n">OCCUPIED</span><span class="p">,</span> <span class="n">sample</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="n">sample_position</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">SamplePositionStatus</span><span class="o">.</span><span class="n">LOCKED</span><span class="p">,</span> <span class="n">sample_position</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">sample_position</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">SamplePositionStatus</span><span class="o">.</span><span class="n">LOCKED</span><span class="p">,</span> <span class="n">sample_position</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="n">SamplePositionStatus</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">,</span> <span class="kc">None</span></div>
 
@@ -657,24 +657,24 @@
 <div class="viewcode-block" id="SampleView.get_sample_position_parent_device">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_sample_position_parent_device">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_sample_position_parent_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Get the parent device of a sample position.</span>
 
 <span class="sd">        If no parent device is defined, returns None. If the</span>
-<span class="sd">        &quot;position&quot; query is a prefix, will look for a single parent device across all matched positions (ie a query</span>
-<span class="sd">        for position=&quot;furnace_1/tray&quot; will properly return &quot;furnace_1&quot; even if &quot;furnace_1/tray/1&quot; and</span>
-<span class="sd">        &quot;furnace_1/tray/2&quot; are in the database _as long as &quot;furnace_1&quot; is the parent device of both!_).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        "position" query is a prefix, will look for a single parent device across all matched positions (ie a query</span>
+<span class="sd">        for position="furnace_1/tray" will properly return "furnace_1" even if "furnace_1/tray/1" and</span>
+<span class="sd">        "furnace_1/tray/2" are in the database _as long as "furnace_1" is the parent device of both!_).</span>
+<span class="sd">        """</span>
         <span class="n">sample_positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$regex&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;^</span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}}</span>
+            <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$regex"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"^</span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2">"</span><span class="p">}}</span>
         <span class="p">)</span>
-        <span class="n">parent_devices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">({</span><span class="n">sp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;parent_device&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="n">sample_positions</span><span class="p">})</span>
+        <span class="n">parent_devices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">({</span><span class="n">sp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"parent_device"</span><span class="p">)</span> <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="n">sample_positions</span><span class="p">})</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parent_devices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No sample position(s) beginning with: </span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No sample position(s) beginning with: </span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">parent_devices</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Multiple parent devices (</span><span class="si">{</span><span class="n">parent_devices</span><span class="si">}</span><span class="s2">) found for sample positions found beginning with: &quot;</span>
-                <span class="sa">f</span><span class="s1">&#39;&quot;position&quot;. Make a more specific position query that doesn</span><span class="se">\&#39;</span><span class="s1">t match multiple devices!&#39;</span>
+                <span class="sa">f</span><span class="s2">"Multiple parent devices (</span><span class="si">{</span><span class="n">parent_devices</span><span class="si">}</span><span class="s2">) found for sample positions found beginning with: "</span>
+                <span class="sa">f</span><span class="s1">'"position". Make a more specific position query that doesn</span><span class="se">\'</span><span class="s1">t match multiple devices!'</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">parent_devices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
@@ -682,7 +682,7 @@
 <div class="viewcode-block" id="SampleView.is_unoccupied_position">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.is_unoccupied_position">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_unoccupied_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tell if a sample position is unoccupied or not.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Tell if a sample position is unoccupied or not."""</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_sample_position_status</span><span class="p">(</span><span class="n">position</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
             <span class="ow">is</span> <span class="ow">not</span> <span class="n">SamplePositionStatus</span><span class="o">.</span><span class="n">OCCUPIED</span>
@@ -692,11 +692,11 @@
 <div class="viewcode-block" id="SampleView.is_locked_position">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.is_locked_position">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_locked_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tell if a sample position is locked or not.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Tell if a sample position is locked or not."""</span>
         <span class="n">sample_position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sample_position</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">position</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">sample_position</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid sample position: </span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">sample_position</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Invalid sample position: </span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sample_position</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="SampleView.get_available_sample_position">
@@ -704,10 +704,10 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">get_available_sample_position</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">position_prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">exact_match</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bool</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Check if the position is occupied.</span>
 
-<span class="sd">        The structure of returned list is ``{&quot;name&quot;: str, &quot;need_release&quot;: bool}``.</span>
+<span class="sd">        The structure of returned list is ``{"name": str, "need_release": bool}``.</span>
 <span class="sd">        The entry need_release indicates whether a sample position needs to be released</span>
 <span class="sd">        when __exit__ method is called in the ``SamplePositionsLock``.</span>
 
@@ -715,24 +715,24 @@
 <span class="sd">            task_id: The task ID requesting the position</span>
 <span class="sd">            position_prefix: The position name or prefix to match</span>
 <span class="sd">            exact_match: If True, match the exact position name. If False, use prefix matching.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">position_prefix</span><span class="p">}</span> <span class="k">if</span> <span class="n">exact_match</span> <span class="k">else</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$regex&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;^</span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">position_prefix</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}}</span>
+<span class="sd">        """</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="n">position_prefix</span><span class="p">}</span> <span class="k">if</span> <span class="n">exact_match</span> <span class="k">else</span> <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$regex"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"^</span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">position_prefix</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">}}</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">exact_match</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find sample position: </span><span class="si">{</span><span class="n">position_prefix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot find sample position: </span><span class="si">{</span><span class="n">position_prefix</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find device with prefix: </span><span class="si">{</span><span class="n">position_prefix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot find device with prefix: </span><span class="si">{</span><span class="n">position_prefix</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="n">available_sample_positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
             <span class="p">{</span>
                 <span class="o">**</span><span class="n">query</span><span class="p">,</span>
-                <span class="s2">&quot;$or&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s2">"$or"</span><span class="p">:</span> <span class="p">[</span>
                     <span class="p">{</span>
-                        <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="s2">"task_id"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="p">},</span>
                     <span class="p">{</span>
-                        <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">,</span>
+                        <span class="s2">"task_id"</span><span class="p">:</span> <span class="n">task_id</span><span class="p">,</span>
                     <span class="p">},</span>
                 <span class="p">],</span>
             <span class="p">}</span>
@@ -740,13 +740,13 @@
         <span class="n">available_sp_names</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">sample_position</span> <span class="ow">in</span> <span class="n">available_sample_positions</span><span class="p">:</span>
             <span class="n">status</span><span class="p">,</span> <span class="n">current_task_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sample_position_status</span><span class="p">(</span>
-                <span class="n">sample_position</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                <span class="n">sample_position</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="n">SamplePositionStatus</span><span class="o">.</span><span class="n">EMPTY</span> <span class="ow">or</span> <span class="n">task_id</span> <span class="o">==</span> <span class="n">current_task_id</span><span class="p">:</span>
                 <span class="n">available_sp_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                     <span class="p">{</span>
-                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">sample_position</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
-                        <span class="s2">&quot;need_release&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sample_position</span><span class="p">(</span><span class="n">sample_position</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">task_id</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
+                        <span class="s2">"name"</span><span class="p">:</span> <span class="n">sample_position</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span>
+                        <span class="s2">"need_release"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sample_position</span><span class="p">(</span><span class="n">sample_position</span><span class="p">[</span><span class="s2">"name"</span><span class="p">])[</span><span class="s2">"task_id"</span><span class="p">]</span> <span class="o">!=</span> <span class="n">task_id</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
                     <span class="p">}</span>
                 <span class="p">)</span>
         <span class="k">return</span> <span class="n">available_sp_names</span></div>
@@ -755,22 +755,22 @@
 <div class="viewcode-block" id="SampleView.lock_sample_position">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.lock_sample_position">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">lock_sample_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Lock a sample position.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Lock a sample position."""</span>
         <span class="n">sample_status</span><span class="p">,</span> <span class="n">current_task_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sample_position_status</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">current_task_id</span> <span class="o">!=</span> <span class="n">task_id</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">sample_status</span> <span class="ow">is</span> <span class="n">SamplePositionStatus</span><span class="o">.</span><span class="n">OCCUPIED</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Position (</span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2">) is currently occupied&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Position (</span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2">) is currently occupied"</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">sample_status</span> <span class="ow">is</span> <span class="n">SamplePositionStatus</span><span class="o">.</span><span class="n">LOCKED</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Position is currently locked by task: </span><span class="si">{</span><span class="n">current_task_id</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Position is currently locked by task: </span><span class="si">{</span><span class="n">current_task_id</span><span class="si">}</span><span class="s2">"</span>
                 <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">position</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="n">position</span><span class="p">},</span>
             <span class="p">{</span>
-                <span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">,</span>
+                <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">"task_id"</span><span class="p">:</span> <span class="n">task_id</span><span class="p">,</span>
                 <span class="p">}</span>
             <span class="p">},</span>
         <span class="p">)</span>
@@ -782,15 +782,15 @@
 <div class="viewcode-block" id="SampleView.release_sample_position">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.release_sample_position">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">release_sample_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Unlock a sample position.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Unlock a sample position."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sample_position</span><span class="p">(</span><span class="n">position</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid sample position: </span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Invalid sample position: </span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">position</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="n">position</span><span class="p">},</span>
             <span class="p">{</span>
-                <span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">"task_id"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="p">}</span>
             <span class="p">},</span>
         <span class="p">)</span>
@@ -802,11 +802,11 @@
 <div class="viewcode-block" id="SampleView.get_sample_positions_by_task">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_sample_positions_by_task">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_sample_positions_by_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the list of sample positions that is locked by a task (given task id).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Get the list of sample positions that is locked by a task (given task id)."""</span>
         <span class="k">return</span> <span class="p">[</span>
-            <span class="n">sample_position</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+            <span class="n">sample_position</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">sample_position</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
-                <span class="p">{</span><span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">}</span>
+                <span class="p">{</span><span class="s2">"task_id"</span><span class="p">:</span> <span class="n">task_id</span><span class="p">}</span>
             <span class="p">)</span>
         <span class="p">]</span></div>
 
@@ -825,11 +825,11 @@
         <span class="n">tags</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectId</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Create a sample and return its uid in the database.</span>
 
 <span class="sd">        Samples with the same name can exist in the database</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">position</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_unoccupied_position</span><span class="p">(</span><span class="n">position</span><span class="p">):</span>
             <span class="c1"># Wait a bit to see if it is actually locked</span>
             <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
@@ -837,31 +837,31 @@
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_unoccupied_position</span><span class="p">(</span><span class="n">position</span><span class="p">):</span>
                     <span class="k">break</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_unoccupied_position</span><span class="p">(</span><span class="n">position</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Requested position (</span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2">) is not EMPTY.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Requested position (</span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2">) is not EMPTY."</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[.$]&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">"[.$]"</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Unsupported sample name: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">. &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;Sample name should not contain &#39;.&#39; or &#39;$&#39;&quot;</span>
+                <span class="sa">f</span><span class="s2">"Unsupported sample name: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">. "</span>
+                <span class="sa">f</span><span class="s2">"Sample name should not contain '.' or '$'"</span>
             <span class="p">)</span>
         <span class="n">entry</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
-            <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="n">tags</span> <span class="ow">or</span> <span class="p">[],</span>
-            <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="n">metadata</span> <span class="ow">or</span> <span class="p">{},</span>
-            <span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="n">position</span><span class="p">,</span>
-            <span class="s2">&quot;last_position&quot;</span><span class="p">:</span> <span class="n">position</span><span class="p">,</span>
-            <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="s2">&quot;in_transit&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="s2">&quot;created_at&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
-            <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+            <span class="s2">"name"</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+            <span class="s2">"tags"</span><span class="p">:</span> <span class="n">tags</span> <span class="ow">or</span> <span class="p">[],</span>
+            <span class="s2">"metadata"</span><span class="p">:</span> <span class="n">metadata</span> <span class="ow">or</span> <span class="p">{},</span>
+            <span class="s2">"position"</span><span class="p">:</span> <span class="n">position</span><span class="p">,</span>
+            <span class="s2">"last_position"</span><span class="p">:</span> <span class="n">position</span><span class="p">,</span>
+            <span class="s2">"task_id"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">"in_transit"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">"created_at"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+            <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
         <span class="p">}</span>
         <span class="k">if</span> <span class="n">sample_id</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sample_id</span><span class="p">,</span> <span class="n">ObjectId</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;User provided </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2"> as the sample_id -- this is not a valid ObjectId, so this sample &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;cannot be created in the database!&quot;</span>
+                    <span class="sa">f</span><span class="s2">"User provided </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2"> as the sample_id -- this is not a valid ObjectId, so this sample "</span>
+                    <span class="sa">f</span><span class="s2">"cannot be created in the database!"</span>
                 <span class="p">)</span>
-            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample_id</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample_id</span>
 
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
         <span class="c1"># Wait until the sample is created</span>
@@ -873,7 +873,7 @@
 <div class="viewcode-block" id="SampleView.get_sample">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_sample">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sample</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a sample by its id.</span>
+<span class="w">        </span><span class="sd">"""Get a sample by its id.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            sample_id (ObjectId): id of the sample within sample collection</span>
@@ -885,37 +885,37 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">            Sample: Sample object for given id</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">})</span>
+<span class="sd">        """</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No sample found with id: </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No sample found with id: </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">Sample</span><span class="p">(</span>
-            <span class="n">sample_id</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
-            <span class="n">position</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">],</span>
-            <span class="n">task_id</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">],</span>
-            <span class="n">metadata</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;metadata&quot;</span><span class="p">,</span> <span class="p">{}),</span>
-            <span class="n">tags</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">,</span> <span class="p">[]),</span>
-            <span class="n">in_transit</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;in_transit&quot;</span><span class="p">),</span>
-            <span class="n">last_position</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;last_position&quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;position&quot;</span><span class="p">)),</span>
+            <span class="n">sample_id</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">],</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span>
+            <span class="n">position</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">"position"</span><span class="p">],</span>
+            <span class="n">task_id</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">],</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"metadata"</span><span class="p">,</span> <span class="p">{}),</span>
+            <span class="n">tags</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tags"</span><span class="p">,</span> <span class="p">[]),</span>
+            <span class="n">in_transit</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"in_transit"</span><span class="p">),</span>
+            <span class="n">last_position</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"last_position"</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"position"</span><span class="p">)),</span>
         <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SampleView.update_sample_task_id">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.update_sample_task_id">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_sample_task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span> <span class="o">|</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the task id for a sample.&quot;&quot;&quot;</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">})</span>
+<span class="w">        </span><span class="sd">"""Update the task id for a sample."""</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find sample with id: </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot find sample with id: </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">},</span>
             <span class="p">{</span>
-                <span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">,</span>
-                    <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+                <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">"task_id"</span><span class="p">:</span> <span class="n">task_id</span><span class="p">,</span>
+                    <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
                 <span class="p">}</span>
             <span class="p">},</span>
         <span class="p">)</span></div>
@@ -924,37 +924,37 @@
 <div class="viewcode-block" id="SampleView.update_sample_metadata">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.update_sample_metadata">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_sample_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the metadata for a sample. This adds new metadata or updates existing metadata.&quot;&quot;&quot;</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">})</span>
+<span class="w">        </span><span class="sd">"""Update the metadata for a sample. This adds new metadata or updates existing metadata."""</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find sample with id: </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot find sample with id: </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-        <span class="n">update_dict</span> <span class="o">=</span> <span class="p">{</span><span class="sa">f</span><span class="s2">&quot;metadata.</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-        <span class="n">update_dict</span><span class="p">[</span><span class="s2">&quot;last_updated&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">update_dict</span> <span class="o">=</span> <span class="p">{</span><span class="sa">f</span><span class="s2">"metadata.</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="n">update_dict</span><span class="p">[</span><span class="s2">"last_updated"</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">},</span>
-            <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="n">update_dict</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="n">update_dict</span><span class="p">},</span>
         <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SampleView.move_sample">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.move_sample">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">move_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the sample with new position.</span>
+<span class="w">        </span><span class="sd">"""Update the sample with new position.</span>
 
 <span class="sd">        A successful move also clears any ``in_transit`` record, since the sample has arrived at a</span>
 <span class="sd">        well-defined position.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">})</span>
+<span class="sd">        """</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find sample with id: </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot find sample with id: </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">position</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s2">"position"</span><span class="p">]</span> <span class="o">==</span> <span class="n">position</span><span class="p">:</span>
             <span class="c1"># Position unchanged, but the sample is now at rest: clear any stale in-transit record.</span>
-            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;in_transit&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"in_transit"</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-                    <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">},</span>
-                    <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;in_transit&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()}},</span>
+                    <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">},</span>
+                    <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"in_transit"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()}},</span>
                 <span class="p">)</span>
             <span class="k">return</span>
 
@@ -966,21 +966,21 @@
                     <span class="k">break</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_unoccupied_position</span><span class="p">(</span><span class="n">position</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Requested position (</span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2">) is not EMPTY or LOCKED by other task.&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Requested position (</span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2">) is not EMPTY or LOCKED by other task."</span>
                 <span class="p">)</span>
         <span class="n">update_fields</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="n">position</span><span class="p">,</span>
-            <span class="s2">&quot;in_transit&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+            <span class="s2">"position"</span><span class="p">:</span> <span class="n">position</span><span class="p">,</span>
+            <span class="s2">"in_transit"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
         <span class="p">}</span>
         <span class="c1"># Keep last_position as the most recent *known* location: only update it when moving to a</span>
         <span class="c1"># real position. When position becomes None (sample left the lab/position), retain the</span>
-        <span class="c1"># previous last_position so the &quot;last known location&quot; is never empty.</span>
+        <span class="c1"># previous last_position so the "last known location" is never empty.</span>
         <span class="k">if</span> <span class="n">position</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">update_fields</span><span class="p">[</span><span class="s2">&quot;last_position&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">position</span>
+            <span class="n">update_fields</span><span class="p">[</span><span class="s2">"last_position"</span><span class="p">]</span> <span class="o">=</span> <span class="n">position</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">},</span>
-            <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="n">update_fields</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="n">update_fields</span><span class="p">},</span>
         <span class="p">)</span></div>
 
 
@@ -989,66 +989,66 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">set_sample_in_transit</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">destination</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Mark a sample as being physically moved from ``source`` to ``destination``.</span>
+<span class="w">        </span><span class="sd">"""Mark a sample as being physically moved from ``source`` to ``destination``.</span>
 
 <span class="sd">        This is meant to be called right before a robot move begins. It does NOT change the</span>
 <span class="sd">        recorded ``position`` (the sample is still physically at/near ``source`` until the move</span>
 <span class="sd">        completes). If the move crashes mid-transfer, this record persists, so the last known</span>
 <span class="sd">        position plus the intended destination remain visible. ``move_sample`` clears it once the</span>
 <span class="sd">        sample arrives.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">})</span>
+<span class="sd">        """</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find sample with id: </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot find sample with id: </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="n">update_fields</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;in_transit&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">source</span><span class="p">,</span>
-                <span class="s2">&quot;destination&quot;</span><span class="p">:</span> <span class="n">destination</span><span class="p">,</span>
-                <span class="s2">&quot;started_at&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+            <span class="s2">"in_transit"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">"source"</span><span class="p">:</span> <span class="n">source</span><span class="p">,</span>
+                <span class="s2">"destination"</span><span class="p">:</span> <span class="n">destination</span><span class="p">,</span>
+                <span class="s2">"started_at"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
             <span class="p">},</span>
-            <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+            <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
         <span class="p">}</span>
         <span class="c1"># The sample is physically still at/near the source until the move completes, so record the</span>
         <span class="c1"># source as the last known location.</span>
         <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">update_fields</span><span class="p">[</span><span class="s2">&quot;last_position&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">source</span>
+            <span class="n">update_fields</span><span class="p">[</span><span class="s2">"last_position"</span><span class="p">]</span> <span class="o">=</span> <span class="n">source</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">},</span>
-            <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="n">update_fields</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="n">update_fields</span><span class="p">},</span>
         <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SampleView.clear_sample_in_transit">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.clear_sample_in_transit">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">clear_sample_in_transit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear the in-transit record for a sample (e.g. for manual recovery).&quot;&quot;&quot;</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">})</span>
+<span class="w">        </span><span class="sd">"""Clear the in-transit record for a sample (e.g. for manual recovery)."""</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find sample with id: </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot find sample with id: </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">},</span>
-            <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;in_transit&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()}},</span>
+            <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"in_transit"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()}},</span>
         <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SampleView.get_in_transit_samples">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_in_transit_samples">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_in_transit_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return summary info for all samples currently recorded as in transit.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return summary info for all samples currently recorded as in transit."""</span>
         <span class="n">in_transit_samples</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;in_transit&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$ne&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}}):</span>
-            <span class="n">transit</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;in_transit&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">"in_transit"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$ne"</span><span class="p">:</span> <span class="kc">None</span><span class="p">}}):</span>
+            <span class="n">transit</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"in_transit"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
             <span class="n">in_transit_samples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="p">{</span>
-                    <span class="s2">&quot;sample_id&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span>
-                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
-                    <span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">],</span>
-                    <span class="s2">&quot;last_position&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;last_position&quot;</span><span class="p">,</span> <span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;position&quot;</span><span class="p">)),</span>
-                    <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;task_id&quot;</span><span class="p">),</span>
-                    <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">transit</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;source&quot;</span><span class="p">),</span>
-                    <span class="s2">&quot;destination&quot;</span><span class="p">:</span> <span class="n">transit</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;destination&quot;</span><span class="p">),</span>
-                    <span class="s2">&quot;started_at&quot;</span><span class="p">:</span> <span class="n">transit</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;started_at&quot;</span><span class="p">),</span>
+                    <span class="s2">"sample_id"</span><span class="p">:</span> <span class="n">sample</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">],</span>
+                    <span class="s2">"name"</span><span class="p">:</span> <span class="n">sample</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span>
+                    <span class="s2">"position"</span><span class="p">:</span> <span class="n">sample</span><span class="p">[</span><span class="s2">"position"</span><span class="p">],</span>
+                    <span class="s2">"last_position"</span><span class="p">:</span> <span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"last_position"</span><span class="p">,</span> <span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"position"</span><span class="p">)),</span>
+                    <span class="s2">"task_id"</span><span class="p">:</span> <span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"task_id"</span><span class="p">),</span>
+                    <span class="s2">"source"</span><span class="p">:</span> <span class="n">transit</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"source"</span><span class="p">),</span>
+                    <span class="s2">"destination"</span><span class="p">:</span> <span class="n">transit</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"destination"</span><span class="p">),</span>
+                    <span class="s2">"started_at"</span><span class="p">:</span> <span class="n">transit</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"started_at"</span><span class="p">),</span>
                 <span class="p">}</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">in_transit_samples</span></div>
@@ -1057,11 +1057,11 @@
 <div class="viewcode-block" id="SampleView.get_sample_positions_names_by_device">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_sample_positions_names_by_device">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_sample_positions_names_by_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all the sample positions names that are related to a device.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Get all the sample positions names that are related to a device."""</span>
         <span class="k">return</span> <span class="p">[</span>
-            <span class="n">sample_position</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+            <span class="n">sample_position</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">sample_position</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
-                <span class="p">{</span><span class="s2">&quot;parent_device&quot;</span><span class="p">:</span> <span class="n">device_name</span><span class="p">}</span>
+                <span class="p">{</span><span class="s2">"parent_device"</span><span class="p">:</span> <span class="n">device_name</span><span class="p">}</span>
             <span class="p">)</span>
         <span class="p">]</span></div>
 
@@ -1069,25 +1069,25 @@
 <div class="viewcode-block" id="SampleView.get_samples_on_device">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_samples_on_device">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_samples_on_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all the samples on a device.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Get all the samples on a device."""</span>
         <span class="n">samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$regex&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;^</span><span class="si">{</span><span class="n">device_name</span><span class="si">}{</span><span class="n">SamplePosition</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}}</span>
+            <span class="p">{</span><span class="s2">"position"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$regex"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"^</span><span class="si">{</span><span class="n">device_name</span><span class="si">}{</span><span class="n">SamplePosition</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="si">}</span><span class="s2">"</span><span class="p">}}</span>
         <span class="p">)</span>
 
         <span class="n">all_samples</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">samples</span><span class="p">:</span>
             <span class="c1"># remove the suffix of the sample position (e.g. remove /1, /2, etc.)</span>
             <span class="n">position_name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">SamplePosition</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="si">}</span><span class="se">\\</span><span class="s2">d+$&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">SamplePosition</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="si">}</span><span class="se">\\</span><span class="s2">d+$"</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="n">sample</span><span class="p">[</span><span class="s2">"position"</span><span class="p">]</span>
             <span class="p">)</span>
-            <span class="n">all_samples</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">position_name</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">])</span>
+            <span class="n">all_samples</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">position_name</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">all_samples</span></div>
 
 
 <div class="viewcode-block" id="SampleView.exists">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.exists">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if a sample exists in the database.</span>
+<span class="w">        </span><span class="sd">"""Check if a sample exists in the database.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            sample_id (ObjectId): id of the sample within sample collection</span>
@@ -1095,29 +1095,29 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">            bool: True if sample exists in the database</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">sample_id</span><span class="p">)})</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">sample_id</span><span class="p">)})</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
 
 
 <div class="viewcode-block" id="SampleView.remove_sample_position_by_prefix">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.remove_sample_position_by_prefix">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">remove_sample_position_by_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove a sample position from the database.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Remove a sample position from the database."""</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">():</span>  <span class="c1"># pylint: disable=not-callable</span>
             <span class="n">remove_standalone_sample_position</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span><span class="o">.</span><span class="n">delete_many</span><span class="p">(</span>
-                <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$regex&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;^</span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}}</span>
+                <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$regex"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"^</span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">}}</span>
             <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SampleView.get_sample_positions_names_by_prefix">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_sample_positions_names_by_prefix">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_sample_positions_names_by_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all the sample positions names that are related to a device.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Get all the sample positions names that are related to a device."""</span>
         <span class="k">return</span> <span class="p">[</span>
-            <span class="n">sample_position</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+            <span class="n">sample_position</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">sample_position</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
-                <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$regex&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;^</span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}}</span>
+                <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$regex"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"^</span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">}}</span>
             <span class="p">)</span>
         <span class="p">]</span></div>
 
@@ -1125,45 +1125,45 @@
 <div class="viewcode-block" id="SampleView.get_all_sample_positions_from_db">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_all_sample_positions_from_db">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_all_sample_positions_from_db</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Get all sample positions from the database directly.</span>
 
 <span class="sd">        Returns a dictionary mapping position names to their database entries.</span>
 <span class="sd">        This includes both standalone and device-associated sample positions.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">sample_positions</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">position_doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span><span class="o">.</span><span class="n">find</span><span class="p">():</span>
-            <span class="n">sample_positions</span><span class="p">[</span><span class="n">position_doc</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">position_doc</span>
+            <span class="n">sample_positions</span><span class="p">[</span><span class="n">position_doc</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]]</span> <span class="o">=</span> <span class="n">position_doc</span>
         <span class="k">return</span> <span class="n">sample_positions</span></div>
 
 
 <div class="viewcode-block" id="SampleView.get_sample_position_max_number_by_prefix">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_sample_position_max_number_by_prefix">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_sample_position_max_number_by_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Get the maximum number of sample positions for a given prefix from the database.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            prefix: The prefix to search for (e.g., &quot;furnace_temp&quot;)</span>
+<span class="sd">            prefix: The prefix to search for (e.g., "furnace_temp")</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">            The maximum number found for positions with this prefix</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_positions_collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$regex&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;^</span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}}</span>
+            <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$regex"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"^</span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">}}</span>
         <span class="p">)</span>
 
         <span class="n">max_number</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">position</span> <span class="ow">in</span> <span class="n">positions</span><span class="p">:</span>
-            <span class="c1"># Extract number from position name (e.g., &quot;furnace_temp/1&quot; -&gt; 1)</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="n">position</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+            <span class="c1"># Extract number from position name (e.g., "furnace_temp/1" -&gt; 1)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">position</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">number_part</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">SamplePosition</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
                 <span class="n">number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">number_part</span><span class="p">)</span>
                 <span class="n">max_number</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_number</span><span class="p">,</span> <span class="n">number</span><span class="p">)</span>
             <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">):</span>
-                <span class="c1"># If we can&#39;t parse the number, count this as position 1</span>
+                <span class="c1"># If we can't parse the number, count this as position 1</span>
                 <span class="n">max_number</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_number</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">max_number</span></div>
@@ -1172,7 +1172,7 @@
 <div class="viewcode-block" id="SampleView.get_sample_name_by_position">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_sample_name_by_position">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_sample_name_by_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Get the sample name at a given position.</span>
 
 <span class="sd">        Args:</span>
@@ -1181,15 +1181,15 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">            The sample name if a sample exists at the position, None otherwise</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="n">position</span><span class="p">})</span>
-        <span class="k">return</span> <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">sample</span> <span class="k">else</span> <span class="kc">None</span></div>
+<span class="sd">        """</span>
+        <span class="n">sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"position"</span><span class="p">:</span> <span class="n">position</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">sample</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span> <span class="k">if</span> <span class="n">sample</span> <span class="k">else</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="SampleView.get_sample_by_position">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_sample_by_position">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_sample_by_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sample</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Get the sample object at a given position.</span>
 
 <span class="sd">        Args:</span>
@@ -1198,20 +1198,20 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">            The Sample object if a sample exists at the position, None otherwise</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="n">position</span><span class="p">})</span>
+<span class="sd">        """</span>
+        <span class="n">sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"position"</span><span class="p">:</span> <span class="n">position</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">sample</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="k">return</span> <span class="n">Sample</span><span class="p">(</span>
-            <span class="n">sample_id</span><span class="o">=</span><span class="n">sample</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">sample</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
-            <span class="n">position</span><span class="o">=</span><span class="n">sample</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">],</span>
-            <span class="n">task_id</span><span class="o">=</span><span class="n">sample</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">],</span>
-            <span class="n">metadata</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;metadata&quot;</span><span class="p">,</span> <span class="p">{}),</span>
-            <span class="n">tags</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">,</span> <span class="p">[]),</span>
-            <span class="n">in_transit</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;in_transit&quot;</span><span class="p">),</span>
-            <span class="n">last_position</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;last_position&quot;</span><span class="p">,</span> <span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;position&quot;</span><span class="p">)),</span>
+            <span class="n">sample_id</span><span class="o">=</span><span class="n">sample</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">],</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">sample</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span>
+            <span class="n">position</span><span class="o">=</span><span class="n">sample</span><span class="p">[</span><span class="s2">"position"</span><span class="p">],</span>
+            <span class="n">task_id</span><span class="o">=</span><span class="n">sample</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">],</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"metadata"</span><span class="p">,</span> <span class="p">{}),</span>
+            <span class="n">tags</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tags"</span><span class="p">,</span> <span class="p">[]),</span>
+            <span class="n">in_transit</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"in_transit"</span><span class="p">),</span>
+            <span class="n">last_position</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"last_position"</span><span class="p">,</span> <span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"position"</span><span class="p">)),</span>
         <span class="p">)</span></div>
 </div>
 

@@ -614,10 +614,10 @@ and sample positions will be released automatically.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># request devices and sample positions from lab manager. The `$` represents</span>
 <span class="c1"># the name of assigned devices in the sample positions we try to request,</span>
 <span class="c1"># 4 is the number of sample positions.</span>
-<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">request_resources</span><span class="p">({</span><span class="n">Furnace</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;$.inside&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)]})</span> <span class="k">as</span> <span class="n">devices_and_positions</span><span class="p">:</span>
+<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">request_resources</span><span class="p">({</span><span class="n">Furnace</span><span class="p">:</span> <span class="p">[(</span><span class="s2">"$.inside"</span><span class="p">,</span> <span class="mi">4</span><span class="p">)]})</span> <span class="k">as</span> <span class="n">devices_and_positions</span><span class="p">:</span>
     <span class="n">devices</span><span class="p">,</span> <span class="n">sample_positions</span> <span class="o">=</span> <span class="n">devices_and_positions</span>
     <span class="n">furnace</span> <span class="o">=</span> <span class="n">devices</span><span class="p">[</span><span class="n">Furnace</span><span class="p">]</span>
-    <span class="n">inside_furnace</span> <span class="o">=</span> <span class="n">sample_positions</span><span class="p">[</span><span class="n">Furnace</span><span class="p">][</span><span class="s2">&quot;$.inside&quot;</span><span class="p">]</span>
+    <span class="n">inside_furnace</span> <span class="o">=</span> <span class="n">sample_positions</span><span class="p">[</span><span class="n">Furnace</span><span class="p">][</span><span class="s2">"$.inside"</span><span class="p">]</span>
 
     <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples</span><span class="p">:</span>
         <span class="c1"># in a task, we can call other tasks, which will share the same</span>
@@ -635,8 +635,8 @@ and sample positions will be released automatically.</p>
     <span class="k">while</span> <span class="n">furnace</span><span class="o">.</span><span class="n">is_running</span><span class="p">():</span>
         <span class="c1"># log the device data, which is current temperature of the furnace</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">log_device_signal</span><span class="p">({</span>
-            <span class="s2">&quot;device&quot;</span><span class="p">:</span> <span class="n">furnace</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-            <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="n">furnace</span><span class="o">.</span><span class="n">get_temperature</span><span class="p">(),</span>
+            <span class="s2">"device"</span><span class="p">:</span> <span class="n">furnace</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s2">"temperature"</span><span class="p">:</span> <span class="n">furnace</span><span class="o">.</span><span class="n">get_temperature</span><span class="p">(),</span>
         <span class="p">})</span>
 </pre></div>
 </div>

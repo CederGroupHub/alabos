@@ -389,11 +389,11 @@
 <div class="viewcode-block" id="TaskPriority">
 <a class="viewcode-back" href="../../../alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.TaskPriority">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TaskPriority</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    The priority of a task. larger integer = higher priority.</span>
 
 <span class="sd">    Values &gt;= 100 are reserved for urgent/error correcting resource requests.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">SYSTEM</span> <span class="o">=</span> <span class="mi">900</span>
     <span class="n">URGENT</span> <span class="o">=</span> <span class="mi">100</span>
@@ -406,7 +406,7 @@
 <div class="viewcode-block" id="TaskStatus">
 <a class="viewcode-back" href="../../../alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.TaskStatus">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TaskStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    The status of one task.</span>
 
 <span class="sd">    - ``WAITING``: the task cannot start yet, waiting for preceding tasks to finish</span>
@@ -418,7 +418,7 @@
 <span class="sd">    - ``ERROR``: the task encountered some errors during execution</span>
 <span class="sd">    - ``COMPLETED``: the task is completed</span>
 <span class="sd">    - ``CANCELLED``: the task has been cancelled and stopped.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">WAITING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">READY</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
@@ -435,13 +435,13 @@
 <div class="viewcode-block" id="CancelingProgress">
 <a class="viewcode-back" href="../../../alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.CancelingProgress">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CancelingProgress</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    The status for a request that is being canceled. It is kept in the ``canceling`` field of the request.</span>
 
 <span class="sd">    PENDING: The canceling process has been initiated.</span>
 <span class="sd">    WORKER_NOTIFIED: The worker has been notified to cancel the request, which means an</span>
 <span class="sd">      abort error has been raised in the worker.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">PENDING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">WORKER_NOTIFIED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>

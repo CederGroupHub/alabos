@@ -383,7 +383,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for alab_management.sample_view.sample</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;The definition of the Sample and SamplePosition classes.&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""The definition of the Sample and SamplePosition classes."""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
@@ -396,15 +396,15 @@
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample.html#alab_management.sample_view.sample.Sample">[docs]</a>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Sample</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Basic sample object.</span>
 
 <span class="sd">    - ``sample_id``: the unique id of a sample in the database</span>
-<span class="sd">    - ``task_id``: the unique id of a task that currently &quot;owns&quot; (is processing) this sample</span>
+<span class="sd">    - ``task_id``: the unique id of a task that currently "owns" (is processing) this sample</span>
 <span class="sd">    - ``name``: the name of this sample</span>
 <span class="sd">    - ``position``: current position of the sample in the lab. if None, the sample has not been initialized</span>
 <span class="sd">      in the lab</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span>
     <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span> <span class="o">|</span> <span class="kc">None</span>
@@ -413,14 +413,14 @@
     <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
     <span class="n">tags</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
     <span class="c1"># When a sample is being physically moved, ``in_transit`` records where it is coming from and</span>
-    <span class="c1"># going to, e.g. {&quot;source&quot;: ..., &quot;destination&quot;: ..., &quot;started_at&quot;: ...}. It is None whenever the</span>
+    <span class="c1"># going to, e.g. {"source": ..., "destination": ..., "started_at": ...}. It is None whenever the</span>
     <span class="c1"># sample is at rest. compare/hash are disabled so existing Sample equality semantics are preserved.</span>
     <span class="n">in_transit</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">hash</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">)</span>
     <span class="c1"># ``last_position`` always holds the most recently recorded physical location of the sample. Unlike</span>
     <span class="c1"># ``position`` (which becomes None when the sample leaves the lab / a position), this is never</span>
-    <span class="c1"># cleared once set, so the &quot;last known location&quot; is always available. compare/hash are disabled to</span>
+    <span class="c1"># cleared once set, so the "last known location" is always available. compare/hash are disabled to</span>
     <span class="c1"># preserve existing Sample equality semantics.</span>
     <span class="n">last_position</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">hash</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
@@ -430,7 +430,7 @@
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample.html#alab_management.sample_view.sample.SamplePosition">[docs]</a>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">SamplePosition</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A sample position in the lab.</span>
 
 <span class="sd">    Sample position is a position in the lab that can hold sample,</span>
@@ -440,19 +440,19 @@
 <span class="sd">    - ``name``: the name of this sample position, which is the unique</span>
 <span class="sd">      identifier of a sample position</span>
 <span class="sd">    - ``description``: a string that describes the sample position briefly</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">SEPARATOR</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span>
+    <span class="n">SEPARATOR</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"/"</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">hash</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">hash</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the number of sample position is valid.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Check if the number of sample position is valid."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">number</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> is an invalid number of sample positions! The number of sample position (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">) &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;must be &gt;= 0.&quot;</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> is an invalid number of sample positions! The number of sample position (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">) "</span>
+                <span class="sa">f</span><span class="s2">"must be &gt;= 0."</span>
             <span class="p">)</span></div>
 
 
@@ -474,15 +474,15 @@
 <div class="viewcode-block" id="add_standalone_sample_position">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample.html#alab_management.sample_view.sample.add_standalone_sample_position">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">add_standalone_sample_position</span><span class="p">(</span><span class="n">position</span><span class="p">:</span> <span class="n">SamplePosition</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Register a device instance.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Register a device instance."""</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">SamplePosition</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;The type of position should be SamplePosition, but user provided </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">position</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"The type of position should be SamplePosition, but user provided </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">position</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="n">position</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">_standalone_sample_position_registry</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="s2">&quot;ALABOS_RELOAD&quot;</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="s2">"ALABOS_RELOAD"</span><span class="p">,</span> <span class="kc">None</span>
     <span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Duplicated standalone sample position name </span><span class="si">{</span><span class="n">position</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Duplicated standalone sample position name </span><span class="si">{</span><span class="n">position</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="n">_standalone_sample_position_registry</span><span class="p">[</span><span class="n">position</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">position</span>
     <span class="n">_current_standalone_sample_position_registry</span><span class="p">[</span><span class="n">position</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">position</span></div>
 
@@ -491,7 +491,7 @@
 <div class="viewcode-block" id="get_all_standalone_sample_positions">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample.html#alab_management.sample_view.sample.get_all_standalone_sample_positions">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_all_standalone_sample_positions</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SamplePosition</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get all the sample position names in the registry.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Get all the sample position names in the registry."""</span>
     <span class="k">return</span> <span class="n">_standalone_sample_position_registry</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
 
 
@@ -499,7 +499,7 @@
 <div class="viewcode-block" id="get_current_standalone_sample_positions">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample.html#alab_management.sample_view.sample.get_current_standalone_sample_positions">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_current_standalone_sample_positions</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SamplePosition</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get all the current standalone sample positions in the registry.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Get all the current standalone sample positions in the registry."""</span>
     <span class="k">return</span> <span class="n">_current_standalone_sample_position_registry</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
 
 
@@ -507,7 +507,7 @@
 <div class="viewcode-block" id="remove_standalone_sample_position">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample.html#alab_management.sample_view.sample.remove_standalone_sample_position">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">remove_standalone_sample_position</span><span class="p">(</span><span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove a standalone sample position from the registry.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Remove a standalone sample position from the registry."""</span>
     <span class="n">_standalone_sample_position_registry</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="n">_current_standalone_sample_position_registry</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 
@@ -516,7 +516,7 @@
 <div class="viewcode-block" id="reset_current_standalone_sample_position_registry">
 <a class="viewcode-back" href="../../../alab_management.sample_view.sample.html#alab_management.sample_view.sample.reset_current_standalone_sample_position_registry">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">reset_current_standalone_sample_position_registry</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reset the current standalone sample position registry.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Reset the current standalone sample position registry."""</span>
     <span class="n">_current_standalone_sample_position_registry</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
 
 </pre></div>

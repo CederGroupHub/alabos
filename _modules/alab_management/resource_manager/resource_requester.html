@@ -383,10 +383,10 @@
                 <article class="bd-article">
                   
   <h1>Source code for alab_management.resource_manager.resource_requester</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">TaskLauncher is the core module of the system,</span>
 <span class="sd">which actually executes the tasks.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">concurrent</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
@@ -418,7 +418,7 @@
 <div class="viewcode-block" id="RequestCanceledError">
 <a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.RequestCanceledError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RequestCanceledError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Request Canceled Error.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">"""Request Canceled Error."""</span></div>
 
 
 
@@ -433,18 +433,18 @@
     <span class="k">class</span><span class="w"> </span><span class="nc">CombinedTimeoutError</span><span class="p">(</span>
         <span class="ne">TimeoutError</span><span class="p">,</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">TimeoutError</span>
     <span class="p">):</span>  <span class="c1"># pylint: disable=duplicate-bases</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Combined TimeoutError.</span>
 
 <span class="sd">        If you catch either TimeoutError or concurrent.futures.TimeoutError, this will catch both.</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
+<span class="sd">        """</span></div>
 
 
 
 <div class="viewcode-block" id="DeviceRequest">
 <a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.DeviceRequest">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DeviceRequest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pydantic model for device request.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Pydantic model for device request."""</span>
 
     <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">content</span><span class="p">:</span> <span class="nb">str</span></div>
@@ -454,7 +454,7 @@
 <div class="viewcode-block" id="ResourceRequestItem">
 <a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.ResourceRequestItem">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ResourceRequestItem</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pydantic model for resource request item.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Pydantic model for resource request item."""</span>
 
     <span class="n">device</span><span class="p">:</span> <span class="n">DeviceRequest</span>
     <span class="n">sample_positions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SamplePositionRequest</span><span class="p">]</span></div>
@@ -464,21 +464,21 @@
 <div class="viewcode-block" id="ResourcesRequest">
 <a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.ResourcesRequest">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ResourcesRequest</span><span class="p">(</span><span class="n">RootModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This class is used to validate the resource request. Each request should have a format like this.</span>
 
 <span class="sd">    .. code-block::</span>
 
 <span class="sd">      [</span>
 <span class="sd">          {</span>
-<span class="sd">              &quot;device&quot;:{</span>
-<span class="sd">                  &quot;identifier&quot;: &quot;name&quot; or &quot;type&quot; or &quot;nodevice&quot;,</span>
-<span class="sd">                  &quot;content&quot;: string corresponding to identifier</span>
+<span class="sd">              "device":{</span>
+<span class="sd">                  "identifier": "name" or "type" or "nodevice",</span>
+<span class="sd">                  "content": string corresponding to identifier</span>
 <span class="sd">              },</span>
-<span class="sd">              &quot;sample_positions&quot;: [</span>
+<span class="sd">              "sample_positions": [</span>
 <span class="sd">                  {</span>
-<span class="sd">                      &quot;prefix&quot;: prefix of sample position,</span>
-<span class="sd">                      &quot;number&quot;: integer number of such positions requested.</span>
+<span class="sd">                      "prefix": prefix of sample position,</span>
+<span class="sd">                      "number": integer number of such positions requested.</span>
 <span class="sd">                  },</span>
 <span class="sd">                  ...</span>
 <span class="sd">              ]</span>
@@ -489,32 +489,32 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">        :py:class:`SamplePositionRequest &lt;alab_management.sample_view.sample_view.SamplePositionRequest&gt;`</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">root</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ResourceRequestItem</span><span class="p">]</span>
 
 <div class="viewcode-block" id="ResourcesRequest.preprocess">
 <a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.ResourcesRequest.preprocess">[docs]</a>
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">preprocess</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Preprocess the request.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Preprocess the request."""</span>
         <span class="n">new_values</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">request_dict</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">request_dict</span><span class="p">[</span><span class="s2">&quot;device&quot;</span><span class="p">][</span><span class="s2">&quot;identifier&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
-                <span class="s2">&quot;name&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;type&quot;</span><span class="p">,</span>
+            <span class="k">if</span> <span class="n">request_dict</span><span class="p">[</span><span class="s2">"device"</span><span class="p">][</span><span class="s2">"identifier"</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="s2">"name"</span><span class="p">,</span>
+                <span class="s2">"type"</span><span class="p">,</span>
                 <span class="n">_EXTRA_REQUEST</span><span class="p">,</span>
             <span class="p">]:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;device identifier must be one of &#39;name&#39;, &#39;type&#39;, or </span><span class="si">{</span><span class="n">_EXTRA_REQUEST</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">"device identifier must be one of 'name', 'type', or </span><span class="si">{</span><span class="n">_EXTRA_REQUEST</span><span class="si">}</span><span class="s2">"</span>
                 <span class="p">)</span>
             <span class="n">new_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="p">{</span>
-                    <span class="s2">&quot;device&quot;</span><span class="p">:</span> <span class="p">{</span>
-                        <span class="s2">&quot;identifier&quot;</span><span class="p">:</span> <span class="n">request_dict</span><span class="p">[</span><span class="s2">&quot;device&quot;</span><span class="p">][</span><span class="s2">&quot;identifier&quot;</span><span class="p">],</span>
-                        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">request_dict</span><span class="p">[</span><span class="s2">&quot;device&quot;</span><span class="p">][</span><span class="s2">&quot;content&quot;</span><span class="p">],</span>
+                    <span class="s2">"device"</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">"identifier"</span><span class="p">:</span> <span class="n">request_dict</span><span class="p">[</span><span class="s2">"device"</span><span class="p">][</span><span class="s2">"identifier"</span><span class="p">],</span>
+                        <span class="s2">"content"</span><span class="p">:</span> <span class="n">request_dict</span><span class="p">[</span><span class="s2">"device"</span><span class="p">][</span><span class="s2">"content"</span><span class="p">],</span>
                     <span class="p">},</span>
-                    <span class="s2">&quot;sample_positions&quot;</span><span class="p">:</span> <span class="n">request_dict</span><span class="p">[</span><span class="s2">&quot;sample_positions&quot;</span><span class="p">],</span>
+                    <span class="s2">"sample_positions"</span><span class="p">:</span> <span class="n">request_dict</span><span class="p">[</span><span class="s2">"sample_positions"</span><span class="p">],</span>
                 <span class="p">}</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">new_values</span></div>
@@ -525,10 +525,10 @@
 <div class="viewcode-block" id="RequestMixin">
 <a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.RequestMixin">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RequestMixin</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simple wrapper for the request collection.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Simple wrapper for the request collection."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;requests&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">"requests"</span><span class="p">)</span>
 
 <div class="viewcode-block" id="RequestMixin.update_request_status">
 <a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.RequestMixin.update_request_status">[docs]</a>
@@ -538,29 +538,29 @@
         <span class="n">status</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="p">,</span>
         <span class="n">original_status</span><span class="p">:</span> <span class="n">RequestStatus</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">RequestStatus</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the status of a request by request_id.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Update the status of a request by request_id."""</span>
         <span class="k">if</span> <span class="n">original_status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">original_status</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
                 <span class="n">value_returned</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
                     <span class="p">{</span>
-                        <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">,</span>
-                        <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$in&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">status</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">original_status</span><span class="p">]},</span>
+                        <span class="s2">"_id"</span><span class="p">:</span> <span class="n">request_id</span><span class="p">,</span>
+                        <span class="s2">"status"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$in"</span><span class="p">:</span> <span class="p">[</span><span class="n">status</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">original_status</span><span class="p">]},</span>
                     <span class="p">},</span>
-                    <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="p">}},</span>
+                    <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="p">}},</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">value_returned</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-                    <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">,</span> <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">original_status</span><span class="o">.</span><span class="n">name</span><span class="p">},</span>
-                    <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="p">}},</span>
+                    <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">request_id</span><span class="p">,</span> <span class="s2">"status"</span><span class="p">:</span> <span class="n">original_status</span><span class="o">.</span><span class="n">name</span><span class="p">},</span>
+                    <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="p">}},</span>
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">value_returned</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-                <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="p">}}</span>
+                <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">request_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="p">}}</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">value_returned</span><span class="o">.</span><span class="n">modified_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">DocumentNotUpdatedError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Request </span><span class="si">{</span><span class="n">request_id</span><span class="si">}</span><span class="s2"> was not updated to </span><span class="si">{</span><span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;because it is not in </span><span class="si">{</span><span class="n">original_status</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> status.&quot;</span>
+                <span class="sa">f</span><span class="s2">"Request </span><span class="si">{</span><span class="n">request_id</span><span class="si">}</span><span class="s2"> was not updated to </span><span class="si">{</span><span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, "</span>
+                <span class="sa">f</span><span class="s2">"because it is not in </span><span class="si">{</span><span class="n">original_status</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> status."</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">value_returned</span></div>
 
@@ -568,26 +568,26 @@
 <div class="viewcode-block" id="RequestMixin.get_request">
 <a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.RequestMixin.get_request">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a request by request_id.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Get a request by request_id."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">},</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">request_id</span><span class="p">},</span> <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>  <span class="c1"># DB_ACCESS_OUTSIDE_VIEW</span></div>
 
 
 <div class="viewcode-block" id="RequestMixin.get_requests_by_status">
 <a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.RequestMixin.get_requests_by_status">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_requests_by_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all requests by status.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Get all requests by status."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
+            <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
         <span class="p">)</span>  <span class="c1"># DB_ACCESS_OUTSIDE_VIEW</span></div>
 
 
 <div class="viewcode-block" id="RequestMixin.get_requests_by_task_id">
 <a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.RequestMixin.get_requests_by_task_id">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_requests_by_task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all requests by task_id.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">})</span></div>
+<span class="w">        </span><span class="sd">"""Get all requests by task_id."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">"task_id"</span><span class="p">:</span> <span class="n">task_id</span><span class="p">})</span></div>
 </div>
 
 
@@ -595,18 +595,18 @@
 <div class="viewcode-block" id="ResourceRequester">
 <a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.ResourceRequester">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ResourceRequester</span><span class="p">(</span><span class="n">RequestMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Class for request lab resources easily. This class will insert a request into the database,</span>
 <span class="sd">    and then the task manager will read from the database and assign the resources.</span>
 
 <span class="sd">    It is used in :py:class:`~alab_management.lab_view.LabView`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;requests&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">"requests"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span> <span class="o">=</span> <span class="n">task_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">device_view</span> <span class="o">=</span> <span class="n">DeviceView</span><span class="p">()</span>
@@ -617,13 +617,13 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stop</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span>
-            <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_check_request_status_loop</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;CheckRequestStatus&quot;</span>
+            <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_check_request_status_loop</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"CheckRequestStatus"</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__close__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the thread.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Close the thread."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stop</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
 
@@ -638,7 +638,7 @@
         <span class="n">priority</span><span class="p">:</span> <span class="n">TaskPriority</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">exact_positions</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Request lab resources.</span>
 
 <span class="sd">        Write the request into the database, and then the task manager will read from the</span>
@@ -650,10 +650,10 @@
 <span class="sd">            priority: Optional priority for the request</span>
 <span class="sd">            exact_positions: Set of position names that should be matched exactly (not by prefix).</span>
 <span class="sd">              Position names should be specified as they appear in the resource_request dictionary,</span>
-<span class="sd">              before device prefixes are added. For example, if requesting {None: {&quot;input_rack/slot/1&quot;: 1}},</span>
-<span class="sd">              use exact_positions={&quot;input_rack/slot/1&quot;}. If requesting {Furnace: {&quot;slot/1&quot;: 1}}, use</span>
-<span class="sd">              exact_positions={&quot;slot/1&quot;} (the device prefix will be added automatically).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">              before device prefixes are added. For example, if requesting {None: {"input_rack/slot/1": 1}},</span>
+<span class="sd">              use exact_positions={"input_rack/slot/1"}. If requesting {Furnace: {"slot/1": 1}}, use</span>
+<span class="sd">              exact_positions={"slot/1"} (the device prefix will be added automatically).</span>
+<span class="sd">        """</span>
         <span class="n">f</span> <span class="o">=</span> <span class="n">Future</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">priority</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">priority</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">priority</span>
@@ -666,14 +666,14 @@
                 <span class="n">identifier</span> <span class="o">=</span> <span class="n">_EXTRA_REQUEST</span>
                 <span class="n">content</span> <span class="o">=</span> <span class="n">_EXTRA_REQUEST</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="n">identifier</span> <span class="o">=</span> <span class="s2">&quot;name&quot;</span>
+                <span class="n">identifier</span> <span class="o">=</span> <span class="s2">"name"</span>
                 <span class="n">content</span> <span class="o">=</span> <span class="n">device</span>
             <span class="k">elif</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">BaseDevice</span><span class="p">):</span>
-                <span class="n">identifier</span> <span class="o">=</span> <span class="s2">&quot;type&quot;</span>
+                <span class="n">identifier</span> <span class="o">=</span> <span class="s2">"type"</span>
                 <span class="n">content</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="vm">__name__</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;device must be a name of a specific device, a class of type BaseDevice, or None&quot;</span>
+                    <span class="s2">"device must be a name of a specific device, a class of type BaseDevice, or None"</span>
                 <span class="p">)</span>
             <span class="n">device_str_to_request</span><span class="p">[</span><span class="n">content</span><span class="p">]</span> <span class="o">=</span> <span class="n">device</span>
 
@@ -683,53 +683,53 @@
             <span class="p">]</span>  <span class="c1"># immediate dict conversion - SamplePositionRequest is only used to check request format.</span>
             <span class="n">formatted_resource_request</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="p">{</span>
-                    <span class="s2">&quot;device&quot;</span><span class="p">:</span> <span class="p">{</span>
-                        <span class="s2">&quot;identifier&quot;</span><span class="p">:</span> <span class="n">identifier</span><span class="p">,</span>
-                        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">content</span><span class="p">,</span>
+                    <span class="s2">"device"</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">"identifier"</span><span class="p">:</span> <span class="n">identifier</span><span class="p">,</span>
+                        <span class="s2">"content"</span><span class="p">:</span> <span class="n">content</span><span class="p">,</span>
                     <span class="p">},</span>
-                    <span class="s2">&quot;sample_positions&quot;</span><span class="p">:</span> <span class="n">positions</span><span class="p">,</span>
+                    <span class="s2">"sample_positions"</span><span class="p">:</span> <span class="n">positions</span><span class="p">,</span>
                 <span class="p">}</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">formatted_resource_request</span><span class="p">,</span> <span class="n">ResourcesRequest</span><span class="p">):</span>
             <span class="n">formatted_resource_request</span> <span class="o">=</span> <span class="n">ResourcesRequest</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">formatted_resource_request</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
         <span class="n">formatted_resource_request</span> <span class="o">=</span> <span class="n">formatted_resource_request</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span>  <span class="c1"># pylint: disable=assignment-from-no-return</span>
-            <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;json&quot;</span>
+            <span class="n">mode</span><span class="o">=</span><span class="s2">"json"</span>
         <span class="p">)</span>
 
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="s2">&quot;request&quot;</span><span class="p">:</span> <span class="n">formatted_resource_request</span><span class="p">,</span>
-                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span>
-                <span class="s2">&quot;priority&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">priority</span><span class="p">),</span>
-                <span class="s2">&quot;submitted_at&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
-                <span class="s2">&quot;exact_positions&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">exact_positions</span><span class="p">)</span> <span class="k">if</span> <span class="n">exact_positions</span> <span class="k">else</span> <span class="p">[],</span>
+                <span class="s2">"request"</span><span class="p">:</span> <span class="n">formatted_resource_request</span><span class="p">,</span>
+                <span class="s2">"status"</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">"task_id"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span>
+                <span class="s2">"priority"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">priority</span><span class="p">),</span>
+                <span class="s2">"submitted_at"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+                <span class="s2">"exact_positions"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">exact_positions</span><span class="p">)</span> <span class="k">if</span> <span class="n">exact_positions</span> <span class="k">else</span> <span class="p">[],</span>
             <span class="p">}</span>
         <span class="p">)</span>  <span class="c1"># DB_ACCESS_OUTSIDE_VIEW</span>
         <span class="n">_id</span><span class="p">:</span> <span class="n">ObjectId</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">ObjectId</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;f&quot;</span><span class="p">:</span> <span class="n">f</span><span class="p">,</span> <span class="s2">&quot;device_str_to_request&quot;</span><span class="p">:</span> <span class="n">device_str_to_request</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"f"</span><span class="p">:</span> <span class="n">f</span><span class="p">,</span> <span class="s2">"device_str_to_request"</span><span class="p">:</span> <span class="n">device_str_to_request</span><span class="p">}</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_concurrent_result</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">TimeoutError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="c1"># if the request is not fulfilled, cancel it to make sure the resources are released</span>
             <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">find_one_and_update</span><span class="p">(</span>
-                <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">_id</span><span class="p">,</span> <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$ne&quot;</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">FULFILLED</span><span class="o">.</span><span class="n">name</span><span class="p">}},</span>
-                <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="o">.</span><span class="n">name</span><span class="p">}},</span>
+                <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">_id</span><span class="p">,</span> <span class="s2">"status"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$ne"</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">FULFILLED</span><span class="o">.</span><span class="n">name</span><span class="p">}},</span>
+                <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="o">.</span><span class="n">name</span><span class="p">}},</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">request</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">CombinedTimeoutError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Request </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span><span class="si">}</span><span class="s2"> timed out after </span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s2"> seconds.&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Request </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span><span class="si">}</span><span class="s2"> timed out after </span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s2"> seconds."</span>
                 <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
             <span class="k">else</span><span class="p">:</span>  <span class="c1"># if the request is fulfilled, return the result normally, wrong timeout</span>
                 <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_concurrent_result</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_post_process_requested_resource</span><span class="p">(</span>
-                <span class="n">devices</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;devices&quot;</span><span class="p">],</span>
-                <span class="n">sample_positions</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;sample_positions&quot;</span><span class="p">],</span>
+                <span class="n">devices</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">"devices"</span><span class="p">],</span>
+                <span class="n">sample_positions</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">"sample_positions"</span><span class="p">],</span>
                 <span class="n">resource_request</span><span class="o">=</span><span class="n">resource_request</span><span class="p">,</span>
             <span class="p">),</span>
-            <span class="s2">&quot;request_id&quot;</span><span class="p">:</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;request_id&quot;</span><span class="p">],</span>
+            <span class="s2">"request_id"</span><span class="p">:</span> <span class="n">result</span><span class="p">[</span><span class="s2">"request_id"</span><span class="p">],</span>
         <span class="p">}</span></div>
 
 
@@ -737,12 +737,12 @@
 <a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.ResourceRequester.get_concurrent_result">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_concurrent_result</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">Future</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Get the result of a future with a timeout.</span>
 <span class="sd">        If the request is canceled, we will catch a RequestCanceledError and hang the program.</span>
 <span class="sd">        The hanged program will be killed by the abort exception in the task actor, which will</span>
 <span class="sd">        be handled in the task actor to clean up the lab.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">result</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">RequestCanceledError</span><span class="p">:</span>
@@ -755,12 +755,12 @@
 <div class="viewcode-block" id="ResourceRequester.release_resources">
 <a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.ResourceRequester.release_resources">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">release_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Release a request by request_id.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Release a request by request_id."""</span>
         <span class="c1"># For the requests that were CANCELED or ERROR, but have assigned resources, release them</span>
         <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">request</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="n">RequestStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">name</span><span class="p">]:</span>
-            <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;assigned_devices&quot;</span> <span class="ow">in</span> <span class="n">request</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
-                <span class="s2">&quot;assigned_sample_positions&quot;</span> <span class="ow">in</span> <span class="n">request</span>
+        <span class="k">if</span> <span class="n">request</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="n">RequestStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">name</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="s2">"assigned_devices"</span> <span class="ow">in</span> <span class="n">request</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+                <span class="s2">"assigned_sample_positions"</span> <span class="ow">in</span> <span class="n">request</span>
             <span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">update_request_status</span><span class="p">(</span>
                     <span class="n">request_id</span><span class="p">,</span>
@@ -768,10 +768,10 @@
                     <span class="n">original_status</span><span class="o">=</span><span class="p">[</span><span class="n">RequestStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="p">,</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="p">],</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># If it doesn&#39;t have assigned resources, just leave it as CANCELED or ERROR</span>
+                <span class="c1"># If it doesn't have assigned resources, just leave it as CANCELED or ERROR</span>
                 <span class="k">return</span>
         <span class="c1"># For the requests that were fulfilled, definitely have assigned resources, release them</span>
-        <span class="k">elif</span> <span class="n">request</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">FULFILLED</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">request</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="o">==</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">FULFILLED</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update_request_status</span><span class="p">(</span>
                 <span class="n">request_id</span><span class="p">,</span>
                 <span class="n">RequestStatus</span><span class="o">.</span><span class="n">NEED_RELEASE</span><span class="p">,</span>
@@ -779,7 +779,7 @@
             <span class="p">)</span>
 
         <span class="c1"># wait for the request to be released or canceled or errored during the release</span>
-        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">request_id</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">])[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">request_id</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="p">[</span><span class="s2">"status"</span><span class="p">])[</span><span class="s2">"status"</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
             <span class="n">RequestStatus</span><span class="o">.</span><span class="n">RELEASED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="n">RequestStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="n">RequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
@@ -790,7 +790,7 @@
 <div class="viewcode-block" id="ResourceRequester.release_all_resources">
 <a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.ResourceRequester.release_all_resources">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">release_all_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Release all requests by task_id, used for error recovery.</span>
 
 <span class="sd">        For the requests that are not fulfilled, they will be marked as CANCELED.</span>
@@ -798,52 +798,52 @@
 <span class="sd">        For the request that have been fulfilled, they will be marked as NEED_RELEASE.</span>
 
 <span class="sd">        For the request that have been errored, release assigned resources.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># For the requests that were fulfilled, definitely have assigned resources, release them</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">update_many</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span>
-                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">FULFILLED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">"task_id"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span>
+                <span class="s2">"status"</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">FULFILLED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="p">{</span>
-                <span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">NEED_RELEASE</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">"status"</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">NEED_RELEASE</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="p">}</span>
             <span class="p">},</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">update_many</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span>
-                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">"task_id"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span>
+                <span class="s2">"status"</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="p">{</span>
-                <span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">"status"</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="p">}</span>
             <span class="p">},</span>
         <span class="p">)</span>
         <span class="c1"># For the requests that were CANCELED or ERROR, but have assigned resources, release them</span>
         <span class="n">assigned_cancel_error_requests_id</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">request</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_requests_by_task_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">request</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="k">if</span> <span class="n">request</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span>
                 <span class="n">RequestStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="n">RequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="p">]</span> <span class="ow">and</span> <span class="p">(</span>
-                <span class="p">(</span><span class="s2">&quot;assigned_devices&quot;</span> <span class="ow">in</span> <span class="n">request</span><span class="p">)</span>
-                <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;assigned_sample_positions&quot;</span> <span class="ow">in</span> <span class="n">request</span><span class="p">)</span>
+                <span class="p">(</span><span class="s2">"assigned_devices"</span> <span class="ow">in</span> <span class="n">request</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="p">(</span><span class="s2">"assigned_sample_positions"</span> <span class="ow">in</span> <span class="n">request</span><span class="p">)</span>
             <span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">update_request_status</span><span class="p">(</span>
-                    <span class="n">request</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span>
+                    <span class="n">request</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">],</span>
                     <span class="n">RequestStatus</span><span class="o">.</span><span class="n">NEED_RELEASE</span><span class="p">,</span>
                     <span class="n">original_status</span><span class="o">=</span><span class="p">[</span><span class="n">RequestStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="p">,</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="p">],</span>
                 <span class="p">)</span>
-                <span class="n">assigned_cancel_error_requests_id</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">request</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">])</span>
+                <span class="n">assigned_cancel_error_requests_id</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">request</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">])</span>
 
         <span class="c1"># wait for all the requests to be released or canceled or errored during the release</span>
         <span class="k">while</span> <span class="nb">any</span><span class="p">(</span>
             <span class="p">(</span>
-                <span class="n">request</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span>
+                <span class="n">request</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span>
                 <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
                     <span class="n">RequestStatus</span><span class="o">.</span><span class="n">RELEASED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">RequestStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
@@ -859,7 +859,7 @@
         <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stop</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">request_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="o">.</span><span class="n">copy</span><span class="p">():</span>
-                    <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">request_id</span><span class="o">=</span><span class="n">request_id</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">])[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+                    <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">request_id</span><span class="o">=</span><span class="n">request_id</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="p">[</span><span class="s2">"status"</span><span class="p">])[</span><span class="s2">"status"</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
                     <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">FULFILLED</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_handle_fulfilled_request</span><span class="p">(</span><span class="n">request_id</span><span class="o">=</span><span class="n">request_id</span><span class="p">)</span>
                     <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
@@ -873,57 +873,57 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_handle_fulfilled_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
         <span class="n">entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">FULFILLED</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+        <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="o">!=</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">FULFILLED</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
             <span class="k">return</span>
 
-        <span class="n">assigned_devices</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;assigned_devices&quot;</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
-        <span class="n">assigned_sample_positions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;assigned_sample_positions&quot;</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+        <span class="n">assigned_devices</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s2">"assigned_devices"</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+        <span class="n">assigned_sample_positions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s2">"assigned_sample_positions"</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
 
         <span class="n">request</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>
 
-        <span class="n">f</span><span class="p">:</span> <span class="n">Future</span> <span class="o">=</span> <span class="n">request</span><span class="p">[</span><span class="s2">&quot;f&quot;</span><span class="p">]</span>
+        <span class="n">f</span><span class="p">:</span> <span class="n">Future</span> <span class="o">=</span> <span class="n">request</span><span class="p">[</span><span class="s2">"f"</span><span class="p">]</span>
         <span class="n">device_str_to_request</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="n">BaseDevice</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="n">request</span><span class="p">[</span>
-            <span class="s2">&quot;device_str_to_request&quot;</span>
+            <span class="s2">"device_str_to_request"</span>
         <span class="p">]</span>
 
         <span class="n">f</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="s2">&quot;devices&quot;</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="n">device_str_to_request</span><span class="p">[</span><span class="n">device_str</span><span class="p">]:</span> <span class="n">device_dict</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                <span class="s2">"devices"</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="n">device_str_to_request</span><span class="p">[</span><span class="n">device_str</span><span class="p">]:</span> <span class="n">device_dict</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span>
                     <span class="k">for</span> <span class="n">device_str</span><span class="p">,</span> <span class="n">device_dict</span> <span class="ow">in</span> <span class="n">assigned_devices</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
                 <span class="p">},</span>
-                <span class="s2">&quot;sample_positions&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">"sample_positions"</span><span class="p">:</span> <span class="p">{</span>
                     <span class="n">name</span><span class="p">:</span> <span class="p">[</span>
-                        <span class="n">sample_position</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                        <span class="n">sample_position</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span>
                         <span class="k">for</span> <span class="n">sample_position</span> <span class="ow">in</span> <span class="n">sample_positions_list</span>
                     <span class="p">]</span>
                     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">sample_positions_list</span> <span class="ow">in</span> <span class="n">assigned_sample_positions</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
                 <span class="p">},</span>
-                <span class="s2">&quot;request_id&quot;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">,</span>
+                <span class="s2">"request_id"</span><span class="p">:</span> <span class="n">request_id</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_handle_error_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
         <span class="n">entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+        <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="o">!=</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
             <span class="k">return</span>
 
-        <span class="n">error</span><span class="p">:</span> <span class="ne">Exception</span> <span class="o">=</span> <span class="n">dill</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;error&quot;</span><span class="p">])</span>  <span class="c1"># type: ignore</span>
+        <span class="n">error</span><span class="p">:</span> <span class="ne">Exception</span> <span class="o">=</span> <span class="n">dill</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">"error"</span><span class="p">])</span>  <span class="c1"># type: ignore</span>
         <span class="n">request</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>
-        <span class="n">f</span><span class="p">:</span> <span class="n">Future</span> <span class="o">=</span> <span class="n">request</span><span class="p">[</span><span class="s2">&quot;f&quot;</span><span class="p">]</span>
+        <span class="n">f</span><span class="p">:</span> <span class="n">Future</span> <span class="o">=</span> <span class="n">request</span><span class="p">[</span><span class="s2">"f"</span><span class="p">]</span>
         <span class="n">f</span><span class="o">.</span><span class="n">set_exception</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_handle_canceled_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
         <span class="n">entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+        <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="o">!=</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
             <span class="k">return</span>
 
         <span class="n">request</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>
-        <span class="n">f</span><span class="p">:</span> <span class="n">Future</span> <span class="o">=</span> <span class="n">request</span><span class="p">[</span><span class="s2">&quot;f&quot;</span><span class="p">]</span>
+        <span class="n">f</span><span class="p">:</span> <span class="n">Future</span> <span class="o">=</span> <span class="n">request</span><span class="p">[</span><span class="s2">"f"</span><span class="p">]</span>
 
         <span class="c1"># for the canceled request, we will return an empty result</span>
         <span class="c1"># and wait for the abort to be handled by the task actor</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">set_exception</span><span class="p">(</span><span class="n">RequestCanceledError</span><span class="p">(</span><span class="s2">&quot;Abort signal received.&quot;</span><span class="p">))</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">set_exception</span><span class="p">(</span><span class="n">RequestCanceledError</span><span class="p">(</span><span class="s2">"Abort signal received."</span><span class="p">))</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_post_process_requested_resource</span><span class="p">(</span>
@@ -945,7 +945,7 @@
                     <span class="k">pass</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">device_prefix</span> <span class="o">=</span> <span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">devices</span><span class="p">[</span><span class="n">device_request</span><span class="p">]</span><span class="si">}{</span><span class="n">SamplePosition</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">devices</span><span class="p">[</span><span class="n">device_request</span><span class="p">]</span><span class="si">}{</span><span class="n">SamplePosition</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="si">}</span><span class="s2">"</span>
                     <span class="p">)</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">reply_prefix</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
                         <span class="n">device_prefix</span>
@@ -955,8 +955,8 @@
                     <span class="n">reply_prefix</span>
                 <span class="p">]</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;devices&quot;</span><span class="p">:</span> <span class="n">devices</span><span class="p">,</span>
-            <span class="s2">&quot;sample_positions&quot;</span><span class="p">:</span> <span class="n">processed_sample_positions</span><span class="p">,</span>
+            <span class="s2">"devices"</span><span class="p">:</span> <span class="n">devices</span><span class="p">,</span>
+            <span class="s2">"sample_positions"</span><span class="p">:</span> <span class="n">processed_sample_positions</span><span class="p">,</span>
         <span class="p">}</span></div>
 
 </pre></div>

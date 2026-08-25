@@ -494,11 +494,11 @@ alabos<span class="w"> </span>init<span class="w">  </span><span class="c1"># cr
 doing this, you may want to modify the name of the project in the <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file as well as the folder’s name.
 Both name should be the same. The <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file will look like this:</p>
 <div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[project]</span>
-<span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;alabos_project&quot;</span><span class="w">  </span><span class="c1"># &lt;--- change this to the name of your project</span>
-<span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;0.1.0&quot;</span>
-<span class="n">requires-python</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&gt;=3.10&quot;</span>
+<span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"alabos_project"</span><span class="w">  </span><span class="c1"># &lt;--- change this to the name of your project</span>
+<span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"0.1.0"</span>
+<span class="n">requires-python</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"&gt;=3.10"</span>
 <span class="n">dependencies</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="s2">&quot;alab-control@git+https://github.com/CederGroupHub/alab_control&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"alab-control@git+https://github.com/CederGroupHub/alab_control"</span><span class="p">,</span>
 <span class="p">]</span>
 </pre></div>
 </div>
@@ -514,40 +514,41 @@ changes will be applied immediately.</p>
 the working directory of the lab, etc. In this tutorial, we will create a mini A-Lab named <code class="docutils literal notranslate"><span class="pre">Mini-Alab</span></code>. All the DB
 configuration will be used as default. The configuration file will look like this:</p>
 <div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[general]</span>
-<span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;Mini-Alab&#39;</span><span class="w">  </span><span class="c1"># Put the name of the lab here, it will be used as the DB name</span>
-<span class="n">working_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;.&quot;</span><span class="w">  </span><span class="c1"># the working directory of the lab, where the device and task definitions are stored</span>
+<span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'Mini-Alab'</span><span class="w">  </span><span class="c1"># Put the name of the lab here, it will be used as the DB name</span>
+<span class="n">working_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"."</span><span class="w">  </span><span class="c1"># the working directory of the lab, where the device and task definitions are stored</span>
 
 <span class="k">[mongodb]</span><span class="w">  </span><span class="c1"># the MongoDB configuration</span>
-<span class="n">host</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;localhost&#39;</span>
-<span class="n">password</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;&#39;</span>
+<span class="n">host</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'localhost'</span>
+<span class="n">password</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">''</span>
 <span class="n">port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">27017</span>
-<span class="n">username</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;&#39;</span>
+<span class="n">username</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">''</span>
 
 <span class="c1"># all the completed experiments are stored in this database</span>
-<span class="c1"># the db name will be the lab name + &#39;_completed&#39;</span>
+<span class="c1"># the db name will be the lab name + '(completed)'</span>
+<span class="c1"># in simulation mode this becomes the lab name + '(completed)_sim'</span>
 <span class="k">[mongodb_completed]</span>
-<span class="n">host</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;localhost&quot;</span>
-<span class="n">password</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<span class="n">host</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"localhost"</span>
+<span class="n">password</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">""</span>
 <span class="n">port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">27017</span>
-<span class="n">username</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<span class="n">username</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">""</span>
 
 <span class="k">[rabbitmq]</span><span class="w">  </span><span class="c1"># the RabbitMQ configuration</span>
-<span class="n">host</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;localhost&quot;</span>
+<span class="n">host</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"localhost"</span>
 <span class="n">port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5672</span>
 
 <span class="c1"># the user notification configuration, currently only email and slack are supported</span>
-<span class="c1"># if you don&#39;t want to use them, just leave them empty</span>
+<span class="c1"># if you don't want to use them, just leave them empty</span>
 <span class="k">[alarm]</span>
 <span class="c1"># the email configuration. All the user notification will be sent to all the email_receivers in the list</span>
 <span class="c1"># the email_sender is the email address of the sender, e.g. alabos@xxx.com</span>
 <span class="n">email_receivers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[]</span>
-<span class="n">email_sender</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot; &quot;</span>
-<span class="n">email_password</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot; &quot;</span>
+<span class="n">email_sender</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">" "</span>
+<span class="n">email_password</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">" "</span>
 
 <span class="c1"># the slack configuration. All the user notification will be sent to the slack_channel_id</span>
 <span class="c1"># the slack_bot_token is the token of the slack bot, you can get it from https://api.slack.com/apps</span>
-<span class="n">slack_bot_token</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot; &quot;</span>
-<span class="n">slack_channel_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot; &quot;</span>
+<span class="n">slack_bot_token</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">" "</span>
+<span class="n">slack_channel_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">" "</span>
 
 <span class="k">[large_result_storage]</span>
 <span class="c1"># the default storage configuration for tasks that generate large results</span>
@@ -555,7 +556,7 @@ configuration will be used as default. The configuration file will look like thi
 <span class="c1"># currently only gridfs is supported</span>
 <span class="c1"># storage_type is defined by using LargeResult class located in alab_management/task_view/task.py</span>
 <span class="c1"># you can override this default configuration by setting the storage_type in the task definition</span>
-<span class="n">default_storage_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;gridfs&quot;</span>
+<span class="n">default_storage_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gridfs"</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">devices</span></code> and <code class="docutils literal notranslate"><span class="pre">tasks</span></code> folders are for storing the definition files of devices and tasks, respectively, where

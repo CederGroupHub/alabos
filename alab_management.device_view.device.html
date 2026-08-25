@@ -545,7 +545,7 @@ device. Empty by default: a device’s attributes often hold bulky internal book
 nothing is published until it is named here. The values appear under <code class="docutils literal notranslate"><span class="pre">attributes</span></code> in
 <code class="docutils literal notranslate"><span class="pre">/api/status</span></code> and in the device’s detail panel.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MobileManipulator</span><span class="p">(</span><span class="n">BaseDevice</span><span class="p">):</span>
-    <span class="n">dashboard_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;battery_percentage&quot;</span><span class="p">,</span> <span class="s2">&quot;current_mission&quot;</span><span class="p">,</span> <span class="s2">&quot;carried_samples&quot;</span><span class="p">]</span>
+    <span class="n">dashboard_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"battery_percentage"</span><span class="p">,</span> <span class="s2">"current_mission"</span><span class="p">,</span> <span class="s2">"carried_samples"</span><span class="p">]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -711,13 +711,13 @@ We use <code class="docutils literal notranslate"><span class="pre">name</span><
 <span class="k">def</span><span class="w"> </span><span class="nf">sample_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">[</span>
         <span class="n">SamplePosition</span><span class="p">(</span>
-            <span class="s2">&quot;inside&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The position inside the furnace, where the samples are heated&quot;</span><span class="p">,</span>
+            <span class="s2">"inside"</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">"The position inside the furnace, where the samples are heated"</span><span class="p">,</span>
             <span class="n">number</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
         <span class="p">),</span>
         <span class="n">SamplePosition</span><span class="p">(</span>
-            <span class="s2">&quot;furnace_table&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Temporary position to transfer samples&quot;</span><span class="p">,</span>
+            <span class="s2">"furnace_table"</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">"Temporary position to transfer samples"</span><span class="p">,</span>
             <span class="n">number</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
         <span class="p">),</span>
     <span class="p">]</span>
@@ -748,8 +748,8 @@ It is intended to be used as a singleton, and should be instantiated once per de
 <p>Collected all the methods that are decorated with <code class="docutils literal notranslate"><span class="pre">&#64;log_signal</span></code> and return a dictionary of the form:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="o">&lt;</span><span class="n">method_name</span><span class="o">&gt;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;interval&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">interval_seconds</span><span class="o">&gt;</span><span class="p">,</span>
-        <span class="s2">&quot;signal_name&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">signal_name</span><span class="o">&gt;</span>
+        <span class="s2">"interval"</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">interval_seconds</span><span class="o">&gt;</span><span class="p">,</span>
+        <span class="s2">"signal_name"</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">signal_name</span><span class="o">&gt;</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -918,7 +918,7 @@ function returns an object. Default is None.</p></li>
 <ol class="arabic simple" start="2">
 <li><p>Mocking a function that returns multiple values in a dictionary:</p></li>
 </ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@mock</span><span class="p">(</span><span class="n">return_constant</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;twotheta&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span> <span class="s2">&quot;counts&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">300</span><span class="p">]})</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@mock</span><span class="p">(</span><span class="n">return_constant</span><span class="o">=</span><span class="p">{</span><span class="s2">"twotheta"</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span> <span class="s2">"counts"</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">300</span><span class="p">]})</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">run_simulation</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="o">...</span>
     <span class="n">a</span> <span class="o">=</span> <span class="p">{</span><span class="n">twotheta</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">]}</span>
@@ -931,7 +931,7 @@ function returns an object. Default is None.</p></li>
 </ol>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@mock</span><span class="p">(</span><span class="n">object_type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">create_mock_string</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="s2">&quot;Mocked String&quot;</span>
+    <span class="k">return</span> <span class="s2">"Mocked String"</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="4">

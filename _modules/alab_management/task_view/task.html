@@ -383,7 +383,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for alab_management.task_view.task</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Define the base class of task, which will be used for defining more tasks.&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""Define the base class of task, which will be used for defining more tasks."""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -415,15 +415,15 @@
 <div class="viewcode-block" id="LargeResult">
 <a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.LargeResult">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">LargeResult</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A Pydantic model for a large result (file &gt;16 MB).</span>
 <span class="sd">    Stored in either gridFS or other filesystems (Cloud AWS S3, etc.).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># to avoid import AlabOSConfig at the top level</span>
     <span class="n">storage_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">AlabOSConfig</span><span class="p">()[</span><span class="s2">&quot;large_result_storage&quot;</span><span class="p">][</span>
-            <span class="s2">&quot;default_storage_type&quot;</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">AlabOSConfig</span><span class="p">()[</span><span class="s2">"large_result_storage"</span><span class="p">][</span>
+            <span class="s2">"default_storage_type"</span>
         <span class="p">]</span>
     <span class="p">)</span>
     <span class="c1"># The path to the local file, used for uploading</span>
@@ -439,12 +439,12 @@
     <span class="c1"># if file_like_data is provided check if it has .read() method</span>
 <div class="viewcode-block" id="LargeResult.check_file_like_data">
 <a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.LargeResult.check_file_like_data">[docs]</a>
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">check_file_like_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if file_like_data has a .read() method.&quot;&quot;&quot;</span>
-        <span class="n">file_like_data</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;file_like_data&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">file_like_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">file_like_data</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;file_like_data must have a .read() method&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""Check if file_like_data has a .read() method."""</span>
+        <span class="n">file_like_data</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"file_like_data"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">file_like_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">file_like_data</span><span class="p">,</span> <span class="s2">"read"</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"file_like_data must have a .read() method"</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">values</span></div>
 
 
@@ -452,7 +452,7 @@
 <a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.LargeResult.from_local_file">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_local_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">local_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">storage_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_UNSET</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Create a LargeResult object from a local file and store it.</span>
 <span class="sd">        If file is failed to be stored, will raise a ValueError.</span>
 
@@ -464,10 +464,10 @@
 <span class="sd">        -------</span>
 <span class="sd">            LargeResult: the LargeResult object</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">storage_type</span> <span class="ow">is</span> <span class="n">_UNSET</span><span class="p">:</span>
-            <span class="n">storage_type</span> <span class="o">=</span> <span class="n">AlabOSConfig</span><span class="p">()[</span><span class="s2">&quot;large_result_storage&quot;</span><span class="p">][</span>
-                <span class="s2">&quot;default_storage_type&quot;</span>
+            <span class="n">storage_type</span> <span class="o">=</span> <span class="n">AlabOSConfig</span><span class="p">()[</span><span class="s2">"large_result_storage"</span><span class="p">][</span>
+                <span class="s2">"default_storage_type"</span>
             <span class="p">]</span>
         <span class="n">large_file</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">local_path</span><span class="o">=</span><span class="n">local_path</span><span class="p">,</span> <span class="n">storage_type</span><span class="o">=</span><span class="n">storage_type</span><span class="p">)</span>
         <span class="n">large_file</span><span class="o">.</span><span class="n">store</span><span class="p">()</span>
@@ -478,7 +478,7 @@
 <a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.LargeResult.from_file_like_data">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_file_like_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file_like_data</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">storage_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_UNSET</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Create a LargeResult object from a file-like object.</span>
 <span class="sd">        File-like object must have a .read() method.</span>
 <span class="sd">        If file is failed to be stored, will raise a ValueError.</span>
@@ -490,10 +490,10 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">            LargeResult: the LargeResult object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">storage_type</span> <span class="ow">is</span> <span class="n">_UNSET</span><span class="p">:</span>
-            <span class="n">storage_type</span> <span class="o">=</span> <span class="n">AlabOSConfig</span><span class="p">()[</span><span class="s2">&quot;large_result_storage&quot;</span><span class="p">][</span>
-                <span class="s2">&quot;default_storage_type&quot;</span>
+            <span class="n">storage_type</span> <span class="o">=</span> <span class="n">AlabOSConfig</span><span class="p">()[</span><span class="s2">"large_result_storage"</span><span class="p">][</span>
+                <span class="s2">"default_storage_type"</span>
             <span class="p">]</span>
         <span class="n">large_result</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">file_like_data</span><span class="o">=</span><span class="n">file_like_data</span><span class="p">,</span> <span class="n">storage_type</span><span class="o">=</span><span class="n">storage_type</span><span class="p">)</span>
         <span class="n">large_result</span><span class="o">.</span><span class="n">store</span><span class="p">()</span>
@@ -503,22 +503,22 @@
 <div class="viewcode-block" id="LargeResult.store">
 <a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.LargeResult.store">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">store</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Store the large result in the storage system.</span>
 <span class="sd">        This method should block until the result is confirmed to be stored.</span>
 <span class="sd">        This method should have a timeout regardless of the storage system to not block indefinitely.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage_type</span> <span class="o">==</span> <span class="s2">&quot;gridfs&quot;</span><span class="p">:</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage_type</span> <span class="o">==</span> <span class="s2">"gridfs"</span><span class="p">:</span>
             <span class="n">db</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span>
             <span class="n">fs</span> <span class="o">=</span> <span class="n">gridfs</span><span class="o">.</span><span class="n">GridFS</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_path</span><span class="p">:</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">local_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">local_path</span><span class="p">,</span> <span class="s2">"rb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
                     <span class="n">file_id</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_like_data</span><span class="p">:</span>
                 <span class="n">file_id</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_like_data</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;Either local_path or serializable_data must be provided for storing in gridfs.&quot;</span>
+                    <span class="s2">"Either local_path or serializable_data must be provided for storing in gridfs."</span>
                 <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span> <span class="o">=</span> <span class="n">file_id</span>
             <span class="c1"># check if the file is stored, wait until it is stored for maximum 10 seconds</span>
@@ -526,40 +526,40 @@
                 <span class="k">if</span> <span class="n">fs</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file_id</span><span class="p">):</span>
                     <span class="k">return</span>
                 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File with identifier </span><span class="si">{</span><span class="n">file_id</span><span class="si">}</span><span class="s2"> failed to be stored.&quot;</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only gridfs storage is supported for now.&quot;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"File with identifier </span><span class="si">{</span><span class="n">file_id</span><span class="si">}</span><span class="s2"> failed to be stored."</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Only gridfs storage is supported for now."</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="LargeResult.retrieve">
 <a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.LargeResult.retrieve">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">retrieve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve the large result from the storage system.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage_type</span> <span class="o">==</span> <span class="s2">&quot;gridfs&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Retrieve the large result from the storage system."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage_type</span> <span class="o">==</span> <span class="s2">"gridfs"</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;Identifier is not provided for retrieving from gridfs.&quot;</span>
+                    <span class="s2">"Identifier is not provided for retrieving from gridfs."</span>
                 <span class="p">)</span>
             <span class="n">db</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span>
             <span class="n">fs</span> <span class="o">=</span> <span class="n">gridfs</span><span class="o">.</span><span class="n">GridFS</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">fs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;File with identifier </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span>
+                    <span class="sa">f</span><span class="s2">"File with identifier </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="si">}</span><span class="s2"> does not exist."</span>
                 <span class="p">)</span>
             <span class="k">return</span> <span class="n">fs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only gridfs storage is supported for now.&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Only gridfs storage is supported for now."</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="LargeResult.check_if_stored">
 <a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.LargeResult.check_if_stored">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">check_if_stored</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the large result is stored in the storage system.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage_type</span> <span class="o">==</span> <span class="s2">&quot;gridfs&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Check if the large result is stored in the storage system."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage_type</span> <span class="o">==</span> <span class="s2">"gridfs"</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">False</span>
             <span class="n">db</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span>
             <span class="n">fs</span> <span class="o">=</span> <span class="n">gridfs</span><span class="o">.</span><span class="n">GridFS</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">fs</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only gridfs storage is supported for now.&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Only gridfs storage is supported for now."</span><span class="p">)</span></div>
 </div>
 
 
@@ -567,7 +567,7 @@
 <div class="viewcode-block" id="TaskCancelledError">
 <a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.TaskCancelledError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TaskCancelledError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raise from ``run`` to end a task as CANCELLED rather than as ERROR.</span>
+<span class="w">    </span><span class="sd">"""Raise from ``run`` to end a task as CANCELLED rather than as ERROR.</span>
 
 <span class="sd">    A cancellation reaches a task as a ``dramatiq_abort.Abort``, which cannot interrupt a thread</span>
 <span class="sd">    already blocked inside a device call. So a task that polls :meth:`LabView.is_cancelling`, or</span>
@@ -575,18 +575,18 @@
 <span class="sd">    by raising anything else it is recorded as a failure. It was not a failure: somebody asked for</span>
 <span class="sd">    it. Raise this instead, and the task actor treats it exactly like an abort, including calling</span>
 <span class="sd">    :meth:`BaseTask.on_cancel`.</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
+<span class="sd">    """</span></div>
 
 
 
 <div class="viewcode-block" id="BaseTask">
 <a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.BaseTask">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseTask</span><span class="p">(</span><span class="n">ABC</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">MetaClassWithImportLock</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    The abstract class of task.</span>
 
 <span class="sd">    All the tasks should inherit from this class.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1">#: Whether the task actor should run the default cleanup (prompt the operator, then move every</span>
     <span class="c1">#: sample of this task out of the lab with ``position=None``) after the task is cancelled.</span>
@@ -598,17 +598,17 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">samples</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">ObjectId</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">lab_view</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;LabView&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">lab_view</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">"LabView"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">priority</span><span class="p">:</span> <span class="n">TaskPriority</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">TaskPriority</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">,</span>
         <span class="n">_offline_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Args:</span>
 <span class="sd">            task_id: the identifier of task</span>
 <span class="sd">            lab_view: a lab_view corresponding to the task_id</span>
-<span class="sd">            samples: a list of sample_id&#39;s corresponding to samples involvend in the task.</span>
+<span class="sd">            samples: a list of sample_id's corresponding to samples involvend in the task.</span>
 <span class="sd">            _offline_mode: whether the task is run in offline mode or not. It is in offline mode when you</span>
 <span class="sd">              are trying to build an experiment out of it or get the task result.</span>
 
@@ -622,12 +622,12 @@
 <span class="sd">              super(Heating, self).__init__(*args, **kwargs)</span>
 <span class="sd">              self.setpoints = setpoints</span>
 <span class="sd">              self.samples = [sample_1, sample_2, sample_3, sample_4]</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__offline</span> <span class="o">=</span> <span class="n">_offline_mode</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_taskid_generated</span> <span class="o">=</span> <span class="p">(</span>
             <span class="kc">False</span>  <span class="c1"># whether the task_id is generated using ObjectId() here or not</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_message</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_message</span> <span class="o">=</span> <span class="s2">""</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__samples</span> <span class="o">=</span> <span class="n">samples</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_offline</span><span class="p">:</span>
@@ -641,13 +641,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">subclass_kwargs</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="n">key</span><span class="p">:</span> <span class="n">val</span>
                 <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getargvalues</span><span class="p">(</span><span class="n">subclass_init_frame</span><span class="p">)</span><span class="o">.</span><span class="n">locals</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;self&quot;</span><span class="p">,</span> <span class="s2">&quot;args&quot;</span><span class="p">,</span> <span class="s2">&quot;kwargs&quot;</span><span class="p">,</span> <span class="s2">&quot;__class__&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"self"</span><span class="p">,</span> <span class="s2">"args"</span><span class="p">,</span> <span class="s2">"kwargs"</span><span class="p">,</span> <span class="s2">"__class__"</span><span class="p">]</span>
             <span class="p">}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">task_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">lab_view</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">samples</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;BaseTask was instantiated with offline mode off -- task_id, &quot;</span>
-                    <span class="s2">&quot;lab_view, and samples must all be provided!&quot;</span>
+                    <span class="s2">"BaseTask was instantiated with offline mode off -- task_id, "</span>
+                    <span class="s2">"lab_view, and samples must all be provided!"</span>
                 <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span> <span class="o">=</span> <span class="n">task_id</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span> <span class="o">=</span> <span class="n">lab_view</span>
@@ -657,24 +657,24 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_offline</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if this task is in offline, False if it is a live task.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns True if this task is in offline, False if it is a live task."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__offline</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">samples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the list of samples associated with this task.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns the list of samples associated with this task."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__samples</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">priority</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the priority of this task.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns the priority of this task."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_offline</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">_resource_requester</span><span class="o">.</span><span class="n">priority</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">result_specification</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns a pydantic model describing the results to be generated by this task.</span>
 <span class="sd">        If specified, this model will be used by task_actor to validate the results after the task is completed.</span>
 <span class="sd">        If any error occurs, a warning will be printed.</span>
@@ -687,20 +687,20 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">            BaseModel: A Pydantic model type describing the results to be generated by this task.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="nd">@priority</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">priority</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">TaskPriority</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Priority should be a positive integer&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Priority should be a positive integer"</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__offline</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">_resource_requester</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BaseTask.set_message">
 <a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.BaseTask.set_message">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the task message to be displayed on the dashboard.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Sets the task message to be displayed on the dashboard."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_message</span> <span class="o">=</span> <span class="n">message</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__offline</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">_task_view</span><span class="o">.</span><span class="n">set_message</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span></div>
@@ -709,7 +709,7 @@
 <div class="viewcode-block" id="BaseTask.get_message">
 <a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.BaseTask.get_message">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets the task message to be displayed on the dashboard.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Gets the task message to be displayed on the dashboard."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_message</span></div>
 
 
@@ -723,7 +723,7 @@
         <span class="n">header</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">include_traceback</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build a rich, debuggable error report for this task.</span>
+<span class="w">        </span><span class="sd">"""Build a rich, debuggable error report for this task.</span>
 
 <span class="sd">        Use this inside an ``except`` block to produce a message that identifies what failed, the</span>
 <span class="sd">        exact source location (file, line and function), the current process stage, the task and its</span>
@@ -732,10 +732,10 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            exc: The exception to report. If ``None``, the exception currently being handled is used.</span>
-<span class="sd">            stage: The process stage where it failed. Defaults to the task&#39;s last status message.</span>
+<span class="sd">            stage: The process stage where it failed. Defaults to the task's last status message.</span>
 <span class="sd">            header: A short title for the report.</span>
 <span class="sd">            include_traceback: Whether to append the full traceback.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.error_context</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
             <span class="n">format_error_report</span> <span class="k">as</span> <span class="n">_format_error_report</span><span class="p">,</span>
         <span class="p">)</span>
@@ -743,8 +743,8 @@
         <span class="k">return</span> <span class="n">_format_error_report</span><span class="p">(</span>
             <span class="n">exc</span><span class="o">=</span><span class="n">exc</span><span class="p">,</span>
             <span class="n">task_type</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
-            <span class="n">task_id</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;task_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-            <span class="n">samples</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;samples&quot;</span><span class="p">,</span> <span class="p">[])</span> <span class="ow">or</span> <span class="p">[]),</span>
+            <span class="n">task_id</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"task_id"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="n">samples</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"samples"</span><span class="p">,</span> <span class="p">[])</span> <span class="ow">or</span> <span class="p">[]),</span>
             <span class="n">stage</span><span class="o">=</span><span class="n">stage</span> <span class="k">if</span> <span class="n">stage</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_message</span><span class="p">(),</span>
             <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span>
             <span class="n">include_traceback</span><span class="o">=</span><span class="n">include_traceback</span><span class="p">,</span>
@@ -754,7 +754,7 @@
 <div class="viewcode-block" id="BaseTask.validate">
 <a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.BaseTask.validate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Validate the task.</span>
 
 <span class="sd">        This function will be called before the task is executed.</span>
@@ -763,14 +763,14 @@
 <span class="sd">        set temperature is too high for the furnace.</span>
 
 <span class="sd">        By default, this function returns True unless it is overridden by a subclass.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="BaseTask.on_cancel">
 <a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.BaseTask.on_cancel">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Bring the lab to a safe, truthful state after this task has been cancelled.</span>
 
 <span class="sd">        The task actor calls this once, from its ``Abort`` handler, before any cleanup. Use it to</span>
@@ -786,14 +786,14 @@
 <span class="sd">        (which moves every sample of the task out of the lab) would lie about where samples are.</span>
 
 <span class="sd">        By default this does nothing.</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
+<span class="sd">        """</span></div>
 
 
 <div class="viewcode-block" id="BaseTask.run">
 <a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.BaseTask.run">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Run the task. In this function, you can request lab resources from lab manager and log data to database</span>
 <span class="sd">        with logger.</span>
 
@@ -813,10 +813,10 @@
 <span class="sd">          # request devices and sample positions from lab manager. The `$` represents</span>
 <span class="sd">          # the name of assigned devices in the sample positions we try to request,</span>
 <span class="sd">          # 4 is the number of sample positions.</span>
-<span class="sd">          with self.lab_view.request_resources({Furnace: [(&quot;$.inside&quot;, 4)]}) as devices_and_positions:</span>
+<span class="sd">          with self.lab_view.request_resources({Furnace: [("$.inside", 4)]}) as devices_and_positions:</span>
 <span class="sd">              devices, sample_positions = devices_and_positions</span>
 <span class="sd">              furnace = devices[Furnace]</span>
-<span class="sd">              inside_furnace = sample_positions[Furnace][&quot;$.inside&quot;]</span>
+<span class="sd">              inside_furnace = sample_positions[Furnace]["$.inside"]</span>
 
 <span class="sd">              for sample in self.samples:</span>
 <span class="sd">                  # in a task, we can call other tasks, which will share the same</span>
@@ -834,13 +834,13 @@
 <span class="sd">              while furnace.is_running():</span>
 <span class="sd">                  # log the device data, which is current temperature of the furnace</span>
 <span class="sd">                  self.logger.log_device_signal({</span>
-<span class="sd">                      &quot;device&quot;: furnace.name,</span>
-<span class="sd">                      &quot;temperature&quot;: furnace.get_temperature(),</span>
+<span class="sd">                      "device": furnace.name,</span>
+<span class="sd">                      "temperature": furnace.get_temperature(),</span>
 <span class="sd">                  })</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;The .run method must be implemented by the subclass of BaseTask.&quot;</span>
+            <span class="s2">"The .run method must be implemented by the subclass of BaseTask."</span>
         <span class="p">)</span></div>
 
 
@@ -848,11 +848,11 @@
 <a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.BaseTask.run_subtask">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">run_subtask</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">task</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="s2">&quot;BaseTask&quot;</span><span class="p">],</span>
+        <span class="n">task</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="s2">"BaseTask"</span><span class="p">],</span>
         <span class="n">samples</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run a subtask of this current task. Returns the result, if any, of the subtask.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Run a subtask of this current task. Returns the result, if any, of the subtask."""</span>
         <span class="n">samples</span> <span class="o">=</span> <span class="n">samples</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">samples</span><span class="p">]</span>
@@ -864,14 +864,14 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_kwargs</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">samples</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">ObjectId</span><span class="p">],</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="o">**</span><span class="n">subclass_kwargs</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BaseTask&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"BaseTask"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Used to create a new task object from the provided arguments.</span>
 
 <span class="sd">        This is used in the `add_to` and `ExperimentBuilder.add_task` method to</span>
 <span class="sd">        create a new task object and validate it before adding it to an experiment</span>
 <span class="sd">        or sample builder.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">task_obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span>
             <span class="n">samples</span><span class="o">=</span><span class="n">samples</span><span class="p">,</span>
             <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span>
@@ -887,15 +887,15 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">samples</span><span class="p">:</span> <span class="n">SampleBuilder</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">SampleBuilder</span><span class="p">],</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Used to add basetask to a SampleBuilder&#39;s tasklist during Experiment construction.</span>
+<span class="w">        </span><span class="sd">"""Used to add basetask to a SampleBuilder's tasklist during Experiment construction.</span>
 
-<span class="sd">        Args: samples (Union[SampleBuilder, List[SampleBuilder]]): One or more SampleBuilder&#39;s which will have this</span>
+<span class="sd">        Args: samples (Union[SampleBuilder, List[SampleBuilder]]): One or more SampleBuilder's which will have this</span>
 <span class="sd">        task appended to their tasklists.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__offline</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s2">&quot;Cannot add a live BaseTask instance to a SampleBuilder. BaseTask must be instantiated with &quot;</span>
-                <span class="s2">&quot;`offline_mode=True` to enable this method.&quot;</span>
+                <span class="s2">"Cannot add a live BaseTask instance to a SampleBuilder. BaseTask must be instantiated with "</span>
+                <span class="s2">"`offline_mode=True` to enable this method."</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">SampleBuilder</span><span class="p">):</span>
@@ -911,11 +911,11 @@
         <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">task_obj</span><span class="o">.</span><span class="n">validate</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Task input validation failed!&quot;</span>
+                <span class="s2">"Task input validation failed!"</span>
                 <span class="o">+</span> <span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Error message: </span><span class="si">{</span><span class="n">task_obj</span><span class="o">.</span><span class="n">get_message</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Error message: </span><span class="si">{</span><span class="n">task_obj</span><span class="o">.</span><span class="n">get_message</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span>
                     <span class="k">if</span> <span class="n">task_obj</span><span class="o">.</span><span class="n">get_message</span><span class="p">()</span>
-                    <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+                    <span class="k">else</span> <span class="s2">""</span>
                 <span class="p">)</span>
             <span class="p">)</span>
 
@@ -933,7 +933,7 @@
 
 <span class="n">_task_registry</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="n">BaseTask</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
 
-<span class="n">SUPPORTED_SAMPLE_POSITIONS_TYPE</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="s2">&quot;BaseDevice&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
+<span class="n">SUPPORTED_SAMPLE_POSITIONS_TYPE</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="s2">"BaseDevice"</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
 <span class="n">_reroute_task_registry</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span>
     <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="n">BaseTask</span><span class="p">]</span> <span class="o">|</span> <span class="n">SUPPORTED_SAMPLE_POSITIONS_TYPE</span><span class="p">]</span>
 <span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -942,9 +942,9 @@
 <div class="viewcode-block" id="add_task">
 <a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.add_task">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">add_task</span><span class="p">(</span><span class="n">task</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">BaseTask</span><span class="p">]):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Register a task.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="vm">__name__</span> <span class="ow">in</span> <span class="n">_task_registry</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ALABOS_RELOAD&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Duplicated operation name </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">"""Register a task."""</span>
+    <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="vm">__name__</span> <span class="ow">in</span> <span class="n">_task_registry</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ALABOS_RELOAD"</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Duplicated operation name </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="n">_task_registry</span><span class="p">[</span><span class="n">task</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span> <span class="o">=</span> <span class="n">task</span></div>
 
 
@@ -952,7 +952,7 @@
 <div class="viewcode-block" id="get_all_tasks">
 <a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.get_all_tasks">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_all_tasks</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="n">BaseTask</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get all the tasks in the registry.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Get all the tasks in the registry."""</span>
     <span class="k">return</span> <span class="n">_task_registry</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
 
 
@@ -960,7 +960,7 @@
 <div class="viewcode-block" id="get_task_by_name">
 <a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.get_task_by_name">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_task_by_name</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">BaseTask</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a task by name.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Get a task by name."""</span>
     <span class="k">return</span> <span class="n">_task_registry</span><span class="p">[</span><span class="n">name</span><span class="p">]</span></div>
 
 
@@ -972,22 +972,22 @@
     <span class="n">task</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">BaseTask</span><span class="p">],</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Register a reroute task.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Register a reroute task."""</span>
     <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="vm">__name__</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_task_registry</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Task </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> is not registered! Register with `add_task` before registering as a reroute task.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Task </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> is not registered! Register with `add_task` before registering as a reroute task."</span>
         <span class="p">)</span>
-    <span class="k">if</span> <span class="s2">&quot;sample&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">getfullargspec</span><span class="p">(</span><span class="n">task</span><span class="p">)</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">"sample"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">getfullargspec</span><span class="p">(</span><span class="n">task</span><span class="p">)</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Task </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> does not have `sample` as a parameter! &quot;</span>
-            <span class="s2">&quot;Reroute tasks must accept a `sample` parameter that specifies the name or sample_id of the sample to be &quot;</span>
-            <span class="s2">&quot;rerouted&quot;</span>
+            <span class="sa">f</span><span class="s2">"Task </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> does not have `sample` as a parameter! "</span>
+            <span class="s2">"Reroute tasks must accept a `sample` parameter that specifies the name or sample_id of the sample to be "</span>
+            <span class="s2">"rerouted"</span>
         <span class="p">)</span>
     <span class="n">_reroute_task_registry</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
         <span class="p">{</span>
-            <span class="s2">&quot;supported_sample_positions&quot;</span><span class="p">:</span> <span class="n">supported_sample_positions</span><span class="p">,</span>
-            <span class="s2">&quot;task&quot;</span><span class="p">:</span> <span class="n">task</span><span class="p">,</span>
-            <span class="s2">&quot;kwargs&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="p">,</span>
+            <span class="s2">"supported_sample_positions"</span><span class="p">:</span> <span class="n">supported_sample_positions</span><span class="p">,</span>
+            <span class="s2">"task"</span><span class="p">:</span> <span class="n">task</span><span class="p">,</span>
+            <span class="s2">"kwargs"</span><span class="p">:</span> <span class="n">kwargs</span><span class="p">,</span>
         <span class="p">}</span>
     <span class="p">)</span></div>
 

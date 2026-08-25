@@ -383,10 +383,10 @@
                 <article class="bd-article">
                   
   <h1>Source code for alab_management.resource_manager.resource_manager</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">TaskLauncher is the core module of the system,</span>
 <span class="sd">which actually executes the tasks.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
@@ -420,19 +420,19 @@
 <div class="viewcode-block" id="ResourceManager">
 <a class="viewcode-back" href="../../../alab_management.resource_manager.resource_manager.html#alab_management.resource_manager.resource_manager.ResourceManager">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ResourceManager</span><span class="p">(</span><span class="n">RequestMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    TaskManager will.</span>
 
 <span class="sd">    (1) find all the ready tasks and submit them,</span>
 <span class="sd">    (2) handle all the resource requests</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">load_definition</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span> <span class="o">=</span> <span class="n">TaskView</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sample_view</span> <span class="o">=</span> <span class="n">SampleView</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">device_view</span> <span class="o">=</span> <span class="n">DeviceView</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;requests&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">"requests"</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_pause_resource_assigning</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -444,20 +444,20 @@
 <a class="viewcode-back" href="../../../alab_management.resource_manager.resource_manager.html#alab_management.resource_manager.resource_manager.ResourceManager.pause_resource_assigning">[docs]</a>
     <span class="nd">@contextmanager</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">pause_resource_assigning</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pause the resource assigning.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Pause the resource assigning."""</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_pause_resource_assigning</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Pausing resource assigning.&quot;</span><span class="p">)</span>
+            <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Pausing resource assigning."</span><span class="p">)</span>
             <span class="k">yield</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_pause_resource_assigning</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Resuming resource assigning.&quot;</span><span class="p">)</span></div>
+            <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Resuming resource assigning."</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ResourceManager.run">
 <a class="viewcode-back" href="../../../alab_management.resource_manager.resource_manager.html#alab_management.resource_manager.resource_manager.ResourceManager.run">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start the loop.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Start the loop."""</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">()</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span></div>
@@ -471,14 +471,14 @@
 <div class="viewcode-block" id="ResourceManager.handle_released_resources">
 <a class="viewcode-back" href="../../../alab_management.resource_manager.resource_manager.html#alab_management.resource_manager.resource_manager.ResourceManager.handle_released_resources">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">handle_released_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Release the resources.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Release the resources."""</span>
         <span class="k">for</span> <span class="n">request</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_requests_by_status</span><span class="p">(</span><span class="n">RequestStatus</span><span class="o">.</span><span class="n">NEED_RELEASE</span><span class="p">):</span>
-            <span class="n">devices</span> <span class="o">=</span> <span class="n">request</span><span class="p">[</span><span class="s2">&quot;assigned_devices&quot;</span><span class="p">]</span>
-            <span class="n">sample_positions</span> <span class="o">=</span> <span class="n">request</span><span class="p">[</span><span class="s2">&quot;assigned_sample_positions&quot;</span><span class="p">]</span>
+            <span class="n">devices</span> <span class="o">=</span> <span class="n">request</span><span class="p">[</span><span class="s2">"assigned_devices"</span><span class="p">]</span>
+            <span class="n">sample_positions</span> <span class="o">=</span> <span class="n">request</span><span class="p">[</span><span class="s2">"assigned_sample_positions"</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_release_devices</span><span class="p">(</span><span class="n">devices</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_release_sample_positions</span><span class="p">(</span><span class="n">sample_positions</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update_request_status</span><span class="p">(</span>
-                <span class="n">request_id</span><span class="o">=</span><span class="n">request</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span>
+                <span class="n">request_id</span><span class="o">=</span><span class="n">request</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">],</span>
                 <span class="n">status</span><span class="o">=</span><span class="n">RequestStatus</span><span class="o">.</span><span class="n">RELEASED</span><span class="p">,</span>
                 <span class="n">original_status</span><span class="o">=</span><span class="n">RequestStatus</span><span class="o">.</span><span class="n">NEED_RELEASE</span><span class="p">,</span>
             <span class="p">)</span></div>
@@ -487,26 +487,26 @@
 <div class="viewcode-block" id="ResourceManager.handle_requested_resources">
 <a class="viewcode-back" href="../../../alab_management.resource_manager.resource_manager.html#alab_management.resource_manager.resource_manager.ResourceManager.handle_requested_resources">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">handle_requested_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Check if there are any requests that are in PENDING status. If so,</span>
 <span class="sd">        try to assign the resources to it.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">requests</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_requests_by_status</span><span class="p">(</span><span class="n">RequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="p">))</span>
         <span class="c1"># prioritize the oldest requests at the highest priority value</span>
-        <span class="n">requests</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;submitted_at&quot;</span><span class="p">])</span>
-        <span class="n">requests</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;priority&quot;</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">requests</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">"submitted_at"</span><span class="p">])</span>
+        <span class="n">requests</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">"priority"</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">request</span> <span class="ow">in</span> <span class="n">requests</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_handle_requested_resources</span><span class="p">(</span><span class="n">request</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_handle_requested_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_entry</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">resource_request</span> <span class="o">=</span> <span class="n">request_entry</span><span class="p">[</span><span class="s2">&quot;request&quot;</span><span class="p">]</span>
-            <span class="n">task_id</span> <span class="o">=</span> <span class="n">request_entry</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span>
+            <span class="n">resource_request</span> <span class="o">=</span> <span class="n">request_entry</span><span class="p">[</span><span class="s2">"request"</span><span class="p">]</span>
+            <span class="n">task_id</span> <span class="o">=</span> <span class="n">request_entry</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">]</span>
 
             <span class="n">task_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">task_status</span> <span class="o">!=</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">REQUESTING_RESOURCES</span> <span class="ow">or</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="p">{</span>
-                <span class="n">task</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">]</span>
+                <span class="n">task</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">]</span>
                 <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">get_tasks_to_be_canceled</span><span class="p">(</span>
                     <span class="n">canceling_progress</span><span class="o">=</span><span class="n">CancelingProgress</span><span class="o">.</span><span class="n">WORKER_NOTIFIED</span>
                 <span class="p">)</span>
@@ -514,7 +514,7 @@
                 <span class="c1"># this implies the Task has been cancelled or errored somewhere else in the chain -- we should</span>
                 <span class="c1"># not allocate any resources to the broken Task.</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">update_request_status</span><span class="p">(</span>
-                    <span class="n">request_id</span><span class="o">=</span><span class="n">request_entry</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span>
+                    <span class="n">request_id</span><span class="o">=</span><span class="n">request_entry</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">],</span>
                     <span class="n">status</span><span class="o">=</span><span class="n">RequestStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="p">,</span>
                     <span class="n">original_status</span><span class="o">=</span><span class="n">RequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="p">,</span>
                 <span class="p">)</span>
@@ -523,14 +523,14 @@
             <span class="n">devices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_view</span><span class="o">.</span><span class="n">request_devices</span><span class="p">(</span>
                 <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span>
                 <span class="n">device_names_str</span><span class="o">=</span><span class="p">[</span>
-                    <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;device&quot;</span><span class="p">][</span><span class="s2">&quot;content&quot;</span><span class="p">]</span>
+                    <span class="n">entry</span><span class="p">[</span><span class="s2">"device"</span><span class="p">][</span><span class="s2">"content"</span><span class="p">]</span>
                     <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">resource_request</span>
-                    <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;device&quot;</span><span class="p">][</span><span class="s2">&quot;identifier&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;name&quot;</span>
+                    <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s2">"device"</span><span class="p">][</span><span class="s2">"identifier"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"name"</span>
                 <span class="p">],</span>
                 <span class="n">device_types_str</span><span class="o">=</span><span class="p">[</span>
-                    <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;device&quot;</span><span class="p">][</span><span class="s2">&quot;content&quot;</span><span class="p">]</span>
+                    <span class="n">entry</span><span class="p">[</span><span class="s2">"device"</span><span class="p">][</span><span class="s2">"content"</span><span class="p">]</span>
                     <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">resource_request</span>
-                    <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;device&quot;</span><span class="p">][</span><span class="s2">&quot;identifier&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;type&quot;</span>
+                    <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s2">"device"</span><span class="p">][</span><span class="s2">"identifier"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"type"</span>
                 <span class="p">],</span>
             <span class="p">)</span>
             <span class="c1"># some devices are not available now</span>
@@ -543,33 +543,33 @@
             <span class="n">parsed_sample_positions_request</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">exact_positions_set</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
             <span class="c1"># Convert list from database back to set for easier lookup</span>
-            <span class="n">exact_positions_raw</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">request_entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;exact_positions&quot;</span><span class="p">,</span> <span class="p">[]))</span>
+            <span class="n">exact_positions_raw</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">request_entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"exact_positions"</span><span class="p">,</span> <span class="p">[]))</span>
 
             <span class="k">for</span> <span class="n">request</span> <span class="ow">in</span> <span class="n">resource_request</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">request</span><span class="p">[</span><span class="s2">&quot;device&quot;</span><span class="p">][</span><span class="s2">&quot;identifier&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">_EXTRA_REQUEST</span><span class="p">:</span>
-                    <span class="n">device_prefix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="k">if</span> <span class="n">request</span><span class="p">[</span><span class="s2">"device"</span><span class="p">][</span><span class="s2">"identifier"</span><span class="p">]</span> <span class="o">==</span> <span class="n">_EXTRA_REQUEST</span><span class="p">:</span>
+                    <span class="n">device_prefix</span> <span class="o">=</span> <span class="s2">""</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">device_name</span> <span class="o">=</span> <span class="n">devices</span><span class="p">[</span><span class="n">request</span><span class="p">[</span><span class="s2">&quot;device&quot;</span><span class="p">][</span><span class="s2">&quot;content&quot;</span><span class="p">]][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
-                    <span class="n">device_prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">device_name</span><span class="si">}{</span><span class="n">SamplePosition</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="n">device_name</span> <span class="o">=</span> <span class="n">devices</span><span class="p">[</span><span class="n">request</span><span class="p">[</span><span class="s2">"device"</span><span class="p">][</span><span class="s2">"content"</span><span class="p">]][</span><span class="s2">"name"</span><span class="p">]</span>
+                    <span class="n">device_prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">device_name</span><span class="si">}{</span><span class="n">SamplePosition</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="si">}</span><span class="s2">"</span>
 
-                <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">request</span><span class="p">[</span><span class="s2">&quot;sample_positions&quot;</span><span class="p">]:</span>
-                    <span class="n">prefix</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">request</span><span class="p">[</span><span class="s2">"sample_positions"</span><span class="p">]:</span>
+                    <span class="n">prefix</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[</span><span class="s2">"prefix"</span><span class="p">]</span>
                     <span class="c1"># if this is a nested resource request, lets not prepend the device name twice.</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">prefix</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">device_prefix</span><span class="p">):</span>
                         <span class="n">prefix</span> <span class="o">=</span> <span class="n">device_prefix</span> <span class="o">+</span> <span class="n">prefix</span>
                     <span class="n">parsed_sample_positions_request</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="n">SamplePositionRequest</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="n">pos</span><span class="p">[</span><span class="s2">&quot;number&quot;</span><span class="p">])</span>
+                        <span class="n">SamplePositionRequest</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="n">pos</span><span class="p">[</span><span class="s2">"number"</span><span class="p">])</span>
                     <span class="p">)</span>
                     <span class="c1"># If the original prefix (before device prefix) was in exact_positions, add the full path</span>
-                    <span class="n">original_prefix</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">]</span>
+                    <span class="n">original_prefix</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[</span><span class="s2">"prefix"</span><span class="p">]</span>
                     <span class="k">if</span> <span class="n">original_prefix</span> <span class="ow">in</span> <span class="n">exact_positions_raw</span><span class="p">:</span>
                         <span class="n">exact_positions_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-                <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">request_entry</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]},</span>
+                <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">request_entry</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]},</span>
                 <span class="p">{</span>
-                    <span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
-                        <span class="s2">&quot;parsed_sample_positions_request&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">"parsed_sample_positions_request"</span><span class="p">:</span> <span class="p">[</span>
                             <span class="nb">dict</span><span class="p">(</span><span class="n">spr</span><span class="p">)</span> <span class="k">for</span> <span class="n">spr</span> <span class="ow">in</span> <span class="n">parsed_sample_positions_request</span>
                         <span class="p">]</span>
                     <span class="p">}</span>
@@ -588,26 +588,26 @@
             <span class="c1"># we will store the error in the database for easier debugging</span>
             <span class="n">error</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">format_exc</span><span class="p">(),)</span>
             <span class="n">returned_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-                <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">request_entry</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span> <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">name</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">request_entry</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">],</span> <span class="s2">"status"</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">name</span><span class="p">},</span>
                 <span class="p">{</span>
-                    <span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
-                        <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                        <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="n">dill</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">error</span><span class="p">),</span>
-                        <span class="s2">&quot;assigned_devices&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-                        <span class="s2">&quot;assigned_sample_positions&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">"status"</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="s2">"error"</span><span class="p">:</span> <span class="n">dill</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">error</span><span class="p">),</span>
+                        <span class="s2">"assigned_devices"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="s2">"assigned_sample_positions"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="p">}</span>
                 <span class="p">},</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">returned_value</span><span class="o">.</span><span class="n">modified_count</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">DocumentNotUpdatedError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Error updating request </span><span class="si">{</span><span class="n">request_entry</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">: cannot update the request status from PENDING &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;to ERROR.&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Error updating request </span><span class="si">{</span><span class="n">request_entry</span><span class="p">[</span><span class="s1">'_id'</span><span class="p">]</span><span class="si">}</span><span class="s2">: cannot update the request status from PENDING "</span>
+                    <span class="sa">f</span><span class="s2">"to ERROR."</span>
                 <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">error</span>
             <span class="k">return</span>
 
         <span class="c1"># if both devices and sample positions can be satisfied</span>
         <span class="n">request_entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">request_entry</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span> <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
+            <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">request_entry</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">],</span> <span class="s2">"status"</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">request_entry</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -618,13 +618,13 @@
             <span class="p">)</span>
 
             <span class="n">returned_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-                <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">request_entry</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span> <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">name</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">request_entry</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">],</span> <span class="s2">"status"</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">name</span><span class="p">},</span>
                 <span class="p">{</span>
-                    <span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
-                        <span class="s2">&quot;assigned_devices&quot;</span><span class="p">:</span> <span class="n">devices</span><span class="p">,</span>
-                        <span class="s2">&quot;assigned_sample_positions&quot;</span><span class="p">:</span> <span class="n">sample_positions</span><span class="p">,</span>
-                        <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">FULFILLED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                        <span class="s2">&quot;fulfilled_at&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+                    <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">"assigned_devices"</span><span class="p">:</span> <span class="n">devices</span><span class="p">,</span>
+                        <span class="s2">"assigned_sample_positions"</span><span class="p">:</span> <span class="n">sample_positions</span><span class="p">,</span>
+                        <span class="s2">"status"</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">FULFILLED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="s2">"fulfilled_at"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
                     <span class="p">}</span>
                 <span class="p">},</span>
             <span class="p">)</span>
@@ -637,7 +637,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_occupy_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">devices</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">devices</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">device_view</span><span class="o">.</span><span class="n">occupy_device</span><span class="p">(</span>
-                <span class="n">device</span><span class="o">=</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">device</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]),</span> <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span>
+                <span class="n">device</span><span class="o">=</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">device</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]),</span> <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span>
             <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_occupy_sample_positions</span><span class="p">(</span>
@@ -646,21 +646,21 @@
         <span class="k">for</span> <span class="n">sample_positions_</span> <span class="ow">in</span> <span class="n">sample_positions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">sample_position_</span> <span class="ow">in</span> <span class="n">sample_positions_</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">sample_view</span><span class="o">.</span><span class="n">lock_sample_position</span><span class="p">(</span>
-                    <span class="n">task_id</span><span class="p">,</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">sample_position_</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+                    <span class="n">task_id</span><span class="p">,</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">sample_position_</span><span class="p">[</span><span class="s2">"name"</span><span class="p">])</span>
                 <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_release_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">devices</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]):</span>
         <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">devices</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">device</span><span class="p">[</span><span class="s2">&quot;need_release&quot;</span><span class="p">]:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">device_view</span><span class="o">.</span><span class="n">release_device</span><span class="p">(</span><span class="n">device</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">device</span><span class="p">[</span><span class="s2">"need_release"</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">device_view</span><span class="o">.</span><span class="n">release_device</span><span class="p">(</span><span class="n">device</span><span class="p">[</span><span class="s2">"name"</span><span class="p">])</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_release_sample_positions</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">sample_positions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span>
     <span class="p">):</span>
         <span class="k">for</span> <span class="n">sample_positions_</span> <span class="ow">in</span> <span class="n">sample_positions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">sample_position</span> <span class="ow">in</span> <span class="n">sample_positions_</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">sample_position</span><span class="p">[</span><span class="s2">&quot;need_release&quot;</span><span class="p">]:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">sample_view</span><span class="o">.</span><span class="n">release_sample_position</span><span class="p">(</span><span class="n">sample_position</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span></div>
+                <span class="k">if</span> <span class="n">sample_position</span><span class="p">[</span><span class="s2">"need_release"</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sample_view</span><span class="o">.</span><span class="n">release_sample_position</span><span class="p">(</span><span class="n">sample_position</span><span class="p">[</span><span class="s2">"name"</span><span class="p">])</span></div>
 
 </pre></div>
 

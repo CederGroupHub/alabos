@@ -495,7 +495,7 @@ polling <a class="reference internal" href="#alab_management.lab_view.LabView.is
 instead of sitting out the full delay:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># returns True as soon as the task is cancelled, False if the full 30s elapsed</span>
 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">cancellation_event</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
-    <span class="k">raise</span> <span class="n">TaskCancelledError</span><span class="p">(</span><span class="s2">&quot;cancelled while waiting&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="n">TaskCancelledError</span><span class="p">(</span><span class="s2">"cancelled while waiting"</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -544,7 +544,7 @@ this in long waits, and bail out cooperatively, so a cancel takes effect at the 
 point instead of after the blocking call finally returns.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">while</span> <span class="n">furnace</span><span class="o">.</span><span class="n">is_running</span><span class="p">():</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">is_cancelling</span><span class="p">():</span>
-        <span class="k">raise</span> <span class="n">TaskCancelledError</span><span class="p">(</span><span class="s2">&quot;cancelled while waiting for the furnace&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">TaskCancelledError</span><span class="p">(</span><span class="s2">"cancelled while waiting for the furnace"</span><span class="p">)</span>
     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -577,8 +577,8 @@ positions like “input_rack/slot/1” without prefix matching potentially selec
 <p class="rubric">Example</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Lock exact positions</span>
 <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">lock_exact_sample_positions</span><span class="p">([</span>
-    <span class="s2">&quot;input_rack/slot/1&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;input_rack/slot/2&quot;</span>
+    <span class="s2">"input_rack/slot/1"</span><span class="p">,</span>
+    <span class="s2">"input_rack/slot/2"</span>
 <span class="p">])</span> <span class="k">as</span> <span class="n">locked_positions</span><span class="p">:</span>
     <span class="c1"># Use the positions</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">move_sample</span><span class="p">(</span>
@@ -607,13 +607,13 @@ using prefix matching. This is useful when you need to lock a specific position 
 </dl>
 <p class="rubric">Example</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Lock an exact position</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">lock_sample_position</span><span class="p">(</span><span class="s2">&quot;input_rack/slot/1&quot;</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">lock_sample_position</span><span class="p">(</span><span class="s2">"input_rack/slot/1"</span><span class="p">)</span>
 
 <span class="c1"># Use the position</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">move_sample</span><span class="p">(</span><span class="n">sample</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="s2">&quot;input_rack/slot/1&quot;</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">move_sample</span><span class="p">(</span><span class="n">sample</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="s2">"input_rack/slot/1"</span><span class="p">)</span>
 
 <span class="c1"># Release when done</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">release_sample_position</span><span class="p">(</span><span class="s2">&quot;input_rack/slot/1&quot;</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">release_sample_position</span><span class="p">(</span><span class="s2">"input_rack/slot/1"</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -657,12 +657,12 @@ is what a task with <code class="docutils literal notranslate"><span class="pre"
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">lock_sample_position</span><span class="p">(</span><span class="s2">&quot;input_rack/slot/1&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">lock_sample_position</span><span class="p">(</span><span class="s2">"input_rack/slot/1"</span><span class="p">)</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="c1"># Use the position</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">move_sample</span><span class="p">(</span><span class="n">sample</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="s2">&quot;input_rack/slot/1&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">move_sample</span><span class="p">(</span><span class="n">sample</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="s2">"input_rack/slot/1"</span><span class="p">)</span>
 <span class="k">finally</span><span class="p">:</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">release_sample_position</span><span class="p">(</span><span class="s2">&quot;input_rack/slot/1&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">release_sample_position</span><span class="p">(</span><span class="s2">"input_rack/slot/1"</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -721,21 +721,21 @@ only for positions where number=1.</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Prefix matching (default) - &quot;slot/1&quot; could match &quot;slot/1&quot; or &quot;slot/10&quot;</span>
-<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">request_resources</span><span class="p">({</span><span class="n">Furnace</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;slot/1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}})</span> <span class="k">as</span> <span class="p">(</span><span class="n">devices</span><span class="p">,</span> <span class="n">positions</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Prefix matching (default) - "slot/1" could match "slot/1" or "slot/10"</span>
+<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">request_resources</span><span class="p">({</span><span class="n">Furnace</span><span class="p">:</span> <span class="p">{</span><span class="s2">"slot/1"</span><span class="p">:</span> <span class="mi">1</span><span class="p">}})</span> <span class="k">as</span> <span class="p">(</span><span class="n">devices</span><span class="p">,</span> <span class="n">positions</span><span class="p">):</span>
     <span class="o">...</span>
 
-<span class="c1"># Exact matching - only matches &quot;slot/1&quot;</span>
+<span class="c1"># Exact matching - only matches "slot/1"</span>
 <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">request_resources</span><span class="p">(</span>
-    <span class="p">{</span><span class="n">Furnace</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;slot/1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}},</span>
-    <span class="n">exact_positions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;slot/1&quot;</span><span class="p">}</span>
+    <span class="p">{</span><span class="n">Furnace</span><span class="p">:</span> <span class="p">{</span><span class="s2">"slot/1"</span><span class="p">:</span> <span class="mi">1</span><span class="p">}},</span>
+    <span class="n">exact_positions</span><span class="o">=</span><span class="p">{</span><span class="s2">"slot/1"</span><span class="p">}</span>
 <span class="p">)</span> <span class="k">as</span> <span class="p">(</span><span class="n">devices</span><span class="p">,</span> <span class="n">positions</span><span class="p">):</span>
     <span class="o">...</span>
 
 <span class="c1"># Mix of prefix and exact matching</span>
 <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lab_view</span><span class="o">.</span><span class="n">request_resources</span><span class="p">(</span>
-    <span class="p">{</span><span class="kc">None</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;input_rack/slot/1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;input_rack/slot/2&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}},</span>
-    <span class="n">exact_positions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input_rack/slot/1&quot;</span><span class="p">}</span>  <span class="c1"># Only slot/1 is exact</span>
+    <span class="p">{</span><span class="kc">None</span><span class="p">:</span> <span class="p">{</span><span class="s2">"input_rack/slot/1"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"input_rack/slot/2"</span><span class="p">:</span> <span class="mi">1</span><span class="p">}},</span>
+    <span class="n">exact_positions</span><span class="o">=</span><span class="p">{</span><span class="s2">"input_rack/slot/1"</span><span class="p">}</span>  <span class="c1"># Only slot/1 is exact</span>
 <span class="p">)</span> <span class="k">as</span> <span class="p">(</span><span class="n">devices</span><span class="p">,</span> <span class="n">positions</span><span class="p">):</span>
     <span class="c1"># slot/1 is exact, slot/2 uses prefix matching</span>
     <span class="o">...</span>
@@ -743,8 +743,8 @@ only for positions where number=1.</p>
 <span class="c1"># Invalid: Cannot use exact matching with number &gt; 1</span>
 <span class="c1"># This will raise ValueError:</span>
 <span class="c1"># with self.lab_view.request_resources(</span>
-<span class="c1">#     {&quot;BFT_input_rack&quot;: {&quot;slot&quot;: 11}},</span>
-<span class="c1">#     exact_positions={&quot;slot&quot;}  # ERROR: exact matching requires number=1</span>
+<span class="c1">#     {"BFT_input_rack": {"slot": 11}},</span>
+<span class="c1">#     exact_positions={"slot"}  # ERROR: exact matching requires number=1</span>
 <span class="c1"># ) as (devices, positions):</span>
 <span class="c1">#     ...</span>
 </pre></div>

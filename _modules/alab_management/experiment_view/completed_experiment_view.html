@@ -383,7 +383,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for alab_management.experiment_view.completed_experiment_view</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;A wrapper over the ``experiment`` class.&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""A wrapper over the ``experiment`` class."""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
@@ -397,11 +397,11 @@
 <div class="viewcode-block" id="CompletedExperimentView">
 <a class="viewcode-back" href="../../../alab_management.experiment_view.completed_experiment_view.html#alab_management.experiment_view.completed_experiment_view.CompletedExperimentView">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CompletedExperimentView</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Experiment view manages the experiment status, which is a collection of tasks and samples.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Experiment view manages the experiment status, which is a collection of tasks and samples."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_working_experiment_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;experiment&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_completed_experiment_collection</span> <span class="o">=</span> <span class="n">get_completed_collection</span><span class="p">(</span><span class="s2">&quot;experiment&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_working_experiment_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">"experiment"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_completed_experiment_collection</span> <span class="o">=</span> <span class="n">get_completed_collection</span><span class="p">(</span><span class="s2">"experiment"</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">completed_sample_view</span> <span class="o">=</span> <span class="n">CompletedSampleView</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">completed_task_view</span> <span class="o">=</span> <span class="n">CompletedTaskView</span><span class="p">()</span>
@@ -409,31 +409,31 @@
 <div class="viewcode-block" id="CompletedExperimentView.save_experiment">
 <a class="viewcode-back" href="../../../alab_management.experiment_view.completed_experiment_view.html#alab_management.experiment_view.completed_experiment_view.CompletedExperimentView.save_experiment">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">save_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Transfers an experiment from the working (standard) database to the completed database.</span>
 <span class="sd">        This also transfers all samples and tasks associated with the experiment into the completed database.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            experiment_id (ObjectId): id of the experiment to be transferred</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">experiment_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_working_experiment_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span>
             <span class="n">ObjectId</span><span class="p">(</span><span class="n">experiment_id</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">experiment_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Experiment with id </span><span class="si">{</span><span class="n">experiment_id</span><span class="si">}</span><span class="s2"> does not exist in the working database!&quot;</span>
+                <span class="sa">f</span><span class="s2">"Experiment with id </span><span class="si">{</span><span class="n">experiment_id</span><span class="si">}</span><span class="s2"> does not exist in the working database!"</span>
             <span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">experiment_dict</span><span class="p">[</span><span class="s2">&quot;samples&quot;</span><span class="p">]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">completed_sample_view</span><span class="o">.</span><span class="n">save_sample</span><span class="p">(</span><span class="n">sample_id</span><span class="o">=</span><span class="n">sample</span><span class="p">[</span><span class="s2">&quot;sample_id&quot;</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">experiment_dict</span><span class="p">[</span><span class="s2">"samples"</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">completed_sample_view</span><span class="o">.</span><span class="n">save_sample</span><span class="p">(</span><span class="n">sample_id</span><span class="o">=</span><span class="n">sample</span><span class="p">[</span><span class="s2">"sample_id"</span><span class="p">])</span>
 
-        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">experiment_dict</span><span class="p">[</span><span class="s2">&quot;tasks&quot;</span><span class="p">]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">completed_task_view</span><span class="o">.</span><span class="n">save_task</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">experiment_dict</span><span class="p">[</span><span class="s2">"tasks"</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">completed_task_view</span><span class="o">.</span><span class="n">save_task</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">])</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">experiment_id</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_completed_experiment_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-                <span class="nb">filter</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">experiment_id</span><span class="p">)},</span>
-                <span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="n">experiment_dict</span><span class="p">},</span>
+                <span class="nb">filter</span><span class="o">=</span><span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">experiment_id</span><span class="p">)},</span>
+                <span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="n">experiment_dict</span><span class="p">},</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_completed_experiment_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">experiment_dict</span><span class="p">)</span></div>
@@ -442,20 +442,20 @@
 <div class="viewcode-block" id="CompletedExperimentView.save_all">
 <a class="viewcode-back" href="../../../alab_management.experiment_view.completed_experiment_view.html#alab_management.experiment_view.completed_experiment_view.CompletedExperimentView.save_all">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">save_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Saves all completed experiments in the working database to the completed database.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Saves all completed experiments in the working database to the completed database."""</span>
         <span class="k">for</span> <span class="n">experiment_dict</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_working_experiment_collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;COMPLETED&quot;</span><span class="p">}</span>
+            <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="s2">"COMPLETED"</span><span class="p">}</span>
         <span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">save_experiment</span><span class="p">(</span><span class="n">experiment_dict</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">save_experiment</span><span class="p">(</span><span class="n">experiment_dict</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">])</span>
             <span class="k">except</span><span class="p">:</span>  <span class="c1"># noqa: E722</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error saving experiment </span><span class="si">{</span><span class="n">experiment_dict</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error saving experiment </span><span class="si">{</span><span class="n">experiment_dict</span><span class="p">[</span><span class="s1">'_id'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="CompletedExperimentView.exists">
 <a class="viewcode-back" href="../../../alab_management.experiment_view.completed_experiment_view.html#alab_management.experiment_view.completed_experiment_view.CompletedExperimentView.exists">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment_id</span><span class="p">:</span> <span class="n">ObjectId</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if an experiment exists in the completed experiment database.</span>
+<span class="w">        </span><span class="sd">"""Check if an experiment exists in the completed experiment database.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            experiment_id (ObjectId): id of the experiment within completed experiment collection</span>
@@ -463,10 +463,10 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">            bool: True if sample exists in the database</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_completed_experiment_collection</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span>
-                <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">experiment_id</span><span class="p">)}</span>
+                <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">experiment_id</span><span class="p">)}</span>
             <span class="p">)</span>
             <span class="o">&gt;</span> <span class="mi">0</span>
         <span class="p">)</span></div>
@@ -475,7 +475,7 @@
 <div class="viewcode-block" id="CompletedExperimentView.get_experiment">
 <a class="viewcode-back" href="../../../alab_management.experiment_view.completed_experiment_view.html#alab_management.experiment_view.completed_experiment_view.CompletedExperimentView.get_experiment">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment_id</span><span class="p">:</span> <span class="n">ObjectId</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get an experiment from the completed experiment collection.</span>
+<span class="w">        </span><span class="sd">"""Get an experiment from the completed experiment collection.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            experiment_id (ObjectId): id of the experiment within completed experiment collection</span>
@@ -483,13 +483,13 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">            Dict[str, Any]: experiment dict</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">experiment_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_completed_experiment_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">experiment_id</span><span class="p">)}</span>
+            <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">experiment_id</span><span class="p">)}</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">experiment_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Experiment with id </span><span class="si">{</span><span class="n">experiment_id</span><span class="si">}</span><span class="s2"> does not exist!&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Experiment with id </span><span class="si">{</span><span class="n">experiment_id</span><span class="si">}</span><span class="s2"> does not exist!"</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">experiment_dict</span></div>
 </div>

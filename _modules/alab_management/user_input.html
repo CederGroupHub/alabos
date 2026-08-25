@@ -401,24 +401,24 @@
 <div class="viewcode-block" id="UserRequestStatus">
 <a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.UserRequestStatus">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserRequestStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum for user response.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Enum for user response."""</span>
 
-    <span class="n">FULLFILLED</span> <span class="o">=</span> <span class="s2">&quot;fulfilled&quot;</span>
-    <span class="n">PENDING</span> <span class="o">=</span> <span class="s2">&quot;pending&quot;</span>
-    <span class="n">ERROR</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span></div>
+    <span class="n">FULLFILLED</span> <span class="o">=</span> <span class="s2">"fulfilled"</span>
+    <span class="n">PENDING</span> <span class="o">=</span> <span class="s2">"pending"</span>
+    <span class="n">ERROR</span> <span class="o">=</span> <span class="s2">"error"</span></div>
 
 
 
 <div class="viewcode-block" id="UserInputView">
 <a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.UserInputView">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserInputView</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sample view manages the samples and their positions.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Sample view manages the samples and their positions."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;user_input&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span> <span class="o">=</span> <span class="n">get_collection</span><span class="p">(</span><span class="s2">"user_input"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_task_view</span> <span class="o">=</span> <span class="n">TaskView</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_view</span> <span class="o">=</span> <span class="n">ExperimentView</span><span class="p">()</span>
-        <span class="n">alarm_config</span> <span class="o">=</span> <span class="n">AlabOSConfig</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;alarm&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">alarm_config</span> <span class="o">=</span> <span class="n">AlabOSConfig</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"alarm"</span><span class="p">,</span> <span class="p">{})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_alarm</span> <span class="o">=</span> <span class="n">Alarm</span><span class="p">(</span><span class="o">**</span><span class="n">alarm_config</span><span class="p">)</span>
 
 <div class="viewcode-block" id="UserInputView.insert_request">
@@ -429,74 +429,74 @@
         <span class="n">options</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">maintenance</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">category</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Unknown Category&quot;</span><span class="p">,</span>
+        <span class="n">category</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"Unknown Category"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectId</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Insert a request into the database.</span>
 
 <span class="sd">        Returns the request ObjectID</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;maintenance&quot;</span><span class="p">:</span> <span class="n">maintenance</span><span class="p">}</span>
+<span class="sd">        """</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"maintenance"</span><span class="p">:</span> <span class="n">maintenance</span><span class="p">}</span>
         <span class="k">if</span> <span class="n">task_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">maintenance</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;task_id is required for non-maintenance requests!&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"task_id is required for non-maintenance requests!"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">task_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_task_view</span><span class="o">.</span><span class="n">get_task</span><span class="p">(</span>
                 <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span>
             <span class="p">)</span>  <span class="c1"># will throw error if task id does not exist</span>
             <span class="n">experiment_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_view</span><span class="o">.</span><span class="n">get_experiment_by_task_id</span><span class="p">(</span><span class="n">task_id</span><span class="p">)[</span>
-                <span class="s2">&quot;_id&quot;</span>
+                <span class="s2">"_id"</span>
             <span class="p">]</span>
             <span class="n">context</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                 <span class="p">{</span>
-                    <span class="s2">&quot;experiment_id&quot;</span><span class="p">:</span> <span class="n">experiment_id</span><span class="p">,</span>
-                    <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">,</span>
+                    <span class="s2">"experiment_id"</span><span class="p">:</span> <span class="n">experiment_id</span><span class="p">,</span>
+                    <span class="s2">"task_id"</span><span class="p">:</span> <span class="n">task_id</span><span class="p">,</span>
                 <span class="p">}</span>
             <span class="p">)</span>
         <span class="n">request_id</span> <span class="o">=</span> <span class="n">ObjectId</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">,</span>
-                <span class="s2">&quot;prompt&quot;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">,</span>
-                <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span> <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">options</span><span class="p">],</span>
-                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                <span class="s2">&quot;request_context&quot;</span><span class="p">:</span> <span class="n">context</span><span class="p">,</span>
-                <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+                <span class="s2">"_id"</span><span class="p">:</span> <span class="n">request_id</span><span class="p">,</span>
+                <span class="s2">"prompt"</span><span class="p">:</span> <span class="n">prompt</span><span class="p">,</span>
+                <span class="s2">"options"</span><span class="p">:</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span> <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">options</span><span class="p">],</span>
+                <span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="s2">"request_context"</span><span class="p">:</span> <span class="n">context</span><span class="p">,</span>
+                <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
             <span class="p">}</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">maintenance</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="n">category</span> <span class="o">=</span> <span class="s2">&quot;Maintenance&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_alarm</span><span class="o">.</span><span class="n">alert</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;User input requested: </span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+            <span class="n">category</span> <span class="o">=</span> <span class="s2">"Maintenance"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_alarm</span><span class="o">.</span><span class="n">alert</span><span class="p">(</span><span class="sa">f</span><span class="s2">"User input requested: </span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">request_id</span></div>
 
 
 <div class="viewcode-block" id="UserInputView.get_request">
 <a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.UserInputView.get_request">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Get a request.</span>
 
 <span class="sd">        Returns a request.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">})</span>
+<span class="sd">        """</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">request_id</span><span class="p">})</span>
 
         <span class="k">if</span> <span class="n">request</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;User input request id </span><span class="si">{</span><span class="n">request_id</span><span class="si">}</span><span class="s2"> does not exist!&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"User input request id </span><span class="si">{</span><span class="n">request_id</span><span class="si">}</span><span class="s2"> does not exist!"</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">request</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="UserInputView.update_request_status">
 <a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.UserInputView.update_request_status">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_request_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">note</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the status of a request.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Update the status of a request."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>  <span class="c1"># will error is request does not exist</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">request_id</span><span class="p">},</span>
             <span class="p">{</span>
-                <span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="s2">&quot;response&quot;</span><span class="p">:</span> <span class="n">response</span><span class="p">,</span>
-                    <span class="s2">&quot;note&quot;</span><span class="p">:</span> <span class="n">note</span><span class="p">,</span>
-                    <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">FULLFILLED</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                    <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+                <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">"response"</span><span class="p">:</span> <span class="n">response</span><span class="p">,</span>
+                    <span class="s2">"note"</span><span class="p">:</span> <span class="n">note</span><span class="p">,</span>
+                    <span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">FULLFILLED</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                    <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
                 <span class="p">}</span>
             <span class="p">},</span>
         <span class="p">)</span></div>
@@ -505,74 +505,74 @@
 <div class="viewcode-block" id="UserInputView.retrieve_user_input">
 <a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.UserInputView.retrieve_user_input">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_user_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrive response from user for a given request. Blocks until request is marked as completed.</span>
 
 <span class="sd">        Returns the user response, which is one of a list of options</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">status</span> <span class="o">=</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">while</span> <span class="n">status</span> <span class="o">==</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="p">:</span>
-                <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">})</span>
+                <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">request_id</span><span class="p">})</span>
                 <span class="k">if</span> <span class="n">request</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;User input request id </span><span class="si">{</span><span class="n">request_id</span><span class="si">}</span><span class="s2"> does not exist!&quot;</span>
+                        <span class="sa">f</span><span class="s2">"User input request id </span><span class="si">{</span><span class="n">request_id</span><span class="si">}</span><span class="s2"> does not exist!"</span>
                     <span class="p">)</span>
-                <span class="n">status</span> <span class="o">=</span> <span class="n">UserRequestStatus</span><span class="p">(</span><span class="n">request</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">])</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="n">UserRequestStatus</span><span class="p">(</span><span class="n">request</span><span class="p">[</span><span class="s2">"status"</span><span class="p">])</span>
                 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>  <span class="c1"># noqa: E722</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-                <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">name</span><span class="p">}}</span>
+                <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">request_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">name</span><span class="p">}}</span>
             <span class="p">)</span>
             <span class="k">raise</span>
-        <span class="k">return</span> <span class="n">request</span><span class="p">[</span><span class="s2">&quot;response&quot;</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="n">request</span><span class="p">[</span><span class="s2">"response"</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="UserInputView.clean_up_user_input_collection">
 <a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.UserInputView.clean_up_user_input_collection">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">clean_up_user_input_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Drop the sample position collection.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Drop the sample position collection."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">drop</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="UserInputView.get_all_pending_requests">
 <a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.UserInputView.get_all_pending_requests">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_all_pending_requests</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Get all pending requests.</span>
 
 <span class="sd">        Returns a list of pending requests.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
             <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">value</span><span class="p">}),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">value</span><span class="p">}),</span>
         <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="UserInputView.retrieve_user_input_with_note">
 <a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.UserInputView.retrieve_user_input_with_note">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_user_input_with_note</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrive response from user for a given request. Blocks until request is marked as completed.</span>
 
 <span class="sd">        Returns the user response, which is one of a list of options</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">status</span> <span class="o">=</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">while</span> <span class="n">status</span> <span class="o">==</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="p">:</span>
-                <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">})</span>
+                <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">request_id</span><span class="p">})</span>
                 <span class="k">if</span> <span class="n">request</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;User input request id </span><span class="si">{</span><span class="n">request_id</span><span class="si">}</span><span class="s2"> does not exist!&quot;</span>
+                        <span class="sa">f</span><span class="s2">"User input request id </span><span class="si">{</span><span class="n">request_id</span><span class="si">}</span><span class="s2"> does not exist!"</span>
                     <span class="p">)</span>
-                <span class="n">status</span> <span class="o">=</span> <span class="n">UserRequestStatus</span><span class="p">(</span><span class="n">request</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">])</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="n">UserRequestStatus</span><span class="p">(</span><span class="n">request</span><span class="p">[</span><span class="s2">"status"</span><span class="p">])</span>
                 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>  <span class="c1"># noqa: E722</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-                <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">name</span><span class="p">}}</span>
+                <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">request_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">name</span><span class="p">}}</span>
             <span class="p">)</span>
             <span class="k">raise</span>
-        <span class="k">return</span> <span class="n">request</span><span class="p">[</span><span class="s2">&quot;response&quot;</span><span class="p">],</span> <span class="n">request</span><span class="p">[</span><span class="s2">&quot;note&quot;</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="n">request</span><span class="p">[</span><span class="s2">"response"</span><span class="p">],</span> <span class="n">request</span><span class="p">[</span><span class="s2">"note"</span><span class="p">]</span></div>
 </div>
 
 
@@ -584,9 +584,9 @@
     <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">options</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">maintenance</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">category</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Unknown Category&quot;</span><span class="p">,</span>
+    <span class="n">category</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"Unknown Category"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Request user input through the dashboard. Blocks until response is given.</span>
 
 <span class="sd">    Args:</span>
@@ -598,7 +598,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">        response (str): user response as string</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">user_input_view</span> <span class="o">=</span> <span class="n">UserInputView</span><span class="p">()</span>
     <span class="n">request_id</span> <span class="o">=</span> <span class="n">user_input_view</span><span class="o">.</span><span class="n">insert_request</span><span class="p">(</span>
         <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span>
@@ -614,7 +614,7 @@
 <div class="viewcode-block" id="request_maintenance_input">
 <a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.request_maintenance_input">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">request_maintenance_input</span><span class="p">(</span><span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Request user input for maintenance through the dashboard. Blocks until response is given.</span>
 
 <span class="sd">    Args:</span>
@@ -624,13 +624,13 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">        response (str): user response as string</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">request_user_input</span><span class="p">(</span>
         <span class="n">task_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
         <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span>
         <span class="n">maintenance</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">category</span><span class="o">=</span><span class="s2">&quot;Maintenance&quot;</span><span class="p">,</span>
+        <span class="n">category</span><span class="o">=</span><span class="s2">"Maintenance"</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
@@ -642,9 +642,9 @@
     <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">options</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">maintenance</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">category</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Unknown Category&quot;</span><span class="p">,</span>
+    <span class="n">category</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"Unknown Category"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Request user input through the dashboard. Blocks until response. Returns response and note.</span>
 
 <span class="sd">    Args:</span>
@@ -657,7 +657,7 @@
 <span class="sd">    -------</span>
 <span class="sd">        response (str): user response as string</span>
 <span class="sd">        note (str): note from the user</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">user_input_view</span> <span class="o">=</span> <span class="n">UserInputView</span><span class="p">()</span>
     <span class="n">request_id</span> <span class="o">=</span> <span class="n">user_input_view</span><span class="o">.</span><span class="n">insert_request</span><span class="p">(</span>
         <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span>
