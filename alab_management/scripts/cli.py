@@ -8,6 +8,7 @@ from .cleanup_lab import cleanup_lab
 from .init_project import init_project
 from .launch_lab import launch_dashboard, launch_lab
 from .launch_worker import launch_worker
+from .seed_demo_data import seed_demo_data
 from .setup_lab import setup_lab
 
 CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
@@ -134,3 +135,24 @@ def launch_summary_dashboard(host, port):
     from alab_management.dashboard.plotly import launch
 
     launch(host=host, port=port)
+
+
+@cli.command(
+    "seed_demo_data",
+    short_help="Seed demo samples, tasks, and experiments into the working database for UI testing.",
+)
+@click.option(
+    "--keep-existing-demo",
+    is_flag=True,
+    default=False,
+    help="Do not replace previously seeded demo documents tagged by the demo seeder.",
+)
+def seed_demo_data_cli(keep_existing_demo: bool):
+    """Seed demo data into the working database for dashboard testing."""
+    summary = seed_demo_data(replace_existing=not keep_existing_demo)
+    click.echo(
+        "Seeded demo data: "
+        f"{summary['samples_created']} samples, "
+        f"{summary['tasks_created']} tasks, "
+        f"{summary['experiments_created']} experiments."
+    )

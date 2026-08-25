@@ -70,6 +70,19 @@ const StyledDevicesDiv = styled.div`
   }
 `;
 
+const DEVICE_ACCENTS = {
+  occupiedBg: '#e6f0ef',
+  occupiedText: '#2b5b57',
+  errorBg: '#f4e8ec',
+  errorText: '#8c435b',
+  pauseRequestedBg: '#f3ece3',
+  pauseRequestedText: '#7a6146',
+  pausedBg: '#dce6ec',
+  pausedText: '#27485c',
+  badgeBg: '#45697c',
+  badgeText: '#ffffff',
+};
+
 
 // Attribute values come straight from the device's database document, so they can be anything from a
 // number to a nested mission plan. Primitives read best inline; anything structured is pretty-printed
@@ -116,13 +129,13 @@ function Row({ device, hoverForId }) {
   const rowColor = () => {
     switch (device.status) {
       case "OCCUPIED":
-        return '#e8f5e9';
+        return DEVICE_ACCENTS.occupiedBg;
       case "ERROR":
-        return '#c62828';
+        return DEVICE_ACCENTS.errorBg;
       case "PAUSE_REQUESTED":
-        return '#ffe0b2';
+        return DEVICE_ACCENTS.pauseRequestedBg;
       case "PAUSED":
-        return '#ef6c00';
+        return DEVICE_ACCENTS.pausedBg;
       default:
         return "#ffffff";
     }
@@ -130,9 +143,14 @@ function Row({ device, hoverForId }) {
 
   const textColor = (task_status) => {
     switch (task_status) {
+      case "OCCUPIED":
+        return DEVICE_ACCENTS.occupiedText;
       case "ERROR":
+        return DEVICE_ACCENTS.errorText;
+      case "PAUSE_REQUESTED":
+        return DEVICE_ACCENTS.pauseRequestedText;
       case "PAUSED":
-        return '#ffffff';
+        return DEVICE_ACCENTS.pausedText;
       default:
         return "#000000";
     }
@@ -140,9 +158,14 @@ function Row({ device, hoverForId }) {
 
   const subtextColor = (task_status) => {
     switch (task_status) {
+      case "OCCUPIED":
+        return DEVICE_ACCENTS.occupiedText;
       case "ERROR":
+        return DEVICE_ACCENTS.errorText;
+      case "PAUSE_REQUESTED":
+        return DEVICE_ACCENTS.pauseRequestedText;
       case "PAUSED":
-        return '#ffffff';
+        return DEVICE_ACCENTS.pausedText;
       default:
         return "#9e9e9e";
     }
@@ -151,11 +174,35 @@ function Row({ device, hoverForId }) {
   const PauseButton = ({ pause_state, device_name }) => {
     switch (pause_state) {
       case "RELEASED":
-        return <Button variant="contained" color="error" onClick={() => { request_device_pause(device_name) }}>Pause</Button>
+        return (
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => { request_device_pause(device_name) }}
+          >
+            Pause
+          </Button>
+        )
       case "REQUESTED":
-        return <Button variant="contained" color="primary" onClick={() => release_device_pause(device_name)}>Cancel Pause Request</Button>
+        return (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => release_device_pause(device_name)}
+          >
+            Cancel Pause Request
+          </Button>
+        )
       case "PAUSED":
-        return <Button variant="contained" color="primary" onClick={() => release_device_pause(device_name)}>Release</Button>
+        return (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => release_device_pause(device_name)}
+          >
+            Release
+          </Button>
+        )
     }
   }
 
@@ -288,7 +335,15 @@ class SingleOccupiedSamplePositionsList extends React.Component {
             component="div"
             id="nested-list-subheader"
             onClick={this.handleClick}>
-            <Badge badgeContent={this.props.samples.length} color="primary">
+            <Badge
+              badgeContent={this.props.samples.length}
+              sx={{
+                '& .MuiBadge-badge': {
+                  backgroundColor: DEVICE_ACCENTS.badgeBg,
+                  color: DEVICE_ACCENTS.badgeText,
+                },
+              }}
+            >
               {this.props.position}
             </Badge>
           </ ListSubheader>}

@@ -125,3 +125,123 @@ export async function get_device_signals(device_name, signal_names, hours) {
         return console.warn(error);
     }
 }
+
+// Sample Positions
+const SAMPLE_POSITIONS_API = process.env.NODE_ENV === "production" ? "/api/sample-positions" : URL + "/api/sample-positions";
+
+export async function get_sample_position_racks() {
+    try {
+        const res = await fetch(SAMPLE_POSITIONS_API + "/racks", { mode: 'cors' });
+        return await res.json();
+    } catch (error) {
+        return console.warn(error);
+    }
+}
+
+export function place_sample_in_position(position, { sample_id = null, sample_name = "" } = {}) {
+    return fetch(SAMPLE_POSITIONS_API + "/place", {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            position,
+            sample_id,
+            sample_name,
+        }),
+    });
+}
+
+export function clear_sample_position(position) {
+    return fetch(SAMPLE_POSITIONS_API + "/clear", {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            position,
+        }),
+    });
+}
+
+// Data exports
+const DATA_API = process.env.NODE_ENV === "production" ? "/api/data" : URL + "/api/data";
+
+export async function get_sample_summary_rows() {
+    try {
+        const res = await fetch(DATA_API + "/sample_summary", { mode: 'cors' });
+        return await res.json();
+    } catch (error) {
+        return console.warn(error);
+    }
+}
+
+export async function get_powder_dosing_rows() {
+    try {
+        const res = await fetch(DATA_API + "/powder_dosing_actuals", { mode: 'cors' });
+        return await res.json();
+    } catch (error) {
+        return console.warn(error);
+    }
+}
+
+export async function get_task_outcome_rows() {
+    try {
+        const res = await fetch(DATA_API + "/task_outcome_log", { mode: 'cors' });
+        return await res.json();
+    } catch (error) {
+        return console.warn(error);
+    }
+}
+
+export const DATA_DOWNLOADS = {
+    sampleSummary: DATA_API + "/sample_summary.csv",
+    powderDosing: DATA_API + "/powder_dosing_actuals.csv",
+    taskOutcome: DATA_API + "/task_outcome_log.csv",
+};
+
+// Device control
+const DEVICE_CONTROL_API = process.env.NODE_ENV === "production" ? "/api/device-control" : URL + "/api/device-control";
+
+export async function get_device_control_catalog() {
+    const res = await fetch(DEVICE_CONTROL_API + "/catalog", { mode: 'cors' });
+    return await res.json();
+}
+
+export async function claim_device_control(device_name) {
+    const res = await fetch(DEVICE_CONTROL_API + "/claim", {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ device_name }),
+    });
+    return await res.json();
+}
+
+export async function release_device_control(device_name, manual_task_id) {
+    const res = await fetch(DEVICE_CONTROL_API + "/release", {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ device_name, manual_task_id }),
+    });
+    return await res.json();
+}
+
+export async function execute_device_control_command(device_name, command_name, manual_task_id = null, params = {}) {
+    const res = await fetch(DEVICE_CONTROL_API + "/command", {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ device_name, command_name, manual_task_id, params }),
+    });
+    return await res.json();
+}
