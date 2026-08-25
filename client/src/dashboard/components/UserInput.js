@@ -217,7 +217,7 @@ function UserInputs({ hoverForId }) {
   useEffect(() => {
     const interval = setInterval(() => {
       refreshPendingRequests();
-    }, 250);
+    }, 2000);
     return () => clearInterval(interval);
   }, [refreshPendingRequests]);
 

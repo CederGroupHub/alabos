@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import csv
 import io
+from calendar import monthrange
 from datetime import datetime
 from typing import Any
 
-from flask import Blueprint, Response, jsonify
+from bson import ObjectId
+from flask import Blueprint, Response, jsonify, request
 
 from alab_management.dashboard.lab_views import sample_view, task_view
 from alab_management.utils.data_objects import (
@@ -22,7 +24,7 @@ def _get_history_collection(name: str):
     """Prefer the completed DB for historical exports, falling back to the working DB."""
     try:
         completed = get_completed_collection(name)
-        if completed.count_documents({}) > 0:
+        if completed.find_one({}, projection={"_id": 1}) is not None:
             return completed
     except ValueError:
         pass
@@ -34,26 +36,82 @@ def _get_history_collection(name: str):
     raise ValueError(f"Unsupported history collection: {name}")
 
 
-def _sample_id_str(sample_id: Any) -> str | None:
-    return str(sample_id) if sample_id is not None else None
+def _month_window(month_key: str) -> tuple[datetime, datetime]:
+    year, month = (int(part) for part in month_key.split("-"))
+    start = datetime(year, month, 1)
+    if month == 12:
+        end = datetime(year + 1, 1, 1)
+    else:
+        end = datetime(year, month + 1, 1)
+    return start, end
 
 
-def _completed_sample_docs() -> dict[str, dict[str, Any]]:
+def _default_month_key() -> str:
+    now = datetime.now()
+    return f"{now.year:04d}-{now.month:02d}"
+
+
+def _parse_month_key(month_key: str | None) -> str:
+    if not month_key:
+        return _default_month_key()
+    try:
+        year, month = (int(part) for part in month_key.split("-"))
+        if month < 1 or month > 12:
+            raise ValueError
+        monthrange(year, month)
+    except (TypeError, ValueError):
+        raise ValueError("month must be YYYY-MM") from None
+    return f"{year:04d}-{month:02d}"
+
+
+def _window_metadata(month_key: str) -> dict[str, Any]:
+    start, end = _month_window(month_key)
+    year, month = (int(part) for part in month_key.split("-"))
+    tasks_col = _get_history_collection("tasks")
+    has_older = (
+        tasks_col.find_one({"created_at": {"$lt": start}}, projection={"_id": 1})
+        is not None
+    )
+    current_month = _default_month_key()
     return {
-        str(sample["_id"]): sample
-        for sample in _get_history_collection("samples").find()
+        "month": month_key,
+        "label": datetime(year, month, 1).strftime("%B %Y"),
+        "start": start,
+        "end": end,
+        "has_older": has_older,
+        "has_newer": month_key < current_month,
     }
 
 
-def _tasks_by_sample_id() -> dict[str, list[dict[str, Any]]]:
-    by_sample_id: dict[str, list[dict[str, Any]]] = {}
-    for task in _get_history_collection("tasks").find():
-        for sample in task.get("samples", []):
-            sample_id = _sample_id_str(sample.get("sample_id"))
-            if sample_id is None:
-                continue
-            by_sample_id.setdefault(sample_id, []).append(task)
-    return by_sample_id
+def _window_from_request() -> dict[str, Any]:
+    try:
+        month_key = _parse_month_key(request.args.get("month"))
+    except ValueError as exc:
+        raise ValueError(str(exc)) from exc
+    return _window_metadata(month_key)
+
+
+def _created_at_filter(start: datetime, end: datetime) -> dict[str, Any]:
+    return {"created_at": {"$gte": start, "$lt": end}}
+
+
+def _response_payload(rows: list[dict[str, Any]], window: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "status": "success",
+        "window": make_jsonable(
+            {
+                "month": window["month"],
+                "label": window["label"],
+                "has_older": window["has_older"],
+                "has_newer": window["has_newer"],
+            }
+        ),
+        "rows": make_jsonable(rows),
+    }
+
+
+def _sample_id_str(sample_id: Any) -> str | None:
+    return str(sample_id) if sample_id is not None else None
 
 
 def _sample_metadata(sample_doc: dict[str, Any] | None) -> dict[str, Any]:
@@ -67,9 +125,14 @@ def _find_first_task_of_type(tasks: list[dict[str, Any]], task_type: str) -> dic
     return None
 
 
-def _sample_summary_rows() -> list[dict[str, Any]]:
+def _sample_summary_rows(window: dict[str, Any]) -> list[dict[str, Any]]:
     rows = []
-    for sample in _get_history_collection("samples").find().sort("created_at", 1):
+    date_filter = _created_at_filter(window["start"], window["end"])
+    for sample in (
+        _get_history_collection("samples")
+        .find(date_filter)
+        .sort("created_at", 1)
+    ):
         rows.append(
             {
                 "sample_id": str(sample["_id"]),
@@ -86,13 +149,38 @@ def _sample_summary_rows() -> list[dict[str, Any]]:
     return rows
 
 
-def _powder_dosing_rows() -> list[dict[str, Any]]:
+def _powder_dosing_rows(window: dict[str, Any]) -> list[dict[str, Any]]:
     rows = []
-    sample_docs = _completed_sample_docs()
-    tasks_by_sample_id = _tasks_by_sample_id()
-    for task in _get_history_collection("tasks").find({"type": "PowderDosing"}).sort(
-        "created_at", 1
-    ):
+    date_filter = _created_at_filter(window["start"], window["end"])
+    tasks_col = _get_history_collection("tasks")
+    samples_col = _get_history_collection("samples")
+
+    dosing_tasks = list(
+        tasks_col.find({"type": "PowderDosing", **date_filter}).sort("created_at", 1)
+    )
+
+    sample_object_ids: list[ObjectId] = []
+    for task in dosing_tasks:
+        for sample in task.get("samples", []):
+            sample_id = sample.get("sample_id")
+            if sample_id is not None:
+                sample_object_ids.append(ObjectId(sample_id))
+    sample_object_ids = list(dict.fromkeys(sample_object_ids))
+
+    sample_docs = {
+        str(sample["_id"]): sample
+        for sample in samples_col.find({"_id": {"$in": sample_object_ids}})
+    }
+
+    tasks_by_sample_id: dict[str, list[dict[str, Any]]] = {sid: [] for sid in sample_docs}
+    if sample_object_ids:
+        for task in tasks_col.find({"samples.sample_id": {"$in": sample_object_ids}}):
+            for sample in task.get("samples", []):
+                sample_id = _sample_id_str(sample.get("sample_id"))
+                if sample_id in tasks_by_sample_id:
+                    tasks_by_sample_id[sample_id].append(task)
+
+    for task in dosing_tasks:
         sample_lookup = {}
         for sample in task.get("samples", []):
             sample_name = sample.get("name")
@@ -216,9 +304,14 @@ def _powder_dosing_rows() -> list[dict[str, Any]]:
     return rows
 
 
-def _task_outcome_rows() -> list[dict[str, Any]]:
+def _task_outcome_rows(window: dict[str, Any]) -> list[dict[str, Any]]:
     rows = []
-    for task in _get_history_collection("tasks").find().sort("created_at", -1):
+    date_filter = _created_at_filter(window["start"], window["end"])
+    for task in (
+        _get_history_collection("tasks")
+        .find(date_filter)
+        .sort("created_at", -1)
+    ):
         rows.append(
             {
                 "task_id": str(task["_id"]),
@@ -265,37 +358,101 @@ def _csv_cell(value: Any) -> str:
     return str(value)
 
 
+def _shift_month(month_key: str, delta: int) -> str:
+    year, month = (int(part) for part in month_key.split("-"))
+    month += delta
+    while month < 1:
+        month += 12
+        year -= 1
+    while month > 12:
+        month -= 12
+        year += 1
+    return f"{year:04d}-{month:02d}"
+
+
+@data_bp.route("/window", methods=["GET"])
+def data_window():
+    """Return the active month window and whether older/newer months exist."""
+    try:
+        window = _window_from_request()
+    except ValueError as exc:
+        return jsonify({"status": "error", "errors": str(exc)}), 400
+    return jsonify(
+        {
+            "status": "success",
+            "window": make_jsonable(
+                {
+                    "month": window["month"],
+                    "label": window["label"],
+                    "has_older": window["has_older"],
+                    "has_newer": window["has_newer"],
+                    "older_month": _shift_month(window["month"], -1)
+                    if window["has_older"]
+                    else None,
+                    "newer_month": _shift_month(window["month"], 1)
+                    if window["has_newer"]
+                    else None,
+                }
+            ),
+        }
+    )
+
+
 @data_bp.route("/sample_summary", methods=["GET"])
 def sample_summary():
-    """Return a curated sample summary."""
-    return jsonify({"status": "success", "rows": make_jsonable(_sample_summary_rows())})
+    """Return a curated sample summary for one calendar month."""
+    try:
+        window = _window_from_request()
+    except ValueError as exc:
+        return jsonify({"status": "error", "errors": str(exc)}), 400
+    return jsonify(_response_payload(_sample_summary_rows(window), window))
 
 
 @data_bp.route("/powder_dosing_actuals", methods=["GET"])
 def powder_dosing_actuals():
-    """Return a curated powder dosing export."""
-    return jsonify({"status": "success", "rows": make_jsonable(_powder_dosing_rows())})
+    """Return a curated powder dosing export for one calendar month."""
+    try:
+        window = _window_from_request()
+    except ValueError as exc:
+        return jsonify({"status": "error", "errors": str(exc)}), 400
+    return jsonify(_response_payload(_powder_dosing_rows(window), window))
 
 
 @data_bp.route("/task_outcome_log", methods=["GET"])
 def task_outcome_log():
-    """Return a curated task outcome log."""
-    return jsonify({"status": "success", "rows": make_jsonable(_task_outcome_rows())})
+    """Return a curated task outcome log for one calendar month."""
+    try:
+        window = _window_from_request()
+    except ValueError as exc:
+        return jsonify({"status": "error", "errors": str(exc)}), 400
+    return jsonify(_response_payload(_task_outcome_rows(window), window))
 
 
 @data_bp.route("/sample_summary.csv", methods=["GET"])
 def sample_summary_csv():
     """Download the sample summary as CSV."""
-    return _csv_response("sample_summary.csv", _sample_summary_rows())
+    try:
+        window = _window_from_request()
+    except ValueError as exc:
+        return jsonify({"status": "error", "errors": str(exc)}), 400
+    return _csv_response("sample_summary.csv", _sample_summary_rows(window))
 
 
 @data_bp.route("/powder_dosing_actuals.csv", methods=["GET"])
 def powder_dosing_actuals_csv():
     """Download powder dosing actuals as CSV."""
-    return _csv_response("powder_dosing_actuals.csv", _powder_dosing_rows())
+    try:
+        window = _window_from_request()
+    except ValueError as exc:
+        return jsonify({"status": "error", "errors": str(exc)}), 400
+    return _csv_response("powder_dosing_actuals.csv", _powder_dosing_rows(window))
 
 
 @data_bp.route("/task_outcome_log.csv", methods=["GET"])
 def task_outcome_log_csv():
     """Download the task outcome log as CSV."""
-    return _csv_response("task_outcome_log.csv", _task_outcome_rows())
+    try:
+        window = _window_from_request()
+    except ValueError as exc:
+        return jsonify({"status": "error", "errors": str(exc)}), 400
+    return _csv_response("task_outcome_log.csv", _task_outcome_rows(window))

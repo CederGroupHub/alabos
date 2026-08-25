@@ -169,38 +169,49 @@ export function clear_sample_position(position) {
 // Data exports
 const DATA_API = process.env.NODE_ENV === "production" ? "/api/data" : URL + "/api/data";
 
-export async function get_sample_summary_rows() {
+function dataMonthQuery(month) {
+    return month ? `?month=${encodeURIComponent(month)}` : "";
+}
+
+export async function get_data_window(month = null) {
     try {
-        const res = await fetch(DATA_API + "/sample_summary", { mode: 'cors' });
+        const res = await fetch(DATA_API + "/window" + dataMonthQuery(month), { mode: 'cors' });
         return await res.json();
     } catch (error) {
         return console.warn(error);
     }
 }
 
-export async function get_powder_dosing_rows() {
+export async function get_sample_summary_rows(month = null) {
     try {
-        const res = await fetch(DATA_API + "/powder_dosing_actuals", { mode: 'cors' });
+        const res = await fetch(DATA_API + "/sample_summary" + dataMonthQuery(month), { mode: 'cors' });
         return await res.json();
     } catch (error) {
         return console.warn(error);
     }
 }
 
-export async function get_task_outcome_rows() {
+export async function get_powder_dosing_rows(month = null) {
     try {
-        const res = await fetch(DATA_API + "/task_outcome_log", { mode: 'cors' });
+        const res = await fetch(DATA_API + "/powder_dosing_actuals" + dataMonthQuery(month), { mode: 'cors' });
         return await res.json();
     } catch (error) {
         return console.warn(error);
     }
 }
 
-export const DATA_DOWNLOADS = {
-    sampleSummary: DATA_API + "/sample_summary.csv",
-    powderDosing: DATA_API + "/powder_dosing_actuals.csv",
-    taskOutcome: DATA_API + "/task_outcome_log.csv",
-};
+export async function get_task_outcome_rows(month = null) {
+    try {
+        const res = await fetch(DATA_API + "/task_outcome_log" + dataMonthQuery(month), { mode: 'cors' });
+        return await res.json();
+    } catch (error) {
+        return console.warn(error);
+    }
+}
+
+export function dataDownloadHref(endpoint, month = null) {
+    return DATA_API + endpoint + dataMonthQuery(month);
+}
 
 // Device control
 const DEVICE_CONTROL_API = process.env.NODE_ENV === "production" ? "/api/device-control" : URL + "/api/device-control";

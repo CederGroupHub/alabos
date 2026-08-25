@@ -6,36 +6,102 @@ from alab_management.dashboard.lab_views import (
     task_view,
     user_input_view,
 )
+from alab_management.utils.data_objects import get_completed_collection
 
 userinput_bp = Blueprint("/userinput", __name__, url_prefix="/api/userinput")
+
+
+def _batch_fetch_tasks(task_ids: set[ObjectId]) -> dict[ObjectId, dict]:
+    if not task_ids:
+        return {}
+
+    tasks_by_id: dict[ObjectId, dict] = {}
+    for task in task_view._task_collection.find({"_id": {"$in": list(task_ids)}}):
+        tasks_by_id[task["_id"]] = task
+
+    missing = task_ids - set(tasks_by_id)
+    if missing:
+        try:
+            completed_tasks = get_completed_collection("tasks")
+            for task in completed_tasks.find({"_id": {"$in": list(missing)}}):
+                tasks_by_id[task["_id"]] = task
+        except ValueError:
+            pass
+
+    return tasks_by_id
+
+
+def _batch_fetch_experiments(experiment_ids: set[ObjectId]) -> dict[ObjectId, dict]:
+    if not experiment_ids:
+        return {}
+
+    experiments_by_id: dict[ObjectId, dict] = {}
+    for experiment in experiment_view._experiment_collection.find(
+        {"_id": {"$in": list(experiment_ids)}}
+    ):
+        experiments_by_id[experiment["_id"]] = experiment
+
+    missing = experiment_ids - set(experiments_by_id)
+    if missing:
+        try:
+            completed_experiments = get_completed_collection("experiment")
+            for experiment in completed_experiments.find(
+                {"_id": {"$in": list(missing)}}
+            ):
+                experiments_by_id[experiment["_id"]] = experiment
+        except ValueError:
+            pass
+
+    return experiments_by_id
 
 
 @userinput_bp.route("/pending", methods=["GET"])
 def get_userinput_status():
     """Get all the status in the database."""
+    pending_requests = list(user_input_view.get_all_pending_requests())
+
+    task_ids: set[ObjectId] = set()
+    experiment_ids: set[ObjectId] = set()
+    for request_ in pending_requests:
+        context = request_["request_context"]
+        if "task_id" in context:
+            task_ids.add(ObjectId(context["task_id"]))
+        if not context.get("maintenance") and "experiment_id" in context:
+            experiment_ids.add(ObjectId(context["experiment_id"]))
+
+    tasks_by_id = _batch_fetch_tasks(task_ids)
+    experiments_by_id = _batch_fetch_experiments(experiment_ids)
+
     user_input_requests = {}
     id_to_name = {}
-    for request_ in user_input_view.get_all_pending_requests():
-        if request_["request_context"]["maintenance"]:
+    for request_ in pending_requests:
+        context = request_["request_context"]
+        if context.get("maintenance"):
             experiment_name = "Maintenance"
             eid = "Maintenance"
-            if "task_id" not in request_["request_context"]:
+            if "task_id" not in context:
                 task_id = "This request came directly from a device, no task_id."
                 task_type = "DeviceRequest"
             else:
-                task_id = str(request_["request_context"]["task_id"])
-                task_type = task_view.get_task(request_["request_context"]["task_id"])[
-                    "type"
-                ]
+                task_object_id = ObjectId(context["task_id"])
+                task_id = str(task_object_id)
+                task_doc = tasks_by_id.get(task_object_id)
+                if task_doc is None:
+                    raise ValueError(f"No task exists with provided task id: {task_object_id}")
+                task_type = task_doc["type"]
         else:
-            eid = str(request_["request_context"]["experiment_id"])
-            experiment_name = experiment_view.get_experiment(
-                request_["request_context"]["experiment_id"]
-            )["name"]
-            task_id = str(request_["request_context"]["task_id"])
-            task_type = task_view.get_task(request_["request_context"]["task_id"])[
-                "type"
-            ]
+            experiment_object_id = ObjectId(context["experiment_id"])
+            eid = str(experiment_object_id)
+            experiment_doc = experiments_by_id.get(experiment_object_id)
+            if experiment_doc is None:
+                raise ValueError(f"Cannot find an experiment with id: {experiment_object_id}")
+            experiment_name = experiment_doc["name"]
+            task_object_id = ObjectId(context["task_id"])
+            task_id = str(task_object_id)
+            task_doc = tasks_by_id.get(task_object_id)
+            if task_doc is None:
+                raise ValueError(f"No task exists with provided task id: {task_object_id}")
+            task_type = task_doc["type"]
 
         if eid not in user_input_requests:
             user_input_requests[eid] = []

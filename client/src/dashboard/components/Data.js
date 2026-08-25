@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Box,
   Button,
   Card,
   CardContent,
   CircularProgress,
+  IconButton,
   Stack,
   Table,
   TableBody,
@@ -15,7 +16,15 @@ import {
   Typography,
 } from '@mui/material';
 import Paper from '@mui/material/Paper';
-import { DATA_DOWNLOADS, get_powder_dosing_rows, get_sample_summary_rows, get_task_outcome_rows } from '../../api_routes';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import {
+  dataDownloadHref,
+  get_data_window,
+  get_powder_dosing_rows,
+  get_sample_summary_rows,
+  get_task_outcome_rows,
+} from '../../api_routes';
 
 function DataSection({ title, description, rows, columns, downloadHref, loading }) {
   return (
@@ -37,7 +46,7 @@ function DataSection({ title, description, rows, columns, downloadHref, loading 
             </Box>
           ) : rows.length === 0 ? (
             <Typography variant="body2" color="text.secondary">
-              No rows yet. This export will populate once the relevant samples/tasks have run.
+              No rows for this month. Try an older month or wait for new samples/tasks to complete.
             </Typography>
           ) : (
             <TableContainer component={Paper} sx={{ maxHeight: 320 }}>
@@ -74,42 +83,83 @@ function Data() {
   const [powderDosing, setPowderDosing] = useState([]);
   const [taskOutcome, setTaskOutcome] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [windowInfo, setWindowInfo] = useState(null);
+  const [month, setMonth] = useState(null);
 
-  const refresh = async () => {
+  const refresh = useCallback(async (targetMonth = null) => {
     setLoading(true);
-    const [sampleSummaryResult, powderDosingResult, taskOutcomeResult] = await Promise.all([
-      get_sample_summary_rows(),
-      get_powder_dosing_rows(),
-      get_task_outcome_rows(),
+    const [windowResult, sampleSummaryResult, powderDosingResult, taskOutcomeResult] = await Promise.all([
+      get_data_window(targetMonth),
+      get_sample_summary_rows(targetMonth),
+      get_powder_dosing_rows(targetMonth),
+      get_task_outcome_rows(targetMonth),
     ]);
+    const activeMonth = windowResult?.window?.month || targetMonth;
+    setMonth(activeMonth);
+    setWindowInfo(windowResult?.window || null);
     setSampleSummary(sampleSummaryResult?.rows || []);
     setPowderDosing(powderDosingResult?.rows || []);
     setTaskOutcome(taskOutcomeResult?.rows || []);
     setLoading(false);
-  };
+  }, []);
 
   useEffect(() => {
-    refresh();
-  }, []);
+    refresh(null);
+  }, [refresh]);
+
+  const goOlder = () => {
+    if (!windowInfo?.older_month) {
+      return;
+    }
+    refresh(windowInfo.older_month);
+  };
+
+  const goNewer = () => {
+    if (!windowInfo?.newer_month) {
+      return;
+    }
+    refresh(windowInfo.newer_month);
+  };
 
   return (
     <Stack spacing={2}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
         <Box>
           <Typography variant="h5">Data</Typography>
           <Typography variant="body2" color="text.secondary">
             Curated Mongo-backed exports for operators and experimenters.
           </Typography>
         </Box>
-        <Button variant="outlined" onClick={refresh}>Refresh</Button>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <IconButton
+            aria-label="Older month"
+            onClick={goOlder}
+            disabled={loading || !windowInfo?.has_older}
+          >
+            <ChevronLeftIcon />
+          </IconButton>
+          <Typography variant="body1" sx={{ minWidth: 140, textAlign: "center" }}>
+            {windowInfo?.label || "Loading..."}
+          </Typography>
+          <IconButton
+            aria-label="Newer month"
+            onClick={goNewer}
+            disabled={loading || !windowInfo?.has_newer}
+          >
+            <ChevronRightIcon />
+          </IconButton>
+          <Button variant="outlined" onClick={() => refresh(month)} disabled={loading}>
+            Refresh
+          </Button>
+        </Stack>
       </Box>
 
       <DataSection
         title="Sample Summary"
-        description="Current sample inventory and basic metadata from the working lab database."
+        description="Samples created during the selected month."
         rows={sampleSummary}
         loading={loading}
-        downloadHref={DATA_DOWNLOADS.sampleSummary}
+        downloadHref={dataDownloadHref("/sample_summary.csv", month)}
         columns={[
           { key: "sample_id", label: "Sample ID" },
           { key: "name", label: "Name" },
@@ -121,10 +171,10 @@ function Data() {
 
       <DataSection
         title="Powder Dosing Actuals"
-        description="Flattened per-sample Labman dosing results, including target and actual dispensed masses."
+        description="Flattened per-sample Labman dosing results for the selected month."
         rows={powderDosing}
         loading={loading}
-        downloadHref={DATA_DOWNLOADS.powderDosing}
+        downloadHref={dataDownloadHref("/powder_dosing_actuals.csv", month)}
         columns={[
           { key: "sample_name", label: "Sample" },
           { key: "powder_name", label: "Powder" },
@@ -137,10 +187,10 @@ function Data() {
 
       <DataSection
         title="Task Outcome Log"
-        description="Recent task status and result-key overview from the task collection."
+        description="Task status and result-key overview for the selected month."
         rows={taskOutcome}
         loading={loading}
-        downloadHref={DATA_DOWNLOADS.taskOutcome}
+        downloadHref={dataDownloadHref("/task_outcome_log.csv", month)}
         columns={[
           { key: "task_id", label: "Task ID" },
           { key: "type", label: "Type" },
