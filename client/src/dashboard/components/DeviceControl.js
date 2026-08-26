@@ -245,27 +245,15 @@ function DeviceControl() {
   return (
     <StyledDeviceControlDiv>
       <Stack spacing={2.5}>
-        <Card
-          variant="outlined"
-          sx={{
-            borderColor: PAGE_ACCENTS.border,
-            background: PAGE_ACCENTS.shell,
-          }}
-        >
-          <CardContent>
-            <Stack spacing={1}>
-              <Typography variant="h5" sx={{ color: PAGE_ACCENTS.title }}>
-                Device Control
-              </Typography>
-              <Typography variant="body2" sx={{ color: PAGE_ACCENTS.text }}>
-                Read-only health and state checks can run directly. Any actuation command must first claim the device in ALabOS, then keep that manual claim until release.
-              </Typography>
-              <Typography variant="body2" sx={{ color: PAGE_ACCENTS.muted }}>
-                Robot arms and static racks are intentionally excluded from this page.
-              </Typography>
-            </Stack>
-          </CardContent>
-        </Card>
+        <Box>
+          <Typography variant="h5">Device Control</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Read-only health and state checks can run directly. Any actuation command must first claim the device in ALabOS, then keep that manual claim until release.
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Robot arms and static racks are intentionally excluded from this page.
+          </Typography>
+        </Box>
 
         {error && <Alert severity="error">{error}</Alert>}
         {loading && <CircularProgress size={28} />}
