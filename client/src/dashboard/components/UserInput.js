@@ -231,20 +231,28 @@ function UserInputAccordion({
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
         >
-          <InputHeader accordionState={accordionState} numRequests={requests.length} />
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={1.5}
+            sx={{ flex: 1, minWidth: 0 }}
+          >
+            <InputHeader accordionState={accordionState} numRequests={requests.length} />
+            <Button
+              variant="contained"
+              size="small"
+              onClick={(event) => {
+                event.stopPropagation();
+                handleMarkSectionCompleted();
+              }}
+              disabled={bulkSubmitting || requests.length === 0}
+              sx={{ flexShrink: 0 }}
+            >
+              Mark all as completed
+            </Button>
+          </Stack>
         </AccordionSummary>
-        <AccordionDetails>
-          <Stack spacing={2}>
-            <Stack direction="row" justifyContent="flex-end">
-              <Button
-                variant="contained"
-                size="small"
-                onClick={handleMarkSectionCompleted}
-                disabled={bulkSubmitting || requests.length === 0}
-              >
-                Mark all as completed
-              </Button>
-            </Stack>
+        <AccordionDetails sx={{ pt: 1 }}>
             <TableContainer style={{ height: "100%" }
             } component={Paper} >
             <Table stickyHeader aria-label="user input table">
@@ -263,7 +271,6 @@ function UserInputAccordion({
               }
             </Table>
           </TableContainer >
-          </Stack>
         </AccordionDetails>
 
       </Accordion>
