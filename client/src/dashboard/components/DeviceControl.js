@@ -417,7 +417,7 @@ function CommandSection({
   disableActuation,
 }) {
   return (
-    <Stack spacing={1.25}>
+    <Stack spacing={1}>
       <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
         {title}
       </Typography>
@@ -426,64 +426,106 @@ function CommandSection({
           No commands configured.
         </Typography>
       )}
-      {commands.map((command) => {
-        const values = getCommandParamsForDevice(device.device_name, command);
-        const isPending = pending[device.device_name]?.[`command:${command.command_name}`];
-        return (
-          <Card
+      <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ alignItems: 'center' }}>
+        {commands.map((command) => (
+          <CommandControl
             key={command.command_name}
-            variant="outlined"
-            sx={{ borderColor: PAGE_ACCENTS.border }}
-          >
-            <CardContent sx={{ '&:last-child': { pb: 2 } }}>
-              <Stack spacing={1.25}>
-                <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                  {command.label}
-                </Typography>
-                <Stack direction={{ xs: 'column', md: 'row' }} spacing={1} alignItems={{ md: 'center' }}>
-                  {Object.entries(command.params || {}).map(([name, schema]) => (
-                    schema.type === 'bool' ? (
-                      <Stack key={name} direction="row" alignItems="center">
-                        <Switch
-                          checked={Boolean(values[name])}
-                          onChange={(event) => onParamChange(device.device_name, command.command_name, name, event, schema.type)}
-                        />
-                        <Typography variant="body2">
-                          {name === 'close_gripper'
-                            ? 'Close gripper before shaking'
-                            : name === 'frequency'
-                              ? 'Frequency (Hz)'
-                              : name === 'duration_seconds'
-                                ? 'Duration (seconds)'
-                                : name}
-                        </Typography>
-                      </Stack>
-                    ) : (
-                      <TextField
-                        key={name}
-                        size="small"
-                        label={name === 'duration_seconds' ? 'Duration (seconds)' : name}
-                        type="number"
-                        value={values[name]}
-                        onChange={(event) => onParamChange(device.device_name, command.command_name, name, event, schema.type)}
-                        inputProps={schema.type === 'int' ? { step: 1 } : { step: 'any' }}
-                      />
-                    )
-                  ))}
-                  <Button
-                    variant={command.mode === 'read' ? 'outlined' : 'contained'}
-                    disabled={Boolean(disableActuation) || isPending}
-                    onClick={() => onCommand(device.device_name, command)}
-                  >
-                    {isPending ? 'Running…' : command.label}
-                  </Button>
-                </Stack>
-              </Stack>
-            </CardContent>
-          </Card>
-        );
-      })}
+            command={command}
+            device={device}
+            pending={pending}
+            onCommand={onCommand}
+            getCommandParamsForDevice={getCommandParamsForDevice}
+            onParamChange={onParamChange}
+            disableActuation={disableActuation}
+          />
+        ))}
+      </Stack>
     </Stack>
+  );
+}
+
+function CommandControl({
+  command,
+  device,
+  pending,
+  onCommand,
+  getCommandParamsForDevice,
+  onParamChange,
+  disableActuation,
+}) {
+  const values = getCommandParamsForDevice(device.device_name, command);
+  const isPending = pending[device.device_name]?.[`command:${command.command_name}`];
+  const paramEntries = Object.entries(command.params || {});
+  const hasParams = paramEntries.length > 0;
+
+  const runButton = (
+    <Button
+      variant={command.mode === 'read' ? 'outlined' : 'contained'}
+      disabled={Boolean(disableActuation) || isPending}
+      onClick={() => onCommand(device.device_name, command)}
+    >
+      {isPending ? 'Running…' : command.label}
+    </Button>
+  );
+
+  if (!hasParams) {
+    return runButton;
+  }
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: 1,
+        border: `1px solid ${PAGE_ACCENTS.border}`,
+        borderRadius: 1,
+        px: 1.25,
+        py: 1,
+      }}
+    >
+      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+        {command.label}
+      </Typography>
+      {paramEntries.map(([name, schema]) => (
+        schema.type === 'bool' ? (
+          <Stack key={name} direction="row" alignItems="center">
+            <Switch
+              checked={Boolean(values[name])}
+              onChange={(event) => onParamChange(device.device_name, command.command_name, name, event, schema.type)}
+            />
+            <Typography variant="body2">
+              {name === 'close_gripper'
+                ? 'Close gripper before shaking'
+                : name === 'frequency'
+                  ? 'Frequency (Hz)'
+                  : name === 'duration_seconds'
+                    ? 'Duration (seconds)'
+                    : name}
+            </Typography>
+          </Stack>
+        ) : (
+          <TextField
+            key={name}
+            size="small"
+            label={
+              name === 'duration_seconds'
+                ? 'Duration (seconds)'
+                : name === 'frequency'
+                  ? 'Frequency (Hz)'
+                  : name
+            }
+            type="number"
+            value={values[name]}
+            onChange={(event) => onParamChange(device.device_name, command.command_name, name, event, schema.type)}
+            inputProps={schema.type === 'int' ? { step: 1 } : { step: 'any' }}
+            sx={{ width: name === 'duration_seconds' || name === 'frequency' ? 160 : 120 }}
+          />
+        )
+      ))}
+      {runButton}
+    </Box>
   );
 }
 
