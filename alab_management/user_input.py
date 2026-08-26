@@ -38,6 +38,7 @@ class UserInputView:
         task_id: ObjectId | None = None,
         maintenance: bool = False,
         category: str = "Unknown Category",
+        request_context_extra: dict[str, Any] | None = None,
     ) -> ObjectId:
         """
         Insert a request into the database.
@@ -60,6 +61,8 @@ class UserInputView:
                     "task_id": task_id,
                 }
             )
+        if request_context_extra:
+            context.update(request_context_extra)
         request_id = ObjectId()
         self._input_collection.insert_one(
             {
@@ -140,6 +143,14 @@ class UserInputView:
             list[dict[str, Any]],
             self._input_collection.find({"status": UserRequestStatus.PENDING.value}),
         )
+
+    def get_pending_request_by_context(
+        self, context_filters: dict[str, Any]
+    ) -> dict[str, Any] | None:
+        query: dict[str, Any] = {"status": UserRequestStatus.PENDING.value}
+        for key, value in context_filters.items():
+            query[f"request_context.{key}"] = value
+        return self._input_collection.find_one(query)
 
     def retrieve_user_input_with_note(self, request_id: ObjectId) -> tuple[str, str]:
         """

@@ -85,7 +85,7 @@ function DeviceControl() {
         devices.forEach((device) => {
           if (device.manual_task_id) {
             next[device.device_name] = device.manual_task_id;
-          } else if (device.dashboard_status !== 'OCCUPIED') {
+          } else {
             delete next[device.device_name];
           }
         });
@@ -251,6 +251,25 @@ function DeviceControl() {
     );
   };
 
+  const claimStateChipStyle = (device) => {
+    if (device.manual_claimed) {
+      return {
+        backgroundColor: device.auto_release_pending ? PAGE_ACCENTS.warningBg : PAGE_ACCENTS.successBg,
+        color: device.auto_release_pending ? PAGE_ACCENTS.warningText : PAGE_ACCENTS.successText,
+      };
+    }
+    if (device.auto_occupied) {
+      return {
+        backgroundColor: PAGE_ACCENTS.warningBg,
+        color: PAGE_ACCENTS.warningText,
+      };
+    }
+    return {
+      backgroundColor: PAGE_ACCENTS.shell,
+      color: PAGE_ACCENTS.badgeBusyText,
+    };
+  };
+
   return (
     <StyledDeviceControlDiv>
       <Stack spacing={2.5}>
@@ -272,7 +291,7 @@ function DeviceControl() {
           const readCommands = deviceCommands.filter((command) => command.mode === 'read');
           const actuateCommands = deviceCommands.filter((command) => command.mode === 'actuate');
           const isClaimedHere = claimTokens[device.device_name] && claimTokens[device.device_name] === device.manual_task_id;
-          const isUnavailable = device.claim_state === 'Unavailable';
+          const canClaim = Boolean(device.claimable);
 
           return (
             <Card
@@ -300,8 +319,7 @@ function DeviceControl() {
                         size="small"
                         label={device.claim_state}
                         sx={{
-                          backgroundColor: device.manual_claimed ? PAGE_ACCENTS.successBg : PAGE_ACCENTS.shell,
-                          color: device.manual_claimed ? PAGE_ACCENTS.successText : PAGE_ACCENTS.badgeBusyText,
+                          ...claimStateChipStyle(device),
                           fontWeight: 600,
                         }}
                       />
@@ -317,11 +335,21 @@ function DeviceControl() {
                       <Typography variant="body2" sx={{ color: PAGE_ACCENTS.text }}>
                         <strong>Dashboard message:</strong> {device.message || 'No active message.'}
                       </Typography>
+                      {device.auto_release_pending && (
+                        <Alert severity="warning" sx={{ py: 0.5 }}>
+                          An automated run is waiting for this device. Approve the User Input Request to release manual control.
+                        </Alert>
+                      )}
+                      {device.auto_occupied && (
+                        <Alert severity="info" sx={{ py: 0.5 }}>
+                          This device is currently in use by an automated run and cannot be claimed for manual control.
+                        </Alert>
+                      )}
 
                       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
                         <Button
                           variant="contained"
-                          disabled={Boolean(device.manual_claimed) || isUnavailable || pending[device.device_name]?.claim}
+                          disabled={!canClaim || pending[device.device_name]?.claim}
                           onClick={() => handleClaim(device.device_name)}
                         >
                           {pending[device.device_name]?.claim ? 'Claiming…' : 'Claim Device'}

@@ -9,13 +9,20 @@ from bson.errors import InvalidId
 from flask import Blueprint, request
 
 from alab_management.dashboard.lab_views import device_view
+from alab_management.dashboard.manual_control import (
+    build_claim_state,
+    get_manual_claim_id,
+    get_pending_auto_release_request,
+    is_auto_occupied,
+    release_manual_claim_with_token,
+    require_manual_claim,
+    set_manual_claim_id,
+)
 from alab_management.device_manager import DevicesClient
 
 device_control_bp = Blueprint(
     "/device-control", __name__, url_prefix="/api/device-control"
 )
-
-MANUAL_CONTROL_ATTRIBUTE = "manual_control_task_id"
 
 BLOCKED_COMMANDS: dict[str, set[str]] = {
     "DASH_capper": {"open_top_gripper", "close_top_gripper"},
@@ -226,21 +233,37 @@ def _parse_dashboard_status(task_status: str, pause_status: str) -> str:
     return task_status
 
 
-def _get_manual_claim_id(device_entry: dict[str, Any]) -> str | None:
-    attributes = device_entry.get("attributes") or {}
-    claim_id = attributes.get(MANUAL_CONTROL_ATTRIBUTE)
-    if claim_id in ("", None):
-        return None
-    return str(claim_id)
-
-
-def _set_manual_claim_id(device_name: str, manual_task_id: str | None):
-    attributes = dict(device_view.get_all_attributes(device_name=device_name) or {})
-    if manual_task_id is None:
-        attributes.pop(MANUAL_CONTROL_ATTRIBUTE, None)
-    else:
-        attributes[MANUAL_CONTROL_ATTRIBUTE] = manual_task_id
-    device_view.set_all_attributes(device_name=device_name, attributes=attributes)
+def _get_device_runtime(device_name: str) -> dict[str, Any]:
+    device_entry = device_view.get_device(device_name=device_name)
+    manual_claim_id = get_manual_claim_id(device_entry)
+    dashboard_status = _parse_dashboard_status(
+        device_entry["status"], device_entry["pause_status"]
+    )
+    is_manual_claim = (
+        manual_claim_id is not None
+        and device_entry.get("task_id") is not None
+        and str(device_entry["task_id"]) == manual_claim_id
+    )
+    pending_auto_release = (
+        get_pending_auto_release_request(device_name) is not None
+        if is_manual_claim
+        else False
+    )
+    auto_occupied = is_auto_occupied(device_name)
+    claim_state = build_claim_state(device_name, dashboard_status, is_manual_claim)
+    return {
+        "dashboard_status": dashboard_status,
+        "task_status": device_entry["status"],
+        "pause_status": device_entry["pause_status"],
+        "message": device_entry.get("message", ""),
+        "task_id": str(device_entry["task_id"]) if device_entry.get("task_id") else None,
+        "manual_task_id": manual_claim_id if is_manual_claim else None,
+        "manual_claimed": is_manual_claim,
+        "auto_release_pending": pending_auto_release,
+        "auto_occupied": auto_occupied,
+        "claimable": dashboard_status == "IDLE" and not auto_occupied,
+        "claim_state": claim_state,
+    }
 
 
 def _normalize_result(value: Any):
@@ -320,49 +343,9 @@ def _get_catalog_entry(device_name: str):
     raise ValueError(f"Unknown device '{device_name}'.")
 
 
-def _get_device_runtime(device_name: str) -> dict[str, Any]:
-    device_entry = device_view.get_device(device_name=device_name)
-    manual_claim_id = _get_manual_claim_id(device_entry)
-    dashboard_status = _parse_dashboard_status(
-        device_entry["status"], device_entry["pause_status"]
-    )
-    is_manual_claim = (
-        manual_claim_id is not None
-        and device_entry.get("task_id") is not None
-        and str(device_entry["task_id"]) == manual_claim_id
-    )
-    return {
-        "dashboard_status": dashboard_status,
-        "task_status": device_entry["status"],
-        "pause_status": device_entry["pause_status"],
-        "message": device_entry.get("message", ""),
-        "task_id": str(device_entry["task_id"]) if device_entry.get("task_id") else None,
-        "manual_task_id": manual_claim_id if is_manual_claim else None,
-        "manual_claimed": is_manual_claim,
-        "claim_state": (
-            "Claimed by manual control"
-            if is_manual_claim
-            else "Unavailable"
-            if dashboard_status != "IDLE"
-            else "Unclaimed"
-        ),
-    }
-
-
 def _require_implemented_device(device_name: str):
     if device_name not in COMMAND_REGISTRY:
         raise ValueError(f"Device '{device_name}' is not implemented in Device Control v1.")
-
-
-def _require_manual_claim(device_name: str, manual_task_id: str):
-    device_entry = device_view.get_device(device_name=device_name)
-    manual_claim = _get_manual_claim_id(device_entry)
-    if manual_claim is None:
-        raise ValueError(f"Device '{device_name}' is not claimed for manual control.")
-    if manual_claim != manual_task_id:
-        raise ValueError("Manual claim token does not match the current device claim.")
-    if device_entry.get("task_id") is None or str(device_entry["task_id"]) != manual_task_id:
-        raise ValueError("Device occupier does not match the provided manual claim token.")
 
 
 def _run_device_command(
@@ -422,13 +405,13 @@ def claim_device():
     try:
         _require_implemented_device(device_name)
         runtime = _get_device_runtime(device_name)
-        if runtime["dashboard_status"] != "IDLE":
+        if not runtime["claimable"]:
             raise ValueError(
-                f"Device '{device_name}' is not claimable because it is {runtime['dashboard_status']}."
+                f"Device '{device_name}' is not claimable because it is {runtime['claim_state']}."
             )
         manual_task_id = ObjectId()
         device_view.occupy_device(device_name, task_id=manual_task_id)
-        _set_manual_claim_id(device_name, str(manual_task_id))
+        set_manual_claim_id(device_name, str(manual_task_id))
     except Exception as exception:
         return {"status": "error", "errors": str(exception)}, 400
 
@@ -452,9 +435,7 @@ def release_device():
         _require_implemented_device(device_name)
         if not manual_task_id:
             raise ValueError("manual_task_id is required.")
-        _require_manual_claim(device_name, str(manual_task_id))
-        device_view.release_device(device_name=device_name)
-        _set_manual_claim_id(device_name, None)
+        release_manual_claim_with_token(device_name, str(manual_task_id))
     except Exception as exception:
         return {"status": "error", "errors": str(exception)}, 400
 
@@ -492,7 +473,7 @@ def execute_device_command():
                 ObjectId(str(manual_task_id))
             except (InvalidId, TypeError) as exc:
                 raise ValueError("manual_task_id is not a valid ObjectId.") from exc
-            _require_manual_claim(device_name, str(manual_task_id))
+            require_manual_claim(device_name, str(manual_task_id))
         result = _run_device_command(
             device_name=device_name,
             method=command_entry["target_method"],

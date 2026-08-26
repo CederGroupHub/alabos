@@ -14,6 +14,10 @@ import dill
 from bson import ObjectId
 
 from alab_management.device_view.device_view import DeviceView
+from alab_management.dashboard.manual_control import (
+    ensure_auto_release_user_input,
+    is_manually_claimed,
+)
 from alab_management.logger import DBLogger
 from alab_management.resource_manager.enums import _EXTRA_REQUEST
 from alab_management.resource_manager.resource_requester import (
@@ -137,6 +141,11 @@ class ResourceManager(RequestMixin):
             # some devices are not available now
             # the request cannot be fulfilled
             if devices is None:
+                self._prompt_manual_release_if_needed(
+                    task_id=task_id,
+                    resource_request=resource_request,
+                    resource_request_id=request_entry["_id"],
+                )
                 return
 
             # replace device placeholder in sample position request
@@ -262,3 +271,24 @@ class ResourceManager(RequestMixin):
             for sample_position in sample_positions_:
                 if sample_position["need_release"]:
                     self.sample_view.release_sample_position(sample_position["name"])
+
+    def _prompt_manual_release_if_needed(
+        self,
+        *,
+        task_id: ObjectId,
+        resource_request: list[dict[str, Any]],
+        resource_request_id: ObjectId,
+    ):
+        requested_device_names = [
+            entry["device"]["content"]
+            for entry in resource_request
+            if entry["device"]["identifier"] == "name"
+        ]
+        for device_name in requested_device_names:
+            if not is_manually_claimed(device_name):
+                continue
+            ensure_auto_release_user_input(
+                device_name=device_name,
+                task_id=task_id,
+                resource_request_id=resource_request_id,
+            )
