@@ -83,18 +83,6 @@ COMMAND_REGISTRY = {
             "params": {},
             "target_method": "get_state",
         },
-        "open_top_gripper": {
-            "label": "Open Top Gripper",
-            "mode": "actuate",
-            "params": {},
-            "target_method": "open_top_gripper",
-        },
-        "close_top_gripper": {
-            "label": "Close Top Gripper",
-            "mode": "actuate",
-            "params": {},
-            "target_method": "close_top_gripper",
-        },
         "open_bottom_gripper": {
             "label": "Open Bottom Gripper",
             "mode": "actuate",
@@ -180,6 +168,13 @@ COMMAND_REGISTRY = {
                     "required": True,
                     "min": 0.1,
                     "default": 60,
+                },
+                "frequency": {
+                    "type": "int",
+                    "required": True,
+                    "min": 1,
+                    "max": 70,
+                    "default": 51,
                 },
                 "close_gripper": {
                     "type": "bool",

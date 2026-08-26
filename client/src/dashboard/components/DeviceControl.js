@@ -461,7 +461,13 @@ function CommandSection({
                           onChange={(event) => onParamChange(device.device_name, command.command_name, name, event, schema.type)}
                         />
                         <Typography variant="body2">
-                          {name === 'close_gripper' ? 'Close gripper before shaking' : name}
+                          {name === 'close_gripper'
+                            ? 'Close gripper before shaking'
+                            : name === 'frequency'
+                              ? 'Frequency (Hz)'
+                              : name === 'duration_seconds'
+                                ? 'Duration (seconds)'
+                                : name}
                         </Typography>
                       </Stack>
                     ) : (
