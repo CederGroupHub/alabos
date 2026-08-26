@@ -150,8 +150,67 @@ function UserInputRow({ request_id, task_name, task_id, prompt, options, hoverFo
 }
 
 
-function UserInputAccordion({ experiment_id, experiment_name, requests, hoverForId }) {
+function UserInputAccordion({
+  experiment_id,
+  experiment_name,
+  requests,
+  hoverForId,
+  onBulkMessage,
+}) {
   const [accordionState, setAccordionState] = React.useState(true);
+  const [bulkSubmitting, setBulkSubmitting] = React.useState(false);
+
+  const getCompletedOption = (request) =>
+    (request.options || []).find((option) => option === "Mark as Completed") || null;
+
+  const handleMarkSectionCompleted = async () => {
+    const completableRequests = requests
+      .map((request) => ({
+        request,
+        completedOption: getCompletedOption(request),
+      }))
+      .filter(({ completedOption }) => completedOption !== null);
+    const skippedCount = requests.length - completableRequests.length;
+
+    if (completableRequests.length === 0) {
+      onBulkMessage({
+        severity: "warning",
+        text: skippedCount > 0
+          ? `No requests in ${experiment_name} offer the exact 'Mark as Completed' option.`
+          : `There are no pending requests in ${experiment_name}.`,
+      });
+      return;
+    }
+
+    setBulkSubmitting(true);
+    try {
+      await Promise.all(
+        completableRequests.map(async ({ request, completedOption }) => {
+          const response = await respond_to_userinputrequest(
+            request.id,
+            completedOption,
+            "",
+          );
+          if (!response.ok) {
+            throw new Error(`Failed to update request ${request.id}`);
+          }
+        })
+      );
+      onBulkMessage({
+        severity: "success",
+        text: skippedCount > 0
+          ? `Marked ${completableRequests.length} request(s) in ${experiment_name} as completed. Skipped ${skippedCount} request(s) without the exact 'Mark as Completed' option.`
+          : `Marked ${completableRequests.length} request(s) in ${experiment_name} as completed.`,
+      });
+    } catch (error) {
+      onBulkMessage({
+        severity: "error",
+        text: `Failed to mark eligible requests in ${experiment_name} as completed.`,
+      });
+    } finally {
+      setBulkSubmitting(false);
+    }
+  };
 
   const InputHeader = ({ accordionState, numRequests }) => {
     if (accordionState) {
@@ -175,8 +234,19 @@ function UserInputAccordion({ experiment_id, experiment_name, requests, hoverFor
           <InputHeader accordionState={accordionState} numRequests={requests.length} />
         </AccordionSummary>
         <AccordionDetails>
-          <TableContainer style={{ height: "100%" }
-          } component={Paper} >
+          <Stack spacing={2}>
+            <Stack direction="row" justifyContent="flex-end">
+              <Button
+                variant="contained"
+                size="small"
+                onClick={handleMarkSectionCompleted}
+                disabled={bulkSubmitting || requests.length === 0}
+              >
+                Mark all as completed
+              </Button>
+            </Stack>
+            <TableContainer style={{ height: "100%" }
+            } component={Paper} >
             <Table stickyHeader aria-label="user input table">
               <TableHead>
                 <TableRow>
@@ -193,6 +263,7 @@ function UserInputAccordion({ experiment_id, experiment_name, requests, hoverFor
               }
             </Table>
           </TableContainer >
+          </Stack>
         </AccordionDetails>
 
       </Accordion>
@@ -204,7 +275,6 @@ function UserInputs({ hoverForId }) {
   //https://upmostly.com/tutorials/how-to-post-requests-react
   const [pending, setPending] = React.useState({});
   const [idToName, setIdToName] = React.useState({});
-  const [bulkSubmitting, setBulkSubmitting] = React.useState(false);
   const [message, setMessage] = React.useState(null);
 
   const refreshPendingRequests = React.useCallback(() => {
@@ -225,76 +295,28 @@ function UserInputs({ hoverForId }) {
     refreshPendingRequests();
   }, [refreshPendingRequests]);
 
-  const allRequests = Object.values(pending).flat();
-  const getCompletedOption = (request) =>
-    (request.options || []).find((option) => option === "Mark as Completed") || null;
-
-  const handleMarkAllCompleted = async () => {
-    const completableRequests = allRequests
-      .map((request) => ({
-        request,
-        completedOption: getCompletedOption(request),
-      }))
-      .filter(({ completedOption }) => completedOption !== null);
-    const skippedCount = allRequests.length - completableRequests.length;
-
-    if (completableRequests.length === 0) {
-      setMessage({
-        severity: "warning",
-        text: skippedCount > 0
-          ? "No pending requests offer the exact 'Mark as Completed' option."
-          : "There are no pending requests to complete.",
-      });
-      return;
-    }
-
-    setBulkSubmitting(true);
-    try {
-      await Promise.all(
-        completableRequests.map(async ({ request, completedOption }) => {
-          const response = await respond_to_userinputrequest(request.id, completedOption, "");
-          if (!response.ok) {
-            throw new Error(`Failed to update request ${request.id}`);
-          }
-        })
-      );
-      setMessage({
-        severity: "success",
-        text: skippedCount > 0
-          ? `Marked ${completableRequests.length} request(s) as completed. Skipped ${skippedCount} request(s) without the exact 'Mark as Completed' option.`
-          : `Marked ${completableRequests.length} request(s) as completed.`,
-      });
-      refreshPendingRequests();
-    } catch (error) {
-      setMessage({
-        severity: "error",
-        text: "Failed to mark all eligible requests as completed.",
-      });
-    } finally {
-      setBulkSubmitting(false);
-    }
-  };
-
+  const handleBulkMessage = React.useCallback((nextMessage) => {
+    setMessage(nextMessage);
+    refreshPendingRequests();
+  }, [refreshPendingRequests]);
 
   return (
     <Stack spacing={2}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <div>
-          <Typography variant="h5">User Input Requests</Typography>
-          <Typography variant="body2" color="text.secondary">
-            Resolve pending operator prompts individually or complete them in bulk when appropriate.
-          </Typography>
-        </div>
-        <Button
-          variant="contained"
-          onClick={handleMarkAllCompleted}
-          disabled={bulkSubmitting || allRequests.length === 0}
-        >
-          Mark all as completed
-        </Button>
-      </Stack>
+      <div>
+        <Typography variant="h5">User Input Requests</Typography>
+        <Typography variant="body2" color="text.secondary">
+          Resolve pending operator prompts individually, or mark an entire section as completed when appropriate.
+        </Typography>
+      </div>
       {Object.entries(pending).map(([experiment_id, requests]) => (
-        <UserInputAccordion experiment_id={experiment_id} experiment_name={idToName[experiment_id]} requests={requests} key={experiment_id} hoverForId={hoverForId} />
+        <UserInputAccordion
+          experiment_id={experiment_id}
+          experiment_name={idToName[experiment_id]}
+          requests={requests}
+          key={experiment_id}
+          hoverForId={hoverForId}
+          onBulkMessage={handleBulkMessage}
+        />
       ))}
       <Snackbar
         open={message !== null}
