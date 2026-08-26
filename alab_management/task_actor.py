@@ -22,7 +22,12 @@ from alab_management.utils.logger import configure_logging
 from alab_management.utils.middleware import register_abortable_middleware
 from alab_management.utils.module_ops import load_definition
 
-configure_logging(dramatiq_level=logging.INFO)
+configure_logging(
+    dramatiq_level=logging.INFO,
+    mobile_robot_debug=False,
+    robot_arm_mobile_debug=False,
+    announce=False,
+)
 
 dramatiq.set_broker(get_rabbitmq_broker())
 

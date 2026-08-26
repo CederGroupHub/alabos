@@ -11,7 +11,7 @@ import logging
 logger = logging.getLogger(__name__)
 import time
 from collections.abc import Callable
-from concurrent.futures import Future
+from concurrent.futures import Future, TimeoutError as FuturesTimeoutError
 from contextlib import contextmanager
 from enum import Enum, auto
 from functools import partial
@@ -29,6 +29,14 @@ from pika.spec import Basic
 
 from alab_management.sample_view.sample_view import SamplePositionStatus
 from alab_management.scripts.setup_lab import setup_lab
+from alab_management.utils.device_verbose_logging import (
+    emit_device_trace,
+    should_trace_device,
+)
+from alab_management.utils.logger import (
+    DEVICE_RPC_HEARTBEAT_SECONDS,
+    is_device_rpc_debug_enabled,
+)
 
 from .config import AlabOSConfig
 from .device_view.device_view import DevicePauseStatus, DeviceTaskStatus, DeviceView
@@ -38,6 +46,30 @@ from .utils.module_ops import load_definition
 
 DEFAULT_SERVER_QUEUE_SUFFIX = ".device_rpc"
 DEFAULT_CLIENT_QUEUE_SUFFIX = DEFAULT_SERVER_QUEUE_SUFFIX + ".reply_to"
+
+
+def _summarize_rpc_value(value: Any, *, max_len: int = 80) -> str:
+    text = repr(value)
+    if len(text) > max_len:
+        return f"{text[: max_len - 3]}..."
+    return text
+
+
+def _summarize_rpc_call(*args: Any, **kwargs: Any) -> str:
+    parts = [_summarize_rpc_value(arg) for arg in args[:3]]
+    if len(args) > 3:
+        parts.append(f"...+{len(args) - 3} args")
+    for index, (key, value) in enumerate(kwargs.items()):
+        if index >= 5:
+            parts.append("...")
+            break
+        parts.append(f"{key}={_summarize_rpc_value(value)}")
+    return ", ".join(parts) if parts else "-"
+
+
+def _rpc_trace(device_name: str, message: str, *args: Any) -> None:
+    if should_trace_device(device_name):
+        emit_device_trace(device_name, message, *args)
 
 
 class MethodCallStatus(Enum):
@@ -571,6 +603,15 @@ class DeviceManager:
     ):
         """Execute a command on the device. Acknowledges completion on rabbitmq channel."""
         require_occupation = kwargs.pop("require_occupation", True)
+        call_summary = _summarize_rpc_call(*args, **kwargs)
+        started_at = time.monotonic()
+        _rpc_trace(
+            device,
+            "execute -> %s task=%s args=(%s)",
+            method,
+            task_id,
+            call_summary,
+        )
 
         def callback_publish(channel, delivery_tag, props, response):
             if isinstance(response, Mock):
@@ -625,6 +666,25 @@ class DeviceManager:
             response = {"status": "success", "result": result}
         except Exception as e:
             response = {"status": "failure", "result": e}
+
+        duration = time.monotonic() - started_at
+        if response["status"] == "success":
+            _rpc_trace(
+                device,
+                "execute <- %s task=%s (%.2fs)",
+                method,
+                task_id,
+                duration,
+            )
+        else:
+            _rpc_trace(
+                device,
+                "execute <- %s task=%s failed after %.2fs: %r",
+                method,
+                task_id,
+                duration,
+                response["result"],
+            )
 
         cb = partial(callback_publish, channel, delivery_tag, props, response)
         self.connection.add_callback_threadsafe(cb)
@@ -740,6 +800,66 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
         """
         return DeviceWrapper(name=device_name, devices_client=self)
 
+    def _wait_for_rpc_result(
+        self,
+        future: Future,
+        correlation_id: ObjectId,
+        device_name: str,
+        method: str,
+        started_at: float,
+    ) -> Any:
+        if not should_trace_device(device_name):
+            if self._timeout is None:
+                return future.result()
+            try:
+                return future.result(timeout=self._timeout)
+            except FuturesTimeoutError:
+                self._waiting.pop(correlation_id, None)
+                elapsed = time.monotonic() - started_at
+                logger.error(
+                    "[device-rpc] call timed out: %s.%s task=%s after %.2fs",
+                    device_name,
+                    method,
+                    self._task_id,
+                    elapsed,
+                )
+                raise FuturesTimeoutError(
+                    f"Device RPC timed out after {self._timeout}s: "
+                    f"{device_name}.{method} (task={self._task_id})"
+                ) from None
+
+        while True:
+            if self._timeout is not None:
+                elapsed = time.monotonic() - started_at
+                remaining = self._timeout - elapsed
+                if remaining <= 0:
+                    self._waiting.pop(correlation_id, None)
+                    raise FuturesTimeoutError(
+                        f"Device RPC timed out after {self._timeout}s: "
+                        f"{device_name}.{method} (task={self._task_id})"
+                    )
+                wait_timeout = min(DEVICE_RPC_HEARTBEAT_SECONDS, remaining)
+            else:
+                wait_timeout = DEVICE_RPC_HEARTBEAT_SECONDS
+
+            try:
+                return future.result(timeout=wait_timeout)
+            except FuturesTimeoutError:
+                elapsed = time.monotonic() - started_at
+                timeout_note = (
+                    f", timeout={self._timeout}s"
+                    if self._timeout is not None
+                    else ""
+                )
+                _rpc_trace(
+                    device_name,
+                    "call ... waiting: %s task=%s (%.0fs elapsed%s)",
+                    method,
+                    self._task_id,
+                    elapsed,
+                    timeout_note,
+                )
+
     def call(
         self,
         device_name: str,
@@ -767,6 +887,15 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
         f: Future = Future()
         correlation_id = ObjectId()
         self._waiting[correlation_id] = f
+        call_summary = _summarize_rpc_call(*args, **kwargs)
+        started_at = time.monotonic()
+        _rpc_trace(
+            device_name,
+            "call -> %s task=%s args=(%s)",
+            method,
+            self._task_id,
+            call_summary,
+        )
         self._conn.add_callback_threadsafe(
             lambda: self._channel.basic_publish(
                 exchange="",
@@ -788,7 +917,34 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
                 ),
             )
         )
-        return f.result()
+        try:
+            result = self._wait_for_rpc_result(
+                f,
+                correlation_id,
+                device_name,
+                method,
+                started_at,
+            )
+        except FuturesTimeoutError:
+            elapsed = time.monotonic() - started_at
+            logger.error(
+                "[device-rpc] call timed out: %s.%s task=%s after %.2fs",
+                device_name,
+                method,
+                self._task_id,
+                elapsed,
+            )
+            raise
+
+        duration = time.monotonic() - started_at
+        _rpc_trace(
+            device_name,
+            "call <- %s task=%s (%.2fs)",
+            method,
+            self._task_id,
+            duration,
+        )
+        return result
 
     def on_message(
         self,

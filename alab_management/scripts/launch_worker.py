@@ -13,7 +13,11 @@ def launch_worker(args):
     from alab_management.config import AlabOSConfig
     from alab_management.utils.logger import configure_logging
 
-    configure_logging(dramatiq_level=logging.INFO)
+    configure_logging(
+        dramatiq_level=logging.INFO,
+        mobile_robot_debug=False,
+        robot_arm_mobile_debug=False,
+    )
 
     from alab_management.task_manager.task_manager import TaskManager
 

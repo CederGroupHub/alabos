@@ -13,13 +13,24 @@ from alab_management.utils.data_objects import make_jsonable
 status_bp = Blueprint("/status", __name__, url_prefix="/api/status")
 
 
-def parse_device_status(task_status: str, pause_status: str) -> str:
+def parse_device_status(
+    task_status: str,
+    pause_status: str,
+    attributes: dict[str, Any] | None = None,
+) -> str:
+    """Derive the dashboard-facing status string for a device.
+
+    Permanently disabled devices (``attributes.disabled``) get their own status so the UI can
+    distinguish them from operator-initiated pauses.
+    """
+    attributes = attributes or {}
+    if attributes.get("disabled"):
+        return "DISABLED"
     if pause_status == "PAUSED":
         return "PAUSED"
-    elif pause_status == "REQUESTED":
+    if pause_status == "REQUESTED":
         return "PAUSE_REQUESTED"
-    else:
-        return task_status
+    return task_status
 
 
 def published_attributes(device: dict[str, Any]) -> dict[str, Any]:
@@ -28,10 +39,18 @@ def published_attributes(device: dict[str, Any]) -> dict[str, Any]:
     A device declares this with ``dashboard_attributes``. Anything not named there stays private,
     since attributes are also used for bulky internal bookkeeping that would bloat every poll of
     this endpoint.
+
+    ``disabled`` and ``disabled_reason`` are always included so every dashboard client can tell
+    permanently disabled devices apart from operator pauses without extra API calls.
     """
     allowed = device.get("dashboard_attributes") or []
     attributes = device.get("attributes") or {}
-    return {name: attributes.get(name) for name in allowed if name in attributes}
+    published = {name: attributes.get(name) for name in allowed if name in attributes}
+    published["disabled"] = bool(attributes.get("disabled"))
+    disabled_reason = attributes.get("disabled_reason")
+    if disabled_reason is not None:
+        published["disabled_reason"] = disabled_reason
+    return published
 
 
 def describe_sample(sample_id) -> dict[str, Any]:
@@ -53,7 +72,11 @@ def get_all_status():
             "type": device["type"],
             "task_status": device["status"],
             "pause_status": device["pause_status"],
-            "status": parse_device_status(device["status"], device["pause_status"]),
+            "status": parse_device_status(
+                device["status"],
+                device["pause_status"],
+                device.get("attributes"),
+            ),
             "message": device["message"],
             "task": str(device["task_id"]) if device["task_id"] is not None else "null",
             "attributes": published_attributes(device),

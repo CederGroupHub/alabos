@@ -79,6 +79,8 @@ const DEVICE_ACCENTS = {
   pauseRequestedText: '#7a6146',
   pausedBg: '#dce6ec',
   pausedText: '#27485c',
+  disabledBg: '#ececec',
+  disabledText: '#616161',
   badgeBg: '#45697c',
   badgeText: '#ffffff',
 };
@@ -136,6 +138,8 @@ function Row({ device, hoverForId }) {
         return DEVICE_ACCENTS.pauseRequestedBg;
       case "PAUSED":
         return DEVICE_ACCENTS.pausedBg;
+      case "DISABLED":
+        return DEVICE_ACCENTS.disabledBg;
       default:
         return "#ffffff";
     }
@@ -151,6 +155,8 @@ function Row({ device, hoverForId }) {
         return DEVICE_ACCENTS.pauseRequestedText;
       case "PAUSED":
         return DEVICE_ACCENTS.pausedText;
+      case "DISABLED":
+        return DEVICE_ACCENTS.disabledText;
       default:
         return "#000000";
     }
@@ -166,12 +172,23 @@ function Row({ device, hoverForId }) {
         return DEVICE_ACCENTS.pauseRequestedText;
       case "PAUSED":
         return DEVICE_ACCENTS.pausedText;
+      case "DISABLED":
+        return DEVICE_ACCENTS.disabledText;
       default:
         return "#9e9e9e";
     }
   }
 
-  const PauseButton = ({ pause_state, device_name }) => {
+  const permanentlyDisabled = Boolean(device.attributes?.disabled);
+
+  const PauseButton = ({ pause_state, device_name, permanently_disabled }) => {
+    if (permanently_disabled) {
+      return (
+        <Typography variant="caption" sx={{ color: DEVICE_ACCENTS.disabledText }}>
+          Disabled
+        </Typography>
+      );
+    }
     switch (pause_state) {
       case "RELEASED":
         return (
@@ -256,7 +273,11 @@ function Row({ device, hoverForId }) {
           }}>{device.message}</Typography>
         </TableCell>
         <TableCell align="center">
-          <PauseButton pause_state={device.pause_status} device_name={device.name} />
+          <PauseButton
+            pause_state={device.pause_status}
+            device_name={device.name}
+            permanently_disabled={permanentlyDisabled}
+          />
         </TableCell>
       </TableRow>
       <TableRow sx={{ bgcolor: rowColor(device.status) }}>
@@ -372,7 +393,7 @@ class SingleOccupiedSamplePositionsList extends React.Component {
 
 function Devices({ hoverForId }) {
   const [devices, setDevices] = React.useState([]);
-  const [onlyActive, setOnlyActive] = React.useState(true);
+  const [hideIdleDevices, setHideIdleDevices] = React.useState(true);
 
   useEffect(() => {
     get_status().then(data => {
@@ -400,8 +421,8 @@ function Devices({ hoverForId }) {
     return false
   }
 
-  const FilteredDevices = (onlyActive) => {
-    if (onlyActive) {
+  const FilteredDevices = (hideIdle) => {
+    if (hideIdle) {
       return devices.filter(DisplayDeviceRowFilter)
     } else {
       return devices
@@ -412,8 +433,14 @@ function Devices({ hoverForId }) {
   return (
     <><FormControl component="fieldset" variant="standard" sx={{ padding: "0px 16px" }}>
       <FormControlLabel
-        control={<Switch checked={onlyActive} onChange={() => (setOnlyActive(!onlyActive))} name="Only show active Devices" />}
-        label="Only show active Devices" />
+        control={
+          <Switch
+            checked={hideIdleDevices}
+            onChange={() => setHideIdleDevices(!hideIdleDevices)}
+            name="Hide idle devices with no samples"
+          />
+        }
+        label="Hide idle devices with no samples" />
     </FormControl><TableContainer style={{ height: "100%" }} component={Paper}>
         <StyledDevicesDiv>
           <Table stickyHeader aria-label="device table">
@@ -427,7 +454,7 @@ function Devices({ hoverForId }) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {FilteredDevices(onlyActive).map((device) => (
+              {FilteredDevices(hideIdleDevices).map((device) => (
                 <Row key={device.name} device={device} hoverForId={hoverForId} />
               ))}
             </TableBody>

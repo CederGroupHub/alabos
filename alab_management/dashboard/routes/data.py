@@ -190,7 +190,7 @@ def _powder_dosing_rows(window: dict[str, Any]) -> list[dict[str, Any]]:
                     "sample_id": sample_id,
                     "sample_doc": sample_docs.get(sample_id) if sample_id else None,
                 }
-        results_per_sample = (task.get("result") or {}).get("results_per_sample") or {}
+        results_per_sample = _task_result_dict(task.get("result")).get("results_per_sample") or {}
         for sample_name, dosing in results_per_sample.items():
             task_sample = sample_lookup.get(sample_name, {})
             sample_id = task_sample.get("sample_id")
@@ -304,6 +304,22 @@ def _powder_dosing_rows(window: dict[str, Any]) -> list[dict[str, Any]]:
     return rows
 
 
+def _task_result_keys(result: Any) -> list[str]:
+    if isinstance(result, dict):
+        return sorted(str(key) for key in result.keys())
+    if isinstance(result, ObjectId):
+        return [f"gridfs:{result}"]
+    if result is None:
+        return []
+    return [type(result).__name__]
+
+
+def _task_result_dict(result: Any) -> dict[str, Any]:
+    if isinstance(result, dict):
+        return result
+    return {}
+
+
 def _task_outcome_rows(window: dict[str, Any]) -> list[dict[str, Any]]:
     rows = []
     date_filter = _created_at_filter(window["start"], window["end"])
@@ -324,7 +340,7 @@ def _task_outcome_rows(window: dict[str, Any]) -> list[dict[str, Any]]:
                 "message": task.get("message", ""),
                 "sample_names": [sample.get("name") for sample in task.get("samples", [])],
                 "sample_ids": [str(sample.get("sample_id")) for sample in task.get("samples", [])],
-                "result_keys": sorted((task.get("result") or {}).keys()),
+                "result_keys": _task_result_keys(task.get("result")),
             }
         )
     return rows

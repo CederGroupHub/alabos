@@ -45,7 +45,11 @@ def get_device(device_name: str):
         "description": device.get("description", ""),
         "task_status": device["status"],
         "pause_status": device["pause_status"],
-        "status": parse_device_status(device["status"], device["pause_status"]),
+        "status": parse_device_status(
+            device["status"],
+            device["pause_status"],
+            device.get("attributes"),
+        ),
         "message": device.get("message", ""),
         "task": str(device["task_id"]) if device.get("task_id") is not None else None,
         "sample_positions": device.get("sample_positions", []),
