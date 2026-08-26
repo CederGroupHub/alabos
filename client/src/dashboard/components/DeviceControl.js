@@ -298,25 +298,42 @@ function DeviceControl() {
                     </Stack>
                   </Stack>
 
-                  <Typography variant="body2" sx={{ color: PAGE_ACCENTS.text }}>
-                    <strong>Dashboard message:</strong> {device.message || 'No active message.'}
-                  </Typography>
+                  <Stack
+                    direction={{ xs: 'column', lg: 'row' }}
+                    spacing={2}
+                    alignItems={{ xs: 'stretch', lg: 'flex-start' }}
+                  >
+                    <Stack spacing={1.5} sx={{ flexShrink: 0 }}>
+                      <Typography variant="body2" sx={{ color: PAGE_ACCENTS.text }}>
+                        <strong>Dashboard message:</strong> {device.message || 'No active message.'}
+                      </Typography>
 
-                  <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
-                    <Button
-                      variant="contained"
-                      disabled={Boolean(device.manual_claimed) || isUnavailable || pending[device.device_name]?.claim}
-                      onClick={() => handleClaim(device.device_name)}
+                      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
+                        <Button
+                          variant="contained"
+                          disabled={Boolean(device.manual_claimed) || isUnavailable || pending[device.device_name]?.claim}
+                          onClick={() => handleClaim(device.device_name)}
+                        >
+                          {pending[device.device_name]?.claim ? 'Claiming…' : 'Claim Device'}
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          disabled={!isClaimedHere || pending[device.device_name]?.release}
+                          onClick={() => handleRelease(device.device_name)}
+                        >
+                          {pending[device.device_name]?.release ? 'Releasing…' : 'Release Device'}
+                        </Button>
+                      </Stack>
+                    </Stack>
+
+                    <Alert
+                      severity={results[device.device_name]?.severity || 'info'}
+                      sx={{ flex: 1, minWidth: 0, width: '100%' }}
                     >
-                      {pending[device.device_name]?.claim ? 'Claiming…' : 'Claim Device'}
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      disabled={!isClaimedHere || pending[device.device_name]?.release}
-                      onClick={() => handleRelease(device.device_name)}
-                    >
-                      {pending[device.device_name]?.release ? 'Releasing…' : 'Release Device'}
-                    </Button>
+                      <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>
+                        {prettyJson(results[device.device_name]?.payload)}
+                      </pre>
+                    </Alert>
                   </Stack>
 
                   <Divider />
@@ -346,12 +363,6 @@ function DeviceControl() {
                       disableActuation={!isClaimedHere}
                     />
                   </Stack>
-
-                  <Alert severity={results[device.device_name]?.severity || 'info'}>
-                    <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>
-                      {prettyJson(results[device.device_name]?.payload)}
-                    </pre>
-                  </Alert>
                 </Stack>
               </CardContent>
             </Card>
