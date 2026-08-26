@@ -153,7 +153,7 @@ COMMAND_REGISTRY = {
             "target_method": "get_state",
         },
         "is_running": {
-            "label": "Is Running?",
+            "label": "Is Shaking?",
             "mode": "read",
             "params": {},
             "target_method": "is_running",
@@ -178,22 +178,27 @@ COMMAND_REGISTRY = {
                     "type": "float",
                     "required": True,
                     "min": 0.1,
+                    "default": 60,
                 },
-                "close_gripper": {"type": "bool", "required": True},
+                "close_gripper": {
+                    "type": "bool",
+                    "required": True,
+                    "default": True,
+                },
             },
             "target_method": "shake",
+        },
+        "stop": {
+            "label": "Stop Shaking",
+            "mode": "actuate",
+            "params": {},
+            "target_method": "stop",
         },
         "reset": {
             "label": "Reset",
             "mode": "actuate",
             "params": {},
             "target_method": "reset",
-        },
-        "stop": {
-            "label": "Stop",
-            "mode": "actuate",
-            "params": {},
-            "target_method": "stop",
         },
     },
     "DASH_scale": {

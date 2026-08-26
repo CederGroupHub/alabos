@@ -194,7 +194,9 @@ function DeviceControl() {
       if (Object.prototype.hasOwnProperty.call(values, name)) {
         prepared[name] = values[name];
       } else if (schema.type === 'bool') {
-        prepared[name] = true;
+        prepared[name] = schema.default !== undefined ? schema.default : true;
+      } else if (schema.default !== undefined) {
+        prepared[name] = schema.default;
       } else {
         prepared[name] = '';
       }
@@ -458,13 +460,15 @@ function CommandSection({
                           checked={Boolean(values[name])}
                           onChange={(event) => onParamChange(device.device_name, command.command_name, name, event, schema.type)}
                         />
-                        <Typography variant="body2">{name}</Typography>
+                        <Typography variant="body2">
+                          {name === 'close_gripper' ? 'Close gripper before shaking' : name}
+                        </Typography>
                       </Stack>
                     ) : (
                       <TextField
                         key={name}
                         size="small"
-                        label={name}
+                        label={name === 'duration_seconds' ? 'Duration (seconds)' : name}
                         type="number"
                         value={values[name]}
                         onChange={(event) => onParamChange(device.device_name, command.command_name, name, event, schema.type)}
