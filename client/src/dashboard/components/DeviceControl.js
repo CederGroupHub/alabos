@@ -427,8 +427,24 @@ function CommandSection({
   onParamChange,
   disableActuation,
 }) {
+  const simpleCommands = commands.filter((command) => !Object.keys(command.params || {}).length);
+  const paramCommands = commands.filter((command) => Object.keys(command.params || {}).length);
+
+  const renderCommands = (commandList) => commandList.map((command) => (
+    <CommandControl
+      key={command.command_name}
+      command={command}
+      device={device}
+      pending={pending}
+      onCommand={onCommand}
+      getCommandParamsForDevice={getCommandParamsForDevice}
+      onParamChange={onParamChange}
+      disableActuation={disableActuation}
+    />
+  ));
+
   return (
-    <Stack spacing={1}>
+    <Stack spacing={1.5}>
       <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
         {title}
       </Typography>
@@ -437,20 +453,21 @@ function CommandSection({
           No commands configured.
         </Typography>
       )}
-      <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ alignItems: 'center' }}>
-        {commands.map((command) => (
-          <CommandControl
-            key={command.command_name}
-            command={command}
-            device={device}
-            pending={pending}
-            onCommand={onCommand}
-            getCommandParamsForDevice={getCommandParamsForDevice}
-            onParamChange={onParamChange}
-            disableActuation={disableActuation}
-          />
-        ))}
-      </Stack>
+      {simpleCommands.length > 0 && (
+        <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ alignItems: 'center' }}>
+          {renderCommands(simpleCommands)}
+        </Stack>
+      )}
+      {paramCommands.length > 0 && (
+        <Stack
+          direction="row"
+          spacing={1}
+          flexWrap="wrap"
+          sx={{ alignItems: 'center', rowGap: 1.5 }}
+        >
+          {renderCommands(paramCommands)}
+        </Stack>
+      )}
     </Stack>
   );
 }
