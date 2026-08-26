@@ -391,6 +391,9 @@
 <span class="sd">DeviceManager class, which will handle all the request to run certain methods on the real device.</span>
 <span class="sd">"""</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">Future</span>
@@ -577,10 +580,7 @@
 <span class="w">        </span><span class="sd">"""Re-connect the devices in the device view."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="c1"># call alabos setup_lab to refresh the devices and standalone sample positions</span>
-        <span class="nb">print</span><span class="p">(</span>
-            <span class="s2">"Installing new devices and sample positions. "</span>
-            <span class="s2">"Adding discrepancies to the watchers for deletion once unoccupied."</span>
-        <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'Installing new devices and sample positions. Adding discrepancies to the watchers for deletion once unoccupied.'</span><span class="p">)</span>
         <span class="n">update_and_removal_todo</span> <span class="o">=</span> <span class="n">setup_lab</span><span class="p">(</span><span class="n">reload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">device_name</span> <span class="ow">in</span> <span class="n">update_and_removal_todo</span><span class="p">[</span><span class="s2">"removed_devices_names"</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">device_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_names_to_be_removed</span><span class="p">:</span>
@@ -619,7 +619,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">sample_positions_in_devices_to_be_removed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">update_and_removal_todo</span><span class="p">[</span><span class="s2">"removed_sample_positions_in_devices"</span><span class="p">]</span>
             <span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">"Connecting to devices again..."</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'Connecting to devices again...'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span> <span class="o">=</span> <span class="n">DeviceView</span><span class="p">(</span>
             <span class="n">connect_to_devices</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>  <span class="c1"># create a new device view</span></div>
@@ -639,25 +639,15 @@
                 <span class="p">]</span> <span class="o">==</span> <span class="n">DeviceTaskStatus</span><span class="o">.</span><span class="n">IDLE</span><span class="o">.</span><span class="n">name</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span><span class="o">.</span><span class="n">get_samples_on_device</span><span class="p">(</span>
                     <span class="n">device_name</span>
                 <span class="p">):</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> is not occupied and has no samples on it, "</span>
-                        <span class="s2">"pausing it and then removing it from the device view."</span>
-                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s1"> is not occupied and has no samples on it, pausing it and then removing it from the device view.'</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">pause_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">device_names_to_be_removed_that_is_paused</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">device_names_to_be_removed</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> has been paused and will be removed from the device view after 10 seconds."</span>
-                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s1"> has been paused and will be removed from the device view after 10 seconds.'</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">device_entry</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="o">==</span> <span class="n">DeviceTaskStatus</span><span class="o">.</span><span class="n">OCCUPIED</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> is occupied, skipping and waiting for it to be unoccupied."</span>
-                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s1"> is occupied, skipping and waiting for it to be unoccupied.'</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> is in status </span><span class="si">{</span><span class="n">device_entry</span><span class="p">[</span><span class="s1">'status'</span><span class="p">]</span><span class="si">}</span><span class="s2">, "</span>
-                        <span class="s2">"skipping and waiting for it to be unoccupied."</span>
-                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> is in status </span><span class="si">{</span><span class="n">device_entry</span><span class="p">[</span><span class="s1">'status'</span><span class="p">]</span><span class="si">}</span><span class="s2">, skipping and waiting for it to be unoccupied."</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">device_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_names_to_be_removed_that_is_paused</span><span class="p">:</span>
                 <span class="n">device_entry</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">get_device</span><span class="p">(</span>
                     <span class="n">device_name</span>
@@ -667,27 +657,17 @@
                     <span class="ow">and</span> <span class="n">device_entry</span><span class="p">[</span><span class="s2">"pause_status"</span><span class="p">]</span> <span class="o">==</span> <span class="n">DevicePauseStatus</span><span class="o">.</span><span class="n">PAUSED</span><span class="o">.</span><span class="n">name</span>
                     <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span><span class="o">.</span><span class="n">get_samples_on_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
                 <span class="p">):</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> is not occupied, paused, and has no samples on it, "</span>
-                        <span class="s2">"removing it from the device view."</span>
-                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s1"> is not occupied, paused, and has no samples on it, removing it from the device view.'</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">remove_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
                     <span class="c1"># also remove the sample positions that are related to the device</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span><span class="o">.</span><span class="n">remove_sample_position_by_prefix</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">device_names_to_be_removed_that_is_paused</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> has been removed from the device view."</span>
-                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s1"> has been removed from the device view.'</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">device_entry</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="o">==</span> <span class="n">DeviceTaskStatus</span><span class="o">.</span><span class="n">OCCUPIED</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> is occupied, skipping and waiting for it to be unoccupied."</span>
-                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s1"> is occupied, skipping and waiting for it to be unoccupied.'</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">pause_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> is in status </span><span class="si">{</span><span class="n">device_entry</span><span class="p">[</span><span class="s1">'status'</span><span class="p">]</span><span class="si">}</span><span class="s2">, "</span>
-                        <span class="s2">"skipping and waiting for it to be unoccupied."</span>
-                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> is in status </span><span class="si">{</span><span class="n">device_entry</span><span class="p">[</span><span class="s1">'status'</span><span class="p">]</span><span class="si">}</span><span class="s2">, skipping and waiting for it to be unoccupied."</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">pause_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_sample_positions_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_positions_names</span><span class="p">):</span>
@@ -712,25 +692,16 @@
         <span class="k">if</span> <span class="nb">all</span><span class="p">(</span>
             <span class="n">status</span> <span class="o">==</span> <span class="n">SamplePositionStatus</span><span class="o">.</span><span class="n">EMPTY</span> <span class="k">for</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">sample_positions_status</span>
         <span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Sample position with prefix </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2"> is empty, removing it from the sample view and </span><span class="se">\</span>
-<span class="s2">                adding it back with the new number of slots."</span>
-            <span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Sample position with prefix </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s1"> is empty, removing it from the sample view and                 adding it back with the new number of slots.'</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span><span class="o">.</span><span class="n">remove_sample_position_by_prefix</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span><span class="o">.</span><span class="n">add_sample_positions_to_db</span><span class="p">(</span>
                 <span class="n">sample_positions</span><span class="o">=</span><span class="p">[</span><span class="n">sample_position_object</span><span class="p">],</span>
                 <span class="n">parent_device_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sample_positions_objects_to_be_updated</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">sample_position_object</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Sample position with prefix </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2"> has been updated in the sample view."</span>
-            <span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Sample position with prefix </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s1"> has been updated in the sample view.'</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Sample position with prefix </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2"> is not empty, "</span>
-                <span class="sa">f</span><span class="s2">"current status of some sample positions: </span><span class="si">{</span><span class="n">sample_positions_status</span><span class="si">}</span><span class="s2">,"</span>
-                <span class="s2">"skipping and waiting for it to be empty."</span>
-            <span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Sample position with prefix </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s1"> is not empty, current status of some sample positions: </span><span class="si">{</span><span class="n">sample_positions_status</span><span class="si">}</span><span class="s1">,skipping and waiting for it to be empty.'</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_handle_sample_position_removal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Handle removing a sample position."""</span>
@@ -744,20 +715,12 @@
         <span class="k">if</span> <span class="nb">all</span><span class="p">(</span>
             <span class="n">status</span> <span class="o">==</span> <span class="n">SamplePositionStatus</span><span class="o">.</span><span class="n">EMPTY</span> <span class="k">for</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">sample_positions_status</span>
         <span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Sample position with prefix </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2"> is empty, removing it from the sample view."</span>
-            <span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Sample position with prefix </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s1"> is empty, removing it from the sample view.'</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span><span class="o">.</span><span class="n">remove_sample_position_by_prefix</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sample_positions_prefixes_to_be_removed</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Sample position with prefix </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2"> has been removed from the sample view."</span>
-            <span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Sample position with prefix </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s1"> has been removed from the sample view.'</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Sample position with prefix </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2"> is not empty, "</span>
-                <span class="sa">f</span><span class="s2">"current status of some sample positions: </span><span class="si">{</span><span class="n">sample_positions_status</span><span class="si">}</span><span class="s2">, "</span>
-                <span class="s2">"skipping and waiting for it to be empty."</span>
-            <span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Sample position with prefix </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s1"> is not empty, current status of some sample positions: </span><span class="si">{</span><span class="n">sample_positions_status</span><span class="si">}</span><span class="s1">, skipping and waiting for it to be empty.'</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_handle_device_sample_position_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_sample_position_dict</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Handle updating sample positions in devices."""</span>
@@ -779,28 +742,18 @@
                 <span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">device_entry</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="o">==</span> <span class="n">DeviceTaskStatus</span><span class="o">.</span><span class="n">IDLE</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> is not occupied and has no samples on it, "</span>
-                        <span class="s2">"pausing it to update the sample positions."</span>
-                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s1"> is not occupied and has no samples on it, pausing it to update the sample positions.'</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">pause_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">sample_positions_in_devices_to_be_updated_that_is_paused</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                         <span class="n">device_sample_position_dict</span>
                     <span class="p">)</span>
                     <span class="n">processed</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> has been paused to update the sample positions."</span>
-                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s1"> has been paused to update the sample positions.'</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">device_entry</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="o">==</span> <span class="n">DeviceTaskStatus</span><span class="o">.</span><span class="n">OCCUPIED</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> is occupied, skipping and waiting for it to be unoccupied."</span>
-                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s1"> is occupied, skipping and waiting for it to be unoccupied.'</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">pause_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> is in status </span><span class="si">{</span><span class="n">device_entry</span><span class="p">[</span><span class="s1">'status'</span><span class="p">]</span><span class="si">}</span><span class="s2">, "</span>
-                        <span class="s2">"skipping and waiting for it to be unoccupied."</span>
-                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> is in status </span><span class="si">{</span><span class="n">device_entry</span><span class="p">[</span><span class="s1">'status'</span><span class="p">]</span><span class="si">}</span><span class="s2">, skipping and waiting for it to be unoccupied."</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">processed</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sample_positions_in_devices_to_be_updated</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span>
@@ -828,10 +781,7 @@
                     <span class="n">device_entry</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="o">==</span> <span class="n">DeviceTaskStatus</span><span class="o">.</span><span class="n">IDLE</span><span class="o">.</span><span class="n">name</span>
                     <span class="ow">and</span> <span class="n">device_entry</span><span class="p">[</span><span class="s2">"pause_status"</span><span class="p">]</span> <span class="o">==</span> <span class="n">DevicePauseStatus</span><span class="o">.</span><span class="n">PAUSED</span><span class="o">.</span><span class="n">name</span>
                 <span class="p">):</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> is not occupied, paused, "</span>
-                        <span class="s2">"and has no samples on it, updating the sample positions."</span>
-                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s1"> is not occupied, paused, and has no samples on it, updating the sample positions.'</span><span class="p">)</span>
                     <span class="k">for</span> <span class="n">sample_position_object</span> <span class="ow">in</span> <span class="n">device_sample_position_dict</span><span class="p">[</span>
                         <span class="n">device_name</span>
                     <span class="p">]:</span>
@@ -847,20 +797,12 @@
                             <span class="n">parent_device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">,</span>
                         <span class="p">)</span>
                     <span class="n">processed</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"Sample positions in device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> have been updated."</span>
-                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Sample positions in device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s1"> have been updated.'</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">device_entry</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="o">==</span> <span class="n">DeviceTaskStatus</span><span class="o">.</span><span class="n">OCCUPIED</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> is occupied, skipping "</span>
-                        <span class="s2">"and waiting for it to be unoccupied."</span>
-                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s1"> is occupied, skipping and waiting for it to be unoccupied.'</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">pause_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> is in status </span><span class="si">{</span><span class="n">device_entry</span><span class="p">[</span><span class="s1">'status'</span><span class="p">]</span><span class="si">}</span><span class="s2">, "</span>
-                        <span class="s2">"skipping and waiting for it to be unoccupied."</span>
-                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> is in status </span><span class="si">{</span><span class="n">device_entry</span><span class="p">[</span><span class="s1">'status'</span><span class="p">]</span><span class="si">}</span><span class="s2">, skipping and waiting for it to be unoccupied."</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">pause_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">processed</span><span class="p">:</span>
@@ -886,28 +828,18 @@
                 <span class="n">device_entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">get_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">device_entry</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="o">==</span> <span class="n">DeviceTaskStatus</span><span class="o">.</span><span class="n">IDLE</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> is not occupied and has no samples on it, "</span>
-                        <span class="s2">"pausing it to remove the sample positions."</span>
-                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s1"> is not occupied and has no samples on it, pausing it to remove the sample positions.'</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">pause_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">sample_positions_in_devices_to_be_removed_that_is_paused</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                         <span class="n">device_sample_position_dict</span>
                     <span class="p">)</span>
                     <span class="n">processed</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> has been paused to remove the sample positions."</span>
-                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s1"> has been paused to remove the sample positions.'</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">device_entry</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="o">==</span> <span class="n">DeviceTaskStatus</span><span class="o">.</span><span class="n">OCCUPIED</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> is occupied, skipping and waiting for it to be unoccupied."</span>
-                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s1"> is occupied, skipping and waiting for it to be unoccupied.'</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">pause_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> is in status </span><span class="si">{</span><span class="n">device_entry</span><span class="p">[</span><span class="s1">'status'</span><span class="p">]</span><span class="si">}</span><span class="s2">, "</span>
-                        <span class="s2">"skipping and waiting for it to be unoccupied."</span>
-                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> is in status </span><span class="si">{</span><span class="n">device_entry</span><span class="p">[</span><span class="s1">'status'</span><span class="p">]</span><span class="si">}</span><span class="s2">, skipping and waiting for it to be unoccupied."</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">processed</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sample_positions_in_devices_to_be_removed</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span>
@@ -937,10 +869,7 @@
                     <span class="n">device_entry</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="o">==</span> <span class="n">DeviceTaskStatus</span><span class="o">.</span><span class="n">IDLE</span><span class="o">.</span><span class="n">name</span>
                     <span class="ow">and</span> <span class="n">device_entry</span><span class="p">[</span><span class="s2">"pause_status"</span><span class="p">]</span> <span class="o">==</span> <span class="n">DevicePauseStatus</span><span class="o">.</span><span class="n">PAUSED</span><span class="o">.</span><span class="n">name</span>
                 <span class="p">):</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> is not occupied, paused, "</span>
-                        <span class="s2">"and has no samples on it, removing the sample positions."</span>
-                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s1"> is not occupied, paused, and has no samples on it, removing the sample positions.'</span><span class="p">)</span>
                     <span class="k">for</span> <span class="n">sample_position_object</span> <span class="ow">in</span> <span class="n">device_sample_position_dict</span><span class="p">[</span>
                         <span class="n">device_name</span>
                     <span class="p">]:</span>
@@ -948,20 +877,12 @@
                             <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">device_name</span><span class="si">}{</span><span class="n">sample_position_object</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="si">}{</span><span class="n">sample_position_object</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
                         <span class="p">)</span>
                     <span class="n">processed</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"Sample positions in device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> have been removed."</span>
-                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Sample positions in device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s1"> have been removed.'</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">device_entry</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="o">==</span> <span class="n">DeviceTaskStatus</span><span class="o">.</span><span class="n">OCCUPIED</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> is occupied, skipping "</span>
-                        <span class="s2">"and waiting for it to be unoccupied."</span>
-                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s1"> is occupied, skipping and waiting for it to be unoccupied.'</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">pause_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> is in status </span><span class="si">{</span><span class="n">device_entry</span><span class="p">[</span><span class="s1">'status'</span><span class="p">]</span><span class="si">}</span><span class="s2">, "</span>
-                        <span class="s2">"skipping and waiting for it to be unoccupied."</span>
-                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> is in status </span><span class="si">{</span><span class="n">device_entry</span><span class="p">[</span><span class="s1">'status'</span><span class="p">]</span><span class="si">}</span><span class="s2">, skipping and waiting for it to be unoccupied."</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">pause_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">processed</span><span class="p">:</span>

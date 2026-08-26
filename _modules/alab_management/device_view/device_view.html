@@ -385,6 +385,9 @@
   <h1>Source code for alab_management.device_view.device_view</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Wrapper over the ``devices`` collection."""</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Collection</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
@@ -472,14 +475,13 @@
 <span class="sd">        show which devices were disabled because the connection could not be established.</span>
 <span class="sd">        """</span>
         <span class="k">for</span> <span class="n">device_name</span><span class="p">,</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_list</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Connecting to </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">..."</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">" "</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">device</span><span class="o">.</span><span class="n">_connect_wrapper</span><span class="p">()</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">"Failed!"</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">"Could not connect to </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s2">. "</span>
-                    <span class="s2">"Disabling and pausing it so the rest of the lab can still launch."</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s2">"Could not connect to </span><span class="si">%s</span><span class="s2">: </span><span class="si">%r</span><span class="s2">. Disabling and pausing it so the rest of the lab can still launch."</span><span class="p">,</span>
+                    <span class="n">device_name</span><span class="p">,</span>
+                    <span class="n">e</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_mark_device_connection_failed</span><span class="p">(</span><span class="n">device_name</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
                 <span class="k">continue</span>
@@ -487,7 +489,7 @@
             <span class="c1"># If this device was previously auto-disabled due to a connection failure and is</span>
             <span class="c1"># now reachable again, clear that flag so it becomes usable.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_clear_connection_failed_flag</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">"Done"</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Connecting to </span><span class="si">%s</span><span class="s2">... Done"</span><span class="p">,</span> <span class="n">device_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__connected_to_devices</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__disconnect_all_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -497,13 +499,13 @@
             <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_list</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">continue</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Disconnecting from </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">..."</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">" "</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Disconnecting from </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">..."</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">device</span><span class="o">.</span><span class="n">_disconnect_wrapper</span><span class="p">()</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Could not disconnect from </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Could not disconnect from </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
                 <span class="k">continue</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">"Done"</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Disconnected from </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">device_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_connected_device_names</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__connected_to_devices</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -525,7 +527,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="n">device_name</span><span class="p">,</span> <span class="s2">"disabled_reason"</span><span class="p">,</span> <span class="s2">"connection_failed"</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_message</span><span class="p">(</span><span class="n">device_name</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>  <span class="c1"># best-effort bookkeeping; never block launch</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Failed to flag </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> as disabled: </span><span class="si">{</span><span class="n">exc</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Failed to flag </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s1"> as disabled: </span><span class="si">{</span><span class="n">exc</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_clear_connection_failed_flag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Clear a previous connection-failure disable once a device connects again.</span>
@@ -1170,16 +1172,14 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">remove_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Remove a device from the device view and the registry."""</span>
         <span class="c1"># disconnect the device</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Disconnecting from </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">..."</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Disconnecting from </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s1">...'</span><span class="p">)</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">():</span>  <span class="c1"># pylint: disable=not-callable</span>
             <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_list</span><span class="p">[</span><span class="n">device_name</span><span class="p">]</span>
             <span class="n">device</span><span class="o">.</span><span class="n">_disconnect_wrapper</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_device_list</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">device_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="n">remove_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">delete_one</span><span class="p">({</span><span class="s2">"name"</span><span class="p">:</span> <span class="n">device_name</span><span class="p">})</span>
-            <span class="nb">print</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> has been removed from the device view and the registry."</span>
-            <span class="p">)</span></div>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s1"> has been removed from the device view and the registry.'</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DeviceView.get_all_devices_from_db">
