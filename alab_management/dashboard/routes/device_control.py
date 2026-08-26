@@ -9,6 +9,7 @@ from bson.errors import InvalidId
 from flask import Blueprint, request
 
 from alab_management.dashboard.lab_views import device_view
+from alab_management.device_manager import DevicesClient
 
 device_control_bp = Blueprint(
     "/device-control", __name__, url_prefix="/api/device-control"
@@ -365,6 +366,33 @@ def _require_manual_claim(device_name: str, manual_task_id: str):
         raise ValueError("Device occupier does not match the provided manual claim token.")
 
 
+def _run_device_command(
+    device_name: str,
+    method: str,
+    *,
+    mode: str,
+    manual_task_id: str | None,
+    validated_params: dict[str, Any],
+):
+    """Run a device method through the Device Manager's connected drivers."""
+    if mode == "actuate":
+        if not manual_task_id:
+            raise ValueError("Actuation commands require a manual device claim.")
+        task_id = ObjectId(str(manual_task_id))
+        require_occupation = True
+    else:
+        task_id = ObjectId()
+        require_occupation = False
+
+    client = DevicesClient(task_id=task_id)
+    return client.call(
+        device_name,
+        method,
+        require_occupation=require_occupation,
+        **validated_params,
+    )
+
+
 @device_control_bp.route("/catalog", methods=["GET"])
 def get_device_control_catalog():
     """Return the curated device list and current runtime state."""
@@ -463,10 +491,12 @@ def execute_device_command():
             except (InvalidId, TypeError) as exc:
                 raise ValueError("manual_task_id is not a valid ObjectId.") from exc
             _require_manual_claim(device_name, str(manual_task_id))
-        result = device_view.execute_command(
+        result = _run_device_command(
             device_name=device_name,
             method=command_entry["target_method"],
-            **validated_params,
+            mode=command_entry["mode"],
+            manual_task_id=str(manual_task_id) if manual_task_id else None,
+            validated_params=validated_params,
         )
     except Exception as exception:
         return {"status": "error", "errors": str(exception)}, 400

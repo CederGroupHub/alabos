@@ -649,6 +649,7 @@ class DeviceManager:
         **kwargs,
     ):
         """Execute a command on the device. Acknowledges completion on rabbitmq channel."""
+        require_occupation = kwargs.pop("require_occupation", True)
 
         def callback_publish(channel, delivery_tag, props, response):
             if isinstance(response, Mock):
@@ -672,7 +673,7 @@ class DeviceManager:
             device_entry: dict[str, Any] | None = self._device_view.get_device(device)
 
             # check if the device is currently occupied by this task
-            if self._check_status and (
+            if self._check_status and require_occupation and (
                 device_entry is None
                 or device_entry["status"] != DeviceTaskStatus.OCCUPIED.name
                 or device_entry["task_id"] != ObjectId(task_id)
@@ -742,7 +743,7 @@ class DeviceManager:
                 body["task_id"],
                 *body["args"],
             ),
-            kwargs=body["kwargs"],
+            kwargs={**body["kwargs"], "require_occupation": body.get("require_occupation", True)},
         )
         self.threads.append(thread)
         thread.start()
@@ -818,7 +819,14 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
         """
         return DeviceWrapper(name=device_name, devices_client=self)
 
-    def call(self, device_name: str, method: str, *args, **kwargs) -> Any:
+    def call(
+        self,
+        device_name: str,
+        method: str,
+        *args,
+        require_occupation: bool = True,
+        **kwargs,
+    ) -> Any:
         """
         Call a method inside the device with name ``device_name``. args, kwargs will be feeded into
         the method directly.
@@ -849,6 +857,7 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
                         "args": args,
                         "kwargs": kwargs,
                         "task_id": str(self._task_id),
+                        "require_occupation": require_occupation,
                     }
                 ),
                 properties=BasicProperties(
