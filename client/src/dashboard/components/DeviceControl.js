@@ -454,16 +454,15 @@ function CommandSection({
         </Typography>
       )}
       {simpleCommands.length > 0 && (
-        <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ alignItems: 'center' }}>
+        <Stack direction="row" flexWrap="wrap" sx={{ alignItems: 'center', gap: 1 }}>
           {renderCommands(simpleCommands)}
         </Stack>
       )}
       {paramCommands.length > 0 && (
         <Stack
           direction="row"
-          spacing={1}
           flexWrap="wrap"
-          sx={{ alignItems: 'center', rowGap: 1.5 }}
+          sx={{ alignItems: 'center', gap: 1 }}
         >
           {renderCommands(paramCommands)}
         </Stack>
