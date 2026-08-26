@@ -13,11 +13,9 @@ from alab_management.lab_view import LabView
 from alab_management.logger import DBLogger
 from alab_management.task_view import TaskView
 from alab_management.task_view.task_enums import CancelingProgress, TaskStatus
-from alab_management.utils.logger import set_up_rich_handler
 from alab_management.utils.module_ops import load_definition
 
 cli_logger = logging.getLogger(__name__)
-set_up_rich_handler(cli_logger)
 
 
 class TaskManager:
@@ -55,7 +53,7 @@ class TaskManager:
 
     def refresh_tasks(self):
         """Refresh the tasks in the task view."""
-        print("Refreshing tasks in TaskManager...")
+        cli_logger.info('Refreshing tasks in TaskManager...')
         load_definition(reload=True)
         self.task_view = TaskView()
 
@@ -97,28 +95,16 @@ class TaskManager:
             )
 
         if len(tasks_to_cancel) == 0:
-            print("No dangling tasks found from previous alabos workers. Nice!")
+            cli_logger.info('No dangling tasks found from previous alabos workers. Nice!')
             return
 
-        print(
-            f"""
-              Found {len(tasks_to_cancel)} dangling tasks leftover from previous alabos workers. These tasks were in
-              an unknown state (RUNNING or CANCELLING) when the alabos workers were stopped.
-
-              We will now cancel them and remove their physical components from the lab. We will go through each task
-              one by one. A user request will appear on the alabos dashboard for each task. Please acknowledge each
-              request to remove the samples from the lab. Once all tasks have been addressed, the alabos workers will
-              begin to process new tasks. Lets begin:"""
-        )
+        cli_logger.info(f'\n              Found {len(tasks_to_cancel)} dangling tasks leftover from previous alabos workers. These tasks were in\n              an unknown state (RUNNING or CANCELLING) when the alabos workers were stopped.\n\n              We will now cancel them and remove their physical components from the lab. We will go through each task\n              one by one. A user request will appear on the alabos dashboard for each task. Please acknowledge each\n              request to remove the samples from the lab. Once all tasks have been addressed, the alabos workers will\n              begin to process new tasks. Lets begin:')
         for i, task_entry in enumerate(tasks_to_cancel):
             task_id = task_entry["task_id"]
             task_class = task_entry["type"]
             task_name = task_class.__name__
 
-            print(
-                f"\n({i + 1}/{len(tasks_to_cancel)}) please clean up task {task_name} ({task_id}) using the ALabOS "
-                f"dashboard..."
-            )
+            cli_logger.info(f'\n({i + 1}/{len(tasks_to_cancel)}) please clean up task {task_name} ({task_id}) using the ALabOS dashboard...')
 
             # puts a user request on the dashboard to remove all samples in this task from the physical lab,
             # blocks until request is acknowledged. There may be a duplicate request on the dashboard if the task was
@@ -127,9 +113,9 @@ class TaskManager:
 
             # mark task as successfully cancelled
             self.task_view.update_status(task_id=task_id, status=TaskStatus.CANCELLED)
-            print("\t Task cancelled successfully.")
+            cli_logger.info('\t Task cancelled successfully.')
 
-        print("Cleanup is done, nice job. Lets get back to work!")
+        cli_logger.info('Cleanup is done, nice job. Lets get back to work!')
 
     def submit_ready_tasks(self):
         """

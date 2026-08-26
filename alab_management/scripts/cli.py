@@ -41,6 +41,9 @@ def init_cli():
 @cli.command("setup", short_help="Read and write definitions to database")
 def setup_lab_cli():
     """Read and write definitions to database."""
+    from alab_management.utils.logger import configure_logging
+
+    configure_logging()
     if setup_lab():
         click.echo("Done")
     else:

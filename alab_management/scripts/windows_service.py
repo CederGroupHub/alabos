@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import socket
 import sys
 import time
@@ -86,14 +89,14 @@ class alabosService(win32serviceutil.ServiceFramework):
             while self.running:
                 time.sleep(0.5)
                 if not self.alabos_thread.is_alive() and not self.warned:
-                    print("AlabOS thread is dead")
+                    logger.info('AlabOS thread is dead')
                     user_input_view._alarm.alert(
                         "Traceback (most recent call last): \nURGENT! AlabOS thread is dead!",
                         category="Error",
                     )
                     self.warned = True
                 if not self.worker_process.is_alive() and not self.warned:
-                    print("AlabOS worker thread is dead")
+                    logger.info('AlabOS worker thread is dead')
                     user_input_view._alarm.alert(
                         "Traceback (most recent call last): \nURGENT! AlabOS worker thread is dead!",
                         category="Error",
@@ -103,7 +106,7 @@ class alabosService(win32serviceutil.ServiceFramework):
                     not self.alabos_thread.is_alive()
                     and not self.worker_process.is_alive()
                 ):
-                    print("Both AlabOS and the worker thread are dead")
+                    logger.info('Both AlabOS and the worker thread are dead')
                     user_input_view._alarm.alert(
                         "Traceback (most recent call last): \nURGENT! Both AlabOS and the worker thread are dead!",
                         category="Error",

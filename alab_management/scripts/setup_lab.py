@@ -3,6 +3,8 @@ Generate device, sample position, task definitions from user defined files (task
 and write them to MongoDB, which will make it easier to query.
 """
 
+import logging
+
 from alab_management.alarm import Alarm
 from alab_management.config import AlabOSConfig
 from alab_management.device_view.device import get_current_devices
@@ -10,6 +12,21 @@ from alab_management.sample_view.sample import (
     SamplePosition,
     get_current_standalone_sample_positions,
 )
+
+logger = logging.getLogger(__name__)
+
+
+def _format_sample_positions(positions: list[SamplePosition]) -> list[str]:
+    return [f"{position.name}({position.number})" for position in positions]
+
+
+def _format_device_sample_positions(
+    positions_by_device: dict[str, list[SamplePosition]],
+) -> dict[str, list[str]]:
+    return {
+        device_name: _format_sample_positions(positions)
+        for device_name, positions in positions_by_device.items()
+    }
 
 
 def _process_device_sample_positions(
@@ -158,7 +175,7 @@ def setup_lab(
     for device_name in available_devices_names:
         if device_name not in current_devices_dict:
             removed_devices_names.append(device_name)
-    print(f"Devices to be removed from the db and registry: {removed_devices_names}")
+    logger.info(f'Devices to be removed from the db and registry: {removed_devices_names}')
 
     # step 6: add the new devices to the db [apply positive delta of devices]
     DeviceView().add_devices_to_db(filtered_devices)
@@ -166,7 +183,10 @@ def setup_lab(
         device_instance._apply_default_db_values()
         # trigger database updates for Device values stored within db. These are not executed upon instantiation
         # because the device documents were not yet created within the Device collection.
-    print(f"Devices added to the db and registry: {filtered_devices}")
+    logger.info(
+        "Devices added to the db and registry: %s",
+        sorted(filtered_devices.keys()),
+    )
 
     # Devices already in the db never see edits to their class definition, so refresh the fields
     # that only describe the device (description, dashboard_attributes).
@@ -180,7 +200,7 @@ def setup_lab(
         try:
             device_instance._apply_default_db_values()
         except Exception as error:  # noqa: BLE001 - one bad device must not stop setup
-            print(f"Could not apply default attribute values for {device_name}: {error}")
+            logger.error(f'Could not apply default attribute values for {device_name}: {error}')
 
     # step 7: get all the standalone sample positions from the __init__.py
     # and the ones that are currently active in the lab [current state]
@@ -217,9 +237,7 @@ def setup_lab(
     for sample_position_name in sample_positions_names:
         if sample_position_name not in current_sample_positions_names:
             removed_sample_positions_prefixes.append(sample_position_name)
-    print(
-        f"Standalone sample positions to be removed from the db and registry: {removed_sample_positions_prefixes}"
-    )
+    logger.info(f'Standalone sample positions to be removed from the db and registry: {removed_sample_positions_prefixes}')
 
     # step 11: find the current sample positions that has the same name but different number of slots
     # [calculate negative delta of sample positions numbers]
@@ -252,7 +270,10 @@ def setup_lab(
                 )
         except KeyError:
             continue
-    print(f"Updated standalone sample positions: {updated_sample_positions}")
+    logger.info(
+        "Updated standalone sample positions: %s",
+        _format_sample_positions(updated_sample_positions),
+    )
 
     # step 12: add device sample positions to the db [apply positive delta of device prefix of sample positions]
     # next add positions within devices
@@ -274,7 +295,10 @@ def setup_lab(
     removed_sample_positions_in_devices = _find_removed_sample_positions_in_devices(
         devices_sample_positions_before_reload, current_devices_sample_positions
     )
-    print(f"Removed sample positions in devices: {removed_sample_positions_in_devices}")
+    logger.info(
+        "Removed sample positions in devices: %s",
+        _format_device_sample_positions(removed_sample_positions_in_devices),
+    )
 
     # step 14: check if there is any update of sample positions from the devices
     # [calculate negative delta of sample positions numbers]
@@ -283,7 +307,10 @@ def setup_lab(
     updated_sample_positions_in_devices = _find_updated_sample_positions_in_devices(
         devices_sample_positions_before_reload, current_devices_sample_positions
     )
-    print(f"Updated sample positions in devices: {updated_sample_positions_in_devices}")
+    logger.info(
+        "Updated sample positions in devices: %s",
+        _format_device_sample_positions(updated_sample_positions_in_devices),
+    )
 
     # print the alarm configuration
     alarm_config = AlabOSConfig().get("alarm", {})

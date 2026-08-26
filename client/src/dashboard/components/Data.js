@@ -129,6 +129,9 @@ function Data() {
           <Typography variant="body2" color="text.secondary">
             Curated Mongo-backed exports for operators and experimenters.
           </Typography>
+          <Typography variant="body2" color="error.main">
+            This page is under active development and is not yet fully operational.
+          </Typography>
         </Box>
         <Stack direction="row" spacing={1} alignItems="center">
           <IconButton

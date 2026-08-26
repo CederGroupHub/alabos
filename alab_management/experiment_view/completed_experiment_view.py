@@ -1,5 +1,8 @@
 """A wrapper over the ``experiment`` class."""
 
+import logging
+
+logger = logging.getLogger(__name__)
 from typing import Any
 
 from bson import ObjectId  # type: ignore
@@ -57,7 +60,7 @@ class CompletedExperimentView:
             try:
                 self.save_experiment(experiment_dict["_id"])
             except:  # noqa: E722
-                print(f"Error saving experiment {experiment_dict['_id']}")
+                logger.error(f"Error saving experiment {experiment_dict['_id']}")
 
     def exists(self, experiment_id: ObjectId | str) -> bool:
         """Check if an experiment exists in the completed experiment database.

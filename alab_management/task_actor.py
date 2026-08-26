@@ -18,16 +18,17 @@ from alab_management.task_view import BaseTask, TaskStatus, TaskView
 from alab_management.task_view.task import TaskCancelledError
 from alab_management.utils.data_objects import get_rabbitmq_broker
 from alab_management.utils.error_context import format_error_report, get_error_origin
-from alab_management.utils.logger import set_up_rich_handler
+from alab_management.utils.logger import configure_logging
 from alab_management.utils.middleware import register_abortable_middleware
 from alab_management.utils.module_ops import load_definition
+
+configure_logging(dramatiq_level=logging.INFO)
 
 dramatiq.set_broker(get_rabbitmq_broker())
 
 register_abortable_middleware()
 
 cli_logger = logging.getLogger(__name__)
-set_up_rich_handler(cli_logger)
 
 
 @dramatiq.actor(
@@ -66,29 +67,18 @@ def run_task(task_id_str: str):
     try:
         task_entry = task_view.get_task(task_id, encode=True)
     except ValueError:
-        print(
-            f"{datetime.datetime.now()}: No task found with id: {task_id} -- assuming that alabos was aborted without "
-            f"cleanup, and skipping this task."
-        )
+        cli_logger.info(f'{datetime.datetime.now()}: No task found with id: {task_id} -- assuming that alabos was aborted without cleanup, and skipping this task.')
         return
 
     if task_view.get_status(task_id) != TaskStatus.INITIATED:
-        print(
-            "Task status is not INITIATED; this implies the task has already been picked up by a previous task actor. "
-            "No action is taken."
-        )
+        cli_logger.info('Task status is not INITIATED; this implies the task has already been picked up by a previous task actor. No action is taken.')
         return
 
     try:
         task_type = task_entry.pop("type")
-        print(
-            f"{datetime.datetime.now()}: Worker picked up task {task_id} of type {task_type.__name__}"
-        )
+        cli_logger.info(f'{datetime.datetime.now()}: Worker picked up task {task_id} of type {task_type.__name__}')
     except ValueError:
-        print(
-            f"{datetime.datetime.now()}: No task found with id: {task_id} -- assuming that alabos was aborted without "
-            f"cleanup, and skipping this task."
-        )
+        cli_logger.info(f'{datetime.datetime.now()}: No task found with id: {task_id} -- assuming that alabos was aborted without cleanup, and skipping this task.')
         return
 
     lab_view = LabView(task_id=task_id)
@@ -293,18 +283,10 @@ def run_task(task_id_str: str):
                     model = task.result_specification
                     model(**result)
                 except ValidationError:
-                    print(
-                        f"WARNING: Task result for task_id {task_id_str} is "
-                        f"inconsistent with the task result specification."
-                        f"{format_exc()}"
-                    )
-                    print()
+                    cli_logger.warning(f'WARNING: Task result for task_id {task_id_str} is inconsistent with the task result specification.{format_exc()}')
+                    cli_logger.info("")
             else:
-                print(
-                    f"WARNING: Task result for task_id {task_id_str} is not a dictionary, but a {type(result)}."
-                    f"Therefore, the task result specification is invalid. "
-                    f"Please ensure that the task result is a dictionary."
-                )
+                cli_logger.warning(f'WARNING: Task result for task_id {task_id_str} is not a dictionary, but a {type(result)}.Therefore, the task result specification is invalid. Please ensure that the task result is a dictionary.')
 
         logger.system_log(
             level="INFO",

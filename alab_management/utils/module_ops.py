@@ -1,5 +1,8 @@
 """This file contains the functions to load python modules from a path."""
 
+import logging
+
+logger = logging.getLogger(__name__)
 import hashlib
 import importlib
 import importlib.util
@@ -108,7 +111,7 @@ def import_module_from_path(path: str | Path, reload: bool = False) -> ModuleTyp
     # Import the module
     with import_lock:
         if module_name in sys.modules and reload:
-            print("Reloading module:", module_name)
+            logger.info(str('Reloading module:') + ' ' + str(module_name))
             # Set an environment variable to indicate reloading, used in add_device, add_task, add_sample_position
             os.environ["ALABOS_RELOAD"] = "1"
             try:
@@ -132,12 +135,12 @@ def _should_reload_package(package_name: str, reloaded_packages: set) -> bool:
 
 def _reload_parent_package(package_name: str, reloaded_packages: set) -> None:
     """Reload a parent package."""
-    print(f"Reloading parent package: {package_name}")
+    logger.info(f'Reloading parent package: {package_name}')
     try:
         deep_reload(sys.modules[package_name])
         reloaded_packages.add(package_name)
     except Exception as e:
-        print(f"Failed to reload parent package {package_name}: {e}")
+        logger.error(f'Failed to reload parent package {package_name}: {e}')
 
 
 def _process_parent_packages(
@@ -204,7 +207,7 @@ def _scan_and_import_new_modules(root_path: Path) -> None:
 
             # If this module is not already imported, import it
             if module_name not in sys.modules:
-                print(f"Importing new module: {module_name}")
+                logger.info(f'Importing new module: {module_name}')
                 importlib.import_module(module_name)
 
                 # After importing, reload each parent package up to the working directory
@@ -212,7 +215,7 @@ def _scan_and_import_new_modules(root_path: Path) -> None:
                     py_file, dir_path, root_path, reloaded_packages
                 )
         except (ValueError, ImportError) as e:
-            print(f"Skipping import of {py_file}: {e}")
+            logger.info(f'Skipping import of {py_file}: {e}')
             continue
 
 

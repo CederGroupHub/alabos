@@ -1,5 +1,8 @@
 """The module to send alerts to the user via email or slack."""
 
+import logging
+
+logger = logging.getLogger(__name__)
 import smtplib
 
 from retry.api import retry_call
@@ -154,9 +157,7 @@ class Alarm:
                                 exceptions=SlackApiError,
                             )
                     except Exception as e:
-                        print(
-                            f"Error sending alert to {platform} even after retry: {e}"
-                        )
+                        logger.error(f'Error sending alert to {platform} even after retry: {e}')
 
     def send_email(self, message: str, category: str):
         """
@@ -201,17 +202,16 @@ class Alarm:
         )
 
     def print_configuration(self):
-        """Print the configuration of the alarm."""
-        print("Alarm Configuration:")
-        print("Platforms: ", self.platforms)
-        print("Email Receivers: ", self.email_receivers)
-        print("Email Sender: ", self.email_sender)
-        print("Slack Channel ID: ", self.slack_channel_id)
-        print(
-            "Sim Mode Flag: ",
-            (
-                str(self.sim_mode_flag) + ". Will not send alerts in sim mode."
-                if self.sim_mode_flag
-                else "False"
-            ),
-        )
+        """Log the configuration of the alarm."""
+        logger.info("Alarm Configuration:")
+        logger.info("Platforms: %s", self.platforms)
+        logger.info("Email Receivers: %s", self.email_receivers)
+        logger.info("Email Sender: %s", self.email_sender)
+        logger.info("Slack Channel ID: %s", self.slack_channel_id)
+        if self.sim_mode_flag:
+            logger.info(
+                "Sim Mode Flag: %s. Will not send alerts in sim mode.",
+                self.sim_mode_flag,
+            )
+        else:
+            logger.info("Sim Mode Flag: False")

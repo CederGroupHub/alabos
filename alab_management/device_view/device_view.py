@@ -1,5 +1,8 @@
 """Wrapper over the ``devices`` collection."""
 
+import logging
+
+logger = logging.getLogger(__name__)
 import time
 from collections.abc import Collection
 from datetime import datetime
@@ -76,14 +79,13 @@ class DeviceView:
         show which devices were disabled because the connection could not be established.
         """
         for device_name, device in self._device_list.items():
-            print(f"Connecting to {device_name}...", end=" ")
             try:
                 device._connect_wrapper()
             except Exception as e:
-                print("Failed!")
-                print(
-                    f"Could not connect to {device_name}: {e!r}. "
-                    "Disabling and pausing it so the rest of the lab can still launch."
+                logger.error(
+                    "Could not connect to %s: %r. Disabling and pausing it so the rest of the lab can still launch.",
+                    device_name,
+                    e,
                 )
                 self._mark_device_connection_failed(device_name, e)
                 continue
@@ -91,7 +93,7 @@ class DeviceView:
             # If this device was previously auto-disabled due to a connection failure and is
             # now reachable again, clear that flag so it becomes usable.
             self._clear_connection_failed_flag(device_name)
-            print("Done")
+            logger.info("Connecting to %s... Done", device_name)
         self.__connected_to_devices = True
 
     def __disconnect_all_devices(self):
@@ -101,13 +103,13 @@ class DeviceView:
             device = self._device_list.get(device_name)
             if device is None:
                 continue
-            print(f"Disconnecting from {device_name}...", end=" ")
+            logger.info(f"Disconnecting from {device_name}...")
             try:
                 device._disconnect_wrapper()
             except Exception as e:
-                print(f"Could not disconnect from {device_name}: {e!r}")
+                logger.error(f"Could not disconnect from {device_name}: {e!r}")
                 continue
-            print("Done")
+            logger.info("Disconnected from %s", device_name)
         self._connected_device_names.clear()
         self.__connected_to_devices = False
 
@@ -129,7 +131,7 @@ class DeviceView:
             self.set_attribute(device_name, "disabled_reason", "connection_failed")
             self.set_message(device_name, message)
         except Exception as exc:  # best-effort bookkeeping; never block launch
-            print(f"Failed to flag {device_name} as disabled: {exc!r}")
+            logger.error(f'Failed to flag {device_name} as disabled: {exc!r}')
 
     def _clear_connection_failed_flag(self, device_name: str):
         """Clear a previous connection-failure disable once a device connects again.
@@ -694,16 +696,14 @@ class DeviceView:
     def remove_device(self, device_name: str):
         """Remove a device from the device view and the registry."""
         # disconnect the device
-        print(f"Disconnecting from {device_name}...")
+        logger.info(f'Disconnecting from {device_name}...')
         with self._lock():  # pylint: disable=not-callable
             device = self._device_list[device_name]
             device._disconnect_wrapper()
             self._device_list.pop(device_name, None)
             remove_device(device_name)
             self._device_collection.delete_one({"name": device_name})
-            print(
-                f"Device {device_name} has been removed from the device view and the registry."
-            )
+            logger.info(f'Device {device_name} has been removed from the device view and the registry.')
 
     def get_all_devices_from_db(self) -> dict[str, dict[str, Any]]:
         """

@@ -5,6 +5,9 @@ If ``-a`` is true, the whole database (including the data recorded) shall
 be deleted.
 """
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 def cleanup_lab(
     all_collections: bool = False,
@@ -43,11 +46,11 @@ def cleanup_lab(
                 f"If you want to remove the simulation database then type in "
                 f"{config['general']['name']}_sim:  "
             )
-            print(f"Removing database {database_name}")
+            logger.info(f'Removing database {database_name}')
             _GetMongoCollection.init()
             _GetMongoCollection.client.drop_database(database_name)  # type: ignore
         else:
-            print(f"Removing database {database_name}")
+            logger.info(f'Removing database {database_name}')
             _GetMongoCollection.init()
             _GetMongoCollection.client.drop_database(database_name)
 

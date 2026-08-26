@@ -1,5 +1,7 @@
 """Launch Dramatiq worker to submit tasks."""
 
+import logging
+
 
 def launch_worker(args):
     """Launch a Dramatiq worker process to execute tasks."""
@@ -9,6 +11,10 @@ def launch_worker(args):
     from dramatiq.cli import make_argument_parser
 
     from alab_management.config import AlabOSConfig
+    from alab_management.utils.logger import configure_logging
+
+    configure_logging(dramatiq_level=logging.INFO)
+
     from alab_management.task_manager.task_manager import TaskManager
 
     task_manager = TaskManager()

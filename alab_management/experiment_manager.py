@@ -11,7 +11,6 @@ import time
 from contextlib import contextmanager
 from typing import Any
 
-from alab_management.utils.logger import set_up_rich_handler
 from alab_management.utils.module_ops import load_definition
 
 from .config import AlabOSConfig
@@ -22,7 +21,6 @@ from .task_view import TaskStatus, TaskView
 from .utils.graph_ops import Graph
 
 cli_logger = logging.getLogger(__name__)
-set_up_rich_handler(cli_logger)
 
 
 class ExperimentManager:
@@ -105,7 +103,7 @@ class ExperimentManager:
             self.experiment_view.update_experiment_status(
                 experiment["_id"], ExperimentStatus.ERROR
             )
-            print(f"Experiment ({experiment['_id']}) has a cycle in the graph.")
+            cli_logger.info(f"Experiment ({experiment['_id']}) has a cycle in the graph.")
             return
 
         # create samples in the sample database
@@ -188,14 +186,11 @@ class ExperimentManager:
                         "exp_id": experiment["_id"],
                     },
                 )
-                print(f"Experiment ({experiment['_id']}) completed.")
+                cli_logger.info(f"Experiment ({experiment['_id']}) completed.")
 
                 if self.__copy_to_completed_db:
                     self.completed_experiment_view.save_experiment(experiment["_id"])
-                    print(
-                        f"Experiment ({experiment['_id']}) and associated "
-                        f"samples/tasks were copied to the completed db."
-                    )
+                    cli_logger.info(f"Experiment ({experiment['_id']}) and associated samples/tasks were copied to the completed db.")
                     self.logger.system_log(
                         level="DEBUG",
                         log_data={
@@ -218,7 +213,7 @@ class ExperimentManager:
 
     def refresh_task_list(self):
         """This method will refresh the task list by reloading definition of tasks."""
-        print("Refreshing task view in ExperimentManager...")
+        cli_logger.info('Refreshing task view in ExperimentManager...')
         load_definition(reload=True)
         self.task_view = TaskView()
         self.experiment_view = ExperimentView()

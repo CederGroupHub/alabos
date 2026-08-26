@@ -219,6 +219,9 @@ function SamplePositions() {
           <Typography variant="body2" color="text.secondary">
             Manual rack occupancy editor for DASH loading positions.
           </Typography>
+          <Typography variant="body2" color="error.main">
+            This page is under active development and is not yet fully operational.
+          </Typography>
         </Box>
         <Button variant="outlined" onClick={refresh}>Refresh</Button>
       </Box>

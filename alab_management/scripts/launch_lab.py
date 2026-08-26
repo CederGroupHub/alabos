@@ -1,5 +1,8 @@
 """The script to launch task_view and executor, which are the core of the system."""
 
+import logging
+
+logger = logging.getLogger(__name__)
 import contextlib
 import multiprocessing
 import os
@@ -27,7 +30,7 @@ def launch_dashboard(host: str, port: int, debug: bool = False):
     from alab_management.dashboard import create_app
 
     if debug:
-        print("Debug mode is on, the dashboard will be served with CORS enabled!")
+        logger.debug('Debug mode is on, the dashboard will be served with CORS enabled!')
     app = create_app(cors=debug)  # if debug enabled, allow cross-origin requests to API
     server = (
         WSGIServer((host, port), app)
@@ -47,7 +50,7 @@ def launch_experiment_manager():
     load_definition()
     experiment_manager = ExperimentManager()
     experiment_manager.run()
-    print(experiment_manager)
+    logger.info(experiment_manager)
 
 
 def launch_task_manager():
@@ -102,7 +105,7 @@ def system_refresh():
         or resource_manager is None
         or task_manager is None
     ):
-        print("System is not fully initialized. Please wait for a while for refresh.")
+        logger.info('System is not fully initialized. Please wait for a while for refresh.')
         return
     global package_fingerprint
 
@@ -110,9 +113,7 @@ def system_refresh():
 
     if current_package_fingerprint != package_fingerprint:
         package_fingerprint = current_package_fingerprint
-        print(
-            "Package fingerprint has changed, reloading definitions and refreshing system."
-        )
+        logger.info('Package fingerprint has changed, reloading definitions and refreshing system.')
         with (
             task_manager.pause_new_task_launching(),
             resource_manager.pause_resource_assigning(),
@@ -133,18 +134,15 @@ def system_refresh():
 
 def launch_lab(host, port, debug):
     """Start to run the lab."""
-    import logging
-
     from alab_management.device_view import DeviceView
+    from alab_management.utils.logger import configure_logging
 
-    logging.basicConfig(level=logging.INFO)
+    configure_logging()
 
     dv = DeviceView()
 
     if len(list(dv.get_all())) == 0:
-        print(
-            "No devices found in the database. Please setup the lab using `alabos setup` first!"
-        )
+        logger.info('No devices found in the database. Please setup the lab using `alabos setup` first!')
         sys.exit(1)
 
     dashboard_thread = Thread(target=launch_dashboard, args=(host, port, debug))

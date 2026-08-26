@@ -29,11 +29,9 @@ from alab_management.sample_view.sample_view import SamplePositionRequest, Sampl
 from alab_management.task_view import TaskView
 from alab_management.task_view.task_enums import CancelingProgress, TaskStatus
 from alab_management.utils.data_objects import DocumentNotUpdatedError, get_collection
-from alab_management.utils.logger import set_up_rich_handler
 from alab_management.utils.module_ops import load_definition
 
 cli_logger = logging.getLogger(__name__)
-set_up_rich_handler(cli_logger)
 
 
 class ResourceManager(RequestMixin):
