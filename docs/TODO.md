@@ -36,3 +36,17 @@
 8. Clean up the `Device Control` UI.
    Improve readability once the backend behavior is settled and the real command set is confirmed.
    Revisit spacing, grouping, and result presentation so manual control is easier to scan during operation.
+
+9. Deduplicate the `Device Control` catalog (single source of truth in `alab_one`).
+   Today `alab_management/dashboard/routes/device_control.py` hardcodes `DEVICE_CATALOG` and
+   `COMMAND_REGISTRY` while the real device methods live in `alab_one/alabOS/devices/`. That
+   duplication drifts easily (for example blocked gripper commands or new shaker parameters).
+   **Phase 1:** move the catalog into `alab_one` (for example
+   `alabOS/device_control_catalog.py`, or per-device `device_control_commands` metadata on
+   `BaseDevice` subclasses).
+   **Phase 2:** change `device_control.py` to load the catalog from the AlabOS working
+   directory after `load_definition()`, instead of hardcoding device names and commands.
+   **Phase 3:** add a test that every catalogued command maps to a real device method (and
+   that blocked commands stay blocked).
+   Keep claim/release, occupation, user-input handoff, and `DevicesClient` RPC in
+   `alab_management` — only the command definitions move to `alab_one`.
