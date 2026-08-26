@@ -1057,6 +1057,7 @@
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Execute a command on the device. Acknowledges completion on rabbitmq channel."""</span>
+        <span class="n">require_occupation</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"require_occupation"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">callback_publish</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">delivery_tag</span><span class="p">,</span> <span class="n">props</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">Mock</span><span class="p">):</span>
@@ -1080,7 +1081,7 @@
             <span class="n">device_entry</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">get_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
 
             <span class="c1"># check if the device is currently occupied by this task</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_status</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_status</span> <span class="ow">and</span> <span class="n">require_occupation</span> <span class="ow">and</span> <span class="p">(</span>
                 <span class="n">device_entry</span> <span class="ow">is</span> <span class="kc">None</span>
                 <span class="ow">or</span> <span class="n">device_entry</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="o">!=</span> <span class="n">DeviceTaskStatus</span><span class="o">.</span><span class="n">OCCUPIED</span><span class="o">.</span><span class="n">name</span>
                 <span class="ow">or</span> <span class="n">device_entry</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">]</span> <span class="o">!=</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">task_id</span><span class="p">)</span>
@@ -1152,7 +1153,7 @@
                 <span class="n">body</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">],</span>
                 <span class="o">*</span><span class="n">body</span><span class="p">[</span><span class="s2">"args"</span><span class="p">],</span>
             <span class="p">),</span>
-            <span class="n">kwargs</span><span class="o">=</span><span class="n">body</span><span class="p">[</span><span class="s2">"kwargs"</span><span class="p">],</span>
+            <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="o">**</span><span class="n">body</span><span class="p">[</span><span class="s2">"kwargs"</span><span class="p">],</span> <span class="s2">"require_occupation"</span><span class="p">:</span> <span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"require_occupation"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)},</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">threads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thread</span><span class="p">)</span>
         <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
@@ -1237,7 +1238,14 @@
 
 <div class="viewcode-block" id="DevicesClient.call">
 <a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DevicesClient.call">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">require_occupation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Call a method inside the device with name ``device_name``. args, kwargs will be feeded into</span>
 <span class="sd">        the method directly.</span>
@@ -1268,6 +1276,7 @@
                         <span class="s2">"args"</span><span class="p">:</span> <span class="n">args</span><span class="p">,</span>
                         <span class="s2">"kwargs"</span><span class="p">:</span> <span class="n">kwargs</span><span class="p">,</span>
                         <span class="s2">"task_id"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span><span class="p">),</span>
+                        <span class="s2">"require_occupation"</span><span class="p">:</span> <span class="n">require_occupation</span><span class="p">,</span>
                     <span class="p">}</span>
                 <span class="p">),</span>
                 <span class="n">properties</span><span class="o">=</span><span class="n">BasicProperties</span><span class="p">(</span>
