@@ -1,5 +1,7 @@
 """Useful CLI tools for the alab_management package."""
 
+import os
+
 import click
 
 from alab_management.__init__ import __version__
@@ -13,20 +15,33 @@ from .setup_lab import setup_lab
 
 CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
 
-
-@click.group("cli", context_settings=CONTEXT_SETTINGS)
-def cli():
-    """Managing workflow in Alab."""
-    click.echo(
-        rf"""       _    _       _         ___  ____
+ALABOS_BANNER = rf"""       _    _       _         ___  ____
       / \  | | __ _| |__     / _ \/ ___|
      / _ \ | |/ _` | '_ \   | | | \___ \
     / ___ \| | (_| | |_) |  | |_| |___) |
    /_/   \_\_|\__,_|_.__/    \___/|____/
 
 ----  Alab OS v{__version__} -- Alab Project Team  ----
-    """
-    )
+"""
+
+
+def _should_print_cli_banner(ctx: click.Context) -> bool:
+    if os.environ.get("ALABOS_QUIET_CLI", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }:
+        return False
+    return ctx.invoked_subcommand != "launch_worker"
+
+
+@click.group("cli", context_settings=CONTEXT_SETTINGS)
+@click.pass_context
+def cli(ctx):
+    """Managing workflow in Alab."""
+    if _should_print_cli_banner(ctx):
+        click.echo(ALABOS_BANNER)
 
 
 @cli.command("init", short_help="Init definition folder with default configuration")

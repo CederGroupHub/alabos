@@ -14,7 +14,7 @@ def launch_worker(args):
     from alab_management.utils.logger import configure_logging
 
     configure_logging(
-        dramatiq_level=logging.INFO,
+        dramatiq_level=logging.WARNING,
         mobile_robot_debug=False,
         robot_arm_mobile_debug=False,
     )
