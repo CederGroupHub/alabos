@@ -17,11 +17,15 @@ device_control_bp = Blueprint(
 
 MANUAL_CONTROL_ATTRIBUTE = "manual_control_task_id"
 
+BLOCKED_COMMANDS: dict[str, set[str]] = {
+    "DASH_capper": {"open_top_gripper", "close_top_gripper"},
+}
+
 DEVICE_CATALOG = [
     {
         "device_name": "DASH_capper",
         "label": "Capper",
-        "description": "PLC-backed capper with top/bottom grippers and spin motor.",
+        "description": "PLC-backed capper with bottom gripper and spin motor.",
         "implementation_status": "implemented",
         "not_implemented_reason": None,
     },
@@ -402,6 +406,7 @@ def get_device_control_catalog():
                 "allowlisted_commands": [
                     _serialize_command(entry["device_name"], name, command)
                     for name, command in commands.items()
+                    if name not in BLOCKED_COMMANDS.get(entry["device_name"], set())
                 ],
             }
         )
@@ -471,7 +476,9 @@ def execute_device_command():
     try:
         _require_implemented_device(device_name)
         command_entry = COMMAND_REGISTRY[device_name].get(command_name)
-        if command_entry is None:
+        if command_entry is None or command_name in BLOCKED_COMMANDS.get(
+            device_name, set()
+        ):
             raise ValueError(
                 f"Command '{command_name}' is not allowlisted for '{device_name}'."
             )

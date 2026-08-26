@@ -41,6 +41,15 @@ const PAGE_ACCENTS = {
   warningText: '#7a5f3f',
 };
 
+const HIDDEN_COMMANDS_BY_DEVICE = {
+  DASH_capper: new Set(['open_top_gripper', 'close_top_gripper']),
+};
+
+function visibleCommands(deviceName, commands) {
+  const hidden = HIDDEN_COMMANDS_BY_DEVICE[deviceName] || new Set();
+  return (commands || []).filter((command) => !hidden.has(command.command_name));
+}
+
 function prettyJson(value) {
   if (value === undefined || value === null || value === '') {
     return 'No response yet.';
@@ -259,8 +268,9 @@ function DeviceControl() {
         {loading && <CircularProgress size={28} />}
 
         {implementedDevices.map((device) => {
-          const readCommands = device.allowlisted_commands.filter((command) => command.mode === 'read');
-          const actuateCommands = device.allowlisted_commands.filter((command) => command.mode === 'actuate');
+          const deviceCommands = visibleCommands(device.device_name, device.allowlisted_commands);
+          const readCommands = deviceCommands.filter((command) => command.mode === 'read');
+          const actuateCommands = deviceCommands.filter((command) => command.mode === 'actuate');
           const isClaimedHere = claimTokens[device.device_name] && claimTokens[device.device_name] === device.manual_task_id;
           const isUnavailable = device.claim_state === 'Unavailable';
 
