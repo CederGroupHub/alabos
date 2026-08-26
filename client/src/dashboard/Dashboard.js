@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import Devices from './components/Devices';
 import DeviceControl from './components/DeviceControl';
+import MobileRobotControl from './components/MobileRobotControl';
 import Data from './components/Data';
 import Experiments from './components/Experiments';
 import SamplePositions from './components/SamplePositions';
 import styled from 'styled-components';
 import { useLocation, Link } from "react-router-dom";
-import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, FormControl, FormControlLabel, Switch } from '@mui/material';
+import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, FormControl, FormControlLabel, Switch, Typography } from '@mui/material';
 import PrecisionManufacturingIcon from '@mui/icons-material/PrecisionManufacturing';
 import FireplaceIcon from '@mui/icons-material/Fireplace';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import TableChartIcon from '@mui/icons-material/TableChart';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import SettingsRemoteIcon from '@mui/icons-material/SettingsRemote';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
 import UserInputs from './components/UserInput';
 import Badge from '@mui/material/Badge';
 import { get_pending_userinputrequests } from '../api_routes';
@@ -110,16 +112,6 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange }) {
         </LinkedButton>
       </ListItem>
       <ListItem>
-        <LinkedButton to="/#device-control">
-          <ListItemButton className={hash === "#device-control" ? "active list-button-round" : "list-button-round"}>
-            <ListItemIcon>
-              <SettingsRemoteIcon />
-            </ListItemIcon>
-            <ListItemText primary="Device Control" />
-          </ListItemButton>
-        </LinkedButton>
-      </ListItem>
-      <ListItem>
         <LinkedButton to="/#sample-positions">
           <ListItemButton className={hash === "#sample-positions" ? "active list-button-round" : "list-button-round"}>
             <ListItemIcon>
@@ -162,6 +154,47 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange }) {
             label="Hover for ID"
           />
         </FormControl>
+      </ListItem>
+      <Divider sx={{ mt: 1 }} />
+      <ListItem sx={{ display: 'block', pt: 1.5, pb: 0.5, px: 2 }}>
+        <Typography
+          variant="caption"
+          sx={{
+            display: 'block',
+            fontWeight: 700,
+            color: '#355062',
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase',
+          }}
+        >
+          Direct hardware control
+        </Typography>
+        <Typography
+          variant="caption"
+          sx={{ display: 'block', color: '#5f7483', mt: 0.25, lineHeight: 1.35 }}
+        >
+          For integration testing and debugging
+        </Typography>
+      </ListItem>
+      <ListItem>
+        <LinkedButton to="/#device-control">
+          <ListItemButton className={hash === "#device-control" ? "active list-button-round" : "list-button-round"}>
+            <ListItemIcon>
+              <SettingsRemoteIcon />
+            </ListItemIcon>
+            <ListItemText primary="Device Control" />
+          </ListItemButton>
+        </LinkedButton>
+      </ListItem>
+      <ListItem>
+        <LinkedButton to="/#mobile-robot-control">
+          <ListItemButton className={hash === "#mobile-robot-control" ? "active list-button-round" : "list-button-round"}>
+            <ListItemIcon>
+              <SmartToyIcon />
+            </ListItemIcon>
+            <ListItemText primary="Mobile Robot Control" />
+          </ListItemButton>
+        </LinkedButton>
       </ListItem>
     </List>
 
@@ -254,6 +287,8 @@ function Dashboard() {
         return <Data />;
       case "#device-control":
         return <DeviceControl />;
+      case "#mobile-robot-control":
+        return <MobileRobotControl />;
       case "#userinput":
         return <UserInputs hoverForId={hoverForId} />
       case "#experiment":

@@ -256,3 +256,35 @@ export async function execute_device_control_command(device_name, command_name, 
     });
     return await res.json();
 }
+
+// Mobile robot segment control
+const ROBOT_CONTROL_API = process.env.NODE_ENV === "production" ? "/api/robot-control/mobile" : URL + "/api/robot-control/mobile";
+
+export async function get_mobile_robot_catalog() {
+    const res = await fetch(ROBOT_CONTROL_API + "/catalog", { mode: 'cors' });
+    return await res.json();
+}
+
+export async function preview_mobile_robot_segment(segment_id, body) {
+    const res = await fetch(ROBOT_CONTROL_API + "/preview/" + segment_id, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+    });
+    return await res.json();
+}
+
+export async function run_mobile_robot_segment(segment_id, body) {
+    const res = await fetch(ROBOT_CONTROL_API + "/run/" + segment_id, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+    });
+    return await res.json();
+}
