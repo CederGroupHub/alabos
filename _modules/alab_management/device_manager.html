@@ -396,7 +396,7 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">Future</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">Future</span><span class="p">,</span> <span class="ne">TimeoutError</span> <span class="k">as</span> <span class="n">FuturesTimeoutError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
@@ -414,6 +414,14 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.sample_view.sample_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">SamplePositionStatus</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.scripts.setup_lab</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_lab</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.device_verbose_logging</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">emit_device_trace</span><span class="p">,</span>
+    <span class="n">should_trace_device</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.logger</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DEVICE_RPC_HEARTBEAT_SECONDS</span><span class="p">,</span>
+    <span class="n">is_device_rpc_debug_enabled</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">AlabOSConfig</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.device_view.device_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">DevicePauseStatus</span><span class="p">,</span> <span class="n">DeviceTaskStatus</span><span class="p">,</span> <span class="n">DeviceView</span>
@@ -423,6 +431,30 @@
 
 <span class="n">DEFAULT_SERVER_QUEUE_SUFFIX</span> <span class="o">=</span> <span class="s2">".device_rpc"</span>
 <span class="n">DEFAULT_CLIENT_QUEUE_SUFFIX</span> <span class="o">=</span> <span class="n">DEFAULT_SERVER_QUEUE_SUFFIX</span> <span class="o">+</span> <span class="s2">".reply_to"</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_summarize_rpc_value</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">max_len</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">80</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_len</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">text</span><span class="p">[:</span><span class="w"> </span><span class="n">max_len</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">..."</span>
+    <span class="k">return</span> <span class="n">text</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_summarize_rpc_call</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">_summarize_rpc_value</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">[:</span><span class="mi">3</span><span class="p">]]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"...+</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">3</span><span class="si">}</span><span class="s2"> args"</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="o">&gt;=</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"..."</span><span class="p">)</span>
+            <span class="k">break</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">_summarize_rpc_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="k">if</span> <span class="n">parts</span> <span class="k">else</span> <span class="s2">"-"</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_rpc_trace</span><span class="p">(</span><span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">should_trace_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">):</span>
+        <span class="n">emit_device_trace</span><span class="p">(</span><span class="n">device_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="MethodCallStatus">
@@ -979,6 +1011,15 @@
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Execute a command on the device. Acknowledges completion on rabbitmq channel."""</span>
         <span class="n">require_occupation</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"require_occupation"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">call_summary</span> <span class="o">=</span> <span class="n">_summarize_rpc_call</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">started_at</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+        <span class="n">_rpc_trace</span><span class="p">(</span>
+            <span class="n">device</span><span class="p">,</span>
+            <span class="s2">"execute -&gt; </span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> args=(</span><span class="si">%s</span><span class="s2">)"</span><span class="p">,</span>
+            <span class="n">method</span><span class="p">,</span>
+            <span class="n">task_id</span><span class="p">,</span>
+            <span class="n">call_summary</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">callback_publish</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">delivery_tag</span><span class="p">,</span> <span class="n">props</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">Mock</span><span class="p">):</span>
@@ -1033,6 +1074,25 @@
             <span class="n">response</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="s2">"success"</span><span class="p">,</span> <span class="s2">"result"</span><span class="p">:</span> <span class="n">result</span><span class="p">}</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">response</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="s2">"failure"</span><span class="p">,</span> <span class="s2">"result"</span><span class="p">:</span> <span class="n">e</span><span class="p">}</span>
+
+        <span class="n">duration</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">started_at</span>
+        <span class="k">if</span> <span class="n">response</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"success"</span><span class="p">:</span>
+            <span class="n">_rpc_trace</span><span class="p">(</span>
+                <span class="n">device</span><span class="p">,</span>
+                <span class="s2">"execute &lt;- </span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> (</span><span class="si">%.2f</span><span class="s2">s)"</span><span class="p">,</span>
+                <span class="n">method</span><span class="p">,</span>
+                <span class="n">task_id</span><span class="p">,</span>
+                <span class="n">duration</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_rpc_trace</span><span class="p">(</span>
+                <span class="n">device</span><span class="p">,</span>
+                <span class="s2">"execute &lt;- </span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> failed after </span><span class="si">%.2f</span><span class="s2">s: </span><span class="si">%r</span><span class="s2">"</span><span class="p">,</span>
+                <span class="n">method</span><span class="p">,</span>
+                <span class="n">task_id</span><span class="p">,</span>
+                <span class="n">duration</span><span class="p">,</span>
+                <span class="n">response</span><span class="p">[</span><span class="s2">"result"</span><span class="p">],</span>
+            <span class="p">)</span>
 
         <span class="n">cb</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">callback_publish</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">delivery_tag</span><span class="p">,</span> <span class="n">props</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">add_callback_threadsafe</span><span class="p">(</span><span class="n">cb</span><span class="p">)</span>
@@ -1157,6 +1217,66 @@
         <span class="k">return</span> <span class="n">DeviceWrapper</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">device_name</span><span class="p">,</span> <span class="n">devices_client</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
 
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_wait_for_rpc_result</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">future</span><span class="p">:</span> <span class="n">Future</span><span class="p">,</span>
+        <span class="n">correlation_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span>
+        <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">started_at</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">should_trace_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">FuturesTimeoutError</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">correlation_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">started_at</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s2">"[device-rpc] call timed out: </span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> after </span><span class="si">%.2f</span><span class="s2">s"</span><span class="p">,</span>
+                    <span class="n">device_name</span><span class="p">,</span>
+                    <span class="n">method</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span><span class="p">,</span>
+                    <span class="n">elapsed</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="n">FuturesTimeoutError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"Device RPC timed out after </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span><span class="si">}</span><span class="s2">s: "</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> (task=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span><span class="si">}</span><span class="s2">)"</span>
+                <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">started_at</span>
+                <span class="n">remaining</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span> <span class="o">-</span> <span class="n">elapsed</span>
+                <span class="k">if</span> <span class="n">remaining</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">correlation_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">FuturesTimeoutError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"Device RPC timed out after </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span><span class="si">}</span><span class="s2">s: "</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> (task=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span><span class="si">}</span><span class="s2">)"</span>
+                    <span class="p">)</span>
+                <span class="n">wait_timeout</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">DEVICE_RPC_HEARTBEAT_SECONDS</span><span class="p">,</span> <span class="n">remaining</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">wait_timeout</span> <span class="o">=</span> <span class="n">DEVICE_RPC_HEARTBEAT_SECONDS</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">wait_timeout</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">FuturesTimeoutError</span><span class="p">:</span>
+                <span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">started_at</span>
+                <span class="n">timeout_note</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">", timeout=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span><span class="si">}</span><span class="s2">s"</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="k">else</span> <span class="s2">""</span>
+                <span class="p">)</span>
+                <span class="n">_rpc_trace</span><span class="p">(</span>
+                    <span class="n">device_name</span><span class="p">,</span>
+                    <span class="s2">"call ... waiting: </span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> (</span><span class="si">%.0f</span><span class="s2">s elapsed</span><span class="si">%s</span><span class="s2">)"</span><span class="p">,</span>
+                    <span class="n">method</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span><span class="p">,</span>
+                    <span class="n">elapsed</span><span class="p">,</span>
+                    <span class="n">timeout_note</span><span class="p">,</span>
+                <span class="p">)</span>
+
 <div class="viewcode-block" id="DevicesClient.call">
 <a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DevicesClient.call">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span>
@@ -1186,6 +1306,15 @@
         <span class="n">f</span><span class="p">:</span> <span class="n">Future</span> <span class="o">=</span> <span class="n">Future</span><span class="p">()</span>
         <span class="n">correlation_id</span> <span class="o">=</span> <span class="n">ObjectId</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="p">[</span><span class="n">correlation_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span>
+        <span class="n">call_summary</span> <span class="o">=</span> <span class="n">_summarize_rpc_call</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">started_at</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+        <span class="n">_rpc_trace</span><span class="p">(</span>
+            <span class="n">device_name</span><span class="p">,</span>
+            <span class="s2">"call -&gt; </span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> args=(</span><span class="si">%s</span><span class="s2">)"</span><span class="p">,</span>
+            <span class="n">method</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span><span class="p">,</span>
+            <span class="n">call_summary</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">add_callback_threadsafe</span><span class="p">(</span>
             <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">basic_publish</span><span class="p">(</span>
                 <span class="n">exchange</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>
@@ -1207,7 +1336,34 @@
                 <span class="p">),</span>
             <span class="p">)</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">result</span><span class="p">()</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wait_for_rpc_result</span><span class="p">(</span>
+                <span class="n">f</span><span class="p">,</span>
+                <span class="n">correlation_id</span><span class="p">,</span>
+                <span class="n">device_name</span><span class="p">,</span>
+                <span class="n">method</span><span class="p">,</span>
+                <span class="n">started_at</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="n">FuturesTimeoutError</span><span class="p">:</span>
+            <span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">started_at</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">"[device-rpc] call timed out: </span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> after </span><span class="si">%.2f</span><span class="s2">s"</span><span class="p">,</span>
+                <span class="n">device_name</span><span class="p">,</span>
+                <span class="n">method</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span><span class="p">,</span>
+                <span class="n">elapsed</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">raise</span>
+
+        <span class="n">duration</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">started_at</span>
+        <span class="n">_rpc_trace</span><span class="p">(</span>
+            <span class="n">device_name</span><span class="p">,</span>
+            <span class="s2">"call &lt;- </span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> (</span><span class="si">%.2f</span><span class="s2">s)"</span><span class="p">,</span>
+            <span class="n">method</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span><span class="p">,</span>
+            <span class="n">duration</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
 
 
 <div class="viewcode-block" id="DevicesClient.on_message">
