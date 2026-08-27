@@ -433,6 +433,13 @@
 <span class="n">DEFAULT_CLIENT_QUEUE_SUFFIX</span> <span class="o">=</span> <span class="n">DEFAULT_SERVER_QUEUE_SUFFIX</span> <span class="o">+</span> <span class="s2">".reply_to"</span>
 
 
+<div class="viewcode-block" id="DeviceManagerUnavailableError">
+<a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DeviceManagerUnavailableError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DeviceManagerUnavailableError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Raised when a device call cannot reach the Device Manager at all."""</span></div>
+
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_summarize_rpc_value</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">max_len</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">80</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">text</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_len</span><span class="p">:</span>
@@ -454,6 +461,24 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_rpc_trace</span><span class="p">(</span><span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">should_trace_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">):</span>
+        <span class="n">emit_device_trace</span><span class="p">(</span><span class="n">device_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_rpc_trace_any_verbose</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Write an RPC breadcrumb for every currently verbose-traced device.</span>
+
+<span class="sd">    Used for Device Manager consumer lifecycle events that are not yet tied to one device</span>
+<span class="sd">    (e.g. "listening on queue X"), so the per-device verbose log still shows whether the</span>
+<span class="sd">    consumer is alive.</span>
+<span class="sd">    """</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.device_verbose_logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_verbose_devices</span>
+
+    <span class="n">devices</span> <span class="o">=</span> <span class="n">get_verbose_devices</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">devices</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">is_device_rpc_debug_enabled</span><span class="p">():</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"[device-rpc] "</span> <span class="o">+</span> <span class="p">(</span><span class="n">message</span> <span class="o">%</span> <span class="n">args</span> <span class="k">if</span> <span class="n">args</span> <span class="k">else</span> <span class="n">message</span><span class="p">))</span>
+        <span class="k">return</span>
+    <span class="k">for</span> <span class="n">device_name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">devices</span><span class="p">):</span>
         <span class="n">emit_device_trace</span><span class="p">(</span><span class="n">device_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
 
 
@@ -984,16 +1009,31 @@
 <span class="w">        </span><span class="sd">"""Start to listen on the device_rpc queue and conduct the command one by one."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">get_rabbitmq_connection</span><span class="p">()</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">channel</span><span class="p">()</span> <span class="k">as</span> <span class="n">channel</span><span class="p">:</span>
+            <span class="c1"># Not exclusive. The queue is still auto-delete, so it goes away with this consumer</span>
+            <span class="c1"># and a client publishing while no Device Manager is running gets an immediate</span>
+            <span class="c1"># unroutable error rather than a request that is silently queued and then executed</span>
+            <span class="c1"># much later against a device the requesting task no longer occupies. Exclusivity on</span>
+            <span class="c1"># top of that buys nothing and adds a failure mode: a restarting Device Manager whose</span>
+            <span class="c1"># previous connection has not been reaped yet gets RESOURCE_LOCKED here, which kills</span>
+            <span class="c1"># this thread and takes the whole `alabos launch` process down with it.</span>
             <span class="n">channel</span><span class="o">.</span><span class="n">queue_declare</span><span class="p">(</span>
                 <span class="n">queue</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_rpc_queue_name</span><span class="p">,</span>
                 <span class="n">auto_delete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">exclusive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">exclusive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">channel</span><span class="o">.</span><span class="n">basic_consume</span><span class="p">(</span>
                 <span class="n">queue</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_rpc_queue_name</span><span class="p">,</span>
                 <span class="n">on_message_callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">on_message</span><span class="p">,</span>
                 <span class="n">auto_ack</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                 <span class="n">consumer_tag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_rpc_queue_name</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">_rpc_trace_any_verbose</span><span class="p">(</span>
+                <span class="s2">"consumer listening queue=</span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_rpc_queue_name</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">"Device Manager RPC consumer listening on queue </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_rpc_queue_name</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">channel</span><span class="o">.</span><span class="n">start_consuming</span><span class="p">()</span></div>
 
@@ -1012,12 +1052,14 @@
 <span class="w">        </span><span class="sd">"""Execute a command on the device. Acknowledges completion on rabbitmq channel."""</span>
         <span class="n">require_occupation</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"require_occupation"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="n">call_summary</span> <span class="o">=</span> <span class="n">_summarize_rpc_call</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">correlation_id</span> <span class="o">=</span> <span class="n">props</span><span class="o">.</span><span class="n">correlation_id</span>
         <span class="n">started_at</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
         <span class="n">_rpc_trace</span><span class="p">(</span>
             <span class="n">device</span><span class="p">,</span>
-            <span class="s2">"execute -&gt; </span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> args=(</span><span class="si">%s</span><span class="s2">)"</span><span class="p">,</span>
+            <span class="s2">"execute -&gt; </span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> corr=</span><span class="si">%s</span><span class="s2"> args=(</span><span class="si">%s</span><span class="s2">)"</span><span class="p">,</span>
             <span class="n">method</span><span class="p">,</span>
             <span class="n">task_id</span><span class="p">,</span>
+            <span class="n">correlation_id</span><span class="p">,</span>
             <span class="n">call_summary</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -1036,8 +1078,23 @@
                     <span class="p">),</span>
                     <span class="n">body</span><span class="o">=</span><span class="n">dill</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">response</span><span class="p">),</span>
                 <span class="p">)</span>
+                <span class="n">_rpc_trace</span><span class="p">(</span>
+                    <span class="n">device</span><span class="p">,</span>
+                    <span class="s2">"reply published </span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> corr=</span><span class="si">%s</span><span class="s2"> status=</span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
+                    <span class="n">method</span><span class="p">,</span>
+                    <span class="n">task_id</span><span class="p">,</span>
+                    <span class="n">props</span><span class="o">.</span><span class="n">correlation_id</span><span class="p">,</span>
+                    <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"status"</span><span class="p">),</span>
+                <span class="p">)</span>
 
             <span class="n">channel</span><span class="o">.</span><span class="n">basic_ack</span><span class="p">(</span><span class="n">delivery_tag</span><span class="o">=</span><span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">delivery_tag</span><span class="p">))</span>
+            <span class="n">_rpc_trace</span><span class="p">(</span>
+                <span class="n">device</span><span class="p">,</span>
+                <span class="s2">"acked </span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> corr=</span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
+                <span class="n">method</span><span class="p">,</span>
+                <span class="n">task_id</span><span class="p">,</span>
+                <span class="n">props</span><span class="o">.</span><span class="n">correlation_id</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">device_entry</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">get_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
@@ -1051,6 +1108,13 @@
                 <span class="k">if</span> <span class="n">device_entry</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span><span class="s2">"There is no such device in the device view."</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">device_entry</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="o">!=</span> <span class="n">DeviceTaskStatus</span><span class="o">.</span><span class="n">OCCUPIED</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                    <span class="n">_rpc_trace</span><span class="p">(</span>
+                        <span class="n">device</span><span class="p">,</span>
+                        <span class="s2">"occupation wait </span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> status=</span><span class="si">%s</span><span class="s2"> (want OCCUPIED)"</span><span class="p">,</span>
+                        <span class="n">method</span><span class="p">,</span>
+                        <span class="n">task_id</span><span class="p">,</span>
+                        <span class="n">device_entry</span><span class="p">[</span><span class="s2">"status"</span><span class="p">],</span>
+                    <span class="p">)</span>
                     <span class="c1"># Wait a few seconds for the device to be OCCUPIED.</span>
                     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
                         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
@@ -1065,6 +1129,13 @@
                         <span class="p">)</span>
                 <span class="k">if</span> <span class="n">device_entry</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">]</span> <span class="o">!=</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">task_id</span><span class="p">):</span>
                     <span class="n">device_task_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">device_entry</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">])</span>
+                    <span class="n">_rpc_trace</span><span class="p">(</span>
+                        <span class="n">device</span><span class="p">,</span>
+                        <span class="s2">"occupation mismatch </span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> holder=</span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
+                        <span class="n">method</span><span class="p">,</span>
+                        <span class="n">task_id</span><span class="p">,</span>
+                        <span class="n">device_task_id</span><span class="p">,</span>
+                    <span class="p">)</span>
                     <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">"Currently the task (</span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">) "</span>
                         <span class="sa">f</span><span class="s2">"does not occupy this device: </span><span class="si">{</span><span class="n">device</span><span class="si">}</span><span class="s2">, which is currently occupied by task </span><span class="si">{</span><span class="n">device_task_id</span><span class="si">}</span><span class="s2">"</span>
@@ -1079,17 +1150,19 @@
         <span class="k">if</span> <span class="n">response</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"success"</span><span class="p">:</span>
             <span class="n">_rpc_trace</span><span class="p">(</span>
                 <span class="n">device</span><span class="p">,</span>
-                <span class="s2">"execute &lt;- </span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> (</span><span class="si">%.2f</span><span class="s2">s)"</span><span class="p">,</span>
+                <span class="s2">"execute &lt;- </span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> corr=</span><span class="si">%s</span><span class="s2"> (</span><span class="si">%.2f</span><span class="s2">s)"</span><span class="p">,</span>
                 <span class="n">method</span><span class="p">,</span>
                 <span class="n">task_id</span><span class="p">,</span>
+                <span class="n">correlation_id</span><span class="p">,</span>
                 <span class="n">duration</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">_rpc_trace</span><span class="p">(</span>
                 <span class="n">device</span><span class="p">,</span>
-                <span class="s2">"execute &lt;- </span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> failed after </span><span class="si">%.2f</span><span class="s2">s: </span><span class="si">%r</span><span class="s2">"</span><span class="p">,</span>
+                <span class="s2">"execute &lt;- </span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> corr=</span><span class="si">%s</span><span class="s2"> failed after </span><span class="si">%.2f</span><span class="s2">s: </span><span class="si">%r</span><span class="s2">"</span><span class="p">,</span>
                 <span class="n">method</span><span class="p">,</span>
                 <span class="n">task_id</span><span class="p">,</span>
+                <span class="n">correlation_id</span><span class="p">,</span>
                 <span class="n">duration</span><span class="p">,</span>
                 <span class="n">response</span><span class="p">[</span><span class="s2">"result"</span><span class="p">],</span>
             <span class="p">)</span>
@@ -1122,6 +1195,18 @@
 <span class="sd">          }</span>
 <span class="sd">        """</span>
         <span class="n">body</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">dill</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">_body</span><span class="p">)</span>
+        <span class="n">device_name</span> <span class="o">=</span> <span class="n">body</span><span class="p">[</span><span class="s2">"device"</span><span class="p">]</span>
+        <span class="n">method_name</span> <span class="o">=</span> <span class="n">body</span><span class="p">[</span><span class="s2">"method"</span><span class="p">]</span>
+        <span class="n">task_id</span> <span class="o">=</span> <span class="n">body</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">]</span>
+        <span class="n">_rpc_trace</span><span class="p">(</span>
+            <span class="n">device_name</span><span class="p">,</span>
+            <span class="s2">"received </span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> corr=</span><span class="si">%s</span><span class="s2"> delivery_tag=</span><span class="si">%s</span><span class="s2"> queue=</span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
+            <span class="n">method_name</span><span class="p">,</span>
+            <span class="n">task_id</span><span class="p">,</span>
+            <span class="n">props</span><span class="o">.</span><span class="n">correlation_id</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">.</span><span class="n">delivery_tag</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rpc_queue_name</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="n">thread</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span>
             <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_execute_command_wrapper</span><span class="p">,</span>
@@ -1129,15 +1214,22 @@
                 <span class="n">channel</span><span class="p">,</span>
                 <span class="n">method</span><span class="o">.</span><span class="n">delivery_tag</span><span class="p">,</span>
                 <span class="n">props</span><span class="p">,</span>
-                <span class="n">body</span><span class="p">[</span><span class="s2">"device"</span><span class="p">],</span>
-                <span class="n">body</span><span class="p">[</span><span class="s2">"method"</span><span class="p">],</span>
-                <span class="n">body</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">],</span>
+                <span class="n">device_name</span><span class="p">,</span>
+                <span class="n">method_name</span><span class="p">,</span>
+                <span class="n">task_id</span><span class="p">,</span>
                 <span class="o">*</span><span class="n">body</span><span class="p">[</span><span class="s2">"args"</span><span class="p">],</span>
             <span class="p">),</span>
             <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="o">**</span><span class="n">body</span><span class="p">[</span><span class="s2">"kwargs"</span><span class="p">],</span> <span class="s2">"require_occupation"</span><span class="p">:</span> <span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"require_occupation"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)},</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">threads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thread</span><span class="p">)</span>
-        <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+        <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="n">_rpc_trace</span><span class="p">(</span>
+            <span class="n">device_name</span><span class="p">,</span>
+            <span class="s2">"dispatch thread started </span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> corr=</span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
+            <span class="n">method_name</span><span class="p">,</span>
+            <span class="n">task_id</span><span class="p">,</span>
+            <span class="n">props</span><span class="o">.</span><span class="n">correlation_id</span><span class="p">,</span>
+        <span class="p">)</span></div>
 </div>
 
 
@@ -1174,13 +1266,19 @@
         <span class="c1">#  taskid, or can be random? I think this dies with the resourcerequest context manager anyways?</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rpc_reply_queue_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid4</span><span class="p">())</span> <span class="o">+</span> <span class="n">DEFAULT_CLIENT_QUEUE_SUFFIX</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span> <span class="o">=</span> <span class="n">task_id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">,</span> <span class="n">Future</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># correlation_id -&gt; (Future, device_name, method) so reply logging knows the device.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Future</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="o">=</span> <span class="n">get_rabbitmq_connection</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">channel</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">queue_declare</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_rpc_reply_queue_name</span><span class="p">,</span> <span class="n">exclusive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">auto_delete</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
+        <span class="c1"># Device RPCs go to the default exchange, which silently discards anything it cannot</span>
+        <span class="c1"># route. Asking for returns means an RPC sent while no Device Manager is consuming comes</span>
+        <span class="c1"># straight back to us and fails the call, instead of the caller waiting forever for a</span>
+        <span class="c1"># reply that nobody will ever send.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">add_on_return_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_returned_message</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="p">:</span> <span class="n">Thread</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -1216,6 +1314,50 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">DeviceWrapper</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">device_name</span><span class="p">,</span> <span class="n">devices_client</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
 
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fail_waiting_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">correlation_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">error</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Complete a pending RPC with an error instead of leaving its caller blocked."""</span>
+        <span class="n">waiting</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">correlation_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">waiting</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">future</span><span class="p">,</span> <span class="n">device_name</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">waiting</span>
+        <span class="n">_rpc_trace</span><span class="p">(</span>
+            <span class="n">device_name</span><span class="p">,</span>
+            <span class="s2">"call failed to dispatch </span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> corr=</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
+            <span class="n">method</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span><span class="p">,</span>
+            <span class="n">correlation_id</span><span class="p">,</span>
+            <span class="n">error</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">future</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
+            <span class="n">future</span><span class="o">.</span><span class="n">set_exception</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_on_returned_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_channel</span><span class="p">,</span> <span class="n">_method</span><span class="p">,</span> <span class="n">properties</span><span class="p">,</span> <span class="n">_body</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Handle an RPC that RabbitMQ could not deliver to the Device Manager.</span>
+
+<span class="sd">        The device RPC queue only exists while the Device Manager is consuming it, so an</span>
+<span class="sd">        unroutable message means the Device Manager is not running or has not finished starting</span>
+<span class="sd">        up. Without this the message would simply vanish and the caller would wait forever.</span>
+<span class="sd">        """</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">correlation_id</span> <span class="o">=</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">properties</span><span class="o">.</span><span class="n">correlation_id</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">"[device-rpc] a device call was returned as undeliverable but carried no usable "</span>
+                <span class="s2">"correlation id, so the caller cannot be notified. Is the Device Manager running?"</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fail_waiting_call</span><span class="p">(</span>
+            <span class="n">correlation_id</span><span class="p">,</span>
+            <span class="n">DeviceManagerUnavailableError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Device call could not be delivered: RabbitMQ has no queue "</span>
+                <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_rpc_queue_name</span><span class="si">}</span><span class="s2">'. That queue only exists while the alabos Device "</span>
+                <span class="s2">"Manager is consuming it, so the Device Manager is either not running or has not "</span>
+                <span class="s2">"finished starting up. Check the `alabos launch` process, and check the Devices "</span>
+                <span class="s2">"page for devices that are still connecting -- launch waits on device "</span>
+                <span class="s2">"connections before the Device Manager starts serving calls."</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_wait_for_rpc_result</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1270,9 +1412,13 @@
                 <span class="p">)</span>
                 <span class="n">_rpc_trace</span><span class="p">(</span>
                     <span class="n">device_name</span><span class="p">,</span>
-                    <span class="s2">"call ... waiting: </span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> (</span><span class="si">%.0f</span><span class="s2">s elapsed</span><span class="si">%s</span><span class="s2">)"</span><span class="p">,</span>
+                    <span class="s2">"call ... waiting: </span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> corr=</span><span class="si">%s</span><span class="s2"> queue=</span><span class="si">%s</span><span class="s2"> "</span>
+                    <span class="s2">"(</span><span class="si">%.0f</span><span class="s2">s elapsed</span><span class="si">%s</span><span class="s2">; if no 'received'/'execute' lines appear, "</span>
+                    <span class="s2">"Device Manager has not picked up this message)"</span><span class="p">,</span>
                     <span class="n">method</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span><span class="p">,</span>
+                    <span class="n">correlation_id</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_rpc_queue_name</span><span class="p">,</span>
                     <span class="n">elapsed</span><span class="p">,</span>
                     <span class="n">timeout_note</span><span class="p">,</span>
                 <span class="p">)</span>
@@ -1305,37 +1451,56 @@
 
         <span class="n">f</span><span class="p">:</span> <span class="n">Future</span> <span class="o">=</span> <span class="n">Future</span><span class="p">()</span>
         <span class="n">correlation_id</span> <span class="o">=</span> <span class="n">ObjectId</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="p">[</span><span class="n">correlation_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="p">[</span><span class="n">correlation_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">device_name</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
         <span class="n">call_summary</span> <span class="o">=</span> <span class="n">_summarize_rpc_call</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">started_at</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
         <span class="n">_rpc_trace</span><span class="p">(</span>
             <span class="n">device_name</span><span class="p">,</span>
-            <span class="s2">"call -&gt; </span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> args=(</span><span class="si">%s</span><span class="s2">)"</span><span class="p">,</span>
+            <span class="s2">"call -&gt; </span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> corr=</span><span class="si">%s</span><span class="s2"> queue=</span><span class="si">%s</span><span class="s2"> args=(</span><span class="si">%s</span><span class="s2">)"</span><span class="p">,</span>
             <span class="n">method</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span><span class="p">,</span>
+            <span class="n">correlation_id</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rpc_queue_name</span><span class="p">,</span>
             <span class="n">call_summary</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">add_callback_threadsafe</span><span class="p">(</span>
-            <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">basic_publish</span><span class="p">(</span>
-                <span class="n">exchange</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>
-                <span class="n">routing_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_rpc_queue_name</span><span class="p">,</span>
-                <span class="n">body</span><span class="o">=</span><span class="n">dill</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
-                    <span class="p">{</span>
-                        <span class="s2">"device"</span><span class="p">:</span> <span class="n">device_name</span><span class="p">,</span>
-                        <span class="s2">"method"</span><span class="p">:</span> <span class="n">method</span><span class="p">,</span>
-                        <span class="s2">"args"</span><span class="p">:</span> <span class="n">args</span><span class="p">,</span>
-                        <span class="s2">"kwargs"</span><span class="p">:</span> <span class="n">kwargs</span><span class="p">,</span>
-                        <span class="s2">"task_id"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span><span class="p">),</span>
-                        <span class="s2">"require_occupation"</span><span class="p">:</span> <span class="n">require_occupation</span><span class="p">,</span>
-                    <span class="p">}</span>
-                <span class="p">),</span>
-                <span class="n">properties</span><span class="o">=</span><span class="n">BasicProperties</span><span class="p">(</span>
-                    <span class="n">reply_to</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_rpc_reply_queue_name</span><span class="p">,</span>
-                    <span class="n">content_type</span><span class="o">=</span><span class="s2">"application/python-dill"</span><span class="p">,</span>
-                    <span class="n">correlation_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">correlation_id</span><span class="p">),</span>
-                <span class="p">),</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_publish</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">basic_publish</span><span class="p">(</span>
+                    <span class="n">exchange</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>
+                    <span class="n">routing_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_rpc_queue_name</span><span class="p">,</span>
+                    <span class="n">body</span><span class="o">=</span><span class="n">dill</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+                        <span class="p">{</span>
+                            <span class="s2">"device"</span><span class="p">:</span> <span class="n">device_name</span><span class="p">,</span>
+                            <span class="s2">"method"</span><span class="p">:</span> <span class="n">method</span><span class="p">,</span>
+                            <span class="s2">"args"</span><span class="p">:</span> <span class="n">args</span><span class="p">,</span>
+                            <span class="s2">"kwargs"</span><span class="p">:</span> <span class="n">kwargs</span><span class="p">,</span>
+                            <span class="s2">"task_id"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span><span class="p">),</span>
+                            <span class="s2">"require_occupation"</span><span class="p">:</span> <span class="n">require_occupation</span><span class="p">,</span>
+                        <span class="p">}</span>
+                    <span class="p">),</span>
+                    <span class="n">properties</span><span class="o">=</span><span class="n">BasicProperties</span><span class="p">(</span>
+                        <span class="n">reply_to</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_rpc_reply_queue_name</span><span class="p">,</span>
+                        <span class="n">content_type</span><span class="o">=</span><span class="s2">"application/python-dill"</span><span class="p">,</span>
+                        <span class="n">correlation_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">correlation_id</span><span class="p">),</span>
+                    <span class="p">),</span>
+                    <span class="n">mandatory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="c1"># Runs on the pika I/O thread, where raising would take down the reply consumer.</span>
+                <span class="c1"># Hand the error to the waiting caller instead.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fail_waiting_call</span><span class="p">(</span><span class="n">correlation_id</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="n">_rpc_trace</span><span class="p">(</span>
+                <span class="n">device_name</span><span class="p">,</span>
+                <span class="s2">"published </span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> corr=</span><span class="si">%s</span><span class="s2"> queue=</span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
+                <span class="n">method</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span><span class="p">,</span>
+                <span class="n">correlation_id</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_rpc_queue_name</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">add_callback_threadsafe</span><span class="p">(</span><span class="n">_publish</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wait_for_rpc_result</span><span class="p">(</span>
                 <span class="n">f</span><span class="p">,</span>
@@ -1358,9 +1523,10 @@
         <span class="n">duration</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">started_at</span>
         <span class="n">_rpc_trace</span><span class="p">(</span>
             <span class="n">device_name</span><span class="p">,</span>
-            <span class="s2">"call &lt;- </span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> (</span><span class="si">%.2f</span><span class="s2">s)"</span><span class="p">,</span>
+            <span class="s2">"call &lt;- </span><span class="si">%s</span><span class="s2"> task=</span><span class="si">%s</span><span class="s2"> corr=</span><span class="si">%s</span><span class="s2"> (</span><span class="si">%.2f</span><span class="s2">s)"</span><span class="p">,</span>
             <span class="n">method</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_task_id</span><span class="p">,</span>
+            <span class="n">correlation_id</span><span class="p">,</span>
             <span class="n">duration</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
@@ -1376,10 +1542,25 @@
         <span class="n">_body</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Callback function to handle a returned message from Device Manager."""</span>
-        <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">ObjectId</span><span class="p">(</span><span class="n">properties</span><span class="o">.</span><span class="n">correlation_id</span><span class="p">))</span>
+        <span class="n">correlation_id</span> <span class="o">=</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">properties</span><span class="o">.</span><span class="n">correlation_id</span><span class="p">)</span>
+        <span class="n">waiting</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">correlation_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">waiting</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">"[device-rpc] reply for unknown corr=</span><span class="si">%s</span><span class="s2"> (already timed out or cancelled?)"</span><span class="p">,</span>
+                <span class="n">correlation_id</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">f</span><span class="p">,</span> <span class="n">device_name</span><span class="p">,</span> <span class="n">method_name</span> <span class="o">=</span> <span class="n">waiting</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">body</span> <span class="o">=</span> <span class="n">dill</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">_body</span><span class="p">)</span>
+            <span class="n">_rpc_trace</span><span class="p">(</span>
+                <span class="n">device_name</span><span class="p">,</span>
+                <span class="s2">"reply received </span><span class="si">%s</span><span class="s2"> corr=</span><span class="si">%s</span><span class="s2"> status=</span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
+                <span class="n">method_name</span><span class="p">,</span>
+                <span class="n">correlation_id</span><span class="p">,</span>
+                <span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"status"</span><span class="p">),</span>
+            <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">body</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"success"</span><span class="p">:</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="n">body</span><span class="p">[</span><span class="s2">"result"</span><span class="p">])</span>

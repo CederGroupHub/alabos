@@ -576,13 +576,15 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="alab_management.user_input.request_maintenance_input">
-<span class="sig-name descname"><span class="pre">request_maintenance_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#request_maintenance_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.request_maintenance_input" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">request_maintenance_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_context_extra</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#request_maintenance_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.request_maintenance_input" title="Link to this definition">#</a></dt>
 <dd><p>Request user input for maintenance through the dashboard. Blocks until response is given.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>prompt</strong> (<em>str</em>) – prompt to give user</p></li>
 <li><p><strong>options</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – response options to give user</p></li>
+<li><p><strong>request_context_extra</strong> (<em>Optional</em><em>[</em><em>dict</em><em>]</em>) – extra context stored on the request, used to
+associate it with whatever raised it (e.g. <code class="docutils literal notranslate"><span class="pre">{&quot;device&quot;:</span> <span class="pre">&quot;DASH_arm_JEEVES&quot;}</span></code>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -593,7 +595,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="alab_management.user_input.request_user_input">
-<span class="sig-name descname"><span class="pre">request_user_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maintenance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Unknown</span> <span class="pre">Category'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#request_user_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.request_user_input" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">request_user_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maintenance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Unknown</span> <span class="pre">Category'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_context_extra</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#request_user_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.request_user_input" title="Link to this definition">#</a></dt>
 <dd><p>Request user input through the dashboard. Blocks until response is given.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -602,6 +604,8 @@
 <li><p><strong>prompt</strong> (<em>str</em>) – prompt to give user</p></li>
 <li><p><strong>options</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – response options to give user</p></li>
 <li><p><strong>maintenance</strong> (<em>bool</em>) – if true, mark this as a request for overall system maintenance</p></li>
+<li><p><strong>request_context_extra</strong> (<em>Optional</em><em>[</em><em>dict</em><em>]</em>) – extra context stored on the request, used to
+associate it with whatever raised it (e.g. <code class="docutils literal notranslate"><span class="pre">{&quot;device&quot;:</span> <span class="pre">&quot;DASH_arm_JEEVES&quot;}</span></code>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>

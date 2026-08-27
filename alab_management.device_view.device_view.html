@@ -431,6 +431,9 @@
             </div>
             <nav aria-label="Page">
                 <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.CONNECTION_WATCH_INTERVAL"><code class="docutils literal notranslate"><span class="pre">CONNECTION_WATCH_INTERVAL</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.DEFAULT_DEVICE_CONNECT_TIMEOUT"><code class="docutils literal notranslate"><span class="pre">DEFAULT_DEVICE_CONNECT_TIMEOUT</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.DEFAULT_TOTAL_CONNECT_BUDGET"><code class="docutils literal notranslate"><span class="pre">DEFAULT_TOTAL_CONNECT_BUDGET</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.DeviceConnectionError"><code class="docutils literal notranslate"><span class="pre">DeviceConnectionError</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.DevicePauseStatus"><code class="docutils literal notranslate"><span class="pre">DevicePauseStatus</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.DevicePauseStatus.PAUSED"><code class="docutils literal notranslate"><span class="pre">DevicePauseStatus.PAUSED</span></code></a></li>
@@ -478,6 +481,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.DeviceView.unpause_device"><code class="docutils literal notranslate"><span class="pre">DeviceView.unpause_device()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.MIN_DEVICE_CONNECT_WAIT"><code class="docutils literal notranslate"><span class="pre">MIN_DEVICE_CONNECT_WAIT</span></code></a></li>
 </ul>
             </nav>
         </div>
@@ -492,6 +496,31 @@
   <section id="module-alab_management.device_view.device_view">
 <span id="alab-management-device-view-device-view-module"></span><h1>alab_management.device_view.device_view module<a class="headerlink" href="#module-alab_management.device_view.device_view" title="Link to this heading">#</a></h1>
 <p>Wrapper over the <code class="docutils literal notranslate"><span class="pre">devices</span></code> collection.</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="alab_management.device_view.device_view.CONNECTION_WATCH_INTERVAL">
+<span class="sig-name descname"><span class="pre">CONNECTION_WATCH_INTERVAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5.0</span></em><a class="headerlink" href="#alab_management.device_view.device_view.CONNECTION_WATCH_INTERVAL" title="Link to this definition">#</a></dt>
+<dd><p>How often the background watcher re-checks devices that are still connecting.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="alab_management.device_view.device_view.DEFAULT_DEVICE_CONNECT_TIMEOUT">
+<span class="sig-name descname"><span class="pre">DEFAULT_DEVICE_CONNECT_TIMEOUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">60.0</span></em><a class="headerlink" href="#alab_management.device_view.device_view.DEFAULT_DEVICE_CONNECT_TIMEOUT" title="Link to this definition">#</a></dt>
+<dd><p>How long to wait for a single device to finish connecting before giving up on it <em>for now</em> and
+moving on to the next one. A device that overruns this is not abandoned: its connection keeps
+running in the background and the device joins the lab the moment it succeeds. This exists so
+that one unreachable – or interactively blocked – device can never stop the rest of the lab
+from launching.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="alab_management.device_view.device_view.DEFAULT_TOTAL_CONNECT_BUDGET">
+<span class="sig-name descname"><span class="pre">DEFAULT_TOTAL_CONNECT_BUDGET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">180.0</span></em><a class="headerlink" href="#alab_management.device_view.device_view.DEFAULT_TOTAL_CONNECT_BUDGET" title="Link to this definition">#</a></dt>
+<dd><p>Upper bound on the total time the connect phase may spend waiting on slow devices. Without it,
+N slow devices would each cost the full per-device timeout and launch would still be held up for
+N * timeout. Once this budget is spent, remaining devices get only a token wait; any that do not
+make it are picked up by the watcher and join a few seconds later.</p>
+</dd></dl>
+
 <dl class="py exception">
 <dt class="sig sig-object py" id="alab_management.device_view.device_view.DeviceConnectionError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DeviceConnectionError</span></span><a class="reference internal" href="_modules/alab_management/device_view/device_view.html#DeviceConnectionError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device_view.DeviceConnectionError" title="Link to this definition">#</a></dt>
@@ -908,6 +937,13 @@ status to <code class="docutils literal notranslate"><span class="pre">OCCUPIED<
 
 </dd></dl>
 
+<dl class="py data">
+<dt class="sig sig-object py" id="alab_management.device_view.device_view.MIN_DEVICE_CONNECT_WAIT">
+<span class="sig-name descname"><span class="pre">MIN_DEVICE_CONNECT_WAIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2.0</span></em><a class="headerlink" href="#alab_management.device_view.device_view.MIN_DEVICE_CONNECT_WAIT" title="Link to this definition">#</a></dt>
+<dd><p>The shortest we will ever wait on a device, so that a spent budget cannot skip devices that
+connect essentially instantly.</p>
+</dd></dl>
+
 </section>
 
 
@@ -956,6 +992,9 @@ status to <code class="docutils literal notranslate"><span class="pre">OCCUPIED<
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.CONNECTION_WATCH_INTERVAL"><code class="docutils literal notranslate"><span class="pre">CONNECTION_WATCH_INTERVAL</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.DEFAULT_DEVICE_CONNECT_TIMEOUT"><code class="docutils literal notranslate"><span class="pre">DEFAULT_DEVICE_CONNECT_TIMEOUT</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.DEFAULT_TOTAL_CONNECT_BUDGET"><code class="docutils literal notranslate"><span class="pre">DEFAULT_TOTAL_CONNECT_BUDGET</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.DeviceConnectionError"><code class="docutils literal notranslate"><span class="pre">DeviceConnectionError</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.DevicePauseStatus"><code class="docutils literal notranslate"><span class="pre">DevicePauseStatus</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.DevicePauseStatus.PAUSED"><code class="docutils literal notranslate"><span class="pre">DevicePauseStatus.PAUSED</span></code></a></li>
@@ -1003,6 +1042,7 @@ status to <code class="docutils literal notranslate"><span class="pre">OCCUPIED<
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.DeviceView.unpause_device"><code class="docutils literal notranslate"><span class="pre">DeviceView.unpause_device()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_view.device_view.MIN_DEVICE_CONNECT_WAIT"><code class="docutils literal notranslate"><span class="pre">MIN_DEVICE_CONNECT_WAIT</span></code></a></li>
 </ul>
   </nav></div>
 

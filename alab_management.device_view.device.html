@@ -663,6 +663,8 @@ Note: nested dicts/lists are not supported!.</p>
 <span class="sig-name descname"><span class="pre">request_maintenance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/device_view/device.html#BaseDevice.request_maintenance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_view.device.BaseDevice.request_maintenance" title="Link to this definition">#</a></dt>
 <dd><p>Request maintenance input from the user. This will display a prompt to the user and wait for them to select
 an option. The selected option will be returned.</p>
+<p>The request records which device raised it, so the dashboard can tell an operator that
+this particular device is waiting on them rather than just listing an anonymous prompt.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

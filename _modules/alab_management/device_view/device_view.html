@@ -396,6 +396,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pymongo</span>  <span class="c1"># type: ignore</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">bson</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectId</span>  <span class="c1"># type: ignore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">threading</span><span class="w"> </span><span class="kn">import</span> <span class="n">Event</span><span class="p">,</span> <span class="n">Lock</span><span class="p">,</span> <span class="n">Thread</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.sample_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">SamplePosition</span><span class="p">,</span> <span class="n">SampleView</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.data_objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_collection</span><span class="p">,</span> <span class="n">get_lock</span>
@@ -403,6 +404,27 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.device</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseDevice</span><span class="p">,</span> <span class="n">get_all_devices</span><span class="p">,</span> <span class="n">remove_device</span>
 
 <span class="n">_DeviceType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">"_DeviceType"</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">BaseDevice</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
+
+
+<span class="c1">#: How long to wait for a single device to finish connecting before giving up on it *for now* and</span>
+<span class="c1">#: moving on to the next one. A device that overruns this is not abandoned: its connection keeps</span>
+<span class="c1">#: running in the background and the device joins the lab the moment it succeeds. This exists so</span>
+<span class="c1">#: that one unreachable -- or interactively blocked -- device can never stop the rest of the lab</span>
+<span class="c1">#: from launching.</span>
+<span class="n">DEFAULT_DEVICE_CONNECT_TIMEOUT</span> <span class="o">=</span> <span class="mf">60.0</span>
+
+<span class="c1">#: Upper bound on the total time the connect phase may spend waiting on slow devices. Without it,</span>
+<span class="c1">#: N slow devices would each cost the full per-device timeout and launch would still be held up for</span>
+<span class="c1">#: N * timeout. Once this budget is spent, remaining devices get only a token wait; any that do not</span>
+<span class="c1">#: make it are picked up by the watcher and join a few seconds later.</span>
+<span class="n">DEFAULT_TOTAL_CONNECT_BUDGET</span> <span class="o">=</span> <span class="mf">180.0</span>
+
+<span class="c1">#: The shortest we will ever wait on a device, so that a spent budget cannot skip devices that</span>
+<span class="c1">#: connect essentially instantly.</span>
+<span class="n">MIN_DEVICE_CONNECT_WAIT</span> <span class="o">=</span> <span class="mf">2.0</span>
+
+<span class="c1">#: How often the background watcher re-checks devices that are still connecting.</span>
+<span class="n">CONNECTION_WATCH_INTERVAL</span> <span class="o">=</span> <span class="mf">5.0</span>
 
 
 <div class="viewcode-block" id="DeviceConnectionError">
@@ -463,36 +485,258 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_connected_device_names</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span> <span class="o">=</span> <span class="n">SampleView</span><span class="p">()</span>
 
+        <span class="c1"># Bookkeeping for devices whose connection overran the timeout and is still running in</span>
+        <span class="c1"># the background. Guarded by _connection_lock because the watcher thread reads them.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connection_lock</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pending_connections</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Thread</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connection_results</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connection_started_at</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_paused_for_connection</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connection_watcher</span><span class="p">:</span> <span class="n">Thread</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connection_watcher_stop</span> <span class="o">=</span> <span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_user_input_view</span> <span class="o">=</span> <span class="kc">None</span>
+
         <span class="k">if</span> <span class="n">connect_to_devices</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__connect_all_devices</span><span class="p">()</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">__connect_all_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Connect to every device, tolerating individual connection failures.</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_device_connect_timeout</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Per-device connection timeout, overridable as ``general.device_connect_timeout``."""</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">AlabOSConfig</span>
 
-<span class="sd">        If a device cannot be connected (e.g. it is powered off or unreachable), it is</span>
-<span class="sd">        disabled and paused instead of aborting the whole launch. This lets the lab run</span>
-<span class="sd">        everything that does not depend on the unreachable device, and the dashboard/UI can</span>
-<span class="sd">        show which devices were disabled because the connection could not be established.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span>
+                <span class="n">AlabOSConfig</span><span class="p">()[</span><span class="s2">"general"</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="s2">"device_connect_timeout"</span><span class="p">,</span> <span class="n">DEFAULT_DEVICE_CONNECT_TIMEOUT</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">DEFAULT_DEVICE_CONNECT_TIMEOUT</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__connect_all_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Connect to every device without letting any single device hold up the launch.</span>
+
+<span class="sd">        Each device is connected in its own thread and waited on for at most</span>
+<span class="sd">        ``device_connect_timeout`` seconds. Three things can happen:</span>
+
+<span class="sd">        * it connects, and is marked as connected;</span>
+<span class="sd">        * it raises, and is disabled and paused so the rest of the lab still runs;</span>
+<span class="sd">        * it neither returns nor raises within the timeout -- typically a driver blocking on a</span>
+<span class="sd">          maintenance prompt, or a hardware connection with no timeout of its own.</span>
+
+<span class="sd">        The third case is why this is threaded at all. Such a device is left connecting in the</span>
+<span class="sd">        background and marked ``connecting`` on the dashboard, and the rest of the devices are</span>
+<span class="sd">        connected as normal. This matters because the caller of this method is</span>
+<span class="sd">        ``DeviceManager.__init__``, which must return for ``DeviceManager.run()`` to declare and</span>
+<span class="sd">        consume the device RPC queue. Blocking here means no device RPC for the *entire lab*, and</span>
+<span class="sd">        because RPC calls are published to the default exchange they are silently dropped rather</span>
+<span class="sd">        than queued, so every device call in the lab hangs forever with no error.</span>
 <span class="sd">        """</span>
+        <span class="n">timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_connect_timeout</span><span class="p">()</span>
+        <span class="n">deadline</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">+</span> <span class="n">DEFAULT_TOTAL_CONNECT_BUDGET</span>
         <span class="k">for</span> <span class="n">device_name</span><span class="p">,</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_list</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">remaining_budget</span> <span class="o">=</span> <span class="n">deadline</span> <span class="o">-</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+            <span class="n">wait</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">remaining_budget</span><span class="p">,</span> <span class="n">MIN_DEVICE_CONNECT_WAIT</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_connect_one_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">wait</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__connected_to_devices</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_connection_watcher</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_connect_one_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">BaseDevice</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Connect a single device, giving up the wait (but not the attempt) after ``timeout``."""</span>
+        <span class="n">started_at</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+        <span class="n">result</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_connect</span><span class="p">():</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">device</span><span class="o">.</span><span class="n">_connect_wrapper</span><span class="p">()</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="s2">"Could not connect to </span><span class="si">%s</span><span class="s2">: </span><span class="si">%r</span><span class="s2">. Disabling and pausing it so the rest of the lab can still launch."</span><span class="p">,</span>
-                    <span class="n">device_name</span><span class="p">,</span>
-                    <span class="n">e</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_mark_device_connection_failed</span><span class="p">(</span><span class="n">device_name</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
-                <span class="k">continue</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># recorded rather than raised: this runs in its own thread</span>
+                <span class="n">result</span><span class="p">[</span><span class="s2">"error"</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="s2">"connected"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="n">thread</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span>
+            <span class="n">target</span><span class="o">=</span><span class="n">_connect</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">"connect-</span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="n">thread</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_finish_device_connection</span><span class="p">(</span><span class="n">device_name</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Deliberately not killed: the connection may well succeed later (e.g. once an operator</span>
+        <span class="c1"># answers the prompt it is waiting on), and interrupting a half-open hardware connection</span>
+        <span class="c1"># is worse than leaving it to finish.</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_lock</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_connections</span><span class="p">[</span><span class="n">device_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">thread</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_connection_results</span><span class="p">[</span><span class="n">device_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_connection_started_at</span><span class="p">[</span><span class="n">device_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">started_at</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">"Still connecting to </span><span class="si">%s</span><span class="s2"> after </span><span class="si">%.0f</span><span class="s2">s. Continuing without it so the rest of the lab can "</span>
+            <span class="s2">"launch; it will join automatically when the connection completes."</span><span class="p">,</span>
+            <span class="n">device_name</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mark_device_connecting</span><span class="p">(</span><span class="n">device_name</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_finish_device_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">"""Apply the outcome of a device's connection attempt."""</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"error"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">"Could not connect to </span><span class="si">%s</span><span class="s2">: </span><span class="si">%r</span><span class="s2">. Disabling and pausing it so the rest of the lab can still launch."</span><span class="p">,</span>
+                <span class="n">device_name</span><span class="p">,</span>
+                <span class="n">error</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mark_device_connection_failed</span><span class="p">(</span><span class="n">device_name</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_lock</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_connected_device_names</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
-            <span class="c1"># If this device was previously auto-disabled due to a connection failure and is</span>
-            <span class="c1"># now reachable again, clear that flag so it becomes usable.</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_clear_connection_failed_flag</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Connecting to </span><span class="si">%s</span><span class="s2">... Done"</span><span class="p">,</span> <span class="n">device_name</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__connected_to_devices</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mark_device_connected</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Connecting to </span><span class="si">%s</span><span class="s2">... Done"</span><span class="p">,</span> <span class="n">device_name</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_start_connection_watcher</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Watch devices that are still connecting so they can join the lab without a relaunch."""</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_connections</span><span class="p">:</span>
+                <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connection_watcher_stop</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connection_watcher</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span>
+            <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_watch_pending_connections</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">"device-connection-watcher"</span><span class="p">,</span>
+            <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connection_watcher</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_watch_pending_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_watcher_stop</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_lock</span><span class="p">:</span>
+                <span class="n">pending</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pending_connections</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">pending</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="k">for</span> <span class="n">device_name</span><span class="p">,</span> <span class="n">thread</span> <span class="ow">in</span> <span class="n">pending</span><span class="p">:</span>
+                <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_lock</span><span class="p">:</span>
+                    <span class="n">started_at</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_started_at</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                        <span class="n">device_name</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="n">thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                    <span class="c1"># Refresh the dashboard message: what the device is blocked on can change</span>
+                    <span class="c1"># (a driver may raise a new prompt after the previous one is answered).</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_mark_device_connecting</span><span class="p">(</span>
+                        <span class="n">device_name</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">started_at</span>
+                    <span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_lock</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_pending_connections</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">device_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_results</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">device_name</span><span class="p">,</span> <span class="p">{})</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_connection_started_at</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">device_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_finish_device_connection</span><span class="p">(</span><span class="n">device_name</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_connection_watcher_stop</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">CONNECTION_WATCH_INTERVAL</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_pending_user_input_for_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The unanswered dashboard request this device raised, if it is waiting on one."""</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_user_input_view</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.user_input</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserInputView</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_user_input_view</span> <span class="o">=</span> <span class="n">UserInputView</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_user_input_view</span><span class="o">.</span><span class="n">get_pending_request_by_context</span><span class="p">(</span>
+                <span class="p">{</span><span class="s2">"device"</span><span class="p">:</span> <span class="n">device_name</span><span class="p">}</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_connection_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">values</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Set connection bookkeeping attributes individually.</span>
+
+<span class="sd">        Uses dotted ``$set`` paths rather than ``set_attribute`` so that rewriting connection</span>
+<span class="sd">        state never clobbers attribute values a running driver wrote in the meantime.</span>
+<span class="sd">        """</span>
+        <span class="n">update</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="sa">f</span><span class="s2">"attributes.</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="n">update</span><span class="p">[</span><span class="s2">"last_updated"</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">"name"</span><span class="p">:</span> <span class="n">device_name</span><span class="p">},</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="n">update</span><span class="p">})</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_mark_device_connecting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">waited_seconds</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Flag a device as still connecting, recording what it is waiting on.</span>
+
+<span class="sd">        The device is paused (so no task can acquire something that is not ready) but is *not*</span>
+<span class="sd">        marked disabled, because it is expected to come good on its own.</span>
+<span class="sd">        """</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pending_request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_user_input_for_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">pending_request</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">"NOT CONNECTED: alabos is still connecting to this device "</span>
+                    <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="n">waited_seconds</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">s so far). It is waiting for an operator to answer a "</span>
+                    <span class="s1">'request. Go to "User Input Requests" and respond to: '</span>
+                    <span class="sa">f</span><span class="s1">'"</span><span class="si">{</span><span class="n">pending_request</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"prompt"</span><span class="p">,</span><span class="w"> </span><span class="s2">""</span><span class="p">)</span><span class="si">}</span><span class="s1">". The device will join the lab '</span>
+                    <span class="s2">"automatically once you respond -- no need to restart the lab."</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">"NOT CONNECTED: alabos is still connecting to this device "</span>
+                    <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="n">waited_seconds</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">s so far). The rest of the lab has launched without "</span>
+                    <span class="s2">"it. It will join automatically once the connection completes -- no need to "</span>
+                    <span class="s1">'restart the lab. If it stays like this, check "User Input Requests" and '</span>
+                    <span class="s2">"that the hardware is powered on and reachable."</span>
+                <span class="p">)</span>
+
+            <span class="n">was_connecting</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">attributes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"attributes"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+                <span class="n">was_connecting</span> <span class="o">=</span> <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"connection_status"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"connecting"</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_connection_attributes</span><span class="p">(</span>
+                <span class="n">device_name</span><span class="p">,</span>
+                <span class="n">connection_status</span><span class="o">=</span><span class="s2">"connecting"</span><span class="p">,</span>
+                <span class="n">connection_error</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">connection_waiting_seconds</span><span class="o">=</span><span class="nb">round</span><span class="p">(</span><span class="n">waited_seconds</span><span class="p">),</span>
+                <span class="n">connection_blocked_on_user_input</span><span class="o">=</span><span class="n">pending_request</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">connection_user_input_prompt</span><span class="o">=</span><span class="p">(</span>
+                    <span class="n">pending_request</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"prompt"</span><span class="p">)</span> <span class="k">if</span> <span class="n">pending_request</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">was_connecting</span><span class="p">:</span>
+                <span class="c1"># Only pause on the first pass, so repeated refreshes cannot fight an operator</span>
+                <span class="c1"># who deliberately released the device.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pause_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_paused_for_connection</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_message</span><span class="p">(</span><span class="n">device_name</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>  <span class="c1"># best-effort bookkeeping; never block launch</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Failed to flag </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> as connecting: </span><span class="si">{</span><span class="n">exc</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_mark_device_connected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Record that a device is connected and usable, clearing any connecting/failed state."""</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_connection_attributes</span><span class="p">(</span>
+                <span class="n">device_name</span><span class="p">,</span>
+                <span class="n">connection_status</span><span class="o">=</span><span class="s2">"connected"</span><span class="p">,</span>
+                <span class="n">connection_error</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">connection_waiting_seconds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">connection_blocked_on_user_input</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">connection_user_input_prompt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Failed to record </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> as connected: </span><span class="si">{</span><span class="n">exc</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="c1"># Release the pause this class applied while the device was connecting. An operator pause</span>
+        <span class="c1"># is left alone: we only undo what we did ourselves.</span>
+        <span class="k">if</span> <span class="n">device_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paused_for_connection</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_paused_for_connection</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">unpause_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_message</span><span class="p">(</span><span class="n">device_name</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Failed to unpause </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> after connecting: </span><span class="si">{</span><span class="n">exc</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="c1"># If this device was previously auto-disabled due to a connection failure and is</span>
+        <span class="c1"># now reachable again, clear that flag so it becomes usable.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clear_connection_failed_flag</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__disconnect_all_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connection_watcher_stop</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         <span class="c1"># Only disconnect devices that actually connected; devices that failed to connect</span>
         <span class="c1"># never opened a connection and may not be safe to disconnect.</span>
         <span class="k">for</span> <span class="n">device_name</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connected_device_names</span><span class="p">):</span>
@@ -517,14 +761,23 @@
 <span class="sd">        explain it to operators.</span>
 <span class="sd">        """</span>
         <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s2">"DISABLED: alabos could not establish a connection to this device "</span>
-            <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">). It is paused and cannot be used until the "</span>
-            <span class="s2">"connection is restored and the lab is relaunched."</span>
+            <span class="s2">"NOT CONNECTED: alabos could not establish a connection to this device "</span>
+            <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">). It is disabled and paused, and cannot be used "</span>
+            <span class="s2">"until the connection is restored and the lab is relaunched."</span>
         <span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pause_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_paused_for_connection</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="n">device_name</span><span class="p">,</span> <span class="s2">"disabled"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="n">device_name</span><span class="p">,</span> <span class="s2">"disabled_reason"</span><span class="p">,</span> <span class="s2">"connection_failed"</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_connection_attributes</span><span class="p">(</span>
+                <span class="n">device_name</span><span class="p">,</span>
+                <span class="n">connection_status</span><span class="o">=</span><span class="s2">"failed"</span><span class="p">,</span>
+                <span class="n">connection_error</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="n">connection_waiting_seconds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">connection_blocked_on_user_input</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">connection_user_input_prompt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_message</span><span class="p">(</span><span class="n">device_name</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>  <span class="c1"># best-effort bookkeeping; never block launch</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Failed to flag </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s1"> as disabled: </span><span class="si">{</span><span class="n">exc</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
@@ -961,9 +1214,40 @@
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
                 <span class="s2">"DeviceView cannot execute device commands without first connecting to the devices!"</span>
             <span class="p">)</span>
+        <span class="c1"># Launch no longer waits for every device, so a command can arrive for a device that has</span>
+        <span class="c1"># not finished connecting. Fail with something an operator can act on rather than letting</span>
+        <span class="c1"># the call reach a half-initialised driver.</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_lock</span><span class="p">:</span>
+            <span class="n">connected</span> <span class="o">=</span> <span class="n">device_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connected_device_names</span>
+            <span class="n">still_connecting</span> <span class="o">=</span> <span class="n">device_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_connections</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">connected</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DeviceConnectionError</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_not_connected_reason</span><span class="p">(</span><span class="n">device_name</span><span class="p">,</span> <span class="n">still_connecting</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="n">device_method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_property</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">device_method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_not_connected_reason</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">still_connecting</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""An operator-facing explanation of why a device cannot take commands."""</span>
+        <span class="k">if</span> <span class="n">still_connecting</span><span class="p">:</span>
+            <span class="n">pending_request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_user_input_for_device</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">pending_request</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> has not finished connecting: it is waiting for an "</span>
+                    <span class="s1">'operator to answer a request. Go to "User Input Requests" on the dashboard '</span>
+                    <span class="sa">f</span><span class="s1">'and respond to: "</span><span class="si">{</span><span class="n">pending_request</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"prompt"</span><span class="p">,</span><span class="w"> </span><span class="s2">""</span><span class="p">)</span><span class="si">}</span><span class="s1">". The device will '</span>
+                    <span class="s2">"become usable as soon as you respond."</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> has not finished connecting yet. The lab launched without "</span>
+                <span class="s2">"it and it will become usable once the connection completes. Check "</span>
+                <span class="s1">'"User Input Requests" and that the hardware is powered on and reachable.'</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Device </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> is not connected. alabos could not establish a connection to "</span>
+            <span class="s2">"it at launch, so it is disabled. Check the Devices page for the connection error."</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="DeviceView.set_message">
 <a class="viewcode-back" href="../../../alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.set_message">[docs]</a>

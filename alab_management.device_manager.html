@@ -438,6 +438,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_manager.DeviceManager.run"><code class="docutils literal notranslate"><span class="pre">DeviceManager.run()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_manager.DeviceManagerUnavailableError"><code class="docutils literal notranslate"><span class="pre">DeviceManagerUnavailableError</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_manager.DeviceMethodCallState"><code class="docutils literal notranslate"><span class="pre">DeviceMethodCallState</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_manager.DeviceMethodCallState.future"><code class="docutils literal notranslate"><span class="pre">DeviceMethodCallState.future</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_manager.DeviceMethodCallState.last_updated"><code class="docutils literal notranslate"><span class="pre">DeviceMethodCallState.last_updated</span></code></a></li>
@@ -522,6 +523,13 @@ executes commands on the device drivers, as requested by the task process.</p>
 <dd><p>Start to listen on the device_rpc queue and conduct the command one by one.</p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="alab_management.device_manager.DeviceManagerUnavailableError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DeviceManagerUnavailableError</span></span><a class="reference internal" href="_modules/alab_management/device_manager.html#DeviceManagerUnavailableError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.device_manager.DeviceManagerUnavailableError" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></p>
+<p>Raised when a device call cannot reach the Device Manager at all.</p>
 </dd></dl>
 
 <dl class="py class">
@@ -708,6 +716,7 @@ the method directly.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_manager.DeviceManager.run"><code class="docutils literal notranslate"><span class="pre">DeviceManager.run()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_manager.DeviceManagerUnavailableError"><code class="docutils literal notranslate"><span class="pre">DeviceManagerUnavailableError</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_manager.DeviceMethodCallState"><code class="docutils literal notranslate"><span class="pre">DeviceMethodCallState</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_manager.DeviceMethodCallState.future"><code class="docutils literal notranslate"><span class="pre">DeviceMethodCallState.future</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.device_manager.DeviceMethodCallState.last_updated"><code class="docutils literal notranslate"><span class="pre">DeviceMethodCallState.last_updated</span></code></a></li>

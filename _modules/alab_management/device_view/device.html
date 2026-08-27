@@ -827,11 +827,18 @@
 <span class="sd">        Request maintenance input from the user. This will display a prompt to the user and wait for them to select</span>
 <span class="sd">        an option. The selected option will be returned.</span>
 
+<span class="sd">        The request records which device raised it, so the dashboard can tell an operator that</span>
+<span class="sd">        this particular device is waiting on them rather than just listing an anonymous prompt.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            prompt: the text to display to the user</span>
 <span class="sd">            options: the options to display to the user. This should be a list of strings.</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="n">request_maintenance_input</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">request_maintenance_input</span><span class="p">(</span>
+            <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
+            <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span>
+            <span class="n">request_context_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">"device"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">},</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BaseDevice.retrieve_signal">
