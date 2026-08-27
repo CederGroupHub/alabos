@@ -48,6 +48,10 @@ DEFAULT_SERVER_QUEUE_SUFFIX = ".device_rpc"
 DEFAULT_CLIENT_QUEUE_SUFFIX = DEFAULT_SERVER_QUEUE_SUFFIX + ".reply_to"
 
 
+class DeviceManagerUnavailableError(RuntimeError):
+    """Raised when a device call cannot reach the Device Manager at all."""
+
+
 def _summarize_rpc_value(value: Any, *, max_len: int = 80) -> str:
     text = repr(value)
     if len(text) > max_len:
@@ -69,6 +73,24 @@ def _summarize_rpc_call(*args: Any, **kwargs: Any) -> str:
 
 def _rpc_trace(device_name: str, message: str, *args: Any) -> None:
     if should_trace_device(device_name):
+        emit_device_trace(device_name, message, *args)
+
+
+def _rpc_trace_any_verbose(message: str, *args: Any) -> None:
+    """Write an RPC breadcrumb for every currently verbose-traced device.
+
+    Used for Device Manager consumer lifecycle events that are not yet tied to one device
+    (e.g. "listening on queue X"), so the per-device verbose log still shows whether the
+    consumer is alive.
+    """
+    from alab_management.utils.device_verbose_logging import get_verbose_devices
+
+    devices = get_verbose_devices()
+    if not devices:
+        if is_device_rpc_debug_enabled():
+            logger.info("[device-rpc] " + (message % args if args else message))
+        return
+    for device_name in sorted(devices):
         emit_device_trace(device_name, message, *args)
 
 
@@ -577,16 +599,31 @@ class DeviceManager:
         """Start to listen on the device_rpc queue and conduct the command one by one."""
         self.connection = get_rabbitmq_connection()
         with self.connection.channel() as channel:
+            # Not exclusive. The queue is still auto-delete, so it goes away with this consumer
+            # and a client publishing while no Device Manager is running gets an immediate
+            # unroutable error rather than a request that is silently queued and then executed
+            # much later against a device the requesting task no longer occupies. Exclusivity on
+            # top of that buys nothing and adds a failure mode: a restarting Device Manager whose
+            # previous connection has not been reaped yet gets RESOURCE_LOCKED here, which kills
+            # this thread and takes the whole `alabos launch` process down with it.
             channel.queue_declare(
                 queue=self._rpc_queue_name,
                 auto_delete=True,
-                exclusive=True,
+                exclusive=False,
             )
             channel.basic_consume(
                 queue=self._rpc_queue_name,
                 on_message_callback=self.on_message,
                 auto_ack=False,
                 consumer_tag=self._rpc_queue_name,
+            )
+            _rpc_trace_any_verbose(
+                "consumer listening queue=%s",
+                self._rpc_queue_name,
+            )
+            logger.info(
+                "Device Manager RPC consumer listening on queue %s",
+                self._rpc_queue_name,
             )
             channel.start_consuming()
 
@@ -604,12 +641,14 @@ class DeviceManager:
         """Execute a command on the device. Acknowledges completion on rabbitmq channel."""
         require_occupation = kwargs.pop("require_occupation", True)
         call_summary = _summarize_rpc_call(*args, **kwargs)
+        correlation_id = props.correlation_id
         started_at = time.monotonic()
         _rpc_trace(
             device,
-            "execute -> %s task=%s args=(%s)",
+            "execute -> %s task=%s corr=%s args=(%s)",
             method,
             task_id,
+            correlation_id,
             call_summary,
         )
 
@@ -628,8 +667,23 @@ class DeviceManager:
                     ),
                     body=dill.dumps(response),
                 )
+                _rpc_trace(
+                    device,
+                    "reply published %s task=%s corr=%s status=%s",
+                    method,
+                    task_id,
+                    props.correlation_id,
+                    response.get("status"),
+                )
 
             channel.basic_ack(delivery_tag=cast(int, delivery_tag))
+            _rpc_trace(
+                device,
+                "acked %s task=%s corr=%s",
+                method,
+                task_id,
+                props.correlation_id,
+            )
 
         try:
             device_entry: dict[str, Any] | None = self._device_view.get_device(device)
@@ -643,6 +697,13 @@ class DeviceManager:
                 if device_entry is None:
                     raise PermissionError("There is no such device in the device view.")
                 if device_entry["status"] != DeviceTaskStatus.OCCUPIED.name:
+                    _rpc_trace(
+                        device,
+                        "occupation wait %s task=%s status=%s (want OCCUPIED)",
+                        method,
+                        task_id,
+                        device_entry["status"],
+                    )
                     # Wait a few seconds for the device to be OCCUPIED.
                     for _ in range(5):
                         time.sleep(1)
@@ -657,6 +718,13 @@ class DeviceManager:
                         )
                 if device_entry["task_id"] != ObjectId(task_id):
                     device_task_id = str(device_entry["task_id"])
+                    _rpc_trace(
+                        device,
+                        "occupation mismatch %s task=%s holder=%s",
+                        method,
+                        task_id,
+                        device_task_id,
+                    )
                     raise PermissionError(
                         f"Currently the task ({task_id}) "
                         f"does not occupy this device: {device}, which is currently occupied by task {device_task_id}"
@@ -671,17 +739,19 @@ class DeviceManager:
         if response["status"] == "success":
             _rpc_trace(
                 device,
-                "execute <- %s task=%s (%.2fs)",
+                "execute <- %s task=%s corr=%s (%.2fs)",
                 method,
                 task_id,
+                correlation_id,
                 duration,
             )
         else:
             _rpc_trace(
                 device,
-                "execute <- %s task=%s failed after %.2fs: %r",
+                "execute <- %s task=%s corr=%s failed after %.2fs: %r",
                 method,
                 task_id,
+                correlation_id,
                 duration,
                 response["result"],
             )
@@ -712,6 +782,18 @@ class DeviceManager:
           }
         """
         body: dict[str, Any] = dill.loads(_body)
+        device_name = body["device"]
+        method_name = body["method"]
+        task_id = body["task_id"]
+        _rpc_trace(
+            device_name,
+            "received %s task=%s corr=%s delivery_tag=%s queue=%s",
+            method_name,
+            task_id,
+            props.correlation_id,
+            method.delivery_tag,
+            self._rpc_queue_name,
+        )
 
         thread = Thread(
             target=self._execute_command_wrapper,
@@ -719,15 +801,22 @@ class DeviceManager:
                 channel,
                 method.delivery_tag,
                 props,
-                body["device"],
-                body["method"],
-                body["task_id"],
+                device_name,
+                method_name,
+                task_id,
                 *body["args"],
             ),
             kwargs={**body["kwargs"], "require_occupation": body.get("require_occupation", True)},
         )
         self.threads.append(thread)
         thread.start()
+        _rpc_trace(
+            device_name,
+            "dispatch thread started %s task=%s corr=%s",
+            method_name,
+            task_id,
+            props.correlation_id,
+        )
 
 
 class DevicesClient:  # pylint: disable=too-many-instance-attributes
@@ -760,13 +849,19 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
         #  taskid, or can be random? I think this dies with the resourcerequest context manager anyways?
         self._rpc_reply_queue_name = str(uuid4()) + DEFAULT_CLIENT_QUEUE_SUFFIX
         self._task_id = task_id
-        self._waiting: dict[ObjectId, Future] = {}
+        # correlation_id -> (Future, device_name, method) so reply logging knows the device.
+        self._waiting: dict[ObjectId, tuple[Future, str, str]] = {}
 
         self._conn = get_rabbitmq_connection()
         self._channel = self._conn.channel()
         self._channel.queue_declare(
             self._rpc_reply_queue_name, exclusive=True, auto_delete=True
         )
+        # Device RPCs go to the default exchange, which silently discards anything it cannot
+        # route. Asking for returns means an RPC sent while no Device Manager is consuming comes
+        # straight back to us and fails the call, instead of the caller waiting forever for a
+        # reply that nobody will ever send.
+        self._channel.add_on_return_callback(self._on_returned_message)
 
         self._thread: Thread | None = None
 
@@ -799,6 +894,50 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
             A device wrapper that will send every call to class method to remote server.
         """
         return DeviceWrapper(name=device_name, devices_client=self)
+
+    def _fail_waiting_call(self, correlation_id: ObjectId, error: Exception):
+        """Complete a pending RPC with an error instead of leaving its caller blocked."""
+        waiting = self._waiting.pop(correlation_id, None)
+        if waiting is None:
+            return
+        future, device_name, method = waiting
+        _rpc_trace(
+            device_name,
+            "call failed to dispatch %s task=%s corr=%s: %s",
+            method,
+            self._task_id,
+            correlation_id,
+            error,
+        )
+        if not future.done():
+            future.set_exception(error)
+
+    def _on_returned_message(self, _channel, _method, properties, _body):
+        """Handle an RPC that RabbitMQ could not deliver to the Device Manager.
+
+        The device RPC queue only exists while the Device Manager is consuming it, so an
+        unroutable message means the Device Manager is not running or has not finished starting
+        up. Without this the message would simply vanish and the caller would wait forever.
+        """
+        try:
+            correlation_id = ObjectId(properties.correlation_id)
+        except Exception:
+            logger.error(
+                "[device-rpc] a device call was returned as undeliverable but carried no usable "
+                "correlation id, so the caller cannot be notified. Is the Device Manager running?"
+            )
+            return
+        self._fail_waiting_call(
+            correlation_id,
+            DeviceManagerUnavailableError(
+                f"Device call could not be delivered: RabbitMQ has no queue "
+                f"'{self._rpc_queue_name}'. That queue only exists while the alabos Device "
+                "Manager is consuming it, so the Device Manager is either not running or has not "
+                "finished starting up. Check the `alabos launch` process, and check the Devices "
+                "page for devices that are still connecting -- launch waits on device "
+                "connections before the Device Manager starts serving calls."
+            ),
+        )
 
     def _wait_for_rpc_result(
         self,
@@ -853,9 +992,13 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
                 )
                 _rpc_trace(
                     device_name,
-                    "call ... waiting: %s task=%s (%.0fs elapsed%s)",
+                    "call ... waiting: %s task=%s corr=%s queue=%s "
+                    "(%.0fs elapsed%s; if no 'received'/'execute' lines appear, "
+                    "Device Manager has not picked up this message)",
                     method,
                     self._task_id,
+                    correlation_id,
+                    self._rpc_queue_name,
                     elapsed,
                     timeout_note,
                 )
@@ -886,37 +1029,56 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
 
         f: Future = Future()
         correlation_id = ObjectId()
-        self._waiting[correlation_id] = f
+        self._waiting[correlation_id] = (f, device_name, method)
         call_summary = _summarize_rpc_call(*args, **kwargs)
         started_at = time.monotonic()
         _rpc_trace(
             device_name,
-            "call -> %s task=%s args=(%s)",
+            "call -> %s task=%s corr=%s queue=%s args=(%s)",
             method,
             self._task_id,
+            correlation_id,
+            self._rpc_queue_name,
             call_summary,
         )
-        self._conn.add_callback_threadsafe(
-            lambda: self._channel.basic_publish(
-                exchange="",
-                routing_key=self._rpc_queue_name,
-                body=dill.dumps(
-                    {
-                        "device": device_name,
-                        "method": method,
-                        "args": args,
-                        "kwargs": kwargs,
-                        "task_id": str(self._task_id),
-                        "require_occupation": require_occupation,
-                    }
-                ),
-                properties=BasicProperties(
-                    reply_to=self._rpc_reply_queue_name,
-                    content_type="application/python-dill",
-                    correlation_id=str(correlation_id),
-                ),
+
+        def _publish() -> None:
+            try:
+                self._channel.basic_publish(
+                    exchange="",
+                    routing_key=self._rpc_queue_name,
+                    body=dill.dumps(
+                        {
+                            "device": device_name,
+                            "method": method,
+                            "args": args,
+                            "kwargs": kwargs,
+                            "task_id": str(self._task_id),
+                            "require_occupation": require_occupation,
+                        }
+                    ),
+                    properties=BasicProperties(
+                        reply_to=self._rpc_reply_queue_name,
+                        content_type="application/python-dill",
+                        correlation_id=str(correlation_id),
+                    ),
+                    mandatory=True,
+                )
+            except Exception as e:
+                # Runs on the pika I/O thread, where raising would take down the reply consumer.
+                # Hand the error to the waiting caller instead.
+                self._fail_waiting_call(correlation_id, e)
+                return
+            _rpc_trace(
+                device_name,
+                "published %s task=%s corr=%s queue=%s",
+                method,
+                self._task_id,
+                correlation_id,
+                self._rpc_queue_name,
             )
-        )
+
+        self._conn.add_callback_threadsafe(_publish)
         try:
             result = self._wait_for_rpc_result(
                 f,
@@ -939,9 +1101,10 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
         duration = time.monotonic() - started_at
         _rpc_trace(
             device_name,
-            "call <- %s task=%s (%.2fs)",
+            "call <- %s task=%s corr=%s (%.2fs)",
             method,
             self._task_id,
+            correlation_id,
             duration,
         )
         return result
@@ -954,10 +1117,25 @@ class DevicesClient:  # pylint: disable=too-many-instance-attributes
         _body: bytes,
     ):
         """Callback function to handle a returned message from Device Manager."""
-        f = self._waiting.pop(ObjectId(properties.correlation_id))
+        correlation_id = ObjectId(properties.correlation_id)
+        waiting = self._waiting.pop(correlation_id, None)
+        if waiting is None:
+            logger.warning(
+                "[device-rpc] reply for unknown corr=%s (already timed out or cancelled?)",
+                correlation_id,
+            )
+            return
+        f, device_name, method_name = waiting
 
         try:
             body = dill.loads(_body)
+            _rpc_trace(
+                device_name,
+                "reply received %s corr=%s status=%s",
+                method_name,
+                correlation_id,
+                body.get("status"),
+            )
 
             if body["status"] == "success":
                 f.set_result(body["result"])
