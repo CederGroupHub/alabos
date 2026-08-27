@@ -11,7 +11,6 @@ import TextField from '@mui/material/TextField';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
-import Snackbar from '@mui/material/Snackbar';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Grow from '@mui/material/Grow';
@@ -22,14 +21,42 @@ import { useEffect } from 'react';
 import { get_pending_userinputrequests, respond_to_userinputrequest } from '../../api_routes';
 import { HoverText } from '../../utils';
 import Badge from '@mui/material/Badge';
-// import Icon from '@mui/material/Icon';
-
-// import * as React from 'react';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
-// import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+
+/** Preferred affirmative options, in priority order for bulk-complete. */
+const AFFIRMATIVE_OPTIONS = [
+  "Mark as completed",
+  "Mark as Completed",
+  "success",
+  "OK",
+  "Continue",
+];
+
+/** Friendlier labels for legacy option strings still used by running tasks. */
+const OPTION_DISPLAY_LABELS = {
+  success: "Mark as completed",
+  OK: "Mark as completed",
+  "Mark as Completed": "Mark as completed",
+  error: "Error",
+};
+
+function displayOptionLabel(option) {
+  return OPTION_DISPLAY_LABELS[option] || option;
+}
+
+function getCompletedOption(request) {
+  const options = request.options || [];
+  for (const preferred of AFFIRMATIVE_OPTIONS) {
+    const match = options.find((option) => option === preferred);
+    if (match) {
+      return match;
+    }
+  }
+  return null;
+}
 
 
 function SplitButton({ options, optionIndex, setOptionIndex, handleClick }) {
@@ -57,13 +84,13 @@ function SplitButton({ options, optionIndex, setOptionIndex, handleClick }) {
     <React.Fragment>
       <ButtonGroup variant="outlined" ref={anchorRef} aria-label="split button" fullWidth
         disableElevation={false}>
-        <Button onClick={handleClick} size="small" >{options[optionIndex]}</Button>
+        <Button onClick={handleClick} size="small">{displayOptionLabel(options[optionIndex])}</Button>
         <Button
           size="small"
           color="primary"
           aria-controls={open ? 'split-button-menu' : undefined}
           aria-expanded={open ? 'true' : undefined}
-          aria-label="select reponse to user input request"
+          aria-label="select response to user input request"
           aria-haspopup="menu"
           onClick={handleToggle}
         >
@@ -76,7 +103,7 @@ function SplitButton({ options, optionIndex, setOptionIndex, handleClick }) {
         role={undefined}
         transition
         disablePortal
-        style={{ zIndex: '100' }} //hack to get popper to show up on top of other elements
+        style={{ zIndex: '100' }}
       >
         {({ TransitionProps, placement }) => (
           <Grow
@@ -95,7 +122,7 @@ function SplitButton({ options, optionIndex, setOptionIndex, handleClick }) {
                       selected={index === optionIndex}
                       onClick={(event) => handleMenuItemClick(event, index)}
                     >
-                      {option}
+                      {displayOptionLabel(option)}
                     </MenuItem>
                   ))}
                 </MenuList>
@@ -111,7 +138,7 @@ function SplitButton({ options, optionIndex, setOptionIndex, handleClick }) {
 
 function UserInputRow({ request_id, task_name, task_id, prompt, options, hoverForId = false }) {
   const [note, setNote] = React.useState("");
-  const [optionIndex, setOptionIndex] = React.useState(0); //passed to splitbutton
+  const [optionIndex, setOptionIndex] = React.useState(0);
 
 
   function handleClick() {
@@ -140,8 +167,6 @@ function UserInputRow({ request_id, task_name, task_id, prompt, options, hoverFo
           value={note}
           size="small"
           fullWidth
-        // autoFocus={focused}
-        // onClick={(event) => setFocused(true)}
         />
         <SplitButton options={options} optionIndex={optionIndex} setOptionIndex={setOptionIndex} handleClick={handleClick} />
       </TableCell>
@@ -160,9 +185,6 @@ function UserInputAccordion({
   const [accordionState, setAccordionState] = React.useState(true);
   const [bulkSubmitting, setBulkSubmitting] = React.useState(false);
 
-  const getCompletedOption = (request) =>
-    (request.options || []).find((option) => option === "Mark as Completed") || null;
-
   const handleMarkSectionCompleted = async () => {
     const completableRequests = requests
       .map((request) => ({
@@ -176,7 +198,7 @@ function UserInputAccordion({
       onBulkMessage({
         severity: "warning",
         text: skippedCount > 0
-          ? `No requests in ${experiment_name} offer the exact 'Mark as Completed' option.`
+          ? `No requests in ${experiment_name} have a completable option (e.g. Mark as completed / success / OK).`
           : `There are no pending requests in ${experiment_name}.`,
       });
       return;
@@ -199,7 +221,7 @@ function UserInputAccordion({
       onBulkMessage({
         severity: "success",
         text: skippedCount > 0
-          ? `Marked ${completableRequests.length} request(s) in ${experiment_name} as completed. Skipped ${skippedCount} request(s) without the exact 'Mark as Completed' option.`
+          ? `Marked ${completableRequests.length} request(s) in ${experiment_name} as completed. Skipped ${skippedCount} request(s) without a completable option.`
           : `Marked ${completableRequests.length} request(s) in ${experiment_name} as completed.`,
       });
     } catch (error) {
@@ -248,7 +270,7 @@ function UserInputAccordion({
               disabled={bulkSubmitting || requests.length === 0}
               sx={{ flexShrink: 0 }}
             >
-              Mark all as completed
+              {bulkSubmitting ? "Marking…" : "Mark all as completed"}
             </Button>
           </Stack>
         </AccordionSummary>
@@ -260,7 +282,6 @@ function UserInputAccordion({
                 <TableRow>
                   <TableCell align="center"><b>Task</b></TableCell>
                   <TableCell align="center"><b>Prompt</b></TableCell>
-                  {/* <TableCell align="center"><b>User Notes</b></TableCell> */}
                   <TableCell align="center"><b>Send Response</b></TableCell>
                 </TableRow>
               </TableHead>
@@ -279,7 +300,6 @@ function UserInputAccordion({
 }
 
 function UserInputs({ hoverForId }) {
-  //https://upmostly.com/tutorials/how-to-post-requests-react
   const [pending, setPending] = React.useState({});
   const [idToName, setIdToName] = React.useState({});
   const [message, setMessage] = React.useState(null);
@@ -307,6 +327,14 @@ function UserInputs({ hoverForId }) {
     refreshPendingRequests();
   }, [refreshPendingRequests]);
 
+  useEffect(() => {
+    if (message === null) {
+      return undefined;
+    }
+    const timer = window.setTimeout(() => setMessage(null), 5000);
+    return () => window.clearTimeout(timer);
+  }, [message]);
+
   return (
     <Stack spacing={2}>
       <div>
@@ -315,6 +343,11 @@ function UserInputs({ hoverForId }) {
           Resolve pending operator prompts individually, or mark an entire section as completed when appropriate.
         </Typography>
       </div>
+      {message && (
+        <Alert severity={message.severity} onClose={() => setMessage(null)}>
+          {message.text}
+        </Alert>
+      )}
       {Object.entries(pending).map(([experiment_id, requests]) => (
         <UserInputAccordion
           experiment_id={experiment_id}
@@ -325,13 +358,6 @@ function UserInputs({ hoverForId }) {
           onBulkMessage={handleBulkMessage}
         />
       ))}
-      <Snackbar
-        open={message !== null}
-        autoHideDuration={5000}
-        onClose={() => setMessage(null)}
-      >
-        {message ? <Alert severity={message.severity}>{message.text}</Alert> : null}
-      </Snackbar>
     </Stack>
   )
 }
