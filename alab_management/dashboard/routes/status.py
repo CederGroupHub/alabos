@@ -21,11 +21,16 @@ def parse_device_status(
     """Derive the dashboard-facing status string for a device.
 
     Permanently disabled devices (``attributes.disabled``) get their own status so the UI can
-    distinguish them from operator-initiated pauses.
+    distinguish them from operator-initiated pauses. A device that has not finished connecting
+    reports ``CONNECTING``, which takes precedence over its pause status: alabos pauses such a
+    device itself while it waits, and showing that as a plain ``PAUSED`` would look like an
+    operator action and hide the fact that the device is simply not connected yet.
     """
     attributes = attributes or {}
     if attributes.get("disabled"):
         return "DISABLED"
+    if attributes.get("connection_status") == "connecting":
+        return "CONNECTING"
     if pause_status == "PAUSED":
         return "PAUSED"
     if pause_status == "REQUESTED":
@@ -40,8 +45,9 @@ def published_attributes(device: dict[str, Any]) -> dict[str, Any]:
     since attributes are also used for bulky internal bookkeeping that would bloat every poll of
     this endpoint.
 
-    ``disabled`` and ``disabled_reason`` are always included so every dashboard client can tell
-    permanently disabled devices apart from operator pauses without extra API calls.
+    ``disabled`` and the connection bookkeeping written by ``DeviceView`` are always included, so
+    every dashboard client can tell permanently disabled devices apart from operator pauses, and
+    can explain a device that is not connected, without extra API calls.
     """
     allowed = device.get("dashboard_attributes") or []
     attributes = device.get("attributes") or {}
@@ -50,6 +56,15 @@ def published_attributes(device: dict[str, Any]) -> dict[str, Any]:
     disabled_reason = attributes.get("disabled_reason")
     if disabled_reason is not None:
         published["disabled_reason"] = disabled_reason
+    published["connection_status"] = attributes.get("connection_status") or "connected"
+    for name in (
+        "connection_error",
+        "connection_waiting_seconds",
+        "connection_blocked_on_user_input",
+        "connection_user_input_prompt",
+    ):
+        if attributes.get(name) is not None:
+            published[name] = attributes[name]
     return published
 
 

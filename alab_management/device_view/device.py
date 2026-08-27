@@ -408,11 +408,18 @@ class BaseDevice(ABC):
         Request maintenance input from the user. This will display a prompt to the user and wait for them to select
         an option. The selected option will be returned.
 
+        The request records which device raised it, so the dashboard can tell an operator that
+        this particular device is waiting on them rather than just listing an anonymous prompt.
+
         Args:
             prompt: the text to display to the user
             options: the options to display to the user. This should be a list of strings.
         """
-        return request_maintenance_input(prompt=prompt, options=options)
+        return request_maintenance_input(
+            prompt=prompt,
+            options=options,
+            request_context_extra={"device": self.name},
+        )
 
     def retrieve_signal(
         self, signal_name: str, within: datetime.timedelta | None = None

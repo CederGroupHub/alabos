@@ -11,6 +11,7 @@ from typing import Any, TypeVar, cast
 
 import pymongo  # type: ignore
 from bson import ObjectId  # type: ignore
+from threading import Event, Lock, Thread
 
 from alab_management.sample_view import SamplePosition, SampleView
 from alab_management.utils.data_objects import get_collection, get_lock
@@ -18,6 +19,27 @@ from alab_management.utils.data_objects import get_collection, get_lock
 from .device import BaseDevice, get_all_devices, remove_device
 
 _DeviceType = TypeVar("_DeviceType", bound=BaseDevice)  # pylint: disable=invalid-name
+
+
+#: How long to wait for a single device to finish connecting before giving up on it *for now* and
+#: moving on to the next one. A device that overruns this is not abandoned: its connection keeps
+#: running in the background and the device joins the lab the moment it succeeds. This exists so
+#: that one unreachable -- or interactively blocked -- device can never stop the rest of the lab
+#: from launching.
+DEFAULT_DEVICE_CONNECT_TIMEOUT = 60.0
+
+#: Upper bound on the total time the connect phase may spend waiting on slow devices. Without it,
+#: N slow devices would each cost the full per-device timeout and launch would still be held up for
+#: N * timeout. Once this budget is spent, remaining devices get only a token wait; any that do not
+#: make it are picked up by the watcher and join a few seconds later.
+DEFAULT_TOTAL_CONNECT_BUDGET = 180.0
+
+#: The shortest we will ever wait on a device, so that a spent budget cannot skip devices that
+#: connect essentially instantly.
+MIN_DEVICE_CONNECT_WAIT = 2.0
+
+#: How often the background watcher re-checks devices that are still connecting.
+CONNECTION_WATCH_INTERVAL = 5.0
 
 
 class DeviceConnectionError(Exception):
@@ -67,36 +89,258 @@ class DeviceView:
         self._connected_device_names: set[str] = set()
         self._sample_view = SampleView()
 
+        # Bookkeeping for devices whose connection overran the timeout and is still running in
+        # the background. Guarded by _connection_lock because the watcher thread reads them.
+        self._connection_lock = Lock()
+        self._pending_connections: dict[str, Thread] = {}
+        self._connection_results: dict[str, dict[str, Any]] = {}
+        self._connection_started_at: dict[str, float] = {}
+        self._paused_for_connection: set[str] = set()
+        self._connection_watcher: Thread | None = None
+        self._connection_watcher_stop = Event()
+        self._user_input_view = None
+
         if connect_to_devices:
             self.__connect_all_devices()
 
-    def __connect_all_devices(self):
-        """Connect to every device, tolerating individual connection failures.
+    @staticmethod
+    def _device_connect_timeout() -> float:
+        """Per-device connection timeout, overridable as ``general.device_connect_timeout``."""
+        from alab_management.config import AlabOSConfig
 
-        If a device cannot be connected (e.g. it is powered off or unreachable), it is
-        disabled and paused instead of aborting the whole launch. This lets the lab run
-        everything that does not depend on the unreachable device, and the dashboard/UI can
-        show which devices were disabled because the connection could not be established.
+        try:
+            return float(
+                AlabOSConfig()["general"].get(
+                    "device_connect_timeout", DEFAULT_DEVICE_CONNECT_TIMEOUT
+                )
+            )
+        except Exception:
+            return DEFAULT_DEVICE_CONNECT_TIMEOUT
+
+    def __connect_all_devices(self):
+        """Connect to every device without letting any single device hold up the launch.
+
+        Each device is connected in its own thread and waited on for at most
+        ``device_connect_timeout`` seconds. Three things can happen:
+
+        * it connects, and is marked as connected;
+        * it raises, and is disabled and paused so the rest of the lab still runs;
+        * it neither returns nor raises within the timeout -- typically a driver blocking on a
+          maintenance prompt, or a hardware connection with no timeout of its own.
+
+        The third case is why this is threaded at all. Such a device is left connecting in the
+        background and marked ``connecting`` on the dashboard, and the rest of the devices are
+        connected as normal. This matters because the caller of this method is
+        ``DeviceManager.__init__``, which must return for ``DeviceManager.run()`` to declare and
+        consume the device RPC queue. Blocking here means no device RPC for the *entire lab*, and
+        because RPC calls are published to the default exchange they are silently dropped rather
+        than queued, so every device call in the lab hangs forever with no error.
         """
+        timeout = self._device_connect_timeout()
+        deadline = time.monotonic() + DEFAULT_TOTAL_CONNECT_BUDGET
         for device_name, device in self._device_list.items():
+            remaining_budget = deadline - time.monotonic()
+            wait = min(timeout, max(remaining_budget, MIN_DEVICE_CONNECT_WAIT))
+            self._connect_one_device(device_name, device, wait)
+        self.__connected_to_devices = True
+        self._start_connection_watcher()
+
+    def _connect_one_device(self, device_name: str, device: BaseDevice, timeout: float):
+        """Connect a single device, giving up the wait (but not the attempt) after ``timeout``."""
+        started_at = time.monotonic()
+        result: dict[str, Any] = {}
+
+        def _connect():
             try:
                 device._connect_wrapper()
-            except Exception as e:
-                logger.error(
-                    "Could not connect to %s: %r. Disabling and pausing it so the rest of the lab can still launch.",
-                    device_name,
-                    e,
-                )
-                self._mark_device_connection_failed(device_name, e)
-                continue
+            except Exception as e:  # recorded rather than raised: this runs in its own thread
+                result["error"] = e
+            else:
+                result["connected"] = True
+
+        thread = Thread(
+            target=_connect, name=f"connect-{device_name}", daemon=True
+        )
+        thread.start()
+        thread.join(timeout)
+
+        if not thread.is_alive():
+            self._finish_device_connection(device_name, result)
+            return
+
+        # Deliberately not killed: the connection may well succeed later (e.g. once an operator
+        # answers the prompt it is waiting on), and interrupting a half-open hardware connection
+        # is worse than leaving it to finish.
+        with self._connection_lock:
+            self._pending_connections[device_name] = thread
+            self._connection_results[device_name] = result
+            self._connection_started_at[device_name] = started_at
+        logger.warning(
+            "Still connecting to %s after %.0fs. Continuing without it so the rest of the lab can "
+            "launch; it will join automatically when the connection completes.",
+            device_name,
+            timeout,
+        )
+        self._mark_device_connecting(device_name, timeout)
+
+    def _finish_device_connection(self, device_name: str, result: dict[str, Any]):
+        """Apply the outcome of a device's connection attempt."""
+        error = result.get("error")
+        if error is not None:
+            logger.error(
+                "Could not connect to %s: %r. Disabling and pausing it so the rest of the lab can still launch.",
+                device_name,
+                error,
+            )
+            self._mark_device_connection_failed(device_name, error)
+            return
+        with self._connection_lock:
             self._connected_device_names.add(device_name)
-            # If this device was previously auto-disabled due to a connection failure and is
-            # now reachable again, clear that flag so it becomes usable.
-            self._clear_connection_failed_flag(device_name)
-            logger.info("Connecting to %s... Done", device_name)
-        self.__connected_to_devices = True
+        self._mark_device_connected(device_name)
+        logger.info("Connecting to %s... Done", device_name)
+
+    def _start_connection_watcher(self):
+        """Watch devices that are still connecting so they can join the lab without a relaunch."""
+        with self._connection_lock:
+            if not self._pending_connections:
+                return
+        self._connection_watcher_stop.clear()
+        self._connection_watcher = Thread(
+            target=self._watch_pending_connections,
+            name="device-connection-watcher",
+            daemon=True,
+        )
+        self._connection_watcher.start()
+
+    def _watch_pending_connections(self):
+        while not self._connection_watcher_stop.is_set():
+            with self._connection_lock:
+                pending = list(self._pending_connections.items())
+            if not pending:
+                return
+            for device_name, thread in pending:
+                with self._connection_lock:
+                    started_at = self._connection_started_at.get(
+                        device_name, time.monotonic()
+                    )
+                if thread.is_alive():
+                    # Refresh the dashboard message: what the device is blocked on can change
+                    # (a driver may raise a new prompt after the previous one is answered).
+                    self._mark_device_connecting(
+                        device_name, time.monotonic() - started_at
+                    )
+                    continue
+                with self._connection_lock:
+                    self._pending_connections.pop(device_name, None)
+                    result = self._connection_results.pop(device_name, {})
+                    self._connection_started_at.pop(device_name, None)
+                self._finish_device_connection(device_name, result)
+            self._connection_watcher_stop.wait(CONNECTION_WATCH_INTERVAL)
+
+    def _pending_user_input_for_device(self, device_name: str) -> dict[str, Any] | None:
+        """The unanswered dashboard request this device raised, if it is waiting on one."""
+        try:
+            if self._user_input_view is None:
+                from alab_management.user_input import UserInputView
+
+                self._user_input_view = UserInputView()
+            return self._user_input_view.get_pending_request_by_context(
+                {"device": device_name}
+            )
+        except Exception:
+            return None
+
+    def _update_connection_attributes(self, device_name: str, **values: Any):
+        """Set connection bookkeeping attributes individually.
+
+        Uses dotted ``$set`` paths rather than ``set_attribute`` so that rewriting connection
+        state never clobbers attribute values a running driver wrote in the meantime.
+        """
+        update: dict[str, Any] = {
+            f"attributes.{key}": value for key, value in values.items()
+        }
+        update["last_updated"] = datetime.now()
+        self._device_collection.update_one({"name": device_name}, {"$set": update})
+
+    def _mark_device_connecting(self, device_name: str, waited_seconds: float):
+        """Flag a device as still connecting, recording what it is waiting on.
+
+        The device is paused (so no task can acquire something that is not ready) but is *not*
+        marked disabled, because it is expected to come good on its own.
+        """
+        try:
+            pending_request = self._pending_user_input_for_device(device_name)
+            if pending_request is not None:
+                message = (
+                    "NOT CONNECTED: alabos is still connecting to this device "
+                    f"({waited_seconds:.0f}s so far). It is waiting for an operator to answer a "
+                    'request. Go to "User Input Requests" and respond to: '
+                    f'"{pending_request.get("prompt", "")}". The device will join the lab '
+                    "automatically once you respond -- no need to restart the lab."
+                )
+            else:
+                message = (
+                    "NOT CONNECTED: alabos is still connecting to this device "
+                    f"({waited_seconds:.0f}s so far). The rest of the lab has launched without "
+                    "it. It will join automatically once the connection completes -- no need to "
+                    'restart the lab. If it stays like this, check "User Input Requests" and '
+                    "that the hardware is powered on and reachable."
+                )
+
+            was_connecting = False
+            try:
+                attributes = self.get_device(device_name).get("attributes") or {}
+                was_connecting = attributes.get("connection_status") == "connecting"
+            except Exception:
+                pass
+
+            self._update_connection_attributes(
+                device_name,
+                connection_status="connecting",
+                connection_error=None,
+                connection_waiting_seconds=round(waited_seconds),
+                connection_blocked_on_user_input=pending_request is not None,
+                connection_user_input_prompt=(
+                    pending_request.get("prompt") if pending_request else None
+                ),
+            )
+            if not was_connecting:
+                # Only pause on the first pass, so repeated refreshes cannot fight an operator
+                # who deliberately released the device.
+                self.pause_device(device_name)
+                self._paused_for_connection.add(device_name)
+            self.set_message(device_name, message)
+        except Exception as exc:  # best-effort bookkeeping; never block launch
+            logger.error(f"Failed to flag {device_name} as connecting: {exc!r}")
+
+    def _mark_device_connected(self, device_name: str):
+        """Record that a device is connected and usable, clearing any connecting/failed state."""
+        try:
+            self._update_connection_attributes(
+                device_name,
+                connection_status="connected",
+                connection_error=None,
+                connection_waiting_seconds=None,
+                connection_blocked_on_user_input=False,
+                connection_user_input_prompt=None,
+            )
+        except Exception as exc:
+            logger.error(f"Failed to record {device_name} as connected: {exc!r}")
+        # Release the pause this class applied while the device was connecting. An operator pause
+        # is left alone: we only undo what we did ourselves.
+        if device_name in self._paused_for_connection:
+            self._paused_for_connection.discard(device_name)
+            try:
+                self.unpause_device(device_name)
+                self.set_message(device_name, "")
+            except Exception as exc:
+                logger.error(f"Failed to unpause {device_name} after connecting: {exc!r}")
+        # If this device was previously auto-disabled due to a connection failure and is
+        # now reachable again, clear that flag so it becomes usable.
+        self._clear_connection_failed_flag(device_name)
 
     def __disconnect_all_devices(self):
+        self._connection_watcher_stop.set()
         # Only disconnect devices that actually connected; devices that failed to connect
         # never opened a connection and may not be safe to disconnect.
         for device_name in list(self._connected_device_names):
@@ -121,14 +365,23 @@ class DeviceView:
         explain it to operators.
         """
         message = (
-            "DISABLED: alabos could not establish a connection to this device "
-            f"({type(error).__name__}: {error}). It is paused and cannot be used until the "
-            "connection is restored and the lab is relaunched."
+            "NOT CONNECTED: alabos could not establish a connection to this device "
+            f"({type(error).__name__}: {error}). It is disabled and paused, and cannot be used "
+            "until the connection is restored and the lab is relaunched."
         )
         try:
             self.pause_device(device_name)
+            self._paused_for_connection.discard(device_name)
             self.set_attribute(device_name, "disabled", True)
             self.set_attribute(device_name, "disabled_reason", "connection_failed")
+            self._update_connection_attributes(
+                device_name,
+                connection_status="failed",
+                connection_error=f"{type(error).__name__}: {error}",
+                connection_waiting_seconds=None,
+                connection_blocked_on_user_input=False,
+                connection_user_input_prompt=None,
+            )
             self.set_message(device_name, message)
         except Exception as exc:  # best-effort bookkeeping; never block launch
             logger.error(f'Failed to flag {device_name} as disabled: {exc!r}')
@@ -524,8 +777,39 @@ class DeviceView:
             raise Exception(
                 "DeviceView cannot execute device commands without first connecting to the devices!"
             )
+        # Launch no longer waits for every device, so a command can arrive for a device that has
+        # not finished connecting. Fail with something an operator can act on rather than letting
+        # the call reach a half-initialised driver.
+        with self._connection_lock:
+            connected = device_name in self._connected_device_names
+            still_connecting = device_name in self._pending_connections
+        if not connected:
+            raise DeviceConnectionError(
+                self._not_connected_reason(device_name, still_connecting)
+            )
         device_method = self.query_property(device_name=device_name, prop=method)
         return device_method(*args, **kwargs)
+
+    def _not_connected_reason(self, device_name: str, still_connecting: bool) -> str:
+        """An operator-facing explanation of why a device cannot take commands."""
+        if still_connecting:
+            pending_request = self._pending_user_input_for_device(device_name)
+            if pending_request is not None:
+                return (
+                    f"Device {device_name} has not finished connecting: it is waiting for an "
+                    'operator to answer a request. Go to "User Input Requests" on the dashboard '
+                    f'and respond to: "{pending_request.get("prompt", "")}". The device will '
+                    "become usable as soon as you respond."
+                )
+            return (
+                f"Device {device_name} has not finished connecting yet. The lab launched without "
+                "it and it will become usable once the connection completes. Check "
+                '"User Input Requests" and that the hardware is powered on and reachable.'
+            )
+        return (
+            f"Device {device_name} is not connected. alabos could not establish a connection to "
+            "it at launch, so it is disabled. Check the Devices page for the connection error."
+        )
 
     def set_message(self, device_name: str, message: str):
         """Sets the device message. Message is used to communicate device state with the user dashboard.

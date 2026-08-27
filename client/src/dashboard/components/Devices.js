@@ -68,6 +68,37 @@ const StyledDevicesDiv = styled.div`
     color: #1565c0;
     font-family: Source Code Pro;
   }
+
+  .status-chip {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-family: Source Code Pro;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+  }
+
+  .connection-notice {
+    border-left: 3px solid;
+    padding: 4px 0 4px 10px;
+    margin-bottom: 4px;
+  }
+
+  .connection-notice.connecting {
+    border-color: #b26a00;
+    color: #7a4a00;
+  }
+
+  .connection-notice.failed {
+    border-color: #8c435b;
+    color: #7a3b50;
+  }
+
+  .connection-headline {
+    font-weight: 600;
+  }
 `;
 
 const DEVICE_ACCENTS = {
@@ -81,9 +112,63 @@ const DEVICE_ACCENTS = {
   pausedText: '#27485c',
   disabledBg: '#ececec',
   disabledText: '#616161',
+  connectingBg: '#fbf0dd',
+  connectingText: '#8a5300',
   badgeBg: '#45697c',
   badgeText: '#ffffff',
 };
+
+const STATUS_LABELS = {
+  CONNECTING: 'NOT CONNECTED',
+};
+
+
+// A device that has not finished connecting is the one state an operator can usually fix from the
+// dashboard, so it gets a full explanation rather than a colour: what it is waiting on, where to
+// go and answer it, and the fact that answering is enough (no relaunch).
+function ConnectionNotice({ attributes }) {
+  const status = attributes?.connection_status;
+  if (status !== 'connecting' && status !== 'failed') {
+    return null;
+  }
+  const waited = attributes?.connection_waiting_seconds;
+  const prompt = attributes?.connection_user_input_prompt;
+
+  if (status === 'failed') {
+    return (
+      <div className="connection-notice failed">
+        <Typography variant="body2" className="connection-headline">
+          Not connected — connection failed
+        </Typography>
+        <Typography variant="caption" display="block">
+          {attributes?.connection_error || 'alabos could not connect to this device at launch.'}
+          {' '}This device is disabled until the connection is restored and the lab is relaunched.
+        </Typography>
+      </div>
+    );
+  }
+
+  return (
+    <div className="connection-notice connecting">
+      <Typography variant="body2" className="connection-headline">
+        Not connected — still connecting{waited ? ` (${waited}s)` : ''}
+      </Typography>
+      {prompt ? (
+        <Typography variant="caption" display="block">
+          This device is waiting for you. Open <b>User Input Requests</b> and answer:{' '}
+          <b>“{prompt}”</b>. It will join the lab automatically once you respond — you do not need
+          to restart the lab.
+        </Typography>
+      ) : (
+        <Typography variant="caption" display="block">
+          The rest of the lab launched without it, and it will join automatically once the
+          connection completes — you do not need to restart the lab. If it stays like this, check{' '}
+          <b>User Input Requests</b> and that the hardware is powered on and reachable.
+        </Typography>
+      )}
+    </div>
+  );
+}
 
 
 // Attribute values come straight from the device's database document, so they can be anything from a
@@ -140,6 +225,8 @@ function Row({ device, hoverForId }) {
         return DEVICE_ACCENTS.pausedBg;
       case "DISABLED":
         return DEVICE_ACCENTS.disabledBg;
+      case "CONNECTING":
+        return DEVICE_ACCENTS.connectingBg;
       default:
         return "#ffffff";
     }
@@ -157,6 +244,8 @@ function Row({ device, hoverForId }) {
         return DEVICE_ACCENTS.pausedText;
       case "DISABLED":
         return DEVICE_ACCENTS.disabledText;
+      case "CONNECTING":
+        return DEVICE_ACCENTS.connectingText;
       default:
         return "#000000";
     }
@@ -174,18 +263,31 @@ function Row({ device, hoverForId }) {
         return DEVICE_ACCENTS.pausedText;
       case "DISABLED":
         return DEVICE_ACCENTS.disabledText;
+      case "CONNECTING":
+        return DEVICE_ACCENTS.connectingText;
       default:
         return "#9e9e9e";
     }
   }
 
   const permanentlyDisabled = Boolean(device.attributes?.disabled);
+  const connectionStatus = device.attributes?.connection_status;
+  const notConnected = connectionStatus === "connecting" || connectionStatus === "failed";
 
-  const PauseButton = ({ pause_state, device_name, permanently_disabled }) => {
+  const PauseButton = ({ pause_state, device_name, permanently_disabled, connecting }) => {
     if (permanently_disabled) {
       return (
         <Typography variant="caption" sx={{ color: DEVICE_ACCENTS.disabledText }}>
           Disabled
+        </Typography>
+      );
+    }
+    // The pause on a connecting device is applied by alabos, not an operator, so offering
+    // "Release" here would imply it is the way to make the device usable. It is not.
+    if (connecting) {
+      return (
+        <Typography variant="caption" sx={{ color: DEVICE_ACCENTS.connectingText }}>
+          Connecting…
         </Typography>
       );
     }
@@ -258,30 +360,44 @@ function Row({ device, hoverForId }) {
             sx={{ color: subtextColor(device.status) }}
           >{device.type}</Typography>
         </TableCell>
-        {/* <TableCell align="center">{row.type}</TableCell> */}
+        <TableCell align="center">
+          <span
+            className="status-chip"
+            style={{
+              backgroundColor: rowColor(device.status) === "#ffffff" ? "#eeeeee" : rowColor(device.status),
+              color: textColor(device.status) === "#000000" ? "#5f5f5f" : textColor(device.status),
+            }}
+          >
+            {STATUS_LABELS[device.status] || device.status}
+          </span>
+        </TableCell>
         <TableCell align="center" size="small">
           <OccupiedSamplePositions samples={device.samples} name={device.name} key={String(device.name + "-samplepositions")} hoverForId={hoverForId} />
         </TableCell>
-        <TableCell align="left" width="50%" >
-          <Typography variant="caption" sx={{
-            color: textColor(device.status),
-            whiteSpace: "pre-wrap",
-            display: '-webkit-box',
-            overflow: 'auto',
-            WebkitBoxOrient: 'vertical',
-            WebkitLineClamp: 3,
-          }}>{device.message}</Typography>
+        <TableCell align="left" width="45%" >
+          <ConnectionNotice attributes={device.attributes} />
+          {!notConnected &&
+            <Typography variant="caption" sx={{
+              color: textColor(device.status),
+              whiteSpace: "pre-wrap",
+              display: '-webkit-box',
+              overflow: 'auto',
+              WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: 3,
+            }}>{device.message}</Typography>
+          }
         </TableCell>
         <TableCell align="center">
           <PauseButton
             pause_state={device.pause_status}
             device_name={device.name}
             permanently_disabled={permanentlyDisabled}
+            connecting={connectionStatus === "connecting"}
           />
         </TableCell>
       </TableRow>
       <TableRow sx={{ bgcolor: rowColor(device.status) }}>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={5}>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <div style={{ margin: "8px 0 16px 0" }}>
               <Typography variant="subtitle2" gutterBottom>Device state</Typography>
@@ -448,8 +564,9 @@ function Devices({ hoverForId }) {
               <TableRow>
                 <TableCell padding="none" width="48" />
                 <TableCell><b>Name</b></TableCell>
+                <TableCell align="center"><b>Status</b></TableCell>
                 <TableCell align="center"><b>Samples</b></TableCell>
-                <TableCell align="center" width="50%"><b>Message</b></TableCell>
+                <TableCell align="center" width="45%"><b>Message</b></TableCell>
                 <TableCell align="center">Pause</TableCell>
               </TableRow>
             </TableHead>

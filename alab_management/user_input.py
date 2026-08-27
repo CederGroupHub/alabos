@@ -182,6 +182,7 @@ def request_user_input(
     options: list[str],
     maintenance: bool = False,
     category: str = "Unknown Category",
+    request_context_extra: dict[str, Any] | None = None,
 ) -> str:
     """
     Request user input through the dashboard. Blocks until response is given.
@@ -191,6 +192,8 @@ def request_user_input(
         prompt (str): prompt to give user
         options (List[str]): response options to give user
         maintenance (bool): if true, mark this as a request for overall system maintenance
+        request_context_extra (Optional[dict]): extra context stored on the request, used to
+          associate it with whatever raised it (e.g. ``{"device": "DASH_arm_JEEVES"}``)
 
     Returns
     -------
@@ -203,17 +206,24 @@ def request_user_input(
         options=options,
         maintenance=maintenance,
         category=category,
+        request_context_extra=request_context_extra,
     )
     return user_input_view.retrieve_user_input(request_id=request_id)
 
 
-def request_maintenance_input(prompt: str, options: list[str]):
+def request_maintenance_input(
+    prompt: str,
+    options: list[str],
+    request_context_extra: dict[str, Any] | None = None,
+):
     """
     Request user input for maintenance through the dashboard. Blocks until response is given.
 
     Args:
         prompt (str): prompt to give user
         options (List[str]): response options to give user
+        request_context_extra (Optional[dict]): extra context stored on the request, used to
+          associate it with whatever raised it (e.g. ``{"device": "DASH_arm_JEEVES"}``)
 
     Returns
     -------
@@ -225,6 +235,7 @@ def request_maintenance_input(prompt: str, options: list[str]):
         options=options,
         maintenance=True,
         category="Maintenance",
+        request_context_extra=request_context_extra,
     )
 
 
