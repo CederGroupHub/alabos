@@ -237,7 +237,8 @@ function MobileRobotControl() {
           </Typography>
           <Typography variant="body2" color="text.secondary">
             Preview first to confirm source and destination positions, then run to submit directly
-            to AlabOS.
+            to AlabOS. After Run, check User Input Requests — Starting/Ending prompts must be
+            answered before the robot moves.
           </Typography>
         </Box>
 

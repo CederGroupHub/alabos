@@ -1,6 +1,7 @@
 """This is a dashboard that displays data from the ALab database."""
 
 from .basic_route import modules
+from .dash_control import dash_control_bp
 from .data import data_bp
 from .device import device_bp
 from .device_control import device_control_bp
@@ -16,6 +17,7 @@ from .user_input import userinput_bp
 def init_app(app):
     """Add routes to the app."""
     app.register_blueprint(modules)
+    app.register_blueprint(dash_control_bp)
     app.register_blueprint(data_bp)
     app.register_blueprint(device_bp)
     app.register_blueprint(device_control_bp)

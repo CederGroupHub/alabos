@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Devices from './components/Devices';
 import DeviceControl from './components/DeviceControl';
+import DashControl from './components/DashControl';
 import MobileRobotControl from './components/MobileRobotControl';
 import Data from './components/Data';
 import Experiments from './components/Experiments';
@@ -14,6 +15,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import TableChartIcon from '@mui/icons-material/TableChart';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import SettingsRemoteIcon from '@mui/icons-material/SettingsRemote';
+import BuildIcon from '@mui/icons-material/Build';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import UserInputs from './components/UserInput';
 import Badge from '@mui/material/Badge';
@@ -196,6 +198,16 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange }) {
           </ListItemButton>
         </LinkedButton>
       </ListItem>
+      <ListItem>
+        <LinkedButton to="/#dash-control">
+          <ListItemButton className={hash === "#dash-control" ? "active list-button-round" : "list-button-round"}>
+            <ListItemIcon>
+              <BuildIcon />
+            </ListItemIcon>
+            <ListItemText primary="DASH Control" />
+          </ListItemButton>
+        </LinkedButton>
+      </ListItem>
     </List>
 
 
@@ -289,6 +301,8 @@ function Dashboard() {
         return <DeviceControl />;
       case "#mobile-robot-control":
         return <MobileRobotControl />;
+      case "#dash-control":
+        return <DashControl />;
       case "#userinput":
         return <UserInputs hoverForId={hoverForId} />
       case "#experiment":

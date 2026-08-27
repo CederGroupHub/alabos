@@ -288,3 +288,35 @@ export async function run_mobile_robot_segment(segment_id, body) {
     });
     return await res.json();
 }
+
+// DASH workflow segment control
+const DASH_CONTROL_API = process.env.NODE_ENV === "production" ? "/api/dash-control" : URL + "/api/dash-control";
+
+export async function get_dash_control_catalog() {
+    const res = await fetch(DASH_CONTROL_API + "/catalog", { mode: 'cors' });
+    return await res.json();
+}
+
+export async function preview_dash_segment(segment_id, body) {
+    const res = await fetch(DASH_CONTROL_API + "/preview/" + segment_id, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+    });
+    return await res.json();
+}
+
+export async function run_dash_segment(segment_id, body) {
+    const res = await fetch(DASH_CONTROL_API + "/run/" + segment_id, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+    });
+    return await res.json();
+}
