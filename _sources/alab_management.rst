@@ -24,7 +24,9 @@ Submodules
    alab_management.alarm
    alab_management.config
    alab_management.device_manager
+   alab_management.experiment_cancel
    alab_management.experiment_manager
+   alab_management.lab_reset
    alab_management.lab_view
    alab_management.logger
    alab_management.task_actor

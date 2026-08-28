@@ -259,7 +259,9 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../alab_management.alarm.html">alab_management.alarm module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../alab_management.config.html">alab_management.config module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../alab_management.device_manager.html">alab_management.device_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.experiment_cancel.html">alab_management.experiment_cancel module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../alab_management.experiment_manager.html">alab_management.experiment_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.lab_reset.html">alab_management.lab_reset module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../alab_management.lab_view.html">alab_management.lab_view module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../alab_management.logger.html">alab_management.logger module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../alab_management.task_actor.html">alab_management.task_actor module</a></li>
@@ -406,7 +408,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.resource_manager.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">_EXTRA_REQUEST</span><span class="p">,</span> <span class="n">RequestStatus</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.sample_view.sample</span><span class="w"> </span><span class="kn">import</span> <span class="n">SamplePosition</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.sample_view.sample_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">SamplePositionRequest</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.task_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskPriority</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.task_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskCancelledError</span><span class="p">,</span> <span class="n">TaskPriority</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.data_objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">DocumentNotUpdatedError</span><span class="p">,</span> <span class="n">get_collection</span>
 
 <span class="n">_SampleRequestDict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
@@ -711,6 +713,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_waiting</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"f"</span><span class="p">:</span> <span class="n">f</span><span class="p">,</span> <span class="s2">"device_str_to_request"</span><span class="p">:</span> <span class="n">device_str_to_request</span><span class="p">}</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_concurrent_result</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">TaskCancelledError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">find_one_and_update</span><span class="p">(</span>
+                <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">_id</span><span class="p">,</span> <span class="s2">"status"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$ne"</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">FULFILLED</span><span class="o">.</span><span class="n">name</span><span class="p">}},</span>
+                <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="o">.</span><span class="n">name</span><span class="p">}},</span>
+            <span class="p">)</span>
+            <span class="k">raise</span>
         <span class="k">except</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">TimeoutError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="c1"># if the request is not fulfilled, cancel it to make sure the resources are released</span>
             <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_collection</span><span class="o">.</span><span class="n">find_one_and_update</span><span class="p">(</span>
@@ -735,21 +743,33 @@
 
 <div class="viewcode-block" id="ResourceRequester.get_concurrent_result">
 <a class="viewcode-back" href="../../../alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.ResourceRequester.get_concurrent_result">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_concurrent_result</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">Future</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Get the result of a future with a timeout.</span>
-<span class="sd">        If the request is canceled, we will catch a RequestCanceledError and hang the program.</span>
-<span class="sd">        The hanged program will be killed by the abort exception in the task actor, which will</span>
-<span class="sd">        be handled in the task actor to clean up the lab.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_concurrent_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="n">Future</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Wait for a resource request, and abort if this task is being cancelled.</span>
+
+<span class="sd">        Polls in short slices so a cancel does not sit behind an unbounded</span>
+<span class="sd">        ``Future.result`` wait, and so a cancelled request raises</span>
+<span class="sd">        ``TaskCancelledError`` instead of hanging until Dramatiq abort arrives.</span>
 <span class="sd">        """</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">result</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">RequestCanceledError</span><span class="p">:</span>
-            <span class="c1"># if there is an abort signal, we will just hang the program</span>
-            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-                <span class="c1"># abort signal here. It should be handled in the task actor</span>
-                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.task_view.task_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskView</span>
+
+        <span class="n">deadline</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">timeout</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">+</span> <span class="n">timeout</span>
+        <span class="n">task_view</span> <span class="o">=</span> <span class="n">TaskView</span><span class="p">()</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">remaining</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">deadline</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">deadline</span> <span class="o">-</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">remaining</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">remaining</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">()</span>
+            <span class="n">slice_timeout</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="k">if</span> <span class="n">remaining</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">min</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">remaining</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">result</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">slice_timeout</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">RequestCanceledError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">TaskCancelledError</span><span class="p">(</span>
+                    <span class="s2">"Cancelled while waiting for resources."</span>
+                <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+            <span class="k">except</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">task_view</span><span class="o">.</span><span class="n">is_canceling</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">TaskCancelledError</span><span class="p">(</span><span class="s2">"Cancelled while waiting for resources."</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">remaining</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">deadline</span><span class="p">:</span>
+                    <span class="k">raise</span></div>
 
 
 <div class="viewcode-block" id="ResourceRequester.release_resources">

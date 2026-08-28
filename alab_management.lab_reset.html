@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>alab_management.resource_manager.enums module &#8212; Alab Management 1.1.0</title>
+    <title>alab_management.lab_reset module &#8212; Alab Management 1.1.0</title>
   
   
   
@@ -46,12 +46,12 @@
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script src="_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'alab_management.resource_manager.enums';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'alab_management.lab_reset';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="alab_management.resource_manager.resource_manager module" href="alab_management.resource_manager.resource_manager.html" />
-    <link rel="prev" title="alab_management.resource_manager package" href="alab_management.resource_manager.html" />
+    <link rel="next" title="alab_management.lab_view module" href="alab_management.lab_view.html" />
+    <link rel="prev" title="alab_management.experiment_manager module" href="alab_management.experiment_manager.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -236,8 +236,8 @@
 <li class="toctree-l4"><a class="reference internal" href="alab_management.experiment_view.experiment_view.html">alab_management.experiment_view.experiment_view module</a></li>
 </ul>
 </details></li>
-<li class="toctree-l3 current active has-children"><a class="reference internal" href="alab_management.resource_manager.html">alab_management.resource_manager package</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l4 current active"><a class="current reference internal" href="#">alab_management.resource_manager.enums module</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.resource_manager.html">alab_management.resource_manager package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.resource_manager.enums.html">alab_management.resource_manager.enums module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="alab_management.resource_manager.resource_manager.html">alab_management.resource_manager.resource_manager module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="alab_management.resource_manager.resource_requester.html">alab_management.resource_manager.resource_requester module</a></li>
 </ul>
@@ -264,7 +264,7 @@
 <li class="toctree-l3"><a class="reference internal" href="alab_management.device_manager.html">alab_management.device_manager module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.experiment_cancel.html">alab_management.experiment_cancel module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.experiment_manager.html">alab_management.experiment_manager module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="alab_management.lab_reset.html">alab_management.lab_reset module</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">alab_management.lab_reset module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.lab_view.html">alab_management.lab_view module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.logger.html">alab_management.logger module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.task_actor.html">alab_management.task_actor module</a></li>
@@ -347,7 +347,7 @@
       
       
       
-      <li><a href="_sources/alab_management.resource_manager.enums.rst" target="_blank"
+      <li><a href="_sources/alab_management.lab_reset.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -423,7 +423,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>alab_management.resource_manager.enums module</h1>
+    <h1>alab_management.lab_reset module</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -433,15 +433,7 @@
             </div>
             <nav aria-label="Page">
                 <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.resource_manager.enums.RequestStatus"><code class="docutils literal notranslate"><span class="pre">RequestStatus</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.resource_manager.enums.RequestStatus.CANCELED"><code class="docutils literal notranslate"><span class="pre">RequestStatus.CANCELED</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.resource_manager.enums.RequestStatus.ERROR"><code class="docutils literal notranslate"><span class="pre">RequestStatus.ERROR</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.resource_manager.enums.RequestStatus.FULFILLED"><code class="docutils literal notranslate"><span class="pre">RequestStatus.FULFILLED</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.resource_manager.enums.RequestStatus.NEED_RELEASE"><code class="docutils literal notranslate"><span class="pre">RequestStatus.NEED_RELEASE</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.resource_manager.enums.RequestStatus.PENDING"><code class="docutils literal notranslate"><span class="pre">RequestStatus.PENDING</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.resource_manager.enums.RequestStatus.RELEASED"><code class="docutils literal notranslate"><span class="pre">RequestStatus.RELEASED</span></code></a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_reset.reset_lab_software_state"><code class="docutils literal notranslate"><span class="pre">reset_lab_software_state()</span></code></a></li>
 </ul>
             </nav>
         </div>
@@ -453,43 +445,22 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="module-alab_management.resource_manager.enums">
-<span id="alab-management-resource-manager-enums-module"></span><h1>alab_management.resource_manager.enums module<a class="headerlink" href="#module-alab_management.resource_manager.enums" title="Link to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="alab_management.resource_manager.enums.RequestStatus">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RequestStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/resource_manager/enums.html#RequestStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.resource_manager.enums.RequestStatus" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
-<p>The status for a request. It will be stored in the database.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.resource_manager.enums.RequestStatus.CANCELED">
-<span class="sig-name descname"><span class="pre">CANCELED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#alab_management.resource_manager.enums.RequestStatus.CANCELED" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.resource_manager.enums.RequestStatus.ERROR">
-<span class="sig-name descname"><span class="pre">ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#alab_management.resource_manager.enums.RequestStatus.ERROR" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.resource_manager.enums.RequestStatus.FULFILLED">
-<span class="sig-name descname"><span class="pre">FULFILLED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#alab_management.resource_manager.enums.RequestStatus.FULFILLED" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.resource_manager.enums.RequestStatus.NEED_RELEASE">
-<span class="sig-name descname"><span class="pre">NEED_RELEASE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#alab_management.resource_manager.enums.RequestStatus.NEED_RELEASE" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.resource_manager.enums.RequestStatus.PENDING">
-<span class="sig-name descname"><span class="pre">PENDING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#alab_management.resource_manager.enums.RequestStatus.PENDING" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="alab_management.resource_manager.enums.RequestStatus.RELEASED">
-<span class="sig-name descname"><span class="pre">RELEASED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#alab_management.resource_manager.enums.RequestStatus.RELEASED" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
+  <section id="module-alab_management.lab_reset">
+<span id="alab-management-lab-reset-module"></span><h1>alab_management.lab_reset module<a class="headerlink" href="#module-alab_management.lab_reset" title="Link to this heading">#</a></h1>
+<p>Force the lab back to an empty software state without restarting processes.</p>
+<p>This is the dashboard “Reset lab” button. It cancels every live task, dismisses
+user-input prompts, drops resource locks, releases devices, clears the mobile-robot
+queues, unassigns samples from positions, and closes open experiments.</p>
+<p>It does not stop hardware that is already moving, and it does not drop Mongo.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="alab_management.lab_reset.reset_lab_software_state">
+<span class="sig-name descname"><span class="pre">reset_lab_software_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settle_s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_reset.html#reset_lab_software_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_reset.reset_lab_software_state" title="Link to this definition">#</a></dt>
+<dd><p>Cancel everything the dashboard is waiting on so a new experiment can be submitted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span></p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -506,20 +477,20 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="alab_management.resource_manager.html"
+       href="alab_management.experiment_manager.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">alab_management.resource_manager package</p>
+        <p class="prev-next-title">alab_management.experiment_manager module</p>
       </div>
     </a>
     <a class="right-next"
-       href="alab_management.resource_manager.resource_manager.html"
+       href="alab_management.lab_view.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">alab_management.resource_manager.resource_manager module</p>
+        <p class="prev-next-title">alab_management.lab_view module</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -540,15 +511,7 @@
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.resource_manager.enums.RequestStatus"><code class="docutils literal notranslate"><span class="pre">RequestStatus</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.resource_manager.enums.RequestStatus.CANCELED"><code class="docutils literal notranslate"><span class="pre">RequestStatus.CANCELED</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.resource_manager.enums.RequestStatus.ERROR"><code class="docutils literal notranslate"><span class="pre">RequestStatus.ERROR</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.resource_manager.enums.RequestStatus.FULFILLED"><code class="docutils literal notranslate"><span class="pre">RequestStatus.FULFILLED</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.resource_manager.enums.RequestStatus.NEED_RELEASE"><code class="docutils literal notranslate"><span class="pre">RequestStatus.NEED_RELEASE</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.resource_manager.enums.RequestStatus.PENDING"><code class="docutils literal notranslate"><span class="pre">RequestStatus.PENDING</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.resource_manager.enums.RequestStatus.RELEASED"><code class="docutils literal notranslate"><span class="pre">RequestStatus.RELEASED</span></code></a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_reset.reset_lab_software_state"><code class="docutils literal notranslate"><span class="pre">reset_lab_software_state()</span></code></a></li>
 </ul>
   </nav></div>
 

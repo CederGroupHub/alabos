@@ -259,7 +259,9 @@
 <li class="toctree-l3"><a class="reference internal" href="../../alab_management.alarm.html">alab_management.alarm module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../alab_management.config.html">alab_management.config module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../alab_management.device_manager.html">alab_management.device_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../alab_management.experiment_cancel.html">alab_management.experiment_cancel module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../alab_management.experiment_manager.html">alab_management.experiment_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../alab_management.lab_reset.html">alab_management.lab_reset module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../alab_management.lab_view.html">alab_management.lab_view module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../alab_management.logger.html">alab_management.logger module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../alab_management.task_actor.html">alab_management.task_actor module</a></li>
@@ -392,10 +394,12 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.alarm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Alarm</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.experiment_view.experiment_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExperimentView</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.task_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskView</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.task_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskCancelledError</span><span class="p">,</span> <span class="n">TaskView</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.data_objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_collection</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">AlabOSConfig</span>
+
+<span class="n">CANCEL_RESPONSE</span> <span class="o">=</span> <span class="s2">"Cancelled"</span>
 
 
 <div class="viewcode-block" id="UserRequestStatus">
@@ -513,22 +517,68 @@
 
 <span class="sd">        Returns the user response, which is one of a list of options</span>
 <span class="sd">        """</span>
-        <span class="n">status</span> <span class="o">=</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">while</span> <span class="n">status</span> <span class="o">==</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="p">:</span>
-                <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">request_id</span><span class="p">})</span>
-                <span class="k">if</span> <span class="n">request</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"User input request id </span><span class="si">{</span><span class="n">request_id</span><span class="si">}</span><span class="s2"> does not exist!"</span>
-                    <span class="p">)</span>
-                <span class="n">status</span> <span class="o">=</span> <span class="n">UserRequestStatus</span><span class="p">(</span><span class="n">request</span><span class="p">[</span><span class="s2">"status"</span><span class="p">])</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_raise_if_owning_task_cancelled</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">UserRequestStatus</span><span class="p">(</span><span class="n">request</span><span class="p">[</span><span class="s2">"status"</span><span class="p">])</span> <span class="o">!=</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="p">:</span>
+                    <span class="k">break</span>
                 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">TaskCancelledError</span><span class="p">:</span>
+            <span class="k">raise</span>
         <span class="k">except</span><span class="p">:</span>  <span class="c1"># noqa: E722</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
                 <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">request_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">name</span><span class="p">}}</span>
             <span class="p">)</span>
             <span class="k">raise</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_raise_if_owning_task_cancelled</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">request</span><span class="p">[</span><span class="s2">"response"</span><span class="p">]</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_raise_if_owning_task_cancelled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Abort a blocked user-input wait when the owning task is being cancelled."""</span>
+        <span class="n">task_id</span> <span class="o">=</span> <span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"request_context"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"task_id"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">task_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_view</span><span class="o">.</span><span class="n">is_canceling</span><span class="p">(</span><span class="n">task_id</span><span class="p">):</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">UserRequestStatus</span><span class="p">(</span><span class="n">request</span><span class="p">[</span><span class="s2">"status"</span><span class="p">])</span> <span class="o">==</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_request_status</span><span class="p">(</span>
+                <span class="n">request_id</span><span class="o">=</span><span class="n">request</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">],</span>
+                <span class="n">response</span><span class="o">=</span><span class="n">CANCEL_RESPONSE</span><span class="p">,</span>
+                <span class="n">note</span><span class="o">=</span><span class="s2">"Dismissed because the task was cancelled."</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">raise</span> <span class="n">TaskCancelledError</span><span class="p">(</span><span class="s2">"Cancelled while waiting for user input."</span><span class="p">)</span>
+
+<div class="viewcode-block" id="UserInputView.dismiss_pending_requests">
+<a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.UserInputView.dismiss_pending_requests">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dismiss_pending_requests</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">experiment_id</span><span class="p">:</span> <span class="n">ObjectId</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">task_id</span><span class="p">:</span> <span class="n">ObjectId</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">response</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">CANCEL_RESPONSE</span><span class="p">,</span>
+        <span class="n">note</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"Dismissed because the experiment or task was cancelled."</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Fulfill pending prompts so a cancelled task is not stuck waiting for a click."""</span>
+        <span class="k">if</span> <span class="n">experiment_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">task_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"experiment_id or task_id is required"</span><span class="p">)</span>
+        <span class="n">query</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">value</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">experiment_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">"request_context.experiment_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">experiment_id</span>
+        <span class="k">if</span> <span class="n">task_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">"request_context.task_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">task_id</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">update_many</span><span class="p">(</span>
+            <span class="n">query</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">FULLFILLED</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                    <span class="s2">"response"</span><span class="p">:</span> <span class="n">response</span><span class="p">,</span>
+                    <span class="s2">"note"</span><span class="p">:</span> <span class="n">note</span><span class="p">,</span>
+                    <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">modified_count</span></div>
 
 
 <div class="viewcode-block" id="UserInputView.clean_up_user_input_collection">
@@ -571,21 +621,22 @@
 
 <span class="sd">        Returns the user response, which is one of a list of options</span>
 <span class="sd">        """</span>
-        <span class="n">status</span> <span class="o">=</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">while</span> <span class="n">status</span> <span class="o">==</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="p">:</span>
-                <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">request_id</span><span class="p">})</span>
-                <span class="k">if</span> <span class="n">request</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"User input request id </span><span class="si">{</span><span class="n">request_id</span><span class="si">}</span><span class="s2"> does not exist!"</span>
-                    <span class="p">)</span>
-                <span class="n">status</span> <span class="o">=</span> <span class="n">UserRequestStatus</span><span class="p">(</span><span class="n">request</span><span class="p">[</span><span class="s2">"status"</span><span class="p">])</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_raise_if_owning_task_cancelled</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">UserRequestStatus</span><span class="p">(</span><span class="n">request</span><span class="p">[</span><span class="s2">"status"</span><span class="p">])</span> <span class="o">!=</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="p">:</span>
+                    <span class="k">break</span>
                 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">TaskCancelledError</span><span class="p">:</span>
+            <span class="k">raise</span>
         <span class="k">except</span><span class="p">:</span>  <span class="c1"># noqa: E722</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
                 <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">request_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">name</span><span class="p">}}</span>
             <span class="p">)</span>
             <span class="k">raise</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_raise_if_owning_task_cancelled</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">request</span><span class="p">[</span><span class="s2">"response"</span><span class="p">],</span> <span class="n">request</span><span class="p">[</span><span class="s2">"note"</span><span class="p">]</span></div>
 </div>
 

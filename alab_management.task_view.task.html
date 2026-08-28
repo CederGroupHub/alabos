@@ -262,7 +262,9 @@
 <li class="toctree-l3"><a class="reference internal" href="alab_management.alarm.html">alab_management.alarm module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.config.html">alab_management.config module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.device_manager.html">alab_management.device_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.experiment_cancel.html">alab_management.experiment_cancel module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.experiment_manager.html">alab_management.experiment_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.lab_reset.html">alab_management.lab_reset module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.lab_view.html">alab_management.lab_view module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.logger.html">alab_management.logger module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.task_actor.html">alab_management.task_actor module</a></li>
@@ -500,10 +502,9 @@ task appended to their tasklists.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="alab_management.task_view.task.BaseTask.cleanup_on_cancel">
 <span class="sig-name descname"><span class="pre">cleanup_on_cancel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#alab_management.task_view.task.BaseTask.cleanup_on_cancel" title="Link to this definition">#</a></dt>
-<dd><p>Whether the task actor should run the default cleanup (prompt the operator, then move every
-sample of this task out of the lab with <code class="docutils literal notranslate"><span class="pre">position=None</span></code>) after the task is cancelled.
-Set to <code class="docutils literal notranslate"><span class="pre">False</span></code> in a subclass that reconciles its own samples in <a class="reference internal" href="#alab_management.task_view.task.BaseTask.on_cancel" title="alab_management.task_view.task.BaseTask.on_cancel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_cancel()</span></code></a>, e.g. a
-transport task whose samples are still sitting at a known physical position.</p>
+<dd><p>Kept for subclasses that set this to <code class="docutils literal notranslate"><span class="pre">False</span></code>. Cancel no longer prompts the operator
+to remove samples; the task actor always releases devices and reserved positions and
+leaves samples at their last known location.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -568,8 +569,8 @@ this task held are still held at this point and are released afterwards.</p></li
 <li><p>Raising from here does not un-cancel the task. The exception is logged and the
 cancellation proceeds, so a failure to clean up never leaves a task stuck.</p></li>
 </ul>
-<p>Set <a class="reference internal" href="#alab_management.task_view.task.BaseTask.cleanup_on_cancel" title="alab_management.task_view.task.BaseTask.cleanup_on_cancel"><code class="xref py py-attr docutils literal notranslate"><span class="pre">cleanup_on_cancel</span></code></a> to <code class="docutils literal notranslate"><span class="pre">False</span></code> alongside this method when the default cleanup
-(which moves every sample of the task out of the lab) would lie about where samples are.</p>
+<p>Samples stay at their last known position after cancel. Use this method when the
+physical location should be written back explicitly.</p>
 <p>By default this does nothing.</p>
 </dd></dl>
 

@@ -259,7 +259,9 @@
 <li class="toctree-l3"><a class="reference internal" href="alab_management.alarm.html">alab_management.alarm module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.config.html">alab_management.config module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.device_manager.html">alab_management.device_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.experiment_cancel.html">alab_management.experiment_cancel module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.experiment_manager.html">alab_management.experiment_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.lab_reset.html">alab_management.lab_reset module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.lab_view.html">alab_management.lab_view module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.logger.html">alab_management.logger module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.task_actor.html">alab_management.task_actor module</a></li>
@@ -513,6 +515,13 @@
 </li>
       </ul></li>
       <li>
+    alab_management.experiment_cancel
+
+      <ul>
+        <li><a href="alab_management.experiment_cancel.html#module-alab_management.experiment_cancel">module</a>
+</li>
+      </ul></li>
+      <li>
     alab_management.experiment_manager
 
       <ul>
@@ -549,6 +558,13 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    alab_management.lab_reset
+
+      <ul>
+        <li><a href="alab_management.lab_reset.html#module-alab_management.lab_reset">module</a>
+</li>
+      </ul></li>
       <li>
     alab_management.lab_view
 
@@ -706,6 +722,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.device_manager.html#alab_management.device_manager.DevicesClient.call">call() (DevicesClient method)</a>
 </li>
+      <li><a href="alab_management.experiment_cancel.html#alab_management.experiment_cancel.cancel_experiment_software_state">cancel_experiment_software_state() (in module alab_management.experiment_cancel)</a>
+</li>
       <li><a href="alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.CANCELABLE_LIVE_STATUS">CANCELABLE_LIVE_STATUS (TaskView attribute)</a>
 </li>
       <li><a href="alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.CANCELABLE_PENDING_STATUS">CANCELABLE_PENDING_STATUS (TaskView attribute)</a>
@@ -828,10 +846,10 @@
 </li>
       <li><a href="alab_management.logger.html#alab_management.logger.LoggingType.DEVICE_SIGNAL">DEVICE_SIGNAL (LoggingType attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceConnectionError">DeviceConnectionError</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.device_manager.html#alab_management.device_manager.DeviceManager">DeviceManager (class in alab_management.device_manager)</a>
 </li>
       <li><a href="alab_management.device_manager.html#alab_management.device_manager.DeviceManagerUnavailableError">DeviceManagerUnavailableError</a>
@@ -861,6 +879,8 @@
       <li><a href="alab_management.device_view.dbattributes.html#alab_management.device_view.dbattributes.DictInDatabase">DictInDatabase (class in alab_management.device_view.dbattributes)</a>
 </li>
       <li><a href="alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.disconnect">disconnect() (BaseDevice method)</a>
+</li>
+      <li><a href="alab_management.user_input.html#alab_management.user_input.UserInputView.dismiss_pending_requests">dismiss_pending_requests() (UserInputView method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -994,7 +1014,7 @@
 </li>
       <li><a href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.get_available_sample_position">get_available_sample_position() (SampleView method)</a>
 </li>
-      <li><a href="alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.ResourceRequester.get_concurrent_result">get_concurrent_result() (ResourceRequester static method)</a>
+      <li><a href="alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.ResourceRequester.get_concurrent_result">get_concurrent_result() (ResourceRequester method)</a>
 </li>
       <li><a href="alab_management.device_view.device.html#alab_management.device_view.device.get_current_devices">get_current_devices() (in module alab_management.device_view.device)</a>
 </li>
@@ -1330,6 +1350,8 @@
 </li>
         <li><a href="alab_management.device_view.device_view.html#module-alab_management.device_view.device_view">alab_management.device_view.device_view</a>
 </li>
+        <li><a href="alab_management.experiment_cancel.html#module-alab_management.experiment_cancel">alab_management.experiment_cancel</a>
+</li>
         <li><a href="alab_management.experiment_manager.html#module-alab_management.experiment_manager">alab_management.experiment_manager</a>
 </li>
         <li><a href="alab_management.experiment_view.html#module-alab_management.experiment_view">alab_management.experiment_view</a>
@@ -1339,6 +1361,8 @@
         <li><a href="alab_management.experiment_view.experiment.html#module-alab_management.experiment_view.experiment">alab_management.experiment_view.experiment</a>
 </li>
         <li><a href="alab_management.experiment_view.experiment_view.html#module-alab_management.experiment_view.experiment_view">alab_management.experiment_view.experiment_view</a>
+</li>
+        <li><a href="alab_management.lab_reset.html#module-alab_management.lab_reset">alab_management.lab_reset</a>
 </li>
         <li><a href="alab_management.lab_view.html#module-alab_management.lab_view">alab_management.lab_view</a>
 </li>
@@ -1600,6 +1624,8 @@
       <li><a href="alab_management.device_view.device.html#alab_management.device_view.device.reset_current_device_registry">reset_current_device_registry() (in module alab_management.device_view.device)</a>
 </li>
       <li><a href="alab_management.sample_view.sample.html#alab_management.sample_view.sample.reset_current_standalone_sample_position_registry">reset_current_standalone_sample_position_registry() (in module alab_management.sample_view.sample)</a>
+</li>
+      <li><a href="alab_management.lab_reset.html#alab_management.lab_reset.reset_lab_software_state">reset_lab_software_state() (in module alab_management.lab_reset)</a>
 </li>
       <li><a href="alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.ResourceRequester">ResourceRequester (class in alab_management.resource_manager.resource_requester)</a>
 </li>

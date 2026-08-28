@@ -259,7 +259,9 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../alab_management.alarm.html">alab_management.alarm module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../alab_management.config.html">alab_management.config module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../alab_management.device_manager.html">alab_management.device_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.experiment_cancel.html">alab_management.experiment_cancel module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../alab_management.experiment_manager.html">alab_management.experiment_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.lab_reset.html">alab_management.lab_reset module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../alab_management.lab_view.html">alab_management.lab_view module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../alab_management.logger.html">alab_management.logger module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../alab_management.task_actor.html">alab_management.task_actor module</a></li>
@@ -588,10 +590,9 @@
 <span class="sd">    All the tasks should inherit from this class.</span>
 <span class="sd">    """</span>
 
-    <span class="c1">#: Whether the task actor should run the default cleanup (prompt the operator, then move every</span>
-    <span class="c1">#: sample of this task out of the lab with ``position=None``) after the task is cancelled.</span>
-    <span class="c1">#: Set to ``False`` in a subclass that reconciles its own samples in :meth:`on_cancel`, e.g. a</span>
-    <span class="c1">#: transport task whose samples are still sitting at a known physical position.</span>
+    <span class="c1">#: Kept for subclasses that set this to ``False``. Cancel no longer prompts the operator</span>
+    <span class="c1">#: to remove samples; the task actor always releases devices and reserved positions and</span>
+    <span class="c1">#: leaves samples at their last known location.</span>
     <span class="n">cleanup_on_cancel</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -782,8 +783,8 @@
 <span class="sd">        - Raising from here does not un-cancel the task. The exception is logged and the</span>
 <span class="sd">          cancellation proceeds, so a failure to clean up never leaves a task stuck.</span>
 
-<span class="sd">        Set :attr:`cleanup_on_cancel` to ``False`` alongside this method when the default cleanup</span>
-<span class="sd">        (which moves every sample of the task out of the lab) would lie about where samples are.</span>
+<span class="sd">        Samples stay at their last known position after cancel. Use this method when the</span>
+<span class="sd">        physical location should be written back explicitly.</span>
 
 <span class="sd">        By default this does nothing.</span>
 <span class="sd">        """</span></div>

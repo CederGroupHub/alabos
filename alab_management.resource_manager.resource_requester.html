@@ -262,7 +262,9 @@
 <li class="toctree-l3"><a class="reference internal" href="alab_management.alarm.html">alab_management.alarm module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.config.html">alab_management.config module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.device_manager.html">alab_management.device_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.experiment_cancel.html">alab_management.experiment_cancel module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.experiment_manager.html">alab_management.experiment_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.lab_reset.html">alab_management.lab_reset module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.lab_view.html">alab_management.lab_view module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.logger.html">alab_management.logger module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.task_actor.html">alab_management.task_actor module</a></li>
@@ -620,11 +622,11 @@ and then the task manager will read from the database and assign the resources.<
 <p>It is used in <a class="reference internal" href="alab_management.lab_view.html#alab_management.lab_view.LabView" title="alab_management.lab_view.LabView"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabView</span></code></a>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.resource_manager.resource_requester.ResourceRequester.get_concurrent_result">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_concurrent_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/resource_manager/resource_requester.html#ResourceRequester.get_concurrent_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.resource_manager.resource_requester.ResourceRequester.get_concurrent_result" title="Link to this definition">#</a></dt>
-<dd><p>Get the result of a future with a timeout.
-If the request is canceled, we will catch a RequestCanceledError and hang the program.
-The hanged program will be killed by the abort exception in the task actor, which will
-be handled in the task actor to clean up the lab.</p>
+<span class="sig-name descname"><span class="pre">get_concurrent_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/resource_manager/resource_requester.html#ResourceRequester.get_concurrent_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.resource_manager.resource_requester.ResourceRequester.get_concurrent_result" title="Link to this definition">#</a></dt>
+<dd><p>Wait for a resource request, and abort if this task is being cancelled.</p>
+<p>Polls in short slices so a cancel does not sit behind an unbounded
+<code class="docutils literal notranslate"><span class="pre">Future.result</span></code> wait, and so a cancelled request raises
+<code class="docutils literal notranslate"><span class="pre">TaskCancelledError</span></code> instead of hanging until Dramatiq abort arrives.</p>
 </dd></dl>
 
 <dl class="py method">

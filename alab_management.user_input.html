@@ -261,7 +261,9 @@
 <li class="toctree-l3"><a class="reference internal" href="alab_management.alarm.html">alab_management.alarm module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.config.html">alab_management.config module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.device_manager.html">alab_management.device_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.experiment_cancel.html">alab_management.experiment_cancel module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.experiment_manager.html">alab_management.experiment_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.lab_reset.html">alab_management.lab_reset module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.lab_view.html">alab_management.lab_view module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.logger.html">alab_management.logger module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.task_actor.html">alab_management.task_actor module</a></li>
@@ -432,6 +434,7 @@
                 <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.user_input.UserInputView"><code class="docutils literal notranslate"><span class="pre">UserInputView</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.user_input.UserInputView.clean_up_user_input_collection"><code class="docutils literal notranslate"><span class="pre">UserInputView.clean_up_user_input_collection()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.user_input.UserInputView.dismiss_pending_requests"><code class="docutils literal notranslate"><span class="pre">UserInputView.dismiss_pending_requests()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.user_input.UserInputView.get_all_pending_requests"><code class="docutils literal notranslate"><span class="pre">UserInputView.get_all_pending_requests()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.user_input.UserInputView.get_pending_request_by_context"><code class="docutils literal notranslate"><span class="pre">UserInputView.get_pending_request_by_context()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.user_input.UserInputView.get_request"><code class="docutils literal notranslate"><span class="pre">UserInputView.get_request()</span></code></a></li>
@@ -472,6 +475,17 @@
 <dt class="sig sig-object py" id="alab_management.user_input.UserInputView.clean_up_user_input_collection">
 <span class="sig-name descname"><span class="pre">clean_up_user_input_collection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#UserInputView.clean_up_user_input_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.UserInputView.clean_up_user_input_collection" title="Link to this definition">#</a></dt>
 <dd><p>Drop the sample position collection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.user_input.UserInputView.dismiss_pending_requests">
+<span class="sig-name descname"><span class="pre">dismiss_pending_requests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Cancelled'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">note</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Dismissed</span> <span class="pre">because</span> <span class="pre">the</span> <span class="pre">experiment</span> <span class="pre">or</span> <span class="pre">task</span> <span class="pre">was</span> <span class="pre">cancelled.'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#UserInputView.dismiss_pending_requests"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.UserInputView.dismiss_pending_requests" title="Link to this definition">#</a></dt>
+<dd><p>Fulfill pending prompts so a cancelled task is not stuck waiting for a click.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -681,6 +695,7 @@ note (str): note from the user</p>
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.user_input.UserInputView"><code class="docutils literal notranslate"><span class="pre">UserInputView</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.user_input.UserInputView.clean_up_user_input_collection"><code class="docutils literal notranslate"><span class="pre">UserInputView.clean_up_user_input_collection()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.user_input.UserInputView.dismiss_pending_requests"><code class="docutils literal notranslate"><span class="pre">UserInputView.dismiss_pending_requests()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.user_input.UserInputView.get_all_pending_requests"><code class="docutils literal notranslate"><span class="pre">UserInputView.get_all_pending_requests()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.user_input.UserInputView.get_pending_request_by_context"><code class="docutils literal notranslate"><span class="pre">UserInputView.get_pending_request_by_context()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.user_input.UserInputView.get_request"><code class="docutils literal notranslate"><span class="pre">UserInputView.get_request()</span></code></a></li>
