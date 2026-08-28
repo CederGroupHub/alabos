@@ -50,7 +50,6 @@ function defaultFormState(segment) {
   return {
     slot: segment.params?.slot?.default ?? 1,
     options: {
-      advanced_place: segment.options?.advanced_place?.default ?? true,
       label_vial: segment.options?.label_vial?.default ?? false,
       remove_at_end: segment.options?.remove_at_end?.default ?? true,
       batch_name: segment.default_batch_name || '',
@@ -122,7 +121,6 @@ function DashControl() {
         slot: Number(form.slot) || 1,
       },
       options: {
-        advanced_place: Boolean(form.options?.advanced_place),
         label_vial: Boolean(form.options?.label_vial),
         remove_at_end: Boolean(form.options?.remove_at_end),
         batch_name: form.options?.batch_name || undefined,
@@ -293,22 +291,6 @@ function DashControl() {
                   </Stack>
 
                   <Stack spacing={0.5}>
-                    <Stack direction="row" alignItems="center" spacing={1}>
-                      <Switch
-                        checked={Boolean(form.options?.advanced_place)}
-                        onChange={(event) => updateForm(segment.id, (current) => ({
-                          ...current,
-                          options: {
-                            ...current.options,
-                            advanced_place: event.target.checked,
-                          },
-                        }))}
-                      />
-                      <Typography variant="body2">
-                        Advanced place (Clutter pick/place scripts)
-                      </Typography>
-                    </Stack>
-
                     {hasRemoveAtEnd && (
                       <Stack direction="row" alignItems="center" spacing={1}>
                         <Switch
