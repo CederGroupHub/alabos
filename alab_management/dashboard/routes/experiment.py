@@ -1,8 +1,7 @@
 """This is a dashboard that displays data from the ALab database."""
 
+import logging
 from datetime import datetime, timedelta
-from typing import Any
-
 from bson import ObjectId  # type: ignore
 from bson.errors import InvalidId  # type: ignore
 from flask import Blueprint, request
@@ -13,6 +12,8 @@ from alab_management.experiment_view.experiment import InputExperiment
 from alab_management.experiment_view.experiment_view import ExperimentStatus
 from alab_management.task_view.task_enums import TaskStatus
 from alab_management.utils.data_objects import make_jsonable
+
+logger = logging.getLogger(__name__)
 
 experiment_bp = Blueprint("/experiment", __name__, url_prefix="/api/experiment")
 
@@ -185,18 +186,29 @@ def query_experiment_results(exp_id: str):
 
 @experiment_bp.route("/cancel/<exp_id>", methods=["GET"])
 def cancel_experiment(exp_id: str):
+    """Cancel one experiment and free only that experiment's software bookings."""
+    from alab_management.experiment_cancel import cancel_experiment_software_state
+
     try:
-        exp_id = ObjectId(exp_id)
-        experiment: dict[str, Any] | None = experiment_view.get_experiment(exp_id)
-        if experiment is None:
-            return {"status": "error", "reason": "Experiment not found"}, 400
+        summary = cancel_experiment_software_state(ObjectId(exp_id))
+    except InvalidId as exception:
+        return {"status": "error", "reason": exception.args[0]}, 400
+    except ValueError as exception:
+        return {"status": "error", "reason": str(exception)}, 400
+    except Exception as exception:
+        logger.exception("Cancel experiment failed")
+        return {"status": "error", "reason": str(exception)}, 500
+    return {"status": "success", "data": summary}
 
-        tasks: list[dict[str, Any]] = experiment["tasks"]
-        # tasks = experiment_view.get_experiment(exp_id)["tasks"]
 
-        for task in tasks:
-            task_view.mark_task_as_canceling(task["task_id"])
-    except Exception as e:
-        return {"status": "error", "reason": e.args[0]}, 400
-    else:
-        return {"status": "success"}
+@experiment_bp.route("/reset_lab", methods=["POST"])
+def reset_lab():
+    """Cancel every live experiment and release the lab's software state."""
+    from alab_management.lab_reset import reset_lab_software_state
+
+    try:
+        summary = reset_lab_software_state()
+    except Exception as exception:
+        logger.exception("Reset lab failed")
+        return {"status": "error", "reason": str(exception)}, 500
+    return {"status": "success", "data": summary}

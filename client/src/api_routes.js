@@ -70,6 +70,35 @@ export async function get_experiment_status(experiment_id) {
     }
 }
 
+const RESET_LAB_API = process.env.NODE_ENV === "production" ? "/api/experiment/reset_lab" : URL + "/api/experiment/reset_lab";
+
+export async function reset_lab() {
+    const res = await fetch(RESET_LAB_API, {
+        method: "POST",
+        mode: "cors",
+    });
+    return res.json();
+}
+
+const CANCEL_EXPERIMENT_API = process.env.NODE_ENV === "production" ? "/api/experiment/cancel/" : URL + "/api/experiment/cancel/";
+const CANCEL_TASK_API = process.env.NODE_ENV === "production" ? "/api/task/cancel/" : URL + "/api/task/cancel/";
+
+export async function cancel_experiment(experiment_id) {
+    const res = await fetch(CANCEL_EXPERIMENT_API + experiment_id, {
+        method: "GET",
+        mode: "cors",
+    });
+    return res.json();
+}
+
+export async function cancel_task(task_id) {
+    const res = await fetch(CANCEL_TASK_API + task_id, {
+        method: "GET",
+        mode: "cors",
+    });
+    return res.json();
+}
+
 // Devices
 
 const PAUSE_DEVICE_API = process.env.NODE_ENV === "production" ? "/api/pause/" : URL + "/api/pause/";

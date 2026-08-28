@@ -13,6 +13,13 @@ def cancel_task(task_id: str):
     try:
         task_id_obj: ObjectId = ObjectId(task_id)
         task_view.mark_task_as_canceling(task_id_obj)
+        from alab_management.user_input import CANCEL_RESPONSE, UserInputView
+
+        UserInputView().dismiss_pending_requests(
+            task_id=task_id_obj,
+            response=CANCEL_RESPONSE,
+            note="Dismissed because the task was cancelled.",
+        )
 
         return {"status": "success"}
     except Exception as exception:

@@ -177,10 +177,9 @@ class BaseTask(ABC, metaclass=MetaClassWithImportLock):
     All the tasks should inherit from this class.
     """
 
-    #: Whether the task actor should run the default cleanup (prompt the operator, then move every
-    #: sample of this task out of the lab with ``position=None``) after the task is cancelled.
-    #: Set to ``False`` in a subclass that reconciles its own samples in :meth:`on_cancel`, e.g. a
-    #: transport task whose samples are still sitting at a known physical position.
+    #: Kept for subclasses that set this to ``False``. Cancel no longer prompts the operator
+    #: to remove samples; the task actor always releases devices and reserved positions and
+    #: leaves samples at their last known location.
     cleanup_on_cancel: bool = True
 
     def __init__(
@@ -357,8 +356,8 @@ class BaseTask(ABC, metaclass=MetaClassWithImportLock):
         - Raising from here does not un-cancel the task. The exception is logged and the
           cancellation proceeds, so a failure to clean up never leaves a task stuck.
 
-        Set :attr:`cleanup_on_cancel` to ``False`` alongside this method when the default cleanup
-        (which moves every sample of the task out of the lab) would lie about where samples are.
+        Samples stay at their last known position after cancel. Use this method when the
+        physical location should be written back explicitly.
 
         By default this does nothing.
         """

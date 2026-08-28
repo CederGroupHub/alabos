@@ -211,11 +211,10 @@ def run_task(task_id_str: str):
             cli_logger.error(
                 f"on_cancel of task {task_type} ({task_id}) failed: {cancel_exception}"
             )
-        if task.cleanup_on_cancel:
-            lab_view.request_cleanup()
-        else:
-            # The task reconciled its own samples, so only give the resources back.
-            lab_view.release_all_resources()
+        # Do not prompt the operator to remove samples. That leftover prompt is why
+        # Cancel used to look stuck. Samples stay at their last known position;
+        # devices and reserved positions are released so the rest of the lab can continue.
+        lab_view.release_all_resources()
     except:  # noqa: E722
         task_status = TaskStatus.ERROR
         task_view.update_status(task_id=task_id, status=TaskStatus.FINISHING)

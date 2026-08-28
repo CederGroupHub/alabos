@@ -7,10 +7,12 @@ from bson import ObjectId
 
 from alab_management.alarm import Alarm
 from alab_management.experiment_view.experiment_view import ExperimentView
-from alab_management.task_view import TaskView
+from alab_management.task_view import TaskCancelledError, TaskView
 from alab_management.utils.data_objects import get_collection
 
 from .config import AlabOSConfig
+
+CANCEL_RESPONSE = "Cancelled"
 
 
 class UserRequestStatus(Enum):
@@ -112,22 +114,65 @@ class UserInputView:
 
         Returns the user response, which is one of a list of options
         """
-        status = UserRequestStatus.PENDING
+        request = None
         try:
-            while status == UserRequestStatus.PENDING:
-                request = self._input_collection.find_one({"_id": request_id})
-                if request is None:
-                    raise ValueError(
-                        f"User input request id {request_id} does not exist!"
-                    )
-                status = UserRequestStatus(request["status"])
+            while True:
+                request = self.get_request(request_id)
+                self._raise_if_owning_task_cancelled(request)
+                if UserRequestStatus(request["status"]) != UserRequestStatus.PENDING:
+                    break
                 time.sleep(0.5)
+        except TaskCancelledError:
+            raise
         except:  # noqa: E722
             self._input_collection.update_one(
                 {"_id": request_id}, {"$set": {"status": UserRequestStatus.ERROR.name}}
             )
             raise
+        self._raise_if_owning_task_cancelled(request)
         return request["response"]
+
+    def _raise_if_owning_task_cancelled(self, request: dict[str, Any]) -> None:
+        """Abort a blocked user-input wait when the owning task is being cancelled."""
+        task_id = (request.get("request_context") or {}).get("task_id")
+        if task_id is None or not self._task_view.is_canceling(task_id):
+            return
+        if UserRequestStatus(request["status"]) == UserRequestStatus.PENDING:
+            self.update_request_status(
+                request_id=request["_id"],
+                response=CANCEL_RESPONSE,
+                note="Dismissed because the task was cancelled.",
+            )
+        raise TaskCancelledError("Cancelled while waiting for user input.")
+
+    def dismiss_pending_requests(
+        self,
+        *,
+        experiment_id: ObjectId | None = None,
+        task_id: ObjectId | None = None,
+        response: str = CANCEL_RESPONSE,
+        note: str = "Dismissed because the experiment or task was cancelled.",
+    ) -> int:
+        """Fulfill pending prompts so a cancelled task is not stuck waiting for a click."""
+        if experiment_id is None and task_id is None:
+            raise ValueError("experiment_id or task_id is required")
+        query: dict[str, Any] = {"status": UserRequestStatus.PENDING.value}
+        if experiment_id is not None:
+            query["request_context.experiment_id"] = experiment_id
+        if task_id is not None:
+            query["request_context.task_id"] = task_id
+        result = self._input_collection.update_many(
+            query,
+            {
+                "$set": {
+                    "status": UserRequestStatus.FULLFILLED.value,
+                    "response": response,
+                    "note": note,
+                    "last_updated": datetime.now(),
+                }
+            },
+        )
+        return result.modified_count
 
     def clean_up_user_input_collection(self):
         """Drop the sample position collection."""
@@ -158,21 +203,22 @@ class UserInputView:
 
         Returns the user response, which is one of a list of options
         """
-        status = UserRequestStatus.PENDING
+        request = None
         try:
-            while status == UserRequestStatus.PENDING:
-                request = self._input_collection.find_one({"_id": request_id})
-                if request is None:
-                    raise ValueError(
-                        f"User input request id {request_id} does not exist!"
-                    )
-                status = UserRequestStatus(request["status"])
+            while True:
+                request = self.get_request(request_id)
+                self._raise_if_owning_task_cancelled(request)
+                if UserRequestStatus(request["status"]) != UserRequestStatus.PENDING:
+                    break
                 time.sleep(0.5)
+        except TaskCancelledError:
+            raise
         except:  # noqa: E722
             self._input_collection.update_one(
                 {"_id": request_id}, {"$set": {"status": UserRequestStatus.ERROR.name}}
             )
             raise
+        self._raise_if_owning_task_cancelled(request)
         return request["response"], request["note"]
 
 

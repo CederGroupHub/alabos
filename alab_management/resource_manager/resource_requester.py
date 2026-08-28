@@ -21,7 +21,7 @@ from alab_management.device_view.device_view import DeviceView
 from alab_management.resource_manager.enums import _EXTRA_REQUEST, RequestStatus
 from alab_management.sample_view.sample import SamplePosition
 from alab_management.sample_view.sample_view import SamplePositionRequest
-from alab_management.task_view import TaskPriority
+from alab_management.task_view import TaskCancelledError, TaskPriority
 from alab_management.utils.data_objects import DocumentNotUpdatedError, get_collection
 
 _SampleRequestDict = dict[str, int]
@@ -289,6 +289,12 @@ class ResourceRequester(RequestMixin):
         self._waiting[_id] = {"f": f, "device_str_to_request": device_str_to_request}
         try:
             result = self.get_concurrent_result(f, timeout=timeout)
+        except TaskCancelledError:
+            self._request_collection.find_one_and_update(
+                {"_id": _id, "status": {"$ne": RequestStatus.FULFILLED.name}},
+                {"$set": {"status": RequestStatus.CANCELED.name}},
+            )
+            raise
         except concurrent.futures.TimeoutError as e:
             # if the request is not fulfilled, cancel it to make sure the resources are released
             request = self._request_collection.find_one_and_update(
@@ -310,21 +316,33 @@ class ResourceRequester(RequestMixin):
             "request_id": result["request_id"],
         }
 
-    @staticmethod
-    def get_concurrent_result(f: Future, timeout: float | None = None):
+    def get_concurrent_result(self, f: Future, timeout: float | None = None):
+        """Wait for a resource request, and abort if this task is being cancelled.
+
+        Polls in short slices so a cancel does not sit behind an unbounded
+        ``Future.result`` wait, and so a cancelled request raises
+        ``TaskCancelledError`` instead of hanging until Dramatiq abort arrives.
         """
-        Get the result of a future with a timeout.
-        If the request is canceled, we will catch a RequestCanceledError and hang the program.
-        The hanged program will be killed by the abort exception in the task actor, which will
-        be handled in the task actor to clean up the lab.
-        """
-        try:
-            return f.result(timeout=timeout)
-        except RequestCanceledError:
-            # if there is an abort signal, we will just hang the program
-            while True:
-                # abort signal here. It should be handled in the task actor
-                time.sleep(1)
+        from alab_management.task_view.task_view import TaskView
+
+        deadline = None if timeout is None else time.monotonic() + timeout
+        task_view = TaskView()
+        while True:
+            remaining = None if deadline is None else deadline - time.monotonic()
+            if remaining is not None and remaining <= 0:
+                raise concurrent.futures.TimeoutError()
+            slice_timeout = 0.5 if remaining is None else min(0.5, remaining)
+            try:
+                return f.result(timeout=slice_timeout)
+            except RequestCanceledError as exc:
+                raise TaskCancelledError(
+                    "Cancelled while waiting for resources."
+                ) from exc
+            except concurrent.futures.TimeoutError:
+                if task_view.is_canceling(self.task_id):
+                    raise TaskCancelledError("Cancelled while waiting for resources.")
+                if remaining is not None and time.monotonic() >= deadline:
+                    raise
 
     def release_resources(self, request_id: ObjectId):
         """Release a request by request_id."""
