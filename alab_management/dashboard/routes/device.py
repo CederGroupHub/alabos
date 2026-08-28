@@ -13,6 +13,11 @@ from flask import Blueprint, request
 from alab_management.dashboard.lab_views import device_view, sample_view
 from alab_management.logger import DBLogger
 from alab_management.utils.data_objects import make_jsonable
+from alab_management.utils.device_verbose_logging import (
+    DEFAULT_VERBOSE_LOG_TAIL,
+    MAX_VERBOSE_LOG_TAIL,
+    read_verbose_log_tail,
+)
 
 from .status import describe_sample, parse_device_status, published_attributes
 
@@ -131,6 +136,37 @@ def get_device_signals(device_name: str):
                 "within_hours": within.total_seconds() / 3600,
                 "signals": series,
             },
+        }
+    )
+
+
+@device_bp.route("/<device_name>/verbose-log", methods=["GET"])
+def get_device_verbose_log(device_name: str):
+    """The trailing lines of the per-device verbose log the restart launcher tails.
+
+    This is the same file a terminal tab follows when that device is ticked on the launcher.
+    Query ``lines`` (default 200, cap 1000) chooses how much of the tail to return.
+    """
+    try:
+        device_view.get_device(device_name=device_name)
+    except ValueError as exception:
+        return {"status": "error", "errors": str(exception)}, 404
+
+    try:
+        max_lines = int(request.args.get("lines", DEFAULT_VERBOSE_LOG_TAIL))
+    except ValueError:
+        return {"status": "error", "errors": "lines must be a number"}, 400
+    max_lines = max(1, min(max_lines, MAX_VERBOSE_LOG_TAIL))
+
+    try:
+        payload = read_verbose_log_tail(device_name, max_lines)
+    except ValueError as exception:
+        return {"status": "error", "errors": str(exception)}, 400
+
+    return make_jsonable(
+        {
+            "status": "success",
+            "data": {"device_name": device_name, **payload},
         }
     )
 

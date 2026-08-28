@@ -9,18 +9,11 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Collapse from '@mui/material/Collapse';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListSubheader from '@mui/material/ListSubheader';
-import Badge from '@mui/material/Badge';
-import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import IconButton from '@mui/material/IconButton';
 import { useEffect } from 'react';
-import { get_status } from '../../api_routes';
-import { HoverText } from '../../utils';
+import { get_device_verbose_log, get_status } from '../../api_routes';
 import { FormControl, FormControlLabel, Switch } from '@mui/material';
 import { request_device_pause, release_device_pause } from '../../api_routes';
 import Button from '@mui/material/Button';
@@ -98,6 +91,46 @@ const StyledDevicesDiv = styled.div`
 
   .connection-headline {
     font-weight: 600;
+  }
+
+  .device-detail-split {
+    display: flex;
+    gap: 16px;
+    align-items: stretch;
+    min-height: 240px;
+    margin: 8px 0 16px 0;
+  }
+
+  .device-detail-state {
+    flex: 0 0 36%;
+    min-width: 220px;
+    overflow: auto;
+  }
+
+  .device-detail-log {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .device-live-log {
+    font-family: Source Code Pro, monospace;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    background: #1e2a30;
+    color: #ffffff;
+    height: 220px;
+    overflow: auto;
+    padding: 8px 10px;
+    margin: 0;
+    border-radius: 4px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .device-live-log.empty {
+    color: #ffffff;
   }
 `;
 
@@ -182,6 +215,70 @@ function AttributeValue({ value }) {
     return <pre className="attribute-value">{JSON.stringify(value, null, 2)}</pre>;
   }
   return <Typography variant="body2" className="attribute-value">{String(value)}</Typography>;
+}
+
+
+function DeviceLogPane({ deviceName, open }) {
+  const [lines, setLines] = React.useState([]);
+  const [available, setAvailable] = React.useState(false);
+  const [reason, setReason] = React.useState(null);
+  const preRef = React.useRef(null);
+  const stickToBottom = React.useRef(true);
+
+  useEffect(() => {
+    if (!open) {
+      return undefined;
+    }
+    let cancelled = false;
+    const load = () => {
+      get_device_verbose_log(deviceName, 200).then((data) => {
+        if (cancelled || !data) {
+          return;
+        }
+        setAvailable(Boolean(data.available));
+        setReason(data.reason || null);
+        setLines(data.lines || []);
+      });
+    };
+    load();
+    const interval = setInterval(load, 1000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [open, deviceName]);
+
+  useEffect(() => {
+    const el = preRef.current;
+    if (el && stickToBottom.current) {
+      el.scrollTop = el.scrollHeight;
+    }
+  }, [lines]);
+
+  const onScroll = (event) => {
+    const el = event.target;
+    stickToBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 24;
+  };
+
+  let emptyMessage = 'Waiting for the first log line…';
+  if (!available && reason === 'no_file') {
+    emptyMessage = 'No log file yet. It appears once this device is next called.';
+  }
+
+  const text = lines.length > 0 ? lines.join('\n') : emptyMessage;
+
+  return (
+    <div className="device-detail-log">
+      <Typography variant="subtitle2" gutterBottom>Live log</Typography>
+      <pre
+        ref={preRef}
+        className={lines.length > 0 ? 'device-live-log' : 'device-live-log empty'}
+        onScroll={onScroll}
+      >
+        {text}
+      </pre>
+    </div>
+  );
 }
 
 
@@ -336,16 +433,14 @@ function Row({ device, hoverForId }) {
         }}
       >
         <TableCell align="center" padding="none" width="48">
-          {attributeCount > 0 &&
-            <IconButton
-              aria-label="show device details"
-              size="small"
-              onClick={() => setOpen(!open)}
-              sx={{ color: textColor(device.status) }}
-            >
-              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-            </IconButton>
-          }
+          <IconButton
+            aria-label="show device details"
+            size="small"
+            onClick={() => setOpen(!open)}
+            sx={{ color: textColor(device.status) }}
+          >
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
           <Typography
@@ -372,7 +467,7 @@ function Row({ device, hoverForId }) {
           </span>
         </TableCell>
         <TableCell align="center" size="small">
-          <OccupiedSamplePositions samples={device.samples} name={device.name} key={String(device.name + "-samplepositions")} hoverForId={hoverForId} />
+          <OccupiedSamplePositions samples={device.samples} />
         </TableCell>
         <TableCell align="left" width="45%" >
           <ConnectionNotice attributes={device.attributes} />
@@ -399,9 +494,12 @@ function Row({ device, hoverForId }) {
       <TableRow sx={{ bgcolor: rowColor(device.status) }}>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <div style={{ margin: "8px 0 16px 0" }}>
-              <Typography variant="subtitle2" gutterBottom>Device state</Typography>
-              <DeviceAttributes attributes={device.attributes} />
+            <div className="device-detail-split">
+              <div className="device-detail-state">
+                <Typography variant="subtitle2" gutterBottom>Device state</Typography>
+                <DeviceAttributes attributes={device.attributes} />
+              </div>
+              <DeviceLogPane deviceName={device.name} open={open} />
             </div>
           </Collapse>
         </TableCell>
@@ -412,99 +510,12 @@ function Row({ device, hoverForId }) {
 
 
 
-function OccupiedSamplePositions({ device, samples, hoverForId }) {
-  var total_samples = 0;
-  // samples.map(sample => {
-  //   total_samples += sample.samples.length;
-  // })
-  for (let _samples of Object.values(samples)) {
-    total_samples += _samples.length;
+function OccupiedSamplePositions({ samples }) {
+  let total_samples = 0;
+  for (const occupied of Object.values(samples || {})) {
+    total_samples += occupied.length;
   }
-  const var_name = String(device) + '-accordionState'
-  const [accordionState, setAccordionState] = React.useState(false, var_name);
-  // const [accordionState, setAccordionState] = React.useState(true);
-  return (
-    <div>
-      <Accordion elevation={0} expanded={accordionState} onChange={(e, expanded) => setAccordionState(expanded)}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-        >
-          <Typography variant="body1">{total_samples}</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          {
-            Object.entries(samples).map(([position, _samples]) => (
-              <SingleOccupiedSamplePositionsList position={position} samples={_samples} key={position} hoverForId={hoverForId} />
-            ))
-          }
-        </AccordionDetails>
-      </Accordion>
-    </div >
-  );
-}
-class SingleOccupiedSamplePositionsList extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      open: false,
-    }
-    this.handleClick = this.handleClick.bind(this);
-  }
-
-  handleClick() {
-    this.setState(prevState => ({
-      open: !prevState.open
-    }));
-  }
-
-  render() {
-
-    return (
-      <List
-        sx={{
-          bgcolor: 'background.paper',
-          // overflow: 'auto',
-          maxHeight: 300,
-        }}
-        dense={true}
-        subheader={
-          <ListSubheader
-            component="div"
-            id="nested-list-subheader"
-            onClick={this.handleClick}>
-            <Badge
-              badgeContent={this.props.samples.length}
-              sx={{
-                '& .MuiBadge-badge': {
-                  backgroundColor: DEVICE_ACCENTS.badgeBg,
-                  color: DEVICE_ACCENTS.badgeText,
-                },
-              }}
-            >
-              {this.props.position}
-            </Badge>
-          </ ListSubheader>}
-      >
-        <Collapse in={this.state.open} timeout="auto" unmountOnExit>
-          {this.props.samples.map((sample) => (
-            <ListItem
-              key={sample.id}
-              disableGutters
-              sx={{ display: 'block' }}
-            >
-              {/* <ListItemText primary={sample} /> */}
-              <HoverText defaultText={sample.name} hoverText={sample.id} variant="body2" active={this.props.hoverForId} />
-              {sample.in_transit &&
-                <Typography variant="caption" className="in-transit" display="block">
-                  {sample.in_transit.source} → {sample.in_transit.destination}
-                </Typography>
-              }
-            </ListItem>
-          ))}
-        </Collapse>
-      </List>
-    );
-  }
+  return <Typography variant="body1">{total_samples}</Typography>;
 }
 
 function Devices({ hoverForId }) {

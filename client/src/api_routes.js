@@ -126,6 +126,24 @@ export async function get_device_signals(device_name, signal_names, hours) {
     }
 }
 
+export async function get_device_verbose_log(device_name, lines) {
+    try {
+        const params = new URLSearchParams();
+        if (lines) {
+            params.append("lines", lines);
+        }
+        const query = params.toString();
+        const res = await fetch(
+            DEVICE_API + encodeURIComponent(device_name) + "/verbose-log" + (query ? "?" + query : ""),
+            { mode: 'cors' }
+        );
+        const result_1 = await res.json();
+        return result_1.data;
+    } catch (error) {
+        return console.warn(error);
+    }
+}
+
 // Sample Positions
 const SAMPLE_POSITIONS_API = process.env.NODE_ENV === "production" ? "/api/sample-positions" : URL + "/api/sample-positions";
 

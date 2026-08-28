@@ -87,6 +87,13 @@ def _rpc_trace_any_verbose(message: str, *args: Any) -> None:
 
     devices = get_verbose_devices()
     if not devices:
+        try:
+            from alab_management.device_view.device_view import DeviceView
+
+            devices = {device["name"] for device in DeviceView().get_all()}
+        except Exception:
+            devices = set()
+    if not devices:
         if is_device_rpc_debug_enabled():
             logger.info("[device-rpc] " + (message % args if args else message))
         return
