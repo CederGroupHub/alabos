@@ -114,6 +114,15 @@ const StyledDevicesDiv = styled.div`
     flex-direction: column;
   }
 
+  .device-live-log-wrap {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #1e2a30;
+  }
+
   .device-live-log {
     font-family: Source Code Pro, monospace;
     font-size: 0.75rem;
@@ -124,13 +133,31 @@ const StyledDevicesDiv = styled.div`
     overflow: auto;
     padding: 8px 10px;
     margin: 0;
-    border-radius: 4px;
+    border-radius: 0;
     white-space: pre-wrap;
     word-break: break-word;
   }
 
   .device-live-log.empty {
     color: #ffffff;
+  }
+
+  .device-live-log-resizer {
+    flex-shrink: 0;
+    height: 10px;
+    cursor: ns-resize;
+    background: #1e2a30;
+    border-top: 1px solid #2c3b42;
+  }
+
+  .device-live-log-resizer::after {
+    content: "";
+    display: block;
+    width: 36px;
+    height: 3px;
+    margin: 3px auto 0;
+    border-radius: 2px;
+    background: #6b818c;
   }
 `;
 
@@ -218,15 +245,19 @@ function AttributeValue({ value }) {
 }
 
 
+const DEFAULT_LOG_HEIGHT = 220;
+
 function DeviceLogPane({ deviceName, open }) {
   const [lines, setLines] = React.useState([]);
   const [available, setAvailable] = React.useState(false);
   const [reason, setReason] = React.useState(null);
+  const [height, setHeight] = React.useState(DEFAULT_LOG_HEIGHT);
   const preRef = React.useRef(null);
   const stickToBottom = React.useRef(true);
 
   useEffect(() => {
     if (!open) {
+      setHeight(DEFAULT_LOG_HEIGHT);
       return undefined;
     }
     let cancelled = false;
@@ -260,6 +291,22 @@ function DeviceLogPane({ deviceName, open }) {
     stickToBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 24;
   };
 
+  const onResizeStart = (event) => {
+    event.preventDefault();
+    const startY = event.clientY;
+    const startHeight = height;
+    const onMove = (moveEvent) => {
+      const next = startHeight + (moveEvent.clientY - startY);
+      setHeight(Math.max(DEFAULT_LOG_HEIGHT, next));
+    };
+    const onUp = () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    };
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+  };
+
   let emptyMessage = 'Waiting for the first log line…';
   if (!available && reason === 'no_file') {
     emptyMessage = 'No log file yet. It appears once this device is next called.';
@@ -270,13 +317,23 @@ function DeviceLogPane({ deviceName, open }) {
   return (
     <div className="device-detail-log">
       <Typography variant="subtitle2" gutterBottom>Live log</Typography>
-      <pre
-        ref={preRef}
-        className={lines.length > 0 ? 'device-live-log' : 'device-live-log empty'}
-        onScroll={onScroll}
-      >
-        {text}
-      </pre>
+      <div className="device-live-log-wrap">
+        <pre
+          ref={preRef}
+          className={lines.length > 0 ? 'device-live-log' : 'device-live-log empty'}
+          style={{ height }}
+          onScroll={onScroll}
+        >
+          {text}
+        </pre>
+        <div
+          className="device-live-log-resizer"
+          role="separator"
+          aria-orientation="horizontal"
+          aria-label="Drag to make the live log taller"
+          onMouseDown={onResizeStart}
+        />
+      </div>
     </div>
   );
 }
@@ -520,7 +577,7 @@ function OccupiedSamplePositions({ samples }) {
 
 function Devices({ hoverForId }) {
   const [devices, setDevices] = React.useState([]);
-  const [hideIdleDevices, setHideIdleDevices] = React.useState(true);
+  const [hideIdleDevices, setHideIdleDevices] = React.useState(false);
 
   useEffect(() => {
     get_status().then(data => {

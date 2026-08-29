@@ -38,7 +38,66 @@ function experimentCanBeCancelled(status) {
   return (status.tasks || []).some((task) => CANCELABLE_TASK_STATUSES.has(task.status));
 }
 
-function CancelConfirmDialog({ open, setOpen, type, id, onCancelled }) {
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function waitUntilExperimentsHaveNoLiveTasks(experimentIds, { timeoutMs = 90000, intervalMs = 1000 } = {}) {
+  const deadline = Date.now() + timeoutMs;
+  let latest = [];
+  while (Date.now() < deadline) {
+    latest = await Promise.all((experimentIds || []).map((id) => get_experiment_status(id)));
+    const stillLive = latest.some((status) => !status || experimentCanBeCancelled(status));
+    if (!stillLive) {
+      return latest;
+    }
+    await sleep(intervalMs);
+  }
+  throw new Error("Reset was sent, but some tasks are still finishing. Check the list and try again if needed.");
+}
+
+async function waitUntilExperimentShowsCancelled(experimentId, { timeoutMs = 90000, intervalMs = 1000 } = {}) {
+  const deadline = Date.now() + timeoutMs;
+  let latest = null;
+  while (Date.now() < deadline) {
+    latest = await get_experiment_status(experimentId);
+    if (latest && latest.status === "CANCELLED" && !experimentCanBeCancelled(latest)) {
+      return latest;
+    }
+    await sleep(intervalMs);
+  }
+  throw new Error("Cancel was sent, but the experiment still has live tasks. Check the list and try again if needed.");
+}
+
+async function waitUntilTaskIsNotLive(experimentId, taskId, { timeoutMs = 90000, intervalMs = 1000 } = {}) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    const latest = await get_experiment_status(experimentId);
+    const task = (latest && latest.tasks || []).find((entry) => entry.id === taskId);
+    if (task && !CANCELABLE_TASK_STATUSES.has(task.status)) {
+      return latest;
+    }
+    await sleep(intervalMs);
+  }
+  throw new Error("Cancel was sent, but the task is still live. Check the list and try again if needed.");
+}
+
+function experimentStatusLabel(status) {
+  switch (status) {
+    case "CANCELLED":
+      return "Cancelled — no live tasks";
+    case "ERROR":
+      return "Error";
+    case "COMPLETED":
+      return "Completed";
+    case "RUNNING":
+      return "Running";
+    default:
+      return status || "";
+  }
+}
+
+function CancelConfirmDialog({ open, setOpen, type, id, experimentId, onCancelled }) {
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState(null);
 
@@ -61,25 +120,43 @@ function CancelConfirmDialog({ open, setOpen, type, id, onCancelled }) {
         setError(response.reason || response.errors || "Cancel failed.");
         return;
       }
-      setOpen(false);
-      if (onCancelled) {
-        onCancelled();
+      if (type === "experiment") {
+        await waitUntilExperimentShowsCancelled(id);
+      } else {
+        await waitUntilTaskIsNotLive(experimentId, id);
       }
+      if (onCancelled) {
+        await onCancelled();
+      }
+      await sleep(300);
+      setError(null);
+      setOpen(false);
     } catch (err) {
-      setError(String(err));
+      setError(String(err.message || err));
     } finally {
       setBusy(false);
     }
   };
 
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      disableEscapeKeyDown={busy}
+    >
       <DialogTitle>Cancel {type === "experiment" ? "Experiment" : "Task"}</DialogTitle>
       <DialogContent>
         <DialogContentText>
           Are you sure you want to cancel this {type === "experiment" ? "experiment" : "task"} ({id})?
           Samples stay where they are. Devices booked by queued tasks are released.
         </DialogContentText>
+        {busy && (
+          <DialogContentText sx={{ mt: 2 }}>
+            {type === "experiment"
+              ? "Cancelling… waiting until this experiment shows as Cancelled with no live tasks."
+              : "Cancelling… waiting until this task is no longer live."}
+          </DialogContentText>
+        )}
         {error && (
           <DialogContentText sx={{ mt: 2 }} color="error">
             {error}
@@ -87,9 +164,16 @@ function CancelConfirmDialog({ open, setOpen, type, id, onCancelled }) {
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleCancel} color="error" disabled={busy}>
-          {busy ? "Cancelling…" : "Yes"}
-        </Button>
+        {!busy && (
+          <Button onClick={handleCancel} color="error">
+            Yes
+          </Button>
+        )}
+        {busy && (
+          <Button disabled>
+            Cancelling…
+          </Button>
+        )}
         <Button onClick={handleClose} autoFocus disabled={busy}>
           No
         </Button>
@@ -98,7 +182,7 @@ function CancelConfirmDialog({ open, setOpen, type, id, onCancelled }) {
   );
 }
 
-function Row({ experiment_id, hoverForId, onExperimentCancelled }) {
+function Row({ experiment_id, hoverForId, onExperimentCancelled, refreshEpoch }) {
   const [open, setOpen] = React.useState(false);
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [dialogId, setDialogId] = React.useState("");
@@ -124,12 +208,12 @@ function Row({ experiment_id, hoverForId, onExperimentCancelled }) {
       })
     }, refreshPeriod);
     return () => clearInterval(interval);
-  }, [status.progress, open]);
+  }, [status.progress, open, refreshEpoch, experiment_id]);
 
   const refreshStatus = () => {
-    get_experiment_status(experiment_id).then(nextStatus => {
+    return get_experiment_status(experiment_id).then(nextStatus => {
       setStatus(nextStatus);
-    })
+    });
   };
 
   const handleCancel = (id, type) => {
@@ -146,6 +230,8 @@ function Row({ experiment_id, hoverForId, onExperimentCancelled }) {
         return "error";
       case "COMPLETED":
         return "success";
+      case "CANCELLED":
+        return "inherit";
       default:
         return "warning";
     }
@@ -183,10 +269,11 @@ function Row({ experiment_id, hoverForId, onExperimentCancelled }) {
         setOpen={setDialogOpen}
         type={dialogType}
         id={dialogId}
-        onCancelled={() => {
-          refreshStatus();
+        experimentId={experiment_id}
+        onCancelled={async () => {
+          await refreshStatus();
           if (onExperimentCancelled) {
-            onExperimentCancelled();
+            await onExperimentCancelled();
           }
         }}
       />
@@ -209,25 +296,52 @@ function Row({ experiment_id, hoverForId, onExperimentCancelled }) {
           <Typography variant="body2">{status.id}</Typography>
         </TableCell> */}
 
-        <TableCell align="right">
+        <TableCell align="left">
           <Typography variant="body2">{status.samples.length}</Typography>
         </TableCell>
 
 
-        <TableCell align="right"><Typography variant="body2">{timestampInLocale(status.submitted_at)}</Typography></TableCell>
-        <TableCell align="right">
-          <LinearProgress variant="determinate" value={Math.round(status.progress * 100)} color={progressBarColor()} />
+        <TableCell align="left"><Typography variant="body2">{timestampInLocale(status.submitted_at)}</Typography></TableCell>
+        <TableCell align="center" sx={{ width: 220 }}>
+          <Box
+            sx={{
+              width: "100%",
+              mx: "auto",
+              border: "1px solid",
+              borderColor: "text.primary",
+              borderRadius: "2px",
+              overflow: "hidden",
+              bgcolor: "grey.100",
+              height: 14,
+            }}
+          >
+            <LinearProgress
+              variant="determinate"
+              value={Math.round((status.progress || 0) * 100)}
+              color={progressBarColor()}
+              sx={{
+                height: 14,
+                bgcolor: "transparent",
+                "& .MuiLinearProgress-bar": {
+                  transition: "transform 0.2s linear",
+                },
+              }}
+            />
+          </Box>
+          <Typography variant="caption" color={status.status === "CANCELLED" ? "text.secondary" : "text.primary"}>
+            {experimentStatusLabel(status.status)}
+          </Typography>
         </TableCell>
         {/* <TableCell align="right">{row.protein}</TableCell> */}
 
-        <TableCell align="right">
+        <TableCell align="left">
           <Button
             variant="contained"
             color="error"
             disabled={!experimentCanBeCancelled(status)}
             onClick={() => handleCancel(status.id, "experiment")}
           >
-            Cancel Experiment
+            {status.status === "CANCELLED" ? "Cancelled" : "Cancel Experiment"}
           </Button>
         </TableCell>
       </TableRow>
@@ -339,7 +453,7 @@ function Row({ experiment_id, hoverForId, onExperimentCancelled }) {
   );
 }
 
-function CollapsibleTable({ experiment_ids, hoverForId, onExperimentCancelled }) {
+function CollapsibleTable({ experiment_ids, hoverForId, onExperimentCancelled, refreshEpoch }) {
   return (
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">
@@ -347,15 +461,15 @@ function CollapsibleTable({ experiment_ids, hoverForId, onExperimentCancelled })
           <TableRow>
             <TableCell />
             <TableCell>Name</TableCell>
-            <TableCell align="right"># Samples</TableCell>
-            <TableCell align="right">Submitted At</TableCell>
-            <TableCell align="right">Progress</TableCell>
-            <TableCell align="right">Cancel Exp</TableCell>
+            <TableCell align="left"># Samples</TableCell>
+            <TableCell align="left">Submitted At</TableCell>
+            <TableCell align="center" sx={{ width: 220 }}>Progress</TableCell>
+            <TableCell align="left">Cancel Exp</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {experiment_ids.map((experiment_id) => (
-            <Row key={experiment_id} experiment_id={experiment_id} hoverForId={hoverForId} onExperimentCancelled={onExperimentCancelled} />
+            <Row key={experiment_id} experiment_id={experiment_id} hoverForId={hoverForId} onExperimentCancelled={onExperimentCancelled} refreshEpoch={refreshEpoch} />
           ))}
         </TableBody>
       </Table>
@@ -363,65 +477,79 @@ function CollapsibleTable({ experiment_ids, hoverForId, onExperimentCancelled })
   );
 }
 
-function ResetLabDialog({ open, setOpen, onReset }) {
+function ResetLabDialog({ open, setOpen, experimentIds, onReset }) {
   const [busy, setBusy] = React.useState(false);
-  const [result, setResult] = React.useState(null);
+  const [error, setError] = React.useState(null);
 
   const handleClose = () => {
     if (busy) {
       return;
     }
-    setResult(null);
+    setError(null);
     setOpen(false);
   };
 
   const handleReset = async () => {
     setBusy(true);
-    setResult(null);
+    setError(null);
+    const idsAtStart = [...(experimentIds || [])];
     try {
       const response = await reset_lab();
       if (response.status !== "success") {
-        setResult({ error: response.reason || "Reset lab failed." });
+        setError(response.reason || "Reset lab failed.");
         return;
       }
-      setResult({ data: response.data });
-      onReset();
-    } catch (error) {
-      setResult({ error: String(error) });
+      await waitUntilExperimentsHaveNoLiveTasks(idsAtStart);
+      await onReset();
+      await sleep(300);
+      setError(null);
+      setOpen(false);
+    } catch (err) {
+      setError(String(err.message || err));
     } finally {
       setBusy(false);
     }
   };
 
-  const summary = result && result.data;
-
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      disableEscapeKeyDown={busy}
+    >
       <DialogTitle>Reset lab</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          This cancels every running and queued experiment, dismisses user-input
-          prompts, and releases devices so you can submit again. It does not
-          emergency-stop hardware that is already moving.
+          This cancels every running and queued experiment and releases devices
+          so you can submit again. Cancelled experiments stay on this list,
+          marked cancelled, with no live tasks. It does not dismiss Labman or
+          other maintenance prompts, and it does not emergency-stop hardware
+          that is already moving.
         </DialogContentText>
-        {summary && (
+        {busy && (
           <DialogContentText sx={{ mt: 2 }}>
-            Cancelled {summary.tasks_cancelled} tasks, dismissed {summary.user_inputs_dismissed} prompts,
-            released {summary.devices_released} devices, closed {summary.experiments_closed} experiments.
+            Resetting… waiting until every experiment shows no live tasks.
           </DialogContentText>
         )}
-        {result && result.error && (
+        {error && (
           <DialogContentText sx={{ mt: 2 }} color="error">
-            {result.error}
+            {error}
           </DialogContentText>
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleReset} color="error" disabled={busy}>
-          {busy ? "Resetting…" : "Reset everything"}
-        </Button>
+        {!busy && (
+          <Button onClick={handleReset} color="error">
+            Reset everything
+          </Button>
+        )}
+        {busy && (
+          <Button disabled>
+            Resetting…
+          </Button>
+        )}
         <Button onClick={handleClose} autoFocus disabled={busy}>
-          {summary ? "Close" : "Cancel"}
+          Cancel
         </Button>
       </DialogActions>
     </Dialog>
@@ -431,11 +559,12 @@ function ResetLabDialog({ open, setOpen, onReset }) {
 function Experiments({ hoverForId }) {
   const [experimentIds, setExperimentIds] = React.useState([]);
   const [resetOpen, setResetOpen] = React.useState(false);
+  const [refreshEpoch, setRefreshEpoch] = React.useState(0);
 
-  const refreshExperimentIds = () => {
-    get_experiment_ids().then(ids => {
-      setExperimentIds(ids || []);
-    })
+  const refreshExperimentIds = async () => {
+    const ids = await get_experiment_ids();
+    setExperimentIds(ids || []);
+    setRefreshEpoch((value) => value + 1);
   };
 
   useEffect(() => {
@@ -450,6 +579,7 @@ function Experiments({ hoverForId }) {
         <Button
           variant="contained"
           color="error"
+          disabled={resetOpen}
           onClick={() => setResetOpen(true)}
         >
           Reset lab
@@ -458,9 +588,15 @@ function Experiments({ hoverForId }) {
       <ResetLabDialog
         open={resetOpen}
         setOpen={setResetOpen}
+        experimentIds={experimentIds}
         onReset={refreshExperimentIds}
       />
-      <CollapsibleTable experiment_ids={experimentIds} hoverForId={hoverForId} onExperimentCancelled={refreshExperimentIds} />
+      <CollapsibleTable
+        experiment_ids={experimentIds}
+        hoverForId={hoverForId}
+        onExperimentCancelled={refreshExperimentIds}
+        refreshEpoch={refreshEpoch}
+      />
     </Box>
   );
 }
