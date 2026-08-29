@@ -4,10 +4,56 @@ import pytest
 
 from alab_management.dashboard.manual_control import (
     APPROVE_RELEASE_OPTION,
+    MANUAL_CONTROL_ATTRIBUTE,
     RELEASE_MANUAL_CLAIM_ACTION,
     build_claim_state,
     handle_manual_release_user_input_response,
 )
+from alab_management.dashboard.routes.status import (
+    device_is_manually_claimed,
+    parse_device_status,
+)
+
+
+def test_parse_device_status_manual_control_is_not_occupied():
+    task_id = "abc123"
+    assert (
+        parse_device_status(
+            "OCCUPIED",
+            "RELEASED",
+            {MANUAL_CONTROL_ATTRIBUTE: task_id},
+            task_id=task_id,
+        )
+        == "MANUAL_CONTROL"
+    )
+
+
+def test_parse_device_status_stale_manual_attribute_stays_occupied():
+    assert (
+        parse_device_status(
+            "OCCUPIED",
+            "RELEASED",
+            {MANUAL_CONTROL_ATTRIBUTE: "old-claim"},
+            task_id="workflow-task",
+        )
+        == "OCCUPIED"
+    )
+
+
+def test_device_is_manually_claimed_requires_matching_task():
+    task_id = "abc123"
+    assert device_is_manually_claimed(
+        {
+            "task_id": task_id,
+            "attributes": {MANUAL_CONTROL_ATTRIBUTE: task_id},
+        }
+    )
+    assert not device_is_manually_claimed(
+        {
+            "task_id": "workflow-task",
+            "attributes": {MANUAL_CONTROL_ATTRIBUTE: "abc123"},
+        }
+    )
 
 
 def test_build_claim_state_manual_claim():

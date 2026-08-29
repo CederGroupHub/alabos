@@ -8,15 +8,28 @@ from alab_management.dashboard.lab_views import (
     sample_view,
     task_view,
 )
+from alab_management.dashboard.manual_control import MANUAL_CONTROL_ATTRIBUTE
 from alab_management.utils.data_objects import make_jsonable
 
 status_bp = Blueprint("/status", __name__, url_prefix="/api/status")
+
+
+def device_is_manually_claimed(device: dict[str, Any]) -> bool:
+    """True when Device Control currently holds this device, not a workflow task."""
+    attributes = device.get("attributes") or {}
+    claim_id = attributes.get(MANUAL_CONTROL_ATTRIBUTE)
+    task_id = device.get("task_id")
+    if claim_id in ("", None) or task_id is None:
+        return False
+    return str(task_id) == str(claim_id)
 
 
 def parse_device_status(
     task_status: str,
     pause_status: str,
     attributes: dict[str, Any] | None = None,
+    *,
+    task_id: Any = None,
 ) -> str:
     """Derive the dashboard-facing status string for a device.
 
@@ -25,6 +38,9 @@ def parse_device_status(
     reports ``CONNECTING``, which takes precedence over its pause status: alabos pauses such a
     device itself while it waits, and showing that as a plain ``PAUSED`` would look like an
     operator action and hide the fact that the device is simply not connected yet.
+
+    A Device Control claim that currently occupies the device is ``MANUAL_CONTROL``, so the
+    Devices page does not show the same green Occupied chip as a DASH workflow.
     """
     attributes = attributes or {}
     if attributes.get("disabled"):
@@ -35,6 +51,8 @@ def parse_device_status(
         return "PAUSED"
     if pause_status == "REQUESTED":
         return "PAUSE_REQUESTED"
+    if device_is_manually_claimed({"attributes": attributes, "task_id": task_id}):
+        return "MANUAL_CONTROL"
     return task_status
 
 
@@ -91,7 +109,9 @@ def get_all_status():
                 device["status"],
                 device["pause_status"],
                 device.get("attributes"),
+                task_id=device.get("task_id"),
             ),
+            "manual_claimed": device_is_manually_claimed(device),
             "message": device["message"],
             "task": str(device["task_id"]) if device["task_id"] is not None else "null",
             "attributes": published_attributes(device),

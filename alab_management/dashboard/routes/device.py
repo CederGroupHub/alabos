@@ -54,6 +54,7 @@ def get_device(device_name: str):
             device["status"],
             device["pause_status"],
             device.get("attributes"),
+            task_id=device.get("task_id"),
         ),
         "message": device.get("message", ""),
         "task": str(device["task_id"]) if device.get("task_id") is not None else None,
