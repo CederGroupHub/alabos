@@ -164,6 +164,8 @@ const StyledDevicesDiv = styled.div`
 const DEVICE_ACCENTS = {
   occupiedBg: '#e6f0ef',
   occupiedText: '#2b5b57',
+  manualControlBg: '#ece6f4',
+  manualControlText: '#4d3b73',
   errorBg: '#f4e8ec',
   errorText: '#8c435b',
   pauseRequestedBg: '#f3ece3',
@@ -180,7 +182,99 @@ const DEVICE_ACCENTS = {
 
 const STATUS_LABELS = {
   CONNECTING: 'NOT CONNECTED',
+  MANUAL_CONTROL: 'MANUAL CONTROL',
 };
+
+function isHeldStatus(status) {
+  return status === "OCCUPIED" || status === "MANUAL_CONTROL";
+}
+
+function isDisabledStatus(status) {
+  return status === "DISABLED";
+}
+
+function pinDisabledToBottom(names, byName) {
+  const enabled = names.filter((name) => !isDisabledStatus(byName.get(name)?.status));
+  const disabled = names.filter((name) => isDisabledStatus(byName.get(name)?.status));
+  return [...enabled, ...disabled];
+}
+
+function moveName(names, name, insertAt) {
+  const without = names.filter((entry) => entry !== name);
+  const index = Math.max(0, Math.min(insertAt, without.length));
+  without.splice(index, 0, name);
+  return without;
+}
+
+function lastHeldIndex(names, byName) {
+  for (let index = names.length - 1; index >= 0; index -= 1) {
+    if (isHeldStatus(byName.get(names[index])?.status)) {
+      return index;
+    }
+  }
+  return -1;
+}
+
+function initialDeviceOrder(devices) {
+  const held = [];
+  const rest = [];
+  const disabled = [];
+  devices.forEach((device) => {
+    if (isDisabledStatus(device.status)) {
+      disabled.push(device);
+    } else if (isHeldStatus(device.status)) {
+      held.push(device);
+    } else {
+      rest.push(device);
+    }
+  });
+  return [...held, ...rest, ...disabled];
+}
+
+function mergeDeviceOrder(previousDevices, nextDevices) {
+  const nextByName = new Map(nextDevices.map((device) => [device.name, device]));
+  if (previousDevices.length === 0) {
+    return initialDeviceOrder(nextDevices);
+  }
+
+  const previousByName = new Map(previousDevices.map((device) => [device.name, device]));
+  let names = previousDevices
+    .map((device) => device.name)
+    .filter((name) => nextByName.has(name));
+
+  nextDevices.forEach((device) => {
+    if (!names.includes(device.name)) {
+      names.push(device.name);
+    }
+  });
+
+  names.forEach((name) => {
+    const previous = previousByName.get(name);
+    const next = nextByName.get(name);
+    if (!next) {
+      return;
+    }
+    const fromStatus = previous?.status;
+    const toStatus = next.status;
+    if (fromStatus === toStatus) {
+      return;
+    }
+    if (isHeldStatus(toStatus) && !isHeldStatus(fromStatus)) {
+      names = moveName(names, name, 0);
+      return;
+    }
+    if (toStatus === "IDLE" && fromStatus !== "IDLE") {
+      const without = names.filter((entry) => entry !== name);
+      names = moveName(without, name, lastHeldIndex(without, nextByName) + 1);
+      return;
+    }
+    if (isDisabledStatus(toStatus) && !isDisabledStatus(fromStatus)) {
+      names = moveName(names, name, names.length);
+    }
+  });
+
+  return pinDisabledToBottom(names, nextByName).map((name) => nextByName.get(name));
+}
 
 
 // A device that has not finished connecting is the one state an operator can usually fix from the
@@ -371,6 +465,8 @@ function Row({ device, hoverForId }) {
     switch (device.status) {
       case "OCCUPIED":
         return DEVICE_ACCENTS.occupiedBg;
+      case "MANUAL_CONTROL":
+        return DEVICE_ACCENTS.manualControlBg;
       case "ERROR":
         return DEVICE_ACCENTS.errorBg;
       case "PAUSE_REQUESTED":
@@ -390,6 +486,8 @@ function Row({ device, hoverForId }) {
     switch (task_status) {
       case "OCCUPIED":
         return DEVICE_ACCENTS.occupiedText;
+      case "MANUAL_CONTROL":
+        return DEVICE_ACCENTS.manualControlText;
       case "ERROR":
         return DEVICE_ACCENTS.errorText;
       case "PAUSE_REQUESTED":
@@ -409,6 +507,8 @@ function Row({ device, hoverForId }) {
     switch (task_status) {
       case "OCCUPIED":
         return DEVICE_ACCENTS.occupiedText;
+      case "MANUAL_CONTROL":
+        return DEVICE_ACCENTS.manualControlText;
       case "ERROR":
         return DEVICE_ACCENTS.errorText;
       case "PAUSE_REQUESTED":
@@ -580,15 +680,15 @@ function Devices({ hoverForId }) {
   const [hideIdleDevices, setHideIdleDevices] = React.useState(false);
 
   useEffect(() => {
-    get_status().then(data => {
-      setDevices(data.devices);
-    })
+    const applyStatus = (data) => {
+      const incoming = data?.devices || [];
+      setDevices((previous) => mergeDeviceOrder(previous, incoming));
+    };
+
+    get_status().then(applyStatus);
 
     const interval = setInterval(() => {
-      get_status().then(data => {
-        setDevices(data.devices);
-      })
-
+      get_status().then(applyStatus);
     }, 1000);
     return () => clearInterval(interval);
   }, []);
