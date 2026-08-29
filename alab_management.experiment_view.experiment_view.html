@@ -434,6 +434,7 @@
             <nav aria-label="Page">
                 <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentStatus"><code class="docutils literal notranslate"><span class="pre">ExperimentStatus</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentStatus.CANCELLED"><code class="docutils literal notranslate"><span class="pre">ExperimentStatus.CANCELLED</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentStatus.COMPLETED"><code class="docutils literal notranslate"><span class="pre">ExperimentStatus.COMPLETED</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentStatus.ERROR"><code class="docutils literal notranslate"><span class="pre">ExperimentStatus.ERROR</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentStatus.PENDING"><code class="docutils literal notranslate"><span class="pre">ExperimentStatus.PENDING</span></code></a></li>
@@ -450,6 +451,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentView.update_sample_task_id"><code class="docutils literal notranslate"><span class="pre">ExperimentView.update_sample_task_id()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.dashboard_experiment_status"><code class="docutils literal notranslate"><span class="pre">dashboard_experiment_status()</span></code></a></li>
 </ul>
             </nav>
         </div>
@@ -474,7 +476,13 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">RUNNING</span></code>: The experiment has been submitted and put in the queue</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">COMPLETED</span></code>: The experiment has been completed</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ERROR</span></code>: The experiment has failed somewhere</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CANCELLED</span></code>: The experiment was cancelled and no tasks are still live</p></li>
 </ul>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="alab_management.experiment_view.experiment_view.ExperimentStatus.CANCELLED">
+<span class="sig-name descname"><span class="pre">CANCELLED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#alab_management.experiment_view.experiment_view.ExperimentStatus.CANCELLED" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="alab_management.experiment_view.experiment_view.ExperimentStatus.COMPLETED">
 <span class="sig-name descname"><span class="pre">COMPLETED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#alab_management.experiment_view.experiment_view.ExperimentStatus.COMPLETED" title="Link to this definition">#</a></dt>
@@ -579,6 +587,20 @@ lab manager will add sample id and task id for the samples and tasks.</p>
 
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="alab_management.experiment_view.experiment_view.dashboard_experiment_status">
+<span class="sig-name descname"><span class="pre">dashboard_experiment_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_statuses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stored_status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/experiment_view/experiment_view.html#dashboard_experiment_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.experiment_view.experiment_view.dashboard_experiment_status" title="Link to this definition">#</a></dt>
+<dd><p>Status the Experiments page should show, from the tasks that are actually live.</p>
+<p>A cancelled experiment used to look like <code class="docutils literal notranslate"><span class="pre">ERROR</span></code> because one failed task overrode
+the whole row. If nothing is still running and any task was cancelled, the row is
+<code class="docutils literal notranslate"><span class="pre">CANCELLED</span></code> — finished, not live.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
@@ -628,6 +650,7 @@ lab manager will add sample id and task id for the samples and tasks.</p>
   <nav class="bd-toc-nav page-toc">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentStatus"><code class="docutils literal notranslate"><span class="pre">ExperimentStatus</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentStatus.CANCELLED"><code class="docutils literal notranslate"><span class="pre">ExperimentStatus.CANCELLED</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentStatus.COMPLETED"><code class="docutils literal notranslate"><span class="pre">ExperimentStatus.COMPLETED</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentStatus.ERROR"><code class="docutils literal notranslate"><span class="pre">ExperimentStatus.ERROR</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentStatus.PENDING"><code class="docutils literal notranslate"><span class="pre">ExperimentStatus.PENDING</span></code></a></li>
@@ -644,6 +667,7 @@ lab manager will add sample id and task id for the samples and tasks.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentView.update_sample_task_id"><code class="docutils literal notranslate"><span class="pre">ExperimentView.update_sample_task_id()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.dashboard_experiment_status"><code class="docutils literal notranslate"><span class="pre">dashboard_experiment_status()</span></code></a></li>
 </ul>
   </nav></div>
 

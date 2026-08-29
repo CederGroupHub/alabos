@@ -448,10 +448,10 @@
   <section id="module-alab_management.experiment_cancel">
 <span id="alab-management-experiment-cancel-module"></span><h1>alab_management.experiment_cancel module<a class="headerlink" href="#module-alab_management.experiment_cancel" title="Link to this heading">#</a></h1>
 <p>Cancel one experiment and free only that experiment’s software bookings.</p>
-<p>This is the dashboard Cancel button. It marks the experiment’s tasks for
-cancellation, dismisses that experiment’s user-input prompts, cancels its
-pending resource requests, and closes the experiment once every task is
-terminal.</p>
+<p>This is the dashboard Cancel button. It force-cancels that experiment’s live
+tasks (the same write Reset lab uses, scoped to this experiment), dismisses
+its user-input prompts, cancels its pending resource requests, releases its
+devices and positions, and marks the experiment Cancelled.</p>
 <p>It does not emergency-stop hardware that is already moving, and it does not
 touch other experiments. Use Reset lab when the whole lab is stuck.</p>
 <dl class="py function">

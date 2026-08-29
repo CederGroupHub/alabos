@@ -563,17 +563,25 @@
             <span class="n">task_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">task</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">]</span> <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">experiment</span><span class="p">[</span><span class="s2">"tasks"</span><span class="p">]]</span>
 
             <span class="c1"># if all the tasks of an experiment have been finished</span>
+            <span class="n">task_statuses</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="n">task_ids</span>
+            <span class="p">]</span>
             <span class="k">if</span> <span class="nb">all</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span>
+                <span class="n">status</span>
                 <span class="ow">in</span> <span class="p">{</span>
                     <span class="n">TaskStatus</span><span class="o">.</span><span class="n">COMPLETED</span><span class="p">,</span>
                     <span class="n">TaskStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span>
                     <span class="n">TaskStatus</span><span class="o">.</span><span class="n">CANCELLED</span><span class="p">,</span>
                 <span class="p">}</span>
-                <span class="k">for</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="n">task_ids</span>
+                <span class="k">for</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">task_statuses</span>
             <span class="p">):</span>
+                <span class="n">finished_status</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">CANCELLED</span>
+                    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">status</span> <span class="ow">is</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">CANCELLED</span> <span class="k">for</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">task_statuses</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">COMPLETED</span>
+                <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span><span class="n">update_experiment_status</span><span class="p">(</span>
-                    <span class="n">exp_id</span><span class="o">=</span><span class="n">experiment</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">],</span> <span class="n">status</span><span class="o">=</span><span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">COMPLETED</span>
+                    <span class="n">exp_id</span><span class="o">=</span><span class="n">experiment</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">],</span> <span class="n">status</span><span class="o">=</span><span class="n">finished_status</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">system_log</span><span class="p">(</span>
                     <span class="n">level</span><span class="o">=</span><span class="s2">"DEBUG"</span><span class="p">,</span>

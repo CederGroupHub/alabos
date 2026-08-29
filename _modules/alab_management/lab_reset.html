@@ -458,7 +458,7 @@
     <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
 
     <span class="n">tasks_cancelled</span> <span class="o">=</span> <span class="n">_cancel_live_tasks</span><span class="p">(</span><span class="n">task_view</span><span class="p">,</span> <span class="n">now</span><span class="p">)</span>
-    <span class="n">user_inputs_dismissed</span> <span class="o">=</span> <span class="n">_dismiss_pending_user_inputs</span><span class="p">(</span><span class="n">user_input_view</span><span class="p">,</span> <span class="n">now</span><span class="p">)</span>
+    <span class="n">user_inputs_dismissed</span> <span class="o">=</span> <span class="n">_dismiss_pending_experiment_user_inputs</span><span class="p">(</span><span class="n">user_input_view</span><span class="p">,</span> <span class="n">now</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">settle_s</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">settle_s</span><span class="p">)</span>
     <span class="n">_drop_resource_locks</span><span class="p">()</span>
@@ -522,9 +522,16 @@
         <span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_dismiss_pending_user_inputs</span><span class="p">(</span><span class="n">user_input_view</span><span class="p">:</span> <span class="n">UserInputView</span><span class="p">,</span> <span class="n">now</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_dismiss_pending_experiment_user_inputs</span><span class="p">(</span>
+    <span class="n">user_input_view</span><span class="p">:</span> <span class="n">UserInputView</span><span class="p">,</span> <span class="n">now</span><span class="p">:</span> <span class="n">datetime</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Dismiss prompts that belong to an experiment, not Labman/maintenance refill requests."""</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">user_input_view</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">update_many</span><span class="p">(</span>
-        <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">value</span><span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="s2">"request_context.experiment_id"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$exists"</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+            <span class="s2">"request_context.maintenance"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$ne"</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+        <span class="p">},</span>
         <span class="p">{</span>
             <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
                 <span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">FULLFILLED</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
@@ -611,7 +618,7 @@
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="n">experiments</span><span class="p">:</span>
             <span class="n">experiment_view</span><span class="o">.</span><span class="n">update_experiment_status</span><span class="p">(</span>
-                <span class="n">exp_id</span><span class="o">=</span><span class="n">experiment</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">],</span> <span class="n">status</span><span class="o">=</span><span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">COMPLETED</span>
+                <span class="n">exp_id</span><span class="o">=</span><span class="n">experiment</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">],</span> <span class="n">status</span><span class="o">=</span><span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">CANCELLED</span>
             <span class="p">)</span>
             <span class="n">closed</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="k">return</span> <span class="n">closed</span>

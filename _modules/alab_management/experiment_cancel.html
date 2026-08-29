@@ -387,10 +387,10 @@
   <h1>Source code for alab_management.experiment_cancel</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Cancel one experiment and free only that experiment's software bookings.</span>
 
-<span class="sd">This is the dashboard Cancel button. It marks the experiment's tasks for</span>
-<span class="sd">cancellation, dismisses that experiment's user-input prompts, cancels its</span>
-<span class="sd">pending resource requests, and closes the experiment once every task is</span>
-<span class="sd">terminal.</span>
+<span class="sd">This is the dashboard Cancel button. It force-cancels that experiment's live</span>
+<span class="sd">tasks (the same write Reset lab uses, scoped to this experiment), dismisses</span>
+<span class="sd">its user-input prompts, cancels its pending resource requests, releases its</span>
+<span class="sd">devices and positions, and marks the experiment Cancelled.</span>
 
 <span class="sd">It does not emergency-stop hardware that is already moving, and it does not</span>
 <span class="sd">touch other experiments. Use Reset lab when the whole lab is stuck.</span>
@@ -406,19 +406,19 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.device_view.device_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">DeviceTaskStatus</span><span class="p">,</span> <span class="n">DeviceView</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.experiment_view.experiment_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExperimentStatus</span><span class="p">,</span> <span class="n">ExperimentView</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.lab_reset</span><span class="w"> </span><span class="kn">import</span> <span class="n">LIVE_TASK_STATUSES</span><span class="p">,</span> <span class="n">_abort_task_actor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.resource_manager.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestStatus</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.sample_view.sample_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">SampleView</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.task_view.task_enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskStatus</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.task_view.task_enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">CancelingProgress</span><span class="p">,</span> <span class="n">TaskStatus</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.task_view.task_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskView</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.user_input</span><span class="w"> </span><span class="kn">import</span> <span class="n">CANCEL_RESPONSE</span><span class="p">,</span> <span class="n">UserInputView</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.data_objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_collection</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="n">TERMINAL_TASK_STATUSES</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">TaskStatus</span><span class="o">.</span><span class="n">COMPLETED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-    <span class="n">TaskStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-    <span class="n">TaskStatus</span><span class="o">.</span><span class="n">CANCELLED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+<span class="n">OPEN_EXPERIMENT_STATUSES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+    <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
 <span class="p">}</span>
 
 
@@ -443,32 +443,19 @@
         <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"task_id"</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="p">]</span>
 
-    <span class="n">tasks_marked</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="n">task_ids</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">task_view</span><span class="o">.</span><span class="n">mark_task_as_canceling</span><span class="p">(</span><span class="n">task_id</span><span class="p">):</span>
-            <span class="n">tasks_marked</span> <span class="o">+=</span> <span class="mi">1</span>
-
+    <span class="n">tasks_cancelled</span> <span class="o">=</span> <span class="n">_force_cancel_experiment_tasks</span><span class="p">(</span><span class="n">task_view</span><span class="p">,</span> <span class="n">task_ids</span><span class="p">,</span> <span class="n">now</span><span class="p">)</span>
     <span class="n">user_inputs_dismissed</span> <span class="o">=</span> <span class="n">user_input_view</span><span class="o">.</span><span class="n">dismiss_pending_requests</span><span class="p">(</span>
         <span class="n">experiment_id</span><span class="o">=</span><span class="n">exp_id</span><span class="p">,</span>
         <span class="n">response</span><span class="o">=</span><span class="n">CANCEL_RESPONSE</span><span class="p">,</span>
         <span class="n">note</span><span class="o">=</span><span class="s2">"Dismissed because the experiment was cancelled."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">resource_requests_cancelled</span> <span class="o">=</span> <span class="n">_cancel_pending_resource_requests</span><span class="p">(</span><span class="n">task_ids</span><span class="p">)</span>
-
-    <span class="n">cancelled_task_ids</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">task_id</span>
-        <span class="k">for</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="n">task_ids</span>
-        <span class="k">if</span> <span class="n">task_view</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">task_id</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">CANCELLED</span><span class="o">.</span><span class="n">name</span>
-    <span class="p">]</span>
-    <span class="n">devices_released</span> <span class="o">=</span> <span class="n">_release_devices_held_by</span><span class="p">(</span><span class="n">device_view</span><span class="p">,</span> <span class="n">cancelled_task_ids</span><span class="p">,</span> <span class="n">now</span><span class="p">)</span>
-    <span class="n">positions_unlocked</span> <span class="o">=</span> <span class="n">_unlock_positions_held_by</span><span class="p">(</span><span class="n">sample_view</span><span class="p">,</span> <span class="n">cancelled_task_ids</span><span class="p">)</span>
-
-    <span class="n">experiment_closed</span> <span class="o">=</span> <span class="n">_close_experiment_if_terminal</span><span class="p">(</span>
-        <span class="n">experiment_view</span><span class="p">,</span> <span class="n">task_view</span><span class="p">,</span> <span class="n">experiment</span><span class="p">,</span> <span class="n">task_ids</span>
-    <span class="p">)</span>
+    <span class="n">devices_released</span> <span class="o">=</span> <span class="n">_release_devices_held_by</span><span class="p">(</span><span class="n">device_view</span><span class="p">,</span> <span class="n">task_ids</span><span class="p">,</span> <span class="n">now</span><span class="p">)</span>
+    <span class="n">positions_unlocked</span> <span class="o">=</span> <span class="n">_unlock_positions_held_by</span><span class="p">(</span><span class="n">sample_view</span><span class="p">,</span> <span class="n">task_ids</span><span class="p">)</span>
+    <span class="n">experiment_closed</span> <span class="o">=</span> <span class="n">_close_experiment</span><span class="p">(</span><span class="n">experiment_view</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
 
     <span class="n">summary</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">"tasks_marked"</span><span class="p">:</span> <span class="n">tasks_marked</span><span class="p">,</span>
+        <span class="s2">"tasks_cancelled"</span><span class="p">:</span> <span class="n">tasks_cancelled</span><span class="p">,</span>
         <span class="s2">"user_inputs_dismissed"</span><span class="p">:</span> <span class="n">user_inputs_dismissed</span><span class="p">,</span>
         <span class="s2">"resource_requests_cancelled"</span><span class="p">:</span> <span class="n">resource_requests_cancelled</span><span class="p">,</span>
         <span class="s2">"devices_released"</span><span class="p">:</span> <span class="n">devices_released</span><span class="p">,</span>
@@ -478,6 +465,38 @@
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Cancelled experiment </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">exp_id</span><span class="p">,</span> <span class="n">summary</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">summary</span></div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_force_cancel_experiment_tasks</span><span class="p">(</span>
+    <span class="n">task_view</span><span class="p">:</span> <span class="n">TaskView</span><span class="p">,</span> <span class="n">task_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">],</span> <span class="n">now</span><span class="p">:</span> <span class="n">datetime</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">task_ids</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="n">live_tasks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+        <span class="n">task_view</span><span class="o">.</span><span class="n">_task_collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">"_id"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$in"</span><span class="p">:</span> <span class="n">task_ids</span><span class="p">},</span>
+                <span class="s2">"status"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$in"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">LIVE_TASK_STATUSES</span><span class="p">)},</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">live_tasks</span><span class="p">:</span>
+        <span class="n">_abort_task_actor</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">live_tasks</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="n">live_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">task</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]</span> <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">live_tasks</span><span class="p">]</span>
+    <span class="n">task_view</span><span class="o">.</span><span class="n">_task_collection</span><span class="o">.</span><span class="n">update_many</span><span class="p">(</span>
+        <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$in"</span><span class="p">:</span> <span class="n">live_ids</span><span class="p">}},</span>
+        <span class="p">{</span>
+            <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">"status"</span><span class="p">:</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">CANCELLED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">"canceling_progress"</span><span class="p">:</span> <span class="n">CancelingProgress</span><span class="o">.</span><span class="n">WORKER_NOTIFIED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Cancelled by experiment cancel."</span><span class="p">,</span>
+                <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">now</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">live_ids</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_cancel_pending_resource_requests</span><span class="p">(</span><span class="n">task_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -521,32 +540,13 @@
     <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">modified_count</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_close_experiment_if_terminal</span><span class="p">(</span>
-    <span class="n">experiment_view</span><span class="p">:</span> <span class="n">ExperimentView</span><span class="p">,</span>
-    <span class="n">task_view</span><span class="p">:</span> <span class="n">TaskView</span><span class="p">,</span>
-    <span class="n">experiment</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-    <span class="n">task_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">],</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">experiment</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="o">==</span> <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">COMPLETED</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_close_experiment</span><span class="p">(</span><span class="n">experiment_view</span><span class="p">:</span> <span class="n">ExperimentView</span><span class="p">,</span> <span class="n">experiment</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">experiment</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">OPEN_EXPERIMENT_STATUSES</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
-
-    <span class="c1"># A PENDING experiment may not have task ids yet. Closing it here is what</span>
-    <span class="c1"># stops Experiment Manager from starting it after Cancel.</span>
-    <span class="k">if</span> <span class="n">experiment</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="o">==</span> <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">name</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">task_ids</span><span class="p">:</span>
-        <span class="n">experiment_view</span><span class="o">.</span><span class="n">update_experiment_status</span><span class="p">(</span>
-            <span class="n">exp_id</span><span class="o">=</span><span class="n">experiment</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">],</span> <span class="n">status</span><span class="o">=</span><span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">COMPLETED</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="kc">True</span>
-
-    <span class="k">if</span> <span class="n">task_ids</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span>
-        <span class="n">task_view</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">task_id</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">TERMINAL_TASK_STATUSES</span>
-        <span class="k">for</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="n">task_ids</span>
-    <span class="p">):</span>
-        <span class="n">experiment_view</span><span class="o">.</span><span class="n">update_experiment_status</span><span class="p">(</span>
-            <span class="n">exp_id</span><span class="o">=</span><span class="n">experiment</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">],</span> <span class="n">status</span><span class="o">=</span><span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">COMPLETED</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="kc">True</span>
-    <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">experiment_view</span><span class="o">.</span><span class="n">update_experiment_status</span><span class="p">(</span>
+        <span class="n">exp_id</span><span class="o">=</span><span class="n">experiment</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">],</span> <span class="n">status</span><span class="o">=</span><span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">CANCELLED</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="kc">True</span>
 </pre></div>
 
                 </article>

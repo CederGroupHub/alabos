@@ -411,12 +411,48 @@
 <span class="sd">    - ``RUNNING``: The experiment has been submitted and put in the queue</span>
 <span class="sd">    - ``COMPLETED``: The experiment has been completed</span>
 <span class="sd">    - ``ERROR``: The experiment has failed somewhere</span>
+<span class="sd">    - ``CANCELLED``: The experiment was cancelled and no tasks are still live</span>
 <span class="sd">    """</span>
 
     <span class="n">PENDING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">RUNNING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">COMPLETED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">ERROR</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
+    <span class="n">ERROR</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">CANCELLED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
+
+
+
+<span class="n">LIVE_TASK_STATUS_NAMES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"WAITING"</span><span class="p">,</span>
+    <span class="s2">"READY"</span><span class="p">,</span>
+    <span class="s2">"INITIATED"</span><span class="p">,</span>
+    <span class="s2">"REQUESTING_RESOURCES"</span><span class="p">,</span>
+    <span class="s2">"RUNNING"</span><span class="p">,</span>
+    <span class="s2">"FINISHING"</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="dashboard_experiment_status">
+<a class="viewcode-back" href="../../../alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.dashboard_experiment_status">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">dashboard_experiment_status</span><span class="p">(</span><span class="n">task_statuses</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">stored_status</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Status the Experiments page should show, from the tasks that are actually live.</span>
+
+<span class="sd">    A cancelled experiment used to look like ``ERROR`` because one failed task overrode</span>
+<span class="sd">    the whole row. If nothing is still running and any task was cancelled, the row is</span>
+<span class="sd">    ``CANCELLED`` — finished, not live.</span>
+<span class="sd">    """</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">status</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">status</span><span class="p">)</span> <span class="k">for</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">task_statuses</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">name</span> <span class="ow">in</span> <span class="n">LIVE_TASK_STATUS_NAMES</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"ERROR"</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">return</span> <span class="n">stored_status</span>
+    <span class="k">if</span> <span class="n">names</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"COMPLETED"</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">COMPLETED</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"CANCELLED"</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">CANCELLED</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"ERROR"</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">return</span> <span class="n">stored_status</span></div>
 
 
 
@@ -525,7 +561,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">get_experiment</span><span class="p">(</span><span class="n">exp_id</span><span class="o">=</span><span class="n">exp_id</span><span class="p">)</span>
 
         <span class="n">update_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
-        <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">COMPLETED</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="ow">in</span> <span class="p">{</span><span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">COMPLETED</span><span class="p">,</span> <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">CANCELLED</span><span class="p">}:</span>
             <span class="n">update_dict</span><span class="p">[</span><span class="s2">"completed_at"</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
             <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">exp_id</span><span class="p">},</span>
