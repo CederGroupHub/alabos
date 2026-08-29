@@ -8,12 +8,13 @@ import pytest
 from bson import ObjectId
 
 from alab_management.experiment_cancel import cancel_experiment_software_state
+from alab_management.experiment_view.experiment_view import dashboard_experiment_status
 from alab_management.resource_manager.resource_requester import ResourceRequester
 from alab_management.task_view.task import TaskCancelledError
 from alab_management.user_input import CANCEL_RESPONSE, UserInputView, UserRequestStatus
 
 
-def test_cancel_experiment_keeps_running_experiment_open_until_workers_finish(monkeypatch):
+def test_cancel_experiment_force_cancels_live_tasks_and_closes(monkeypatch):
     exp_id = ObjectId()
     waiting_task_id = ObjectId()
     running_task_id = ObjectId()
@@ -25,14 +26,15 @@ def test_cancel_experiment_keeps_running_experiment_open_until_workers_finish(mo
             {"task_id": running_task_id},
         ],
     }
-    statuses = {
-        waiting_task_id: SimpleNamespace(name="CANCELLED"),
-        running_task_id: SimpleNamespace(name="RUNNING"),
-    }
+    live_tasks = [
+        {"_id": waiting_task_id, "task_actor_id": None},
+        {"_id": running_task_id, "task_actor_id": "msg-1"},
+    ]
 
+    task_collection = MagicMock()
+    task_collection.find.return_value = live_tasks
     task_view = MagicMock()
-    task_view.mark_task_as_canceling.return_value = True
-    task_view.get_status.side_effect = lambda task_id: statuses[task_id]
+    task_view._task_collection = task_collection
 
     experiment_view = MagicMock()
     experiment_view.get_experiment.return_value = experiment
@@ -41,7 +43,7 @@ def test_cancel_experiment_keeps_running_experiment_open_until_workers_finish(mo
     user_input_view.dismiss_pending_requests.return_value = 1
 
     device_collection = MagicMock()
-    device_collection.update_many.return_value.modified_count = 1
+    device_collection.update_many.return_value.modified_count = 2
     sample_positions = MagicMock()
     sample_positions.update_many.return_value.modified_count = 2
     requests = MagicMock()
@@ -65,22 +67,27 @@ def test_cancel_experiment_keeps_running_experiment_open_until_workers_finish(mo
     monkeypatch.setattr(
         "alab_management.experiment_cancel.get_collection", lambda name: requests
     )
+    abort = MagicMock()
+    monkeypatch.setattr("alab_management.experiment_cancel._abort_task_actor", abort)
 
     summary = cancel_experiment_software_state(exp_id)
 
-    assert summary["tasks_marked"] == 2
+    assert summary["tasks_cancelled"] == 2
     assert summary["user_inputs_dismissed"] == 1
     assert summary["resource_requests_cancelled"] == 3
-    assert summary["devices_released"] == 1
+    assert summary["devices_released"] == 2
     assert summary["positions_unlocked"] == 2
-    assert summary["experiment_closed"] is False
-    experiment_view.update_experiment_status.assert_not_called()
+    assert summary["experiment_closed"] is True
+    experiment_view.update_experiment_status.assert_called_once()
     user_input_view.dismiss_pending_requests.assert_called_once()
     assert user_input_view.dismiss_pending_requests.call_args.kwargs["experiment_id"] == exp_id
     device_collection.update_many.assert_called_once()
     assert device_collection.update_many.call_args.args[0]["task_id"]["$in"] == [
-        waiting_task_id
+        waiting_task_id,
+        running_task_id,
     ]
+    assert abort.call_count == 2
+    task_collection.update_many.assert_called_once()
 
 
 def test_cancel_experiment_closes_when_every_task_is_terminal(monkeypatch):
@@ -92,9 +99,10 @@ def test_cancel_experiment_closes_when_every_task_is_terminal(monkeypatch):
         "tasks": [{"task_id": task_id}],
     }
 
+    task_collection = MagicMock()
+    task_collection.find.return_value = [{"_id": task_id, "task_actor_id": None}]
     task_view = MagicMock()
-    task_view.mark_task_as_canceling.return_value = True
-    task_view.get_status.return_value = SimpleNamespace(name="CANCELLED")
+    task_view._task_collection = task_collection
 
     experiment_view = MagicMock()
     experiment_view.get_experiment.return_value = experiment
@@ -119,6 +127,7 @@ def test_cancel_experiment_closes_when_every_task_is_terminal(monkeypatch):
         "alab_management.experiment_cancel.get_collection",
         lambda name: SimpleNamespace(update_many=lambda *args, **kwargs: SimpleNamespace(modified_count=0)),
     )
+    monkeypatch.setattr("alab_management.experiment_cancel._abort_task_actor", MagicMock())
 
     summary = cancel_experiment_software_state(exp_id)
 
@@ -156,7 +165,7 @@ def test_cancel_pending_experiment_without_task_ids(monkeypatch):
 
     summary = cancel_experiment_software_state(exp_id)
 
-    assert summary["tasks_marked"] == 0
+    assert summary["tasks_cancelled"] == 0
     assert summary["experiment_closed"] is True
 
 
@@ -254,3 +263,16 @@ def test_get_concurrent_result_returns_when_fulfilled(monkeypatch):
     )
 
     assert requester.get_concurrent_result(future)["devices"] == {}
+
+
+def test_dashboard_status_shows_cancelled_when_nothing_is_live():
+    assert (
+        dashboard_experiment_status(
+            ["ERROR", "CANCELLED", "CANCELLED"], "COMPLETED"
+        )
+        == "CANCELLED"
+    )
+    assert dashboard_experiment_status(["COMPLETED", "COMPLETED"], "COMPLETED") == "COMPLETED"
+    assert dashboard_experiment_status(["ERROR", "ERROR"], "COMPLETED") == "ERROR"
+    assert dashboard_experiment_status(["RUNNING", "ERROR"], "RUNNING") == "ERROR"
+    assert dashboard_experiment_status(["RUNNING", "WAITING"], "RUNNING") == "RUNNING"

@@ -166,17 +166,25 @@ class ExperimentManager:
             task_ids = [task["task_id"] for task in experiment["tasks"]]
 
             # if all the tasks of an experiment have been finished
+            task_statuses = [
+                self.task_view.get_status(task_id=task_id) for task_id in task_ids
+            ]
             if all(
-                self.task_view.get_status(task_id=task_id)
+                status
                 in {
                     TaskStatus.COMPLETED,
                     TaskStatus.ERROR,
                     TaskStatus.CANCELLED,
                 }
-                for task_id in task_ids
+                for status in task_statuses
             ):
+                finished_status = (
+                    ExperimentStatus.CANCELLED
+                    if any(status is TaskStatus.CANCELLED for status in task_statuses)
+                    else ExperimentStatus.COMPLETED
+                )
                 self.experiment_view.update_experiment_status(
-                    exp_id=experiment["_id"], status=ExperimentStatus.COMPLETED
+                    exp_id=experiment["_id"], status=finished_status
                 )
                 self.logger.system_log(
                     level="DEBUG",

@@ -9,7 +9,10 @@ from pydantic import ValidationError
 
 from alab_management.dashboard.lab_views import experiment_view, sample_view, task_view
 from alab_management.experiment_view.experiment import InputExperiment
-from alab_management.experiment_view.experiment_view import ExperimentStatus
+from alab_management.experiment_view.experiment_view import (
+    ExperimentStatus,
+    dashboard_experiment_status,
+)
 from alab_management.task_view.task_enums import TaskStatus
 from alab_management.utils.data_objects import make_jsonable
 
@@ -63,7 +66,12 @@ def get_experiment_progress(exp_id: str):
 def get_overview():
     """Get id for all experiments that are running or completed."""
     experiment_ids = []
-    for status in [ExperimentStatus.RUNNING, ExperimentStatus.COMPLETED]:
+    for status in [
+        ExperimentStatus.RUNNING,
+        ExperimentStatus.COMPLETED,
+        ExperimentStatus.CANCELLED,
+        ExperimentStatus.ERROR,
+    ]:
         experiments = experiment_view.get_experiments_with_status(status)
         experiment_ids.extend(
             [
@@ -87,7 +95,7 @@ def query_experiment(exp_id: str):
     if experiment is None:
         return {"status": "error", "errors": "Cannot find experiment with this exp id"}
 
-    progress, error_state = get_experiment_progress(exp_id)
+    progress, _error_state = get_experiment_progress(exp_id)
 
     return_dict = {
         "id": str(experiment["_id"]),
@@ -111,9 +119,7 @@ def query_experiment(exp_id: str):
         ],
         "tasks": [],
         "progress": progress,
-        "status": (
-            experiment["status"] if not error_state else ExperimentStatus.ERROR.name
-        ),
+        "status": experiment["status"],
     }
 
     for task in experiment["tasks"]:
@@ -126,6 +132,10 @@ def query_experiment(exp_id: str):
                 "message": task_entry.get("message", ""),
             }
         )
+    return_dict["status"] = dashboard_experiment_status(
+        [task["status"] for task in return_dict["tasks"]],
+        experiment["status"],
+    )
     return return_dict
 
 

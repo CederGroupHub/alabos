@@ -22,12 +22,45 @@ class ExperimentStatus(Enum):
     - ``RUNNING``: The experiment has been submitted and put in the queue
     - ``COMPLETED``: The experiment has been completed
     - ``ERROR``: The experiment has failed somewhere
+    - ``CANCELLED``: The experiment was cancelled and no tasks are still live
     """
 
     PENDING = auto()
     RUNNING = auto()
     COMPLETED = auto()
     ERROR = auto()
+    CANCELLED = auto()
+
+
+LIVE_TASK_STATUS_NAMES = {
+    "WAITING",
+    "READY",
+    "INITIATED",
+    "REQUESTING_RESOURCES",
+    "RUNNING",
+    "FINISHING",
+}
+
+
+def dashboard_experiment_status(task_statuses: list[str], stored_status: str) -> str:
+    """Status the Experiments page should show, from the tasks that are actually live.
+
+    A cancelled experiment used to look like ``ERROR`` because one failed task overrode
+    the whole row. If nothing is still running and any task was cancelled, the row is
+    ``CANCELLED`` — finished, not live.
+    """
+    names = [status.name if hasattr(status, "name") else str(status) for status in task_statuses]
+    if any(name in LIVE_TASK_STATUS_NAMES for name in names):
+        if any(name == "ERROR" for name in names):
+            return ExperimentStatus.ERROR.name
+        return stored_status
+    if names and all(name == "COMPLETED" for name in names):
+        return ExperimentStatus.COMPLETED.name
+    if any(name == "CANCELLED" for name in names):
+        return ExperimentStatus.CANCELLED.name
+    if any(name == "ERROR" for name in names):
+        return ExperimentStatus.ERROR.name
+    return stored_status
 
 
 class ExperimentView:
@@ -122,7 +155,7 @@ class ExperimentView:
         self.get_experiment(exp_id=exp_id)
 
         update_dict = {"status": status.name}
-        if status == ExperimentStatus.COMPLETED:
+        if status in {ExperimentStatus.COMPLETED, ExperimentStatus.CANCELLED}:
             update_dict["completed_at"] = datetime.now()
         self._experiment_collection.update_one(
             {"_id": exp_id},

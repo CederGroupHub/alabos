@@ -5,6 +5,7 @@ from unittest.mock import MagicMock
 
 from bson import ObjectId
 
+from alab_management.experiment_view.experiment_view import ExperimentStatus
 from alab_management.lab_reset import reset_lab_software_state
 
 
@@ -41,7 +42,6 @@ def test_reset_lab_software_state_cancels_and_releases(monkeypatch):
         [{"_id": experiment_id}],
         [],
     ]
-
     lock_collection = MagicMock()
     requests_collection = MagicMock()
 
@@ -82,4 +82,11 @@ def test_reset_lab_software_state_cancels_and_releases(monkeypatch):
     lock_collection.drop.assert_called_once()
     requests_collection.drop.assert_called_once()
     experiment_view.update_experiment_status.assert_called_once()
+    assert (
+        experiment_view.update_experiment_status.call_args.kwargs["status"]
+        == ExperimentStatus.CANCELLED
+    )
+    dismiss_filter = user_input_collection.update_many.call_args.args[0]
+    assert dismiss_filter["request_context.experiment_id"] == {"$exists": True}
+    assert dismiss_filter["request_context.maintenance"] == {"$ne": True}
     assert device_collection.update_one.call_count == 2

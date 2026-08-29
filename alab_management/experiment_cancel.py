@@ -1,9 +1,9 @@
 """Cancel one experiment and free only that experiment's software bookings.
 
-This is the dashboard Cancel button. It marks the experiment's tasks for
-cancellation, dismisses that experiment's user-input prompts, cancels its
-pending resource requests, and closes the experiment once every task is
-terminal.
+This is the dashboard Cancel button. It force-cancels that experiment's live
+tasks (the same write Reset lab uses, scoped to this experiment), dismisses
+its user-input prompts, cancels its pending resource requests, releases its
+devices and positions, and marks the experiment Cancelled.
 
 It does not emergency-stop hardware that is already moving, and it does not
 touch other experiments. Use Reset lab when the whole lab is stuck.
@@ -19,19 +19,19 @@ from bson import ObjectId
 
 from alab_management.device_view.device_view import DeviceTaskStatus, DeviceView
 from alab_management.experiment_view.experiment_view import ExperimentStatus, ExperimentView
+from alab_management.lab_reset import LIVE_TASK_STATUSES, _abort_task_actor
 from alab_management.resource_manager.enums import RequestStatus
 from alab_management.sample_view.sample_view import SampleView
-from alab_management.task_view.task_enums import TaskStatus
+from alab_management.task_view.task_enums import CancelingProgress, TaskStatus
 from alab_management.task_view.task_view import TaskView
 from alab_management.user_input import CANCEL_RESPONSE, UserInputView
 from alab_management.utils.data_objects import get_collection
 
 logger = logging.getLogger(__name__)
 
-TERMINAL_TASK_STATUSES = {
-    TaskStatus.COMPLETED.name,
-    TaskStatus.ERROR.name,
-    TaskStatus.CANCELLED.name,
+OPEN_EXPERIMENT_STATUSES = {
+    ExperimentStatus.PENDING.name,
+    ExperimentStatus.RUNNING.name,
 }
 
 
@@ -54,32 +54,19 @@ def cancel_experiment_software_state(exp_id: ObjectId) -> dict[str, Any]:
         if task.get("task_id") is not None
     ]
 
-    tasks_marked = 0
-    for task_id in task_ids:
-        if task_view.mark_task_as_canceling(task_id):
-            tasks_marked += 1
-
+    tasks_cancelled = _force_cancel_experiment_tasks(task_view, task_ids, now)
     user_inputs_dismissed = user_input_view.dismiss_pending_requests(
         experiment_id=exp_id,
         response=CANCEL_RESPONSE,
         note="Dismissed because the experiment was cancelled.",
     )
     resource_requests_cancelled = _cancel_pending_resource_requests(task_ids)
-
-    cancelled_task_ids = [
-        task_id
-        for task_id in task_ids
-        if task_view.get_status(task_id).name == TaskStatus.CANCELLED.name
-    ]
-    devices_released = _release_devices_held_by(device_view, cancelled_task_ids, now)
-    positions_unlocked = _unlock_positions_held_by(sample_view, cancelled_task_ids)
-
-    experiment_closed = _close_experiment_if_terminal(
-        experiment_view, task_view, experiment, task_ids
-    )
+    devices_released = _release_devices_held_by(device_view, task_ids, now)
+    positions_unlocked = _unlock_positions_held_by(sample_view, task_ids)
+    experiment_closed = _close_experiment(experiment_view, experiment)
 
     summary = {
-        "tasks_marked": tasks_marked,
+        "tasks_cancelled": tasks_cancelled,
         "user_inputs_dismissed": user_inputs_dismissed,
         "resource_requests_cancelled": resource_requests_cancelled,
         "devices_released": devices_released,
@@ -88,6 +75,38 @@ def cancel_experiment_software_state(exp_id: ObjectId) -> dict[str, Any]:
     }
     logger.info("Cancelled experiment %s: %s", exp_id, summary)
     return summary
+
+
+def _force_cancel_experiment_tasks(
+    task_view: TaskView, task_ids: list[ObjectId], now: datetime
+) -> int:
+    if not task_ids:
+        return 0
+    live_tasks = list(
+        task_view._task_collection.find(
+            {
+                "_id": {"$in": task_ids},
+                "status": {"$in": list(LIVE_TASK_STATUSES)},
+            }
+        )
+    )
+    for task in live_tasks:
+        _abort_task_actor(task)
+    if not live_tasks:
+        return 0
+    live_ids = [task["_id"] for task in live_tasks]
+    task_view._task_collection.update_many(
+        {"_id": {"$in": live_ids}},
+        {
+            "$set": {
+                "status": TaskStatus.CANCELLED.name,
+                "canceling_progress": CancelingProgress.WORKER_NOTIFIED.name,
+                "message": "Cancelled by experiment cancel.",
+                "last_updated": now,
+            }
+        },
+    )
+    return len(live_ids)
 
 
 def _cancel_pending_resource_requests(task_ids: list[ObjectId]) -> int:
@@ -131,29 +150,10 @@ def _unlock_positions_held_by(sample_view: SampleView, task_ids: list[ObjectId])
     return result.modified_count
 
 
-def _close_experiment_if_terminal(
-    experiment_view: ExperimentView,
-    task_view: TaskView,
-    experiment: dict[str, Any],
-    task_ids: list[ObjectId],
-) -> bool:
-    if experiment["status"] == ExperimentStatus.COMPLETED.name:
+def _close_experiment(experiment_view: ExperimentView, experiment: dict[str, Any]) -> bool:
+    if experiment["status"] not in OPEN_EXPERIMENT_STATUSES:
         return False
-
-    # A PENDING experiment may not have task ids yet. Closing it here is what
-    # stops Experiment Manager from starting it after Cancel.
-    if experiment["status"] == ExperimentStatus.PENDING.name and not task_ids:
-        experiment_view.update_experiment_status(
-            exp_id=experiment["_id"], status=ExperimentStatus.COMPLETED
-        )
-        return True
-
-    if task_ids and all(
-        task_view.get_status(task_id).name in TERMINAL_TASK_STATUSES
-        for task_id in task_ids
-    ):
-        experiment_view.update_experiment_status(
-            exp_id=experiment["_id"], status=ExperimentStatus.COMPLETED
-        )
-        return True
-    return False
+    experiment_view.update_experiment_status(
+        exp_id=experiment["_id"], status=ExperimentStatus.CANCELLED
+    )
+    return True

@@ -69,7 +69,7 @@ def reset_lab_software_state(*, settle_s: float = DEFAULT_SETTLE_S) -> dict[str,
     now = datetime.now()
 
     tasks_cancelled = _cancel_live_tasks(task_view, now)
-    user_inputs_dismissed = _dismiss_pending_user_inputs(user_input_view, now)
+    user_inputs_dismissed = _dismiss_pending_experiment_user_inputs(user_input_view, now)
     if settle_s > 0:
         time.sleep(settle_s)
     _drop_resource_locks()
@@ -132,9 +132,16 @@ def _abort_task_actor(task: dict[str, Any]) -> None:
         )
 
 
-def _dismiss_pending_user_inputs(user_input_view: UserInputView, now: datetime) -> int:
+def _dismiss_pending_experiment_user_inputs(
+    user_input_view: UserInputView, now: datetime
+) -> int:
+    """Dismiss prompts that belong to an experiment, not Labman/maintenance refill requests."""
     result = user_input_view._input_collection.update_many(
-        {"status": UserRequestStatus.PENDING.value},
+        {
+            "status": UserRequestStatus.PENDING.value,
+            "request_context.experiment_id": {"$exists": True},
+            "request_context.maintenance": {"$ne": True},
+        },
         {
             "$set": {
                 "status": UserRequestStatus.FULLFILLED.value,
@@ -221,7 +228,7 @@ def _close_open_experiments(experiment_view: ExperimentView) -> int:
         )
         for experiment in experiments:
             experiment_view.update_experiment_status(
-                exp_id=experiment["_id"], status=ExperimentStatus.COMPLETED
+                exp_id=experiment["_id"], status=ExperimentStatus.CANCELLED
             )
             closed += 1
     return closed
