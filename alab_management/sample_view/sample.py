@@ -15,8 +15,8 @@ class Sample:
     - ``sample_id``: the unique id of a sample in the database
     - ``task_id``: the unique id of a task that currently "owns" (is processing) this sample
     - ``name``: the name of this sample
-    - ``position``: current position of the sample in the lab. if None, the sample has not been initialized
-      in the lab
+    - ``position``: current booked occupancy in the lab. It is None when occupancy has been released,
+      the sample has not been placed, or the sample was removed from the lab.
     """
 
     sample_id: ObjectId
@@ -36,6 +36,15 @@ class Sample:
     # cleared once set, so the "last known location" is always available. compare/hash are disabled to
     # preserve existing Sample equality semantics.
     last_position: str | None = field(default=None, compare=False, hash=False)
+    location_state: str = field(default="unknown", compare=False, hash=False)
+    location_history: list[dict[str, Any]] = field(
+        default_factory=list, compare=False, hash=False
+    )
+
+    @property
+    def last_known_position(self) -> str | None:
+        """Return the most recently recorded physical sample position."""
+        return self.last_position
 
 
 @dataclass(frozen=True)

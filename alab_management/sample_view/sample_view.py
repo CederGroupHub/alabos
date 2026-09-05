@@ -2,7 +2,8 @@
 
 import re
 import time
-from datetime import datetime
+import warnings
+from datetime import datetime, timezone
 from enum import Enum, auto
 from typing import Any, cast
 
@@ -387,6 +388,9 @@ class SampleView:
         sample_id: ObjectId | None = None,
         tags: list[str] | None = None,
         metadata: dict[str, Any] | None = None,
+        *,
+        actor: str = "alabos",
+        reason: str | None = None,
     ) -> ObjectId:
         """
         Create a sample and return its uid in the database.
@@ -407,24 +411,40 @@ class SampleView:
                 f"Unsupported sample name: {name}. "
                 f"Sample name should not contain '.' or '$'"
             )
+        sample_id = sample_id or ObjectId()
+        now = datetime.now(timezone.utc)
+        location_history = []
+        if position is not None:
+            location_history.append(
+                self._location_event(
+                    sample_id=sample_id,
+                    event_type="placed",
+                    position=position,
+                    destination=position,
+                    actor=actor,
+                    reason=reason,
+                    timestamp=now,
+                )
+            )
         entry = {
+            "_id": sample_id,
             "name": name,
             "tags": tags or [],
             "metadata": metadata or {},
             "position": position,
             "last_position": position,
+            "location_state": "present" if position is not None else "unknown",
+            "location_history": location_history,
             "task_id": None,
             "in_transit": None,
-            "created_at": datetime.now(),
-            "last_updated": datetime.now(),
+            "created_at": now,
+            "last_updated": now,
         }
-        if sample_id:
-            if not isinstance(sample_id, ObjectId):
-                raise ValueError(
-                    f"User provided {sample_id} as the sample_id -- this is not a valid ObjectId, so this sample "
-                    f"cannot be created in the database!"
-                )
-            entry["_id"] = sample_id
+        if not isinstance(sample_id, ObjectId):
+            raise ValueError(
+                f"User provided {sample_id} as the sample_id -- this is not a valid ObjectId, so this sample "
+                f"cannot be created in the database!"
+            )
 
         result = self._sample_collection.insert_one(entry)
         # Wait until the sample is created
@@ -459,6 +479,10 @@ class SampleView:
             tags=result.get("tags", []),
             in_transit=result.get("in_transit"),
             last_position=result.get("last_position", result.get("position")),
+            location_state=result.get(
+                "location_state", self._infer_location_state(result)
+            ),
+            location_history=result.get("location_history", []),
         )
 
     def update_sample_task_id(self, sample_id: ObjectId, task_id: ObjectId | None):
@@ -490,7 +514,76 @@ class SampleView:
             {"$set": update_dict},
         )
 
-    def move_sample(self, sample_id: ObjectId, position: str | None):
+    @staticmethod
+    def _infer_location_state(sample: dict[str, Any]) -> str:
+        if sample.get("in_transit") is not None:
+            return "in_transit"
+        if sample.get("position") is not None:
+            return "present"
+        if sample.get("last_position") is not None:
+            return "unconfirmed"
+        return "unknown"
+
+    @staticmethod
+    def _location_event(
+        *,
+        sample_id: ObjectId,
+        event_type: str,
+        position: str | None = None,
+        source: str | None = None,
+        destination: str | None = None,
+        task_id: ObjectId | None = None,
+        task_type: str | None = None,
+        actor: str = "alabos",
+        reason: str | None = None,
+        timestamp: datetime | None = None,
+    ) -> dict[str, Any]:
+        return {
+            "timestamp": timestamp or datetime.now(timezone.utc),
+            "event_type": event_type,
+            "sample_id": sample_id,
+            "position": position,
+            "source": source,
+            "destination": destination,
+            "task_id": task_id,
+            "task_type": task_type,
+            "actor": actor,
+            "reason": reason,
+        }
+
+    def _update_location(
+        self,
+        *,
+        sample_id: ObjectId,
+        previous: dict[str, Any],
+        update_fields: dict[str, Any],
+        event: dict[str, Any],
+    ):
+        """Update cached location and append its event as one guarded write."""
+        result = self._sample_collection.update_one(
+            {
+                "_id": sample_id,
+                "position": previous.get("position"),
+                "in_transit": previous.get("in_transit"),
+            },
+            {"$set": update_fields, "$push": {"location_history": event}},
+        )
+        if result.modified_count != 1:
+            raise RuntimeError(
+                f"Sample {sample_id} changed while its location was being updated. "
+                "Refresh the sample and retry the operation."
+            )
+
+    def move_sample(
+        self,
+        sample_id: ObjectId,
+        position: str | None,
+        *,
+        task_id: ObjectId | None = None,
+        task_type: str | None = None,
+        actor: str = "alabos",
+        reason: str | None = None,
+    ):
         """Update the sample with new position.
 
         A successful move also clears any ``in_transit`` record, since the sample has arrived at a
@@ -500,12 +593,48 @@ class SampleView:
         if result is None:
             raise ValueError(f"Cannot find sample with id: {sample_id}")
 
+        if position is None:
+            warnings.warn(
+                "move_sample(..., None) is deprecated; use release_sample_occupancy() "
+                "or remove_sample_from_lab() instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            self.release_sample_occupancy(
+                sample_id,
+                task_id=task_id,
+                task_type=task_type,
+                actor=actor,
+                reason=reason or "Deprecated move_sample(..., None) call",
+            )
+            return
+
         if result["position"] == position:
             # Position unchanged, but the sample is now at rest: clear any stale in-transit record.
             if result.get("in_transit") is not None:
-                self._sample_collection.update_one(
-                    {"_id": sample_id},
-                    {"$set": {"in_transit": None, "last_updated": datetime.now()}},
+                transit = result["in_transit"]
+                now = datetime.now(timezone.utc)
+                self._update_location(
+                    sample_id=sample_id,
+                    previous=result,
+                    update_fields={
+                        "in_transit": None,
+                        "last_position": position,
+                        "location_state": "present",
+                        "last_updated": now,
+                    },
+                    event=self._location_event(
+                        sample_id=sample_id,
+                        event_type="arrived",
+                        position=position,
+                        source=transit.get("source"),
+                        destination=position,
+                        task_id=task_id,
+                        task_type=task_type,
+                        actor=actor,
+                        reason=reason,
+                        timestamp=now,
+                    ),
                 )
             return
 
@@ -519,23 +648,137 @@ class SampleView:
                 raise ValueError(
                     f"Requested position ({position}) is not EMPTY or LOCKED by other task."
                 )
+        now = datetime.now(timezone.utc)
+        transit = result.get("in_transit")
+        previous_position = result.get("position")
+        event_type = "arrived" if transit is not None else (
+            "placed" if previous_position is None else "moved"
+        )
         update_fields = {
             "position": position,
             "in_transit": None,
-            "last_updated": datetime.now(),
+            "last_position": position,
+            "location_state": "present",
+            "last_updated": now,
         }
-        # Keep last_position as the most recent *known* location: only update it when moving to a
-        # real position. When position becomes None (sample left the lab/position), retain the
-        # previous last_position so the "last known location" is never empty.
-        if position is not None:
-            update_fields["last_position"] = position
-        self._sample_collection.update_one(
-            {"_id": sample_id},
-            {"$set": update_fields},
+        self._update_location(
+            sample_id=sample_id,
+            previous=result,
+            update_fields=update_fields,
+            event=self._location_event(
+                sample_id=sample_id,
+                event_type=event_type,
+                position=position,
+                source=(transit or {}).get("source", previous_position),
+                destination=position,
+                task_id=task_id,
+                task_type=task_type,
+                actor=actor,
+                reason=reason,
+                timestamp=now,
+            ),
         )
 
+    def release_sample_occupancy(
+        self,
+        sample_id: ObjectId,
+        *,
+        task_id: ObjectId | None = None,
+        task_type: str | None = None,
+        actor: str = "alabos",
+        reason: str | None = None,
+    ):
+        """Free current occupancy without forgetting physical-location evidence."""
+        result = self._sample_collection.find_one({"_id": sample_id})
+        if result is None:
+            raise ValueError(f"Cannot find sample with id: {sample_id}")
+        if result.get("position") is None or result.get("location_state") == "removed":
+            return
+
+        now = datetime.now(timezone.utc)
+        state = "in_transit" if result.get("in_transit") is not None else "unconfirmed"
+        self._update_location(
+            sample_id=sample_id,
+            previous=result,
+            update_fields={
+                "position": None,
+                "location_state": state,
+                "last_updated": now,
+            },
+            event=self._location_event(
+                sample_id=sample_id,
+                event_type="occupancy_released",
+                position=result.get("position"),
+                source=result.get("position"),
+                destination=(result.get("in_transit") or {}).get("destination"),
+                task_id=task_id,
+                task_type=task_type,
+                actor=actor,
+                reason=reason,
+                timestamp=now,
+            ),
+        )
+
+    def remove_sample_from_lab(
+        self,
+        sample_id: ObjectId,
+        *,
+        task_id: ObjectId | None = None,
+        task_type: str | None = None,
+        actor: str = "alabos",
+        reason: str | None = None,
+    ):
+        """Record confirmed physical removal while retaining the final known slot."""
+        result = self._sample_collection.find_one({"_id": sample_id})
+        if result is None:
+            raise ValueError(f"Cannot find sample with id: {sample_id}")
+        if result.get("position") is None and result.get("location_state") == "removed":
+            return
+
+        now = datetime.now(timezone.utc)
+        final_position = result.get("position") or result.get("last_position")
+        self._update_location(
+            sample_id=sample_id,
+            previous=result,
+            update_fields={
+                "position": None,
+                "in_transit": None,
+                "last_position": final_position,
+                "location_state": "removed",
+                "last_updated": now,
+            },
+            event=self._location_event(
+                sample_id=sample_id,
+                event_type="removed_from_lab",
+                position=final_position,
+                source=final_position,
+                task_id=task_id,
+                task_type=task_type,
+                actor=actor,
+                reason=reason,
+                timestamp=now,
+            ),
+        )
+
+    def get_location_history(self, sample_id: ObjectId) -> list[dict[str, Any]]:
+        """Return the sample's location events in insertion order."""
+        result = self._sample_collection.find_one(
+            {"_id": sample_id}, {"location_history": 1}
+        )
+        if result is None:
+            raise ValueError(f"Cannot find sample with id: {sample_id}")
+        return list(result.get("location_history", []))
+
     def set_sample_in_transit(
-        self, sample_id: ObjectId, source: str | None, destination: str | None
+        self,
+        sample_id: ObjectId,
+        source: str | None,
+        destination: str | None,
+        *,
+        task_id: ObjectId | None = None,
+        task_type: str | None = None,
+        actor: str = "alabos",
+        reason: str | None = None,
     ):
         """Mark a sample as being physically moved from ``source`` to ``destination``.
 
@@ -549,31 +792,76 @@ class SampleView:
         if result is None:
             raise ValueError(f"Cannot find sample with id: {sample_id}")
 
+        now = datetime.now(timezone.utc)
         update_fields = {
             "in_transit": {
                 "source": source,
                 "destination": destination,
-                "started_at": datetime.now(),
+                "started_at": now,
             },
-            "last_updated": datetime.now(),
+            "location_state": "in_transit",
+            "last_updated": now,
         }
         # The sample is physically still at/near the source until the move completes, so record the
         # source as the last known location.
         if source is not None:
             update_fields["last_position"] = source
-        self._sample_collection.update_one(
-            {"_id": sample_id},
-            {"$set": update_fields},
+        self._update_location(
+            sample_id=sample_id,
+            previous=result,
+            update_fields=update_fields,
+            event=self._location_event(
+                sample_id=sample_id,
+                event_type="in_transit",
+                position=source,
+                source=source,
+                destination=destination,
+                task_id=task_id,
+                task_type=task_type,
+                actor=actor,
+                reason=reason,
+                timestamp=now,
+            ),
         )
 
-    def clear_sample_in_transit(self, sample_id: ObjectId):
+    def clear_sample_in_transit(
+        self,
+        sample_id: ObjectId,
+        *,
+        task_id: ObjectId | None = None,
+        task_type: str | None = None,
+        actor: str = "operator",
+        reason: str | None = None,
+    ):
         """Clear the in-transit record for a sample (e.g. for manual recovery)."""
         result = self._sample_collection.find_one({"_id": sample_id})
         if result is None:
             raise ValueError(f"Cannot find sample with id: {sample_id}")
-        self._sample_collection.update_one(
-            {"_id": sample_id},
-            {"$set": {"in_transit": None, "last_updated": datetime.now()}},
+        if result.get("in_transit") is None:
+            return
+        now = datetime.now(timezone.utc)
+        self._update_location(
+            sample_id=sample_id,
+            previous=result,
+            update_fields={
+                "in_transit": None,
+                "location_state": (
+                    "present" if result.get("position") is not None else "unconfirmed"
+                ),
+                "last_updated": now,
+            },
+            event=self._location_event(
+                sample_id=sample_id,
+                event_type="operator_override",
+                position=result.get("position") or result.get("last_position"),
+                source=(result.get("in_transit") or {}).get("source"),
+                destination=(result.get("in_transit") or {}).get("destination"),
+                task_id=task_id,
+                task_type=task_type,
+                actor=actor,
+                reason=reason or "Cleared stale in-transit state",
+                timestamp=now,
+            ),
         )
 
     def get_in_transit_samples(self) -> list[dict[str, Any]]:
@@ -727,4 +1015,8 @@ class SampleView:
             tags=sample.get("tags", []),
             in_transit=sample.get("in_transit"),
             last_position=sample.get("last_position", sample.get("position")),
+            location_state=sample.get(
+                "location_state", self._infer_location_state(sample)
+            ),
+            location_history=sample.get("location_history", []),
         )

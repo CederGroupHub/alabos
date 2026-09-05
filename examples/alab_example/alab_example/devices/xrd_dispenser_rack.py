@@ -119,7 +119,11 @@ class XRDDispenserRack(BaseDevice):
             {"position": f"{self.name}/slot/{slot}"}
         )
         if sample is not None:
-            self._sampleview.move_sample(sample_id=sample["_id"], position=None)
+            self._sampleview.remove_sample_from_lab(
+                sample_id=sample["_id"],
+                actor="operator",
+                reason="Operator cleaned the XRD holder slot",
+            )
 
         self.available_slots.append(slot)
 

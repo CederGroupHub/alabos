@@ -1,10 +1,14 @@
 import time
 from contextlib import contextmanager
+from types import SimpleNamespace
 from unittest import TestCase
+from unittest.mock import patch
 
 from bson import ObjectId
 
 from alab_management.sample_view import SampleView
+from alab_management.sample_view.completed_sample_view import CompletedSampleView
+from alab_management.scripts.backfill_sample_locations import backfill_sample_locations
 from alab_management.scripts.cleanup_lab import cleanup_lab
 from alab_management.scripts.setup_lab import setup_lab
 
@@ -152,10 +156,138 @@ class TestSampleView(TestCase):
         sample_2 = self.sample_view.get_sample(sample_id=sample_id_2)
         self.assertEqual(None, sample_2.position)
 
-        # move the sample to None
+        # Deprecated None still releases occupancy without forgetting the last position.
         self.sample_view.move_sample(sample_id=sample_id, position=None)
         sample = self.sample_view.get_sample(sample_id=sample_id)
         self.assertEqual(None, sample.position)
+        self.assertEqual("furnace_table", sample.last_position)
+
+    def test_location_history_tracks_transit_arrival_release_and_removal(self):
+        sample_id = self.sample_view.create_sample("tracked", position="furnace_table")
+
+        self.sample_view.set_sample_in_transit(
+            sample_id,
+            source="furnace_table",
+            destination="furnace_1/inside/1",
+            task_id=ObjectId(),
+            task_type="Moving",
+            actor="mobile",
+        )
+        self.sample_view.move_sample(sample_id, "furnace_1/inside/1")
+
+        sample = self.sample_view.get_sample(sample_id)
+        self.assertEqual("furnace_1/inside/1", sample.position)
+        self.assertEqual("furnace_1/inside/1", sample.last_known_position)
+        self.assertEqual("present", sample.location_state)
+        self.assertIsNone(sample.in_transit)
+        self.assertEqual(
+            ["placed", "in_transit", "arrived"],
+            [event["event_type"] for event in sample.location_history],
+        )
+
+        self.sample_view.release_sample_occupancy(
+            sample_id, reason="Task failed after arrival"
+        )
+        sample = self.sample_view.get_sample(sample_id)
+        self.assertIsNone(sample.position)
+        self.assertEqual("furnace_1/inside/1", sample.last_position)
+        self.assertEqual("unconfirmed", sample.location_state)
+        self.assertEqual(
+            "occupancy_released", sample.location_history[-1]["event_type"]
+        )
+
+        self.sample_view.remove_sample_from_lab(
+            sample_id, actor="operator", reason="Operator confirmed removal"
+        )
+        sample = self.sample_view.get_sample(sample_id)
+        self.assertIsNone(sample.position)
+        self.assertEqual("furnace_1/inside/1", sample.last_position)
+        self.assertEqual("removed", sample.location_state)
+        self.assertEqual("removed_from_lab", sample.location_history[-1]["event_type"])
+
+    def test_release_during_transit_preserves_transit_evidence(self):
+        sample_id = self.sample_view.create_sample("tracked", position="furnace_table")
+        self.sample_view.set_sample_in_transit(
+            sample_id, "furnace_table", "furnace_1/inside/1"
+        )
+
+        self.sample_view.release_sample_occupancy(sample_id, reason="Task failed")
+        sample = self.sample_view.get_sample(sample_id)
+
+        self.assertIsNone(sample.position)
+        self.assertEqual("furnace_table", sample.last_position)
+        self.assertEqual("in_transit", sample.location_state)
+        self.assertEqual("furnace_1/inside/1", sample.in_transit["destination"])
+
+    def test_releasing_position_lock_does_not_change_sample_location(self):
+        task_id = ObjectId()
+        sample_id = self.sample_view.create_sample("tracked", position="furnace_table")
+        self.sample_view.update_sample_task_id(sample_id, task_id)
+        before = self.sample_view.get_sample(sample_id)
+        self.sample_view.lock_sample_position(task_id, "furnace_table")
+        self.sample_view.release_sample_position("furnace_table")
+        after = self.sample_view.get_sample(sample_id)
+
+        self.assertEqual(before.position, after.position)
+        self.assertEqual(before.location_history, after.location_history)
+
+    def test_stale_location_update_is_rejected_without_partial_write(self):
+        sample_id = self.sample_view.create_sample("tracked", position="furnace_table")
+        history_before = self.sample_view.get_location_history(sample_id)
+
+        with (
+            patch.object(
+                self.sample_view._sample_collection,
+                "update_one",
+                return_value=SimpleNamespace(modified_count=0),
+            ),
+            self.assertRaises(RuntimeError),
+        ):
+            self.sample_view.move_sample(sample_id, "furnace_1/inside/1")
+
+        self.assertEqual(history_before, self.sample_view.get_location_history(sample_id))
+
+    def test_legacy_sample_backfill_is_idempotent(self):
+        sample_id = ObjectId()
+        self.sample_view._sample_collection.insert_one(
+            {
+                "_id": sample_id,
+                "name": "legacy",
+                "position": "furnace_table",
+                "task_id": None,
+            }
+        )
+
+        dry_run = backfill_sample_locations(
+            dry_run=True, collection=self.sample_view._sample_collection
+        )
+        self.assertEqual(1, dry_run["would_update"])
+        self.assertNotIn(
+            "location_history",
+            self.sample_view._sample_collection.find_one({"_id": sample_id}),
+        )
+
+        first = backfill_sample_locations(collection=self.sample_view._sample_collection)
+        second = backfill_sample_locations(collection=self.sample_view._sample_collection)
+        sample = self.sample_view.get_sample(sample_id)
+
+        self.assertEqual(1, first["updated"])
+        self.assertEqual(0, second["updated"])
+        self.assertEqual("furnace_table", sample.last_position)
+        self.assertEqual("present", sample.location_state)
+        self.assertEqual([], sample.location_history)
+
+    def test_completed_sample_copy_keeps_location_history(self):
+        sample_id = self.sample_view.create_sample("tracked", position="furnace_table")
+        completed_view = CompletedSampleView()
+        completed_view._completed_sample_collection.delete_one({"_id": sample_id})
+        completed_view.save_sample(sample_id)
+
+        archived = completed_view._completed_sample_collection.find_one({"_id": sample_id})
+        self.assertEqual(
+            self.sample_view.get_location_history(sample_id), archived["location_history"]
+        )
+        completed_view._completed_sample_collection.delete_one({"_id": sample_id})
 
     def test_lock_sample_position(self):
         task_id = ObjectId()

@@ -60,6 +60,12 @@ class LabView:
         """Get the task id of the current task."""
         return self._task_id
 
+    @property
+    def task_type_name(self) -> str:
+        """Return the task type as a stable string for audit records."""
+        task_type = self.__task_entry.get("type")
+        return getattr(task_type, "__name__", str(task_type))
+
     @contextmanager
     def request_resources(
         self,
@@ -222,8 +228,54 @@ class LabView:
         if sample_entry.task_id != self._task_id:
             raise ValueError("Cannot move a sample that does not belong to this task.")
         self._sample_view.move_sample(
-            sample_id=sample_entry.sample_id, position=position
+            sample_id=sample_entry.sample_id,
+            position=position,
+            task_id=self.task_id,
+            task_type=self.task_type_name,
+            actor="alabos",
         )
+
+    def release_sample_occupancy(
+        self, sample: ObjectId | str, reason: str | None = None
+    ):
+        """Free a sample's booked occupancy without forgetting its last location."""
+        sample_entry = self.get_sample(sample=sample)
+        if sample_entry.task_id != self._task_id:
+            raise ValueError("Cannot release a sample that does not belong to this task.")
+        self._sample_view.release_sample_occupancy(
+            sample_id=sample_entry.sample_id,
+            task_id=self.task_id,
+            task_type=self.task_type_name,
+            actor="alabos",
+            reason=reason,
+        )
+
+    def release_samples_occupancy(
+        self, samples: list[dict[str, Any]], reason: str | None = None
+    ):
+        """Release occupancy for a set of task samples without forgetting locations."""
+        for sample in samples:
+            self.release_sample_occupancy(sample["sample_id"], reason=reason)
+
+    def remove_sample_from_lab(
+        self, sample: ObjectId | str, reason: str | None = None
+    ):
+        """Record that an operator confirmed the sample physically left the lab."""
+        sample_entry = self.get_sample(sample=sample)
+        if sample_entry.task_id != self._task_id:
+            raise ValueError("Cannot remove a sample that does not belong to this task.")
+        self._sample_view.remove_sample_from_lab(
+            sample_id=sample_entry.sample_id,
+            task_id=self.task_id,
+            task_type=self.task_type_name,
+            actor="operator",
+            reason=reason,
+        )
+
+    def get_location_history(self, sample: ObjectId | str) -> list[dict[str, Any]]:
+        """Return the durable location history for a task sample."""
+        sample_entry = self.get_sample(sample=sample)
+        return self._sample_view.get_location_history(sample_entry.sample_id)
 
     def set_sample_in_transit(
         self, sample: ObjectId | str, source: str | None, destination: str | None
@@ -246,7 +298,12 @@ class LabView:
                 "Cannot set in-transit for a sample that does not belong to this task."
             )
         self._sample_view.set_sample_in_transit(
-            sample_id=sample_entry.sample_id, source=source, destination=destination
+            sample_id=sample_entry.sample_id,
+            source=source,
+            destination=destination,
+            task_id=self.task_id,
+            task_type=self.task_type_name,
+            actor="mobile",
         )
 
     def get_locked_sample_positions(self) -> list[str]:
@@ -589,9 +646,15 @@ class LabView:
 
         self.request_user_input(prompt=prompt, options=["OK"])
 
-        # move the samples out of the lab
+        # Free occupancy without erasing where each sample was last seen.
         for sample in all_samples:
-            self.move_sample(sample=sample["sample_id"], position=None)
+            self._sample_view.release_sample_occupancy(
+                sample_id=sample["sample_id"],
+                task_id=self.task_id,
+                task_type=self.task_type_name,
+                actor="alabos",
+                reason="Task cleanup after unrecoverable error",
+            )
 
         # release all the resource that has not been fulfilled
         self._resource_requester.release_all_resources()

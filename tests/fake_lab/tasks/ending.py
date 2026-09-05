@@ -17,5 +17,7 @@ class Ending(BaseTask):
 
     def run(self):
         """Run the ending task."""
-        self.lab_view.move_sample(self.sample, None)
+        self.lab_view.remove_sample_from_lab(
+            self.sample, reason="Fake operator confirmed removal"
+        )
         return self.task_id

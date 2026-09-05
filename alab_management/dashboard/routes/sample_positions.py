@@ -33,6 +33,8 @@ def _sample_to_dict(sample) -> dict[str, Any] | None:
         "name": sample.name,
         "position": sample.position,
         "last_position": sample.last_position,
+        "last_known_position": sample.last_known_position,
+        "location_state": sample.location_state,
         "task_id": str(sample.task_id) if sample.task_id else None,
     }
 
@@ -89,6 +91,12 @@ def _unplaced_samples() -> list[dict[str, Any]]:
                 "sample_id": str(sample["_id"]),
                 "name": sample["name"],
                 "last_position": sample.get("last_position"),
+                "last_known_position": sample.get(
+                    "last_position", sample.get("position")
+                ),
+                "location_state": sample.get(
+                    "location_state", sample_view._infer_location_state(sample)
+                ),
                 "task_id": str(sample["task_id"]) if sample.get("task_id") else None,
             }
         )
@@ -118,7 +126,9 @@ def place_sample():
 
     if sample_id:
         try:
-            sample_view.move_sample(ObjectId(sample_id), position)
+            sample_view.move_sample(
+                ObjectId(sample_id), position, actor="operator", reason="Placed from dashboard"
+            )
         except Exception as exception:
             return {"status": "error", "errors": str(exception)}, 400
     else:
@@ -128,7 +138,12 @@ def place_sample():
                 "errors": "Provide either `sample_id` or `sample_name`.",
             }, 400
         try:
-            sample_view.create_sample(name=sample_name, position=position)
+            sample_view.create_sample(
+                name=sample_name,
+                position=position,
+                actor="operator",
+                reason="Created and placed from dashboard",
+            )
         except Exception as exception:
             return {"status": "error", "errors": str(exception)}, 400
 
@@ -148,7 +163,11 @@ def clear_position():
         return {"status": "error", "errors": f"No sample found at {position}."}, 400
 
     try:
-        sample_view.move_sample(sample.sample_id, None)
+        sample_view.remove_sample_from_lab(
+            sample.sample_id,
+            actor="operator",
+            reason="Removed from lab using Sample Positions dashboard",
+        )
     except Exception as exception:
         return {"status": "error", "errors": str(exception)}, 400
 

@@ -408,9 +408,9 @@ class Ending(BaseTask):
                 f"User said they were unable to remove {self.sample} in {filled_vial_storage_bin}!"
             )
 
-        self.lab_view.move_sample(
+        self.lab_view.remove_sample_from_lab(
             sample=self.sample,
-            position=None,
+            reason="Operator confirmed removal from filled vial storage",
         )
         self.set_message(
             "Sample was removed from filled vial bin and cleared from A-Lab."
@@ -460,9 +460,9 @@ class Ending(BaseTask):
                     f"User said they were unable to remove {self.sample} on {position}!"
                 )
 
-        self.lab_view.move_sample(
+        self.lab_view.remove_sample_from_lab(
             sample=self.sample,
-            position=None,
+            reason="Operator confirmed manual removal",
         )
         self.set_message("Sample was successfully removed.")
 

@@ -6,6 +6,7 @@ import click
 
 from alab_management.__init__ import __version__
 
+from .backfill_sample_locations import backfill_sample_locations
 from .cleanup_lab import cleanup_lab
 from .init_project import init_project
 from .launch_lab import launch_dashboard, launch_lab
@@ -173,4 +174,24 @@ def seed_demo_data_cli(keep_existing_demo: bool):
         f"{summary['samples_created']} samples, "
         f"{summary['tasks_created']} tasks, "
         f"{summary['experiments_created']} experiments."
+    )
+
+
+@cli.command(
+    "backfill_sample_locations",
+    short_help="Populate persistent location fields on existing samples.",
+)
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    default=False,
+    help="Report how many samples need changes without updating MongoDB.",
+)
+def backfill_sample_locations_cli(dry_run: bool):
+    """Backfill location state without inventing historical movement events."""
+    summary = backfill_sample_locations(dry_run=dry_run)
+    action = "Would update" if dry_run else "Updated"
+    click.echo(
+        f"Scanned {summary['scanned']} samples. "
+        f"{action} {summary['would_update'] if dry_run else summary['updated']}."
     )
