@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Devices from './components/Devices';
 import DeviceControl from './components/DeviceControl';
 import DashControl from './components/DashControl';
+import BftControl from './components/BftControl';
 import MobileRobotControl from './components/MobileRobotControl';
 import Data from './components/Data';
 import Experiments from './components/Experiments';
@@ -10,6 +11,7 @@ import styled from 'styled-components';
 import { useLocation, Link } from "react-router-dom";
 import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, FormControl, FormControlLabel, Switch, Typography } from '@mui/material';
 import PrecisionManufacturingIcon from '@mui/icons-material/PrecisionManufacturing';
+import FactoryIcon from '@mui/icons-material/Factory';
 import FireplaceIcon from '@mui/icons-material/Fireplace';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import TableChartIcon from '@mui/icons-material/TableChart';
@@ -199,6 +201,16 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange }) {
         </LinkedButton>
       </ListItem>
       <ListItem>
+        <LinkedButton to="/#bft-control">
+          <ListItemButton className={hash === "#bft-control" ? "active list-button-round" : "list-button-round"}>
+            <ListItemIcon>
+              <FactoryIcon />
+            </ListItemIcon>
+            <ListItemText primary="BFT Control" />
+          </ListItemButton>
+        </LinkedButton>
+      </ListItem>
+      <ListItem>
         <LinkedButton to="/#dash-control">
           <ListItemButton className={hash === "#dash-control" ? "active list-button-round" : "list-button-round"}>
             <ListItemIcon>
@@ -301,6 +313,8 @@ function Dashboard() {
         return <DeviceControl />;
       case "#mobile-robot-control":
         return <MobileRobotControl />;
+      case "#bft-control":
+        return <BftControl />;
       case "#dash-control":
         return <DashControl />;
       case "#userinput":

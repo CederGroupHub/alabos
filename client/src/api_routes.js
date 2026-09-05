@@ -336,6 +336,9 @@ export async function run_mobile_robot_segment(segment_id, body) {
     return await res.json();
 }
 
+// Prometheus BFT → DASH control
+const BFT_CONTROL_API = process.env.NODE_ENV === "production" ? "/api/bft-control" : URL + "/api/bft-control";
+
 // DASH workflow segment control
 const DASH_CONTROL_API = process.env.NODE_ENV === "production" ? "/api/dash-control" : URL + "/api/dash-control";
 
@@ -346,6 +349,35 @@ export async function get_dash_control_catalog() {
 
 export async function preview_dash_segment(segment_id, body) {
     const res = await fetch(DASH_CONTROL_API + "/preview/" + segment_id, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+    });
+    return await res.json();
+}
+
+export async function get_bft_control_catalog() {
+    const res = await fetch(BFT_CONTROL_API + "/catalog", { mode: 'cors' });
+    return await res.json();
+}
+
+export async function preview_bft_segment(segment_id, body) {
+    const res = await fetch(BFT_CONTROL_API + "/preview/" + segment_id, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+    });
+    return await res.json();
+}
+
+export async function run_bft_segment(segment_id, body) {
+    const res = await fetch(BFT_CONTROL_API + "/run/" + segment_id, {
         method: 'POST',
         mode: 'cors',
         headers: {
