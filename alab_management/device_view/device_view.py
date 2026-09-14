@@ -21,24 +21,13 @@ from .device import BaseDevice, get_all_devices, remove_device
 _DeviceType = TypeVar("_DeviceType", bound=BaseDevice)  # pylint: disable=invalid-name
 
 
-#: How long to wait for a single device to finish connecting before giving up on it *for now* and
-#: moving on to the next one. A device that overruns this is not abandoned: its connection keeps
-#: running in the background and the device joins the lab the moment it succeeds. This exists so
-#: that one unreachable -- or interactively blocked -- device can never stop the rest of the lab
-#: from launching.
-DEFAULT_DEVICE_CONNECT_TIMEOUT = 60.0
+#: How long Device Manager will wait for device connections before starting to serve RPC.
+#: Connections run in parallel, so this is a single shared deadline, not a per-device wait.
+#: Devices that have not connected by then are disabled in the UI; their attempt continues in
+#: the background and re-enables them if it later succeeds.
+DEFAULT_DEVICE_CONNECT_TIMEOUT = 10.0
 
-#: Upper bound on the total time the connect phase may spend waiting on slow devices. Without it,
-#: N slow devices would each cost the full per-device timeout and launch would still be held up for
-#: N * timeout. Once this budget is spent, remaining devices get only a token wait; any that do not
-#: make it are picked up by the watcher and join a few seconds later.
-DEFAULT_TOTAL_CONNECT_BUDGET = 180.0
-
-#: The shortest we will ever wait on a device, so that a spent budget cannot skip devices that
-#: connect essentially instantly.
-MIN_DEVICE_CONNECT_WAIT = 2.0
-
-#: How often the background watcher re-checks devices that are still connecting.
+#: How often the background watcher re-checks devices whose connection overran the launch wait.
 CONNECTION_WATCH_INTERVAL = 5.0
 
 
@@ -105,7 +94,7 @@ class DeviceView:
 
     @staticmethod
     def _device_connect_timeout() -> float:
-        """Per-device connection timeout, overridable as ``general.device_connect_timeout``."""
+        """Launch connection wait, overridable as ``general.device_connect_timeout``."""
         from alab_management.config import AlabOSConfig
 
         try:
@@ -120,33 +109,40 @@ class DeviceView:
     def __connect_all_devices(self):
         """Connect to every device without letting any single device hold up the launch.
 
-        Each device is connected in its own thread and waited on for at most
-        ``device_connect_timeout`` seconds. Three things can happen:
+        All devices are connected in parallel. We wait at most ``device_connect_timeout``
+        seconds in total, then start serving RPC. Three things can happen:
 
         * it connects, and is marked as connected;
         * it raises, and is disabled and paused so the rest of the lab still runs;
         * it neither returns nor raises within the timeout -- typically a driver blocking on a
           maintenance prompt, or a hardware connection with no timeout of its own.
 
-        The third case is why this is threaded at all. Such a device is left connecting in the
-        background and marked ``connecting`` on the dashboard, and the rest of the devices are
-        connected as normal. This matters because the caller of this method is
-        ``DeviceManager.__init__``, which must return for ``DeviceManager.run()`` to declare and
-        consume the device RPC queue. Blocking here means no device RPC for the *entire lab*, and
-        because RPC calls are published to the default exchange they are silently dropped rather
-        than queued, so every device call in the lab hangs forever with no error.
+        The third case is why this is threaded at all. Such a device is disabled in the UI so
+        operators can see it is unusable, while its connection keeps running in the background
+        and re-enables it if it later succeeds. This matters because the caller of this method
+        is ``DeviceManager.__init__``, which must return for ``DeviceManager.run()`` to declare
+        and consume the device RPC queue. Blocking here means no device RPC for the *entire
+        lab*, and because RPC calls are published to the default exchange they are silently
+        dropped rather than queued, so every device call in the lab hangs forever with no error.
         """
         timeout = self._device_connect_timeout()
-        deadline = time.monotonic() + DEFAULT_TOTAL_CONNECT_BUDGET
-        for device_name, device in self._device_list.items():
-            remaining_budget = deadline - time.monotonic()
-            wait = min(timeout, max(remaining_budget, MIN_DEVICE_CONNECT_WAIT))
-            self._connect_one_device(device_name, device, wait)
+        in_flight = [
+            self._begin_device_connection(device_name, device)
+            for device_name, device in self._device_list.items()
+        ]
+        deadline = time.monotonic() + timeout
+        for device_name, thread, result, started_at in in_flight:
+            thread.join(timeout=max(0.0, deadline - time.monotonic()))
+            self._settle_device_connection(
+                device_name, thread, result, started_at, waited=timeout
+            )
         self.__connected_to_devices = True
         self._start_connection_watcher()
 
-    def _connect_one_device(self, device_name: str, device: BaseDevice, timeout: float):
-        """Connect a single device, giving up the wait (but not the attempt) after ``timeout``."""
+    def _begin_device_connection(
+        self, device_name: str, device: BaseDevice
+    ) -> tuple[str, Thread, dict[str, Any], float]:
+        """Start connecting one device in a background thread."""
         started_at = time.monotonic()
         result: dict[str, Any] = {}
 
@@ -162,8 +158,17 @@ class DeviceView:
             target=_connect, name=f"connect-{device_name}", daemon=True
         )
         thread.start()
-        thread.join(timeout)
+        return device_name, thread, result, started_at
 
+    def _settle_device_connection(
+        self,
+        device_name: str,
+        thread: Thread,
+        result: dict[str, Any],
+        started_at: float,
+        waited: float,
+    ) -> None:
+        """Record a finished connection, or disable the device if it is still running."""
         if not thread.is_alive():
             self._finish_device_connection(device_name, result)
             return
@@ -176,12 +181,25 @@ class DeviceView:
             self._connection_results[device_name] = result
             self._connection_started_at[device_name] = started_at
         logger.warning(
-            "Still connecting to %s after %.0fs. Continuing without it so the rest of the lab can "
-            "launch; it will join automatically when the connection completes.",
+            "Could not connect to %s within %.0fs. Disabling and pausing it so the rest of "
+            "the lab can launch; it will re-enable automatically if the connection later succeeds.",
             device_name,
-            timeout,
+            waited,
         )
-        self._mark_device_connecting(device_name, timeout)
+        self._mark_device_connection_failed(
+            device_name,
+            TimeoutError(f"Did not finish connecting within {waited:.0f}s"),
+        )
+
+    def _connect_one_device(self, device_name: str, device: BaseDevice, timeout: float):
+        """Connect a single device, giving up the wait (but not the attempt) after ``timeout``."""
+        device_name, thread, result, started_at = self._begin_device_connection(
+            device_name, device
+        )
+        thread.join(timeout)
+        self._settle_device_connection(
+            device_name, thread, result, started_at, waited=timeout
+        )
 
     def _finish_device_connection(self, device_name: str, result: dict[str, Any]):
         """Apply the outcome of a device's connection attempt."""
@@ -219,16 +237,7 @@ class DeviceView:
             if not pending:
                 return
             for device_name, thread in pending:
-                with self._connection_lock:
-                    started_at = self._connection_started_at.get(
-                        device_name, time.monotonic()
-                    )
                 if thread.is_alive():
-                    # Refresh the dashboard message: what the device is blocked on can change
-                    # (a driver may raise a new prompt after the previous one is answered).
-                    self._mark_device_connecting(
-                        device_name, time.monotonic() - started_at
-                    )
                     continue
                 with self._connection_lock:
                     self._pending_connections.pop(device_name, None)
@@ -366,8 +375,9 @@ class DeviceView:
         """
         message = (
             "NOT CONNECTED: alabos could not establish a connection to this device "
-            f"({type(error).__name__}: {error}). It is disabled and paused, and cannot be used "
-            "until the connection is restored and the lab is relaunched."
+            f"({type(error).__name__}: {error}). It is disabled and paused. If the connection "
+            "later succeeds it will re-enable automatically; otherwise fix the hardware and "
+            "relaunch the lab."
         )
         try:
             self.pause_device(device_name)

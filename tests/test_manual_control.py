@@ -15,6 +15,28 @@ from alab_management.dashboard.routes.status import (
 )
 
 
+def test_parse_device_status_disabled_beats_connecting_and_paused():
+    assert (
+        parse_device_status(
+            "IDLE",
+            "PAUSED",
+            {"disabled": True, "connection_status": "failed"},
+        )
+        == "DISABLED"
+    )
+
+
+def test_parse_device_status_connecting_beats_paused():
+    assert (
+        parse_device_status(
+            "IDLE",
+            "PAUSED",
+            {"connection_status": "connecting"},
+        )
+        == "CONNECTING"
+    )
+
+
 def test_parse_device_status_manual_control_is_not_occupied():
     task_id = "abc123"
     assert (

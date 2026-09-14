@@ -1,6 +1,6 @@
 import time
 from contextlib import contextmanager
-from unittest import TestCase
+from unittest import TestCase, mock
 
 from bson import ObjectId
 
@@ -204,3 +204,59 @@ class TestDeviceView(TestCase):
         for device in devices.values():
             self.assertEqual("IDLE", self.device_view.get_status(device).name)
             self.assertEqual(None, self.device_view.get_device(device)["task_id"])
+
+    def test_connect_timeout_disables_device_without_blocking(self):
+        device_name = self.device_names[0]
+
+        class HangingDevice:
+            def _connect_wrapper(self):
+                time.sleep(30)
+
+        started = time.monotonic()
+        self.device_view._connect_one_device(device_name, HangingDevice(), timeout=0.4)
+        elapsed = time.monotonic() - started
+        self.assertLess(elapsed, 2.0)
+
+        entry = self.device_view.get_device(device_name)
+        attributes = entry.get("attributes") or {}
+        self.assertTrue(attributes.get("disabled"))
+        self.assertEqual(attributes.get("disabled_reason"), "connection_failed")
+        self.assertEqual(attributes.get("connection_status"), "failed")
+        self.assertEqual(entry.get("pause_status"), "PAUSED")
+        self.device_view._connection_watcher_stop.set()
+
+    def test_connect_error_disables_device(self):
+        device_name = self.device_names[0]
+
+        class FailingDevice:
+            def _connect_wrapper(self):
+                raise RuntimeError("hardware unreachable")
+
+        self.device_view._connect_one_device(device_name, FailingDevice(), timeout=1.0)
+
+        entry = self.device_view.get_device(device_name)
+        attributes = entry.get("attributes") or {}
+        self.assertTrue(attributes.get("disabled"))
+        self.assertEqual(attributes.get("disabled_reason"), "connection_failed")
+        self.assertIn("hardware unreachable", attributes.get("connection_error", ""))
+
+    def test_parallel_connect_does_not_sum_timeouts(self):
+        names = self.device_names[:2]
+
+        class HangingDevice:
+            def _connect_wrapper(self):
+                time.sleep(30)
+
+        self.device_view._device_list = {name: HangingDevice() for name in names}
+        started = time.monotonic()
+        with mock.patch.object(
+            DeviceView, "_device_connect_timeout", return_value=0.5
+        ):
+            self.device_view._DeviceView__connect_all_devices()
+        elapsed = time.monotonic() - started
+        self.assertLess(elapsed, 1.5)
+        for name in names:
+            attributes = self.device_view.get_device(name).get("attributes") or {}
+            self.assertTrue(attributes.get("disabled"))
+            self.assertEqual(attributes.get("disabled_reason"), "connection_failed")
+        self.device_view._connection_watcher_stop.set()
