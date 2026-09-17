@@ -450,12 +450,16 @@
 <p>Force the lab back to an empty software state without restarting processes.</p>
 <p>This is the dashboard “Reset lab” button. It cancels every live task, dismisses
 user-input prompts, drops resource locks, releases devices, clears the mobile-robot
-queues, unassigns samples from positions, and closes open experiments.</p>
+queues, unlocks sample-position reservations, clears sample task ownership / in-transit
+flags (without wiping physical <code class="docutils literal notranslate"><span class="pre">position</span></code> / <code class="docutils literal notranslate"><span class="pre">last_position</span></code>), and closes open
+experiments.</p>
 <p>It does not stop hardware that is already moving, and it does not drop Mongo.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="alab_management.lab_reset.reset_lab_software_state">
 <span class="sig-name descname"><span class="pre">reset_lab_software_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settle_s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_reset.html#reset_lab_software_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_reset.reset_lab_software_state" title="Link to this definition">#</a></dt>
 <dd><p>Cancel everything the dashboard is waiting on so a new experiment can be submitted.</p>
+<p>Physical sample occupancy (<code class="docutils literal notranslate"><span class="pre">samples.position</span></code> / <code class="docutils literal notranslate"><span class="pre">last_position</span></code>) is preserved.
+Only ephemeral ownership is cleared: task IDs, in-transit flags, and position locks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span></p>

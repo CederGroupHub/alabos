@@ -385,11 +385,13 @@
                 <article class="bd-article">
                   
   <h1>Source code for alab_management.lab_reset</h1><div class="highlight"><pre>
-<span></span><span class="sd">"""Force the lab back to an empty software state without restarting processes.</span>
+<span></span><span class="sa">r</span><span class="sd">"""Force the lab back to an empty software state without restarting processes.</span>
 
-<span class="sd">This is the dashboard \"Reset lab\" button. It cancels every live task, dismisses</span>
+<span class="sd">This is the dashboard "Reset lab" button. It cancels every live task, dismisses</span>
 <span class="sd">user-input prompts, drops resource locks, releases devices, clears the mobile-robot</span>
-<span class="sd">queues, unassigns samples from positions, and closes open experiments.</span>
+<span class="sd">queues, unlocks sample-position reservations, clears sample task ownership / in-transit</span>
+<span class="sd">flags (without wiping physical ``position`` / ``last_position``), and closes open</span>
+<span class="sd">experiments.</span>
 
 <span class="sd">It does not stop hardware that is already moving, and it does not drop Mongo.</span>
 <span class="sd">"""</span>
@@ -449,7 +451,11 @@
 <div class="viewcode-block" id="reset_lab_software_state">
 <a class="viewcode-back" href="../../alab_management.lab_reset.html#alab_management.lab_reset.reset_lab_software_state">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">reset_lab_software_state</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">settle_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_SETTLE_S</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">"""Cancel everything the dashboard is waiting on so a new experiment can be submitted."""</span>
+<span class="w">    </span><span class="sd">"""Cancel everything the dashboard is waiting on so a new experiment can be submitted.</span>
+
+<span class="sd">    Physical sample occupancy (``samples.position`` / ``last_position``) is preserved.</span>
+<span class="sd">    Only ephemeral ownership is cleared: task IDs, in-transit flags, and position locks.</span>
+<span class="sd">    """</span>
     <span class="n">task_view</span> <span class="o">=</span> <span class="n">TaskView</span><span class="p">()</span>
     <span class="n">experiment_view</span> <span class="o">=</span> <span class="n">ExperimentView</span><span class="p">()</span>
     <span class="n">device_view</span> <span class="o">=</span> <span class="n">DeviceView</span><span class="p">()</span>
@@ -465,7 +471,7 @@
     <span class="n">devices_released</span> <span class="o">=</span> <span class="n">_release_devices</span><span class="p">(</span><span class="n">device_view</span><span class="p">,</span> <span class="n">now</span><span class="p">)</span>
     <span class="n">_clear_mobile_robot_queues</span><span class="p">(</span><span class="n">device_view</span><span class="p">)</span>
     <span class="n">positions_unlocked</span> <span class="o">=</span> <span class="n">_unlock_sample_positions</span><span class="p">(</span><span class="n">sample_view</span><span class="p">)</span>
-    <span class="n">samples_unassigned</span> <span class="o">=</span> <span class="n">_unassign_samples</span><span class="p">(</span><span class="n">sample_view</span><span class="p">,</span> <span class="n">now</span><span class="p">)</span>
+    <span class="n">samples_unassigned</span> <span class="o">=</span> <span class="n">_clear_sample_ownership</span><span class="p">(</span><span class="n">sample_view</span><span class="p">,</span> <span class="n">now</span><span class="p">)</span>
     <span class="n">experiments_closed</span> <span class="o">=</span> <span class="n">_close_open_experiments</span><span class="p">(</span><span class="n">experiment_view</span><span class="p">)</span>
 
     <span class="n">summary</span> <span class="o">=</span> <span class="p">{</span>
@@ -589,18 +595,17 @@
     <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">modified_count</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_unassign_samples</span><span class="p">(</span><span class="n">sample_view</span><span class="p">:</span> <span class="n">SampleView</span><span class="p">,</span> <span class="n">now</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_clear_sample_ownership</span><span class="p">(</span><span class="n">sample_view</span><span class="p">:</span> <span class="n">SampleView</span><span class="p">,</span> <span class="n">now</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Clear ephemeral sample ownership; keep physical ``position`` / ``last_position``."""</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">sample_view</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">update_many</span><span class="p">(</span>
         <span class="p">{</span>
             <span class="s2">"$or"</span><span class="p">:</span> <span class="p">[</span>
-                <span class="p">{</span><span class="s2">"position"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$ne"</span><span class="p">:</span> <span class="kc">None</span><span class="p">}},</span>
                 <span class="p">{</span><span class="s2">"task_id"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$ne"</span><span class="p">:</span> <span class="kc">None</span><span class="p">}},</span>
                 <span class="p">{</span><span class="s2">"in_transit"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$ne"</span><span class="p">:</span> <span class="kc">None</span><span class="p">}},</span>
             <span class="p">]</span>
         <span class="p">},</span>
         <span class="p">{</span>
             <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">"position"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="s2">"task_id"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="s2">"in_transit"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">now</span><span class="p">,</span>
