@@ -589,7 +589,7 @@ class LabView:
 
         self.request_user_input(prompt=prompt, options=["OK"])
 
-        # move the samples out of the lab
+        # Operator confirmed physical removal — clear occupancy (not just task ownership).
         for sample in all_samples:
             self.move_sample(sample=sample["sample_id"], position=None)
 

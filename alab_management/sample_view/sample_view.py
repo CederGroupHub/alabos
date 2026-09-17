@@ -56,6 +56,54 @@ class SamplePositionStatus(Enum):
     LOCKED = auto()
 
 
+POSITION_HISTORY_MAX = 200
+
+
+def _position_history_entry(
+    event: str,
+    position: str | None,
+    *,
+    task_id: ObjectId | None = None,
+    destination: str | None = None,
+) -> dict[str, Any]:
+    """Build one append-only position_history record."""
+    entry: dict[str, Any] = {
+        "at": datetime.now(),
+        "position": position,
+        "event": event,
+    }
+    if task_id is not None:
+        entry["task_id"] = task_id
+    if destination is not None:
+        entry["destination"] = destination
+    return entry
+
+
+def _history_push(entry: dict[str, Any]) -> dict[str, Any]:
+    """Mongo ``$push`` clause that caps ``position_history`` length."""
+    return {
+        "position_history": {
+            "$each": [entry],
+            "$slice": -POSITION_HISTORY_MAX,
+        }
+    }
+
+
+def _sample_from_doc(result: dict[str, Any]) -> Sample:
+    """Construct a ``Sample`` from a Mongo document."""
+    return Sample(
+        sample_id=result["_id"],
+        name=result["name"],
+        position=result["position"],
+        task_id=result["task_id"],
+        metadata=result.get("metadata", {}),
+        tags=result.get("tags", []),
+        in_transit=result.get("in_transit"),
+        last_position=result.get("last_position", result.get("position")),
+        position_history=list(result.get("position_history") or []),
+    )
+
+
 class SampleView:
     """Sample view manages the samples and their positions."""
 
@@ -407,6 +455,10 @@ class SampleView:
                 f"Unsupported sample name: {name}. "
                 f"Sample name should not contain '.' or '$'"
             )
+        now = datetime.now()
+        history: list[dict[str, Any]] = []
+        if position is not None:
+            history.append(_position_history_entry("placed", position))
         entry = {
             "name": name,
             "tags": tags or [],
@@ -415,8 +467,9 @@ class SampleView:
             "last_position": position,
             "task_id": None,
             "in_transit": None,
-            "created_at": datetime.now(),
-            "last_updated": datetime.now(),
+            "position_history": history,
+            "created_at": now,
+            "last_updated": now,
         }
         if sample_id:
             if not isinstance(sample_id, ObjectId):
@@ -450,16 +503,7 @@ class SampleView:
         if result is None:
             raise ValueError(f"No sample found with id: {sample_id}")
 
-        return Sample(
-            sample_id=result["_id"],
-            name=result["name"],
-            position=result["position"],
-            task_id=result["task_id"],
-            metadata=result.get("metadata", {}),
-            tags=result.get("tags", []),
-            in_transit=result.get("in_transit"),
-            last_position=result.get("last_position", result.get("position")),
-        )
+        return _sample_from_doc(result)
 
     def update_sample_task_id(self, sample_id: ObjectId, task_id: ObjectId | None):
         """Update the task id for a sample."""
@@ -529,9 +573,19 @@ class SampleView:
         # previous last_position so the "last known location" is never empty.
         if position is not None:
             update_fields["last_position"] = position
+        event = "cleared" if position is None else "moved"
         self._sample_collection.update_one(
             {"_id": sample_id},
-            {"$set": update_fields},
+            {
+                "$set": update_fields,
+                "$push": _history_push(
+                    _position_history_entry(
+                        event,
+                        position if position is not None else result.get("position"),
+                        task_id=result.get("task_id"),
+                    )
+                ),
+            },
         )
 
     def set_sample_in_transit(
@@ -563,7 +617,17 @@ class SampleView:
             update_fields["last_position"] = source
         self._sample_collection.update_one(
             {"_id": sample_id},
-            {"$set": update_fields},
+            {
+                "$set": update_fields,
+                "$push": _history_push(
+                    _position_history_entry(
+                        "in_transit",
+                        source,
+                        task_id=result.get("task_id"),
+                        destination=destination,
+                    )
+                ),
+            },
         )
 
     def clear_sample_in_transit(self, sample_id: ObjectId):
@@ -718,13 +782,4 @@ class SampleView:
         if sample is None:
             return None
 
-        return Sample(
-            sample_id=sample["_id"],
-            name=sample["name"],
-            position=sample["position"],
-            task_id=sample["task_id"],
-            metadata=sample.get("metadata", {}),
-            tags=sample.get("tags", []),
-            in_transit=sample.get("in_transit"),
-            last_position=sample.get("last_position", sample.get("position")),
-        )
+        return _sample_from_doc(sample)

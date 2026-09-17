@@ -173,6 +173,36 @@ export async function get_device_verbose_log(device_name, lines) {
     }
 }
 
+const LOGS_API = process.env.NODE_ENV === "production" ? "/api/logs" : URL + "/api/logs";
+
+export async function get_launch_log_sources() {
+    try {
+        const res = await fetch(LOGS_API + "/sources", { mode: "cors" });
+        const result = await res.json();
+        return result.data;
+    } catch (error) {
+        return console.warn(error);
+    }
+}
+
+export async function get_launch_log_tail(source_id, lines) {
+    try {
+        const params = new URLSearchParams();
+        if (lines) {
+            params.append("lines", lines);
+        }
+        const query = params.toString();
+        const res = await fetch(
+            LOGS_API + "/tail/" + encodeURIComponent(source_id) + (query ? "?" + query : ""),
+            { mode: "cors" }
+        );
+        const result = await res.json();
+        return result.data;
+    } catch (error) {
+        return console.warn(error);
+    }
+}
+
 // Sample Positions
 const SAMPLE_POSITIONS_API = process.env.NODE_ENV === "production" ? "/api/sample-positions" : URL + "/api/sample-positions";
 

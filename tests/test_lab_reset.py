@@ -90,3 +90,12 @@ def test_reset_lab_software_state_cancels_and_releases(monkeypatch):
     assert dismiss_filter["request_context.experiment_id"] == {"$exists": True}
     assert dismiss_filter["request_context.maintenance"] == {"$ne": True}
     assert device_collection.update_one.call_count == 2
+
+    sample_filter, sample_update = samples.update_many.call_args.args
+    assert sample_update["$set"]["task_id"] is None
+    assert sample_update["$set"]["in_transit"] is None
+    assert "position" not in sample_update["$set"]
+    assert "last_position" not in sample_update["$set"]
+    assert {"task_id": {"$ne": None}} in sample_filter["$or"]
+    assert {"in_transit": {"$ne": None}} in sample_filter["$or"]
+    assert not any("position" in clause for clause in sample_filter["$or"])

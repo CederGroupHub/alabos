@@ -1,8 +1,10 @@
-"""Force the lab back to an empty software state without restarting processes.
+r"""Force the lab back to an empty software state without restarting processes.
 
-This is the dashboard \"Reset lab\" button. It cancels every live task, dismisses
+This is the dashboard "Reset lab" button. It cancels every live task, dismisses
 user-input prompts, drops resource locks, releases devices, clears the mobile-robot
-queues, unassigns samples from positions, and closes open experiments.
+queues, unlocks sample-position reservations, clears sample task ownership / in-transit
+flags (without wiping physical ``position`` / ``last_position``), and closes open
+experiments.
 
 It does not stop hardware that is already moving, and it does not drop Mongo.
 """
@@ -60,7 +62,11 @@ DEFAULT_SETTLE_S = 2.0
 
 
 def reset_lab_software_state(*, settle_s: float = DEFAULT_SETTLE_S) -> dict[str, int]:
-    """Cancel everything the dashboard is waiting on so a new experiment can be submitted."""
+    """Cancel everything the dashboard is waiting on so a new experiment can be submitted.
+
+    Physical sample occupancy (``samples.position`` / ``last_position``) is preserved.
+    Only ephemeral ownership is cleared: task IDs, in-transit flags, and position locks.
+    """
     task_view = TaskView()
     experiment_view = ExperimentView()
     device_view = DeviceView()
@@ -76,7 +82,7 @@ def reset_lab_software_state(*, settle_s: float = DEFAULT_SETTLE_S) -> dict[str,
     devices_released = _release_devices(device_view, now)
     _clear_mobile_robot_queues(device_view)
     positions_unlocked = _unlock_sample_positions(sample_view)
-    samples_unassigned = _unassign_samples(sample_view, now)
+    samples_unassigned = _clear_sample_ownership(sample_view, now)
     experiments_closed = _close_open_experiments(experiment_view)
 
     summary = {
@@ -199,18 +205,17 @@ def _unlock_sample_positions(sample_view: SampleView) -> int:
     return result.modified_count
 
 
-def _unassign_samples(sample_view: SampleView, now: datetime) -> int:
+def _clear_sample_ownership(sample_view: SampleView, now: datetime) -> int:
+    """Clear ephemeral sample ownership; keep physical ``position`` / ``last_position``."""
     result = sample_view._sample_collection.update_many(
         {
             "$or": [
-                {"position": {"$ne": None}},
                 {"task_id": {"$ne": None}},
                 {"in_transit": {"$ne": None}},
             ]
         },
         {
             "$set": {
-                "position": None,
                 "task_id": None,
                 "in_transit": None,
                 "last_updated": now,

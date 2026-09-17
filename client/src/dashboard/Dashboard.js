@@ -5,6 +5,7 @@ import DashControl from './components/DashControl';
 import BftControl from './components/BftControl';
 import MobileRobotControl from './components/MobileRobotControl';
 import Data from './components/Data';
+import Logs from './components/Logs';
 import Experiments from './components/Experiments';
 import SamplePositions from './components/SamplePositions';
 import styled from 'styled-components';
@@ -19,6 +20,7 @@ import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import SettingsRemoteIcon from '@mui/icons-material/SettingsRemote';
 import BuildIcon from '@mui/icons-material/Build';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
+import ArticleIcon from '@mui/icons-material/Article';
 import UserInputs from './components/UserInput';
 import Badge from '@mui/material/Badge';
 import { get_pending_userinputrequests } from '../api_routes';
@@ -132,6 +134,16 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange }) {
               <TableChartIcon />
             </ListItemIcon>
             <ListItemText primary="Data" />
+          </ListItemButton>
+        </LinkedButton>
+      </ListItem>
+      <ListItem>
+        <LinkedButton to="/#logs">
+          <ListItemButton className={hash === "#logs" ? "active list-button-round" : "list-button-round"}>
+            <ListItemIcon>
+              <ArticleIcon />
+            </ListItemIcon>
+            <ListItemText primary="Logs" />
           </ListItemButton>
         </LinkedButton>
       </ListItem>
@@ -309,6 +321,8 @@ function Dashboard() {
         return <SamplePositions />;
       case "#data":
         return <Data />;
+      case "#logs":
+        return <Logs />;
       case "#device-control":
         return <DeviceControl />;
       case "#mobile-robot-control":

@@ -36,6 +36,10 @@ class Sample:
     # cleared once set, so the "last known location" is always available. compare/hash are disabled to
     # preserve existing Sample equality semantics.
     last_position: str | None = field(default=None, compare=False, hash=False)
+    # Append-only movement log (capped in SampleView). Missing on older documents.
+    position_history: list[dict[str, Any]] = field(
+        default_factory=list, compare=False, hash=False
+    )
 
 
 @dataclass(frozen=True)
