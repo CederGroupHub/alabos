@@ -372,7 +372,7 @@ class SampleView:
                         "need_release": self.get_sample_position(sample_position["name"])["task_id"] != task_id,  # type: ignore
                     }
                 )
-                return available_sp_names
+        return available_sp_names
 
     def diagnose_sample_position_shortage(
         self,
