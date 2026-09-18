@@ -83,6 +83,90 @@ function experimentStatusLabel(status) {
   }
 }
 
+function firstDescription(steps) {
+  if (!steps || !steps.length) {
+    return null;
+  }
+  return steps[0].description || steps[0].type || null;
+}
+
+function progressHeadline(status) {
+  const steps = status.progress_steps || {};
+  const current = firstDescription(steps.current);
+  if (current) {
+    return `Now: ${current}`;
+  }
+  if (status.status === "COMPLETED") {
+    return "Done";
+  }
+  if (status.status === "CANCELLED") {
+    return "Cancelled";
+  }
+  if (status.status === "ERROR") {
+    return "Error";
+  }
+  const next = firstDescription(steps.next);
+  if (next) {
+    return `Next: ${next}`;
+  }
+  const previous = firstDescription(steps.previous);
+  if (previous) {
+    return `Last: ${previous}`;
+  }
+  return experimentStatusLabel(status.status);
+}
+
+function ProgressStepCell({ label, tasks }) {
+  const entries = tasks || [];
+  return (
+    <Box sx={{ flex: 1, minWidth: 0, px: 1 }}>
+      <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
+        {label}
+      </Typography>
+      {entries.length === 0 ? (
+        <Typography variant="body2" color="text.secondary">
+          —
+        </Typography>
+      ) : (
+        entries.slice(0, 3).map((task, index) => (
+          <Box key={task.id} sx={{ mb: entries.length > 1 ? 0.5 : 0 }}>
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+              {task.description || task.type}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              {task.status}
+              {index === 2 && entries.length > 3 ? ` (+${entries.length - 3} more)` : ""}
+            </Typography>
+          </Box>
+        ))
+      )}
+    </Box>
+  );
+}
+
+function ProgressStepsStrip({ progressSteps }) {
+  const steps = progressSteps || { previous: [], current: [], next: [] };
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        gap: 1,
+        mb: 2,
+        p: 1.5,
+        border: "1px solid",
+        borderColor: "divider",
+        borderRadius: 1,
+        bgcolor: "grey.50",
+        flexWrap: "wrap",
+      }}
+    >
+      <ProgressStepCell label="Previous" tasks={steps.previous} />
+      <ProgressStepCell label="Now" tasks={steps.current} />
+      <ProgressStepCell label="Next" tasks={steps.next} />
+    </Box>
+  );
+}
+
 function CancelConfirmDialog({ open, setOpen, type, id, experimentId, onCancelled }) {
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState(null);
@@ -174,7 +258,7 @@ function Row({ experiment_id, hoverForId, onExperimentCancelled, refreshEpoch })
   const [dialogId, setDialogId] = React.useState("");
   const [dialogType, setDialogType] = React.useState("Task");
   const [status, setStatus] = React.useState(
-    { "_id": "", "status": "", "samples": [], "tasks": [], "progress": 0 }
+    { "_id": "", "status": "", "samples": [], "tasks": [], "progress": 0, "progress_steps": { previous: [], current: [], next: [] } }
   );
   const [taskOpen, setTaskOpen] = React.useState(false);
   const [sampleOpen, setSampleOpen] = React.useState(false);
@@ -288,7 +372,7 @@ function Row({ experiment_id, hoverForId, onExperimentCancelled, refreshEpoch })
 
 
         <TableCell align="left"><Typography variant="body2">{timestampInLocale(status.submitted_at)}</Typography></TableCell>
-        <TableCell align="center" sx={{ width: 220 }}>
+        <TableCell align="center" sx={{ width: 280 }}>
           <Box
             sx={{
               width: "100%",
@@ -317,6 +401,21 @@ function Row({ experiment_id, hoverForId, onExperimentCancelled, refreshEpoch })
           <Typography variant="caption" color={status.status === "CANCELLED" ? "text.secondary" : "text.primary"}>
             {experimentStatusLabel(status.status)}
           </Typography>
+          <Typography
+            variant="caption"
+            display="block"
+            color="text.secondary"
+            sx={{
+              mt: 0.25,
+              maxWidth: 280,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+            title={progressHeadline(status)}
+          >
+            {progressHeadline(status)}
+          </Typography>
         </TableCell>
         {/* <TableCell align="right">{row.protein}</TableCell> */}
 
@@ -335,6 +434,7 @@ function Row({ experiment_id, hoverForId, onExperimentCancelled, refreshEpoch })
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
+              <ProgressStepsStrip progressSteps={status.progress_steps} />
 
               <Typography variant="body1" gutterBottom component="div">
                 <IconButton
@@ -394,10 +494,17 @@ function Row({ experiment_id, hoverForId, onExperimentCancelled, refreshEpoch })
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {status.tasks.map((task) => (
-                      <TableRow key={task.id}>
+                    {status.tasks.map((task) => {
+                      const isCurrent = (status.progress_steps?.current || []).some(
+                        (entry) => entry.id === task.id
+                      );
+                      return (
+                      <TableRow
+                        key={task.id}
+                        sx={isCurrent ? { bgcolor: "action.hover" } : undefined}
+                      >
                         <TableCell component="th" scope="row">
-                          <HoverText defaultText={task.type} hoverText={task.id} variant="body2" active={hoverForId} />
+                          <HoverText defaultText={task.description || task.type} hoverText={task.id} variant="body2" active={hoverForId} />
                         </TableCell>
                         <TableCell>
                           <Typography variant="body" color={taskStatusColor(task.status)}>
@@ -427,7 +534,8 @@ function Row({ experiment_id, hoverForId, onExperimentCancelled, refreshEpoch })
                         </TableCell>
                         {/* <TableCell>{task.result}</TableCell>  */}
                       </TableRow>
-                    ))}
+                      );
+                    })}
                   </TableBody>
                 </Table>
               </Collapse>
@@ -449,7 +557,7 @@ function CollapsibleTable({ experiment_ids, hoverForId, onExperimentCancelled, r
             <TableCell>Name</TableCell>
             <TableCell align="left"># Samples</TableCell>
             <TableCell align="left">Submitted At</TableCell>
-            <TableCell align="center" sx={{ width: 220 }}>Progress</TableCell>
+            <TableCell align="center" sx={{ width: 280 }}>Progress</TableCell>
             <TableCell align="left">Cancel Exp</TableCell>
           </TableRow>
         </TableHead>
