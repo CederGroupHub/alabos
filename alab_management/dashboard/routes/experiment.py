@@ -7,6 +7,10 @@ from bson.errors import InvalidId  # type: ignore
 from flask import Blueprint, request
 from pydantic import ValidationError
 
+from alab_management.dashboard.experiment_progress import (
+    compute_progress_steps,
+    summarize_task,
+)
 from alab_management.dashboard.lab_views import experiment_view, sample_view, task_view
 from alab_management.experiment_view.experiment import InputExperiment
 from alab_management.experiment_view.experiment_view import (
@@ -120,23 +124,27 @@ def query_experiment(exp_id: str):
         "tasks": [],
         "progress": progress,
         "status": experiment["status"],
+        "progress_steps": {"previous": [], "current": [], "next": []},
     }
 
+    task_docs = []
     for task in experiment["tasks"]:
         task_entry = task_view.get_task(task["task_id"])
-        return_dict["tasks"].append(
-            {
-                "id": str(task["task_id"]),
-                "status": task_entry["status"],
-                "type": task["type"],
-                "message": task_entry.get("message", ""),
-            }
-        )
+        # Prefer experiment graph type when present; keep Mongo fields for status/edges.
+        merged = dict(task_entry)
+        merged.setdefault("type", task.get("type"))
+        if task.get("type"):
+            merged["type"] = task["type"]
+        task_docs.append(merged)
+        summary = summarize_task(merged)
+        return_dict["tasks"].append(summary)
+
+    return_dict["progress_steps"] = compute_progress_steps(task_docs)
     return_dict["status"] = dashboard_experiment_status(
         [task["status"] for task in return_dict["tasks"]],
         experiment["status"],
     )
-    return return_dict
+    return make_jsonable(return_dict)
 
 
 @experiment_bp.route("/results/<exp_id>", methods=["GET"])
@@ -219,6 +227,6 @@ def reset_lab():
     try:
         summary = reset_lab_software_state()
     except Exception as exception:
-        logger.exception("Reset lab failed")
+        logger.exception("Release locks & tasks failed")
         return {"status": "error", "reason": str(exception)}, 500
     return {"status": "success", "data": summary}
