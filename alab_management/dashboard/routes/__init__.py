@@ -7,6 +7,7 @@ from .data import data_bp
 from .device import device_bp
 from .device_control import device_control_bp
 from .experiment import experiment_bp
+from .lab_settings import lab_settings_bp
 from .logs import logs_bp
 from .pause import pause_bp
 from .robot_control import robot_control_bp
@@ -25,6 +26,7 @@ def init_app(app):
     app.register_blueprint(device_bp)
     app.register_blueprint(device_control_bp)
     app.register_blueprint(experiment_bp)
+    app.register_blueprint(lab_settings_bp)
     app.register_blueprint(logs_bp)
     app.register_blueprint(sample_positions_bp)
     app.register_blueprint(status_bp)

@@ -8,6 +8,7 @@ import Data from './components/Data';
 import Logs from './components/Logs';
 import Experiments from './components/Experiments';
 import SamplePositions from './components/SamplePositions';
+import LabSettings from './components/LabSettings';
 import styled from 'styled-components';
 import { useLocation, Link } from "react-router-dom";
 import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, FormControl, FormControlLabel, Switch, Typography } from '@mui/material';
@@ -18,6 +19,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import TableChartIcon from '@mui/icons-material/TableChart';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import SettingsRemoteIcon from '@mui/icons-material/SettingsRemote';
+import SettingsIcon from '@mui/icons-material/Settings';
 import BuildIcon from '@mui/icons-material/Build';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import ArticleIcon from '@mui/icons-material/Article';
@@ -144,6 +146,16 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange }) {
               <ArticleIcon />
             </ListItemIcon>
             <ListItemText primary="Logs" />
+          </ListItemButton>
+        </LinkedButton>
+      </ListItem>
+      <ListItem>
+        <LinkedButton to="/#lab-settings">
+          <ListItemButton className={hash === "#lab-settings" ? "active list-button-round" : "list-button-round"}>
+            <ListItemIcon>
+              <SettingsIcon />
+            </ListItemIcon>
+            <ListItemText primary="Lab settings" />
           </ListItemButton>
         </LinkedButton>
       </ListItem>
@@ -323,6 +335,8 @@ function Dashboard() {
         return <Data />;
       case "#logs":
         return <Logs />;
+      case "#lab-settings":
+        return <LabSettings />;
       case "#device-control":
         return <DeviceControl />;
       case "#mobile-robot-control":

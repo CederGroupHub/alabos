@@ -80,6 +80,84 @@ export async function reset_lab() {
     return res.json();
 }
 
+const LAB_SETTINGS_API = process.env.NODE_ENV === "production" ? "/api/lab-settings" : URL + "/api/lab-settings";
+const CONTROL_API_BASE = process.env.NODE_ENV === "production"
+  ? "http://127.0.0.1:8894/api/control"
+  : "http://127.0.0.1:8894/api/control";
+
+export async function get_lab_idle() {
+    const res = await fetch(LAB_SETTINGS_API + "/idle", { mode: "cors" });
+    return res.json();
+}
+
+export async function clear_lab_occupancy() {
+    const res = await fetch(LAB_SETTINGS_API + "/clear_occupancy", {
+        method: "POST",
+        mode: "cors",
+    });
+    return res.json();
+}
+
+export async function control_status() {
+    const res = await fetch(CONTROL_API_BASE + "/status", { mode: "cors" });
+    return res.json();
+}
+
+export async function control_backup() {
+    const res = await fetch(CONTROL_API_BASE + "/backup", {
+        method: "POST",
+        mode: "cors",
+        headers: { "Content-Type": "application/json" },
+        body: "{}",
+    });
+    return res.json().then((data) => ({ ok: res.ok, status: res.status, data }));
+}
+
+export async function control_refresh_definitions() {
+    const res = await fetch(CONTROL_API_BASE + "/refresh-definitions", {
+        method: "POST",
+        mode: "cors",
+        headers: { "Content-Type": "application/json" },
+        body: "{}",
+    });
+    return res.json().then((data) => ({ ok: res.ok, status: res.status, data }));
+}
+
+export async function control_nuclear(confirmDropDatabase) {
+    const res = await fetch(CONTROL_API_BASE + "/nuclear", {
+        method: "POST",
+        mode: "cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ confirm_drop_database: confirmDropDatabase }),
+    });
+    return res.json().then((data) => ({ ok: res.ok, status: res.status, data }));
+}
+
+export async function get_control_config() {
+    const res = await fetch(CONTROL_API_BASE + "/config", { mode: "cors" });
+    return res.json().then((data) => ({ ok: res.ok, status: res.status, data }));
+}
+
+export async function put_control_config(payload) {
+    const res = await fetch(CONTROL_API_BASE + "/config", {
+        method: "PUT",
+        mode: "cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+    });
+    return res.json().then((data) => ({ ok: res.ok, status: res.status, data }));
+}
+
+export async function apply_control_profile(profileId) {
+    const res = await fetch(CONTROL_API_BASE + "/profile/" + profileId, {
+        method: "POST",
+        mode: "cors",
+        headers: { "Content-Type": "application/json" },
+        body: "{}",
+    });
+    return res.json().then((data) => ({ ok: res.ok, status: res.status, data }));
+}
+
 const CANCEL_EXPERIMENT_API = process.env.NODE_ENV === "production" ? "/api/experiment/cancel/" : URL + "/api/experiment/cancel/";
 const CANCEL_TASK_API = process.env.NODE_ENV === "production" ? "/api/task/cancel/" : URL + "/api/task/cancel/";
 

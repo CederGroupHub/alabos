@@ -99,3 +99,71 @@ def test_reset_lab_software_state_cancels_and_releases(monkeypatch):
     assert {"task_id": {"$ne": None}} in sample_filter["$or"]
     assert {"in_transit": {"$ne": None}} in sample_filter["$or"]
     assert not any("position" in clause for clause in sample_filter["$or"])
+
+
+def test_get_lab_idle_status_reports_reasons(monkeypatch):
+    from alab_management.lab_reset import get_lab_idle_status
+
+    task_collection = MagicMock()
+    task_collection.count_documents.return_value = 2
+    sample_positions = MagicMock()
+    sample_positions.count_documents.return_value = 1
+    experiment_view = MagicMock()
+    experiment_view.get_experiments_with_status.side_effect = [
+        [{"_id": ObjectId()}],
+        [],
+    ]
+
+    monkeypatch.setattr(
+        "alab_management.lab_reset.TaskView",
+        lambda: SimpleNamespace(_task_collection=task_collection),
+    )
+    monkeypatch.setattr(
+        "alab_management.lab_reset.ExperimentView", lambda: experiment_view
+    )
+    monkeypatch.setattr(
+        "alab_management.lab_reset.SampleView",
+        lambda: SimpleNamespace(_sample_positions_collection=sample_positions),
+    )
+
+    status = get_lab_idle_status()
+    assert status["idle"] is False
+    assert any("live task" in r for r in status["reasons"])
+    assert any("pending" in r for r in status["reasons"])
+    assert any("reserved" in r for r in status["reasons"])
+
+
+def test_clear_lab_occupancy_requires_idle(monkeypatch):
+    from alab_management.lab_reset import LabNotIdleError, clear_lab_occupancy
+
+    monkeypatch.setattr(
+        "alab_management.lab_reset.get_lab_idle_status",
+        lambda: {"idle": False, "reasons": ["1 live task(s)"]},
+    )
+    try:
+        clear_lab_occupancy()
+        raise AssertionError("expected LabNotIdleError")
+    except LabNotIdleError as exc:
+        assert exc.reasons == ["1 live task(s)"]
+
+
+def test_clear_lab_occupancy_moves_samples(monkeypatch):
+    from alab_management.lab_reset import clear_lab_occupancy
+
+    sample_id = ObjectId()
+    sample_view = MagicMock()
+    sample_view._sample_collection.find.side_effect = [
+        [{"_id": sample_id, "position": "furnace/1"}],
+        [],
+    ]
+    sample_view._sample_positions_collection.update_many.return_value.modified_count = 0
+
+    monkeypatch.setattr(
+        "alab_management.lab_reset.get_lab_idle_status",
+        lambda: {"idle": True, "reasons": []},
+    )
+    monkeypatch.setattr("alab_management.lab_reset.SampleView", lambda: sample_view)
+
+    summary = clear_lab_occupancy()
+    assert summary["samples_cleared"] == 1
+    sample_view.move_sample.assert_called_once_with(sample_id, None)

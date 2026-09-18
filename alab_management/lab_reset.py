@@ -61,6 +61,82 @@ MOBILE_ROBOT_QUEUE_ATTRIBUTES = {
 DEFAULT_SETTLE_S = 2.0
 
 
+class LabNotIdleError(RuntimeError):
+    """Raised when a lab-settings action requires an idle lab."""
+
+    def __init__(self, reasons: list[str]):
+        self.reasons = list(reasons)
+        super().__init__(
+            "Lab is not idle: " + "; ".join(self.reasons)
+            if self.reasons
+            else "Lab is not idle"
+        )
+
+
+def get_lab_idle_status() -> dict[str, Any]:
+    """Return whether the lab has no live work or position reservations.
+
+    Do not use ``/api/status`` alone — that endpoint only lists RUNNING experiments.
+    """
+    reasons: list[str] = []
+    task_view = TaskView()
+    live_tasks = task_view._task_collection.count_documents(
+        {"status": {"$in": list(LIVE_TASK_STATUSES)}}
+    )
+    if live_tasks:
+        reasons.append(f"{live_tasks} live task(s)")
+
+    experiment_view = ExperimentView()
+    for status_name in OPEN_EXPERIMENT_STATUSES:
+        experiments = list(
+            experiment_view.get_experiments_with_status(ExperimentStatus[status_name])
+        )
+        if experiments:
+            reasons.append(
+                f"{len(experiments)} {status_name.lower()} experiment(s)"
+            )
+
+    sample_view = SampleView()
+    reserved = sample_view._sample_positions_collection.count_documents(
+        {"task_id": {"$ne": None}}
+    )
+    if reserved:
+        reasons.append(f"{reserved} reserved sample position(s)")
+
+    return {"idle": not reasons, "reasons": reasons}
+
+
+def clear_lab_occupancy() -> dict[str, int]:
+    """Clear every sample's current position; keep identity, last_position, history.
+
+    Requires an idle lab. Uses ``move_sample(..., None)`` so history gets a
+    ``cleared`` event, matching per-slot Clear on Sample Positions.
+    """
+    idle = get_lab_idle_status()
+    if not idle["idle"]:
+        raise LabNotIdleError(idle["reasons"])
+
+    sample_view = SampleView()
+    samples_cleared = 0
+    for doc in sample_view._sample_collection.find({"position": {"$ne": None}}):
+        sample_view.move_sample(doc["_id"], None)
+        samples_cleared += 1
+
+    in_transit_cleared = 0
+    for doc in sample_view._sample_collection.find({"in_transit": {"$ne": None}}):
+        sample_view.clear_sample_in_transit(doc["_id"])
+        in_transit_cleared += 1
+
+    positions_unlocked = _unlock_sample_positions(sample_view)
+    summary = {
+        "samples_cleared": samples_cleared,
+        "in_transit_cleared": in_transit_cleared,
+        "positions_unlocked": positions_unlocked,
+    }
+    logger.info("Lab occupancy cleared: %s", summary)
+    return summary
+
+
 def reset_lab_software_state(*, settle_s: float = DEFAULT_SETTLE_S) -> dict[str, int]:
     """Cancel everything the dashboard is waiting on so a new experiment can be submitted.
 

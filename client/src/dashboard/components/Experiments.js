@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { get_experiment_status, get_experiment_ids, reset_lab, cancel_experiment, cancel_task } from '../../api_routes';
+import { get_experiment_status, get_experiment_ids, cancel_experiment, cancel_task } from '../../api_routes';
 import LinearProgress from '@mui/material/LinearProgress';//
 import * as React from 'react';
 import Box from '@mui/material/Box';
@@ -40,20 +40,6 @@ function experimentCanBeCancelled(status) {
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function waitUntilExperimentsHaveNoLiveTasks(experimentIds, { timeoutMs = 90000, intervalMs = 1000 } = {}) {
-  const deadline = Date.now() + timeoutMs;
-  let latest = [];
-  while (Date.now() < deadline) {
-    latest = await Promise.all((experimentIds || []).map((id) => get_experiment_status(id)));
-    const stillLive = latest.some((status) => !status || experimentCanBeCancelled(status));
-    if (!stillLive) {
-      return latest;
-    }
-    await sleep(intervalMs);
-  }
-  throw new Error("Reset was sent, but some tasks are still finishing. Check the list and try again if needed.");
 }
 
 async function waitUntilExperimentShowsCancelled(experimentId, { timeoutMs = 90000, intervalMs = 1000 } = {}) {
@@ -477,88 +463,8 @@ function CollapsibleTable({ experiment_ids, hoverForId, onExperimentCancelled, r
   );
 }
 
-function ResetLabDialog({ open, setOpen, experimentIds, onReset }) {
-  const [busy, setBusy] = React.useState(false);
-  const [error, setError] = React.useState(null);
-
-  const handleClose = () => {
-    if (busy) {
-      return;
-    }
-    setError(null);
-    setOpen(false);
-  };
-
-  const handleReset = async () => {
-    setBusy(true);
-    setError(null);
-    const idsAtStart = [...(experimentIds || [])];
-    try {
-      const response = await reset_lab();
-      if (response.status !== "success") {
-        setError(response.reason || "Reset lab failed.");
-        return;
-      }
-      await waitUntilExperimentsHaveNoLiveTasks(idsAtStart);
-      await onReset();
-      await sleep(300);
-      setError(null);
-      setOpen(false);
-    } catch (err) {
-      setError(String(err.message || err));
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      disableEscapeKeyDown={busy}
-    >
-      <DialogTitle>Reset lab</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          This cancels every running and queued experiment and releases devices
-          so you can submit again. Cancelled experiments stay on this list,
-          marked cancelled, with no live tasks. It does not dismiss Labman or
-          other maintenance prompts, and it does not emergency-stop hardware
-          that is already moving.
-        </DialogContentText>
-        {busy && (
-          <DialogContentText sx={{ mt: 2 }}>
-            Resetting… waiting until every experiment shows no live tasks.
-          </DialogContentText>
-        )}
-        {error && (
-          <DialogContentText sx={{ mt: 2 }} color="error">
-            {error}
-          </DialogContentText>
-        )}
-      </DialogContent>
-      <DialogActions>
-        {!busy && (
-          <Button onClick={handleReset} color="error">
-            Reset everything
-          </Button>
-        )}
-        {busy && (
-          <Button disabled>
-            Resetting…
-          </Button>
-        )}
-        <Button onClick={handleClose} autoFocus disabled={busy}>
-          Cancel
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-}
-
 function Experiments({ hoverForId }) {
   const [experimentIds, setExperimentIds] = React.useState([]);
-  const [resetOpen, setResetOpen] = React.useState(false);
   const [refreshEpoch, setRefreshEpoch] = React.useState(0);
 
   const refreshExperimentIds = async () => {
@@ -575,22 +481,6 @@ function Experiments({ hoverForId }) {
 
   return (
     <Box>
-      <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 1 }}>
-        <Button
-          variant="contained"
-          color="error"
-          disabled={resetOpen}
-          onClick={() => setResetOpen(true)}
-        >
-          Reset lab
-        </Button>
-      </Box>
-      <ResetLabDialog
-        open={resetOpen}
-        setOpen={setResetOpen}
-        experimentIds={experimentIds}
-        onReset={refreshExperimentIds}
-      />
       <CollapsibleTable
         experiment_ids={experimentIds}
         hoverForId={hoverForId}
