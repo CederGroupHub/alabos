@@ -433,6 +433,9 @@
             </div>
             <nav aria-label="Page">
                 <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_reset.LabNotIdleError"><code class="docutils literal notranslate"><span class="pre">LabNotIdleError</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_reset.clear_lab_occupancy"><code class="docutils literal notranslate"><span class="pre">clear_lab_occupancy()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_reset.get_lab_idle_status"><code class="docutils literal notranslate"><span class="pre">get_lab_idle_status()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_reset.reset_lab_software_state"><code class="docutils literal notranslate"><span class="pre">reset_lab_software_state()</span></code></a></li>
 </ul>
             </nav>
@@ -454,6 +457,38 @@ queues, unlocks sample-position reservations, clears sample task ownership / in-
 flags (without wiping physical <code class="docutils literal notranslate"><span class="pre">position</span></code> / <code class="docutils literal notranslate"><span class="pre">last_position</span></code>), and closes open
 experiments.</p>
 <p>It does not stop hardware that is already moving, and it does not drop Mongo.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="alab_management.lab_reset.LabNotIdleError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LabNotIdleError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reasons</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_reset.html#LabNotIdleError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_reset.LabNotIdleError" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></p>
+<p>Raised when a lab-settings action requires an idle lab.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alab_management.lab_reset.clear_lab_occupancy">
+<span class="sig-name descname"><span class="pre">clear_lab_occupancy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_reset.html#clear_lab_occupancy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_reset.clear_lab_occupancy" title="Link to this definition">#</a></dt>
+<dd><p>Clear every sample’s current position; keep identity, last_position, history.</p>
+<p>Requires an idle lab. Uses <code class="docutils literal notranslate"><span class="pre">move_sample(...,</span> <span class="pre">None)</span></code> so history gets a
+<code class="docutils literal notranslate"><span class="pre">cleared</span></code> event, matching per-slot Clear on Sample Positions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alab_management.lab_reset.get_lab_idle_status">
+<span class="sig-name descname"><span class="pre">get_lab_idle_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_reset.html#get_lab_idle_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_reset.get_lab_idle_status" title="Link to this definition">#</a></dt>
+<dd><p>Return whether the lab has no live work or position reservations.</p>
+<p>Do not use <code class="docutils literal notranslate"><span class="pre">/api/status</span></code> alone — that endpoint only lists RUNNING experiments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="alab_management.lab_reset.reset_lab_software_state">
 <span class="sig-name descname"><span class="pre">reset_lab_software_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settle_s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_reset.html#reset_lab_software_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_reset.reset_lab_software_state" title="Link to this definition">#</a></dt>
@@ -515,6 +550,9 @@ Only ephemeral ownership is cleared: task IDs, in-transit flags, and position lo
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_reset.LabNotIdleError"><code class="docutils literal notranslate"><span class="pre">LabNotIdleError</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_reset.clear_lab_occupancy"><code class="docutils literal notranslate"><span class="pre">clear_lab_occupancy()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_reset.get_lab_idle_status"><code class="docutils literal notranslate"><span class="pre">get_lab_idle_status()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_reset.reset_lab_software_state"><code class="docutils literal notranslate"><span class="pre">reset_lab_software_state()</span></code></a></li>
 </ul>
   </nav></div>
