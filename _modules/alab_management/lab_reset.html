@@ -387,11 +387,11 @@
   <h1>Source code for alab_management.lab_reset</h1><div class="highlight"><pre>
 <span></span><span class="sa">r</span><span class="sd">"""Force the lab back to an empty software state without restarting processes.</span>
 
-<span class="sd">This is the dashboard "Reset lab" button. It cancels every live task, dismisses</span>
-<span class="sd">user-input prompts, drops resource locks, releases devices, clears the mobile-robot</span>
-<span class="sd">queues, unlocks sample-position reservations, clears sample task ownership / in-transit</span>
-<span class="sd">flags (without wiping physical ``position`` / ``last_position``), and closes open</span>
-<span class="sd">experiments.</span>
+<span class="sd">This is the dashboard "Release locks &amp; tasks" action. It cancels every live task,</span>
+<span class="sd">dismisses user-input prompts, drops resource locks, releases devices, clears the</span>
+<span class="sd">mobile-robot queues, unlocks sample-position reservations, clears sample task</span>
+<span class="sd">ownership / in-transit flags (without wiping physical ``position`` /</span>
+<span class="sd">``last_position``), and closes open experiments.</span>
 
 <span class="sd">It does not stop hardware that is already moving, and it does not drop Mongo.</span>
 <span class="sd">"""</span>
@@ -587,7 +587,7 @@
             <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
                 <span class="s2">"status"</span><span class="p">:</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">CANCELLED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="s2">"canceling_progress"</span><span class="p">:</span> <span class="n">CancelingProgress</span><span class="o">.</span><span class="n">WORKER_NOTIFIED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                <span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Cancelled by Reset lab."</span><span class="p">,</span>
+                <span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Cancelled by Release locks &amp; tasks."</span><span class="p">,</span>
                 <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">now</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">},</span>
@@ -627,7 +627,7 @@
             <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
                 <span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">FULLFILLED</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
                 <span class="s2">"response"</span><span class="p">:</span> <span class="s2">"Reset"</span><span class="p">,</span>
-                <span class="s2">"note"</span><span class="p">:</span> <span class="s2">"Dismissed by Reset lab."</span><span class="p">,</span>
+                <span class="s2">"note"</span><span class="p">:</span> <span class="s2">"Dismissed by Release locks &amp; tasks."</span><span class="p">,</span>
                 <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">now</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">},</span>

@@ -388,12 +388,12 @@
 <span></span><span class="sd">"""Cancel one experiment and free only that experiment's software bookings.</span>
 
 <span class="sd">This is the dashboard Cancel button. It force-cancels that experiment's live</span>
-<span class="sd">tasks (the same write Reset lab uses, scoped to this experiment), dismisses</span>
-<span class="sd">its user-input prompts, cancels its pending resource requests, releases its</span>
-<span class="sd">devices and positions, and marks the experiment Cancelled.</span>
+<span class="sd">tasks (the same write Release locks &amp; tasks uses, scoped to this experiment),</span>
+<span class="sd">dismisses its user-input prompts, cancels its pending resource requests,</span>
+<span class="sd">releases its devices and positions, and marks the experiment Cancelled.</span>
 
 <span class="sd">It does not emergency-stop hardware that is already moving, and it does not</span>
-<span class="sd">touch other experiments. Use Reset lab when the whole lab is stuck.</span>
+<span class="sd">touch other experiments. Use Release locks &amp; tasks when the whole lab is stuck.</span>
 <span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>

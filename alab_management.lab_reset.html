@@ -451,11 +451,11 @@
   <section id="module-alab_management.lab_reset">
 <span id="alab-management-lab-reset-module"></span><h1>alab_management.lab_reset module<a class="headerlink" href="#module-alab_management.lab_reset" title="Link to this heading">#</a></h1>
 <p>Force the lab back to an empty software state without restarting processes.</p>
-<p>This is the dashboard “Reset lab” button. It cancels every live task, dismisses
-user-input prompts, drops resource locks, releases devices, clears the mobile-robot
-queues, unlocks sample-position reservations, clears sample task ownership / in-transit
-flags (without wiping physical <code class="docutils literal notranslate"><span class="pre">position</span></code> / <code class="docutils literal notranslate"><span class="pre">last_position</span></code>), and closes open
-experiments.</p>
+<p>This is the dashboard “Release locks &amp; tasks” action. It cancels every live task,
+dismisses user-input prompts, drops resource locks, releases devices, clears the
+mobile-robot queues, unlocks sample-position reservations, clears sample task
+ownership / in-transit flags (without wiping physical <code class="docutils literal notranslate"><span class="pre">position</span></code> /
+<code class="docutils literal notranslate"><span class="pre">last_position</span></code>), and closes open experiments.</p>
 <p>It does not stop hardware that is already moving, and it does not drop Mongo.</p>
 <dl class="py exception">
 <dt class="sig sig-object py" id="alab_management.lab_reset.LabNotIdleError">
