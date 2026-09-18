@@ -45,7 +45,7 @@ def clear_occupancy():
 
 @lab_settings_bp.route("/reset_lab", methods=["POST"])
 def reset_lab():
-    """Same as ``/api/experiment/reset_lab`` — kept here for Lab settings UI."""
+    """Release locks & tasks (same as ``/api/experiment/reset_lab``)."""
     try:
         summary = reset_lab_software_state()
     except Exception as exc:  # noqa: BLE001

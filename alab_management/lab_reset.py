@@ -1,10 +1,10 @@
 r"""Force the lab back to an empty software state without restarting processes.
 
-This is the dashboard "Reset lab" button. It cancels every live task, dismisses
-user-input prompts, drops resource locks, releases devices, clears the mobile-robot
-queues, unlocks sample-position reservations, clears sample task ownership / in-transit
-flags (without wiping physical ``position`` / ``last_position``), and closes open
-experiments.
+This is the dashboard "Release locks & tasks" action. It cancels every live task,
+dismisses user-input prompts, drops resource locks, releases devices, clears the
+mobile-robot queues, unlocks sample-position reservations, clears sample task
+ownership / in-transit flags (without wiping physical ``position`` /
+``last_position``), and closes open experiments.
 
 It does not stop hardware that is already moving, and it does not drop Mongo.
 """
@@ -188,7 +188,7 @@ def _cancel_live_tasks(task_view: TaskView, now: datetime) -> int:
             "$set": {
                 "status": TaskStatus.CANCELLED.name,
                 "canceling_progress": CancelingProgress.WORKER_NOTIFIED.name,
-                "message": "Cancelled by Reset lab.",
+                "message": "Cancelled by Release locks & tasks.",
                 "last_updated": now,
             }
         },
@@ -228,7 +228,7 @@ def _dismiss_pending_experiment_user_inputs(
             "$set": {
                 "status": UserRequestStatus.FULLFILLED.value,
                 "response": "Reset",
-                "note": "Dismissed by Reset lab.",
+                "note": "Dismissed by Release locks & tasks.",
                 "last_updated": now,
             }
         },

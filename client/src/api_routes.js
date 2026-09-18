@@ -123,12 +123,15 @@ export async function control_refresh_definitions() {
     return res.json().then((data) => ({ ok: res.ok, status: res.status, data }));
 }
 
-export async function control_nuclear(confirmDropDatabase) {
+export async function control_nuclear(confirmDropDatabase, backupBeforeWipe = true) {
     const res = await fetch(CONTROL_API_BASE + "/nuclear", {
         method: "POST",
         mode: "cors",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ confirm_drop_database: confirmDropDatabase }),
+        body: JSON.stringify({
+            confirm_drop_database: confirmDropDatabase,
+            backup_before_wipe: Boolean(backupBeforeWipe),
+        }),
     });
     return res.json().then((data) => ({ ok: res.ok, status: res.status, data }));
 }

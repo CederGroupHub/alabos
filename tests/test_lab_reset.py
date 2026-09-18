@@ -1,4 +1,4 @@
-"""Tests for the dashboard Reset lab software wipe."""
+"""Tests for the dashboard Release locks & tasks software wipe."""
 
 from types import SimpleNamespace
 from unittest.mock import MagicMock

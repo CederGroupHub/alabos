@@ -56,7 +56,7 @@ function IdleBanner({ idle, reasons, controlAvailable }) {
       <Alert severity="info" sx={{ mb: 2 }}>
         Bootstrap control plane (8894) is not reachable. Backup, refresh
         definitions, nuclear wipe, and Advanced config need the A-Lab OS app
-        shell. Reset lab and Clear occupancy still work here.
+        shell. Release locks &amp; tasks and Clear occupancy still work here.
       </Alert>
     );
   }
@@ -70,8 +70,8 @@ function IdleBanner({ idle, reasons, controlAvailable }) {
   return (
     <Alert severity="warning" sx={{ mb: 2 }}>
       Lab is not idle
-      {reasons?.length ? `: ${reasons.join("; ")}` : "."} Finish or Reset lab
-      before backup / clear occupancy / refresh / nuclear.
+      {reasons?.length ? `: ${reasons.join("; ")}` : "."} Finish or Release
+      locks &amp; tasks before backup / clear occupancy / refresh / nuclear.
     </Alert>
   );
 }
@@ -153,16 +153,52 @@ function ConfirmDialog({
   );
 }
 
-function ActionCard({ title, description, children, actions }) {
+function ActionCard({ title, facts, children, actions }) {
   return (
     <Card variant="outlined" sx={{ mb: 2 }}>
       <CardContent>
-        <Typography variant="h6" gutterBottom>
+        <Typography
+          variant="h6"
+          sx={{ fontWeight: 700, color: "#203d51", mb: 1.25 }}
+        >
           {title}
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-          {description}
-        </Typography>
+        {facts?.length ? (
+          <Box
+            component="ul"
+            sx={{
+              m: 0,
+              mb: 1.5,
+              pl: 0,
+              listStyle: "none",
+            }}
+          >
+            {facts.map((fact) => (
+              <Typography
+                key={fact.label}
+                component="li"
+                variant="body1"
+                sx={{
+                  color: "#203d51",
+                  lineHeight: 1.55,
+                  mb: 1,
+                  "&:last-child": { mb: 0 },
+                }}
+              >
+                <Box
+                  component="span"
+                  sx={{
+                    fontWeight: 700,
+                    color: fact.tone === "warn" ? "#8a4b08" : "#203d51",
+                  }}
+                >
+                  {fact.label}:{" "}
+                </Box>
+                {fact.text}
+              </Typography>
+            ))}
+          </Box>
+        ) : null}
         {children}
       </CardContent>
       {actions && <CardActions sx={{ px: 2, pb: 2 }}>{actions}</CardActions>}
@@ -182,6 +218,7 @@ export default function LabSettings() {
   const [clearOpen, setClearOpen] = useState(false);
   const [refreshOpen, setRefreshOpen] = useState(false);
   const [nuclearOpen, setNuclearOpen] = useState(false);
+  const [nuclearBackupBeforeWipe, setNuclearBackupBeforeWipe] = useState(true);
 
   const refreshIdle = useCallback(async () => {
     try {
@@ -244,14 +281,20 @@ export default function LabSettings() {
 
   return (
     <Box>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
-        <SettingsIcon color="action" />
-        <Typography variant="h5">Lab settings</Typography>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+        <SettingsIcon sx={{ color: "#203d51" }} />
+        <Typography variant="h5" sx={{ fontWeight: 700, color: "#203d51" }}>
+          Lab settings
+        </Typography>
       </Box>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Recover from crashes, clear software occupancy, back up MongoDB, and
-        refresh device/slot definitions — without using the old launcher
-        checklist for day-to-day work.
+      <Typography
+        variant="body1"
+        sx={{ color: "#203d51", mb: 2.5, lineHeight: 1.55, maxWidth: 720 }}
+      >
+        Day-to-day recovery lives here: unstick software, clear empty-lab
+        occupancy, back up MongoDB, and refresh device definitions. Read each
+        card before you click — several actions are destructive or irreversible
+        for live work.
       </Typography>
 
       <IdleBanner
@@ -270,23 +313,94 @@ export default function LabSettings() {
         </Alert>
       )}
 
+      <Alert severity="warning" sx={{ mb: 2.5, maxWidth: 820 }}>
+        <Typography variant="body1" sx={{ fontWeight: 700, mb: 0.75 }}>
+          Recovery note (important)
+        </Typography>
+        <Typography variant="body1" sx={{ lineHeight: 1.55, mb: 1 }}>
+          <strong>Release locks &amp; tasks alone is not enough right now</strong> if
+          you want to run new experiments. Clearing task IDs frees device locks,
+          but samples can still occupy slots in software (
+          <code>samples.position</code>). That blocks the next task from reserving
+          those devices — the old “ghost sample” / stuck-reserve problem.
+        </Typography>
+        <Typography variant="body1" sx={{ lineHeight: 1.55, mb: 1 }}>
+          To clear and reset the lab for a fresh run <strong>without</strong> wiping
+          sample identities, last-known locations, movement history, or cancelled
+          task/experiment records: press{" "}
+          <strong>Release locks &amp; tasks</strong>, then{" "}
+          <strong>Clear occupancy</strong> (lab must be idle for Clear). Physically
+          empty or re-rack the bench to match.
+        </Typography>
+        <Typography variant="body1" sx={{ lineHeight: 1.55 }}>
+          If that still leaves the lab unusable, use{" "}
+          <strong>Nuclear wipe</strong> (Advanced; backup-on by default). Nuclear
+          drops the live Alab database — last resort only.
+        </Typography>
+      </Alert>
+
       <ActionCard
-        title="Reset lab"
-        description="Use after a crash or when tasks/locks are stuck. Cancels live work and releases devices, locks, and reservations. Keeps sample positions and movement history."
+        title="Release locks & tasks"
+        facts={[
+          {
+            label: "When",
+            text: "After a crash, or when experiments / devices / locks look stuck.",
+          },
+          {
+            label: "Does",
+            text: "Cancels live and queued work; releases devices, locks, and reservations.",
+          },
+          {
+            label: "Keeps",
+            text: "Sample positions and movement history.",
+          },
+          {
+            label: "Limitation",
+            text: "Not enough by itself to run again — leftover sample positions still block devices. Follow with Clear occupancy (see note above).",
+            tone: "warn",
+          },
+          {
+            label: "Does not",
+            text: "Emergency-stop hardware that is already moving.",
+            tone: "warn",
+          },
+        ]}
         actions={
           <Button
             variant="contained"
             color="warning"
             onClick={() => setResetOpen(true)}
           >
-            Reset lab
+            Release locks & tasks
           </Button>
         }
       />
 
       <ActionCard
         title="Clear occupancy"
-        description="Use when the physical lab is empty (or you want software to treat every slot as empty). Sets current position to empty, unlocks reservations, appends history. Keeps sample identity, last-known location, and history. Does not cancel experiments — Reset first if anything is still running."
+        facts={[
+          {
+            label: "When",
+            text: "The physical lab is empty, or you need software to treat every slot as empty.",
+          },
+          {
+            label: "Does",
+            text: "Sets current position empty, unlocks slot reservations, appends history.",
+          },
+          {
+            label: "Keeps",
+            text: "Sample identity, last-known location, and full movement history.",
+          },
+          {
+            label: "Requires",
+            text: "Lab idle — run Release locks & tasks first if anything is still running.",
+            tone: "warn",
+          },
+          {
+            label: "With Release locks",
+            text: "This pair is the non-nuclear reset: clear stuck work + empty the occupancy map while keeping sample records, last-known location, and histories. Use Nuclear wipe only if that fails.",
+          },
+        ]}
         actions={
           <Button
             variant="contained"
@@ -301,7 +415,20 @@ export default function LabSettings() {
 
       <ActionCard
         title="Backup MongoDB"
-        description="Point-in-time mongodump of all databases. Allowed only when the lab is idle. Optional backup-on-launch runs during bootstrap before services start (cold start is idle)."
+        facts={[
+          {
+            label: "When",
+            text: "Lab must be idle (or Backup on launch at cold start before services come up).",
+          },
+          {
+            label: "Live Alab",
+            text: "New dated snapshot under backup/live/ every run — never overwrites prior live dumps.",
+          },
+          {
+            label: "Other DBs",
+            text: "Rolling overwrite under backup/current/ (Alab(completed), Labman, …); whole current/ archives every N days.",
+          },
+        ]}
         actions={
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, alignItems: "center" }}>
             <Button
@@ -341,7 +468,20 @@ export default function LabSettings() {
 
       <ActionCard
         title="Restart lab with refreshed definitions"
-        description="Stop services, rebuild devices & slots from code (alabos clean + setup), then start again. Use after changing device/slot definitions in code. Lab must be idle."
+        facts={[
+          {
+            label: "When",
+            text: "After you change device or slot definitions in code.",
+          },
+          {
+            label: "Does",
+            text: "Stops services, rebuilds devices & slots (alabos clean + setup), then starts again.",
+          },
+          {
+            label: "Requires",
+            text: "Lab idle. Sample documents are not deleted.",
+          },
+        ]}
         actions={
           <Button
             variant="contained"
@@ -355,7 +495,16 @@ export default function LabSettings() {
 
       <ActionCard
         title="Profiles"
-        description="Apply saved environment defaults (database name and related flags). Does not wipe data by itself."
+        facts={[
+          {
+            label: "Does",
+            text: "Applies saved environment defaults (database name and related flags).",
+          },
+          {
+            label: "Does not",
+            text: "Wipe or dump data by itself — only changes settings for the next launch / action.",
+          },
+        ]}
         actions={
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
             <Button
@@ -393,33 +542,80 @@ export default function LabSettings() {
       />
 
       <Divider sx={{ my: 3 }} />
-      <Typography variant="h6" gutterBottom>
+      <Typography
+        variant="h6"
+        sx={{ fontWeight: 700, color: "#203d51" }}
+        gutterBottom
+      >
         Advanced
       </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+      <Typography
+        variant="body1"
+        sx={{ color: "#203d51", mb: 2, lineHeight: 1.55, maxWidth: 720 }}
+      >
         Rare or install-time settings. Nuclear wipe drops the entire live AlabOS
-        database (not Alab(completed)).
+        database — it does not drop Alab(completed).
       </Typography>
 
       <ActionCard
         title="Nuclear wipe live Alab"
-        description="Stop services, drop the live database, run setup, restart. For sim / brand-new install only. Requires typing the database name."
+        facts={[
+          {
+            label: "When",
+            text: "Sim lab or a brand-new install — not routine recovery.",
+            tone: "warn",
+          },
+          {
+            label: "Does",
+            text: "Stops services, drops the live database, runs setup, restarts.",
+          },
+          {
+            label: "Loses",
+            text: "Mid-experiment samples that are not yet in Alab(completed).",
+            tone: "warn",
+          },
+          {
+            label: "Confirm",
+            text: "You must type the live database name exactly.",
+          },
+          {
+            label: "Backup",
+            text: "Use the toggle next to the button (on by default) to run the same MongoDB backup as Backup now before wiping.",
+          },
+        ]}
         actions={
-          <Button
-            variant="outlined"
-            color="error"
-            disabled={!idle || controlAvailable === false}
-            onClick={() => setNuclearOpen(true)}
-          >
-            Nuclear wipe…
-          </Button>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, alignItems: "center" }}>
+            <Button
+              variant="outlined"
+              color="error"
+              disabled={!idle || controlAvailable === false}
+              onClick={() => setNuclearOpen(true)}
+            >
+              Nuclear wipe…
+            </Button>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={nuclearBackupBeforeWipe}
+                  disabled={!idle || controlAvailable === false}
+                  onChange={(e) => setNuclearBackupBeforeWipe(e.target.checked)}
+                />
+              }
+              label="Backup MongoDB before wipe"
+            />
+          </Box>
         }
       />
 
       {config && controlAvailable !== false && (
         <ActionCard
           title="Launch & paths"
-          description="Defaults used by the bootstrap shell on next launch / refresh."
+          facts={[
+            {
+              label: "Does",
+              text: "Edits defaults used by the bootstrap shell on the next launch or refresh.",
+            },
+          ]}
         >
           <FormControlLabel
             control={
@@ -453,6 +649,36 @@ export default function LabSettings() {
             onBlur={() =>
               saveConfigField({ backup_directory: config.backup_directory })
             }
+          />
+          <TextField
+            fullWidth
+            margin="dense"
+            label="Rolling archive interval (days)"
+            type="number"
+            value={config.backup_archive_interval_days ?? 60}
+            onChange={(e) =>
+              setConfig({
+                ...config,
+                backup_archive_interval_days: Number(e.target.value),
+              })
+            }
+            onBlur={() =>
+              saveConfigField({
+                backup_archive_interval_days:
+                  config.backup_archive_interval_days,
+              })
+            }
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={config.backup_use_gzip !== false}
+                onChange={(e) =>
+                  saveConfigField({ backup_use_gzip: e.target.checked })
+                }
+              />
+            }
+            label="Use mongodump --gzip"
           />
           <TextField
             fullWidth
@@ -494,23 +720,33 @@ export default function LabSettings() {
 
       <ConfirmDialog
         open={resetOpen}
-        title="Reset lab"
+        title="Release locks & tasks"
         body={
           <>
-            Cancels every running and queued experiment and releases devices so
-            you can submit again. Keeps sample positions and history. Does not
-            emergency-stop hardware that is already moving.
+            <Typography variant="body1" sx={{ color: "#203d51", mb: 1, lineHeight: 1.55 }}>
+              <strong>Does:</strong> Cancels every running and queued experiment
+              and releases devices so you can submit again.
+            </Typography>
+            <Typography variant="body1" sx={{ color: "#203d51", mb: 1, lineHeight: 1.55 }}>
+              <strong>Keeps:</strong> Sample positions and movement history.
+            </Typography>
+            <Typography variant="body1" sx={{ color: "#8a4b08", lineHeight: 1.55 }}>
+              <strong>Does not:</strong> Emergency-stop hardware that is already
+              moving.
+            </Typography>
           </>
         }
-        confirmLabel="Reset everything"
+        confirmLabel="Release locks & tasks"
         confirmColor="warning"
         onClose={() => setResetOpen(false)}
         onConfirm={async () => {
           const response = await reset_lab();
           if (response.status !== "success") {
-            throw new Error(response.reason || "Reset lab failed.");
+            throw new Error(
+              response.reason || "Release locks & tasks failed."
+            );
           }
-          setOk("Lab reset finished.");
+          setOk("Released locks and tasks.");
           await refreshIdle();
         }}
       />
@@ -520,9 +756,17 @@ export default function LabSettings() {
         title="Clear occupancy"
         body={
           <>
-            Sets every sample&apos;s current position to empty and unlocks slot
-            reservations. Identity, last-known location, and movement history
-            are kept. Type CLEAR to confirm.
+            <Typography variant="body1" sx={{ color: "#203d51", mb: 1, lineHeight: 1.55 }}>
+              <strong>Does:</strong> Sets every sample&apos;s current position to
+              empty and unlocks slot reservations.
+            </Typography>
+            <Typography variant="body1" sx={{ color: "#203d51", mb: 1, lineHeight: 1.55 }}>
+              <strong>Keeps:</strong> Identity, last-known location, and movement
+              history.
+            </Typography>
+            <Typography variant="body1" sx={{ color: "#8a4b08", lineHeight: 1.55 }}>
+              <strong>Confirm:</strong> Type CLEAR to continue.
+            </Typography>
           </>
         }
         confirmLabel="Clear occupancy"
@@ -544,9 +788,14 @@ export default function LabSettings() {
         title="Refresh devices & slots"
         body={
           <>
-            Stops AlabOS services, rebuilds device and sample-position
-            definitions from code, then starts services again. Lab must stay
-            idle. Sample documents are not deleted.
+            <Typography variant="body1" sx={{ color: "#203d51", mb: 1, lineHeight: 1.55 }}>
+              <strong>Does:</strong> Stops AlabOS services, rebuilds device and
+              sample-position definitions from code, then starts services again.
+            </Typography>
+            <Typography variant="body1" sx={{ color: "#203d51", lineHeight: 1.55 }}>
+              <strong>Requires:</strong> Lab stays idle. Sample documents are not
+              deleted.
+            </Typography>
           </>
         }
         confirmLabel="Refresh and restart"
@@ -567,10 +816,29 @@ export default function LabSettings() {
         title="Nuclear wipe live Alab"
         body={
           <>
-            Drops the entire live database{" "}
-            <strong>{config?.database_name || "Alab"}</strong>, then runs setup
-            and restarts. Mid-experiment samples not yet in Alab(completed) will
-            be lost. Type the database name to confirm.
+            <Typography variant="body1" sx={{ color: "#203d51", mb: 1, lineHeight: 1.55 }}>
+              <strong>Does:</strong> Drops the entire live database{" "}
+              <strong>{config?.database_name || "Alab"}</strong>, then runs setup
+              and restarts.
+            </Typography>
+            {nuclearBackupBeforeWipe ? (
+              <Typography variant="body1" sx={{ color: "#203d51", mb: 1, lineHeight: 1.55 }}>
+                <strong>Backup first:</strong> Runs the same MongoDB backup as
+                Backup now, then wipes.
+              </Typography>
+            ) : (
+              <Typography variant="body1" sx={{ color: "#8a4b08", mb: 1, lineHeight: 1.55 }}>
+                <strong>No backup:</strong> Wipe proceeds without a MongoDB dump.
+                Turn on Backup MongoDB before wipe if you need a safety copy.
+              </Typography>
+            )}
+            <Typography variant="body1" sx={{ color: "#8a4b08", mb: 1, lineHeight: 1.55 }}>
+              <strong>Loses:</strong> Mid-experiment samples not yet in
+              Alab(completed).
+            </Typography>
+            <Typography variant="body1" sx={{ color: "#8a4b08", lineHeight: 1.55 }}>
+              <strong>Confirm:</strong> Type the database name exactly.
+            </Typography>
           </>
         }
         confirmLabel="Wipe and restart"
@@ -578,7 +846,10 @@ export default function LabSettings() {
         onClose={() => setNuclearOpen(false)}
         onConfirm={async () => {
           const name = config?.database_name || "Alab";
-          const { ok, data } = await control_nuclear(name);
+          const { ok, data } = await control_nuclear(
+            name,
+            nuclearBackupBeforeWipe
+          );
           if (!ok) {
             throw new Error(data.error || data.reason || "Nuclear wipe failed");
           }

@@ -1,12 +1,12 @@
 """Cancel one experiment and free only that experiment's software bookings.
 
 This is the dashboard Cancel button. It force-cancels that experiment's live
-tasks (the same write Reset lab uses, scoped to this experiment), dismisses
-its user-input prompts, cancels its pending resource requests, releases its
-devices and positions, and marks the experiment Cancelled.
+tasks (the same write Release locks & tasks uses, scoped to this experiment),
+dismisses its user-input prompts, cancels its pending resource requests,
+releases its devices and positions, and marks the experiment Cancelled.
 
 It does not emergency-stop hardware that is already moving, and it does not
-touch other experiments. Use Reset lab when the whole lab is stuck.
+touch other experiments. Use Release locks & tasks when the whole lab is stuck.
 """
 
 from __future__ import annotations
