@@ -66,6 +66,24 @@ class ExperimentManager:
         This method will scan the database to find out if there are
         any pending experiments and submit it to task database.
         """
+        from alab_management.device_rpc_status import (
+            dismiss_lab_starting_user_input,
+            ensure_lab_starting_user_input,
+            get_lab_readiness,
+        )
+
+        readiness = get_lab_readiness()
+        if not readiness["lab_ready"]:
+            ensure_lab_starting_user_input()
+            cli_logger.info(
+                "Holding PENDING experiments until lab devices are ready "
+                "(%s).",
+                readiness.get("lab_ready_label"),
+            )
+            return
+
+        dismiss_lab_starting_user_input()
+
         pending_experiments = self.experiment_view.get_experiments_with_status(
             ExperimentStatus.PENDING
         )

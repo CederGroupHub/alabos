@@ -9,6 +9,7 @@ from alab_management.dashboard.lab_views import (
     task_view,
 )
 from alab_management.dashboard.manual_control import MANUAL_CONTROL_ATTRIBUTE
+from alab_management.device_rpc_status import get_lab_readiness
 from alab_management.utils.data_objects import make_jsonable
 
 status_bp = Blueprint("/status", __name__, url_prefix="/api/status")
@@ -156,10 +157,14 @@ def get_all_status():
         for experiment in experiments
     ]
 
+    readiness = get_lab_readiness()
     return make_jsonable(
         {
             "devices": devices,
             "experiments": experiments,
+            "lab_ready": readiness["lab_ready"],
+            "lab_ready_label": readiness["lab_ready_label"],
+            "device_rpc": readiness["device_rpc"],
             # "userinputrequests": user_input_requests,
         }
     )

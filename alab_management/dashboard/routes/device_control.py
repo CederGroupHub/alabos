@@ -19,6 +19,7 @@ from alab_management.dashboard.manual_control import (
     set_manual_claim_id,
 )
 from alab_management.device_manager import DevicesClient
+from alab_management.device_rpc_status import require_lab_ready_or_503
 
 device_control_bp = Blueprint(
     "/device-control", __name__, url_prefix="/api/device-control"
@@ -399,6 +400,9 @@ def get_device_control_catalog():
 @device_control_bp.route("/claim", methods=["POST"])
 def claim_device():
     """Claim a device for manual control."""
+    blocked = require_lab_ready_or_503()
+    if blocked is not None:
+        return blocked
     data = request.get_json(force=True)  # type: ignore[arg-type]
     device_name = data.get("device_name")
 
@@ -427,6 +431,9 @@ def claim_device():
 @device_control_bp.route("/release", methods=["POST"])
 def release_device():
     """Release a manual-control claim."""
+    blocked = require_lab_ready_or_503()
+    if blocked is not None:
+        return blocked
     data = request.get_json(force=True)  # type: ignore[arg-type]
     device_name = data.get("device_name")
     manual_task_id = data.get("manual_task_id")
@@ -448,6 +455,9 @@ def release_device():
 @device_control_bp.route("/command", methods=["POST"])
 def execute_device_command():
     """Execute an allowlisted device command."""
+    blocked = require_lab_ready_or_503()
+    if blocked is not None:
+        return blocked
     data = request.get_json(force=True)  # type: ignore[arg-type]
     device_name = data.get("device_name")
     command_name = data.get("command_name")

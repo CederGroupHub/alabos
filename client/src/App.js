@@ -1,59 +1,60 @@
 import SubmitExp from "./submit_exp/SubmitExp";
 import Dashboard from './dashboard/Dashboard';
-import { AppBar, CssBaseline, Typography } from "@mui/material";
+import { AppBar, Chip, CssBaseline, Tooltip, Typography } from "@mui/material";
 import styled from "styled-components";
 import { Routes, Route, NavLink, BrowserRouter } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import alabLogo from "./alab_logo.png";
+import { LabReadinessProvider, useLabReadiness } from "./LabReadiness";
 
 const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#1976d2",
-      dark: "#1565c0",
-      light: "#42a5f5",
-      contrastText: "#ffffff",
-    },
-    error: {
-      main: "#d32f2f",
-      dark: "#b71c1c",
-      light: "#ef5350",
-      contrastText: "#ffffff",
-    },
-    info: {
-      main: "#1976d2",
-      dark: "#1565c0",
-      light: "#42a5f5",
-      contrastText: "#ffffff",
-    },
-    warning: {
-      main: "#d32f2f",
-      dark: "#b71c1c",
-      light: "#ef5350",
-      contrastText: "#ffffff",
-    },
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: "none",
+    palette: {
+        primary: {
+            main: "#1976d2",
+            dark: "#1565c0",
+            light: "#42a5f5",
+            contrastText: "#ffffff",
         },
-      },
-    },
-    MuiSwitch: {
-      styleOverrides: {
-        switchBase: {
-          "&.Mui-checked": {
-            color: "#1976d2",
-          },
-          "&.Mui-checked + .MuiSwitch-track": {
-            backgroundColor: "#1976d2",
-          },
+        error: {
+            main: "#d32f2f",
+            dark: "#b71c1c",
+            light: "#ef5350",
+            contrastText: "#ffffff",
         },
-      },
+        info: {
+            main: "#1976d2",
+            dark: "#1565c0",
+            light: "#42a5f5",
+            contrastText: "#ffffff",
+        },
+        warning: {
+            main: "#d32f2f",
+            dark: "#b71c1c",
+            light: "#ef5350",
+            contrastText: "#ffffff",
+        },
     },
-  },
+    components: {
+        MuiButton: {
+            styleOverrides: {
+                root: {
+                    textTransform: "none",
+                },
+            },
+        },
+        MuiSwitch: {
+            styleOverrides: {
+                switchBase: {
+                    "&.Mui-checked": {
+                        color: "#1976d2",
+                    },
+                    "&.Mui-checked + .MuiSwitch-track": {
+                        backgroundColor: "#1976d2",
+                    },
+                },
+            },
+        },
+    },
 });
 
 const StyledAppBar = styled(AppBar)`
@@ -64,6 +65,7 @@ const StyledAppBar = styled(AppBar)`
   display: flex;
   flex-direction: row !important;
   align-items: center;
+  justify-content: space-between;
   font-family: "Roboto", sans-serif;
   padding: 0 30px;
 
@@ -94,37 +96,71 @@ const StyledLogoTile = styled.div`
   margin-right: 26px;
 `;
 
+function LabReadyChip() {
+  const { labReady, labReadyLabel, deviceRpc } = useLabReadiness();
+  const tooltip = labReady
+    ? "Lab devices are ready for experiments and direct control."
+    : deviceRpc?.detail
+      ? `Waiting for device manager (${deviceRpc.detail}).`
+      : "Waiting for device manager to finish starting.";
+  return (
+    <Tooltip title={tooltip}>
+      <Chip
+        label={labReadyLabel}
+        size="small"
+        sx={{
+          fontWeight: 600,
+          bgcolor: labReady ? "rgba(76, 175, 80, 0.22)" : "rgba(255, 193, 7, 0.28)",
+          color: "#f5fbff",
+          border: "1px solid rgba(255,255,255,0.25)",
+        }}
+      />
+    </Tooltip>
+  );
+}
+
+function AppShell() {
+  return (
+    <>
+      <StyledAppBar position="sticky">
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <NavLink to="/">
+            <StyledLogoTile>
+              <StyledLogo src={alabLogo} />
+            </StyledLogoTile>
+          </NavLink>
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: 700,
+              letterSpacing: "0.08em",
+              ml: 0.5,
+              color: "#f5fbff",
+              textTransform: "uppercase",
+              fontSize: { xs: "1.35rem", sm: "1.62rem" },
+            }}
+          >
+            A-Lab
+          </Typography>
+        </div>
+        <LabReadyChip />
+      </StyledAppBar>
+      <Routes>
+        <Route path="/*" element={<Dashboard />} />
+        {/* <Route path="new-experiment" element={<SubmitExp />} /> */}
+      </Routes>
+    </>
+  );
+}
+
 function App() {
   return (
     <BrowserRouter>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <StyledAppBar position="sticky">
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <NavLink to="/">
-              <StyledLogoTile>
-                <StyledLogo src={alabLogo} />
-              </StyledLogoTile>
-            </NavLink>
-            <Typography
-              variant="h5"
-              sx={{
-                fontWeight: 700,
-                letterSpacing: "0.08em",
-                ml: 0.5,
-                color: "#f5fbff",
-                textTransform: "uppercase",
-                fontSize: { xs: "1.35rem", sm: "1.62rem" },
-              }}
-            >
-              A-Lab
-            </Typography>
-          </div>
-        </StyledAppBar>
-        <Routes>
-          <Route path="/*" element={<Dashboard />} />
-          {/* <Route path="new-experiment" element={<SubmitExp />} /> */}
-        </Routes>
+        <LabReadinessProvider>
+          <AppShell />
+        </LabReadinessProvider>
       </ThemeProvider>
     </BrowserRouter>
   );

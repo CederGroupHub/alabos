@@ -28,6 +28,11 @@ experiment_bp = Blueprint("/experiment", __name__, url_prefix="/api/experiment")
 @experiment_bp.route("/submit", methods=["POST"])
 def submit_new_experiment():
     """Submit a new experiment to the system."""
+    from alab_management.device_rpc_status import (
+        ensure_lab_starting_user_input,
+        get_lab_readiness,
+    )
+
     data = request.get_json(force=True)  # type: ignore
     try:
         experiment = InputExperiment(**data)  # type: ignore
@@ -37,7 +42,20 @@ def submit_new_experiment():
     except ValueError as exception:
         return {"status": "error", "errors": exception.args[0]}, 400
 
-    return {"status": "success", "data": {"exp_id": str(exp_id)}}
+    readiness = get_lab_readiness()
+    held = not readiness["lab_ready"]
+    if held:
+        ensure_lab_starting_user_input()
+
+    return {
+        "status": "success",
+        "data": {
+            "exp_id": str(exp_id),
+            "lab_ready": readiness["lab_ready"],
+            "lab_ready_label": readiness["lab_ready_label"],
+            "held_until_lab_ready": held,
+        },
+    }
 
 
 def get_experiment_progress(exp_id: str):

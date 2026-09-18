@@ -24,8 +24,10 @@ import BuildIcon from '@mui/icons-material/Build';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import ArticleIcon from '@mui/icons-material/Article';
 import UserInputs from './components/UserInput';
+import LabNotReadyGate from './components/LabNotReadyGate';
 import Badge from '@mui/material/Badge';
 import { get_pending_userinputrequests } from '../api_routes';
+import { useLabReadiness } from '../LabReadiness';
 
 const StyledDashboardDiv = styled.div`
   min-height: calc(100vh - 76px);
@@ -94,6 +96,7 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange }) {
   const [numUserInputRequests, setNumUserInputRequests] = useState(0);
   const { hash } = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { labReady } = useLabReadiness();
   // const [hoverForId, setHoverForId] = useState(false);
 
 
@@ -201,9 +204,12 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange }) {
           variant="caption"
           sx={{ display: 'block', color: '#5f7483', mt: 0.25, lineHeight: 1.35 }}
         >
-          For integration testing and debugging
+          {labReady
+            ? "For integration testing and debugging"
+            : "Waiting for lab devices…"}
         </Typography>
       </ListItem>
+      <Box sx={{ opacity: labReady ? 1 : 0.55 }}>
       <ListItem>
         <LinkedButton to="/#device-control">
           <ListItemButton className={hash === "#device-control" ? "active list-button-round" : "list-button-round"}>
@@ -244,6 +250,7 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange }) {
           </ListItemButton>
         </LinkedButton>
       </ListItem>
+      </Box>
     </List>
 
 
@@ -338,13 +345,29 @@ function Dashboard() {
       case "#lab-settings":
         return <LabSettings />;
       case "#device-control":
-        return <DeviceControl />;
+        return (
+          <LabNotReadyGate>
+            <DeviceControl />
+          </LabNotReadyGate>
+        );
       case "#mobile-robot-control":
-        return <MobileRobotControl />;
+        return (
+          <LabNotReadyGate>
+            <MobileRobotControl />
+          </LabNotReadyGate>
+        );
       case "#bft-control":
-        return <BftControl />;
+        return (
+          <LabNotReadyGate>
+            <BftControl />
+          </LabNotReadyGate>
+        );
       case "#dash-control":
-        return <DashControl />;
+        return (
+          <LabNotReadyGate>
+            <DashControl />
+          </LabNotReadyGate>
+        );
       case "#userinput":
         return <UserInputs hoverForId={hoverForId} />
       case "#experiment":

@@ -4,12 +4,17 @@ from __future__ import annotations
 
 from flask import Blueprint, request
 
+from alab_management.device_rpc_status import require_lab_ready_or_503
+
 robot_control_bp = Blueprint(
     "/robot-control", __name__, url_prefix="/api/robot-control/mobile"
 )
 
 
 def _handle_request(handler, *, segment_id: str | None = None, parse_json: bool = False):
+    blocked = require_lab_ready_or_503()
+    if blocked is not None:
+        return blocked
     try:
         body = request.get_json(silent=True) or {} if parse_json else {}
         if segment_id is None:
@@ -28,7 +33,10 @@ def get_mobile_robot_catalog():
     """List curated mobile-robot transfer segments."""
     from alab_one.robot_control.service import get_catalog
 
-    return _handle_request(get_catalog)
+    try:
+        return {"status": "success", "data": get_catalog()}
+    except Exception as error:
+        return {"status": "error", "errors": str(error)}, 400
 
 
 @robot_control_bp.route("/preview/<segment_id>", methods=["POST"])
