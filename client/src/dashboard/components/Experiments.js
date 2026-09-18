@@ -167,62 +167,200 @@ function ProgressStepsStrip({ progressSteps }) {
   );
 }
 
-function CancelConfirmDialog({ open, setOpen, type, id, experimentId, onCancelled }) {
+function liveTasksFromStatus(status) {
+  return (status?.tasks || []).filter((task) => CANCELABLE_TASK_STATUSES.has(task.status));
+}
+
+function sampleStayLines(status) {
+  return (status?.samples || []).map((sample) => {
+    const where = sample.position || sample.last_position || "unknown";
+    return `${sample.name || sample.id} @ ${where}`;
+  });
+}
+
+function formatCancelSummary(data) {
+  if (!data || typeof data !== "object") {
+    return "Experiment cancel finished.";
+  }
+  const parts = [];
+  if (data.tasks_cancelled != null) {
+    parts.push(`Cancelled ${data.tasks_cancelled} task${data.tasks_cancelled === 1 ? "" : "s"}`);
+  }
+  if (data.positions_unlocked != null) {
+    parts.push(`unlocked ${data.positions_unlocked} position${data.positions_unlocked === 1 ? "" : "s"}`);
+  }
+  if (data.devices_released != null) {
+    parts.push(`released ${data.devices_released} device${data.devices_released === 1 ? "" : "s"}`);
+  }
+  if (data.resource_requests_cancelled != null && data.resource_requests_cancelled > 0) {
+    parts.push(`dropped ${data.resource_requests_cancelled} resource request${data.resource_requests_cancelled === 1 ? "" : "s"}`);
+  }
+  if (data.user_inputs_dismissed != null && data.user_inputs_dismissed > 0) {
+    parts.push(`dismissed ${data.user_inputs_dismissed} prompt${data.user_inputs_dismissed === 1 ? "" : "s"}`);
+  }
+  if (data.experiment_closed) {
+    parts.push("experiment marked cancelled");
+  }
+  return parts.length ? parts.join(" · ") : "Experiment cancel finished.";
+}
+
+function CancelConfirmDialog({ open, setOpen, type, id, experimentId, experimentStatus, onCancelled }) {
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState(null);
+  const [phase, setPhase] = React.useState("confirm"); // confirm | busy | done
+  const [summary, setSummary] = React.useState("");
+
+  React.useEffect(() => {
+    if (open) {
+      setBusy(false);
+      setError(null);
+      setPhase("confirm");
+      setSummary("");
+    }
+  }, [open, id, type]);
+
+  const isExperiment = type === "experiment";
+  const liveTasks = isExperiment ? liveTasksFromStatus(experimentStatus) : [];
+  const sampleLines = isExperiment ? sampleStayLines(experimentStatus) : [];
 
   const handleClose = () => {
     if (busy) {
       return;
     }
     setError(null);
+    setPhase("confirm");
+    setSummary("");
     setOpen(false);
   };
 
   const handleCancel = async () => {
     setBusy(true);
     setError(null);
+    setPhase("busy");
     try {
-      const response = type === "experiment"
+      const response = isExperiment
         ? await cancel_experiment(id)
         : await cancel_task(id);
       if (response.status !== "success") {
         setError(response.reason || response.errors || "Cancel failed.");
+        setPhase("confirm");
         return;
       }
-      if (type === "experiment") {
+      if (isExperiment) {
         await waitUntilExperimentShowsCancelled(id);
+        setSummary(formatCancelSummary(response.data));
+        if (onCancelled) {
+          await onCancelled();
+        }
+        setPhase("done");
       } else {
         await waitUntilTaskIsNotLive(experimentId, id);
+        if (onCancelled) {
+          await onCancelled();
+        }
+        await sleep(300);
+        setOpen(false);
+        setPhase("confirm");
       }
-      if (onCancelled) {
-        await onCancelled();
-      }
-      await sleep(300);
-      setError(null);
-      setOpen(false);
     } catch (err) {
       setError(String(err.message || err));
+      setPhase("confirm");
     } finally {
       setBusy(false);
     }
   };
+
+  const previewCap = 8;
 
   return (
     <Dialog
       open={open}
       onClose={handleClose}
       disableEscapeKeyDown={busy}
+      maxWidth="sm"
+      fullWidth
     >
-      <DialogTitle>Cancel {type === "experiment" ? "Experiment" : "Task"}</DialogTitle>
+      <DialogTitle>
+        {phase === "done"
+          ? "Experiment cancelled"
+          : `Cancel ${isExperiment ? "Experiment" : "Task"}`}
+      </DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          Are you sure you want to cancel this {type === "experiment" ? "experiment" : "task"} ({id})?
-          Samples stay where they are. Devices booked by queued tasks are released.
-        </DialogContentText>
-        {busy && (
+        {phase === "done" ? (
+          <DialogContentText component="div">
+            <Typography variant="body1" sx={{ mb: 1 }}>
+              {summary}
+            </Typography>
+          </DialogContentText>
+        ) : isExperiment ? (
+          <DialogContentText component="div">
+            <Box component="ul" sx={{ m: 0, mb: 2, pl: 2 }}>
+              <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                <Box component="span" sx={{ fontWeight: 700 }}>Stops:</Box>
+                {" "}this experiment’s software work (live + waiting tasks, bookings, prompts).
+              </Typography>
+              <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                <Box component="span" sx={{ fontWeight: 700 }}>Leaves:</Box>
+                {" "}samples where they are; other experiments alone.
+              </Typography>
+              <Typography component="li" variant="body2">
+                <Box component="span" sx={{ fontWeight: 700 }}>Does not:</Box>
+                {" "}halt hardware already in motion.
+              </Typography>
+            </Box>
+
+            <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5 }}>
+              Will cancel
+            </Typography>
+            {liveTasks.length === 0 ? (
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+                Nothing live to cancel; experiment will be marked cancelled if still open.
+              </Typography>
+            ) : (
+              <Box component="ul" sx={{ m: 0, mb: 1.5, pl: 2 }}>
+                {liveTasks.slice(0, previewCap).map((task) => (
+                  <Typography key={task.id} component="li" variant="body2">
+                    {task.description || task.type} ({task.status})
+                  </Typography>
+                ))}
+                {liveTasks.length > previewCap ? (
+                  <Typography component="li" variant="body2" color="text.secondary">
+                    +{liveTasks.length - previewCap} more
+                  </Typography>
+                ) : null}
+              </Box>
+            )}
+
+            <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5 }}>
+              Samples stay
+            </Typography>
+            {sampleLines.length === 0 ? (
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+                No samples on this experiment.
+              </Typography>
+            ) : (
+              <Box component="ul" sx={{ m: 0, mb: 1.5, pl: 2 }}>
+                {sampleLines.map((line) => (
+                  <Typography key={line} component="li" variant="body2">
+                    {line}
+                  </Typography>
+                ))}
+              </Box>
+            )}
+
+            <Typography variant="body2" color="text.secondary">
+              Also frees this experiment’s device/slot reservations.
+            </Typography>
+          </DialogContentText>
+        ) : (
+          <DialogContentText>
+            Are you sure you want to cancel this task ({id})?
+            Samples stay where they are. Devices booked by queued tasks are released.
+          </DialogContentText>
+        )}
+        {phase === "busy" && (
           <DialogContentText sx={{ mt: 2 }}>
-            {type === "experiment"
+            {isExperiment
               ? "Cancelling… waiting until this experiment shows as Cancelled with no live tasks."
               : "Cancelling… waiting until this task is no longer live."}
           </DialogContentText>
@@ -234,19 +372,27 @@ function CancelConfirmDialog({ open, setOpen, type, id, experimentId, onCancelle
         )}
       </DialogContent>
       <DialogActions>
-        {!busy && (
-          <Button onClick={handleCancel} color="error">
-            Yes
+        {phase === "done" ? (
+          <Button onClick={handleClose} autoFocus>
+            Close
           </Button>
+        ) : (
+          <>
+            {!busy && (
+              <Button onClick={handleCancel} color="error">
+                Yes, cancel
+              </Button>
+            )}
+            {busy && (
+              <Button disabled>
+                Cancelling…
+              </Button>
+            )}
+            <Button onClick={handleClose} autoFocus disabled={busy}>
+              No
+            </Button>
+          </>
         )}
-        {busy && (
-          <Button disabled>
-            Cancelling…
-          </Button>
-        )}
-        <Button onClick={handleClose} autoFocus disabled={busy}>
-          No
-        </Button>
       </DialogActions>
     </Dialog>
   );
@@ -340,6 +486,7 @@ function Row({ experiment_id, hoverForId, onExperimentCancelled, refreshEpoch })
         type={dialogType}
         id={dialogId}
         experimentId={experiment_id}
+        experimentStatus={status}
         onCancelled={async () => {
           await refreshStatus();
           if (onExperimentCancelled) {
