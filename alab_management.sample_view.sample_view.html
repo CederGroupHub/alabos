@@ -262,6 +262,7 @@
 <li class="toctree-l3"><a class="reference internal" href="alab_management.alarm.html">alab_management.alarm module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.config.html">alab_management.config module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.device_manager.html">alab_management.device_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.device_rpc_status.html">alab_management.device_rpc_status module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.experiment_cancel.html">alab_management.experiment_cancel module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.experiment_manager.html">alab_management.experiment_manager module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.lab_reset.html">alab_management.lab_reset module</a></li>
@@ -454,6 +455,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.clean_up_sample_position_collection"><code class="docutils literal notranslate"><span class="pre">SampleView.clean_up_sample_position_collection()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.clear_sample_in_transit"><code class="docutils literal notranslate"><span class="pre">SampleView.clear_sample_in_transit()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.create_sample"><code class="docutils literal notranslate"><span class="pre">SampleView.create_sample()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.diagnose_sample_position_shortage"><code class="docutils literal notranslate"><span class="pre">SampleView.diagnose_sample_position_shortage()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.exists"><code class="docutils literal notranslate"><span class="pre">SampleView.exists()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.get_all_sample_positions_from_db"><code class="docutils literal notranslate"><span class="pre">SampleView.get_all_sample_positions_from_db()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.get_available_sample_position"><code class="docutils literal notranslate"><span class="pre">SampleView.get_available_sample_position()</span></code></a></li>
@@ -621,6 +623,20 @@ we will just skip it.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code></span></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.sample_view.sample_view.SampleView.diagnose_sample_position_shortage">
+<span class="sig-name descname"><span class="pre">diagnose_sample_position_shortage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_positions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.diagnose_sample_position_shortage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.diagnose_sample_position_shortage" title="Link to this definition">#</a></dt>
+<dd><p>Explain why <code class="docutils literal notranslate"><span class="pre">request_sample_positions</span></code> would return <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<p>Returns a structured diagnosis suitable for operator prompts:
+:rtype: <span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</span></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">shortages</span></code>: per-request need/available plus blocker positions</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">allow_clear</span></code>: True only when every shortage is an exact-slot request
+(safe to clear those specific slots from User Input)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clearable_blockers</span></code>: blockers for exact shortages (for Clear action)</p></li>
+</ul>
 </dd></dl>
 
 <dl class="py method">
@@ -1012,6 +1028,7 @@ sample arrives.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.clean_up_sample_position_collection"><code class="docutils literal notranslate"><span class="pre">SampleView.clean_up_sample_position_collection()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.clear_sample_in_transit"><code class="docutils literal notranslate"><span class="pre">SampleView.clear_sample_in_transit()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.create_sample"><code class="docutils literal notranslate"><span class="pre">SampleView.create_sample()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.diagnose_sample_position_shortage"><code class="docutils literal notranslate"><span class="pre">SampleView.diagnose_sample_position_shortage()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.exists"><code class="docutils literal notranslate"><span class="pre">SampleView.exists()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.get_all_sample_positions_from_db"><code class="docutils literal notranslate"><span class="pre">SampleView.get_all_sample_positions_from_db()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.get_available_sample_position"><code class="docutils literal notranslate"><span class="pre">SampleView.get_available_sample_position()</span></code></a></li>

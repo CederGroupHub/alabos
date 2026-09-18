@@ -259,6 +259,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../alab_management.alarm.html">alab_management.alarm module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../alab_management.config.html">alab_management.config module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../alab_management.device_manager.html">alab_management.device_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../alab_management.device_rpc_status.html">alab_management.device_rpc_status module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../alab_management.experiment_cancel.html">alab_management.experiment_cancel module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../alab_management.experiment_manager.html">alab_management.experiment_manager module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../alab_management.lab_reset.html">alab_management.lab_reset module</a></li>
@@ -400,6 +401,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">AlabOSConfig</span>
 
 <span class="n">CANCEL_RESPONSE</span> <span class="o">=</span> <span class="s2">"Cancelled"</span>
+<span class="n">SUPERSEDED_RESPONSE</span> <span class="o">=</span> <span class="s2">"Superseded"</span>
 
 
 <div class="viewcode-block" id="UserRequestStatus">
@@ -459,6 +461,16 @@
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">request_context_extra</span><span class="p">:</span>
             <span class="n">context</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">request_context_extra</span><span class="p">)</span>
+
+        <span class="c1"># Keep the User Inputs UI to one actionable row per duplicate: when a fresh</span>
+        <span class="c1"># request replaces an older pending one with the same device + prompt (typical</span>
+        <span class="c1"># orphaned arm "set to remote" piles after reconnect/restart), fulfill the</span>
+        <span class="c1"># stale rows so only the new waiter is shown.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_supersede_duplicate_pending_requests</span><span class="p">(</span>
+            <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
+            <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
+        <span class="p">)</span>
+
         <span class="n">request_id</span> <span class="o">=</span> <span class="n">ObjectId</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span>
             <span class="p">{</span>
@@ -475,6 +487,39 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_alarm</span><span class="o">.</span><span class="n">alert</span><span class="p">(</span><span class="sa">f</span><span class="s2">"User input requested: </span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">request_id</span></div>
 
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_supersede_duplicate_pending_requests</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Fulfill pending requests that a new insert would duplicate.</span>
+
+<span class="sd">        Matches on identical ``prompt`` plus ``request_context.device`` when a device</span>
+<span class="sd">        is present (robot-arm / instrument maintenance prompts). Returns how many</span>
+<span class="sd">        stale requests were superseded.</span>
+<span class="sd">        """</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"device"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">device</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">update_many</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="s2">"prompt"</span><span class="p">:</span> <span class="n">prompt</span><span class="p">,</span>
+                <span class="s2">"request_context.device"</span><span class="p">:</span> <span class="n">device</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">FULLFILLED</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                    <span class="s2">"response"</span><span class="p">:</span> <span class="n">SUPERSEDED_RESPONSE</span><span class="p">,</span>
+                    <span class="s2">"note"</span><span class="p">:</span> <span class="p">(</span>
+                        <span class="s2">"Replaced by a newer request for the same device and prompt."</span>
+                    <span class="p">),</span>
+                    <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">now</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">modified_count</span><span class="p">)</span>
 
 <div class="viewcode-block" id="UserInputView.get_request">
 <a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.UserInputView.get_request">[docs]</a>
@@ -594,19 +639,72 @@
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Get all pending requests.</span>
 
-<span class="sd">        Returns a list of pending requests.</span>
+<span class="sd">        Collapses duplicate device+prompt rows (keeps newest) so the dashboard does</span>
+<span class="sd">        not show a pile of stale identical maintenance prompts.</span>
 <span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_collapse_duplicate_pending_requests</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
             <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">value</span><span class="p">}),</span>
+            <span class="nb">list</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
+                    <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">value</span><span class="p">}</span>
+                <span class="p">)</span>
+            <span class="p">),</span>
         <span class="p">)</span></div>
 
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_collapse_duplicate_pending_requests</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Supersede older pending requests that share device + prompt with a newer one."""</span>
+        <span class="n">pending</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">value</span><span class="p">})</span>
+        <span class="p">)</span>
+        <span class="n">newest_by_key</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">superseded_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">request</span> <span class="ow">in</span> <span class="n">pending</span><span class="p">:</span>
+            <span class="n">context</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"request_context"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+            <span class="n">device</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"device"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">device</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"prompt"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">))</span>
+            <span class="n">current</span> <span class="o">=</span> <span class="n">newest_by_key</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">current</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">newest_by_key</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">request</span>
+                <span class="k">continue</span>
+            <span class="n">current_updated</span> <span class="o">=</span> <span class="n">current</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"last_updated"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">datetime</span><span class="o">.</span><span class="n">min</span>
+            <span class="n">request_updated</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"last_updated"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">datetime</span><span class="o">.</span><span class="n">min</span>
+            <span class="k">if</span> <span class="n">request_updated</span> <span class="o">&gt;=</span> <span class="n">current_updated</span><span class="p">:</span>
+                <span class="n">superseded_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">])</span>
+                <span class="n">newest_by_key</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">request</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">superseded_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">request</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">superseded_ids</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">update_many</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">"_id"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$in"</span><span class="p">:</span> <span class="n">superseded_ids</span><span class="p">},</span>
+                <span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">FULLFILLED</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                    <span class="s2">"response"</span><span class="p">:</span> <span class="n">SUPERSEDED_RESPONSE</span><span class="p">,</span>
+                    <span class="s2">"note"</span><span class="p">:</span> <span class="p">(</span>
+                        <span class="s2">"Replaced by a newer request for the same device and prompt."</span>
+                    <span class="p">),</span>
+                    <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">now</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">modified_count</span><span class="p">)</span>
 
 <div class="viewcode-block" id="UserInputView.get_pending_request_by_context">
 <a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.UserInputView.get_pending_request_by_context">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_pending_request_by_context</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">context_filters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Return one pending request whose ``request_context`` matches all filters."""</span>
         <span class="n">query</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">value</span><span class="p">}</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">context_filters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">query</span><span class="p">[</span><span class="sa">f</span><span class="s2">"request_context.</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
@@ -668,15 +766,36 @@
 <span class="sd">        response (str): user response as string</span>
 <span class="sd">    """</span>
     <span class="n">user_input_view</span> <span class="o">=</span> <span class="n">UserInputView</span><span class="p">()</span>
-    <span class="n">request_id</span> <span class="o">=</span> <span class="n">user_input_view</span><span class="o">.</span><span class="n">insert_request</span><span class="p">(</span>
-        <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span>
-        <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
-        <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span>
-        <span class="n">maintenance</span><span class="o">=</span><span class="n">maintenance</span><span class="p">,</span>
-        <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span>
-        <span class="n">request_context_extra</span><span class="o">=</span><span class="n">request_context_extra</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">user_input_view</span><span class="o">.</span><span class="n">retrieve_user_input</span><span class="p">(</span><span class="n">request_id</span><span class="o">=</span><span class="n">request_id</span><span class="p">)</span></div>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">request_id</span> <span class="o">=</span> <span class="n">user_input_view</span><span class="o">.</span><span class="n">insert_request</span><span class="p">(</span>
+            <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span>
+            <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
+            <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span>
+            <span class="n">maintenance</span><span class="o">=</span><span class="n">maintenance</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span>
+            <span class="n">request_context_extra</span><span class="o">=</span><span class="n">request_context_extra</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">user_input_view</span><span class="o">.</span><span class="n">retrieve_user_input</span><span class="p">(</span><span class="n">request_id</span><span class="o">=</span><span class="n">request_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span> <span class="o">!=</span> <span class="n">SUPERSEDED_RESPONSE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">response</span>
+
+        <span class="c1"># Another insert replaced this request; wait on the surviving pending row</span>
+        <span class="c1"># instead of returning "Superseded" to the caller.</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="p">(</span><span class="n">request_context_extra</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"device"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">device</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">replacement</span> <span class="o">=</span> <span class="n">user_input_view</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="s2">"prompt"</span><span class="p">:</span> <span class="n">prompt</span><span class="p">,</span>
+                <span class="s2">"request_context.device"</span><span class="p">:</span> <span class="n">device</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">replacement</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">user_input_view</span><span class="o">.</span><span class="n">retrieve_user_input</span><span class="p">(</span><span class="n">request_id</span><span class="o">=</span><span class="n">replacement</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">response</span> <span class="o">!=</span> <span class="n">SUPERSEDED_RESPONSE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">response</span></div>
 
 
 

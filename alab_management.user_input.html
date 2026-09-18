@@ -261,6 +261,7 @@
 <li class="toctree-l3"><a class="reference internal" href="alab_management.alarm.html">alab_management.alarm module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.config.html">alab_management.config module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.device_manager.html">alab_management.device_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.device_rpc_status.html">alab_management.device_rpc_status module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.experiment_cancel.html">alab_management.experiment_cancel module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.experiment_manager.html">alab_management.experiment_manager module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.lab_reset.html">alab_management.lab_reset module</a></li>
@@ -492,7 +493,8 @@
 <dt class="sig sig-object py" id="alab_management.user_input.UserInputView.get_all_pending_requests">
 <span class="sig-name descname"><span class="pre">get_all_pending_requests</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#UserInputView.get_all_pending_requests"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.UserInputView.get_all_pending_requests" title="Link to this definition">#</a></dt>
 <dd><p>Get all pending requests.</p>
-<p>Returns a list of pending requests.</p>
+<p>Collapses duplicate device+prompt rows (keeps newest) so the dashboard does
+not show a pile of stale identical maintenance prompts.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></span></p>
@@ -503,7 +505,8 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.user_input.UserInputView.get_pending_request_by_context">
 <span class="sig-name descname"><span class="pre">get_pending_request_by_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context_filters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/user_input.html#UserInputView.get_pending_request_by_context"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.user_input.UserInputView.get_pending_request_by_context" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Return one pending request whose <code class="docutils literal notranslate"><span class="pre">request_context</span></code> matches all filters.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>] | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
 </dd>

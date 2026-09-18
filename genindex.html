@@ -259,6 +259,7 @@
 <li class="toctree-l3"><a class="reference internal" href="alab_management.alarm.html">alab_management.alarm module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.config.html">alab_management.config module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.device_manager.html">alab_management.device_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alab_management.device_rpc_status.html">alab_management.device_rpc_status module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.experiment_cancel.html">alab_management.experiment_cancel module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.experiment_manager.html">alab_management.experiment_manager module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.lab_reset.html">alab_management.lab_reset module</a></li>
@@ -484,6 +485,13 @@
 
       <ul>
         <li><a href="alab_management.device_manager.html#module-alab_management.device_manager">module</a>
+</li>
+      </ul></li>
+      <li>
+    alab_management.device_rpc_status
+
+      <ul>
+        <li><a href="alab_management.device_rpc_status.html#module-alab_management.device_rpc_status">module</a>
 </li>
       </ul></li>
       <li>
@@ -850,6 +858,8 @@
 </li>
       <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.device_exists_in_db">device_exists_in_db() (DeviceView method)</a>
 </li>
+      <li><a href="alab_management.device_rpc_status.html#alab_management.device_rpc_status.device_rpc_queue_name">device_rpc_queue_name() (in module alab_management.device_rpc_status)</a>
+</li>
       <li><a href="alab_management.logger.html#alab_management.logger.LoggingType.DEVICE_SIGNAL">DEVICE_SIGNAL (LoggingType attribute)</a>
 </li>
       <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceConnectionError">DeviceConnectionError</a>
@@ -880,11 +890,15 @@
 </li>
       <li><a href="alab_management.device_manager.html#alab_management.device_manager.DeviceWrapper.DeviceMethodWrapper">DeviceWrapper.DeviceMethodWrapper (class in alab_management.device_manager)</a>
 </li>
+      <li><a href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.diagnose_sample_position_shortage">diagnose_sample_position_shortage() (SampleView method)</a>
+</li>
       <li><a href="alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.dict_in_database">dict_in_database() (BaseDevice method)</a>
 </li>
       <li><a href="alab_management.device_view.dbattributes.html#alab_management.device_view.dbattributes.DictInDatabase">DictInDatabase (class in alab_management.device_view.dbattributes)</a>
 </li>
       <li><a href="alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.disconnect">disconnect() (BaseDevice method)</a>
+</li>
+      <li><a href="alab_management.device_rpc_status.html#alab_management.device_rpc_status.dismiss_lab_starting_user_input">dismiss_lab_starting_user_input() (in module alab_management.device_rpc_status)</a>
 </li>
       <li><a href="alab_management.user_input.html#alab_management.user_input.UserInputView.dismiss_pending_requests">dismiss_pending_requests() (UserInputView method)</a>
 </li>
@@ -897,6 +911,8 @@
       <li><a href="alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SamplePositionStatus.EMPTY">EMPTY (SamplePositionStatus attribute)</a>
 </li>
       <li><a href="alab_management.task_view.task_view.html#alab_management.task_view.task_view.TaskView.encode_task">encode_task() (TaskView method)</a>
+</li>
+      <li><a href="alab_management.device_rpc_status.html#alab_management.device_rpc_status.ensure_lab_starting_user_input">ensure_lab_starting_user_input() (in module alab_management.device_rpc_status)</a>
 </li>
       <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceTaskStatus.ERROR">ERROR (DeviceTaskStatus attribute)</a>
 
@@ -1030,6 +1046,8 @@
 </li>
       <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_device_by_name_from_db">get_device_by_name_from_db() (DeviceView method)</a>
 </li>
+      <li><a href="alab_management.device_rpc_status.html#alab_management.device_rpc_status.get_device_rpc_status">get_device_rpc_status() (in module alab_management.device_rpc_status)</a>
+</li>
       <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_devices_by_task">get_devices_by_task() (DeviceView method)</a>
 </li>
       <li><a href="alab_management.experiment_view.completed_experiment_view.html#alab_management.experiment_view.completed_experiment_view.CompletedExperimentView.get_experiment">get_experiment() (CompletedExperimentView method)</a>
@@ -1052,10 +1070,14 @@
 </li>
       <li><a href="alab_management.lab_reset.html#alab_management.lab_reset.get_lab_idle_status">get_lab_idle_status() (in module alab_management.lab_reset)</a>
 </li>
+      <li><a href="alab_management.device_rpc_status.html#alab_management.device_rpc_status.get_lab_readiness">get_lab_readiness() (in module alab_management.device_rpc_status)</a>
+</li>
       <li><a href="alab_management.logger.html#alab_management.logger.DBLogger.get_latest_device_signal">get_latest_device_signal() (DBLogger method)</a>
 </li>
       <li><a href="alab_management.lab_view.html#alab_management.lab_view.LabView.get_locked_sample_positions">get_locked_sample_positions() (LabView method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.get_message">get_message() (BaseDevice method)</a>
 
       <ul>
@@ -1064,8 +1086,6 @@
         <li><a href="alab_management.device_view.device_view.html#alab_management.device_view.device_view.DeviceView.get_message">(DeviceView method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="alab_management.device_view.device.html#alab_management.device_view.device.DeviceSignalEmitter.get_methods_to_log">get_methods_to_log() (DeviceSignalEmitter method)</a>
 </li>
       <li><a href="alab_management.device_view.device.html#alab_management.device_view.device.BaseDevice.get_occupying_task_id">get_occupying_task_id() (BaseDevice method)</a>
@@ -1222,6 +1242,8 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="alab_management.device_rpc_status.html#alab_management.device_rpc_status.lab_ready_label">lab_ready_label() (in module alab_management.device_rpc_status)</a>
+</li>
       <li><a href="alab_management.lab_reset.html#alab_management.lab_reset.LabNotIdleError">LabNotIdleError</a>
 </li>
       <li><a href="alab_management.lab_view.html#alab_management.lab_view.LabView">LabView (class in alab_management.lab_view)</a>
@@ -1349,6 +1371,8 @@
         <li><a href="alab_management.config.html#module-alab_management.config">alab_management.config</a>
 </li>
         <li><a href="alab_management.device_manager.html#module-alab_management.device_manager">alab_management.device_manager</a>
+</li>
+        <li><a href="alab_management.device_rpc_status.html#module-alab_management.device_rpc_status">alab_management.device_rpc_status</a>
 </li>
         <li><a href="alab_management.device_view.html#module-alab_management.device_view">alab_management.device_view</a>
 </li>
@@ -1630,6 +1654,8 @@
       <li><a href="alab_management.resource_manager.resource_requester.html#alab_management.resource_manager.resource_requester.RequestMixin">RequestMixin (class in alab_management.resource_manager.resource_requester)</a>
 </li>
       <li><a href="alab_management.resource_manager.enums.html#alab_management.resource_manager.enums.RequestStatus">RequestStatus (class in alab_management.resource_manager.enums)</a>
+</li>
+      <li><a href="alab_management.device_rpc_status.html#alab_management.device_rpc_status.require_lab_ready_or_503">require_lab_ready_or_503() (in module alab_management.device_rpc_status)</a>
 </li>
       <li><a href="alab_management.device_view.device.html#alab_management.device_view.device.reset_current_device_registry">reset_current_device_registry() (in module alab_management.device_view.device)</a>
 </li>
