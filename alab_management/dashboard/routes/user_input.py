@@ -9,6 +9,9 @@ from alab_management.dashboard.lab_views import (
 from alab_management.dashboard.manual_control import (
     handle_manual_release_user_input_response,
 )
+from alab_management.dashboard.position_conflict import (
+    handle_position_conflict_user_input_response,
+)
 from alab_management.utils.data_objects import get_completed_collection
 
 userinput_bp = Blueprint("/userinput", __name__, url_prefix="/api/userinput")
@@ -141,6 +144,9 @@ def submit_user_input():
         )
         request_doc = user_input_view.get_request(request_id=request_id)
         handle_manual_release_user_input_response(
+            request_doc, data["response"]
+        )
+        handle_position_conflict_user_input_response(
             request_doc, data["response"]
         )
     except Exception as exception:

@@ -13,6 +13,7 @@ from alab_management.utils.data_objects import get_collection
 from .config import AlabOSConfig
 
 CANCEL_RESPONSE = "Cancelled"
+SUPERSEDED_RESPONSE = "Superseded"
 
 
 class UserRequestStatus(Enum):
@@ -65,6 +66,16 @@ class UserInputView:
             )
         if request_context_extra:
             context.update(request_context_extra)
+
+        # Keep the User Inputs UI to one actionable row per duplicate: when a fresh
+        # request replaces an older pending one with the same device + prompt (typical
+        # orphaned arm "set to remote" piles after reconnect/restart), fulfill the
+        # stale rows so only the new waiter is shown.
+        self._supersede_duplicate_pending_requests(
+            prompt=prompt,
+            context=context,
+        )
+
         request_id = ObjectId()
         self._input_collection.insert_one(
             {
@@ -80,6 +91,39 @@ class UserInputView:
             category = "Maintenance"
         self._alarm.alert(f"User input requested: {prompt}", category)
         return request_id
+
+    def _supersede_duplicate_pending_requests(
+        self, *, prompt: str, context: dict[str, Any]
+    ) -> int:
+        """Fulfill pending requests that a new insert would duplicate.
+
+        Matches on identical ``prompt`` plus ``request_context.device`` when a device
+        is present (robot-arm / instrument maintenance prompts). Returns how many
+        stale requests were superseded.
+        """
+        device = context.get("device")
+        if not device:
+            return 0
+
+        now = datetime.now()
+        result = self._input_collection.update_many(
+            {
+                "status": UserRequestStatus.PENDING.value,
+                "prompt": prompt,
+                "request_context.device": device,
+            },
+            {
+                "$set": {
+                    "status": UserRequestStatus.FULLFILLED.value,
+                    "response": SUPERSEDED_RESPONSE,
+                    "note": (
+                        "Replaced by a newer request for the same device and prompt."
+                    ),
+                    "last_updated": now,
+                }
+            },
+        )
+        return int(result.modified_count)
 
     def get_request(self, request_id: ObjectId) -> dict[str, Any]:
         """
@@ -182,16 +226,69 @@ class UserInputView:
         """
         Get all pending requests.
 
-        Returns a list of pending requests.
+        Collapses duplicate device+prompt rows (keeps newest) so the dashboard does
+        not show a pile of stale identical maintenance prompts.
         """
+        self._collapse_duplicate_pending_requests()
         return cast(
             list[dict[str, Any]],
-            self._input_collection.find({"status": UserRequestStatus.PENDING.value}),
+            list(
+                self._input_collection.find(
+                    {"status": UserRequestStatus.PENDING.value}
+                )
+            ),
         )
+
+    def _collapse_duplicate_pending_requests(self) -> int:
+        """Supersede older pending requests that share device + prompt with a newer one."""
+        pending = list(
+            self._input_collection.find({"status": UserRequestStatus.PENDING.value})
+        )
+        newest_by_key: dict[tuple[str, str], dict[str, Any]] = {}
+        superseded_ids: list[ObjectId] = []
+        for request in pending:
+            context = request.get("request_context") or {}
+            device = context.get("device")
+            if not device:
+                continue
+            key = (str(device), str(request.get("prompt") or ""))
+            current = newest_by_key.get(key)
+            if current is None:
+                newest_by_key[key] = request
+                continue
+            current_updated = current.get("last_updated") or datetime.min
+            request_updated = request.get("last_updated") or datetime.min
+            if request_updated >= current_updated:
+                superseded_ids.append(current["_id"])
+                newest_by_key[key] = request
+            else:
+                superseded_ids.append(request["_id"])
+
+        if not superseded_ids:
+            return 0
+        now = datetime.now()
+        result = self._input_collection.update_many(
+            {
+                "_id": {"$in": superseded_ids},
+                "status": UserRequestStatus.PENDING.value,
+            },
+            {
+                "$set": {
+                    "status": UserRequestStatus.FULLFILLED.value,
+                    "response": SUPERSEDED_RESPONSE,
+                    "note": (
+                        "Replaced by a newer request for the same device and prompt."
+                    ),
+                    "last_updated": now,
+                }
+            },
+        )
+        return int(result.modified_count)
 
     def get_pending_request_by_context(
         self, context_filters: dict[str, Any]
     ) -> dict[str, Any] | None:
+        """Return one pending request whose ``request_context`` matches all filters."""
         query: dict[str, Any] = {"status": UserRequestStatus.PENDING.value}
         for key, value in context_filters.items():
             query[f"request_context.{key}"] = value
@@ -246,15 +343,36 @@ def request_user_input(
         response (str): user response as string
     """
     user_input_view = UserInputView()
-    request_id = user_input_view.insert_request(
-        task_id=task_id,
-        prompt=prompt,
-        options=options,
-        maintenance=maintenance,
-        category=category,
-        request_context_extra=request_context_extra,
-    )
-    return user_input_view.retrieve_user_input(request_id=request_id)
+    while True:
+        request_id = user_input_view.insert_request(
+            task_id=task_id,
+            prompt=prompt,
+            options=options,
+            maintenance=maintenance,
+            category=category,
+            request_context_extra=request_context_extra,
+        )
+        response = user_input_view.retrieve_user_input(request_id=request_id)
+        if response != SUPERSEDED_RESPONSE:
+            return response
+
+        # Another insert replaced this request; wait on the surviving pending row
+        # instead of returning "Superseded" to the caller.
+        device = (request_context_extra or {}).get("device")
+        if not device:
+            continue
+        replacement = user_input_view._input_collection.find_one(
+            {
+                "status": UserRequestStatus.PENDING.value,
+                "prompt": prompt,
+                "request_context.device": device,
+            }
+        )
+        if replacement is None:
+            continue
+        response = user_input_view.retrieve_user_input(request_id=replacement["_id"])
+        if response != SUPERSEDED_RESPONSE:
+            return response
 
 
 def request_maintenance_input(

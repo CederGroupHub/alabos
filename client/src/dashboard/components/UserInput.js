@@ -11,6 +11,11 @@ import TextField from '@mui/material/TextField';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Grow from '@mui/material/Grow';
@@ -184,6 +189,7 @@ function UserInputAccordion({
 }) {
   const [accordionState, setAccordionState] = React.useState(true);
   const [bulkSubmitting, setBulkSubmitting] = React.useState(false);
+  const [confirmOpen, setConfirmOpen] = React.useState(false);
 
   const handleMarkSectionCompleted = async () => {
     const completableRequests = requests
@@ -231,6 +237,7 @@ function UserInputAccordion({
       });
     } finally {
       setBulkSubmitting(false);
+      setConfirmOpen(false);
     }
   };
 
@@ -265,7 +272,7 @@ function UserInputAccordion({
               size="small"
               onClick={(event) => {
                 event.stopPropagation();
-                handleMarkSectionCompleted();
+                setConfirmOpen(true);
               }}
               disabled={bulkSubmitting || requests.length === 0}
               sx={{ flexShrink: 0 }}
@@ -295,6 +302,48 @@ function UserInputAccordion({
         </AccordionDetails>
 
       </Accordion>
+
+      <Dialog
+        open={confirmOpen}
+        onClose={() => {
+          if (!bulkSubmitting) {
+            setConfirmOpen(false);
+          }
+        }}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <DialogTitle>Are you sure?</DialogTitle>
+        <DialogContent>
+          <DialogContentText component="div">
+            <Typography variant="body1" sx={{ mb: 1.5 }}>
+              This will mark every eligible pending request in{" "}
+              <b>{experiment_name}</b> as completed at once.
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Only continue if you are certain each prompt has actually been
+              handled in the lab. Wrong answers can leave the system thinking
+              work is done when it is not (or the reverse). Prefer resolving
+              prompts one by one when you are unsure.
+            </Typography>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setConfirmOpen(false)}
+            disabled={bulkSubmitting}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleMarkSectionCompleted}
+            color="warning"
+            variant="contained"
+            disabled={bulkSubmitting}
+          >
+            {bulkSubmitting ? "Marking…" : "Yes, mark all as completed"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   )
 }

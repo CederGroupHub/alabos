@@ -372,7 +372,110 @@ class SampleView:
                         "need_release": self.get_sample_position(sample_position["name"])["task_id"] != task_id,  # type: ignore
                     }
                 )
-        return available_sp_names
+                return available_sp_names
+
+    def diagnose_sample_position_shortage(
+        self,
+        task_id: ObjectId,
+        sample_positions: list[SamplePositionRequest | str | dict[str, Any]],
+        exact_positions: set[str] | None = None,
+    ) -> dict[str, Any]:
+        """Explain why ``request_sample_positions`` would return ``None``.
+
+        Returns a structured diagnosis suitable for operator prompts:
+
+        - ``shortages``: per-request need/available plus blocker positions
+        - ``allow_clear``: True only when every shortage is an exact-slot request
+          (safe to clear those specific slots from User Input)
+        - ``clearable_blockers``: blockers for exact shortages (for Clear action)
+        """
+        if exact_positions is None:
+            exact_positions = set()
+
+        sample_positions_request: list[SamplePositionRequest] = [
+            (
+                SamplePositionRequest.from_py_type(sample_position)
+                if not isinstance(sample_position, SamplePositionRequest)
+                else sample_position
+            )
+            for sample_position in sample_positions
+        ]
+
+        shortages: list[dict[str, Any]] = []
+        for sample_position in sample_positions_request:
+            is_exact = sample_position.prefix in exact_positions
+            available = self.get_available_sample_position(
+                task_id,
+                position_prefix=sample_position.prefix,
+                exact_match=is_exact,
+            )
+            needed = int(sample_position.number)
+            if len(available) >= needed:
+                continue
+
+            query = (
+                {"name": sample_position.prefix}
+                if is_exact
+                else {
+                    "name": {
+                        "$regex": f"^{re.escape(sample_position.prefix)}"
+                    }
+                }
+            )
+            blockers: list[dict[str, Any]] = []
+            for sample_position_doc in self._sample_positions_collection.find(query):
+                position_name = sample_position_doc["name"]
+                status, current_task_id = self.get_sample_position_status(
+                    position_name
+                )
+                if status is SamplePositionStatus.EMPTY or task_id == current_task_id:
+                    continue
+
+                blocker: dict[str, Any] = {
+                    "position": position_name,
+                    "reason": status.name,
+                    "sample_id": None,
+                    "sample_name": None,
+                    "task_id": str(current_task_id) if current_task_id else None,
+                }
+                if status is SamplePositionStatus.OCCUPIED:
+                    sample = self._sample_collection.find_one(
+                        {"position": position_name}
+                    )
+                    if sample is not None:
+                        blocker["sample_id"] = str(sample["_id"])
+                        blocker["sample_name"] = sample.get("name")
+                blockers.append(blocker)
+
+            shortages.append(
+                {
+                    "prefix": sample_position.prefix,
+                    "exact": is_exact,
+                    "needed": needed,
+                    "available": len(available),
+                    "blockers": blockers,
+                }
+            )
+
+        allow_clear = bool(shortages) and all(
+            shortage["exact"] for shortage in shortages
+        )
+        clearable_blockers: list[dict[str, Any]] = []
+        if allow_clear:
+            seen: set[str] = set()
+            for shortage in shortages:
+                for blocker in shortage["blockers"]:
+                    position_name = blocker["position"]
+                    if position_name in seen:
+                        continue
+                    seen.add(position_name)
+                    clearable_blockers.append(blocker)
+
+        return {
+            "shortages": shortages,
+            "allow_clear": allow_clear,
+            "clearable_blockers": clearable_blockers,
+        }
 
     def lock_sample_position(self, task_id: ObjectId, position: str):
         """Lock a sample position."""

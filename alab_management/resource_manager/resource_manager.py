@@ -13,11 +13,14 @@ from typing import Any, cast
 import dill
 from bson import ObjectId
 
-from alab_management.device_view.device_view import DeviceView
 from alab_management.dashboard.manual_control import (
     ensure_auto_release_user_input,
     is_manually_claimed,
 )
+from alab_management.dashboard.position_conflict import (
+    ensure_position_conflict_user_input,
+)
+from alab_management.device_view.device_view import DeviceView
 from alab_management.logger import DBLogger
 from alab_management.resource_manager.enums import _EXTRA_REQUEST
 from alab_management.resource_manager.resource_requester import (
@@ -189,6 +192,12 @@ class ResourceManager(RequestMixin):
                 exact_positions=exact_positions_set if exact_positions_set else None,
             )
             if sample_positions is None:
+                self._prompt_position_conflict_if_needed(
+                    task_id=task_id,
+                    sample_positions_request=parsed_sample_positions_request,
+                    exact_positions=exact_positions_set,
+                    resource_request_id=request_entry["_id"],
+                )
                 return
 
         # in case some errors happen, we will raise the error in the task process instead of the main process
@@ -290,3 +299,22 @@ class ResourceManager(RequestMixin):
                 task_id=task_id,
                 resource_request_id=resource_request_id,
             )
+
+    def _prompt_position_conflict_if_needed(
+        self,
+        *,
+        task_id: ObjectId,
+        sample_positions_request: list[SamplePositionRequest],
+        exact_positions: set[str],
+        resource_request_id: ObjectId,
+    ):
+        diagnosis = self.sample_view.diagnose_sample_position_shortage(
+            task_id=task_id,
+            sample_positions=sample_positions_request,
+            exact_positions=exact_positions,
+        )
+        ensure_position_conflict_user_input(
+            task_id=task_id,
+            resource_request_id=resource_request_id,
+            diagnosis=diagnosis,
+        )
