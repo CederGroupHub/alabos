@@ -6,7 +6,6 @@ import {
   Alert,
   Box,
   Button,
-  ButtonGroup,
   Card,
   CardContent,
   Chip,
@@ -15,25 +14,19 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControl,
   IconButton,
-  InputLabel,
   List,
   ListItemButton,
   ListItemText,
-  MenuItem,
   Paper,
-  Select,
   Snackbar,
   Stack,
-  Tab,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Tabs,
   TextField,
   Typography,
 } from '@mui/material';
@@ -41,7 +34,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import styled from 'styled-components';
-import { clear_sample_position, get_sample_position_racks, place_sample_in_position } from '../../api_routes';
+import { clear_sample_position, get_lab_idle, get_sample_position_racks } from '../../api_routes';
 
 const RackContainer = styled.div`
   display: flex;
@@ -247,82 +240,6 @@ function PositionHistoryTimeline({ history, onJump }) {
   );
 }
 
-function PlaceSampleDialog({ open, onClose, position, unplacedSamples, onSubmit }) {
-  const [mode, setMode] = useState("new");
-  const [sampleName, setSampleName] = useState("");
-  const [sampleId, setSampleId] = useState("");
-
-  useEffect(() => {
-    if (open) {
-      setMode(unplacedSamples.length > 0 ? "existing" : "new");
-      setSampleName("");
-      setSampleId("");
-    }
-  }, [open, unplacedSamples]);
-
-  const handleSubmit = () => {
-    if (mode === "existing" && sampleId) {
-      onSubmit(position, { sample_id: sampleId });
-      return;
-    }
-    if (mode === "new" && sampleName.trim()) {
-      onSubmit(position, { sample_name: sampleName.trim() });
-    }
-  };
-
-  return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Place Sample</DialogTitle>
-      <DialogContent>
-        <Stack spacing={2} sx={{ mt: 1 }}>
-          <Typography variant="body2">Target position: {position}</Typography>
-          {unplacedSamples.length > 0 && (
-            <Tabs value={mode} onChange={(_event, value) => setMode(value)}>
-              <Tab label="Use Existing Sample" value="existing" />
-              <Tab label="Create New Sample" value="new" />
-            </Tabs>
-          )}
-          {mode === "existing" && unplacedSamples.length > 0 ? (
-            <FormControl fullWidth>
-              <InputLabel id="existing-sample-label">Unplaced Sample</InputLabel>
-              <Select
-                labelId="existing-sample-label"
-                label="Unplaced Sample"
-                value={sampleId}
-                onChange={(event) => setSampleId(event.target.value)}
-              >
-                {unplacedSamples.map((sample) => (
-                  <MenuItem key={sample.sample_id} value={sample.sample_id}>
-                    {sample.name}
-                    {sample.last_position ? ` (last: ${sample.last_position})` : ""}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          ) : (
-            <TextField
-              fullWidth
-              label="Sample Name"
-              value={sampleName}
-              onChange={(event) => setSampleName(event.target.value)}
-            />
-          )}
-        </Stack>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button
-          onClick={handleSubmit}
-          variant="contained"
-          disabled={(mode === "existing" && !sampleId) || (mode === "new" && !sampleName.trim())}
-        >
-          Place Sample
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-}
-
 function SampleDetailDialog({ open, onClose, sample, onJumpToPosition }) {
   if (!sample) {
     return null;
@@ -391,9 +308,10 @@ function SampleDetailDialog({ open, onClose, sample, onJumpToPosition }) {
   );
 }
 
-function SlotCard({ slot, highlighted, onPlace, onClear, onShowSample, slotRef }) {
+function SlotCard({ slot, highlighted, onClear, onShowSample, slotRef, clearDisabled, clearDisabledReason }) {
   const occupied = slot.status === "OCCUPIED";
   const inTransit = Boolean(slot.sample?.in_transit);
+  const clearBlocked = !occupied || clearDisabled;
   return (
     <HighlightedSlot $active={highlighted} ref={slotRef}>
       <Card variant="outlined" sx={{ bgcolor: slotStatusColor(slot), minHeight: 175 }}>
@@ -434,14 +352,19 @@ function SlotCard({ slot, highlighted, onPlace, onClear, onShowSample, slotRef }
                 Locked by task {slot.locked_by_task_id}
               </Typography>
             )}
-            <ButtonGroup size="small" variant="outlined">
-              <Button onClick={() => onPlace(slot.name)} disabled={slot.status !== "EMPTY"}>
-                Place
-              </Button>
-              <Button onClick={() => onClear(slot.name)} disabled={!occupied}>
-                Clear
-              </Button>
-            </ButtonGroup>
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={() => onClear(slot.name)}
+              disabled={clearBlocked}
+              title={
+                occupied && clearDisabled
+                  ? clearDisabledReason || "Lab is not idle"
+                  : undefined
+              }
+            >
+              Clear
+            </Button>
           </Stack>
         </CardContent>
       </Card>
@@ -455,9 +378,10 @@ function DeviceOccupancyRow({
   onToggle,
   highlightedPosition,
   slotRefs,
-  onPlace,
   onClear,
   onShowSample,
+  clearDisabled,
+  clearDisabledReason,
 }) {
   const summary = rack.summary || {};
   return (
@@ -520,9 +444,10 @@ function DeviceOccupancyRow({
                               delete slotRefs.current[slot.name];
                             }
                           }}
-                          onPlace={onPlace}
                           onClear={onClear}
                           onShowSample={onShowSample}
+                          clearDisabled={clearDisabled}
+                          clearDisabledReason={clearDisabledReason}
                         />
                       ))}
                     </SlotGrid>
@@ -545,12 +470,26 @@ function SamplePositions() {
   const [expanded, setExpanded] = useState({});
   const [findQuery, setFindQuery] = useState("");
   const [highlightedPosition, setHighlightedPosition] = useState(null);
-  const [selectedPosition, setSelectedPosition] = useState(null);
   const [detailSample, setDetailSample] = useState(null);
   const [message, setMessage] = useState(null);
+  const [labIdle, setLabIdle] = useState(true);
+  const [idleReasons, setIdleReasons] = useState([]);
   const slotRefs = useRef({});
   const scrollTimer = useRef(null);
   const highlightTimer = useRef(null);
+
+  const refreshIdle = () => {
+    get_lab_idle()
+      .then((res) => {
+        if (res && res.status === "success" && res.data) {
+          setLabIdle(Boolean(res.data.idle));
+          setIdleReasons(res.data.reasons || []);
+        }
+      })
+      .catch(() => {
+        // Keep last known idle state if the idle endpoint fails.
+      });
+  };
 
   const refresh = () => {
     get_sample_position_racks().then((result) => {
@@ -561,6 +500,7 @@ function SamplePositions() {
         setInTransitSamples(result.in_transit_samples || []);
       }
     });
+    refreshIdle();
   };
 
   useEffect(() => {
@@ -659,26 +599,25 @@ function SamplePositions() {
     setDetailSample(sample);
   };
 
-  const handlePlace = async (position, payload) => {
-    const res = await place_sample_in_position(position, payload);
-    const result = await res.json();
-    if (result.status === "success") {
-      setSelectedPosition(null);
-      setMessage({ severity: "success", text: `Updated ${position}.` });
-      refresh();
-    } else {
-      setMessage({ severity: "error", text: result.errors || "Failed to place sample." });
-    }
-  };
+  const clearDisabledReason = idleReasons.length
+    ? `Lab is not idle: ${idleReasons.join("; ")}. Use Release locks & tasks first.`
+    : "Lab is not idle. Use Release locks & tasks first.";
 
   const handleClear = async (position) => {
+    if (!labIdle) {
+      setMessage({
+        severity: "warning",
+        text: clearDisabledReason,
+      });
+      return;
+    }
     const res = await clear_sample_position(position);
     const result = await res.json();
     if (result.status === "success") {
       setMessage({ severity: "success", text: `Cleared ${position}.` });
       refresh();
     } else {
-      setMessage({ severity: "error", text: result.errors || "Failed to clear position." });
+      setMessage({ severity: "error", text: result.errors || result.reason || "Failed to clear position." });
     }
   };
 
@@ -687,13 +626,24 @@ function SamplePositions() {
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 2 }}>
         <Box>
           <Typography variant="h5">Sample Positions</Typography>
-          <Typography variant="body2" color="text.secondary">
-            Occupancy for devices that can hold powder samples (vials, crucibles, XRD holders).
-            Cap-only slots are hidden.
+          <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 640 }}>
+            Occupancy for devices that can hold powder samples (vials, crucibles, XRD
+            holders). Cap-only slots are hidden. Use <b>Clear</b> to free a slot in
+            software when the lab is idle. Initial placement comes from experiment{" "}
+            <b>Starting</b> tasks (notebooks / submission) — Place was removed so GUI
+            and scripts do not fight over the same slots.
           </Typography>
         </Box>
         <Button variant="outlined" onClick={refresh}>Refresh</Button>
       </Box>
+
+      {!labIdle && (
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          Clear is disabled while the lab is busy
+          {idleReasons.length ? `: ${idleReasons.join("; ")}` : "."} Finish work or use
+          Lab settings → Release locks &amp; tasks first.
+        </Alert>
+      )}
 
       <Paper variant="outlined" sx={{ p: 2 }}>
         <Typography variant="subtitle2" gutterBottom>
@@ -848,23 +798,16 @@ function SamplePositions() {
                   }))}
                   highlightedPosition={highlightedPosition}
                   slotRefs={slotRefs}
-                  onPlace={setSelectedPosition}
                   onClear={handleClear}
-                          onShowSample={openSampleHistory}
+                  onShowSample={openSampleHistory}
+                  clearDisabled={!labIdle}
+                  clearDisabledReason={clearDisabledReason}
                 />
               ))}
             </TableBody>
           </Table>
         </TableContainer>
       )}
-
-      <PlaceSampleDialog
-        open={selectedPosition !== null}
-        onClose={() => setSelectedPosition(null)}
-        position={selectedPosition}
-        unplacedSamples={unplacedSamples}
-        onSubmit={handlePlace}
-      />
 
       <SampleDetailDialog
         open={detailSample !== null}

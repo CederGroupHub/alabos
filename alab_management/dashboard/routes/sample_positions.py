@@ -8,6 +8,7 @@ from bson import ObjectId
 from flask import Blueprint, request
 
 from alab_management.dashboard.lab_views import experiment_view, sample_view
+from alab_management.lab_reset import LabNotIdleError, get_lab_idle_status
 from alab_management.utils.data_objects import get_completed_collection
 
 sample_positions_bp = Blueprint(
@@ -485,6 +486,19 @@ def place_sample():
 @sample_positions_bp.route("/clear", methods=["POST"])
 def clear_position():
     """Remove a sample from the given rack slot (physical leave — clears position)."""
+    idle = get_lab_idle_status()
+    if not idle["idle"]:
+        exc = LabNotIdleError(idle["reasons"])
+        return (
+            {
+                "status": "error",
+                "errors": str(exc),
+                "reason": str(exc),
+                "data": idle,
+            },
+            409,
+        )
+
     data = request.get_json(force=True)  # type: ignore[arg-type]
     position = data.get("position")
     if not position:
