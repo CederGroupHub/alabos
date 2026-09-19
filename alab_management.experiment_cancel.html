@@ -453,6 +453,9 @@
 tasks (the same write Release locks &amp; tasks uses, scoped to this experiment),
 dismisses its user-input prompts, cancels its pending resource requests,
 releases its devices and positions, and marks the experiment Cancelled.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">mongodb_completed</span></code> is configured, it then archives the experiment (and
+its samples/tasks) into the completed database — the same copy step the
+experiment manager runs when it marks an experiment finished.</p>
 <p>It does not emergency-stop hardware that is already moving, and it does not
 touch other experiments. Use Release locks &amp; tasks when the whole lab is stuck.</p>
 <dl class="py function">

@@ -756,13 +756,16 @@ only for positions where number=1.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.lab_view.LabView.request_user_input">
-<span class="sig-name descname"><span class="pre">request_user_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_view.html#LabView.request_user_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_view.LabView.request_user_input" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">request_user_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abort_if_task_cancelled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_view.html#LabView.request_user_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_view.LabView.request_user_input" title="Link to this definition">#</a></dt>
 <dd><p>Request user input from the user. This function will block until the user inputs something.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>prompt</strong> (<em>str</em>) – The prompt to display to the user.</p></li>
 <li><p><strong>options</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – A list of options to display to the user.</p></li>
+<li><p><strong>abort_if_task_cancelled</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If true, raise when the owning task is cancelled
+while waiting. Cleanup prompts pass false so a restart can still ask
+the operator to clear samples.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>

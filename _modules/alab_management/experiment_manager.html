@@ -622,7 +622,10 @@
                             <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"ExperimentSavedToCompletedDB"</span><span class="p">,</span>
                             <span class="s2">"exp_id"</span><span class="p">:</span> <span class="n">experiment</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">],</span>
                         <span class="p">},</span>
-                    <span class="p">)</span></div>
+                    <span class="p">)</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.lab_reset</span><span class="w"> </span><span class="kn">import</span> <span class="n">prune_archived_unplaced_from_live</span>
+
+                    <span class="n">prune_archived_unplaced_from_live</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="ExperimentManager.pause_handling_experiments">

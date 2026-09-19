@@ -435,8 +435,11 @@
             <nav aria-label="Page">
                 <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_reset.LabNotIdleError"><code class="docutils literal notranslate"><span class="pre">LabNotIdleError</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_reset.archive_experiments_to_completed"><code class="docutils literal notranslate"><span class="pre">archive_experiments_to_completed()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_reset.archive_terminal_experiments_missing_from_completed"><code class="docutils literal notranslate"><span class="pre">archive_terminal_experiments_missing_from_completed()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_reset.clear_lab_occupancy"><code class="docutils literal notranslate"><span class="pre">clear_lab_occupancy()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_reset.get_lab_idle_status"><code class="docutils literal notranslate"><span class="pre">get_lab_idle_status()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_reset.prune_archived_unplaced_from_live"><code class="docutils literal notranslate"><span class="pre">prune_archived_unplaced_from_live()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_reset.reset_lab_software_state"><code class="docutils literal notranslate"><span class="pre">reset_lab_software_state()</span></code></a></li>
 </ul>
             </nav>
@@ -466,11 +469,36 @@ ownership / in-transit flags (without wiping physical <code class="docutils lite
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="alab_management.lab_reset.archive_experiments_to_completed">
+<span class="sig-name descname"><span class="pre">archive_experiments_to_completed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment_ids</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_reset.html#archive_experiments_to_completed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_reset.archive_experiments_to_completed" title="Link to this definition">#</a></dt>
+<dd><p>Copy each experiment into completed when configured. Returns how many archived.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alab_management.lab_reset.archive_terminal_experiments_missing_from_completed">
+<span class="sig-name descname"><span class="pre">archive_terminal_experiments_missing_from_completed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_reset.html#archive_terminal_experiments_missing_from_completed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_reset.archive_terminal_experiments_missing_from_completed" title="Link to this definition">#</a></dt>
+<dd><p>Archive COMPLETED/CANCELLED live experiments that are not yet in completed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="alab_management.lab_reset.clear_lab_occupancy">
 <span class="sig-name descname"><span class="pre">clear_lab_occupancy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_reset.html#clear_lab_occupancy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_reset.clear_lab_occupancy" title="Link to this definition">#</a></dt>
 <dd><p>Clear every sample’s current position; keep identity, last_position, history.</p>
 <p>Requires an idle lab. Uses <code class="docutils literal notranslate"><span class="pre">move_sample(...,</span> <span class="pre">None)</span></code> so history gets a
 <code class="docutils literal notranslate"><span class="pre">cleared</span></code> event, matching per-slot Clear on Sample Positions.</p>
+<p>Archives any terminal live experiments that are missing from completed, then
+prunes live docs that are already archived (never deletes without a completed
+copy).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span></p>
@@ -491,11 +519,26 @@ ownership / in-transit flags (without wiping physical <code class="docutils lite
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="alab_management.lab_reset.prune_archived_unplaced_from_live">
+<span class="sig-name descname"><span class="pre">prune_archived_unplaced_from_live</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_reset.html#prune_archived_unplaced_from_live"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_reset.prune_archived_unplaced_from_live" title="Link to this definition">#</a></dt>
+<dd><p>Delete live samples/tasks/experiments that are safely archived and unplaced.</p>
+<p>Hard rule: never delete a live document unless the same <code class="docutils literal notranslate"><span class="pre">_id</span></code> exists in
+<code class="docutils literal notranslate"><span class="pre">Alab(completed)</span></code>. Missing completed copies are skipped with a warning.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="alab_management.lab_reset.reset_lab_software_state">
 <span class="sig-name descname"><span class="pre">reset_lab_software_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settle_s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_reset.html#reset_lab_software_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_reset.reset_lab_software_state" title="Link to this definition">#</a></dt>
 <dd><p>Cancel everything the dashboard is waiting on so a new experiment can be submitted.</p>
 <p>Physical sample occupancy (<code class="docutils literal notranslate"><span class="pre">samples.position</span></code> / <code class="docutils literal notranslate"><span class="pre">last_position</span></code>) is preserved.
-Only ephemeral ownership is cleared: task IDs, in-transit flags, and position locks.</p>
+Only ephemeral ownership is cleared: task IDs, in-transit flags, and position locks.
+Closed experiments are archived to completed when configured, then unplaced
+archived docs may be pruned from live.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span></p>
@@ -552,8 +595,11 @@ Only ephemeral ownership is cleared: task IDs, in-transit flags, and position lo
   <nav class="bd-toc-nav page-toc">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_reset.LabNotIdleError"><code class="docutils literal notranslate"><span class="pre">LabNotIdleError</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_reset.archive_experiments_to_completed"><code class="docutils literal notranslate"><span class="pre">archive_experiments_to_completed()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_reset.archive_terminal_experiments_missing_from_completed"><code class="docutils literal notranslate"><span class="pre">archive_terminal_experiments_missing_from_completed()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_reset.clear_lab_occupancy"><code class="docutils literal notranslate"><span class="pre">clear_lab_occupancy()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_reset.get_lab_idle_status"><code class="docutils literal notranslate"><span class="pre">get_lab_idle_status()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_reset.prune_archived_unplaced_from_live"><code class="docutils literal notranslate"><span class="pre">prune_archived_unplaced_from_live()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_reset.reset_lab_software_state"><code class="docutils literal notranslate"><span class="pre">reset_lab_software_state()</span></code></a></li>
 </ul>
   </nav></div>

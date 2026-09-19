@@ -556,17 +556,25 @@
 
 <div class="viewcode-block" id="UserInputView.retrieve_user_input">
 <a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.UserInputView.retrieve_user_input">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_user_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_user_input</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">abort_if_task_cancelled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrive response from user for a given request. Blocks until request is marked as completed.</span>
 
-<span class="sd">        Returns the user response, which is one of a list of options</span>
+<span class="sd">        Returns the user response, which is one of a list of options.</span>
+
+<span class="sd">        ``abort_if_task_cancelled`` is the normal case: a task waiting for an operator</span>
+<span class="sd">        should stop if someone cancelled it. Cleanup prompts pass ``False`` because they</span>
+<span class="sd">        exist *because* the task is being torn down — aborting them leaves the worker</span>
+<span class="sd">        unable to start.</span>
 <span class="sd">        """</span>
         <span class="n">request</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
                 <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_raise_if_owning_task_cancelled</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">abort_if_task_cancelled</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_raise_if_owning_task_cancelled</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">UserRequestStatus</span><span class="p">(</span><span class="n">request</span><span class="p">[</span><span class="s2">"status"</span><span class="p">])</span> <span class="o">!=</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="p">:</span>
                     <span class="k">break</span>
                 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
@@ -577,7 +585,8 @@
                 <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">request_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">name</span><span class="p">}}</span>
             <span class="p">)</span>
             <span class="k">raise</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_raise_if_owning_task_cancelled</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">abort_if_task_cancelled</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_raise_if_owning_task_cancelled</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">request</span><span class="p">[</span><span class="s2">"response"</span><span class="p">]</span></div>
 
 
@@ -713,7 +722,9 @@
 
 <div class="viewcode-block" id="UserInputView.retrieve_user_input_with_note">
 <a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.UserInputView.retrieve_user_input_with_note">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_user_input_with_note</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_user_input_with_note</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">abort_if_task_cancelled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrive response from user for a given request. Blocks until request is marked as completed.</span>
 
@@ -723,7 +734,8 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
                 <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_raise_if_owning_task_cancelled</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">abort_if_task_cancelled</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_raise_if_owning_task_cancelled</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">UserRequestStatus</span><span class="p">(</span><span class="n">request</span><span class="p">[</span><span class="s2">"status"</span><span class="p">])</span> <span class="o">!=</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="p">:</span>
                     <span class="k">break</span>
                 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
@@ -734,7 +746,8 @@
                 <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">request_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">name</span><span class="p">}}</span>
             <span class="p">)</span>
             <span class="k">raise</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_raise_if_owning_task_cancelled</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">abort_if_task_cancelled</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_raise_if_owning_task_cancelled</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">request</span><span class="p">[</span><span class="s2">"response"</span><span class="p">],</span> <span class="n">request</span><span class="p">[</span><span class="s2">"note"</span><span class="p">]</span></div>
 </div>
 
@@ -749,6 +762,7 @@
     <span class="n">maintenance</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">category</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"Unknown Category"</span><span class="p">,</span>
     <span class="n">request_context_extra</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">abort_if_task_cancelled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Request user input through the dashboard. Blocks until response is given.</span>
@@ -775,7 +789,10 @@
             <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span>
             <span class="n">request_context_extra</span><span class="o">=</span><span class="n">request_context_extra</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">user_input_view</span><span class="o">.</span><span class="n">retrieve_user_input</span><span class="p">(</span><span class="n">request_id</span><span class="o">=</span><span class="n">request_id</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">user_input_view</span><span class="o">.</span><span class="n">retrieve_user_input</span><span class="p">(</span>
+            <span class="n">request_id</span><span class="o">=</span><span class="n">request_id</span><span class="p">,</span>
+            <span class="n">abort_if_task_cancelled</span><span class="o">=</span><span class="n">abort_if_task_cancelled</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">response</span> <span class="o">!=</span> <span class="n">SUPERSEDED_RESPONSE</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">response</span>
 
@@ -793,7 +810,10 @@
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">replacement</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">continue</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">user_input_view</span><span class="o">.</span><span class="n">retrieve_user_input</span><span class="p">(</span><span class="n">request_id</span><span class="o">=</span><span class="n">replacement</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">])</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">user_input_view</span><span class="o">.</span><span class="n">retrieve_user_input</span><span class="p">(</span>
+            <span class="n">request_id</span><span class="o">=</span><span class="n">replacement</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">],</span>
+            <span class="n">abort_if_task_cancelled</span><span class="o">=</span><span class="n">abort_if_task_cancelled</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">response</span> <span class="o">!=</span> <span class="n">SUPERSEDED_RESPONSE</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">response</span></div>
 

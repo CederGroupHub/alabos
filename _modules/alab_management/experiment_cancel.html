@@ -393,6 +393,10 @@
 <span class="sd">dismisses its user-input prompts, cancels its pending resource requests,</span>
 <span class="sd">releases its devices and positions, and marks the experiment Cancelled.</span>
 
+<span class="sd">When ``mongodb_completed`` is configured, it then archives the experiment (and</span>
+<span class="sd">its samples/tasks) into the completed database — the same copy step the</span>
+<span class="sd">experiment manager runs when it marks an experiment finished.</span>
+
 <span class="sd">It does not emergency-stop hardware that is already moving, and it does not</span>
 <span class="sd">touch other experiments. Use Release locks &amp; tasks when the whole lab is stuck.</span>
 <span class="sd">"""</span>
@@ -405,9 +409,17 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">bson</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectId</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">AlabOSConfig</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.device_view.device_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">DeviceTaskStatus</span><span class="p">,</span> <span class="n">DeviceView</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.experiment_view.completed_experiment_view</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CompletedExperimentView</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.experiment_view.experiment_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExperimentStatus</span><span class="p">,</span> <span class="n">ExperimentView</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.lab_reset</span><span class="w"> </span><span class="kn">import</span> <span class="n">LIVE_TASK_STATUSES</span><span class="p">,</span> <span class="n">_abort_task_actor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.lab_reset</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">LIVE_TASK_STATUSES</span><span class="p">,</span>
+    <span class="n">_abort_task_actor</span><span class="p">,</span>
+    <span class="n">prune_archived_unplaced_from_live</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.resource_manager.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestStatus</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.sample_view.sample_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">SampleView</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.task_view.task_enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">CancelingProgress</span><span class="p">,</span> <span class="n">TaskStatus</span>
@@ -454,6 +466,10 @@
     <span class="n">devices_released</span> <span class="o">=</span> <span class="n">_release_devices_held_by</span><span class="p">(</span><span class="n">device_view</span><span class="p">,</span> <span class="n">task_ids</span><span class="p">,</span> <span class="n">now</span><span class="p">)</span>
     <span class="n">positions_unlocked</span> <span class="o">=</span> <span class="n">_unlock_positions_held_by</span><span class="p">(</span><span class="n">sample_view</span><span class="p">,</span> <span class="n">task_ids</span><span class="p">)</span>
     <span class="n">experiment_closed</span> <span class="o">=</span> <span class="n">_close_experiment</span><span class="p">(</span><span class="n">experiment_view</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
+    <span class="n">archived_to_completed</span> <span class="o">=</span> <span class="n">_archive_experiment_to_completed</span><span class="p">(</span><span class="n">exp_id</span><span class="p">)</span>
+    <span class="n">prune_summary</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">prune_archived_unplaced_from_live</span><span class="p">()</span> <span class="k">if</span> <span class="n">archived_to_completed</span> <span class="k">else</span> <span class="p">{}</span>
+    <span class="p">)</span>
 
     <span class="n">summary</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">"tasks_cancelled"</span><span class="p">:</span> <span class="n">tasks_cancelled</span><span class="p">,</span>
@@ -462,10 +478,29 @@
         <span class="s2">"devices_released"</span><span class="p">:</span> <span class="n">devices_released</span><span class="p">,</span>
         <span class="s2">"positions_unlocked"</span><span class="p">:</span> <span class="n">positions_unlocked</span><span class="p">,</span>
         <span class="s2">"experiment_closed"</span><span class="p">:</span> <span class="n">experiment_closed</span><span class="p">,</span>
+        <span class="s2">"archived_to_completed"</span><span class="p">:</span> <span class="n">archived_to_completed</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">prune_summary</span><span class="p">,</span>
     <span class="p">}</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Cancelled experiment </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">exp_id</span><span class="p">,</span> <span class="n">summary</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">summary</span></div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_archive_experiment_to_completed</span><span class="p">(</span><span class="n">exp_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Copy experiment + samples + tasks into ``Alab(completed)`` when configured.</span>
+
+<span class="sd">    Matches ``ExperimentManager.mark_completed_experiments`` after a terminal</span>
+<span class="sd">    status write. Also runs when Cancel is clicked on an already-cancelled</span>
+<span class="sd">    experiment so orphans can be archived on retry.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="s2">"mongodb_completed"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">AlabOSConfig</span><span class="p">():</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">CompletedExperimentView</span><span class="p">()</span><span class="o">.</span><span class="n">save_experiment</span><span class="p">(</span><span class="n">exp_id</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="s2">"Experiment (</span><span class="si">%s</span><span class="s2">) and associated samples/tasks were copied to the completed db."</span><span class="p">,</span>
+        <span class="n">exp_id</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="kc">True</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_force_cancel_experiment_tasks</span><span class="p">(</span>
@@ -492,7 +527,7 @@
             <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
                 <span class="s2">"status"</span><span class="p">:</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">CANCELLED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="s2">"canceling_progress"</span><span class="p">:</span> <span class="n">CancelingProgress</span><span class="o">.</span><span class="n">WORKER_NOTIFIED</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                <span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Cancelled by experiment cancel."</span><span class="p">,</span>
+                <span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Cancelled via dashboard (Cancel Experiment)."</span><span class="p">,</span>
                 <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">now</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">},</span>

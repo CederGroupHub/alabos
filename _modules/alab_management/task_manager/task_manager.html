@@ -399,7 +399,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.lab_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">LabView</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBLogger</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.task_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskView</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.task_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskCancelledError</span><span class="p">,</span> <span class="n">TaskView</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.task_view.task_enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">CancelingProgress</span><span class="p">,</span> <span class="n">TaskStatus</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.module_ops</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_definition</span>
 
@@ -499,27 +499,46 @@
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tasks_to_cancel</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'No dangling tasks found from previous alabos workers. Nice!'</span><span class="p">)</span>
+            <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"No dangling tasks found from previous alabos workers. Nice!"</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1">              Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">tasks_to_cancel</span><span class="p">)</span><span class="si">}</span><span class="s1"> dangling tasks leftover from previous alabos workers. These tasks were in</span><span class="se">\n</span><span class="s1">              an unknown state (RUNNING or CANCELLING) when the alabos workers were stopped.</span><span class="se">\n\n</span><span class="s1">              We will now cancel them and remove their physical components from the lab. We will go through each task</span><span class="se">\n</span><span class="s1">              one by one. A user request will appear on the alabos dashboard for each task. Please acknowledge each</span><span class="se">\n</span><span class="s1">              request to remove the samples from the lab. Once all tasks have been addressed, the alabos workers will</span><span class="se">\n</span><span class="s1">              begin to process new tasks. Lets begin:'</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tasks_to_cancel</span><span class="p">)</span>
+        <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Found </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> dangling task(s) leftover from previous alabos workers. "</span>
+            <span class="s2">"They were RUNNING or REQUESTING_RESOURCES when the workers stopped."</span>
+        <span class="p">)</span>
+        <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">"We will cancel them and ask you to remove their samples from the lab. "</span>
+            <span class="s2">"A user request will appear on the dashboard for each task. "</span>
+            <span class="s2">"Acknowledge each one, then the workers will start new work."</span>
+        <span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">task_entry</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tasks_to_cancel</span><span class="p">):</span>
             <span class="n">task_id</span> <span class="o">=</span> <span class="n">task_entry</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">]</span>
             <span class="n">task_class</span> <span class="o">=</span> <span class="n">task_entry</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span>
             <span class="n">task_name</span> <span class="o">=</span> <span class="n">task_class</span><span class="o">.</span><span class="vm">__name__</span>
 
-            <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1">(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">tasks_to_cancel</span><span class="p">)</span><span class="si">}</span><span class="s1">) please clean up task </span><span class="si">{</span><span class="n">task_name</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s1">) using the ALabOS dashboard...'</span><span class="p">)</span>
+            <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">) please clean up task </span><span class="si">{</span><span class="n">task_name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">) "</span>
+                <span class="s2">"using the ALabOS dashboard..."</span>
+            <span class="p">)</span>
 
             <span class="c1"># puts a user request on the dashboard to remove all samples in this task from the physical lab,</span>
             <span class="c1"># blocks until request is acknowledged. There may be a duplicate request on the dashboard if the task was</span>
             <span class="c1"># already cancelled before the taskmanager was restarted. Acknowledging both should be fine.</span>
-            <span class="n">LabView</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span><span class="o">.</span><span class="n">request_cleanup</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">LabView</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span><span class="o">.</span><span class="n">request_cleanup</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">TaskCancelledError</span><span class="p">:</span>
+                <span class="n">cli_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"Cleanup prompt for </span><span class="si">{</span><span class="n">task_name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">) was cancelled; "</span>
+                    <span class="s2">"releasing resources and marking the leftover task cancelled."</span>
+                <span class="p">)</span>
+                <span class="n">LabView</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span><span class="o">.</span><span class="n">release_all_resources</span><span class="p">()</span>
 
             <span class="c1"># mark task as successfully cancelled</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">CANCELLED</span><span class="p">)</span>
-            <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'</span><span class="se">\t</span><span class="s1"> Task cancelled successfully.'</span><span class="p">)</span>
+            <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Task </span><span class="si">{</span><span class="n">task_name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">) cancelled successfully."</span><span class="p">)</span>
 
-        <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'Cleanup is done, nice job. Lets get back to work!'</span><span class="p">)</span></div>
+        <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Cleanup is done. Back to work."</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TaskManager.submit_ready_tasks">
