@@ -15,7 +15,7 @@ def test_handle_pending_experiments_holds_when_lab_not_ready(monkeypatch):
         "alab_management.device_rpc_status.get_lab_readiness",
         lambda: {
             "lab_ready": False,
-            "lab_ready_label": "Lab starting…",
+            "lab_ready_label": "Lab starting...",
             "device_rpc": {"ready": False},
         },
     )

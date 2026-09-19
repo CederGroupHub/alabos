@@ -38,7 +38,10 @@ def test_reset_lab_software_state_cancels_and_releases(monkeypatch):
     samples.update_many.return_value.modified_count = 4
 
     experiment_view = MagicMock()
+    # to_archive loop (PENDING, RUNNING) then _close_open_experiments (PENDING, RUNNING)
     experiment_view.get_experiments_with_status.side_effect = [
+        [{"_id": experiment_id}],
+        [],
         [{"_id": experiment_id}],
         [],
     ]
@@ -69,6 +72,23 @@ def test_reset_lab_software_state_cancels_and_releases(monkeypatch):
         "alab_management.lab_reset.get_collection",
         lambda name: lock_collection if name == "_lock" else requests_collection,
     )
+    monkeypatch.setattr(
+        "alab_management.lab_reset.AlabOSConfig",
+        lambda: {"mongodb_completed": {}},
+    )
+    archive = MagicMock(return_value=1)
+    monkeypatch.setattr(
+        "alab_management.lab_reset.archive_experiments_to_completed", archive
+    )
+    monkeypatch.setattr(
+        "alab_management.lab_reset.prune_archived_unplaced_from_live",
+        lambda: {
+            "samples_pruned": 0,
+            "tasks_pruned": 0,
+            "experiments_pruned": 0,
+            "skipped_not_in_completed": 0,
+        },
+    )
 
     summary = reset_lab_software_state(settle_s=0)
 
@@ -78,6 +98,8 @@ def test_reset_lab_software_state_cancels_and_releases(monkeypatch):
     assert summary["positions_unlocked"] == 3
     assert summary["samples_unassigned"] == 4
     assert summary["experiments_closed"] == 1
+    assert summary["experiments_archived"] == 1
+    archive.assert_called_once()
     task_collection.update_many.assert_called_once()
     lock_collection.drop.assert_called_once()
     requests_collection.drop.assert_called_once()
@@ -163,7 +185,17 @@ def test_clear_lab_occupancy_moves_samples(monkeypatch):
         lambda: {"idle": True, "reasons": []},
     )
     monkeypatch.setattr("alab_management.lab_reset.SampleView", lambda: sample_view)
+    monkeypatch.setattr(
+        "alab_management.lab_reset.prune_archived_unplaced_from_live",
+        lambda: {
+            "samples_pruned": 0,
+            "tasks_pruned": 0,
+            "experiments_pruned": 0,
+            "skipped_not_in_completed": 0,
+        },
+    )
 
     summary = clear_lab_occupancy()
     assert summary["samples_cleared"] == 1
+    assert summary["samples_pruned"] == 0
     sample_view.move_sample.assert_called_once_with(sample_id, None)

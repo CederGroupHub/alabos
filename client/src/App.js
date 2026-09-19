@@ -1,6 +1,7 @@
 import SubmitExp from "./submit_exp/SubmitExp";
 import Dashboard from './dashboard/Dashboard';
-import { AppBar, Chip, CssBaseline, Tooltip, Typography } from "@mui/material";
+import { AppBar, Chip, CssBaseline, IconButton, Tooltip, Typography } from "@mui/material";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import styled from "styled-components";
 import { Routes, Route, NavLink, BrowserRouter } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -110,9 +111,14 @@ function LabReadyChip() {
         size="small"
         sx={{
           fontWeight: 600,
-          bgcolor: labReady ? "rgba(76, 175, 80, 0.22)" : "rgba(255, 193, 7, 0.28)",
-          color: "#f5fbff",
-          border: "1px solid rgba(255,255,255,0.25)",
+          bgcolor: labReady ? "#43a047" : "rgba(255, 193, 7, 0.35)",
+          color: labReady ? "#ffffff" : "#f5fbff",
+          border: labReady
+            ? "1px solid #66bb6a"
+            : "1px solid rgba(255,255,255,0.25)",
+          boxShadow: labReady
+            ? "0 0 0 1px rgba(102, 187, 106, 0.35)"
+            : "none",
         }}
       />
     </Tooltip>
@@ -143,7 +149,26 @@ function AppShell() {
             A-Lab
           </Typography>
         </div>
-        <LabReadyChip />
+        <div style={{ display: "flex", alignItems: "center", gap: 30 }}>
+          <LabReadyChip />
+          <Tooltip title="Refresh page (Ctrl+R)">
+            <IconButton
+              aria-label="Refresh page"
+              onClick={() => window.location.reload()}
+              size="medium"
+              sx={{
+                color: "#f5fbff",
+                border: "1px solid rgba(255, 255, 255, 0.22)",
+                backgroundColor: "rgba(255, 255, 255, 0.06)",
+                "&:hover": {
+                  backgroundColor: "rgba(255, 255, 255, 0.14)",
+                },
+              }}
+            >
+              <RefreshIcon />
+            </IconButton>
+          </Tooltip>
+        </div>
       </StyledAppBar>
       <Routes>
         <Route path="/*" element={<Dashboard />} />

@@ -22,7 +22,7 @@ export function LabReadinessProvider({ children }) {
           }
           if (typeof status.lab_ready === "boolean") {
             setLabReady(status.lab_ready);
-            setLabReadyLabel(status.lab_ready_label || (status.lab_ready ? "Lab ready" : "Lab starting…"));
+            setLabReadyLabel(status.lab_ready_label || (status.lab_ready ? "Lab ready" : "Lab starting..."));
             setDeviceRpc(status.device_rpc || null);
           }
         })

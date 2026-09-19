@@ -117,9 +117,9 @@ def lab_ready_label(device_rpc: dict[str, Any] | None = None) -> str:
     if "unreachable" in detail or not status.get("exists", True):
         if "unreachable" in detail:
             return "Devices not ready"
-        return "Lab starting…"
+        return "Lab starting..."
     if status.get("exists") and status.get("consumers", 0) == 0:
-        return "Lab starting…"
+        return "Lab starting..."
     return "Devices not ready"
 
 

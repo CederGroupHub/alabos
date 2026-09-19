@@ -27,7 +27,7 @@ def test_lab_ready_label_when_starting() -> None:
                 "detail": "no consumer",
             }
         )
-        == "Lab starting…"
+        == "Lab starting..."
     )
 
 
@@ -41,7 +41,7 @@ def test_lab_ready_label_when_queue_missing() -> None:
                 "detail": "queue missing",
             }
         )
-        == "Lab starting…"
+        == "Lab starting..."
     )
 
 

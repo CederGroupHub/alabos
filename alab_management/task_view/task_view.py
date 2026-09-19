@@ -507,7 +507,7 @@ class TaskView:
         self.update_status(task_id=task_id, status=TaskStatus.CANCELLED)
         self.set_message(
             task_id=task_id,
-            message="Cancelled before it started running.",
+            message="Cancelled via dashboard (Cancel Task) before it started running.",
         )
         return True
 

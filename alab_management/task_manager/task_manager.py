@@ -11,7 +11,7 @@ from dramatiq_abort import abort, abort_requested
 
 from alab_management.lab_view import LabView
 from alab_management.logger import DBLogger
-from alab_management.task_view import TaskView
+from alab_management.task_view import TaskCancelledError, TaskView
 from alab_management.task_view.task_enums import CancelingProgress, TaskStatus
 from alab_management.utils.module_ops import load_definition
 
@@ -95,27 +95,46 @@ class TaskManager:
             )
 
         if len(tasks_to_cancel) == 0:
-            cli_logger.info('No dangling tasks found from previous alabos workers. Nice!')
+            cli_logger.info("No dangling tasks found from previous alabos workers. Nice!")
             return
 
-        cli_logger.info(f'\n              Found {len(tasks_to_cancel)} dangling tasks leftover from previous alabos workers. These tasks were in\n              an unknown state (RUNNING or CANCELLING) when the alabos workers were stopped.\n\n              We will now cancel them and remove their physical components from the lab. We will go through each task\n              one by one. A user request will appear on the alabos dashboard for each task. Please acknowledge each\n              request to remove the samples from the lab. Once all tasks have been addressed, the alabos workers will\n              begin to process new tasks. Lets begin:')
+        n = len(tasks_to_cancel)
+        cli_logger.info(
+            f"Found {n} dangling task(s) leftover from previous alabos workers. "
+            "They were RUNNING or REQUESTING_RESOURCES when the workers stopped."
+        )
+        cli_logger.info(
+            "We will cancel them and ask you to remove their samples from the lab. "
+            "A user request will appear on the dashboard for each task. "
+            "Acknowledge each one, then the workers will start new work."
+        )
         for i, task_entry in enumerate(tasks_to_cancel):
             task_id = task_entry["task_id"]
             task_class = task_entry["type"]
             task_name = task_class.__name__
 
-            cli_logger.info(f'\n({i + 1}/{len(tasks_to_cancel)}) please clean up task {task_name} ({task_id}) using the ALabOS dashboard...')
+            cli_logger.info(
+                f"({i + 1}/{n}) please clean up task {task_name} ({task_id}) "
+                "using the ALabOS dashboard..."
+            )
 
             # puts a user request on the dashboard to remove all samples in this task from the physical lab,
             # blocks until request is acknowledged. There may be a duplicate request on the dashboard if the task was
             # already cancelled before the taskmanager was restarted. Acknowledging both should be fine.
-            LabView(task_id=task_id).request_cleanup()
+            try:
+                LabView(task_id=task_id).request_cleanup()
+            except TaskCancelledError:
+                cli_logger.warning(
+                    f"Cleanup prompt for {task_name} ({task_id}) was cancelled; "
+                    "releasing resources and marking the leftover task cancelled."
+                )
+                LabView(task_id=task_id).release_all_resources()
 
             # mark task as successfully cancelled
             self.task_view.update_status(task_id=task_id, status=TaskStatus.CANCELLED)
-            cli_logger.info('\t Task cancelled successfully.')
+            cli_logger.info(f"Task {task_name} ({task_id}) cancelled successfully.")
 
-        cli_logger.info('Cleanup is done, nice job. Lets get back to work!')
+        cli_logger.info("Cleanup is done. Back to work.")
 
     def submit_ready_tasks(self):
         """

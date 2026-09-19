@@ -14,6 +14,77 @@ from alab_management.task_view.task import TaskCancelledError
 from alab_management.user_input import CANCEL_RESPONSE, UserInputView, UserRequestStatus
 
 
+def _patch_cancel_deps(
+    monkeypatch,
+    *,
+    experiment_view,
+    task_view=None,
+    user_input_view=None,
+    device_collection=None,
+    sample_positions=None,
+    requests=None,
+    archive=True,
+):
+    monkeypatch.setattr(
+        "alab_management.experiment_cancel.TaskView",
+        lambda: task_view if task_view is not None else MagicMock(),
+    )
+    monkeypatch.setattr(
+        "alab_management.experiment_cancel.ExperimentView", lambda: experiment_view
+    )
+    monkeypatch.setattr(
+        "alab_management.experiment_cancel.DeviceView",
+        lambda: SimpleNamespace(
+            _device_collection=device_collection
+            if device_collection is not None
+            else MagicMock()
+        ),
+    )
+    monkeypatch.setattr(
+        "alab_management.experiment_cancel.SampleView",
+        lambda: SimpleNamespace(
+            _sample_positions_collection=sample_positions
+            if sample_positions is not None
+            else MagicMock()
+        ),
+    )
+    if user_input_view is None:
+        user_input_view = SimpleNamespace(dismiss_pending_requests=lambda **kwargs: 0)
+    monkeypatch.setattr(
+        "alab_management.experiment_cancel.UserInputView", lambda: user_input_view
+    )
+    if requests is None:
+        requests = SimpleNamespace(
+            update_many=lambda *args, **kwargs: SimpleNamespace(modified_count=0)
+        )
+    monkeypatch.setattr(
+        "alab_management.experiment_cancel.get_collection", lambda name: requests
+    )
+    monkeypatch.setattr("alab_management.experiment_cancel._abort_task_actor", MagicMock())
+    if archive:
+        monkeypatch.setattr(
+            "alab_management.experiment_cancel.AlabOSConfig",
+            lambda: {"mongodb_completed": {}},
+        )
+        save = MagicMock()
+        monkeypatch.setattr(
+            "alab_management.experiment_cancel.CompletedExperimentView",
+            lambda: SimpleNamespace(save_experiment=save),
+        )
+        monkeypatch.setattr(
+            "alab_management.experiment_cancel.prune_archived_unplaced_from_live",
+            lambda: {
+                "samples_pruned": 0,
+                "tasks_pruned": 0,
+                "experiments_pruned": 0,
+                "skipped_not_in_completed": 0,
+            },
+        )
+        return save
+    monkeypatch.setattr("alab_management.experiment_cancel.AlabOSConfig", lambda: {})
+    return None
+
+
 def test_cancel_experiment_force_cancels_live_tasks_and_closes(monkeypatch):
     exp_id = ObjectId()
     waiting_task_id = ObjectId()
@@ -49,23 +120,14 @@ def test_cancel_experiment_force_cancels_live_tasks_and_closes(monkeypatch):
     requests = MagicMock()
     requests.update_many.return_value.modified_count = 3
 
-    monkeypatch.setattr("alab_management.experiment_cancel.TaskView", lambda: task_view)
-    monkeypatch.setattr(
-        "alab_management.experiment_cancel.ExperimentView", lambda: experiment_view
-    )
-    monkeypatch.setattr(
-        "alab_management.experiment_cancel.DeviceView",
-        lambda: SimpleNamespace(_device_collection=device_collection),
-    )
-    monkeypatch.setattr(
-        "alab_management.experiment_cancel.SampleView",
-        lambda: SimpleNamespace(_sample_positions_collection=sample_positions),
-    )
-    monkeypatch.setattr(
-        "alab_management.experiment_cancel.UserInputView", lambda: user_input_view
-    )
-    monkeypatch.setattr(
-        "alab_management.experiment_cancel.get_collection", lambda name: requests
+    save = _patch_cancel_deps(
+        monkeypatch,
+        experiment_view=experiment_view,
+        task_view=task_view,
+        user_input_view=user_input_view,
+        device_collection=device_collection,
+        sample_positions=sample_positions,
+        requests=requests,
     )
     abort = MagicMock()
     monkeypatch.setattr("alab_management.experiment_cancel._abort_task_actor", abort)
@@ -78,6 +140,8 @@ def test_cancel_experiment_force_cancels_live_tasks_and_closes(monkeypatch):
     assert summary["devices_released"] == 2
     assert summary["positions_unlocked"] == 2
     assert summary["experiment_closed"] is True
+    assert summary["archived_to_completed"] is True
+    save.assert_called_once_with(exp_id)
     experiment_view.update_experiment_status.assert_called_once()
     user_input_view.dismiss_pending_requests.assert_called_once()
     assert user_input_view.dismiss_pending_requests.call_args.kwargs["experiment_id"] == exp_id
@@ -107,31 +171,15 @@ def test_cancel_experiment_closes_when_every_task_is_terminal(monkeypatch):
     experiment_view = MagicMock()
     experiment_view.get_experiment.return_value = experiment
 
-    monkeypatch.setattr("alab_management.experiment_cancel.TaskView", lambda: task_view)
-    monkeypatch.setattr(
-        "alab_management.experiment_cancel.ExperimentView", lambda: experiment_view
+    save = _patch_cancel_deps(
+        monkeypatch, experiment_view=experiment_view, task_view=task_view
     )
-    monkeypatch.setattr(
-        "alab_management.experiment_cancel.DeviceView",
-        lambda: SimpleNamespace(_device_collection=MagicMock()),
-    )
-    monkeypatch.setattr(
-        "alab_management.experiment_cancel.SampleView",
-        lambda: SimpleNamespace(_sample_positions_collection=MagicMock()),
-    )
-    monkeypatch.setattr(
-        "alab_management.experiment_cancel.UserInputView",
-        lambda: SimpleNamespace(dismiss_pending_requests=lambda **kwargs: 0),
-    )
-    monkeypatch.setattr(
-        "alab_management.experiment_cancel.get_collection",
-        lambda name: SimpleNamespace(update_many=lambda *args, **kwargs: SimpleNamespace(modified_count=0)),
-    )
-    monkeypatch.setattr("alab_management.experiment_cancel._abort_task_actor", MagicMock())
 
     summary = cancel_experiment_software_state(exp_id)
 
     assert summary["experiment_closed"] is True
+    assert summary["archived_to_completed"] is True
+    save.assert_called_once_with(exp_id)
     experiment_view.update_experiment_status.assert_called_once()
 
 
@@ -142,31 +190,46 @@ def test_cancel_pending_experiment_without_task_ids(monkeypatch):
     experiment_view = MagicMock()
     experiment_view.get_experiment.return_value = experiment
 
-    monkeypatch.setattr("alab_management.experiment_cancel.TaskView", lambda: MagicMock())
-    monkeypatch.setattr(
-        "alab_management.experiment_cancel.ExperimentView", lambda: experiment_view
-    )
-    monkeypatch.setattr(
-        "alab_management.experiment_cancel.DeviceView",
-        lambda: SimpleNamespace(_device_collection=MagicMock()),
-    )
-    monkeypatch.setattr(
-        "alab_management.experiment_cancel.SampleView",
-        lambda: SimpleNamespace(_sample_positions_collection=MagicMock()),
-    )
-    monkeypatch.setattr(
-        "alab_management.experiment_cancel.UserInputView",
-        lambda: SimpleNamespace(dismiss_pending_requests=lambda **kwargs: 0),
-    )
-    monkeypatch.setattr(
-        "alab_management.experiment_cancel.get_collection",
-        lambda name: SimpleNamespace(update_many=lambda *args, **kwargs: SimpleNamespace(modified_count=0)),
-    )
+    save = _patch_cancel_deps(monkeypatch, experiment_view=experiment_view)
 
     summary = cancel_experiment_software_state(exp_id)
 
     assert summary["tasks_cancelled"] == 0
     assert summary["experiment_closed"] is True
+    assert summary["archived_to_completed"] is True
+    save.assert_called_once_with(exp_id)
+
+
+def test_cancel_archives_already_cancelled_experiment(monkeypatch):
+    """Retry Cancel can archive orphans that skipped the completed-db copy."""
+    exp_id = ObjectId()
+    experiment = {"_id": exp_id, "status": "CANCELLED", "tasks": []}
+
+    experiment_view = MagicMock()
+    experiment_view.get_experiment.return_value = experiment
+
+    save = _patch_cancel_deps(monkeypatch, experiment_view=experiment_view)
+
+    summary = cancel_experiment_software_state(exp_id)
+
+    assert summary["experiment_closed"] is False
+    assert summary["archived_to_completed"] is True
+    save.assert_called_once_with(exp_id)
+    experiment_view.update_experiment_status.assert_not_called()
+
+
+def test_cancel_skips_archive_without_completed_db(monkeypatch):
+    exp_id = ObjectId()
+    experiment = {"_id": exp_id, "status": "PENDING", "tasks": []}
+
+    experiment_view = MagicMock()
+    experiment_view.get_experiment.return_value = experiment
+
+    _patch_cancel_deps(monkeypatch, experiment_view=experiment_view, archive=False)
+
+    summary = cancel_experiment_software_state(exp_id)
+
+    assert summary["archived_to_completed"] is False
 
 
 def test_cancel_missing_experiment_raises(monkeypatch):
@@ -212,6 +275,32 @@ def test_retrieve_user_input_raises_when_task_is_cancelling():
 
     view.update_request_status.assert_called_once()
     assert view.update_request_status.call_args.kwargs["response"] == CANCEL_RESPONSE
+
+
+def test_retrieve_user_input_cleanup_waits_when_task_is_cancelling():
+    """Restart cleanup asks the operator to clear samples of leftover tasks.
+
+    Those tasks often already have canceling_progress. Aborting the prompt would
+    crash launch_worker before anyone can acknowledge it.
+    """
+    request_id = ObjectId()
+    request = {
+        "_id": request_id,
+        "status": UserRequestStatus.FULLFILLED.value,
+        "request_context": {"task_id": ObjectId()},
+        "response": "OK",
+        "note": "",
+    }
+    view = UserInputView.__new__(UserInputView)
+    view._task_view = MagicMock()
+    view._task_view.is_canceling.return_value = True
+    view.get_request = lambda _request_id: request
+    view.update_request_status = MagicMock()
+
+    assert (
+        view.retrieve_user_input(request_id, abort_if_task_cancelled=False) == "OK"
+    )
+    view.update_request_status.assert_not_called()
 
 
 def test_retrieve_user_input_returns_response_when_not_cancelling():

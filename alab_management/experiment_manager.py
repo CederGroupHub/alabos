@@ -225,6 +225,9 @@ class ExperimentManager:
                             "exp_id": experiment["_id"],
                         },
                     )
+                    from alab_management.lab_reset import prune_archived_unplaced_from_live
+
+                    prune_archived_unplaced_from_live()
 
     @contextmanager
     def pause_handling_experiments(self):

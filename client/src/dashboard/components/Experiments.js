@@ -19,6 +19,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
+import Alert from '@mui/material/Alert';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { HoverText } from '../../utils';
@@ -34,7 +35,15 @@ const CANCELABLE_TASK_STATUSES = new Set([
   "FINISHING",
 ]);
 
-function experimentCanBeCancelled(status) {
+function taskMentionsLabman(task) {
+  const text = `${task?.type || ""} ${task?.description || ""}`.toLowerCase();
+  return (
+    text.includes("labman")
+    || text.includes("powder dosing")
+    || text.includes("powderdosing")
+  );
+}
+function experimentHasLiveTasks(status) {
   return (status.tasks || []).some((task) => CANCELABLE_TASK_STATUSES.has(task.status));
 }
 
@@ -47,7 +56,11 @@ async function waitUntilExperimentShowsCancelled(experimentId, { timeoutMs = 900
   let latest = null;
   while (Date.now() < deadline) {
     latest = await get_experiment_status(experimentId);
-    if (latest && latest.status === "CANCELLED" && !experimentCanBeCancelled(latest)) {
+    if (
+      latest
+      && latest.status === "CANCELLED"
+      && !experimentHasLiveTasks(latest)
+    ) {
       return latest;
     }
     await sleep(intervalMs);
@@ -96,14 +109,13 @@ function progressHeadline(status) {
   if (current) {
     return `Now: ${current}`;
   }
-  if (status.status === "COMPLETED") {
-    return "Done";
-  }
-  if (status.status === "CANCELLED") {
-    return "Cancelled";
-  }
-  if (status.status === "ERROR") {
-    return "Error";
+  // Terminal status is already shown on the line above — don't repeat it.
+  if (
+    status.status === "COMPLETED"
+    || status.status === "CANCELLED"
+    || status.status === "ERROR"
+  ) {
+    return null;
   }
   const next = firstDescription(steps.next);
   if (next) {
@@ -113,7 +125,7 @@ function progressHeadline(status) {
   if (previous) {
     return `Last: ${previous}`;
   }
-  return experimentStatusLabel(status.status);
+  return null;
 }
 
 function ProgressStepCell({ label, tasks }) {
@@ -201,6 +213,12 @@ function formatCancelSummary(data) {
   if (data.experiment_closed) {
     parts.push("experiment marked cancelled");
   }
+  if (data.archived_to_completed) {
+    parts.push("archived to Alab(completed)");
+  }
+  if (data.samples_pruned != null && data.samples_pruned > 0) {
+    parts.push(`pruned ${data.samples_pruned} live sample${data.samples_pruned === 1 ? "" : "s"}`);
+  }
   return parts.length ? parts.join(" · ") : "Experiment cancel finished.";
 }
 
@@ -222,6 +240,7 @@ function CancelConfirmDialog({ open, setOpen, type, id, experimentId, experiment
   const isExperiment = type === "experiment";
   const liveTasks = isExperiment ? liveTasksFromStatus(experimentStatus) : [];
   const sampleLines = isExperiment ? sampleStayLines(experimentStatus) : [];
+  const hasLabmanTasks = liveTasks.some(taskMentionsLabman);
 
   const handleClose = () => {
     if (busy) {
@@ -296,7 +315,7 @@ function CancelConfirmDialog({ open, setOpen, type, id, experimentId, experiment
           <DialogContentText component="div">
             <Box component="ul" sx={{ m: 0, mb: 2, pl: 2 }}>
               <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
-                <Box component="span" sx={{ fontWeight: 700 }}>Stops:</Box>
+                <Box component="span" sx={{ fontWeight: 700 }}>Stops in AlabOS:</Box>
                 {" "}this experiment’s software work (live + waiting tasks, bookings, prompts).
               </Typography>
               <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
@@ -304,14 +323,33 @@ function CancelConfirmDialog({ open, setOpen, type, id, experimentId, experiment
                 {" "}samples where they are; other experiments alone.
               </Typography>
               <Typography component="li" variant="body2">
-                <Box component="span" sx={{ fontWeight: 700 }}>Does not:</Box>
-                {" "}halt hardware already in motion.
+                <Box component="span" sx={{ fontWeight: 700 }}>Does not stop:</Box>
+                {" "}Labman, robot arms, or other hardware already running. Those keep
+                going until they finish or you stop them on the machine.
               </Typography>
             </Box>
 
             <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5 }}>
-              Will cancel
+              AlabOS tasks that will be marked cancelled
             </Typography>
+            {hasLabmanTasks ? (
+              <Alert severity="warning" sx={{ mb: 1.5 }}>
+                <Typography variant="body2" sx={{ fontWeight: 700, mb: 0.5 }}>
+                  Labman will keep running
+                </Typography>
+                <Typography variant="body2">
+                  Powder dosing tasks below are AlabOS software only. Cancel does{" "}
+                  <Box component="span" sx={{ fontWeight: 700 }}>not</Box> abort
+                  the Labman workflow already submitted to a quadrant. Stop Labman
+                  from the Labman UI if you need the hardware to stop.
+                </Typography>
+              </Alert>
+            ) : (
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                This is software only — cancelling a task ends AlabOS tracking, not
+                hardware already in motion.
+              </Typography>
+            )}
             {liveTasks.length === 0 ? (
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
                 Nothing live to cancel; experiment will be marked cancelled if still open.
@@ -349,7 +387,7 @@ function CancelConfirmDialog({ open, setOpen, type, id, experimentId, experiment
             )}
 
             <Typography variant="body2" color="text.secondary">
-              Also frees this experiment’s device/slot reservations.
+              Also frees this experiment’s device/slot reservations in AlabOS.
             </Typography>
           </DialogContentText>
         ) : (
@@ -478,6 +516,8 @@ function Row({ experiment_id, hoverForId, onExperimentCancelled, refreshEpoch })
     return `${localTime.toLocaleString()}`
   }
 
+  const headline = progressHeadline(status);
+
   return (
     <React.Fragment>
       <CancelConfirmDialog
@@ -519,11 +559,11 @@ function Row({ experiment_id, hoverForId, onExperimentCancelled, refreshEpoch })
 
 
         <TableCell align="left"><Typography variant="body2">{timestampInLocale(status.submitted_at)}</Typography></TableCell>
-        <TableCell align="center" sx={{ width: 280 }}>
+        <TableCell align="left" sx={{ width: 300, maxWidth: 300, pr: 4 }}>
           <Box
             sx={{
               width: "100%",
-              mx: "auto",
+              maxWidth: 240,
               border: "1px solid",
               borderColor: "text.primary",
               borderRadius: "2px",
@@ -548,21 +588,23 @@ function Row({ experiment_id, hoverForId, onExperimentCancelled, refreshEpoch })
           <Typography variant="caption" color={status.status === "CANCELLED" ? "text.secondary" : "text.primary"}>
             {experimentStatusLabel(status.status)}
           </Typography>
-          <Typography
-            variant="caption"
-            display="block"
-            color="text.secondary"
-            sx={{
-              mt: 0.25,
-              maxWidth: 280,
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}
-            title={progressHeadline(status)}
-          >
-            {progressHeadline(status)}
-          </Typography>
+          {headline ? (
+            <Typography
+              variant="caption"
+              display="block"
+              color="text.secondary"
+              sx={{
+                mt: 0.25,
+                maxWidth: 240,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+              title={headline}
+            >
+              {headline}
+            </Typography>
+          ) : null}
         </TableCell>
         {/* <TableCell align="right">{row.protein}</TableCell> */}
 
@@ -570,10 +612,10 @@ function Row({ experiment_id, hoverForId, onExperimentCancelled, refreshEpoch })
           <Button
             variant="contained"
             color="error"
-            disabled={!experimentCanBeCancelled(status)}
+            disabled={!experimentHasLiveTasks(status)}
             onClick={() => handleCancel(status.id, "experiment")}
           >
-            {status.status === "CANCELLED" ? "Cancelled" : "Cancel Experiment"}
+            Cancel Experiment
           </Button>
         </TableCell>
       </TableRow>
@@ -704,7 +746,7 @@ function CollapsibleTable({ experiment_ids, hoverForId, onExperimentCancelled, r
             <TableCell>Name</TableCell>
             <TableCell align="left"># Samples</TableCell>
             <TableCell align="left">Submitted At</TableCell>
-            <TableCell align="center" sx={{ width: 280 }}>Progress</TableCell>
+            <TableCell align="left" sx={{ width: 300, maxWidth: 300, pr: 4 }}>Progress</TableCell>
             <TableCell align="left">Cancel Exp</TableCell>
           </TableRow>
         </TableHead>

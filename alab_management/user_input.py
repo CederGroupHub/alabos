@@ -152,17 +152,25 @@ class UserInputView:
             },
         )
 
-    def retrieve_user_input(self, request_id: ObjectId) -> str:
+    def retrieve_user_input(
+        self, request_id: ObjectId, *, abort_if_task_cancelled: bool = True
+    ) -> str:
         """
         Retrive response from user for a given request. Blocks until request is marked as completed.
 
-        Returns the user response, which is one of a list of options
+        Returns the user response, which is one of a list of options.
+
+        ``abort_if_task_cancelled`` is the normal case: a task waiting for an operator
+        should stop if someone cancelled it. Cleanup prompts pass ``False`` because they
+        exist *because* the task is being torn down — aborting them leaves the worker
+        unable to start.
         """
         request = None
         try:
             while True:
                 request = self.get_request(request_id)
-                self._raise_if_owning_task_cancelled(request)
+                if abort_if_task_cancelled:
+                    self._raise_if_owning_task_cancelled(request)
                 if UserRequestStatus(request["status"]) != UserRequestStatus.PENDING:
                     break
                 time.sleep(0.5)
@@ -173,7 +181,8 @@ class UserInputView:
                 {"_id": request_id}, {"$set": {"status": UserRequestStatus.ERROR.name}}
             )
             raise
-        self._raise_if_owning_task_cancelled(request)
+        if abort_if_task_cancelled:
+            self._raise_if_owning_task_cancelled(request)
         return request["response"]
 
     def _raise_if_owning_task_cancelled(self, request: dict[str, Any]) -> None:
@@ -294,7 +303,9 @@ class UserInputView:
             query[f"request_context.{key}"] = value
         return self._input_collection.find_one(query)
 
-    def retrieve_user_input_with_note(self, request_id: ObjectId) -> tuple[str, str]:
+    def retrieve_user_input_with_note(
+        self, request_id: ObjectId, *, abort_if_task_cancelled: bool = True
+    ) -> tuple[str, str]:
         """
         Retrive response from user for a given request. Blocks until request is marked as completed.
 
@@ -304,7 +315,8 @@ class UserInputView:
         try:
             while True:
                 request = self.get_request(request_id)
-                self._raise_if_owning_task_cancelled(request)
+                if abort_if_task_cancelled:
+                    self._raise_if_owning_task_cancelled(request)
                 if UserRequestStatus(request["status"]) != UserRequestStatus.PENDING:
                     break
                 time.sleep(0.5)
@@ -315,7 +327,8 @@ class UserInputView:
                 {"_id": request_id}, {"$set": {"status": UserRequestStatus.ERROR.name}}
             )
             raise
-        self._raise_if_owning_task_cancelled(request)
+        if abort_if_task_cancelled:
+            self._raise_if_owning_task_cancelled(request)
         return request["response"], request["note"]
 
 
@@ -326,6 +339,7 @@ def request_user_input(
     maintenance: bool = False,
     category: str = "Unknown Category",
     request_context_extra: dict[str, Any] | None = None,
+    abort_if_task_cancelled: bool = True,
 ) -> str:
     """
     Request user input through the dashboard. Blocks until response is given.
@@ -352,7 +366,10 @@ def request_user_input(
             category=category,
             request_context_extra=request_context_extra,
         )
-        response = user_input_view.retrieve_user_input(request_id=request_id)
+        response = user_input_view.retrieve_user_input(
+            request_id=request_id,
+            abort_if_task_cancelled=abort_if_task_cancelled,
+        )
         if response != SUPERSEDED_RESPONSE:
             return response
 
@@ -370,7 +387,10 @@ def request_user_input(
         )
         if replacement is None:
             continue
-        response = user_input_view.retrieve_user_input(request_id=replacement["_id"])
+        response = user_input_view.retrieve_user_input(
+            request_id=replacement["_id"],
+            abort_if_task_cancelled=abort_if_task_cancelled,
+        )
         if response != SUPERSEDED_RESPONSE:
             return response
 

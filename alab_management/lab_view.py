@@ -490,19 +490,33 @@ class LabView:
             )
         return result
 
-    def request_user_input(self, prompt: str, options: list[str]) -> str:
+    def request_user_input(
+        self,
+        prompt: str,
+        options: list[str],
+        *,
+        abort_if_task_cancelled: bool = True,
+    ) -> str:
         """
         Request user input from the user. This function will block until the user inputs something.
 
         Args:
             prompt (str): The prompt to display to the user.
             options (list[str]): A list of options to display to the user.
+            abort_if_task_cancelled: If true, raise when the owning task is cancelled
+                while waiting. Cleanup prompts pass false so a restart can still ask
+                the operator to clear samples.
 
         Returns
         -------
             response (str): The value returned by the user (from the buttons).
         """
-        return request_user_input(task_id=self.task_id, prompt=prompt, options=options)
+        return request_user_input(
+            task_id=self.task_id,
+            prompt=prompt,
+            options=options,
+            abort_if_task_cancelled=abort_if_task_cancelled,
+        )
 
     def request_user_input_with_note(
         self, prompt: str, options: list[str]
@@ -587,7 +601,9 @@ class LabView:
         if error_message:
             prompt += f"\n\n{error_message}"
 
-        self.request_user_input(prompt=prompt, options=["OK"])
+        self.request_user_input(
+            prompt=prompt, options=["OK"], abort_if_task_cancelled=False
+        )
 
         # Operator confirmed physical removal — clear occupancy (not just task ownership).
         for sample in all_samples:

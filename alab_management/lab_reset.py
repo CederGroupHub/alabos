@@ -16,13 +16,17 @@ import time
 from datetime import datetime
 from typing import Any
 
+from alab_management.config import AlabOSConfig
 from alab_management.device_view.device_view import DevicePauseStatus, DeviceTaskStatus, DeviceView
+from alab_management.experiment_view.completed_experiment_view import (
+    CompletedExperimentView,
+)
 from alab_management.experiment_view.experiment_view import ExperimentStatus, ExperimentView
 from alab_management.sample_view.sample_view import SampleView
 from alab_management.task_view.task_enums import CancelingProgress, TaskStatus
 from alab_management.task_view.task_view import TaskView
 from alab_management.user_input import UserInputView, UserRequestStatus
-from alab_management.utils.data_objects import get_collection
+from alab_management.utils.data_objects import get_collection, get_completed_collection
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +42,11 @@ LIVE_TASK_STATUSES = (
 OPEN_EXPERIMENT_STATUSES = (
     ExperimentStatus.PENDING.name,
     ExperimentStatus.RUNNING.name,
+)
+
+TERMINAL_EXPERIMENT_STATUSES = (
+    ExperimentStatus.COMPLETED.name,
+    ExperimentStatus.CANCELLED.name,
 )
 
 MOBILE_ROBOT_QUEUE_ATTRIBUTES = {
@@ -111,6 +120,10 @@ def clear_lab_occupancy() -> dict[str, int]:
 
     Requires an idle lab. Uses ``move_sample(..., None)`` so history gets a
     ``cleared`` event, matching per-slot Clear on Sample Positions.
+
+    Archives any terminal live experiments that are missing from completed, then
+    prunes live docs that are already archived (never deletes without a completed
+    copy).
     """
     idle = get_lab_idle_status()
     if not idle["idle"]:
@@ -128,13 +141,212 @@ def clear_lab_occupancy() -> dict[str, int]:
         in_transit_cleared += 1
 
     positions_unlocked = _unlock_sample_positions(sample_view)
+    experiments_archived = archive_terminal_experiments_missing_from_completed()
+    prune_summary = prune_archived_unplaced_from_live()
     summary = {
         "samples_cleared": samples_cleared,
         "in_transit_cleared": in_transit_cleared,
         "positions_unlocked": positions_unlocked,
+        "experiments_archived": experiments_archived,
+        **prune_summary,
     }
     logger.info("Lab occupancy cleared: %s", summary)
     return summary
+
+
+def archive_terminal_experiments_missing_from_completed() -> int:
+    """Archive COMPLETED/CANCELLED live experiments that are not yet in completed."""
+    if "mongodb_completed" not in AlabOSConfig():
+        return 0
+    try:
+        completed_experiments = get_completed_collection("experiment")
+    except ValueError:
+        return 0
+
+    experiment_view = ExperimentView()
+    missing: list[Any] = []
+    for experiment in experiment_view._experiment_collection.find(
+        {"status": {"$in": list(TERMINAL_EXPERIMENT_STATUSES)}},
+        projection={"_id": 1},
+    ):
+        exp_id = experiment["_id"]
+        if completed_experiments.find_one({"_id": exp_id}, {"_id": 1}) is None:
+            missing.append(exp_id)
+    if not missing:
+        return 0
+    logger.info(
+        "Archiving %s terminal live experiment(s) missing from completed before prune.",
+        len(missing),
+    )
+    return archive_experiments_to_completed(missing)
+
+
+def prune_archived_unplaced_from_live() -> dict[str, int]:
+    """Delete live samples/tasks/experiments that are safely archived and unplaced.
+
+    Hard rule: never delete a live document unless the same ``_id`` exists in
+    ``Alab(completed)``. Missing completed copies are skipped with a warning.
+    """
+    empty = {
+        "samples_pruned": 0,
+        "tasks_pruned": 0,
+        "experiments_pruned": 0,
+        "skipped_not_in_completed": 0,
+    }
+    if "mongodb_completed" not in AlabOSConfig():
+        return empty
+
+    try:
+        completed_samples = get_completed_collection("samples")
+        completed_tasks = get_completed_collection("tasks")
+        completed_experiments = get_completed_collection("experiment")
+    except ValueError:
+        logger.warning("Prune skipped: completed database is not available.")
+        return empty
+
+    sample_view = SampleView()
+    task_view = TaskView()
+    experiment_view = ExperimentView()
+    live_samples = sample_view._sample_collection
+    live_tasks = task_view._task_collection
+    live_experiments = experiment_view._experiment_collection
+
+    terminal_experiments = list(
+        live_experiments.find({"status": {"$in": list(TERMINAL_EXPERIMENT_STATUSES)}})
+    )
+
+    samples_pruned = 0
+    tasks_pruned = 0
+    experiments_pruned = 0
+    skipped = 0
+
+    # Build sample_id -> list of terminal experiments that reference it
+    sample_to_experiments: dict[Any, list[dict[str, Any]]] = {}
+    for experiment in terminal_experiments:
+        for entry in experiment.get("samples") or []:
+            sid = entry.get("sample_id")
+            if sid is None:
+                continue
+            sample_to_experiments.setdefault(sid, []).append(experiment)
+
+    # --- Samples first ---
+    for sample in live_samples.find(
+        {"position": None, "in_transit": None},
+        projection={"_id": 1},
+    ):
+        sample_id = sample["_id"]
+        parents = sample_to_experiments.get(sample_id) or []
+        if not parents:
+            continue
+        # Need at least one terminal parent that is itself archived
+        archived_parent = False
+        for parent in parents:
+            if completed_experiments.find_one({"_id": parent["_id"]}, {"_id": 1}):
+                archived_parent = True
+                break
+        if not archived_parent:
+            skipped += 1
+            logger.warning(
+                "Prune skipped sample %s: no archived terminal parent experiment in completed.",
+                sample_id,
+            )
+            continue
+        if not completed_samples.find_one({"_id": sample_id}, {"_id": 1}):
+            skipped += 1
+            logger.warning(
+                "Prune skipped sample %s: missing from Alab(completed).samples.",
+                sample_id,
+            )
+            continue
+        live_samples.delete_one({"_id": sample_id})
+        samples_pruned += 1
+
+    # --- Tasks then experiments ---
+    for experiment in terminal_experiments:
+        exp_id = experiment["_id"]
+        if not completed_experiments.find_one({"_id": exp_id}, {"_id": 1}):
+            skipped += 1
+            logger.warning(
+                "Prune skipped experiment %s: missing from Alab(completed).experiment.",
+                exp_id,
+            )
+            continue
+
+        sample_ids = [
+            entry.get("sample_id")
+            for entry in experiment.get("samples") or []
+            if entry.get("sample_id") is not None
+        ]
+        remaining_samples = (
+            live_samples.count_documents({"_id": {"$in": sample_ids}}) if sample_ids else 0
+        )
+        if remaining_samples:
+            continue
+
+        task_ids = [
+            task.get("task_id")
+            for task in experiment.get("tasks") or []
+            if task.get("task_id") is not None
+        ]
+        live_task_docs = (
+            list(live_tasks.find({"_id": {"$in": task_ids}}, {"_id": 1}))
+            if task_ids
+            else []
+        )
+        all_tasks_safe = True
+        for task_doc in live_task_docs:
+            tid = task_doc["_id"]
+            if not completed_tasks.find_one({"_id": tid}, {"_id": 1}):
+                all_tasks_safe = False
+                skipped += 1
+                logger.warning(
+                    "Prune skipped task %s (experiment %s): missing from Alab(completed).tasks.",
+                    tid,
+                    exp_id,
+                )
+        if not all_tasks_safe:
+            # Do not delete the experiment until every remaining live task is archived.
+            continue
+
+        for task_doc in live_task_docs:
+            live_tasks.delete_one({"_id": task_doc["_id"]})
+            tasks_pruned += 1
+
+        # Re-check experiment still in completed immediately before delete
+        if not completed_experiments.find_one({"_id": exp_id}, {"_id": 1}):
+            skipped += 1
+            logger.warning(
+                "Prune skipped experiment %s at delete time: missing from completed.",
+                exp_id,
+            )
+            continue
+        live_experiments.delete_one({"_id": exp_id})
+        experiments_pruned += 1
+
+    summary = {
+        "samples_pruned": samples_pruned,
+        "tasks_pruned": tasks_pruned,
+        "experiments_pruned": experiments_pruned,
+        "skipped_not_in_completed": skipped,
+    }
+    if samples_pruned or tasks_pruned or experiments_pruned or skipped:
+        logger.info("Pruned archived unplaced from live: %s", summary)
+    return summary
+
+
+def archive_experiments_to_completed(experiment_ids: list[Any]) -> int:
+    """Copy each experiment into completed when configured. Returns how many archived."""
+    if not experiment_ids or "mongodb_completed" not in AlabOSConfig():
+        return 0
+    archived = 0
+    completed_view = CompletedExperimentView()
+    for exp_id in experiment_ids:
+        try:
+            completed_view.save_experiment(exp_id)
+            archived += 1
+        except Exception:
+            logger.exception("Failed to archive experiment %s to completed.", exp_id)
+    return archived
 
 
 def reset_lab_software_state(*, settle_s: float = DEFAULT_SETTLE_S) -> dict[str, int]:
@@ -142,6 +354,8 @@ def reset_lab_software_state(*, settle_s: float = DEFAULT_SETTLE_S) -> dict[str,
 
     Physical sample occupancy (``samples.position`` / ``last_position``) is preserved.
     Only ephemeral ownership is cleared: task IDs, in-transit flags, and position locks.
+    Closed experiments are archived to completed when configured, then unplaced
+    archived docs may be pruned from live.
     """
     task_view = TaskView()
     experiment_view = ExperimentView()
@@ -149,6 +363,14 @@ def reset_lab_software_state(*, settle_s: float = DEFAULT_SETTLE_S) -> dict[str,
     sample_view = SampleView()
     user_input_view = UserInputView()
     now = datetime.now()
+
+    # Capture open experiment ids before closing so we can archive them.
+    to_archive: list[Any] = []
+    for status in OPEN_EXPERIMENT_STATUSES:
+        for experiment in experiment_view.get_experiments_with_status(
+            ExperimentStatus[status]
+        ):
+            to_archive.append(experiment["_id"])
 
     tasks_cancelled = _cancel_live_tasks(task_view, now)
     user_inputs_dismissed = _dismiss_pending_experiment_user_inputs(user_input_view, now)
@@ -160,6 +382,8 @@ def reset_lab_software_state(*, settle_s: float = DEFAULT_SETTLE_S) -> dict[str,
     positions_unlocked = _unlock_sample_positions(sample_view)
     samples_unassigned = _clear_sample_ownership(sample_view, now)
     experiments_closed = _close_open_experiments(experiment_view)
+    experiments_archived = archive_experiments_to_completed(to_archive)
+    prune_summary = prune_archived_unplaced_from_live()
 
     summary = {
         "tasks_cancelled": tasks_cancelled,
@@ -168,6 +392,8 @@ def reset_lab_software_state(*, settle_s: float = DEFAULT_SETTLE_S) -> dict[str,
         "positions_unlocked": positions_unlocked,
         "samples_unassigned": samples_unassigned,
         "experiments_closed": experiments_closed,
+        "experiments_archived": experiments_archived,
+        **prune_summary,
     }
     logger.info("Lab software reset: %s", summary)
     return summary
@@ -188,7 +414,7 @@ def _cancel_live_tasks(task_view: TaskView, now: datetime) -> int:
             "$set": {
                 "status": TaskStatus.CANCELLED.name,
                 "canceling_progress": CancelingProgress.WORKER_NOTIFIED.name,
-                "message": "Cancelled by Release locks & tasks.",
+                "message": "Cancelled via dashboard (Release locks & tasks).",
                 "last_updated": now,
             }
         },

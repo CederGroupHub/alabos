@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 from collections.abc import Mapping
 
 from rich.console import Console
@@ -27,6 +28,33 @@ LAB_PACKAGES = (
 _LOGGING_CONFIGURED = False
 
 
+def _logging_flag_from_env(env_var: str) -> bool | None:
+    env_value = os.getenv(env_var, "").strip().lower()
+    if env_value in {"1", "true", "yes", "on"}:
+        return True
+    if env_value in {"0", "false", "no", "off"}:
+        return False
+    return None
+
+
+def _rich_console() -> Console:
+    """Console for RichHandler: color only on a real TTY (not piped log files).
+
+    ``force_terminal=True`` used to paint ANSI into ``alabos_worker.log`` and the
+    dashboard Logs view. Opt in with ``ALABOS_FORCE_COLOR=1`` if a Windows console
+    needs colors but does not report as a TTY; ``NO_COLOR`` always disables them.
+    """
+    if os.getenv("NO_COLOR", "").strip():
+        return Console(force_terminal=False, no_color=True)
+    force = _logging_flag_from_env("ALABOS_FORCE_COLOR")
+    if force is True:
+        return Console(force_terminal=True)
+    if force is False:
+        return Console(force_terminal=False, no_color=True)
+    # Auto: color when stdout is interactive; plain text when redirected to a file.
+    return Console(force_terminal=sys.stdout.isatty())
+
+
 def set_up_rich_handler(logger: logging.Logger) -> RichHandler:
     """Set up a RichHandler for a logger."""
     rich_handler = RichHandler(
@@ -34,7 +62,7 @@ def set_up_rich_handler(logger: logging.Logger) -> RichHandler:
         markup=True,
         show_path=False,
         show_level=False,
-        console=Console(force_terminal=True),
+        console=_rich_console(),
     )
     rich_handler.setFormatter(logging.Formatter("%(message)s", datefmt="[%X]"))
     logger.addHandler(rich_handler)
@@ -51,15 +79,6 @@ def _get_logging_config() -> dict:
     except FileNotFoundError:
         pass
     return {}
-
-
-def _logging_flag_from_env(env_var: str) -> bool | None:
-    env_value = os.getenv(env_var, "").strip().lower()
-    if env_value in {"1", "true", "yes", "on"}:
-        return True
-    if env_value in {"0", "false", "no", "off"}:
-        return False
-    return None
 
 
 def _is_logging_debug_enabled(config_key: str, env_var: str) -> bool:

@@ -385,11 +385,11 @@ export default function LabSettings() {
           },
           {
             label: "Does",
-            text: "Sets current position empty, unlocks slot reservations, appends history.",
+            text: "Sets current position empty, unlocks slot reservations, appends history. Then removes live sample/task/experiment docs that are already archived in Alab(completed).",
           },
           {
             label: "Keeps",
-            text: "Sample identity, last-known location, and full movement history.",
+            text: "Anything not yet in Alab(completed). Never deletes a live doc without an archive copy. Last-known location stays on the completed copy.",
           },
           {
             label: "Requires",
@@ -398,7 +398,7 @@ export default function LabSettings() {
           },
           {
             label: "With Release locks",
-            text: "This pair is the non-nuclear reset: clear stuck work + empty the occupancy map while keeping sample records, last-known location, and histories. Use Nuclear wipe only if that fails.",
+            text: "This pair is the non-nuclear reset: clear stuck work + empty the occupancy map, then prune archived leftovers from live. Use Nuclear wipe only if that fails.",
           },
         ]}
         actions={
@@ -758,11 +758,12 @@ export default function LabSettings() {
           <>
             <Typography variant="body1" sx={{ color: "#203d51", mb: 1, lineHeight: 1.55 }}>
               <strong>Does:</strong> Sets every sample&apos;s current position to
-              empty and unlocks slot reservations.
+              empty and unlocks slot reservations. Then removes live docs that
+              already exist in Alab(completed).
             </Typography>
             <Typography variant="body1" sx={{ color: "#203d51", mb: 1, lineHeight: 1.55 }}>
-              <strong>Keeps:</strong> Identity, last-known location, and movement
-              history.
+              <strong>Keeps:</strong> Anything not yet archived. Never deletes a
+              live sample/task/experiment without a matching completed copy.
             </Typography>
             <Typography variant="body1" sx={{ color: "#8a4b08", lineHeight: 1.55 }}>
               <strong>Confirm:</strong> Type CLEAR to continue.

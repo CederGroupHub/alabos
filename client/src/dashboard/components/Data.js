@@ -1,11 +1,15 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Button,
   Card,
   CardContent,
   CircularProgress,
+  FormControl,
   IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
   Stack,
   Table,
   TableBody,
@@ -13,6 +17,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
   Typography,
 } from '@mui/material';
 import Paper from '@mui/material/Paper';
@@ -26,27 +31,89 @@ import {
   get_task_outcome_rows,
 } from '../../api_routes';
 
-function DataSection({ title, description, rows, columns, downloadHref, loading }) {
+const ALL_FIELDS = 'all';
+const PREVIEW_LIMIT = 25;
+
+function cellText(value) {
+  if (Array.isArray(value)) {
+    return value.join(', ');
+  }
+  if (value == null) {
+    return '';
+  }
+  return String(value);
+}
+
+function rowMatchesQuery(row, columns, query, fieldKey) {
+  const needle = query.trim().toLowerCase();
+  if (!needle) {
+    return true;
+  }
+  if (fieldKey === ALL_FIELDS) {
+    return columns.some((column) => cellText(row[column.key]).toLowerCase().includes(needle));
+  }
+  const column = columns.find((entry) => entry.key === fieldKey);
+  if (!column) {
+    return false;
+  }
+  return cellText(row[column.key]).toLowerCase().includes(needle);
+}
+
+function filterRows(rows, columns, query, fieldKey) {
+  return rows.filter((row) => rowMatchesQuery(row, columns, query, fieldKey));
+}
+
+function DataSection({
+  title,
+  description,
+  rows,
+  columns,
+  downloadHref,
+  loading,
+  query,
+  fieldKey,
+}) {
+  const filteredRows = useMemo(
+    () => filterRows(rows, columns, query, fieldKey),
+    [rows, columns, query, fieldKey],
+  );
+  const previewRows = filteredRows.slice(0, PREVIEW_LIMIT);
+  const searching = Boolean(query.trim());
+  const fieldMissing = fieldKey !== ALL_FIELDS && !columns.some((column) => column.key === fieldKey);
+
   return (
     <Card variant="outlined">
       <CardContent>
         <Stack spacing={2}>
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2 }}>
             <Box>
               <Typography variant="h6">{title}</Typography>
               <Typography variant="body2" color="text.secondary">{description}</Typography>
+              {!loading && searching && (
+                <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.5 }}>
+                  {fieldMissing
+                    ? 'This table has no matching field for the selected search target.'
+                    : `Showing ${previewRows.length} of ${filteredRows.length} match${filteredRows.length === 1 ? '' : 'es'} (of ${rows.length} this month).`}
+                </Typography>
+              )}
             </Box>
             <Button href={downloadHref} variant="outlined">
               Download CSV
             </Button>
           </Box>
           {loading ? (
-            <Box sx={{ display: "flex", justifyContent: "center", py: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
               <CircularProgress size={28} />
             </Box>
-          ) : rows.length === 0 ? (
+          ) : fieldMissing ? (
             <Typography variant="body2" color="text.secondary">
-              No rows for this month. Try an older month or wait for new samples/tasks to complete.
+              No rows — selected field is not in this table. Choose All fields or another column.
+            </Typography>
+          ) : filteredRows.length === 0 ? (
+            <Typography variant="body2" color="text.secondary">
+              {searching
+                ? 'No rows match this search for the selected month.'
+                : 'No rows for this month. Try an older month or wait for new samples/tasks to complete.'}
             </Typography>
           ) : (
             <TableContainer component={Paper} sx={{ maxHeight: 320 }}>
@@ -59,11 +126,11 @@ function DataSection({ title, description, rows, columns, downloadHref, loading 
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {rows.slice(0, 25).map((row, index) => (
+                  {previewRows.map((row, index) => (
                     <TableRow key={index}>
                       {columns.map((column) => (
                         <TableCell key={column.key}>
-                          {Array.isArray(row[column.key]) ? row[column.key].join(", ") : String(row[column.key] ?? "")}
+                          {cellText(row[column.key])}
                         </TableCell>
                       ))}
                     </TableRow>
@@ -78,6 +145,45 @@ function DataSection({ title, description, rows, columns, downloadHref, loading 
   );
 }
 
+const SAMPLE_SUMMARY_COLUMNS = [
+  { key: 'sample_id', label: 'Sample ID' },
+  { key: 'name', label: 'Name' },
+  { key: 'position', label: 'Position' },
+  { key: 'last_position', label: 'Last Position' },
+  { key: 'metadata_keys', label: 'Metadata Keys' },
+];
+
+const POWDER_DOSING_COLUMNS = [
+  { key: 'sample_name', label: 'Sample' },
+  { key: 'powder_name', label: 'Powder' },
+  { key: 'target_mass', label: 'Target Mass' },
+  { key: 'dose_mass', label: 'Actual Dose Mass' },
+  { key: 'dose_head_position', label: 'Head Position' },
+  { key: 'dose_timestamp', label: 'Dose Timestamp' },
+];
+
+const TASK_OUTCOME_COLUMNS = [
+  { key: 'task_id', label: 'Task ID' },
+  { key: 'type', label: 'Type' },
+  { key: 'status', label: 'Status' },
+  { key: 'sample_names', label: 'Samples' },
+  { key: 'result_keys', label: 'Result Keys' },
+];
+
+const SEARCH_FIELD_OPTIONS = [
+  { key: ALL_FIELDS, label: 'All fields' },
+  ...[
+    ...SAMPLE_SUMMARY_COLUMNS,
+    ...POWDER_DOSING_COLUMNS,
+    ...TASK_OUTCOME_COLUMNS,
+  ].reduce((options, column) => {
+    if (!options.some((entry) => entry.key === column.key)) {
+      options.push(column);
+    }
+    return options;
+  }, []),
+];
+
 function Data() {
   const [sampleSummary, setSampleSummary] = useState([]);
   const [powderDosing, setPowderDosing] = useState([]);
@@ -85,6 +191,8 @@ function Data() {
   const [loading, setLoading] = useState(true);
   const [windowInfo, setWindowInfo] = useState(null);
   const [month, setMonth] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchField, setSearchField] = useState(ALL_FIELDS);
 
   const refresh = useCallback(async (targetMonth = null) => {
     setLoading(true);
@@ -123,7 +231,7 @@ function Data() {
 
   return (
     <Stack spacing={2}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
         <Box>
           <Typography variant="h5">Data</Typography>
           <Typography variant="body2" color="text.secondary">
@@ -141,8 +249,8 @@ function Data() {
           >
             <ChevronLeftIcon />
           </IconButton>
-          <Typography variant="body1" sx={{ minWidth: 140, textAlign: "center" }}>
-            {windowInfo?.label || "Loading..."}
+          <Typography variant="body1" sx={{ minWidth: 140, textAlign: 'center' }}>
+            {windowInfo?.label || 'Loading...'}
           </Typography>
           <IconButton
             aria-label="Newer month"
@@ -157,19 +265,61 @@ function Data() {
         </Stack>
       </Box>
 
+      <Paper variant="outlined" sx={{ p: 2 }}>
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={1.5}
+          alignItems={{ xs: 'stretch', sm: 'center' }}
+        >
+          <TextField
+            size="small"
+            fullWidth
+            label="Search"
+            placeholder="Sample id, name, powder, task type…"
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+          />
+          <FormControl size="small" sx={{ minWidth: { xs: '100%', sm: 220 } }}>
+            <InputLabel id="data-search-field-label">Search in</InputLabel>
+            <Select
+              labelId="data-search-field-label"
+              label="Search in"
+              value={searchField}
+              onChange={(event) => setSearchField(event.target.value)}
+            >
+              {SEARCH_FIELD_OPTIONS.map((option) => (
+                <MenuItem key={option.key} value={option.key}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Button
+            variant="text"
+            onClick={() => {
+              setSearchQuery('');
+              setSearchField(ALL_FIELDS);
+            }}
+            disabled={!searchQuery && searchField === ALL_FIELDS}
+            sx={{ whiteSpace: 'nowrap' }}
+          >
+            Clear
+          </Button>
+        </Stack>
+        <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 1 }}>
+          Filters the tables for the selected month. CSV download is still the full month export.
+        </Typography>
+      </Paper>
+
       <DataSection
         title="Sample Summary"
         description="Samples created during the selected month."
         rows={sampleSummary}
         loading={loading}
-        downloadHref={dataDownloadHref("/sample_summary.csv", month)}
-        columns={[
-          { key: "sample_id", label: "Sample ID" },
-          { key: "name", label: "Name" },
-          { key: "position", label: "Position" },
-          { key: "last_position", label: "Last Position" },
-          { key: "metadata_keys", label: "Metadata Keys" },
-        ]}
+        query={searchQuery}
+        fieldKey={searchField}
+        downloadHref={dataDownloadHref('/sample_summary.csv', month)}
+        columns={SAMPLE_SUMMARY_COLUMNS}
       />
 
       <DataSection
@@ -177,15 +327,10 @@ function Data() {
         description="Flattened per-sample Labman dosing results for the selected month."
         rows={powderDosing}
         loading={loading}
-        downloadHref={dataDownloadHref("/powder_dosing_actuals.csv", month)}
-        columns={[
-          { key: "sample_name", label: "Sample" },
-          { key: "powder_name", label: "Powder" },
-          { key: "target_mass", label: "Target Mass" },
-          { key: "dose_mass", label: "Actual Dose Mass" },
-          { key: "dose_head_position", label: "Head Position" },
-          { key: "dose_timestamp", label: "Dose Timestamp" },
-        ]}
+        query={searchQuery}
+        fieldKey={searchField}
+        downloadHref={dataDownloadHref('/powder_dosing_actuals.csv', month)}
+        columns={POWDER_DOSING_COLUMNS}
       />
 
       <DataSection
@@ -193,14 +338,10 @@ function Data() {
         description="Task status and result-key overview for the selected month."
         rows={taskOutcome}
         loading={loading}
-        downloadHref={dataDownloadHref("/task_outcome_log.csv", month)}
-        columns={[
-          { key: "task_id", label: "Task ID" },
-          { key: "type", label: "Type" },
-          { key: "status", label: "Status" },
-          { key: "sample_names", label: "Samples" },
-          { key: "result_keys", label: "Result Keys" },
-        ]}
+        query={searchQuery}
+        fieldKey={searchField}
+        downloadHref={dataDownloadHref('/task_outcome_log.csv', month)}
+        columns={TASK_OUTCOME_COLUMNS}
       />
     </Stack>
   );

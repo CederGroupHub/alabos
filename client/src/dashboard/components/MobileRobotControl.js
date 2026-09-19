@@ -63,6 +63,14 @@ function formatIntList(values) {
   return (values || []).join(' ');
 }
 
+function usesLabmanFields(segment) {
+  return segment.param_kind === 'labman_to_rack' || segment.param_kind === 'rack_to_labman';
+}
+
+function slotFieldName(segment) {
+  return segment.param_kind === 'labman_to_rack' ? 'crucible_slots' : 'slots';
+}
+
 function defaultFormState(segment) {
   const params = {};
   Object.entries(segment.params || {}).forEach(([name, schema]) => {
@@ -111,7 +119,7 @@ function MobileRobotControl() {
         nextSegments.forEach((segment) => {
           if (!next[segment.id]) {
             const defaults = defaultFormState(segment);
-            const slotField = segment.param_kind === 'rack_to_rack' ? 'slots' : 'crucible_slots';
+            const slotField = slotFieldName(segment);
             defaults.slotText = {
               [slotField]: formatIntList(defaults.params[slotField]),
             };
@@ -156,7 +164,7 @@ function MobileRobotControl() {
 
   const buildRequestBody = (segment) => {
     const form = forms[segment.id] || defaultFormState(segment);
-    const slotField = segment.param_kind === 'rack_to_rack' ? 'slots' : 'crucible_slots';
+    const slotField = slotFieldName(segment);
     const params = {
       ...form.params,
       [slotField]: parseIntList(form.slotText?.[slotField] || ''),
@@ -220,10 +228,7 @@ function MobileRobotControl() {
     }
   };
 
-  const orderedSegments = useMemo(
-    () => [...segments].sort((left, right) => left.label.localeCompare(right.label)),
-    [segments],
-  );
+  const orderedSegments = useMemo(() => segments, [segments]);
 
   return (
     <StyledMobileRobotControlDiv>
@@ -231,9 +236,9 @@ function MobileRobotControl() {
         <Box>
           <Typography variant="h5">Mobile Robot Control</Typography>
           <Typography variant="body2" color="text.secondary">
-            Run curated cross-station transfers through AlabOS. Each segment builds a small batch
-            (Starting → Moving → optional Ending) so the mobile robot executes the correct Main
-            program legs.
+            LABMAN ↔ BFT crucible transfers through AlabOS. Each direction builds a small batch
+            (Starting → Moving → optional Ending) so the mobile robot executes the correct
+            program legs. DASH hops are Prometheus, on BFT Control.
           </Typography>
           <Typography variant="body2" color="text.secondary">
             Preview first to confirm source and destination positions, then run to submit directly
@@ -247,8 +252,12 @@ function MobileRobotControl() {
 
         {orderedSegments.map((segment) => {
           const form = forms[segment.id] || defaultFormState(segment);
-          const slotField = segment.param_kind === 'rack_to_rack' ? 'slots' : 'crucible_slots';
+          const slotField = slotFieldName(segment);
           const slotLabel = segment.params?.[slotField]?.label || 'Slots';
+          const destinationLabel = segment.params?.destination_slots?.label || 'Destination slots';
+          const destinationHelper = segment.param_kind === 'rack_to_labman'
+            ? 'Optional. Defaults to 1…n in this Labman subrack (max 4).'
+            : `Optional. Defaults to the same numbers. Rack: ${segment.destination_rack || ''}`;
           const result = results[segment.id];
           const isPreviewing = pending[segment.id]?.preview;
           const isRunning = pending[segment.id]?.run;
@@ -282,7 +291,7 @@ function MobileRobotControl() {
                   </Stack>
 
                   <Stack direction={{ xs: 'column', lg: 'row' }} spacing={2} flexWrap="wrap">
-                    {segment.param_kind === 'labman_to_rack' && (
+                    {usesLabmanFields(segment) && (
                       <>
                         <FormControl size="small" sx={{ minWidth: 160 }}>
                           <InputLabel id={`${segment.id}-quadrant-label`}>Quadrant</InputLabel>
@@ -342,8 +351,8 @@ function MobileRobotControl() {
 
                     <TextField
                       size="small"
-                      label="Destination rack slots"
-                      helperText={`Optional. Defaults to the same numbers. Rack: ${segment.destination_rack}`}
+                      label={destinationLabel}
+                      helperText={destinationHelper}
                       value={form.destinationSlotText?.destination_slots || ''}
                       onChange={(event) => updateForm(segment.id, (current) => ({
                         ...current,

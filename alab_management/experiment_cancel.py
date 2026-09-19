@@ -5,6 +5,10 @@ tasks (the same write Release locks & tasks uses, scoped to this experiment),
 dismisses its user-input prompts, cancels its pending resource requests,
 releases its devices and positions, and marks the experiment Cancelled.
 
+When ``mongodb_completed`` is configured, it then archives the experiment (and
+its samples/tasks) into the completed database — the same copy step the
+experiment manager runs when it marks an experiment finished.
+
 It does not emergency-stop hardware that is already moving, and it does not
 touch other experiments. Use Release locks & tasks when the whole lab is stuck.
 """
@@ -17,9 +21,17 @@ from typing import Any
 
 from bson import ObjectId
 
+from alab_management.config import AlabOSConfig
 from alab_management.device_view.device_view import DeviceTaskStatus, DeviceView
+from alab_management.experiment_view.completed_experiment_view import (
+    CompletedExperimentView,
+)
 from alab_management.experiment_view.experiment_view import ExperimentStatus, ExperimentView
-from alab_management.lab_reset import LIVE_TASK_STATUSES, _abort_task_actor
+from alab_management.lab_reset import (
+    LIVE_TASK_STATUSES,
+    _abort_task_actor,
+    prune_archived_unplaced_from_live,
+)
 from alab_management.resource_manager.enums import RequestStatus
 from alab_management.sample_view.sample_view import SampleView
 from alab_management.task_view.task_enums import CancelingProgress, TaskStatus
@@ -64,6 +76,10 @@ def cancel_experiment_software_state(exp_id: ObjectId) -> dict[str, Any]:
     devices_released = _release_devices_held_by(device_view, task_ids, now)
     positions_unlocked = _unlock_positions_held_by(sample_view, task_ids)
     experiment_closed = _close_experiment(experiment_view, experiment)
+    archived_to_completed = _archive_experiment_to_completed(exp_id)
+    prune_summary = (
+        prune_archived_unplaced_from_live() if archived_to_completed else {}
+    )
 
     summary = {
         "tasks_cancelled": tasks_cancelled,
@@ -72,9 +88,28 @@ def cancel_experiment_software_state(exp_id: ObjectId) -> dict[str, Any]:
         "devices_released": devices_released,
         "positions_unlocked": positions_unlocked,
         "experiment_closed": experiment_closed,
+        "archived_to_completed": archived_to_completed,
+        **prune_summary,
     }
     logger.info("Cancelled experiment %s: %s", exp_id, summary)
     return summary
+
+
+def _archive_experiment_to_completed(exp_id: ObjectId) -> bool:
+    """Copy experiment + samples + tasks into ``Alab(completed)`` when configured.
+
+    Matches ``ExperimentManager.mark_completed_experiments`` after a terminal
+    status write. Also runs when Cancel is clicked on an already-cancelled
+    experiment so orphans can be archived on retry.
+    """
+    if "mongodb_completed" not in AlabOSConfig():
+        return False
+    CompletedExperimentView().save_experiment(exp_id)
+    logger.info(
+        "Experiment (%s) and associated samples/tasks were copied to the completed db.",
+        exp_id,
+    )
+    return True
 
 
 def _force_cancel_experiment_tasks(
@@ -101,7 +136,7 @@ def _force_cancel_experiment_tasks(
             "$set": {
                 "status": TaskStatus.CANCELLED.name,
                 "canceling_progress": CancelingProgress.WORKER_NOTIFIED.name,
-                "message": "Cancelled by experiment cancel.",
+                "message": "Cancelled via dashboard (Cancel Experiment).",
                 "last_updated": now,
             }
         },
