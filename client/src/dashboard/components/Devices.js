@@ -529,6 +529,8 @@ function Row({ device, hoverForId }) {
   const notConnected = connectionStatus === "connecting" || connectionStatus === "failed";
 
   const PauseButton = ({ pause_state, device_name, permanently_disabled, connecting }) => {
+    // Fixed width so Pause ↔ Release (and Cancel Pause Request) never resize the column.
+    const buttonSx = { width: "100%", minWidth: 0, whiteSpace: "nowrap" };
     if (permanently_disabled) {
       return (
         <Typography variant="caption" sx={{ color: DEVICE_ACCENTS.disabledText }}>
@@ -551,6 +553,7 @@ function Row({ device, hoverForId }) {
           <Button
             variant="contained"
             color="error"
+            sx={buttonSx}
             onClick={() => { request_device_pause(device_name) }}
           >
             Pause
@@ -561,6 +564,7 @@ function Row({ device, hoverForId }) {
           <Button
             variant="contained"
             color="primary"
+            sx={buttonSx}
             onClick={() => release_device_pause(device_name)}
           >
             Cancel Pause Request
@@ -571,6 +575,7 @@ function Row({ device, hoverForId }) {
           <Button
             variant="contained"
             color="primary"
+            sx={buttonSx}
             onClick={() => release_device_pause(device_name)}
           >
             Release
@@ -639,7 +644,10 @@ function Row({ device, hoverForId }) {
             }}>{device.message}</Typography>
           }
         </TableCell>
-        <TableCell align="center">
+        <TableCell
+          align="center"
+          sx={{ width: 220, minWidth: 220, maxWidth: 220, px: 1 }}
+        >
           <PauseButton
             pause_state={device.pause_status}
             device_name={device.name}
@@ -735,7 +743,12 @@ function Devices({ hoverForId }) {
                 <TableCell align="center"><b>Status</b></TableCell>
                 <TableCell align="center"><b>Samples</b></TableCell>
                 <TableCell align="center" width="45%"><b>Message</b></TableCell>
-                <TableCell align="center">Pause</TableCell>
+                <TableCell
+                  align="center"
+                  sx={{ width: 220, minWidth: 220, maxWidth: 220 }}
+                >
+                  Pause
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

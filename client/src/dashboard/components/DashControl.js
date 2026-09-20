@@ -215,6 +215,9 @@ function DashControl() {
           const slotSchema = segment.params?.slot || {};
           const hasRemoveAtEnd = segment.options?.remove_at_end !== undefined;
           const hasLabelVial = segment.options?.label_vial !== undefined;
+          const isPrepOnly =
+            segment.prep_only === true ||
+            (segment.prep_only == null && /prep only/i.test(segment.description || ''));
 
           return (
             <Card key={segment.id} variant="outlined" sx={{ borderColor: PAGE_ACCENTS.border }}>
@@ -251,7 +254,7 @@ function DashControl() {
                     </Stack>
                   </Stack>
 
-                  {segment.has_diffraction && (
+                  {isPrepOnly && (
                     <Alert severity="info" variant="outlined" sx={{ py: 0.25 }}>
                       Prep only (skip Aeris scans)
                     </Alert>
