@@ -47,8 +47,12 @@ def value_in_database(name: str, default_value: Any) -> property:
     def getter(self) -> Any:
         attributes = self._device_view.get_all_attributes(device_name=self.name)
         if name not in attributes:
-            attributes[name] = default_value
-            self._device_view.set_all_attributes(self.name, attributes=attributes)
+            # Create just this key; writing the whole snapshot back could erase an
+            # attribute another thread set in the meantime.
+            self._device_view.set_attribute(
+                device_name=self.name, attribute=name, value=default_value
+            )
+            return default_value
         return attributes[name]
 
     def setter(self, value: Any) -> None:

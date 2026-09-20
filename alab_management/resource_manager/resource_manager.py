@@ -31,7 +31,7 @@ from alab_management.sample_view.sample import SamplePosition
 from alab_management.sample_view.sample_view import SamplePositionRequest, SampleView
 from alab_management.task_view import TaskView
 from alab_management.task_view.task_enums import CancelingProgress, TaskStatus
-from alab_management.utils.data_objects import DocumentNotUpdatedError, get_collection
+from alab_management.utils.data_objects import get_collection
 from alab_management.utils.module_ops import load_definition
 
 cli_logger = logging.getLogger(__name__)
@@ -216,10 +216,14 @@ class ResourceManager(RequestMixin):
                 },
             )
             if returned_value.modified_count != 1:
-                raise DocumentNotUpdatedError(
-                    f"Error updating request {request_entry['_id']}: cannot update the request status from PENDING "
-                    f"to ERROR."
-                ) from error
+                # Someone else (typically the requesting task cancelling itself while we were
+                # assigning) already moved this request out of PENDING. There is nothing left
+                # to record; raising here used to kill the resource manager thread and, with
+                # it, every later resource request in the lab.
+                cli_logger.warning(
+                    f"Request {request_entry['_id']} left PENDING while it was being handled "
+                    f"({error.args[0].strip().splitlines()[-1] if error.args else error}); skipping it."
+                )
             return
 
         # if both devices and sample positions can be satisfied

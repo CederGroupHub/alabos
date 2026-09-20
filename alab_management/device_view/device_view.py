@@ -899,13 +899,16 @@ class DeviceView:
             attribute (str): attribute to be set
             value (Any): attribute value
         """
-        attributes = self.get_all_attributes(device_name=device_name)
-        attributes[attribute] = value
+        # One dotted $set rather than read-modify-write of the whole ``attributes`` document:
+        # devices write attributes from several threads (and the dashboard from another
+        # process), and rewriting the full dict let a stale snapshot silently undo another
+        # writer's update -- a consumed dashboard command came back and cancelled a later job.
+        self.get_device(device_name=device_name)
         self._device_collection.update_one(
             {"name": device_name},
             {
                 "$set": {
-                    "attributes": attributes,
+                    f"attributes.{attribute}": value,
                     "last_updated": datetime.now(),
                 }
             },
