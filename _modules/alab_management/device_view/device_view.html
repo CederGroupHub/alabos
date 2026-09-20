@@ -1357,16 +1357,13 @@
 <span class="sd">            attribute (str): attribute to be set</span>
 <span class="sd">            value (Any): attribute value</span>
 <span class="sd">        """</span>
-        <span class="c1"># One dotted $set rather than read-modify-write of the whole ``attributes`` document:</span>
-        <span class="c1"># devices write attributes from several threads (and the dashboard from another</span>
-        <span class="c1"># process), and rewriting the full dict let a stale snapshot silently undo another</span>
-        <span class="c1"># writer's update -- a consumed dashboard command came back and cancelled a later job.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">get_device</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">)</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_attributes</span><span class="p">(</span><span class="n">device_name</span><span class="o">=</span><span class="n">device_name</span><span class="p">)</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
             <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="n">device_name</span><span class="p">},</span>
             <span class="p">{</span>
                 <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="sa">f</span><span class="s2">"attributes.</span><span class="si">{</span><span class="n">attribute</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span>
+                    <span class="s2">"attributes"</span><span class="p">:</span> <span class="n">attributes</span><span class="p">,</span>
                     <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
                 <span class="p">}</span>
             <span class="p">},</span>
