@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Devices from './components/Devices';
 import DeviceControl from './components/DeviceControl';
 import DashControl from './components/DashControl';
@@ -11,7 +11,7 @@ import SamplePositions from './components/SamplePositions';
 import LabSettings from './components/LabSettings';
 import styled from 'styled-components';
 import { useLocation, Link } from "react-router-dom";
-import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, FormControl, FormControlLabel, Switch, Typography } from '@mui/material';
+import { Alert, Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, FormControl, FormControlLabel, Snackbar, Switch, Typography } from '@mui/material';
 import PrecisionManufacturingIcon from '@mui/icons-material/PrecisionManufacturing';
 import FactoryIcon from '@mui/icons-material/Factory';
 import FireplaceIcon from '@mui/icons-material/Fireplace';
@@ -28,6 +28,36 @@ import LabNotReadyGate from './components/LabNotReadyGate';
 import Badge from '@mui/material/Badge';
 import { get_pending_userinputrequests } from '../api_routes';
 import { useLabReadiness } from '../LabReadiness';
+
+const USER_INPUT_POLL_MS = 5000;
+const USER_INPUT_BANNER_MS = 6000;
+const USER_INPUT_PROMPT_PREVIEW_LEN = 120;
+
+function collectPendingUserInputs(pending, experimentIdToName) {
+  const items = [];
+  for (const [experimentId, requests] of Object.entries(pending || {})) {
+    const experimentName = (experimentIdToName && experimentIdToName[experimentId]) || experimentId;
+    for (const request of requests || []) {
+      if (!request?.id) {
+        continue;
+      }
+      items.push({
+        id: String(request.id),
+        prompt: request.prompt || "",
+        experimentName,
+      });
+    }
+  }
+  return items;
+}
+
+function truncatePrompt(prompt, maxLen = USER_INPUT_PROMPT_PREVIEW_LEN) {
+  const text = String(prompt || "").replace(/\s+/g, " ").trim();
+  if (text.length <= maxLen) {
+    return text;
+  }
+  return `${text.slice(0, maxLen - 1)}…`;
+}
 
 const StyledDashboardDiv = styled.div`
   min-height: calc(100vh - 76px);
@@ -92,8 +122,10 @@ const Puller = styled(Box)(() => ({
   position: 'absolute',
 }));
 
-function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange }) {
+function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange, onOpenUserInputRequest }) {
   const [numUserInputRequests, setNumUserInputRequests] = useState(0);
+  const [userInputBanner, setUserInputBanner] = useState(null);
+  const knownUserInputIdsRef = useRef(null);
   const { hash } = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { labReady } = useLabReadiness();
@@ -257,15 +289,48 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange }) {
 
   )
   useEffect(() => {
-    const interval = setInterval(() => {
-      get_pending_userinputrequests().then(result => {
-        var numRequests = 0;
-        for (let requests of Object.values(result.pending)) {
-          numRequests += requests.length;
+    const pollPendingUserInputs = () => {
+      get_pending_userinputrequests().then((result) => {
+        if (!result?.pending) {
+          return;
         }
-        setNumUserInputRequests(numRequests);
-      })
-    }, 5000);
+        const items = collectPendingUserInputs(
+          result.pending,
+          result.experiment_id_to_name,
+        );
+        setNumUserInputRequests(items.length);
+
+        const currentIds = new Set(items.map((item) => item.id));
+        if (knownUserInputIdsRef.current === null) {
+          knownUserInputIdsRef.current = currentIds;
+          return;
+        }
+
+        const newItems = items.filter(
+          (item) => !knownUserInputIdsRef.current.has(item.id),
+        );
+        knownUserInputIdsRef.current = currentIds;
+        if (newItems.length === 0) {
+          return;
+        }
+
+        const newest = newItems[newItems.length - 1];
+        const preview = truncatePrompt(newest.prompt);
+        setUserInputBanner({
+          focusId: newest.id,
+          title:
+            newItems.length === 1
+              ? "New user input request"
+              : `${newItems.length} new user input requests`,
+          detail: preview
+            ? `${newest.experimentName}: ${preview}`
+            : newest.experimentName,
+        });
+      });
+    };
+
+    pollPendingUserInputs();
+    const interval = setInterval(pollPendingUserInputs, USER_INPUT_POLL_MS);
     return () => clearInterval(interval);
   }, []);
 
@@ -319,6 +384,49 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange }) {
         }}>
         {drawerContents}
       </Drawer>
+      <Snackbar
+        open={Boolean(userInputBanner)}
+        autoHideDuration={USER_INPUT_BANNER_MS}
+        onClose={(_event, reason) => {
+          if (reason === "clickaway") {
+            return;
+          }
+          setUserInputBanner(null);
+        }}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        sx={{ top: { xs: 16, sm: 84 } }}
+      >
+        {userInputBanner ? (
+          <Alert
+            severity="warning"
+            variant="filled"
+            icon={<NotificationsIcon fontSize="inherit" />}
+            onClick={() => {
+              if (typeof onOpenUserInputRequest === "function") {
+                onOpenUserInputRequest(userInputBanner.focusId);
+              }
+              setUserInputBanner(null);
+            }}
+            sx={{
+              cursor: "pointer",
+              width: "100%",
+              maxWidth: 560,
+              boxShadow: "0 12px 28px rgba(33, 58, 75, 0.28)",
+              alignItems: "flex-start",
+            }}
+          >
+            <Typography variant="subtitle2" component="div">
+              {userInputBanner.title}
+            </Typography>
+            <Typography variant="body2" component="div" sx={{ opacity: 0.95 }}>
+              {userInputBanner.detail}
+            </Typography>
+            <Typography variant="caption" component="div" sx={{ mt: 0.5, opacity: 0.9 }}>
+              Click to open and scroll to this request
+            </Typography>
+          </Alert>
+        ) : null}
+      </Snackbar>
     </Box >
   )
 }
@@ -326,11 +434,19 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange }) {
 function Dashboard() {
   const { hash } = useLocation();
   const [hoverForId, setHoverForId] = useState(false);
+  const [focusUserInputRequestId, setFocusUserInputRequestId] = useState(null);
 
 
   const handleHoverForIdChange = (checked) => {
     setHoverForId(checked);
   }
+
+  const openUserInputRequest = (requestId) => {
+    setFocusUserInputRequestId(requestId ? String(requestId) : null);
+    if (window.location.hash !== "#userinput") {
+      window.location.hash = "userinput";
+    }
+  };
 
   const SwitchContent = () => {
     switch (hash) {
@@ -369,7 +485,13 @@ function Dashboard() {
           </LabNotReadyGate>
         );
       case "#userinput":
-        return <UserInputs hoverForId={hoverForId} />
+        return (
+          <UserInputs
+            hoverForId={hoverForId}
+            focusRequestId={focusUserInputRequestId}
+            onFocusHandled={() => setFocusUserInputRequestId(null)}
+          />
+        );
       case "#experiment":
       case "":
         return <Experiments hoverForId={hoverForId} />
@@ -380,7 +502,12 @@ function Dashboard() {
 
   return (
     <StyledDashboardDiv>
-      <Sidebar hoverForId={hoverForId} setHoverForId={setHoverForId} handleHoverForIdChange={(event) => { handleHoverForIdChange(event.target.checked) }} />
+      <Sidebar
+        hoverForId={hoverForId}
+        setHoverForId={setHoverForId}
+        handleHoverForIdChange={(event) => { handleHoverForIdChange(event.target.checked) }}
+        onOpenUserInputRequest={openUserInputRequest}
+      />
       <Box
         component="main"
         sx={{

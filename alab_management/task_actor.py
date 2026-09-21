@@ -216,46 +216,57 @@ def run_task(task_id_str: str):
         # devices and reserved positions are released so the rest of the lab can continue.
         lab_view.release_all_resources()
     except:  # noqa: E722
-        task_status = TaskStatus.ERROR
-        task_view.update_status(task_id=task_id, status=TaskStatus.FINISHING)
-        # Capture the process stage (the task's last status message) before we overwrite it.
+        # Dashboard Cancel may have already force-written CANCELLED (+ its message).
+        # Treat that as the authoritative outcome instead of promoting to ERROR.
         try:
-            stage = task.get_message()
+            already_cancelled = (
+                task_view.get_status(task_id) is TaskStatus.CANCELLED
+            )
         except Exception:  # noqa: BLE001
-            stage = None
-        origin = get_error_origin()
-        formatted_exception = format_exc()
-        error_report = format_error_report(
-            task_type=task_type.__name__,
-            task_id=task_id,
-            samples=[sample["name"] for sample in task_entry["samples"]],
-            stage=stage,
-            header="Task failed",
-        )
-        task_view.set_message(
-            task_id=task_id, message=error_report
-        )  # display rich error on the dashboard
-        logger.system_log(
-            level="ERROR",
-            log_data={
-                "logged_by": "TaskActor",
-                "type": "TaskEnd",
-                "task_id": task_id,
-                "task_type": task_type.__name__,
-                "status": "ERROR",
-                "stage": stage,
-                "error_type": origin["exc_type"],
-                "error_message": origin["exc_message"],
-                "error_location": origin["raised_at_str"],
-                "error_project_location": origin["project_frame_str"],
-                "traceback": formatted_exception,
-            },
-        )
-        cli_logger.error(
-            f"Task {task_type} ({task_id}) failed: {origin['exc_type']}: {origin['exc_message']} "
-            f"at {origin['raised_at_str']} (stage: {stage})"
-        )
-        lab_view.request_cleanup(error_message=error_report)
+            already_cancelled = False
+        if already_cancelled:
+            task_status = TaskStatus.CANCELLED
+        else:
+            task_status = TaskStatus.ERROR
+            task_view.update_status(task_id=task_id, status=TaskStatus.FINISHING)
+            # Capture the process stage (the task's last status message) before we overwrite it.
+            try:
+                stage = task.get_message()
+            except Exception:  # noqa: BLE001
+                stage = None
+            origin = get_error_origin()
+            formatted_exception = format_exc()
+            error_report = format_error_report(
+                task_type=task_type.__name__,
+                task_id=task_id,
+                samples=[sample["name"] for sample in task_entry["samples"]],
+                stage=stage,
+                header="Task failed",
+            )
+            task_view.set_message(
+                task_id=task_id, message=error_report
+            )  # display rich error on the dashboard
+            logger.system_log(
+                level="ERROR",
+                log_data={
+                    "logged_by": "TaskActor",
+                    "type": "TaskEnd",
+                    "task_id": task_id,
+                    "task_type": task_type.__name__,
+                    "status": "ERROR",
+                    "stage": stage,
+                    "error_type": origin["exc_type"],
+                    "error_message": origin["exc_message"],
+                    "error_location": origin["raised_at_str"],
+                    "error_project_location": origin["project_frame_str"],
+                    "traceback": formatted_exception,
+                },
+            )
+            cli_logger.error(
+                f"Task {task_type} ({task_id}) failed: {origin['exc_type']}: {origin['exc_message']} "
+                f"at {origin['raised_at_str']} (stage: {stage})"
+            )
+            lab_view.request_cleanup(error_message=error_report)
     else:
         task_status = TaskStatus.COMPLETED
         task_view.update_status(task_id=task_id, status=TaskStatus.FINISHING)
@@ -308,4 +319,11 @@ def run_task(task_id_str: str):
             sample_view.update_sample_task_id(
                 task_id=None, sample_id=sample["sample_id"]
             )
+        # Preserve a dashboard force-cancel if the worker decided ERROR after Abort
+        # teardown raised something other than Abort/TaskCancelledError.
+        try:
+            if task_view.get_status(task_id) is TaskStatus.CANCELLED:
+                task_status = TaskStatus.CANCELLED
+        except Exception:  # noqa: BLE001 — still write the decided status below
+            pass
         task_view.update_status(task_id=task_id, status=task_status)

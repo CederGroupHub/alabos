@@ -32,8 +32,9 @@ def test_prune_deletes_unplaced_archived_sample_and_experiment(monkeypatch):
     exp_id = ObjectId()
 
     live_samples = MagicMock()
-    live_samples.find.return_value = [{"_id": sample_id}]
-    live_samples.count_documents.return_value = 0
+    live_samples.find.return_value = [
+        {"_id": sample_id, "position": None, "in_transit": None}
+    ]
 
     live_tasks = MagicMock()
     live_tasks.find.return_value = [{"_id": task_id}]
@@ -89,7 +90,9 @@ def test_prune_skips_sample_missing_from_completed(monkeypatch):
     exp_id = ObjectId()
 
     live_samples = MagicMock()
-    live_samples.find.return_value = [{"_id": sample_id}]
+    live_samples.find.return_value = [
+        {"_id": sample_id, "position": None, "in_transit": None}
+    ]
     live_samples.count_documents.return_value = 1
 
     live_tasks = MagicMock()
@@ -144,9 +147,7 @@ def test_prune_skips_task_missing_from_completed(monkeypatch):
     exp_id = ObjectId()
 
     live_samples = MagicMock()
-    # After sample prune, count_documents returns 0 so we attempt task prune
-    live_samples.find.return_value = [{"_id": sample_id}]
-    live_samples.count_documents.return_value = 0
+    live_samples.find.return_value = [{"_id": sample_id, "position": None, "in_transit": None}]
 
     live_tasks = MagicMock()
     live_tasks.find.return_value = [{"_id": task_id}]
@@ -188,9 +189,11 @@ def test_prune_skips_task_missing_from_completed(monkeypatch):
 
     summary = prune_archived_unplaced_from_live()
 
-    assert summary["samples_pruned"] == 1
+    # Samples stay until the whole experiment unit is safe to remove.
+    assert summary["samples_pruned"] == 0
     assert summary["tasks_pruned"] == 0
     assert summary["experiments_pruned"] == 0
+    live_samples.delete_one.assert_not_called()
     live_tasks.delete_one.assert_not_called()
     live_experiments.delete_one.assert_not_called()
 
@@ -200,7 +203,7 @@ def test_prune_skips_experiment_missing_from_completed(monkeypatch):
     exp_id = ObjectId()
 
     live_samples = MagicMock()
-    live_samples.find.return_value = [{"_id": sample_id}]
+    live_samples.find.return_value = [{"_id": sample_id, "position": None, "in_transit": None}]
 
     live_tasks = MagicMock()
     live_tasks.find.return_value = []
@@ -250,15 +253,28 @@ def test_prune_skips_experiment_missing_from_completed(monkeypatch):
 
 
 def test_prune_leaves_placed_samples(monkeypatch):
-    """find() for prune only requests position/in_transit null — placed never queried."""
+    """Still-placed samples keep the live experiment from being pruned."""
+    sample_id = ObjectId()
     exp_id = ObjectId()
     live_samples = MagicMock()
-    live_samples.find.return_value = []  # no unplaced samples
+    live_samples.find.return_value = [
+        {
+            "_id": sample_id,
+            "position": "DASH_input_rack/slot/1",
+            "in_transit": None,
+        }
+    ]
 
     live_tasks = MagicMock()
+    live_tasks.find.return_value = []
     live_experiments = MagicMock()
     live_experiments.find.return_value = [
-        {"_id": exp_id, "status": "CANCELLED", "samples": [], "tasks": []}
+        {
+            "_id": exp_id,
+            "status": "CANCELLED",
+            "samples": [{"sample_id": sample_id}],
+            "tasks": [],
+        }
     ]
 
     monkeypatch.setattr(
@@ -267,7 +283,11 @@ def test_prune_leaves_placed_samples(monkeypatch):
     )
     monkeypatch.setattr(
         "alab_management.lab_reset.get_completed_collection",
-        lambda name: _completed_lookup([exp_id]),
+        lambda name: {
+            "samples": _completed_lookup([sample_id]),
+            "tasks": _completed_lookup([]),
+            "experiment": _completed_lookup([exp_id]),
+        }[name],
     )
     monkeypatch.setattr(
         "alab_management.lab_reset.SampleView",
@@ -284,5 +304,6 @@ def test_prune_leaves_placed_samples(monkeypatch):
 
     summary = prune_archived_unplaced_from_live()
     assert summary["samples_pruned"] == 0
-    query = live_samples.find.call_args.args[0]
-    assert query == {"position": None, "in_transit": None}
+    assert summary["experiments_pruned"] == 0
+    live_samples.delete_one.assert_not_called()
+    live_experiments.delete_one.assert_not_called()

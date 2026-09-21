@@ -164,6 +164,16 @@ class TaskView:
             status: the new status of the task
         """
         task = self.get_task(task_id=task_id, encode=False)
+        current_status = TaskStatus[task["status"]]
+        # Dashboard Cancel / Release force-write CANCELLED first. A late worker
+        # FINISHING/ERROR write must not overwrite that (operators then see a red
+        # ERROR badge with "Cancelled via dashboard…").
+        if (
+            current_status is TaskStatus.CANCELLED
+            and status is not TaskStatus.CANCELLED
+        ):
+            return
+
         update_dict = {
             "status": status.name,
             "last_updated": datetime.now(),

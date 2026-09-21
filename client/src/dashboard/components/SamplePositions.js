@@ -45,7 +45,7 @@ const RackContainer = styled.div`
 
 const SlotGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 12px;
 `;
 
@@ -54,7 +54,44 @@ const HighlightedSlot = styled.div`
   outline: ${(props) => (props.$active ? '3px solid #1976d2' : 'none')};
   outline-offset: 2px;
   transition: outline-color 0.2s ease;
+  min-width: 0;
 `;
+
+function TruncatedLine({ children, variant = "body2", sx = {}, ...rest }) {
+  return (
+    <Typography
+      variant={variant}
+      title={typeof children === "string" ? children : undefined}
+      sx={{
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+        minWidth: 0,
+        ...sx,
+      }}
+      {...rest}
+    >
+      {children}
+    </Typography>
+  );
+}
+
+function WrappingText({ children, variant = "body2", sx = {}, ...rest }) {
+  return (
+    <Typography
+      variant={variant}
+      sx={{
+        overflowWrap: "anywhere",
+        wordBreak: "break-word",
+        whiteSpace: "normal",
+        ...sx,
+      }}
+      {...rest}
+    >
+      {children}
+    </Typography>
+  );
+}
 
 function slotStatusColor(slot) {
   if (slot.sample?.in_transit) {
@@ -309,63 +346,168 @@ function SampleDetailDialog({ open, onClose, sample, onJumpToPosition }) {
 }
 
 function SlotCard({ slot, highlighted, onClear, onShowSample, slotRef, clearDisabled, clearDisabledReason }) {
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const occupied = slot.status === "OCCUPIED";
   const inTransit = Boolean(slot.sample?.in_transit);
   const clearBlocked = !occupied || clearDisabled;
+  const sample = slot.sample;
+  const ownership = ownershipCaption(sample);
+  const shortId = sample?.sample_id
+    ? `${String(sample.sample_id).slice(0, 8)}…`
+    : null;
+
   return (
     <HighlightedSlot $active={highlighted} ref={slotRef}>
-      <Card variant="outlined" sx={{ bgcolor: slotStatusColor(slot), minHeight: 175 }}>
-        <CardContent>
-          <Stack spacing={1.25}>
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Typography variant="subtitle1">Slot {slot.slot_number}</Typography>
-              <Stack direction="row" spacing={0.5}>
-                {inTransit && <Chip label="IN TRANSIT" size="small" color="info" />}
-                <Chip label={slot.status} size="small" />
-              </Stack>
-            </Stack>
-            <Typography variant="body2" sx={{ wordBreak: "break-word" }}>
-              {slot.name}
+      <Card
+        variant="outlined"
+        sx={{
+          bgcolor: slotStatusColor(slot),
+          height: "100%",
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <CardContent
+          sx={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            gap: 1,
+            py: 1.5,
+            "&:last-child": { pb: 1.5 },
+            minWidth: 0,
+          }}
+        >
+          <Stack spacing={0.75} sx={{ minWidth: 0 }}>
+            <Typography variant="subtitle1">
+              Slot {slot.slot_number}
             </Typography>
-            {slot.sample ? (
-              <Box>
-                <Typography variant="body2"><b>{slot.sample.name}</b></Typography>
-                <Typography variant="caption" color="text.secondary" display="block">
-                  {slot.sample.sample_id}
-                </Typography>
-                {ownershipCaption(slot.sample) && (
-                  <Typography variant="caption" color="text.secondary" display="block">
-                    {ownershipCaption(slot.sample)}
-                  </Typography>
-                )}
-                <Button size="small" onClick={() => onShowSample(slot.sample)} sx={{ px: 0 }}>
-                  History
-                </Button>
-              </Box>
-            ) : (
-              <Typography variant="body2" color="text.secondary">
-                No sample present.
-              </Typography>
-            )}
-            {slot.locked_by_task_id && !occupied && (
-              <Typography variant="caption" color="text.secondary">
-                Locked by task {slot.locked_by_task_id}
-              </Typography>
-            )}
-            <Button
-              size="small"
-              variant="outlined"
-              onClick={() => onClear(slot.name)}
-              disabled={clearBlocked}
-              title={
-                occupied && clearDisabled
-                  ? clearDisabledReason || "Lab is not idle"
-                  : undefined
-              }
+            <Stack
+              direction="row"
+              flexWrap="wrap"
+              sx={{ minWidth: 0, gap: 0.75 }}
             >
-              Clear
-            </Button>
+              {inTransit && <Chip label="IN TRANSIT" size="small" color="info" />}
+              <Chip label={slot.status} size="small" />
+            </Stack>
           </Stack>
+
+          <TruncatedLine variant="caption" color="text.secondary" title={slot.name}>
+            {slot.name}
+          </TruncatedLine>
+
+          {sample ? (
+            <Box sx={{ minWidth: 0 }}>
+              <TruncatedLine variant="body2" sx={{ fontWeight: 700 }}>
+                {sample.name}
+              </TruncatedLine>
+              {shortId && (
+                <TruncatedLine variant="caption" color="text.secondary">
+                  {shortId}
+                </TruncatedLine>
+              )}
+              <Button
+                size="small"
+                onClick={() => setDetailsOpen((prev) => !prev)}
+                endIcon={detailsOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                sx={{ px: 0, mt: 0.25, textTransform: "none" }}
+              >
+                {detailsOpen ? "Hide details" : "Details"}
+              </Button>
+              <Collapse in={detailsOpen} timeout="auto" unmountOnExit>
+                <Box
+                  sx={{
+                    mt: 1,
+                    pt: 1,
+                    borderTop: "1px solid",
+                    borderColor: "divider",
+                    minWidth: 0,
+                  }}
+                >
+                  <Stack spacing={0.75}>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" display="block">
+                        Sample name
+                      </Typography>
+                      <WrappingText variant="body2" sx={{ fontWeight: 700 }}>
+                        {sample.name}
+                      </WrappingText>
+                    </Box>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" display="block">
+                        Sample ID
+                      </Typography>
+                      <WrappingText variant="caption" color="text.secondary" display="block">
+                        {sample.sample_id}
+                      </WrappingText>
+                    </Box>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" display="block">
+                        Position
+                      </Typography>
+                      <WrappingText variant="caption" color="text.secondary" display="block">
+                        {slot.name}
+                      </WrappingText>
+                    </Box>
+                    {ownership && (
+                      <Box>
+                        <Typography variant="caption" color="text.secondary" display="block">
+                          Context
+                        </Typography>
+                        <WrappingText variant="caption" color="text.secondary" display="block">
+                          {ownership}
+                        </WrappingText>
+                      </Box>
+                    )}
+                    {sample.tags?.length > 0 && (
+                      <Box>
+                        <Typography variant="caption" color="text.secondary" display="block">
+                          Tags
+                        </Typography>
+                        <WrappingText variant="caption" color="text.secondary" display="block">
+                          {sample.tags.join(" · ")}
+                        </WrappingText>
+                      </Box>
+                    )}
+                    <Button
+                      size="small"
+                      onClick={() => onShowSample(sample)}
+                      sx={{ px: 0, alignSelf: "flex-start", textTransform: "none" }}
+                    >
+                      History
+                    </Button>
+                  </Stack>
+                </Box>
+              </Collapse>
+            </Box>
+          ) : (
+            <Typography variant="body2" color="text.secondary">
+              No sample present.
+            </Typography>
+          )}
+
+          {slot.locked_by_task_id && !occupied && (
+            <WrappingText variant="caption" color="text.secondary">
+              Locked by task {slot.locked_by_task_id}
+            </WrappingText>
+          )}
+
+          <Box sx={{ flexGrow: 1 }} />
+          <Button
+            size="small"
+            variant="outlined"
+            fullWidth
+            onClick={() => onClear(slot.name)}
+            disabled={clearBlocked}
+            title={
+              occupied && clearDisabled
+                ? clearDisabledReason || "Lab is not idle"
+                : undefined
+            }
+          >
+            Clear
+          </Button>
         </CardContent>
       </Card>
     </HighlightedSlot>
@@ -384,13 +526,22 @@ function DeviceOccupancyRow({
   clearDisabledReason,
 }) {
   const summary = rack.summary || {};
+  const occupiedCount = summary.occupied || 0;
+  const hasOccupied = occupiedCount > 0;
+  let rowBg;
+  if (hasOccupied) {
+    // Match OCCUPIED slot tint; slightly stronger when the row is expanded.
+    rowBg = open ? "#c8e6c9" : "#e8f5e9";
+  } else if (open) {
+    rowBg = "#f5f9fb";
+  }
   return (
     <>
       <TableRow
         hover
         sx={{
           "& > *": { borderBottom: open ? "unset" : undefined },
-          bgcolor: open ? "#f5f9fb" : undefined,
+          bgcolor: rowBg,
           cursor: "pointer",
         }}
         onClick={onToggle}
@@ -541,6 +692,20 @@ function SamplePositions() {
       })
       .slice(0, 12);
   }, [findQuery, liveSamples]);
+
+  // Busiest devices first so occupied racks are easy to spot at the top.
+  const sortedRacks = useMemo(() => {
+    return [...racks].sort((a, b) => {
+      const occupiedA = a.summary?.occupied || 0;
+      const occupiedB = b.summary?.occupied || 0;
+      if (occupiedB !== occupiedA) {
+        return occupiedB - occupiedA;
+      }
+      const nameA = a.display_name || a.device_name || "";
+      const nameB = b.display_name || b.device_name || "";
+      return nameA.localeCompare(nameB);
+    });
+  }, [racks]);
 
   const jumpToPosition = (position, { keepQuery } = {}) => {
     const device_name = deviceFromPosition(position);
@@ -787,7 +952,7 @@ function SamplePositions() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {racks.map((rack) => (
+              {sortedRacks.map((rack) => (
                 <DeviceOccupancyRow
                   key={rack.device_name}
                   rack={rack}

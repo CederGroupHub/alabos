@@ -124,20 +124,7 @@ def query_experiment(exp_id: str):
         "name": experiment["name"],
         "submitted_at": experiment["submitted_at"],
         "samples": [
-            {
-                "name": sample["name"],
-                "id": str(sample["sample_id"]),
-                # Fall back to the last known location so the position field is never empty, even
-                # after a sample leaves a position or an error occurs mid-transfer.
-                "position": (
-                    _sample_obj.position
-                    if _sample_obj.position is not None
-                    else _sample_obj.last_position
-                ),
-                "last_position": _sample_obj.last_position,
-            }
-            for sample in experiment["samples"]
-            for _sample_obj in [sample_view.get_sample(sample["sample_id"])]
+            _sample_payload_for_experiment(sample) for sample in experiment["samples"]
         ],
         "tasks": [],
         "progress": progress,
@@ -163,6 +150,59 @@ def query_experiment(exp_id: str):
         experiment["status"],
     )
     return make_jsonable(return_dict)
+
+
+def _sample_payload_for_experiment(sample: dict) -> dict:
+    """Build the dashboard sample row; tolerate samples pruned from live into completed.
+
+    Cancel / Clear occupancy may archive then prune live sample docs while the live
+    experiment row still references them. Looking those up must not 500 the Experiments
+    page every poll.
+    """
+    sample_id = sample.get("sample_id")
+    name = sample.get("name")
+    position = None
+    last_position = None
+
+    if sample_id is not None:
+        try:
+            live = sample_view.get_sample(sample_id)
+        except ValueError:
+            live = None
+        if live is not None:
+            position = live.position
+            last_position = live.last_position
+            name = live.name or name
+        else:
+            archived = _completed_sample_doc(sample_id)
+            if archived is not None:
+                position = archived.get("position")
+                last_position = archived.get("last_position")
+                name = archived.get("name") or name
+
+    display_position = position if position is not None else last_position
+    return {
+        "name": name,
+        "id": str(sample_id) if sample_id is not None else None,
+        "position": display_position,
+        "last_position": last_position,
+    }
+
+
+def _completed_sample_doc(sample_id: ObjectId) -> dict | None:
+    """Return the archived sample document when ``mongodb_completed`` is configured."""
+    try:
+        from alab_management.config import AlabOSConfig
+        from alab_management.utils.data_objects import get_completed_collection
+
+        if "mongodb_completed" not in AlabOSConfig():
+            return None
+        return get_completed_collection("samples").find_one({"_id": sample_id})
+    except Exception:  # noqa: BLE001 — dashboard must stay up if completed is down
+        logger.debug(
+            "Could not load sample %s from completed database", sample_id, exc_info=True
+        )
+        return None
 
 
 @experiment_bp.route("/results/<exp_id>", methods=["GET"])

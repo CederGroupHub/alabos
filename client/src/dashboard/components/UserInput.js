@@ -141,7 +141,15 @@ function SplitButton({ options, optionIndex, setOptionIndex, handleClick }) {
 }
 
 
-function UserInputRow({ request_id, task_name, task_id, prompt, options, hoverForId = false }) {
+function UserInputRow({
+  request_id,
+  task_name,
+  task_id,
+  prompt,
+  options,
+  hoverForId = false,
+  highlighted = false,
+}) {
   const [note, setNote] = React.useState("");
   const [optionIndex, setOptionIndex] = React.useState(0);
 
@@ -151,7 +159,18 @@ function UserInputRow({ request_id, task_name, task_id, prompt, options, hoverFo
   }
   return (
     <TableRow
-      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+      id={`user-input-request-${request_id}`}
+      data-user-input-request-id={request_id}
+      sx={{
+        '&:last-child td, &:last-child th': { border: 0 },
+        ...(highlighted
+          ? {
+              backgroundColor: "rgba(237, 108, 2, 0.14)",
+              boxShadow: "inset 0 0 0 2px rgba(237, 108, 2, 0.55)",
+              transition: "background-color 1.2s ease, box-shadow 1.2s ease",
+            }
+          : {}),
+      }}
     >
       <TableCell align="center">
         <HoverText defaultText={task_name} hoverText={task_id} variant="body1" active={hoverForId} />
@@ -186,10 +205,22 @@ function UserInputAccordion({
   requests,
   hoverForId,
   onBulkMessage,
+  focusRequestId,
+  highlightedRequestId,
 }) {
+  const containsFocus = Boolean(
+    focusRequestId
+    && requests.some((request) => String(request.id) === String(focusRequestId)),
+  );
   const [accordionState, setAccordionState] = React.useState(true);
   const [bulkSubmitting, setBulkSubmitting] = React.useState(false);
   const [confirmOpen, setConfirmOpen] = React.useState(false);
+
+  useEffect(() => {
+    if (containsFocus) {
+      setAccordionState(true);
+    }
+  }, [containsFocus, focusRequestId]);
 
   const handleMarkSectionCompleted = async () => {
     const completableRequests = requests
@@ -294,7 +325,16 @@ function UserInputAccordion({
               </TableHead>
               {
                 requests.map((request) => (
-                  <UserInputRow request_id={request.id} task_name={request.task.type} task_id={request.task.id} prompt={request.prompt} options={request.options} key={request.id} hoverForId={hoverForId} />
+                  <UserInputRow
+                    request_id={request.id}
+                    task_name={request.task.type}
+                    task_id={request.task.id}
+                    prompt={request.prompt}
+                    options={request.options}
+                    key={request.id}
+                    hoverForId={hoverForId}
+                    highlighted={String(request.id) === String(highlightedRequestId)}
+                  />
                 ))
               }
             </Table>
@@ -348,13 +388,17 @@ function UserInputAccordion({
   )
 }
 
-function UserInputs({ hoverForId }) {
+function UserInputs({ hoverForId, focusRequestId = null, onFocusHandled }) {
   const [pending, setPending] = React.useState({});
   const [idToName, setIdToName] = React.useState({});
   const [message, setMessage] = React.useState(null);
+  const [highlightedRequestId, setHighlightedRequestId] = React.useState(null);
 
   const refreshPendingRequests = React.useCallback(() => {
     get_pending_userinputrequests().then(requests => {
+      if (!requests?.pending) {
+        return;
+      }
       setPending(requests.pending);
       setIdToName(requests.experiment_id_to_name)
     })
@@ -384,6 +428,53 @@ function UserInputs({ hoverForId }) {
     return () => window.clearTimeout(timer);
   }, [message]);
 
+  useEffect(() => {
+    if (!focusRequestId) {
+      return undefined;
+    }
+
+    const focusId = String(focusRequestId);
+    let attempts = 0;
+    const maxAttempts = 25;
+
+    const tryScroll = () => {
+      const el = document.getElementById(`user-input-request-${focusId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        setHighlightedRequestId(focusId);
+        if (typeof onFocusHandled === "function") {
+          onFocusHandled();
+        }
+        return true;
+      }
+      return false;
+    };
+
+    if (tryScroll()) {
+      return undefined;
+    }
+
+    const timer = window.setInterval(() => {
+      attempts += 1;
+      if (tryScroll() || attempts >= maxAttempts) {
+        window.clearInterval(timer);
+        if (attempts >= maxAttempts && typeof onFocusHandled === "function") {
+          onFocusHandled();
+        }
+      }
+    }, 150);
+
+    return () => window.clearInterval(timer);
+  }, [focusRequestId, pending, onFocusHandled]);
+
+  useEffect(() => {
+    if (!highlightedRequestId) {
+      return undefined;
+    }
+    const timer = window.setTimeout(() => setHighlightedRequestId(null), 4000);
+    return () => window.clearTimeout(timer);
+  }, [highlightedRequestId]);
+
   return (
     <Stack spacing={2}>
       <div>
@@ -405,6 +496,8 @@ function UserInputs({ hoverForId }) {
           key={experiment_id}
           hoverForId={hoverForId}
           onBulkMessage={handleBulkMessage}
+          focusRequestId={focusRequestId}
+          highlightedRequestId={highlightedRequestId}
         />
       ))}
     </Stack>

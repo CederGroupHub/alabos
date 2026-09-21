@@ -220,48 +220,8 @@ def prune_archived_unplaced_from_live() -> dict[str, int]:
     experiments_pruned = 0
     skipped = 0
 
-    # Build sample_id -> list of terminal experiments that reference it
-    sample_to_experiments: dict[Any, list[dict[str, Any]]] = {}
-    for experiment in terminal_experiments:
-        for entry in experiment.get("samples") or []:
-            sid = entry.get("sample_id")
-            if sid is None:
-                continue
-            sample_to_experiments.setdefault(sid, []).append(experiment)
-
-    # --- Samples first ---
-    for sample in live_samples.find(
-        {"position": None, "in_transit": None},
-        projection={"_id": 1},
-    ):
-        sample_id = sample["_id"]
-        parents = sample_to_experiments.get(sample_id) or []
-        if not parents:
-            continue
-        # Need at least one terminal parent that is itself archived
-        archived_parent = False
-        for parent in parents:
-            if completed_experiments.find_one({"_id": parent["_id"]}, {"_id": 1}):
-                archived_parent = True
-                break
-        if not archived_parent:
-            skipped += 1
-            logger.warning(
-                "Prune skipped sample %s: no archived terminal parent experiment in completed.",
-                sample_id,
-            )
-            continue
-        if not completed_samples.find_one({"_id": sample_id}, {"_id": 1}):
-            skipped += 1
-            logger.warning(
-                "Prune skipped sample %s: missing from Alab(completed).samples.",
-                sample_id,
-            )
-            continue
-        live_samples.delete_one({"_id": sample_id})
-        samples_pruned += 1
-
-    # --- Tasks then experiments ---
+    # Prune per terminal experiment as a unit: do not delete live samples while the
+    # live experiment row still exists (dashboard /api/experiment/<id> would 500).
     for experiment in terminal_experiments:
         exp_id = experiment["_id"]
         if not completed_experiments.find_one({"_id": exp_id}, {"_id": 1}):
@@ -277,10 +237,32 @@ def prune_archived_unplaced_from_live() -> dict[str, int]:
             for entry in experiment.get("samples") or []
             if entry.get("sample_id") is not None
         ]
-        remaining_samples = (
-            live_samples.count_documents({"_id": {"$in": sample_ids}}) if sample_ids else 0
+        live_sample_docs = (
+            list(
+                live_samples.find(
+                    {"_id": {"$in": sample_ids}},
+                    {"_id": 1, "position": 1, "in_transit": 1},
+                )
+            )
+            if sample_ids
+            else []
         )
-        if remaining_samples:
+        samples_ready = True
+        for sample_doc in live_sample_docs:
+            if sample_doc.get("position") is not None or sample_doc.get("in_transit") is not None:
+                samples_ready = False
+                break
+            if not completed_samples.find_one({"_id": sample_doc["_id"]}, {"_id": 1}):
+                samples_ready = False
+                skipped += 1
+                logger.warning(
+                    "Prune skipped sample %s (experiment %s): missing from "
+                    "Alab(completed).samples.",
+                    sample_doc["_id"],
+                    exp_id,
+                )
+                break
+        if not samples_ready:
             continue
 
         task_ids = [
@@ -307,6 +289,10 @@ def prune_archived_unplaced_from_live() -> dict[str, int]:
         if not all_tasks_safe:
             # Do not delete the experiment until every remaining live task is archived.
             continue
+
+        for sample_doc in live_sample_docs:
+            live_samples.delete_one({"_id": sample_doc["_id"]})
+            samples_pruned += 1
 
         for task_doc in live_task_docs:
             live_tasks.delete_one({"_id": task_doc["_id"]})
