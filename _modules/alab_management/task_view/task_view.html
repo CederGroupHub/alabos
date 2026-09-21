@@ -571,6 +571,16 @@
 <span class="sd">            status: the new status of the task</span>
 <span class="sd">        """</span>
         <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_task</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span> <span class="n">encode</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">current_status</span> <span class="o">=</span> <span class="n">TaskStatus</span><span class="p">[</span><span class="n">task</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]]</span>
+        <span class="c1"># Dashboard Cancel / Release force-write CANCELLED first. A late worker</span>
+        <span class="c1"># FINISHING/ERROR write must not overwrite that (operators then see a red</span>
+        <span class="c1"># ERROR badge with "Cancelled via dashboard…").</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">current_status</span> <span class="ow">is</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">CANCELLED</span>
+            <span class="ow">and</span> <span class="n">status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">CANCELLED</span>
+        <span class="p">):</span>
+            <span class="k">return</span>
+
         <span class="n">update_dict</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">"status"</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
