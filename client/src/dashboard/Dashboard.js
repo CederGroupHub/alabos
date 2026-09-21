@@ -398,8 +398,8 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange, onOpenUser
       >
         {userInputBanner ? (
           <Alert
-            severity="warning"
-            variant="filled"
+            severity="error"
+            variant="outlined"
             icon={<NotificationsIcon fontSize="inherit" />}
             onClick={() => {
               if (typeof onOpenUserInputRequest === "function") {
@@ -411,17 +411,28 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange, onOpenUser
               cursor: "pointer",
               width: "100%",
               maxWidth: 560,
-              boxShadow: "0 12px 28px rgba(33, 58, 75, 0.28)",
               alignItems: "flex-start",
+              color: "#1a1a1a",
+              backgroundColor: "#fdecec",
+              border: "1px solid #c62828",
+              borderRadius: "10px",
+              boxShadow: "0 8px 24px rgba(33, 58, 75, 0.12)",
+              "& .MuiAlert-icon": {
+                color: "#c62828",
+              },
+              "& .MuiAlert-message": {
+                color: "#1a1a1a",
+                paddingTop: "2px",
+              },
             }}
           >
-            <Typography variant="subtitle2" component="div">
+            <Typography variant="subtitle2" component="div" sx={{ color: "#1a1a1a", fontWeight: 600 }}>
               {userInputBanner.title}
             </Typography>
-            <Typography variant="body2" component="div" sx={{ opacity: 0.95 }}>
+            <Typography variant="body2" component="div" sx={{ color: "#2b2b2b", mt: 0.25 }}>
               {userInputBanner.detail}
             </Typography>
-            <Typography variant="caption" component="div" sx={{ mt: 0.5, opacity: 0.9 }}>
+            <Typography variant="caption" component="div" sx={{ mt: 0.5, color: "#555555" }}>
               Click to open and scroll to this request
             </Typography>
           </Alert>
