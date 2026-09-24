@@ -210,7 +210,6 @@
 
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../advance_topics.html">Advance Topics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../test.html">Testing for AlabOS Project</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../auto_refresh.html">Auto Refresh</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../../development.html">Development</a></li>
@@ -417,7 +416,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">pika.spec</span><span class="w"> </span><span class="kn">import</span> <span class="n">Basic</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.sample_view.sample_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">SamplePositionStatus</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.scripts.setup_lab</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_lab</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.device_verbose_logging</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">emit_device_trace</span><span class="p">,</span>
     <span class="n">should_trace_device</span><span class="p">,</span>
@@ -641,57 +639,6 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sample_positions_to_be_updated_or_removed_thread</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sample_positions_to_be_updated_or_removed_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-
-<div class="viewcode-block" id="DeviceManager.refresh_devices">
-<a class="viewcode-back" href="../../alab_management.device_manager.html#alab_management.device_manager.DeviceManager.refresh_devices">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">refresh_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Re-connect the devices in the device view."""</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="c1"># call alabos setup_lab to refresh the devices and standalone sample positions</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'Installing new devices and sample positions. Adding discrepancies to the watchers for deletion once unoccupied.'</span><span class="p">)</span>
-        <span class="n">update_and_removal_todo</span> <span class="o">=</span> <span class="n">setup_lab</span><span class="p">(</span><span class="n">reload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">device_name</span> <span class="ow">in</span> <span class="n">update_and_removal_todo</span><span class="p">[</span><span class="s2">"removed_devices_names"</span><span class="p">]:</span>
-            <span class="k">if</span> <span class="n">device_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_names_to_be_removed</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">device_names_to_be_removed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">updated_sample_position</span> <span class="ow">in</span> <span class="n">update_and_removal_todo</span><span class="p">[</span>
-            <span class="s2">"updated_sample_positions"</span>
-        <span class="p">]:</span>
-            <span class="k">if</span> <span class="p">(</span>
-                <span class="n">updated_sample_position</span>
-                <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_positions_objects_to_be_updated</span>
-            <span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">sample_positions_objects_to_be_updated</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="n">updated_sample_position</span>
-                <span class="p">)</span>
-        <span class="k">for</span> <span class="n">removed_sample_position_prefix</span> <span class="ow">in</span> <span class="n">update_and_removal_todo</span><span class="p">[</span>
-            <span class="s2">"removed_sample_positions_prefixes"</span>
-        <span class="p">]:</span>
-            <span class="k">if</span> <span class="p">(</span>
-                <span class="n">removed_sample_position_prefix</span>
-                <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_positions_prefixes_to_be_removed</span>
-            <span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">sample_positions_prefixes_to_be_removed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="n">removed_sample_position_prefix</span>
-                <span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="n">update_and_removal_todo</span><span class="p">[</span><span class="s2">"updated_sample_positions_in_devices"</span><span class="p">]</span>
-            <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_positions_in_devices_to_be_updated</span>
-        <span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sample_positions_in_devices_to_be_updated</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="n">update_and_removal_todo</span><span class="p">[</span><span class="s2">"updated_sample_positions_in_devices"</span><span class="p">]</span>
-            <span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="n">update_and_removal_todo</span><span class="p">[</span><span class="s2">"removed_sample_positions_in_devices"</span><span class="p">]</span>
-            <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_positions_in_devices_to_be_removed</span>
-        <span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sample_positions_in_devices_to_be_removed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="n">update_and_removal_todo</span><span class="p">[</span><span class="s2">"removed_sample_positions_in_devices"</span><span class="p">]</span>
-            <span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'Connecting to devices again...'</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_device_view</span> <span class="o">=</span> <span class="n">DeviceView</span><span class="p">(</span>
-            <span class="n">connect_to_devices</span><span class="o">=</span><span class="kc">True</span>
-        <span class="p">)</span>  <span class="c1"># create a new device view</span></div>
-
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_device_status_and_remove_if_not_occupied</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Check devices status and remove them if they are not occupied."""</span>

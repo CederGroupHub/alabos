@@ -210,7 +210,6 @@
 
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../advance_topics.html">Advance Topics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../test.html">Testing for AlabOS Project</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../auto_refresh.html">Auto Refresh</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../development.html">Development</a></li>
@@ -447,15 +446,6 @@
 <span class="w">        </span><span class="sd">"""Check the number of running tasks."""</span>
         <span class="n">running_tasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">get_tasks_by_status</span><span class="p">(</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">running_tasks</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="TaskManager.refresh_tasks">
-<a class="viewcode-back" href="../../../alab_management.task_manager.task_manager.html#alab_management.task_manager.task_manager.TaskManager.refresh_tasks">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">refresh_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Refresh the tasks in the task view."""</span>
-        <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'Refreshing tasks in TaskManager...'</span><span class="p">)</span>
-        <span class="n">load_definition</span><span class="p">(</span><span class="n">reload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span> <span class="o">=</span> <span class="n">TaskView</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="TaskManager.run">

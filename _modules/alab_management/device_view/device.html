@@ -210,7 +210,6 @@
 
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../advance_topics.html">Advance Topics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../test.html">Testing for AlabOS Project</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../auto_refresh.html">Auto Refresh</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../development.html">Development</a></li>
@@ -391,7 +390,6 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
@@ -1113,11 +1111,8 @@
 <span class="c1"># it is only pooled with new devices that are added to the lab during reload.</span>
 <span class="n">_device_registry</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BaseDevice</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
-<span class="c1"># _current_device_registry is used to store all the devices that are defined in the __init__.py</span>
-<span class="c1"># when alabos setup is called, regardless of whether it is a reload or not.</span>
-<span class="c1"># this is used to check if a device is still in the lab during reload.</span>
-<span class="c1"># if not, it will be removed from the lab once unoccupied and samples positions that are related to it are also not occupied.</span>
-<span class="c1"># this is not visible to the device_manager</span>
+<span class="c1"># _current_device_registry stores devices defined in the working-dir __init__ during</span>
+<span class="c1"># the latest setup_lab import, used to compare against the live registry/db.</span>
 <span class="n">_current_device_registry</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BaseDevice</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
 
@@ -1125,7 +1120,7 @@
 <a class="viewcode-back" href="../../../alab_management.device_view.device.html#alab_management.device_view.device.add_device">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">BaseDevice</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Register a device instance. It is stored in a global dictionary."""</span>
-    <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">_device_registry</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ALABOS_RELOAD"</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">_device_registry</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Duplicated device name </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="n">_device_registry</span><span class="p">[</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">device</span>
     <span class="n">_current_device_registry</span><span class="p">[</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">device</span></div>
