@@ -615,6 +615,167 @@ def data_window():
     )
 
 
+@data_bp.route("/reports", methods=["GET"])
+def list_data_reports():
+    """List enabled Data report registry entries (no row payloads)."""
+    from alab_management.dashboard import data_reports as reports
+
+    try:
+        reports.ensure_builtin_reports()
+        items = reports.list_reports(enabled_only=True)
+    except Exception as exc:
+        return jsonify({"status": "error", "errors": str(exc)}), 400
+    return jsonify({"status": "success", "reports": items})
+
+
+@data_bp.route("/reports", methods=["POST"])
+def create_data_report():
+    """Register a report generator module (metadata only; does not execute code from body)."""
+    from alab_management.dashboard import data_reports as reports
+
+    data = request.get_json(silent=True) or {}
+    try:
+        reports.ensure_builtin_reports()
+        doc = reports.upsert_report_metadata(
+            data, created_by=str(data.get("created_by") or "api")
+        )
+    except Exception as exc:
+        return jsonify({"status": "error", "errors": str(exc)}), 400
+    return jsonify({"status": "success", "report": doc})
+
+
+@data_bp.route("/reports/<name>", methods=["PATCH"])
+def patch_data_report(name: str):
+    """Rename / save-flag / enable a non-destructive metadata update."""
+    from alab_management.dashboard import data_reports as reports
+
+    data = request.get_json(silent=True) or {}
+    try:
+        doc = reports.patch_report(name, data)
+    except Exception as exc:
+        return jsonify({"status": "error", "errors": str(exc)}), 400
+    return jsonify({"status": "success", "report": doc})
+
+
+@data_bp.route("/reports/<name>", methods=["DELETE"])
+def delete_data_report(name: str):
+    """Delete a non-builtin report."""
+    from alab_management.dashboard import data_reports as reports
+
+    try:
+        reports.delete_report(name)
+    except Exception as exc:
+        return jsonify({"status": "error", "errors": str(exc)}), 400
+    return jsonify({"status": "success", "name": name})
+
+
+@data_bp.route("/reports/<name>/rows", methods=["GET"])
+def data_report_rows(name: str):
+    """Return the stored snapshot for a report."""
+    from alab_management.dashboard import data_reports as reports
+
+    try:
+        reports.ensure_builtin_reports()
+        snap = reports.get_report_snapshot(name)
+        if snap is None:
+            raise ValueError(f"Unknown report '{name}'.")
+    except Exception as exc:
+        return jsonify({"status": "error", "errors": str(exc)}), 400
+    return jsonify({"status": "success", "report": snap})
+
+
+@data_bp.route("/reports/<name>/refresh", methods=["POST"])
+def refresh_data_report(name: str):
+    """Re-run the allowlisted generator and update the snapshot."""
+    from alab_management.dashboard import data_reports as reports
+
+    try:
+        window = _window_from_request()
+        reports.ensure_builtin_reports()
+        snap = reports.refresh_report(
+            name,
+            start=window["start"],
+            end=window["end"],
+            start_date=window["start_date"],
+            end_date=window["end_date"],
+        )
+    except Exception as exc:
+        return jsonify({"status": "error", "errors": str(exc)}), 400
+    return jsonify(
+        {
+            "status": "success",
+            "report": snap,
+            "window": make_jsonable(
+                {
+                    "label": window["label"],
+                    "start_date": window["start_date"],
+                    "end_date": window["end_date"],
+                    "month": window.get("month"),
+                }
+            ),
+        }
+    )
+
+
+@data_bp.route("/reports/<name>.csv", methods=["GET"])
+def data_report_csv(name: str):
+    """Download the current snapshot as CSV."""
+    from alab_management.dashboard import data_reports as reports
+
+    try:
+        reports.ensure_builtin_reports()
+        snap = reports.get_report_snapshot(name)
+        if snap is None:
+            raise ValueError(f"Unknown report '{name}'.")
+    except Exception as exc:
+        return jsonify({"status": "error", "errors": str(exc)}), 400
+    columns = snap.get("columns") or []
+    rows = snap.get("rows") or []
+    if columns:
+        flat_rows = []
+        keys = [col["key"] for col in columns]
+        for row in rows:
+            flat_rows.append({key: row.get(key) for key in keys})
+    else:
+        flat_rows = rows
+    return _csv_response(f"{name}.csv", flat_rows)
+
+
+@data_bp.route("/report_jobs", methods=["POST"])
+def create_report_job():
+    """Start a one-shot Cursor agent job to author a Data report generator."""
+    from alab_management.dashboard import report_agent
+
+    data = request.get_json(silent=True) or {}
+    try:
+        job = report_agent.start_report_job(data.get("prompt"))
+    except report_agent.ReportAgentError as exc:
+        return jsonify({"status": "error", "errors": str(exc)}), exc.status_code
+    except Exception as exc:
+        return jsonify({"status": "error", "errors": str(exc)}), 400
+    return jsonify({"status": "success", "job": make_jsonable(job)})
+
+
+@data_bp.route("/report_jobs/current", methods=["GET"])
+def current_report_job():
+    """Return the latest/active report agent job (if any)."""
+    from alab_management.dashboard import report_agent
+
+    job = report_agent.get_current_job()
+    return jsonify({"status": "success", "job": make_jsonable(job)})
+
+
+@data_bp.route("/report_jobs/<job_id>", methods=["GET"])
+def get_report_job(job_id: str):
+    """Return status and log for a report agent job."""
+    from alab_management.dashboard import report_agent
+
+    job = report_agent.get_job(job_id)
+    if job is None:
+        return jsonify({"status": "error", "errors": f"Unknown job '{job_id}'."}), 404
+    return jsonify({"status": "success", "job": make_jsonable(job)})
+
+
 @data_bp.route("/sample_summary", methods=["GET"])
 def sample_summary():
     """Return a curated sample summary for one calendar month."""
@@ -671,6 +832,8 @@ def sample_report_csv():
                 "sample_ids": row["sample_ids"],
                 "source_count": row["source_count"],
                 "target": row["target"],
+                "target_masses": row["target_masses"],
+                "actual_masses": row["actual_masses"],
                 "powder_summary": row["powder_summary"],
                 "crucible": row["crucible"],
                 "mixing_pot": row["mixing_pot"],

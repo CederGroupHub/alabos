@@ -394,6 +394,117 @@ export async function get_data_window(range = null) {
     }
 }
 
+export async function get_data_reports() {
+    try {
+        const res = await fetch(DATA_API + "/reports", { mode: 'cors' });
+        return await res.json();
+    } catch (error) {
+        return console.warn(error);
+    }
+}
+
+export async function get_data_report_rows(name) {
+    try {
+        const res = await fetch(
+            DATA_API + "/reports/" + encodeURIComponent(name) + "/rows",
+            { mode: 'cors' },
+        );
+        return await res.json();
+    } catch (error) {
+        return console.warn(error);
+    }
+}
+
+export async function refresh_data_report(name, range = null) {
+    try {
+        const res = await fetch(
+            DATA_API + "/reports/" + encodeURIComponent(name) + "/refresh" + dataWindowQuery(range),
+            { method: 'POST', mode: 'cors' },
+        );
+        return await res.json();
+    } catch (error) {
+        return console.warn(error);
+    }
+}
+
+export async function patch_data_report(name, body) {
+    try {
+        const res = await fetch(
+            DATA_API + "/reports/" + encodeURIComponent(name),
+            {
+                method: 'PATCH',
+                mode: 'cors',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body),
+            },
+        );
+        return await res.json();
+    } catch (error) {
+        return console.warn(error);
+    }
+}
+
+export async function create_data_report(body) {
+    try {
+        const res = await fetch(DATA_API + "/reports", {
+            method: 'POST',
+            mode: 'cors',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+        });
+        return await res.json();
+    } catch (error) {
+        return console.warn(error);
+    }
+}
+
+export async function create_data_report_job(prompt) {
+    try {
+        const res = await fetch(DATA_API + "/report_jobs", {
+            method: 'POST',
+            mode: 'cors',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt }),
+        });
+        const data = await res.json();
+        if (!res.ok && data && !data.errors) {
+            data.errors = res.statusText || `HTTP ${res.status}`;
+        }
+        if (!res.ok && data) {
+            data.http_status = res.status;
+        }
+        return data;
+    } catch (error) {
+        return console.warn(error);
+    }
+}
+
+export async function get_data_report_job(jobId) {
+    try {
+        const res = await fetch(
+            DATA_API + "/report_jobs/" + encodeURIComponent(jobId),
+            { mode: 'cors' },
+        );
+        return await res.json();
+    } catch (error) {
+        return console.warn(error);
+    }
+}
+
+export async function get_current_data_report_job() {
+    try {
+        const res = await fetch(DATA_API + "/report_jobs/current", { mode: 'cors' });
+        return await res.json();
+    } catch (error) {
+        return console.warn(error);
+    }
+}
+
+export function dataReportCsvHref(name) {
+    return DATA_API + "/reports/" + encodeURIComponent(name) + ".csv";
+}
+
+// Legacy month-scoped exports (still available for thin wrappers / older clients)
 export async function get_sample_summary_rows(range = null) {
     try {
         const res = await fetch(DATA_API + "/sample_summary" + dataWindowQuery(range), { mode: 'cors' });

@@ -1,7 +1,6 @@
 """Define the base class of task, which will be used for defining more tasks."""
 
 import inspect
-import os
 import time
 from abc import ABC, abstractmethod
 from inspect import getfullargspec
@@ -501,7 +500,7 @@ _reroute_task_registry: list[
 
 def add_task(task: type[BaseTask]):
     """Register a task."""
-    if task.__name__ in _task_registry and not os.environ.get("ALABOS_RELOAD", None):
+    if task.__name__ in _task_registry:
         raise KeyError(f"Duplicated operation name {task.__name__}")
     _task_registry[task.__name__] = task
 

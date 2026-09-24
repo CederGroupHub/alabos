@@ -5,14 +5,11 @@ import logging
 logger = logging.getLogger(__name__)
 import contextlib
 import multiprocessing
-import os
 import sys
 import time
 from threading import Thread
 
 from gevent.pywsgi import WSGIServer  # type: ignore
-
-from alab_management.utils.module_ops import calculate_package_hash
 
 with contextlib.suppress(RuntimeError):
     multiprocessing.set_start_method("spawn")
@@ -22,7 +19,6 @@ experiment_manager = None
 task_manager = None
 device_manager = None
 resource_manager = None
-package_fingerprint = None
 
 
 def launch_dashboard(host: str, port: int, debug: bool = False):
@@ -91,47 +87,6 @@ def launch_resource_manager():
     resource_manager.run()
 
 
-def system_refresh():
-    """Refresh the system if the package fingerprint has changed and auto_refresh is configured."""
-    from alab_management.config import AlabOSConfig
-
-    config = AlabOSConfig()
-    if not config["general"].get("auto_refresh", False):
-        return
-
-    if (
-        experiment_manager is None
-        or device_manager is None
-        or resource_manager is None
-        or task_manager is None
-    ):
-        logger.info('System is not fully initialized. Please wait for a while for refresh.')
-        return
-    global package_fingerprint
-
-    current_package_fingerprint = calculate_package_hash()
-
-    if current_package_fingerprint != package_fingerprint:
-        package_fingerprint = current_package_fingerprint
-        logger.info('Package fingerprint has changed, reloading definitions and refreshing system.')
-        with (
-            task_manager.pause_new_task_launching(),
-            resource_manager.pause_resource_assigning(),
-            device_manager.pause_all_devices(),
-            experiment_manager.pause_handling_experiments(),
-        ):
-            os.environ["ALABOS_RELOAD"] = "1"
-            while task_manager.check_number_of_running_tasks():
-                time.sleep(10)
-            time.sleep(10)  # give some time for tasks to finish
-            # important to refresh device first because device manager will compare current state with future state
-            device_manager.refresh_devices()
-            task_manager.refresh_tasks()
-            experiment_manager.refresh_task_list()
-            time.sleep(10)
-            os.environ.pop("ALABOS_RELOAD", None)
-
-
 def launch_lab(host, port, debug):
     """Start to run the lab."""
     from alab_management.device_view import DeviceView
@@ -161,11 +116,6 @@ def launch_lab(host, port, debug):
     task_launcher_thread.start()
     resource_manager_thread.start()
 
-    global package_fingerprint
-
-    package_fingerprint = calculate_package_hash()
-
-    counter = 0
     while True:
         time.sleep(1.5)
         if not experiment_manager_thread.is_alive():
@@ -182,8 +132,3 @@ def launch_lab(host, port, debug):
 
         if not resource_manager_thread.is_alive():
             sys.exit(1005)
-
-        counter += 1
-        if counter % 10 == 0:  # check every 15 s
-            system_refresh()
-            counter = 0

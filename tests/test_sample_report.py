@@ -108,6 +108,8 @@ def test_build_sample_report_row_collapses_aliases_and_tasks() -> None:
     assert row["mixing_pot"] == 5
     assert row["powders"][0]["target_mass"] == 0.1
     assert row["powders"][0]["actual_mass"] == 0.11
+    assert row["target_masses"] == "Fe2O3 0.1"
+    assert row["actual_masses"] == "Fe2O3 0.11"
     assert row["related_tasks"][0]["type"] == "PowderDosing"
     assert "PowderDosing:COMPLETED" in row["task_summary"]
 

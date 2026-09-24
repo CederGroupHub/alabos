@@ -13,8 +13,8 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import IconButton from '@mui/material/IconButton';
 import { useEffect } from 'react';
-import { get_device_verbose_log, get_status } from '../../api_routes';
-import { FormControl, FormControlLabel, Switch } from '@mui/material';
+import { get_device_verbose_log, get_status, execute_device_control_command } from '../../api_routes';
+import { FormControl, FormControlLabel, Switch, Alert, Stack, Chip } from '@mui/material';
 import { request_device_pause, release_device_pause } from '../../api_routes';
 import Button from '@mui/material/Button';
 
@@ -325,6 +325,117 @@ function ConnectionNotice({ attributes }) {
 }
 
 
+const ATTRIBUTE_LABELS = {
+  battery_percentage: 'Battery %',
+  battery_state: 'Battery state',
+  is_charging: 'Charging',
+  battery_checked_at: 'Battery checked at',
+  battery_policy: 'Battery policy',
+  base_position: 'Base position',
+  control_mode: 'Control mode',
+  connected: 'Connected',
+  executing_plan_status: 'Plan status',
+  helper_status_summary: 'Helper',
+  no_progress_age_s: 'No-progress age (s)',
+  last_error: 'Last error',
+  all_racks_on_quadrant: 'All racks on quadrant',
+};
+
+const FURNACE_LIVE_POLL_MS = 5000;
+
+function isBoxFurnaceDevice(name) {
+  return typeof name === 'string' && /^BFT_box_[abcd]$/i.test(name);
+}
+
+function FurnaceLiveStatus({ deviceName, open }) {
+  const [liveStatus, setLiveStatus] = React.useState(null);
+  const [error, setError] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!open) {
+      return undefined;
+    }
+    let cancelled = false;
+    const load = async () => {
+      setLoading(true);
+      try {
+        const response = await execute_device_control_command(
+          deviceName,
+          'get_live_status',
+          null,
+          {},
+        );
+        if (cancelled) {
+          return;
+        }
+        if (response.status !== 'success') {
+          throw new Error(response.errors || 'Failed to read furnace status.');
+        }
+        setLiveStatus(response.data?.result || null);
+        setError('');
+      } catch (err) {
+        if (!cancelled) {
+          setError(err.message || 'Failed to read furnace status.');
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+    load();
+    const intervalId = window.setInterval(load, FURNACE_LIVE_POLL_MS);
+    return () => {
+      cancelled = true;
+      window.clearInterval(intervalId);
+    };
+  }, [open, deviceName]);
+
+  if (!open) {
+    return null;
+  }
+
+  const temperature = liveStatus?.temperature;
+  const setpoint = liveStatus?.setpoint;
+  const programMode = liveStatus?.program_mode;
+  const doorOpen = liveStatus?.door_open;
+  const isRunning = liveStatus?.is_running;
+
+  return (
+    <div style={{ marginBottom: 12 }}>
+      <Typography variant="subtitle2" gutterBottom>Furnace live status</Typography>
+      {error ? (
+        <Alert severity="warning" sx={{ py: 0.5 }}>{error}</Alert>
+      ) : (
+        <Stack spacing={0.5}>
+          <Typography variant="body2">
+            <b>Temperature:</b>{' '}
+            {loading && liveStatus == null ? '…' : (temperature == null ? '—' : `${temperature} °C`)}
+          </Typography>
+          <Typography variant="body2">
+            <b>Setpoint:</b>{' '}
+            {loading && liveStatus == null ? '…' : (setpoint == null ? '—' : `${setpoint} °C`)}
+          </Typography>
+          <Typography variant="body2">
+            <b>Program:</b>{' '}
+            {loading && liveStatus == null ? '…' : (programMode || '—')}
+          </Typography>
+          <Typography variant="body2">
+            <b>Door:</b>{' '}
+            {loading && liveStatus == null ? '…' : (doorOpen == null ? '—' : (doorOpen ? 'Open' : 'Closed'))}
+          </Typography>
+          <Typography variant="body2">
+            <b>Heating / too hot:</b>{' '}
+            {loading && liveStatus == null ? '…' : (isRunning == null ? '—' : (isRunning ? 'Yes' : 'No'))}
+          </Typography>
+        </Stack>
+      )}
+    </div>
+  );
+}
+
+
 // Attribute values come straight from the device's database document, so they can be anything from a
 // number to a nested mission plan. Primitives read best inline; anything structured is pretty-printed
 // so it stays truthful rather than being flattened into something ambiguous.
@@ -434,7 +545,18 @@ function DeviceLogPane({ deviceName, open }) {
 
 
 function DeviceAttributes({ attributes }) {
-  const entries = Object.entries(attributes || {});
+  const entries = Object.entries(attributes || {}).filter(([name]) => {
+    // Connection bookkeeping is shown via ConnectionNotice on the row.
+    return ![
+      "disabled",
+      "disabled_reason",
+      "connection_status",
+      "connection_error",
+      "connection_waiting_seconds",
+      "connection_blocked_on_user_input",
+      "connection_user_input_prompt",
+    ].includes(name);
+  });
   if (entries.length === 0) {
     return (
       <Typography variant="caption" sx={{ color: "#9e9e9e" }}>
@@ -447,7 +569,9 @@ function DeviceAttributes({ attributes }) {
       <TableBody>
         {entries.map(([name, value]) => (
           <TableRow key={name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-            <TableCell className="attribute-name" width="220">{name}</TableCell>
+            <TableCell className="attribute-name" width="220">
+              {ATTRIBUTE_LABELS[name] || name}
+            </TableCell>
             <TableCell><AttributeValue value={value} /></TableCell>
           </TableRow>
         ))}
@@ -662,6 +786,9 @@ function Row({ device, hoverForId }) {
             <div className="device-detail-split">
               <div className="device-detail-state">
                 <Typography variant="subtitle2" gutterBottom>Device state</Typography>
+                {isBoxFurnaceDevice(device.name) && (
+                  <FurnaceLiveStatus deviceName={device.name} open={open} />
+                )}
                 <DeviceAttributes attributes={device.attributes} />
               </div>
               <DeviceLogPane deviceName={device.name} open={open} />
@@ -686,11 +813,17 @@ function OccupiedSamplePositions({ samples }) {
 function Devices({ hoverForId }) {
   const [devices, setDevices] = React.useState([]);
   const [hideIdleDevices, setHideIdleDevices] = React.useState(false);
+  const [labReady, setLabReady] = React.useState(null);
+  const [labReadyLabel, setLabReadyLabel] = React.useState('');
 
   useEffect(() => {
     const applyStatus = (data) => {
       const incoming = data?.devices || [];
       setDevices((previous) => mergeDeviceOrder(previous, incoming));
+      if (data && Object.prototype.hasOwnProperty.call(data, 'lab_ready')) {
+        setLabReady(Boolean(data.lab_ready));
+        setLabReadyLabel(data.lab_ready_label || '');
+      }
     };
 
     get_status().then(applyStatus);
@@ -723,17 +856,35 @@ function Devices({ hoverForId }) {
 
 
   return (
-    <><FormControl component="fieldset" variant="standard" sx={{ padding: "0px 16px" }}>
-      <FormControlLabel
-        control={
-          <Switch
-            checked={hideIdleDevices}
-            onChange={() => setHideIdleDevices(!hideIdleDevices)}
-            name="Hide idle devices with no samples"
+    <>
+      <Stack
+        direction="row"
+        spacing={2}
+        alignItems="center"
+        sx={{ padding: "0px 16px", mb: 1, flexWrap: "wrap" }}
+      >
+        <FormControl component="fieldset" variant="standard">
+          <FormControlLabel
+            control={
+              <Switch
+                checked={hideIdleDevices}
+                onChange={() => setHideIdleDevices(!hideIdleDevices)}
+                name="Hide idle devices with no samples"
+              />
+            }
+            label="Hide idle devices with no samples"
           />
-        }
-        label="Hide idle devices with no samples" />
-    </FormControl><TableContainer style={{ height: "100%" }} component={Paper}>
+        </FormControl>
+        {labReady !== null && (
+          <Chip
+            size="small"
+            label={labReady ? (labReadyLabel || 'Lab ready') : (labReadyLabel || 'Lab not ready')}
+            color={labReady ? 'success' : 'warning'}
+            variant="outlined"
+          />
+        )}
+      </Stack>
+      <TableContainer style={{ height: "100%" }} component={Paper}>
         <StyledDevicesDiv>
           <Table stickyHeader aria-label="device table">
             <TableHead>
@@ -758,7 +909,8 @@ function Devices({ hoverForId }) {
             </TableBody>
           </Table>
         </StyledDevicesDiv>
-      </TableContainer></>
+      </TableContainer>
+    </>
   )
 }
 

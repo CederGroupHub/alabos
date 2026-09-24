@@ -237,6 +237,14 @@ def build_sample_report_row(
             }
         )
 
+    target_masses = "\n".join(
+        f"{row['powder_name'] or '?'} {'' if row['target_mass'] is None else row['target_mass']}".rstrip()
+        for row in powders
+    )
+    actual_masses = "\n".join(
+        f"{row['powder_name'] or '?'} {'' if row['actual_mass'] is None else row['actual_mass']}".rstrip()
+        for row in powders
+    )
     powder_summary = "; ".join(
         (
             f"{row['powder_name'] or '?'}"
@@ -256,6 +264,8 @@ def build_sample_report_row(
         "source_count": len(samples),
         "target": metadata.get("target"),
         "powders": powders,
+        "target_masses": target_masses,
+        "actual_masses": actual_masses,
         "powder_summary": powder_summary,
         "crucible": format_crucible(
             dosing.get("CrucibleSubRack"), dosing.get("CruciblePosition")

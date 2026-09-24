@@ -52,12 +52,6 @@ class TaskManager:
         running_tasks = self.task_view.get_tasks_by_status(TaskStatus.RUNNING)
         return len(running_tasks)
 
-    def refresh_tasks(self):
-        """Refresh the tasks in the task view."""
-        cli_logger.info('Refreshing tasks in TaskManager...')
-        load_definition(reload=True)
-        self.task_view = TaskView()
-
     def run(self):
         """Start the loop."""
         while True:

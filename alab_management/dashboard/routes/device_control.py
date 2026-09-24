@@ -114,17 +114,41 @@ DEVICE_CATALOG = [
 ]
 
 _BOX_FURNACE_COMMANDS = {
+    "get_live_status": {
+        "label": "Get Live Status",
+        "mode": "read",
+        "params": {},
+        "target_method": "get_live_status",
+    },
     "get_temperature": {
         "label": "Get Temperature",
         "mode": "read",
         "params": {},
         "target_method": "get_temperature",
     },
+    "get_setpoint": {
+        "label": "Get Setpoint",
+        "mode": "read",
+        "params": {},
+        "target_method": "get_setpoint",
+    },
+    "get_program_mode": {
+        "label": "Get Program Mode",
+        "mode": "read",
+        "params": {},
+        "target_method": "get_program_mode",
+    },
     "is_running": {
         "label": "Is Heating / Too Hot?",
         "mode": "read",
         "params": {},
         "target_method": "is_running",
+    },
+    "is_door_open": {
+        "label": "Is Door Open?",
+        "mode": "read",
+        "params": {},
+        "target_method": "is_door_open",
     },
     "open_door": {
         "label": "Open Door",

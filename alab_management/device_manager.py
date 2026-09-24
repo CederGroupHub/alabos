@@ -28,7 +28,6 @@ from pika.adapters.blocking_connection import BlockingChannel
 from pika.spec import Basic
 
 from alab_management.sample_view.sample_view import SamplePositionStatus
-from alab_management.scripts.setup_lab import setup_lab
 from alab_management.utils.device_verbose_logging import (
     emit_device_trace,
     should_trace_device,
@@ -235,54 +234,6 @@ class DeviceManager:
         )
         self.sample_positions_to_be_updated_or_removed_thread.daemon = True
         self.sample_positions_to_be_updated_or_removed_thread.start()
-
-    def refresh_devices(self):
-        """Re-connect the devices in the device view."""
-        self._device_view.close()
-        # call alabos setup_lab to refresh the devices and standalone sample positions
-        logger.info('Installing new devices and sample positions. Adding discrepancies to the watchers for deletion once unoccupied.')
-        update_and_removal_todo = setup_lab(reload=True)
-        for device_name in update_and_removal_todo["removed_devices_names"]:
-            if device_name not in self.device_names_to_be_removed:
-                self.device_names_to_be_removed.append(device_name)
-        for updated_sample_position in update_and_removal_todo[
-            "updated_sample_positions"
-        ]:
-            if (
-                updated_sample_position
-                not in self.sample_positions_objects_to_be_updated
-            ):
-                self.sample_positions_objects_to_be_updated.append(
-                    updated_sample_position
-                )
-        for removed_sample_position_prefix in update_and_removal_todo[
-            "removed_sample_positions_prefixes"
-        ]:
-            if (
-                removed_sample_position_prefix
-                not in self.sample_positions_prefixes_to_be_removed
-            ):
-                self.sample_positions_prefixes_to_be_removed.append(
-                    removed_sample_position_prefix
-                )
-        if (
-            update_and_removal_todo["updated_sample_positions_in_devices"]
-            not in self.sample_positions_in_devices_to_be_updated
-        ):
-            self.sample_positions_in_devices_to_be_updated.append(
-                update_and_removal_todo["updated_sample_positions_in_devices"]
-            )
-        if (
-            update_and_removal_todo["removed_sample_positions_in_devices"]
-            not in self.sample_positions_in_devices_to_be_removed
-        ):
-            self.sample_positions_in_devices_to_be_removed.append(
-                update_and_removal_todo["removed_sample_positions_in_devices"]
-            )
-        logger.info('Connecting to devices again...')
-        self._device_view = DeviceView(
-            connect_to_devices=True
-        )  # create a new device view
 
     def _check_device_status_and_remove_if_not_occupied(self):
         """Check devices status and remove them if they are not occupied."""

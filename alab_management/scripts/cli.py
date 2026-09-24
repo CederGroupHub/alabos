@@ -59,10 +59,15 @@ def setup_lab_cli():
     from alab_management.utils.logger import configure_logging
 
     configure_logging()
-    if setup_lab():
-        click.echo("Done")
-    else:
-        click.echo("Stopped")
+    try:
+        if setup_lab():
+            click.echo("Done")
+        else:
+            click.echo("Stopped")
+            raise SystemExit(1)
+    except Exception as exc:
+        click.echo(f"Setup failed: {exc}", err=True)
+        raise SystemExit(1) from exc
 
 
 @cli.command("launch", short_help="Start to run the lab")

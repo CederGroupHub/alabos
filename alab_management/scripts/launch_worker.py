@@ -10,7 +10,6 @@ def launch_worker(args):
     from dramatiq.cli import main as launch
     from dramatiq.cli import make_argument_parser
 
-    from alab_management.config import AlabOSConfig
     from alab_management.utils.logger import configure_logging
 
     configure_logging(
@@ -25,15 +24,9 @@ def launch_worker(args):
     # Clean up any leftover tasks from previous runs. This blocks new workers until cleanup is done!
     task_manager.clean_up_tasks_from_previous_runs()
 
-    config = AlabOSConfig()
-    reload = config["general"].get("auto_refresh", False)
     args = make_argument_parser().parse_args(
         args=["alab_management.task_actor", *args],
-        namespace=(
-            Namespace(processes=6, threads=128)
-            if not reload
-            else Namespace(processes=72, threads=1)
-        ),
+        namespace=Namespace(processes=6, threads=128),
     )
 
     launch(args=args)

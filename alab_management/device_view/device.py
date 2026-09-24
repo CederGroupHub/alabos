@@ -2,7 +2,6 @@
 
 import datetime
 import functools
-import os
 import threading
 import time
 from abc import ABC, abstractmethod
@@ -664,17 +663,14 @@ class DeviceSignalEmitter:
 # it is only pooled with new devices that are added to the lab during reload.
 _device_registry: dict[str, BaseDevice] = {}
 
-# _current_device_registry is used to store all the devices that are defined in the __init__.py
-# when alabos setup is called, regardless of whether it is a reload or not.
-# this is used to check if a device is still in the lab during reload.
-# if not, it will be removed from the lab once unoccupied and samples positions that are related to it are also not occupied.
-# this is not visible to the device_manager
+# _current_device_registry stores devices defined in the working-dir __init__ during
+# the latest setup_lab import, used to compare against the live registry/db.
 _current_device_registry: dict[str, BaseDevice] = {}
 
 
 def add_device(device: BaseDevice):
     """Register a device instance. It is stored in a global dictionary."""
-    if device.name in _device_registry and not os.environ.get("ALABOS_RELOAD", None):
+    if device.name in _device_registry:
         raise KeyError(f"Duplicated device name {device.name}")
     _device_registry[device.name] = device
     _current_device_registry[device.name] = device

@@ -11,8 +11,6 @@ import time
 from contextlib import contextmanager
 from typing import Any
 
-from alab_management.utils.module_ops import load_definition
-
 from .config import AlabOSConfig
 from .experiment_view import CompletedExperimentView, ExperimentStatus, ExperimentView
 from .logger import DBLogger
@@ -239,10 +237,3 @@ class ExperimentManager:
         finally:
             self._pause_handling_experiments = False
             cli_logger.info("Resuming handling experiments.")
-
-    def refresh_task_list(self):
-        """This method will refresh the task list by reloading definition of tasks."""
-        cli_logger.info('Refreshing task view in ExperimentManager...')
-        load_definition(reload=True)
-        self.task_view = TaskView()
-        self.experiment_view = ExperimentView()

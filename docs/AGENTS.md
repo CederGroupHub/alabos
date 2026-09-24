@@ -1,6 +1,27 @@
 # Agent practices
 
-This file is for humans and coding agents working in this repository. Keep it generic so it can be copied into other repos.
+This file is for humans and coding agents working in this repository.
+
+The sections **Commit and push**, **`agent_temp/`**, **Git**, **CI hygiene**, and **Working style** are generic and may be copied to other repos. The **Data page reports** section is **mandatory for this repository** (alab_management).
+
+## Data page reports (mandatory in this repo)
+
+When the user wants a **Data page report**, **reusable dashboard CSV**, or **custom sample/task/experiment table** for operators (not an explicit one-off chat dump):
+
+1. Implement `alab_management/dashboard/user_reports/<slug>.py` with  
+   `run(*, start, end, live_db, completed_db) -> {columns, rows}`  
+   (**read-only** against lab data; prefer `report_db.find_union` for Alab + Alab(completed)).
+2. Upsert `Alab.data_reports` with  
+   `generator: { "type": "module", "module": "<slug>" }`  
+   (`saved: true` unless they only want a draft). Do not set `builtin: true`.
+3. Tell the user: open **Data** → select the report → **Refresh** (date range) → **Download CSV**.
+
+**Do not** finish with only a markdown/CSV table in chat or an `agent_temp/` one-off as the operator deliverable.
+
+Full contract: [`docs/data-reports-cursor.md`](data-reports-cursor.md).  
+Workflow checklist: [`.cursor/skills/alab-data-report/SKILL.md`](../.cursor/skills/alab-data-report/SKILL.md) (Cursor); other agents should follow the same steps from this section and `data-reports-cursor.md`.
+
+---
 
 ## Commit and push regularly
 

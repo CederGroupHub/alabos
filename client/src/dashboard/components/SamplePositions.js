@@ -45,14 +45,21 @@ const RackContainer = styled.div`
 
 const SlotGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 12px;
+  grid-template-columns: ${(props) =>
+    props.$columns
+      ? `repeat(${props.$columns}, minmax(0, 1fr))`
+      : "repeat(auto-fill, minmax(140px, 1fr))"};
+  gap: 8px;
+  ${(props) =>
+    props.$columns
+      ? `max-width: ${props.$columns * 156}px;`
+      : ""}
 `;
 
 const HighlightedSlot = styled.div`
-  border-radius: 8px;
-  outline: ${(props) => (props.$active ? '3px solid #1976d2' : 'none')};
-  outline-offset: 2px;
+  border-radius: 6px;
+  outline: ${(props) => (props.$active ? '2px solid #1976d2' : 'none')};
+  outline-offset: 1px;
   transition: outline-color 0.2s ease;
   min-width: 0;
 `;
@@ -133,6 +140,35 @@ function formatBadge(summary) {
     parts.push(`${summary.blocked_count} blocked`);
   }
   return parts.join(" · ");
+}
+
+/** Humanize slot-group keys like ``crucible_slot`` → ``Crucible Slot``. */
+function formatSlotGroupTitle(groupName) {
+  if (!groupName || typeof groupName !== "string") {
+    return groupName;
+  }
+  return groupName
+    .split(/[_\s]+/)
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+}
+
+/** Fixed column count for racks whose physical layout is fixed. */
+function slotGridColumns(deviceName, groupName) {
+  if (deviceName === "BFT_input_rack") {
+    return 3;
+  }
+  if (deviceName === "DASH_input_rack") {
+    return 4;
+  }
+  if (
+    deviceName === "DASH_consumable_rack_A"
+    && (groupName === "crucible_slot" || groupName === "vial_slot")
+  ) {
+    return 5;
+  }
+  return null;
 }
 
 function eventLabel(event) {
@@ -369,14 +405,26 @@ function SlotCard({
   const canToggleBlock = slot.can_toggle_block !== false && !slot.locked_by_task_id;
   const sample = slot.sample;
   const ownership = ownershipCaption(sample);
-  const shortId = sample?.sample_id
-    ? `${String(sample.sample_id).slice(0, 8)}…`
-    : null;
+  const statusLabel = inTransit
+    ? "TRANSIT"
+    : slot.blocked
+      ? "BLOCKED"
+      : slot.status;
+  const statusColor = inTransit
+    ? "info"
+    : slot.blocked
+      ? "error"
+      : slot.status === "OCCUPIED"
+        ? "success"
+        : slot.status === "LOCKED"
+          ? "warning"
+          : "default";
 
   return (
     <HighlightedSlot $active={highlighted} ref={slotRef}>
       <Card
         variant="outlined"
+        title={slot.name}
         sx={{
           bgcolor: slotStatusColor(slot),
           height: "100%",
@@ -390,114 +438,95 @@ function SlotCard({
             flex: 1,
             display: "flex",
             flexDirection: "column",
-            gap: 1,
-            py: 1.5,
-            "&:last-child": { pb: 1.5 },
+            gap: 0.6,
+            p: 1,
+            "&:last-child": { pb: 1 },
             minWidth: 0,
           }}
         >
-          <Stack spacing={0.75} sx={{ minWidth: 0 }}>
-            <Typography variant="subtitle1">
-              Slot {slot.slot_number}
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+            spacing={0.5}
+            sx={{ minWidth: 0 }}
+          >
+            <Typography variant="body2" sx={{ fontWeight: 700, lineHeight: 1.25 }}>
+              {slot.slot_number}
             </Typography>
-            <Stack
-              direction="row"
-              flexWrap="wrap"
-              sx={{ minWidth: 0, gap: 0.75 }}
-            >
-              {inTransit && <Chip label="IN TRANSIT" size="small" color="info" />}
-              {slot.blocked && <Chip label="BLOCKED" size="small" color="error" />}
-              <Chip label={slot.status} size="small" />
-            </Stack>
+            <Chip
+              label={statusLabel}
+              size="small"
+              color={statusColor}
+              sx={{
+                height: 20,
+                fontSize: "0.7rem",
+                "& .MuiChip-label": { px: 0.7 },
+              }}
+            />
           </Stack>
-
-          <TruncatedLine variant="caption" color="text.secondary" title={slot.name}>
-            {slot.name}
-          </TruncatedLine>
-
-          {slot.blocked && slot.blocked_reason && (
-            <WrappingText variant="caption" color="error">
-              {slot.blocked_reason}
-            </WrappingText>
-          )}
 
           {sample ? (
             <Box sx={{ minWidth: 0 }}>
-              <TruncatedLine variant="body2" sx={{ fontWeight: 700 }}>
+              <TruncatedLine
+                variant="caption"
+                sx={{ fontWeight: 700, lineHeight: 1.2, display: "block" }}
+              >
                 {sample.name}
               </TruncatedLine>
-              {shortId && (
-                <TruncatedLine variant="caption" color="text.secondary">
-                  {shortId}
-                </TruncatedLine>
-              )}
               <Button
                 size="small"
                 onClick={() => setDetailsOpen((prev) => !prev)}
                 endIcon={detailsOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                sx={{ px: 0, mt: 0.25, textTransform: "none" }}
+                sx={{
+                  px: 0,
+                  minHeight: 0,
+                  py: 0,
+                  mt: 0.15,
+                  fontSize: "0.7rem",
+                  textTransform: "none",
+                }}
               >
-                {detailsOpen ? "Hide details" : "Details"}
+                {detailsOpen ? "Hide" : "Details"}
               </Button>
               <Collapse in={detailsOpen} timeout="auto" unmountOnExit>
                 <Box
                   sx={{
-                    mt: 1,
-                    pt: 1,
+                    mt: 0.5,
+                    pt: 0.5,
                     borderTop: "1px solid",
                     borderColor: "divider",
                     minWidth: 0,
                   }}
                 >
-                  <Stack spacing={0.75}>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" display="block">
-                        Sample name
-                      </Typography>
-                      <WrappingText variant="body2" sx={{ fontWeight: 700 }}>
-                        {sample.name}
-                      </WrappingText>
-                    </Box>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" display="block">
-                        Sample ID
-                      </Typography>
-                      <WrappingText variant="caption" color="text.secondary" display="block">
-                        {sample.sample_id}
-                      </WrappingText>
-                    </Box>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" display="block">
-                        Position
-                      </Typography>
-                      <WrappingText variant="caption" color="text.secondary" display="block">
-                        {slot.name}
-                      </WrappingText>
-                    </Box>
+                  <Stack spacing={0.5}>
+                    <WrappingText variant="caption" color="text.secondary" display="block">
+                      {sample.sample_id}
+                    </WrappingText>
+                    <WrappingText variant="caption" color="text.secondary" display="block">
+                      {slot.name}
+                    </WrappingText>
                     {ownership && (
-                      <Box>
-                        <Typography variant="caption" color="text.secondary" display="block">
-                          Context
-                        </Typography>
-                        <WrappingText variant="caption" color="text.secondary" display="block">
-                          {ownership}
-                        </WrappingText>
-                      </Box>
+                      <WrappingText variant="caption" color="text.secondary" display="block">
+                        {ownership}
+                      </WrappingText>
                     )}
                     {sample.tags?.length > 0 && (
-                      <Box>
-                        <Typography variant="caption" color="text.secondary" display="block">
-                          Tags
-                        </Typography>
-                        <WrappingText variant="caption" color="text.secondary" display="block">
-                          {sample.tags.join(" · ")}
-                        </WrappingText>
-                      </Box>
+                      <WrappingText variant="caption" color="text.secondary" display="block">
+                        {sample.tags.join(" · ")}
+                      </WrappingText>
                     )}
                     <Button
                       size="small"
                       onClick={() => onShowSample(sample)}
-                      sx={{ px: 0, alignSelf: "flex-start", textTransform: "none" }}
+                      sx={{
+                        px: 0,
+                        alignSelf: "flex-start",
+                        textTransform: "none",
+                        minHeight: 0,
+                        py: 0,
+                        fontSize: "0.7rem",
+                      }}
                     >
                       History
                     </Button>
@@ -506,25 +535,27 @@ function SlotCard({
               </Collapse>
             </Box>
           ) : (
-            <Typography variant="body2" color="text.secondary">
-              No sample present.
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ lineHeight: 1.2, minHeight: "1.2em" }}
+            >
+              {slot.blocked ? (slot.blocked_reason || "Blocked") : "Empty"}
             </Typography>
           )}
 
           {slot.locked_by_task_id && !occupied && (
-            <WrappingText variant="caption" color="text.secondary">
-              Locked by task {slot.locked_by_task_id}
-            </WrappingText>
+            <TruncatedLine variant="caption" color="text.secondary">
+              Locked
+            </TruncatedLine>
           )}
 
-          <Box sx={{ flexGrow: 1 }} />
-          <Stack spacing={0.75}>
+          <Stack direction="row" spacing={0.5} sx={{ mt: "auto", pt: 0.25 }}>
             {slot.blocked ? (
               <Button
                 size="small"
                 variant="outlined"
                 color="error"
-                fullWidth
                 onClick={() => onUnblock(slot.name)}
                 disabled={!canToggleBlock}
                 title={
@@ -532,6 +563,14 @@ function SlotCard({
                     ? "Position is locked by a task; release the lock before changing block state."
                     : undefined
                 }
+                sx={{
+                  flex: 1,
+                  minWidth: 0,
+                  px: 0.4,
+                  py: 0.25,
+                  fontSize: "0.7rem",
+                  lineHeight: 1.25,
+                }}
               >
                 Unblock
               </Button>
@@ -540,7 +579,6 @@ function SlotCard({
                 size="small"
                 variant="outlined"
                 color="warning"
-                fullWidth
                 onClick={() => onBlock(slot.name)}
                 disabled={!canToggleBlock}
                 title={
@@ -548,6 +586,14 @@ function SlotCard({
                     ? "Position is locked by a task; release the lock before changing block state."
                     : undefined
                 }
+                sx={{
+                  flex: 1,
+                  minWidth: 0,
+                  px: 0.4,
+                  py: 0.25,
+                  fontSize: "0.7rem",
+                  lineHeight: 1.25,
+                }}
               >
                 Block
               </Button>
@@ -555,7 +601,6 @@ function SlotCard({
             <Button
               size="small"
               variant="outlined"
-              fullWidth
               onClick={() => onClear(slot.name)}
               disabled={clearBlocked}
               title={
@@ -563,6 +608,14 @@ function SlotCard({
                   ? clearDisabledReason || "Lab is not idle"
                   : undefined
               }
+              sx={{
+                flex: 1,
+                minWidth: 0,
+                px: 0.4,
+                py: 0.25,
+                fontSize: "0.7rem",
+                lineHeight: 1.25,
+              }}
             >
               Clear
             </Button>
@@ -648,9 +701,9 @@ function DeviceOccupancyRow({
                 {Object.entries(rack.slot_groups).map(([groupName, slots]) => (
                   <Box key={groupName}>
                     <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                      {groupName}
+                      {formatSlotGroupTitle(groupName)}
                     </Typography>
-                    <SlotGrid>
+                    <SlotGrid $columns={slotGridColumns(rack.device_name, groupName)}>
                       {slots.map((slot) => (
                         <SlotCard
                           key={slot.name}
@@ -857,15 +910,8 @@ function SamplePositions() {
   };
 
   const handleBlock = async (position) => {
-    const reason = window.prompt(
-      `Optional reason for blocking ${position} (leave empty for none):`,
-      ""
-    );
-    if (reason === null) {
-      return;
-    }
     const res = await block_sample_position(position, {
-      reason: reason.trim() || null,
+      reason: "Blocked by the user through the UI",
     });
     const result = await res.json();
     if (result.status === "success") {

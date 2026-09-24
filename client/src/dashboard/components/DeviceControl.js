@@ -537,8 +537,7 @@ function FurnaceDoorCard({
   statusChip,
   claimChip,
 }) {
-  const [temperature, setTemperature] = useState(null);
-  const [isRunning, setIsRunning] = useState(null);
+  const [liveStatus, setLiveStatus] = useState(null);
   const [statusError, setStatusError] = useState('');
   const [statusLoading, setStatusLoading] = useState(false);
 
@@ -546,6 +545,7 @@ function FurnaceDoorCard({
   const canClaim = Boolean(device.claimable);
   const openCommand = findCommand(device, 'open_door');
   const closeCommand = findCommand(device, 'close_door');
+  const isRunning = liveStatus == null ? null : Boolean(liveStatus.is_running);
   const doorBlocked = isRunning === true;
   const openDisabled = (
     !isClaimedHere
@@ -562,18 +562,16 @@ function FurnaceDoorCard({
   const refreshStatus = async () => {
     setStatusLoading(true);
     try {
-      const [tempResponse, runningResponse] = await Promise.all([
-        execute_device_control_command(device.device_name, 'get_temperature', null, {}),
-        execute_device_control_command(device.device_name, 'is_running', null, {}),
-      ]);
-      if (tempResponse.status !== 'success') {
-        throw new Error(tempResponse.errors || 'Failed to read temperature.');
+      const response = await execute_device_control_command(
+        device.device_name,
+        'get_live_status',
+        null,
+        {},
+      );
+      if (response.status !== 'success') {
+        throw new Error(response.errors || 'Failed to read furnace status.');
       }
-      if (runningResponse.status !== 'success') {
-        throw new Error(runningResponse.errors || 'Failed to read heating state.');
-      }
-      setTemperature(tempResponse.data?.result);
-      setIsRunning(Boolean(runningResponse.data?.result));
+      setLiveStatus(response.data?.result || null);
       setStatusError('');
     } catch (statusErr) {
       setStatusError(statusErr.message || 'Failed to read furnace status.');
@@ -588,12 +586,22 @@ function FurnaceDoorCard({
     return () => window.clearInterval(intervalId);
   }, [device.device_name]);
 
+  const temperature = liveStatus?.temperature;
+  const setpoint = liveStatus?.setpoint;
+  const programMode = liveStatus?.program_mode;
+  const doorOpen = liveStatus?.door_open;
   const tempLabel = temperature == null || temperature === ''
     ? '—'
     : `${temperature} °C`;
+  const setpointLabel = setpoint == null || setpoint === ''
+    ? '—'
+    : `${setpoint} °C`;
   const heatLabel = isRunning == null
     ? 'Checking…'
     : (isRunning ? 'Heating / too hot — open blocked' : 'Cool enough to open');
+  const doorLabel = doorOpen == null
+    ? '—'
+    : (doorOpen ? 'Open' : 'Closed');
 
   return (
     <Card
@@ -624,7 +632,20 @@ function FurnaceDoorCard({
 
           <Box>
             <Typography variant="body2" sx={{ color: PAGE_ACCENTS.text }}>
-              <strong>Temperature:</strong> {statusLoading && temperature == null ? '…' : tempLabel}
+              <strong>Temperature:</strong>{' '}
+              {statusLoading && liveStatus == null ? '…' : tempLabel}
+            </Typography>
+            <Typography variant="body2" sx={{ color: PAGE_ACCENTS.text }}>
+              <strong>Setpoint:</strong>{' '}
+              {statusLoading && liveStatus == null ? '…' : setpointLabel}
+            </Typography>
+            <Typography variant="body2" sx={{ color: PAGE_ACCENTS.text }}>
+              <strong>Program:</strong>{' '}
+              {statusLoading && liveStatus == null ? '…' : (programMode || '—')}
+            </Typography>
+            <Typography variant="body2" sx={{ color: PAGE_ACCENTS.text }}>
+              <strong>Door:</strong>{' '}
+              {statusLoading && liveStatus == null ? '…' : doorLabel}
             </Typography>
             <Typography
               variant="body2"
@@ -681,7 +702,7 @@ function FurnaceDoorCard({
               disabled={statusLoading}
               onClick={refreshStatus}
             >
-              Refresh T
+              Refresh
             </Button>
           </Stack>
 
