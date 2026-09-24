@@ -164,7 +164,14 @@ def test_slot_summary_counts():
             ]
         }
     )
-    assert summary == {"occupied": 2, "locked": 1, "in_transit": 1, "empty": 1}
+    assert summary == {
+        "occupied": 2,
+        "locked": 1,
+        "in_transit": 1,
+        "empty": 1,
+        "slot_count": 4,
+        "blocked_count": 0,
+    }
 
 
 def test_campaign_and_ownership_fields():

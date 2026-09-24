@@ -7,6 +7,11 @@ import {
   CardContent,
   Chip,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Divider,
   FormControl,
   InputLabel,
@@ -39,6 +44,26 @@ const PAGE_ACCENTS = {
   warningBg: '#f7efe6',
   warningText: '#7a5f3f',
 };
+
+const DEMO_ACCENTS = {
+  border: '#c62828',
+  shell: '#fdecec',
+  title: '#b71c1c',
+  text: '#1a1a1a',
+  muted: '#5f3a3a',
+  chipBg: '#f8d7da',
+  chipText: '#8a1f1f',
+};
+
+const DEMO_CONFIRM_COPY = (
+  'This DEMO path moves Alfred on the Labman ↔ BFT route without taking Labman '
+  + 'indexing-rack control and without polling Labman.\n\n'
+  + 'Before you continue, confirm that:\n'
+  + '• the chosen Labman quadrant is already oriented toward the opening,\n'
+  + '• Labman is not moving that quadrant / indexing rack,\n'
+  + '• the physical subrack / crucibles match the slots you selected.\n\n'
+  + 'If any of that is unsure, Cancel and use the normal transfer instead.'
+);
 
 function prettyJson(value) {
   if (value === undefined || value === null || value === '') {
@@ -102,6 +127,7 @@ function MobileRobotControl() {
   const [forms, setForms] = useState({});
   const [pending, setPending] = useState({});
   const [results, setResults] = useState({});
+  const [demoConfirmSegment, setDemoConfirmSegment] = useState(null);
 
   const refreshCatalog = async ({ showSpinner = false } = {}) => {
     if (showSpinner) {
@@ -228,29 +254,32 @@ function MobileRobotControl() {
     }
   };
 
-  const orderedSegments = useMemo(() => segments, [segments]);
+  const requestRun = (segment) => {
+    if (segment.demo) {
+      setDemoConfirmSegment(segment);
+      return;
+    }
+    handleRun(segment);
+  };
 
-  return (
-    <StyledMobileRobotControlDiv>
-      <Stack spacing={2.5}>
-        <Box>
-          <Typography variant="h5">Mobile Robot Control</Typography>
-          <Typography variant="body2" color="text.secondary">
-            LABMAN ↔ BFT crucible transfers through AlabOS. Each direction builds a small batch
-            (Starting → Moving → optional Ending) so the mobile robot executes the correct
-            program legs. DASH hops are Prometheus, on BFT Control.
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Preview first to confirm source and destination positions, then run to submit directly
-            to AlabOS. After Run, check User Input Requests — Starting/Ending prompts must be
-            answered before the robot moves.
-          </Typography>
-        </Box>
+  const confirmDemoRun = () => {
+    const segment = demoConfirmSegment;
+    setDemoConfirmSegment(null);
+    if (segment) {
+      handleRun(segment);
+    }
+  };
 
-        {error && <Alert severity="error">{error}</Alert>}
-        {loading && <CircularProgress size={28} />}
+  const normalSegments = useMemo(
+    () => segments.filter((segment) => !segment.demo),
+    [segments],
+  );
+  const demoSegments = useMemo(
+    () => segments.filter((segment) => Boolean(segment.demo)),
+    [segments],
+  );
 
-        {orderedSegments.map((segment) => {
+  const renderSegmentCard = (segment) => {
           const form = forms[segment.id] || defaultFormState(segment);
           const slotField = slotFieldName(segment);
           const slotLabel = segment.params?.[slotField]?.label || 'Slots';
@@ -261,30 +290,40 @@ function MobileRobotControl() {
           const result = results[segment.id];
           const isPreviewing = pending[segment.id]?.preview;
           const isRunning = pending[segment.id]?.run;
+          const accents = segment.demo ? DEMO_ACCENTS : PAGE_ACCENTS;
 
           return (
-            <Card key={segment.id} variant="outlined" sx={{ borderColor: PAGE_ACCENTS.border }}>
+            <Card
+              key={segment.id}
+              variant="outlined"
+              sx={{
+                borderColor: accents.border,
+                backgroundColor: segment.demo ? DEMO_ACCENTS.shell : 'inherit',
+              }}
+            >
               <CardContent>
                 <Stack spacing={2}>
                   <Stack direction={{ xs: 'column', md: 'row' }} justifyContent="space-between" spacing={1.5}>
                     <Box>
-                      <Typography variant="h6" sx={{ color: PAGE_ACCENTS.title }}>
+                      <Typography variant="h6" sx={{ color: accents.title }}>
                         {segment.label}
                       </Typography>
-                      <Typography variant="body2" sx={{ color: PAGE_ACCENTS.muted }}>
+                      <Typography variant="body2" sx={{ color: accents.muted }}>
                         {segment.source_station} → {segment.destination_station}
                       </Typography>
-                      <Typography variant="body2" sx={{ color: PAGE_ACCENTS.text, mt: 0.5 }}>
+                      <Typography variant="body2" sx={{ color: accents.text, mt: 0.5 }}>
                         {segment.description}
                       </Typography>
                     </Box>
                     <Chip
                       size="small"
-                      label={`${segment.source_station} → ${segment.destination_station}`}
+                      label={segment.demo
+                        ? `DEMO · ${segment.source_station} → ${segment.destination_station}`
+                        : `${segment.source_station} → ${segment.destination_station}`}
                       sx={{
                         width: 'fit-content',
-                        backgroundColor: PAGE_ACCENTS.shell,
-                        color: PAGE_ACCENTS.text,
+                        backgroundColor: segment.demo ? DEMO_ACCENTS.chipBg : PAGE_ACCENTS.shell,
+                        color: segment.demo ? DEMO_ACCENTS.chipText : PAGE_ACCENTS.text,
                         fontWeight: 600,
                       }}
                     />
@@ -399,15 +438,17 @@ function MobileRobotControl() {
                       variant="outlined"
                       disabled={isPreviewing}
                       onClick={() => handlePreview(segment)}
+                      color={segment.demo ? 'error' : 'primary'}
                     >
                       {isPreviewing ? 'Previewing…' : 'Preview'}
                     </Button>
                     <Button
                       variant="contained"
                       disabled={isRunning}
-                      onClick={() => handleRun(segment)}
+                      onClick={() => requestRun(segment)}
+                      color={segment.demo ? 'error' : 'primary'}
                     >
-                      {isRunning ? 'Submitting…' : 'Run'}
+                      {isRunning ? 'Submitting…' : (segment.demo ? 'Run DEMO' : 'Run')}
                     </Button>
                   </Stack>
 
@@ -419,7 +460,7 @@ function MobileRobotControl() {
                       </Typography>
                       <Stack spacing={0.75}>
                         {result.payload.samples.map((sample) => (
-                          <Typography key={sample.sample_name} variant="body2" sx={{ color: PAGE_ACCENTS.text }}>
+                          <Typography key={sample.sample_name} variant="body2" sx={{ color: accents.text }}>
                             <strong>{sample.sample_name}</strong>
                             {' — '}
                             {sample.start_position}
@@ -445,8 +486,76 @@ function MobileRobotControl() {
               </CardContent>
             </Card>
           );
-        })}
+  };
+
+  return (
+    <StyledMobileRobotControlDiv>
+      <Stack spacing={2.5}>
+        <Box>
+          <Typography variant="h5">Mobile Robot Control</Typography>
+          <Typography variant="body2" color="text.secondary">
+            LABMAN ↔ BFT crucible transfers through AlabOS. Each direction builds a small batch
+            (Starting → Moving → optional Ending) so the mobile robot executes the correct
+            program legs. DASH hops are Prometheus, on BFT Control.
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Preview first to confirm source and destination positions, then run to submit directly
+            to AlabOS. After Run, check User Input Requests — Starting/Ending prompts must be
+            answered before the robot moves.
+          </Typography>
+        </Box>
+
+        {error && <Alert severity="error">{error}</Alert>}
+        {loading && <CircularProgress size={28} />}
+
+        {normalSegments.map((segment) => renderSegmentCard(segment))}
+
+        {demoSegments.length > 0 && (
+          <Box
+            sx={{
+              mt: 1,
+              p: 2,
+              borderRadius: '12px',
+              border: `1px solid ${DEMO_ACCENTS.border}`,
+              backgroundColor: DEMO_ACCENTS.shell,
+            }}
+          >
+            <Typography variant="h6" sx={{ color: DEMO_ACCENTS.title, fontWeight: 700 }}>
+              DEMO — no Labman control
+            </Typography>
+            <Typography variant="body2" sx={{ color: DEMO_ACCENTS.text, mt: 0.5, mb: 2 }}>
+              These paths run the same Alfred Labman ↔ BFT motion without requesting Labman
+              indexing-rack control or polling Labman. Use only when you have already staged
+              the quadrant at the opening yourself.
+            </Typography>
+            <Stack spacing={2}>
+              {demoSegments.map((segment) => renderSegmentCard(segment))}
+            </Stack>
+          </Box>
+        )}
       </Stack>
+
+      <Dialog
+        open={Boolean(demoConfirmSegment)}
+        onClose={() => setDemoConfirmSegment(null)}
+      >
+        <DialogTitle sx={{ color: DEMO_ACCENTS.title }}>
+          Run DEMO without Labman control?
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText component="div" sx={{ whiteSpace: 'pre-wrap', color: DEMO_ACCENTS.text }}>
+            {demoConfirmSegment
+              ? `${demoConfirmSegment.label}\n\n${DEMO_CONFIRM_COPY}`
+              : DEMO_CONFIRM_COPY}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDemoConfirmSegment(null)}>Cancel</Button>
+          <Button onClick={confirmDemoRun} color="error" variant="contained">
+            I understand — run DEMO
+          </Button>
+        </DialogActions>
+      </Dialog>
     </StyledMobileRobotControlDiv>
   );
 }

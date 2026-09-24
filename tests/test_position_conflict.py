@@ -6,6 +6,7 @@ from alab_management.dashboard.position_conflict import (
     CLEAR_POSITION_CONFLICT_ACTION,
     CLEAR_POSITIONS_OPTION,
     KEEP_WAITING_OPTION,
+    UNBLOCK_POSITIONS_OPTION,
     clear_position_conflict_blockers,
     ensure_position_conflict_user_input,
     handle_position_conflict_user_input_response,
@@ -41,6 +42,8 @@ def _exact_occupied_diagnosis():
                 "task_id": None,
             }
         ],
+        "blocked_blockers": [],
+        "allow_unblock_blocked": False,
     }
 
 
@@ -65,6 +68,44 @@ def _prefix_shortage_diagnosis():
         ],
         "allow_clear": False,
         "clearable_blockers": [],
+        "blocked_blockers": [],
+        "allow_unblock_blocked": False,
+    }
+
+
+def _blocked_shortage_diagnosis():
+    return {
+        "shortages": [
+            {
+                "prefix": "input_rack/slot",
+                "exact": False,
+                "needed": 1,
+                "available": 0,
+                "blockers": [
+                    {
+                        "position": "input_rack/slot/1",
+                        "reason": "BLOCKED",
+                        "sample_id": None,
+                        "sample_name": None,
+                        "task_id": None,
+                        "blocked_reason": "all jammed",
+                    }
+                ],
+            }
+        ],
+        "allow_clear": False,
+        "clearable_blockers": [],
+        "blocked_blockers": [
+            {
+                "position": "input_rack/slot/1",
+                "reason": "BLOCKED",
+                "sample_id": None,
+                "sample_name": None,
+                "task_id": None,
+                "blocked_reason": "all jammed",
+            }
+        ],
+        "allow_unblock_blocked": True,
     }
 
 
@@ -256,3 +297,52 @@ def test_ensure_skips_empty_diagnosis():
             },
         )
     insert_mock.assert_not_called()
+
+
+def test_ensure_position_conflict_offers_unblock_for_blocked():
+    insert_mock = MagicMock()
+    with patch(
+        "alab_management.dashboard.position_conflict.user_input_view.get_pending_request_by_context",
+        return_value=None,
+    ), patch(
+        "alab_management.dashboard.position_conflict.user_input_view.insert_request",
+        insert_mock,
+    ):
+        ensure_position_conflict_user_input(
+            task_id=ObjectId(),
+            resource_request_id=ObjectId(),
+            diagnosis=_blocked_shortage_diagnosis(),
+        )
+
+    kwargs = insert_mock.call_args.kwargs
+    assert kwargs["options"] == [UNBLOCK_POSITIONS_OPTION, KEEP_WAITING_OPTION]
+    assert kwargs["request_context_extra"]["allow_unblock_blocked"] is True
+    assert len(kwargs["request_context_extra"]["blocked_blockers"]) == 1
+    assert "operator-blocked" in kwargs["prompt"]
+    assert "blocked (all jammed)" in kwargs["prompt"]
+
+
+def test_handle_unblock_calls_unblock_blockers():
+    unblock_mock = MagicMock()
+    blockers = [
+        {
+            "position": "input_rack/slot/1",
+            "reason": "BLOCKED",
+            "blocked_reason": "all jammed",
+        }
+    ]
+    request_doc = {
+        "request_context": {
+            "action": CLEAR_POSITION_CONFLICT_ACTION,
+            "allow_unblock_blocked": True,
+            "blocked_blockers": blockers,
+        }
+    }
+    with patch(
+        "alab_management.dashboard.position_conflict.unblock_position_conflict_blockers",
+        unblock_mock,
+    ):
+        handle_position_conflict_user_input_response(
+            request_doc, UNBLOCK_POSITIONS_OPTION
+        )
+    unblock_mock.assert_called_once_with(blockers)

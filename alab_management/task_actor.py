@@ -16,6 +16,7 @@ from alab_management.logger import DBLogger
 from alab_management.sample_view import SampleView
 from alab_management.task_view import BaseTask, TaskStatus, TaskView
 from alab_management.task_view.task import TaskCancelledError
+from alab_management.task_view.wait_messages import WORKER_QUEUE_MESSAGE
 from alab_management.utils.data_objects import get_rabbitmq_broker
 from alab_management.utils.error_context import format_error_report, get_error_origin
 from alab_management.utils.logger import configure_logging
@@ -140,6 +141,8 @@ def run_task(task_id_str: str):
 
     try:
         task_view.update_status(task_id=task_id, status=TaskStatus.RUNNING)
+        if (task_entry.get("message") or "").strip() == WORKER_QUEUE_MESSAGE:
+            task_view.set_message(task_id=task_id, message="")
         for sample in task_entry["samples"]:
             sample_view.update_sample_task_id(
                 task_id=task_id, sample_id=sample["sample_id"]

@@ -10,6 +10,7 @@ from alab_management.dashboard.lab_views import sample_view, user_input_view
 
 CLEAR_POSITION_CONFLICT_ACTION = "clear_position_conflict"
 CLEAR_POSITIONS_OPTION = "Clear conflicting position(s)"
+UNBLOCK_POSITIONS_OPTION = "Unblock blocked position(s)"
 KEEP_WAITING_OPTION = "Keep waiting"
 _MAX_BLOCKERS_IN_PROMPT = 8
 
@@ -24,15 +25,28 @@ def _format_blocker(blocker: dict[str, Any]) -> str:
     if reason == "LOCKED":
         task_id = blocker.get("task_id") or "?"
         return f"{position} locked by task {task_id}"
+    if reason == "BLOCKED":
+        blocked_reason = blocker.get("blocked_reason")
+        if blocked_reason:
+            return f"{position} blocked ({blocked_reason})"
+        return f"{position} blocked"
     return f"{position} ({reason})"
 
 
 def _build_prompt(diagnosis: dict[str, Any]) -> str:
     shortages = diagnosis.get("shortages") or []
-    lines: list[str] = [
-        "An automated experiment task is waiting for sample position(s) that "
-        "are not free in software (leftover occupancy or a lock).",
-    ]
+    has_blocked = bool(diagnosis.get("allow_unblock_blocked"))
+    lines: list[str] = []
+    if has_blocked:
+        lines.append(
+            "An automated experiment task is waiting for sample position(s) "
+            "that are operator-blocked (or also occupied/locked)."
+        )
+    else:
+        lines.append(
+            "An automated experiment task is waiting for sample position(s) that "
+            "are not free in software (leftover occupancy or a lock)."
+        )
 
     for shortage in shortages:
         prefix = shortage.get("prefix") or "?"
@@ -51,12 +65,17 @@ def _build_prompt(diagnosis: dict[str, Any]) -> str:
         if remaining > 0:
             lines.append(f"  · …and {remaining} more blocker(s).")
 
+    if has_blocked:
+        lines.append(
+            "Unblock the blocked position(s) if they were blocked by mistake "
+            "(for example an entire device), or keep waiting."
+        )
     if diagnosis.get("allow_clear"):
         lines.append(
             "Clear the conflicting position(s) in software so the run can "
             "continue, or keep waiting."
         )
-    else:
+    elif not has_blocked:
         lines.append(
             "Use Sample Positions (per-slot Clear) or Lab Settings → Clear "
             "occupancy if the bench matches empty software state. "
@@ -83,11 +102,29 @@ def clear_position_conflict_blockers(blockers: list[dict[str, Any]]):
             sample_view.release_sample_position(position)
 
 
+def unblock_position_conflict_blockers(blockers: list[dict[str, Any]]):
+    """Clear the operator ``blocked`` flag on listed positions (not occupancy)."""
+    for blocker in blockers:
+        position = blocker.get("position")
+        if not position:
+            continue
+        try:
+            sample_view.unblock_sample_position(position)
+        except ValueError:
+            # Locked-by-task: leave blocked; operator must release lock first.
+            continue
+
+
 def handle_position_conflict_user_input_response(
     request_doc: dict[str, Any], response: str
 ):
     context = request_doc.get("request_context") or {}
     if context.get("action") != CLEAR_POSITION_CONFLICT_ACTION:
+        return
+    if response == UNBLOCK_POSITIONS_OPTION:
+        if not context.get("allow_unblock_blocked"):
+            return
+        unblock_position_conflict_blockers(context.get("blocked_blockers") or [])
         return
     if response != CLEAR_POSITIONS_OPTION:
         return
@@ -118,11 +155,14 @@ def ensure_position_conflict_user_input(
         return
 
     allow_clear = bool(diagnosis.get("allow_clear"))
-    options = (
-        [CLEAR_POSITIONS_OPTION, KEEP_WAITING_OPTION]
-        if allow_clear
-        else [KEEP_WAITING_OPTION]
-    )
+    allow_unblock_blocked = bool(diagnosis.get("allow_unblock_blocked"))
+    options: list[str] = []
+    if allow_unblock_blocked:
+        options.append(UNBLOCK_POSITIONS_OPTION)
+    if allow_clear:
+        options.append(CLEAR_POSITIONS_OPTION)
+    options.append(KEEP_WAITING_OPTION)
+
     user_input_view.insert_request(
         task_id=task_id,
         prompt=_build_prompt(diagnosis),
@@ -132,9 +172,15 @@ def ensure_position_conflict_user_input(
             "action": CLEAR_POSITION_CONFLICT_ACTION,
             "resource_request_id": str(resource_request_id),
             "allow_clear": allow_clear,
+            "allow_unblock_blocked": allow_unblock_blocked,
             "blockers": (
                 diagnosis.get("clearable_blockers") or []
                 if allow_clear
+                else []
+            ),
+            "blocked_blockers": (
+                diagnosis.get("blocked_blockers") or []
+                if allow_unblock_blocked
                 else []
             ),
         },

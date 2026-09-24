@@ -31,6 +31,38 @@ BLOCKED_COMMANDS: dict[str, set[str]] = {
 
 DEVICE_CATALOG = [
     {
+        "device_name": "BFT_box_a",
+        "label": "Box Furnace A",
+        "description": "Eurotherm box furnace A — door open/close (blocked while hot or heating).",
+        "implementation_status": "implemented",
+        "not_implemented_reason": None,
+        "group": "furnace_doors",
+    },
+    {
+        "device_name": "BFT_box_b",
+        "label": "Box Furnace B",
+        "description": "Eurotherm box furnace B — door open/close (blocked while hot or heating).",
+        "implementation_status": "implemented",
+        "not_implemented_reason": None,
+        "group": "furnace_doors",
+    },
+    {
+        "device_name": "BFT_box_c",
+        "label": "Box Furnace C",
+        "description": "Eurotherm box furnace C — door open/close (blocked while hot or heating).",
+        "implementation_status": "implemented",
+        "not_implemented_reason": None,
+        "group": "furnace_doors",
+    },
+    {
+        "device_name": "BFT_box_d",
+        "label": "Box Furnace D",
+        "description": "Eurotherm box furnace D — door open/close (blocked while hot or heating).",
+        "implementation_status": "implemented",
+        "not_implemented_reason": None,
+        "group": "furnace_doors",
+    },
+    {
         "device_name": "DASH_capper",
         "label": "Capper",
         "description": "PLC-backed capper with bottom gripper and spin motor.",
@@ -81,7 +113,38 @@ DEVICE_CATALOG = [
     },
 ]
 
+_BOX_FURNACE_COMMANDS = {
+    "get_temperature": {
+        "label": "Get Temperature",
+        "mode": "read",
+        "params": {},
+        "target_method": "get_temperature",
+    },
+    "is_running": {
+        "label": "Is Heating / Too Hot?",
+        "mode": "read",
+        "params": {},
+        "target_method": "is_running",
+    },
+    "open_door": {
+        "label": "Open Door",
+        "mode": "actuate",
+        "params": {},
+        "target_method": "open_door",
+    },
+    "close_door": {
+        "label": "Close Door",
+        "mode": "actuate",
+        "params": {},
+        "target_method": "close_door",
+    },
+}
+
 COMMAND_REGISTRY = {
+    "BFT_box_a": dict(_BOX_FURNACE_COMMANDS),
+    "BFT_box_b": dict(_BOX_FURNACE_COMMANDS),
+    "BFT_box_c": dict(_BOX_FURNACE_COMMANDS),
+    "BFT_box_d": dict(_BOX_FURNACE_COMMANDS),
     "DASH_capper": {
         "probe_plc": {
             "label": "Probe PLC",

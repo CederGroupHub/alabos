@@ -317,8 +317,13 @@ def _slot_summary(slot_groups: dict[str, list[dict[str, Any]]]) -> dict[str, int
     locked = 0
     in_transit = 0
     empty = 0
+    blocked = 0
+    slot_count = 0
     for slots in slot_groups.values():
         for slot in slots:
+            slot_count += 1
+            if slot.get("blocked"):
+                blocked += 1
             if slot.get("sample") and slot["sample"].get("in_transit"):
                 in_transit += 1
             if slot["status"] == "OCCUPIED":
@@ -332,6 +337,8 @@ def _slot_summary(slot_groups: dict[str, list[dict[str, Any]]]) -> dict[str, int
         "locked": locked,
         "in_transit": in_transit,
         "empty": empty,
+        "slot_count": slot_count,
+        "blocked_count": blocked,
     }
 
 
@@ -350,12 +357,23 @@ def _rack_payload(device_name: str) -> dict[str, Any]:
 
         sample = sample_view.get_sample_by_position(position_name)
         status, task_id = sample_view.get_sample_position_status(position_name)
+        position_doc = sample_view.get_sample_position(position_name) or {}
+        blocked = bool(position_doc.get("blocked"))
+        blocked_at = position_doc.get("blocked_at")
         slot_groups.setdefault(position_type, []).append(
             {
                 "name": position_name,
                 "slot_number": _position_slot_number(position_name),
                 "status": status.name,
                 "locked_by_task_id": str(task_id) if task_id else None,
+                "blocked": blocked,
+                "blocked_reason": position_doc.get("blocked_reason"),
+                "blocked_at": (
+                    blocked_at.isoformat()
+                    if hasattr(blocked_at, "isoformat")
+                    else blocked_at
+                ),
+                "can_toggle_block": task_id is None,
                 "sample": _sample_to_dict(sample),
             }
         )
@@ -363,11 +381,17 @@ def _rack_payload(device_name: str) -> dict[str, Any]:
     for entries in slot_groups.values():
         entries.sort(key=lambda entry: entry["slot_number"])
 
+    summary = _slot_summary(slot_groups)
+    slot_count = summary["slot_count"]
+    blocked_count = summary["blocked_count"]
     return {
         "device_name": device_name,
         "display_name": _display_name(device_name),
         "slot_groups": slot_groups,
-        "summary": _slot_summary(slot_groups),
+        "summary": summary,
+        "slot_count": slot_count,
+        "blocked_count": blocked_count,
+        "all_blocked": slot_count > 0 and blocked_count == slot_count,
     }
 
 
@@ -514,3 +538,51 @@ def clear_position():
         return {"status": "error", "errors": str(exception)}, 400
 
     return {"status": "success"}
+
+
+@sample_positions_bp.route("/block", methods=["POST"])
+def block_position():
+    """Mark a sample position blocked so automation will not assign it."""
+    data = request.get_json(force=True)  # type: ignore[arg-type]
+    position = data.get("position")
+    if not position:
+        return {"status": "error", "errors": "Missing required field `position`."}, 400
+
+    reason = data.get("reason")
+    try:
+        sample_view.block_sample_position(position, reason=reason)
+    except ValueError as exception:
+        return {"status": "error", "errors": str(exception)}, 400
+    except Exception as exception:
+        return {"status": "error", "errors": str(exception)}, 400
+
+    return {"status": "success"}
+
+
+@sample_positions_bp.route("/unblock", methods=["POST"])
+def unblock_position():
+    """Clear the operator block on a sample position."""
+    data = request.get_json(force=True)  # type: ignore[arg-type]
+    position = data.get("position")
+    if not position:
+        return {"status": "error", "errors": "Missing required field `position`."}, 400
+
+    try:
+        sample_view.unblock_sample_position(position)
+    except ValueError as exception:
+        return {"status": "error", "errors": str(exception)}, 400
+    except Exception as exception:
+        return {"status": "error", "errors": str(exception)}, 400
+
+    return {"status": "success"}
+
+
+@sample_positions_bp.route("/unblock-all", methods=["POST"])
+def unblock_all_positions():
+    """Clear ``blocked`` on every sample position."""
+    try:
+        count = sample_view.unblock_all_sample_positions()
+    except Exception as exception:
+        return {"status": "error", "errors": str(exception)}, 400
+
+    return {"status": "success", "unblocked_count": count}

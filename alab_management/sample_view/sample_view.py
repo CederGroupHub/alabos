@@ -324,6 +324,79 @@ class SampleView:
             raise ValueError(f"Invalid sample position: {position}")
         return sample_position["task_id"] is not None
 
+    def is_blocked_position(self, position: str) -> bool:
+        """True when the position is operator-blocked from automated allocation."""
+        sample_position = self.get_sample_position(position=position)
+        if sample_position is None:
+            raise ValueError(f"Invalid sample position: {position}")
+        return bool(sample_position.get("blocked"))
+
+    def _require_unlocked_for_block_toggle(self, position: str) -> dict[str, Any]:
+        sample_position = self.get_sample_position(position=position)
+        if sample_position is None:
+            raise ValueError(f"Invalid sample position: {position}")
+        if sample_position.get("task_id") is not None:
+            raise ValueError(
+                "Position is locked by a task; release the lock before changing "
+                "block state."
+            )
+        return sample_position
+
+    def block_sample_position(
+        self, position: str, reason: str | None = None
+    ) -> None:
+        """Mark a sample position blocked so automation will not assign it.
+
+        Rejects when the position has an active task lock. Lab idle is not required.
+        """
+        self._require_unlocked_for_block_toggle(position)
+        reason_text = (reason or "").strip() or None
+        self._sample_positions_collection.update_one(
+            {"name": position},
+            {
+                "$set": {
+                    "blocked": True,
+                    "blocked_reason": reason_text,
+                    "blocked_at": datetime.now(),
+                }
+            },
+        )
+
+    def unblock_sample_position(self, position: str) -> None:
+        """Clear the operator block on a sample position.
+
+        Rejects when the position has an active task lock.
+        """
+        self._require_unlocked_for_block_toggle(position)
+        self._sample_positions_collection.update_one(
+            {"name": position},
+            {
+                "$set": {
+                    "blocked": False,
+                    "blocked_reason": None,
+                    "blocked_at": None,
+                }
+            },
+        )
+
+    def unblock_all_sample_positions(self) -> int:
+        """Clear ``blocked`` on every sample position. Returns how many were updated.
+
+        Does not touch task locks or sample occupancy. Positions that are currently
+        task-locked remain locked but become unblocked for after the lock is released.
+        """
+        result = self._sample_positions_collection.update_many(
+            {"blocked": True},
+            {
+                "$set": {
+                    "blocked": False,
+                    "blocked_reason": None,
+                    "blocked_at": None,
+                }
+            },
+        )
+        return int(result.modified_count)
+
     def get_available_sample_position(
         self, task_id: ObjectId, position_prefix: str, exact_match: bool = False
     ) -> list[dict[str, str | bool]]:
@@ -362,6 +435,8 @@ class SampleView:
         )
         available_sp_names = []
         for sample_position in available_sample_positions:
+            if sample_position.get("blocked"):
+                continue
             status, current_task_id = self.get_sample_position_status(
                 sample_position["name"]
             )
@@ -388,6 +463,8 @@ class SampleView:
         - ``allow_clear``: True only when every shortage is an exact-slot request
           (safe to clear those specific slots from User Input)
         - ``clearable_blockers``: blockers for exact shortages (for Clear action)
+        - ``blocked_blockers``: unique positions with ``blocked`` across shortages
+        - ``allow_unblock_blocked``: True when any shortage is caused by blocked slots
         """
         if exact_positions is None:
             exact_positions = set()
@@ -425,6 +502,21 @@ class SampleView:
             blockers: list[dict[str, Any]] = []
             for sample_position_doc in self._sample_positions_collection.find(query):
                 position_name = sample_position_doc["name"]
+                if sample_position_doc.get("blocked"):
+                    blockers.append(
+                        {
+                            "position": position_name,
+                            "reason": "BLOCKED",
+                            "sample_id": None,
+                            "sample_name": None,
+                            "task_id": None,
+                            "blocked_reason": sample_position_doc.get(
+                                "blocked_reason"
+                            ),
+                        }
+                    )
+                    continue
+
                 status, current_task_id = self.get_sample_position_status(
                     position_name
                 )
@@ -465,16 +557,32 @@ class SampleView:
             seen: set[str] = set()
             for shortage in shortages:
                 for blocker in shortage["blockers"]:
+                    if blocker.get("reason") == "BLOCKED":
+                        continue
                     position_name = blocker["position"]
                     if position_name in seen:
                         continue
                     seen.add(position_name)
                     clearable_blockers.append(blocker)
 
+        blocked_blockers: list[dict[str, Any]] = []
+        blocked_seen: set[str] = set()
+        for shortage in shortages:
+            for blocker in shortage["blockers"]:
+                if blocker.get("reason") != "BLOCKED":
+                    continue
+                position_name = blocker["position"]
+                if position_name in blocked_seen:
+                    continue
+                blocked_seen.add(position_name)
+                blocked_blockers.append(blocker)
+
         return {
             "shortages": shortages,
             "allow_clear": allow_clear,
             "clearable_blockers": clearable_blockers,
+            "blocked_blockers": blocked_blockers,
+            "allow_unblock_blocked": bool(blocked_blockers),
         }
 
     def lock_sample_position(self, task_id: ObjectId, position: str):

@@ -149,6 +149,18 @@ function AppShell() {
             A-Lab
           </Typography>
         </div>
+        <div
+          id="user-input-banner-slot"
+          style={{
+            flex: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            minWidth: 0,
+            padding: "0 16px",
+            alignSelf: "stretch",
+          }}
+        />
         <div style={{ display: "flex", alignItems: "center", gap: 30 }}>
           <LabReadyChip />
           <Tooltip title="Refresh page (Ctrl+R)">

@@ -101,6 +101,31 @@ def _full_traceback(exc: BaseException | None) -> str:
     return traceback.format_exc().strip()
 
 
+def _innermost_exception(exc: BaseException | None) -> BaseException | None:
+    current = exc
+    seen: set[int] = set()
+    while current is not None and id(current) not in seen:
+        seen.add(id(current))
+        nxt = current.__cause__ or current.__context__
+        if nxt is None:
+            return current
+        current = nxt
+    return current
+
+
+def _append_labeled_block(lines: list[str], label: str, exc_type: str, message: str) -> None:
+    """Write a labeled exception as a short type line plus a wrapped message."""
+    type_name = (exc_type or "Error").strip()
+    text = (message or "").strip()
+    if not text:
+        lines.append(f"- {label}: {type_name}")
+        return
+    if text.startswith(f"{type_name}:"):
+        text = text[len(type_name) + 1 :].strip()
+    lines.append(f"- {label}: {type_name}")
+    lines.append(f"    {text}")
+
+
 def format_error_report(
     *,
     exc: BaseException | None = None,
@@ -133,7 +158,15 @@ def format_error_report(
     if task_type:
         title = f"{title} in {task_type}"
     lines.append(f"ERROR: {title}")
-    lines.append(f"- What:  {origin['exc_type']}: {origin['exc_message']}".rstrip())
+    _append_labeled_block(lines, "What", origin["exc_type"], origin["exc_message"])
+
+    if exc is None:
+        _exc_type, exc_value, _tb = sys.exc_info()
+        exc = exc_value
+    root = _innermost_exception(exc)
+    if root is not None and root is not exc:
+        _append_labeled_block(lines, "Cause", type(root).__name__, str(root))
+
     lines.append(f"- Where: {origin['raised_at_str']}")
     if (
         origin["project_frame_str"]
@@ -148,7 +181,7 @@ def format_error_report(
             lines.append(f"- Stage: {stage_text.splitlines()[0]}")
 
     if task_type or task_id is not None:
-        lines.append(f"- Task:  {task_type or '?'} (id: {task_id})")
+        lines.append(f"- Task: {task_type or '?'} (id: {task_id})")
 
     if samples:
         sample_list = ", ".join(str(s) for s in samples)

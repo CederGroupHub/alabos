@@ -9,6 +9,8 @@ from typing import Any
 from bson import ObjectId
 
 from alab_management.task_view.task_enums import TaskStatus
+from alab_management.task_view.wait_messages import default_wait_message
+from alab_management.utils.error_context import TRACEBACK_HEADER
 
 LIVE_STATUSES = frozenset(
     {
@@ -50,13 +52,57 @@ def sample_names_from_task(task: dict[str, Any]) -> list[str]:
     return names
 
 
+def short_operator_message(message: str, max_len: int = 180) -> str:
+    """Collapse an error report to one headline for progress columns."""
+    text = (message or "").strip()
+    if not text:
+        return ""
+    if TRACEBACK_HEADER in text:
+        text = text.split(TRACEBACK_HEADER, 1)[0].strip()
+
+    chosen = ""
+    lines = text.splitlines()
+    for index, raw in enumerate(lines):
+        stripped = raw.strip()
+        if not stripped:
+            continue
+        lower = stripped.lower()
+        if lower.startswith("- cause:") or lower.startswith("- what:"):
+            value = stripped.split(":", 1)[1].strip()
+            following: list[str] = []
+            for nxt in lines[index + 1 :]:
+                if nxt.startswith("    ") and nxt.strip():
+                    following.append(nxt.strip())
+                else:
+                    break
+            if following:
+                # New reports put the exception type on the label line and the
+                # readable message on the following indented line(s).
+                value = " ".join(following)
+            if value:
+                chosen = value
+                if lower.startswith("- cause:"):
+                    break
+            continue
+        if stripped.startswith("ERROR:") and not chosen:
+            chosen = stripped[6:].strip()
+
+    if not chosen:
+        chosen = next((line.strip() for line in lines if line.strip()), text)
+
+    chosen = " ".join(chosen.split())
+    if len(chosen) > max_len:
+        return chosen[: max_len - 1] + "…"
+    return chosen
+
+
 def build_task_description(task: dict[str, Any]) -> str:
     """Operator-facing one-liner from type, samples, and live message."""
     parts = [humanize_task_type(str(task.get("type") or "Task"))]
     samples = sample_names_from_task(task)
     if samples:
         parts.append(", ".join(samples))
-    message = (task.get("message") or "").strip()
+    message = short_operator_message(task.get("message") or "")
     if message:
         parts.append(message)
     return " — ".join(parts)
@@ -95,12 +141,16 @@ def _parse_time(value: Any) -> datetime | None:
 def summarize_task(task: dict[str, Any]) -> dict[str, Any]:
     """JSON-friendly task summary for progress_steps / enriched tasks list."""
     task_id = task.get("_id") or task.get("id")
+    status = _status_name(task.get("status"))
+    message = default_wait_message(status, task.get("message") or "")
+    described = dict(task)
+    described["message"] = message
     summary: dict[str, Any] = {
         "id": str(task_id) if task_id is not None else "",
         "type": task.get("type") or "",
-        "status": _status_name(task.get("status")),
-        "description": build_task_description(task),
-        "message": task.get("message") or "",
+        "status": status,
+        "description": build_task_description(described),
+        "message": message,
         "samples": sample_names_from_task(task),
     }
     if task.get("started_at") is not None:

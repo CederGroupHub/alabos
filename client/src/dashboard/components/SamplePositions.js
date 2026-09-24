@@ -34,7 +34,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import styled from 'styled-components';
-import { clear_sample_position, get_lab_idle, get_sample_position_racks } from '../../api_routes';
+import { clear_sample_position, get_lab_idle, get_sample_position_racks, block_sample_position, unblock_sample_position, unblock_all_sample_positions } from '../../api_routes';
 
 const RackContainer = styled.div`
   display: flex;
@@ -94,6 +94,9 @@ function WrappingText({ children, variant = "body2", sx = {}, ...rest }) {
 }
 
 function slotStatusColor(slot) {
+  if (slot.blocked) {
+    return "#fce4ec";
+  }
   if (slot.sample?.in_transit) {
     return "#e3f2fd";
   }
@@ -125,6 +128,9 @@ function formatBadge(summary) {
   }
   if (summary.in_transit) {
     parts.push(`${summary.in_transit} in transit`);
+  }
+  if (summary.blocked_count) {
+    parts.push(`${summary.blocked_count} blocked`);
   }
   return parts.join(" · ");
 }
@@ -345,11 +351,22 @@ function SampleDetailDialog({ open, onClose, sample, onJumpToPosition }) {
   );
 }
 
-function SlotCard({ slot, highlighted, onClear, onShowSample, slotRef, clearDisabled, clearDisabledReason }) {
+function SlotCard({
+  slot,
+  highlighted,
+  onClear,
+  onBlock,
+  onUnblock,
+  onShowSample,
+  slotRef,
+  clearDisabled,
+  clearDisabledReason,
+}) {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const occupied = slot.status === "OCCUPIED";
   const inTransit = Boolean(slot.sample?.in_transit);
   const clearBlocked = !occupied || clearDisabled;
+  const canToggleBlock = slot.can_toggle_block !== false && !slot.locked_by_task_id;
   const sample = slot.sample;
   const ownership = ownershipCaption(sample);
   const shortId = sample?.sample_id
@@ -389,6 +406,7 @@ function SlotCard({ slot, highlighted, onClear, onShowSample, slotRef, clearDisa
               sx={{ minWidth: 0, gap: 0.75 }}
             >
               {inTransit && <Chip label="IN TRANSIT" size="small" color="info" />}
+              {slot.blocked && <Chip label="BLOCKED" size="small" color="error" />}
               <Chip label={slot.status} size="small" />
             </Stack>
           </Stack>
@@ -396,6 +414,12 @@ function SlotCard({ slot, highlighted, onClear, onShowSample, slotRef, clearDisa
           <TruncatedLine variant="caption" color="text.secondary" title={slot.name}>
             {slot.name}
           </TruncatedLine>
+
+          {slot.blocked && slot.blocked_reason && (
+            <WrappingText variant="caption" color="error">
+              {slot.blocked_reason}
+            </WrappingText>
+          )}
 
           {sample ? (
             <Box sx={{ minWidth: 0 }}>
@@ -494,20 +518,55 @@ function SlotCard({ slot, highlighted, onClear, onShowSample, slotRef, clearDisa
           )}
 
           <Box sx={{ flexGrow: 1 }} />
-          <Button
-            size="small"
-            variant="outlined"
-            fullWidth
-            onClick={() => onClear(slot.name)}
-            disabled={clearBlocked}
-            title={
-              occupied && clearDisabled
-                ? clearDisabledReason || "Lab is not idle"
-                : undefined
-            }
-          >
-            Clear
-          </Button>
+          <Stack spacing={0.75}>
+            {slot.blocked ? (
+              <Button
+                size="small"
+                variant="outlined"
+                color="error"
+                fullWidth
+                onClick={() => onUnblock(slot.name)}
+                disabled={!canToggleBlock}
+                title={
+                  !canToggleBlock
+                    ? "Position is locked by a task; release the lock before changing block state."
+                    : undefined
+                }
+              >
+                Unblock
+              </Button>
+            ) : (
+              <Button
+                size="small"
+                variant="outlined"
+                color="warning"
+                fullWidth
+                onClick={() => onBlock(slot.name)}
+                disabled={!canToggleBlock}
+                title={
+                  !canToggleBlock
+                    ? "Position is locked by a task; release the lock before changing block state."
+                    : undefined
+                }
+              >
+                Block
+              </Button>
+            )}
+            <Button
+              size="small"
+              variant="outlined"
+              fullWidth
+              onClick={() => onClear(slot.name)}
+              disabled={clearBlocked}
+              title={
+                occupied && clearDisabled
+                  ? clearDisabledReason || "Lab is not idle"
+                  : undefined
+              }
+            >
+              Clear
+            </Button>
+          </Stack>
         </CardContent>
       </Card>
     </HighlightedSlot>
@@ -521,6 +580,8 @@ function DeviceOccupancyRow({
   highlightedPosition,
   slotRefs,
   onClear,
+  onBlock,
+  onUnblock,
   onShowSample,
   clearDisabled,
   clearDisabledReason,
@@ -529,7 +590,9 @@ function DeviceOccupancyRow({
   const occupiedCount = summary.occupied || 0;
   const hasOccupied = occupiedCount > 0;
   let rowBg;
-  if (hasOccupied) {
+  if (rack.all_blocked) {
+    rowBg = open ? "#f8bbd0" : "#fce4ec";
+  } else if (hasOccupied) {
     // Match OCCUPIED slot tint; slightly stronger when the row is expanded.
     rowBg = open ? "#c8e6c9" : "#e8f5e9";
   } else if (open) {
@@ -577,6 +640,11 @@ function DeviceOccupancyRow({
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ py: 2, px: 1 }}>
               <Stack spacing={2}>
+                {rack.all_blocked && (
+                  <Alert severity="error">
+                    All positions on this device are blocked — automation cannot use it.
+                  </Alert>
+                )}
                 {Object.entries(rack.slot_groups).map(([groupName, slots]) => (
                   <Box key={groupName}>
                     <Typography variant="subtitle1" sx={{ mb: 1 }}>
@@ -596,6 +664,8 @@ function DeviceOccupancyRow({
                             }
                           }}
                           onClear={onClear}
+                          onBlock={onBlock}
+                          onUnblock={onUnblock}
                           onShowSample={onShowSample}
                           clearDisabled={clearDisabled}
                           clearDisabledReason={clearDisabledReason}
@@ -786,6 +856,67 @@ function SamplePositions() {
     }
   };
 
+  const handleBlock = async (position) => {
+    const reason = window.prompt(
+      `Optional reason for blocking ${position} (leave empty for none):`,
+      ""
+    );
+    if (reason === null) {
+      return;
+    }
+    const res = await block_sample_position(position, {
+      reason: reason.trim() || null,
+    });
+    const result = await res.json();
+    if (result.status === "success") {
+      setMessage({ severity: "success", text: `Blocked ${position}.` });
+      refresh();
+    } else {
+      setMessage({
+        severity: "error",
+        text: result.errors || result.reason || "Failed to block position.",
+      });
+    }
+  };
+
+  const handleUnblock = async (position) => {
+    const res = await unblock_sample_position(position);
+    const result = await res.json();
+    if (result.status === "success") {
+      setMessage({ severity: "success", text: `Unblocked ${position}.` });
+      refresh();
+    } else {
+      setMessage({
+        severity: "error",
+        text: result.errors || result.reason || "Failed to unblock position.",
+      });
+    }
+  };
+
+  const handleUnblockAll = async () => {
+    const confirmed = window.confirm(
+      "Unblock all sample positions? This clears operator blocks only — occupancy and task locks are unchanged."
+    );
+    if (!confirmed) {
+      return;
+    }
+    const res = await unblock_all_sample_positions();
+    const result = await res.json();
+    if (result.status === "success") {
+      const count = result.unblocked_count ?? 0;
+      setMessage({
+        severity: "success",
+        text: `Unblocked ${count} position(s).`,
+      });
+      refresh();
+    } else {
+      setMessage({
+        severity: "error",
+        text: result.errors || result.reason || "Failed to unblock all positions.",
+      });
+    }
+  };
+
   return (
     <RackContainer>
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 2 }}>
@@ -794,12 +925,18 @@ function SamplePositions() {
           <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 640 }}>
             Occupancy for devices that can hold powder samples (vials, crucibles, XRD
             holders). Cap-only slots are hidden. Use <b>Clear</b> to free a slot in
-            software when the lab is idle. Initial placement comes from experiment{" "}
+            software when the lab is idle. Use <b>Block</b> to keep automation from
+            assigning a slot (even when empty). Initial placement comes from experiment{" "}
             <b>Starting</b> tasks (notebooks / submission) — Place was removed so GUI
             and scripts do not fight over the same slots.
           </Typography>
         </Box>
-        <Button variant="outlined" onClick={refresh}>Refresh</Button>
+        <Stack direction="row" spacing={1} flexShrink={0}>
+          <Button variant="outlined" color="warning" onClick={handleUnblockAll}>
+            Unblock all positions
+          </Button>
+          <Button variant="outlined" onClick={refresh}>Refresh</Button>
+        </Stack>
       </Box>
 
       {!labIdle && (
@@ -964,6 +1101,8 @@ function SamplePositions() {
                   highlightedPosition={highlightedPosition}
                   slotRefs={slotRefs}
                   onClear={handleClear}
+                  onBlock={handleBlock}
+                  onUnblock={handleUnblock}
                   onShowSample={openSampleHistory}
                   clearDisabled={!labIdle}
                   clearDisabledReason={clearDisabledReason}

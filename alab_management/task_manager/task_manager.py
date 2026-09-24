@@ -13,6 +13,7 @@ from alab_management.lab_view import LabView
 from alab_management.logger import DBLogger
 from alab_management.task_view import TaskCancelledError, TaskView
 from alab_management.task_view.task_enums import CancelingProgress, TaskStatus
+from alab_management.task_view.wait_messages import WORKER_QUEUE_MESSAGE
 from alab_management.utils.module_ops import load_definition
 
 cli_logger = logging.getLogger(__name__)
@@ -155,6 +156,10 @@ class TaskManager:
             )
             self.task_view.update_status(
                 task_id=task_entry["task_id"], status=TaskStatus.INITIATED
+            )
+            self.task_view.set_message(
+                task_id=task_entry["task_id"],
+                message=WORKER_QUEUE_MESSAGE,
             )
             result = run_task.send_with_options(
                 kwargs={"task_id_str": str(task_entry["task_id"])}

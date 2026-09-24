@@ -45,6 +45,14 @@ const HIDDEN_COMMANDS_BY_DEVICE = {
   DASH_capper: new Set(['open_top_gripper', 'close_top_gripper']),
 };
 
+const FURNACE_DOOR_GROUP = 'furnace_doors';
+const FURNACE_STATUS_POLL_MS = 5000;
+
+function isFurnaceDoorDevice(device) {
+  return device?.group === FURNACE_DOOR_GROUP
+    || String(device?.device_name || '').startsWith('BFT_box_');
+}
+
 function visibleCommands(deviceName, commands) {
   const hidden = HIDDEN_COMMANDS_BY_DEVICE[deviceName] || new Set();
   return (commands || []).filter((command) => !hidden.has(command.command_name));
@@ -106,7 +114,16 @@ function DeviceControl() {
   }, []);
 
   const implementedDevices = useMemo(
-    () => catalog.filter((device) => device.implementation_status === 'implemented'),
+    () => catalog.filter(
+      (device) => device.implementation_status === 'implemented' && !isFurnaceDoorDevice(device),
+    ),
+    [catalog],
+  );
+
+  const furnaceDoorDevices = useMemo(
+    () => catalog.filter(
+      (device) => device.implementation_status === 'implemented' && isFurnaceDoorDevice(device),
+    ),
     [catalog],
   );
 
@@ -286,6 +303,54 @@ function DeviceControl() {
         {error && <Alert severity="error">{error}</Alert>}
         {loading && <CircularProgress size={28} />}
 
+        {furnaceDoorDevices.length > 0 && (
+          <Card variant="outlined" sx={{ borderColor: PAGE_ACCENTS.border }}>
+            <CardContent>
+              <Stack spacing={2}>
+                <Box>
+                  <Typography variant="h6" sx={{ color: PAGE_ACCENTS.title }}>
+                    Box furnace doors
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: PAGE_ACCENTS.muted }}>
+                    Open is blocked while a heating program is active or the chamber is still
+                    above the Eurotherm safety temperature (~300&nbsp;°C). Claim the furnace,
+                    then open or close. Close stays available so a door can be shut after loading.
+                  </Typography>
+                </Box>
+                <Stack
+                  direction={{ xs: 'column', md: 'row' }}
+                  spacing={1.5}
+                  sx={{ alignItems: 'stretch' }}
+                >
+                  {furnaceDoorDevices.map((device) => (
+                    <FurnaceDoorCard
+                      key={device.device_name}
+                      device={device}
+                      claimToken={claimTokens[device.device_name]}
+                      pending={pending[device.device_name] || {}}
+                      result={results[device.device_name]}
+                      onClaim={() => handleClaim(device.device_name)}
+                      onRelease={() => handleRelease(device.device_name)}
+                      onCommand={(command) => handleCommand(device.device_name, command)}
+                      statusChip={statusChip(device)}
+                      claimChip={(
+                        <Chip
+                          size="small"
+                          label={device.claim_state}
+                          sx={{
+                            ...claimStateChipStyle(device),
+                            fontWeight: 600,
+                          }}
+                        />
+                      )}
+                    />
+                  ))}
+                </Stack>
+              </Stack>
+            </CardContent>
+          </Card>
+        )}
+
         {implementedDevices.map((device) => {
           const deviceCommands = visibleCommands(device.device_name, device.allowlisted_commands);
           const readCommands = deviceCommands.filter((command) => command.mode === 'read');
@@ -452,6 +517,210 @@ function DeviceControl() {
         </Card>
       </Stack>
     </StyledDeviceControlDiv>
+  );
+}
+
+function findCommand(device, commandName) {
+  return (device.allowlisted_commands || []).find(
+    (command) => command.command_name === commandName,
+  );
+}
+
+function FurnaceDoorCard({
+  device,
+  claimToken,
+  pending,
+  result,
+  onClaim,
+  onRelease,
+  onCommand,
+  statusChip,
+  claimChip,
+}) {
+  const [temperature, setTemperature] = useState(null);
+  const [isRunning, setIsRunning] = useState(null);
+  const [statusError, setStatusError] = useState('');
+  const [statusLoading, setStatusLoading] = useState(false);
+
+  const isClaimedHere = Boolean(claimToken) && claimToken === device.manual_task_id;
+  const canClaim = Boolean(device.claimable);
+  const openCommand = findCommand(device, 'open_door');
+  const closeCommand = findCommand(device, 'close_door');
+  const doorBlocked = isRunning === true;
+  const openDisabled = (
+    !isClaimedHere
+    || doorBlocked
+    || !openCommand
+    || pending[`command:open_door`]
+  );
+  const closeDisabled = (
+    !isClaimedHere
+    || !closeCommand
+    || pending[`command:close_door`]
+  );
+
+  const refreshStatus = async () => {
+    setStatusLoading(true);
+    try {
+      const [tempResponse, runningResponse] = await Promise.all([
+        execute_device_control_command(device.device_name, 'get_temperature', null, {}),
+        execute_device_control_command(device.device_name, 'is_running', null, {}),
+      ]);
+      if (tempResponse.status !== 'success') {
+        throw new Error(tempResponse.errors || 'Failed to read temperature.');
+      }
+      if (runningResponse.status !== 'success') {
+        throw new Error(runningResponse.errors || 'Failed to read heating state.');
+      }
+      setTemperature(tempResponse.data?.result);
+      setIsRunning(Boolean(runningResponse.data?.result));
+      setStatusError('');
+    } catch (statusErr) {
+      setStatusError(statusErr.message || 'Failed to read furnace status.');
+    } finally {
+      setStatusLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    refreshStatus();
+    const intervalId = window.setInterval(refreshStatus, FURNACE_STATUS_POLL_MS);
+    return () => window.clearInterval(intervalId);
+  }, [device.device_name]);
+
+  const tempLabel = temperature == null || temperature === ''
+    ? '—'
+    : `${temperature} °C`;
+  const heatLabel = isRunning == null
+    ? 'Checking…'
+    : (isRunning ? 'Heating / too hot — open blocked' : 'Cool enough to open');
+
+  return (
+    <Card
+      variant="outlined"
+      sx={{
+        borderColor: PAGE_ACCENTS.border,
+        background: PAGE_ACCENTS.shell,
+        flex: 1,
+        minWidth: 220,
+      }}
+    >
+      <CardContent>
+        <Stack spacing={1.5}>
+          <Stack direction="row" justifyContent="space-between" spacing={1} alignItems="flex-start">
+            <Box>
+              <Typography variant="subtitle1" sx={{ color: PAGE_ACCENTS.title, fontWeight: 700 }}>
+                {device.label.replace('Box Furnace ', 'Furnace ')}
+              </Typography>
+              <Typography variant="caption" sx={{ color: PAGE_ACCENTS.muted }}>
+                {device.device_name}
+              </Typography>
+            </Box>
+            <Stack direction="row" spacing={0.75} flexWrap="wrap">
+              {statusChip}
+              {claimChip}
+            </Stack>
+          </Stack>
+
+          <Box>
+            <Typography variant="body2" sx={{ color: PAGE_ACCENTS.text }}>
+              <strong>Temperature:</strong> {statusLoading && temperature == null ? '…' : tempLabel}
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                color: doorBlocked ? PAGE_ACCENTS.warningText : PAGE_ACCENTS.successText,
+                mt: 0.25,
+              }}
+            >
+              {heatLabel}
+            </Typography>
+          </Box>
+
+          {device.auto_occupied && (
+            <Alert severity="info" sx={{ py: 0.5 }}>
+              In use by an automated run — cannot claim for manual door control.
+            </Alert>
+          )}
+          {device.auto_release_pending && (
+            <Alert severity="warning" sx={{ py: 0.5 }}>
+              An automated run is waiting. Approve the User Input Request to release.
+            </Alert>
+          )}
+          {statusError && (
+            <Alert severity="warning" sx={{ py: 0.5 }}>
+              {statusError}
+            </Alert>
+          )}
+          {doorBlocked && isClaimedHere && (
+            <Alert severity="warning" sx={{ py: 0.5 }}>
+              Open Door is disabled until the furnace finishes heating and cools below the safety limit.
+            </Alert>
+          )}
+
+          <Stack direction="row" spacing={1} flexWrap="wrap">
+            <Button
+              size="small"
+              variant="contained"
+              disabled={!canClaim || pending.claim}
+              onClick={onClaim}
+            >
+              {pending.claim ? 'Claiming…' : 'Claim'}
+            </Button>
+            <Button
+              size="small"
+              variant="outlined"
+              disabled={!isClaimedHere || pending.release}
+              onClick={onRelease}
+            >
+              {pending.release ? 'Releasing…' : 'Release'}
+            </Button>
+            <Button
+              size="small"
+              variant="outlined"
+              disabled={statusLoading}
+              onClick={refreshStatus}
+            >
+              Refresh T
+            </Button>
+          </Stack>
+
+          <Stack direction="row" spacing={1} flexWrap="wrap">
+            <Button
+              size="small"
+              variant="contained"
+              color="warning"
+              disabled={openDisabled}
+              onClick={async () => {
+                await onCommand(openCommand);
+                await refreshStatus();
+              }}
+            >
+              {pending['command:open_door'] ? 'Opening…' : 'Open door'}
+            </Button>
+            <Button
+              size="small"
+              variant="contained"
+              disabled={closeDisabled}
+              onClick={async () => {
+                await onCommand(closeCommand);
+                await refreshStatus();
+              }}
+            >
+              {pending['command:close_door'] ? 'Closing…' : 'Close door'}
+            </Button>
+          </Stack>
+
+          {result && (
+            <Alert severity={result.severity || 'info'} sx={{ py: 0.5 }}>
+              <pre style={{ margin: 0, whiteSpace: 'pre-wrap', fontSize: 12 }}>
+                {prettyJson(result.payload)}
+              </pre>
+            </Alert>
+          )}
+        </Stack>
+      </CardContent>
+    </Card>
   );
 }
 

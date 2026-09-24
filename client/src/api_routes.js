@@ -324,51 +324,114 @@ export function clear_sample_position(position) {
     });
 }
 
+export function block_sample_position(position, { reason = null } = {}) {
+    return fetch(SAMPLE_POSITIONS_API + "/block", {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            position,
+            reason,
+        }),
+    });
+}
+
+export function unblock_sample_position(position) {
+    return fetch(SAMPLE_POSITIONS_API + "/unblock", {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            position,
+        }),
+    });
+}
+
+export function unblock_all_sample_positions() {
+    return fetch(SAMPLE_POSITIONS_API + "/unblock-all", {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}),
+    });
+}
+
 // Data exports
 const DATA_API = process.env.NODE_ENV === "production" ? "/api/data" : URL + "/api/data";
 
-function dataMonthQuery(month) {
-    return month ? `?month=${encodeURIComponent(month)}` : "";
+/**
+ * Build ?month=YYYY-MM or ?start=YYYY-MM-DD&end=YYYY-MM-DD for Data exports.
+ * @param {string | { month?: string, start?: string, end?: string } | null} range
+ */
+export function dataWindowQuery(range = null) {
+    const params = new URLSearchParams();
+    if (range && typeof range === "object") {
+        if (range.start && range.end) {
+            params.set("start", range.start);
+            params.set("end", range.end);
+        } else if (range.month) {
+            params.set("month", range.month);
+        }
+    } else if (typeof range === "string" && range) {
+        params.set("month", range);
+    }
+    const query = params.toString();
+    return query ? `?${query}` : "";
 }
 
-export async function get_data_window(month = null) {
+export async function get_data_window(range = null) {
     try {
-        const res = await fetch(DATA_API + "/window" + dataMonthQuery(month), { mode: 'cors' });
+        const res = await fetch(DATA_API + "/window" + dataWindowQuery(range), { mode: 'cors' });
         return await res.json();
     } catch (error) {
         return console.warn(error);
     }
 }
 
-export async function get_sample_summary_rows(month = null) {
+export async function get_sample_summary_rows(range = null) {
     try {
-        const res = await fetch(DATA_API + "/sample_summary" + dataMonthQuery(month), { mode: 'cors' });
+        const res = await fetch(DATA_API + "/sample_summary" + dataWindowQuery(range), { mode: 'cors' });
         return await res.json();
     } catch (error) {
         return console.warn(error);
     }
 }
 
-export async function get_powder_dosing_rows(month = null) {
+export async function get_sample_report_rows(range = null) {
     try {
-        const res = await fetch(DATA_API + "/powder_dosing_actuals" + dataMonthQuery(month), { mode: 'cors' });
+        const res = await fetch(DATA_API + "/sample_report" + dataWindowQuery(range), { mode: 'cors' });
         return await res.json();
     } catch (error) {
         return console.warn(error);
     }
 }
 
-export async function get_task_outcome_rows(month = null) {
+export async function get_powder_dosing_rows(range = null) {
     try {
-        const res = await fetch(DATA_API + "/task_outcome_log" + dataMonthQuery(month), { mode: 'cors' });
+        const res = await fetch(DATA_API + "/powder_dosing_actuals" + dataWindowQuery(range), { mode: 'cors' });
         return await res.json();
     } catch (error) {
         return console.warn(error);
     }
 }
 
-export function dataDownloadHref(endpoint, month = null) {
-    return DATA_API + endpoint + dataMonthQuery(month);
+export async function get_task_outcome_rows(range = null) {
+    try {
+        const res = await fetch(DATA_API + "/task_outcome_log" + dataWindowQuery(range), { mode: 'cors' });
+        return await res.json();
+    } catch (error) {
+        return console.warn(error);
+    }
+}
+
+export function dataDownloadHref(endpoint, range = null) {
+    return DATA_API + endpoint + dataWindowQuery(range);
 }
 
 // Device control

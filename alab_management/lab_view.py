@@ -593,10 +593,18 @@ class LabView:
                 header="Unrecoverable error",
             )
 
+        sample_pos_text = (
+            ", ".join(all_positions_with_samples) or "(no occupied sample positions recorded)"
+        )
+        reserved_text = (
+            ", ".join(all_reserved_sample_positions) or "(none reserved)"
+        )
         prompt = (
             "An unrecoverable error has occurred.\n"
-            f"(1) remove samples on {', '.join(all_positions_with_samples)}\n"
-            f"(2) remove all other consumables on {', '.join(all_reserved_sample_positions)}"
+            "\n"
+            "What to do:\n"
+            f"(1) remove samples on {sample_pos_text}\n"
+            f"(2) remove all other consumables on {reserved_text}"
         )
         if error_message:
             prompt += f"\n\n{error_message}"

@@ -23,6 +23,7 @@ import Alert from '@mui/material/Alert';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { HoverText } from '../../utils';
+import FormattedOperatorText from './FormattedOperatorText';
 
 const timezoneOffset = (new Date()).getTimezoneOffset();
 
@@ -140,17 +141,24 @@ function ProgressStepCell({ label, tasks }) {
           —
         </Typography>
       ) : (
-        entries.slice(0, 3).map((task, index) => (
+        entries.slice(0, 3).map((task, index) => {
+          const looksLikeReport = /ERROR:|Traceback \(most recent call last\):/.test(task.message || "");
+          return (
           <Box key={task.id} sx={{ mb: entries.length > 1 ? 0.5 : 0 }}>
-            <Typography variant="body2" sx={{ fontWeight: 500 }}>
-              {task.description || task.type}
-            </Typography>
+            {looksLikeReport ? (
+              <FormattedOperatorText text={task.message} />
+            ) : (
+              <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                {task.description || task.type}
+              </Typography>
+            )}
             <Typography variant="caption" color="text.secondary">
               {task.status}
               {index === 2 && entries.length > 3 ? ` (+${entries.length - 3} more)` : ""}
             </Typography>
           </Box>
-        ))
+          );
+        })
       )}
     </Box>
   );
@@ -693,23 +701,20 @@ function Row({ experiment_id, hoverForId, onExperimentCancelled, refreshEpoch })
                         sx={isCurrent ? { bgcolor: "action.hover" } : undefined}
                       >
                         <TableCell component="th" scope="row">
-                          <HoverText defaultText={task.description || task.type} hoverText={task.id} variant="body2" active={hoverForId} />
+                          <HoverText
+                            defaultText={[task.type, (task.samples || []).join(", ")].filter(Boolean).join(" — ") || task.type}
+                            hoverText={task.id}
+                            variant="body2"
+                            active={hoverForId}
+                          />
                         </TableCell>
                         <TableCell>
                           <Typography variant="body" color={taskStatusColor(task.status)}>
                             {task.status}
                           </Typography>
                         </TableCell>
-                        <TableCell>
-                          <Typography variant="body" style={{
-                            whiteSpace: "pre-wrap",
-                            display: '-webkit-box',
-                            overflow: 'auto',
-                            WebkitBoxOrient: 'vertical',
-                            WebkitLineClamp: 2,
-                          }}>
-                            {task.message}
-                          </Typography>
+                        <TableCell sx={{ maxWidth: 640, verticalAlign: "top" }}>
+                          <FormattedOperatorText text={task.message} />
                         </TableCell>
                         <TableCell>
                           <Button

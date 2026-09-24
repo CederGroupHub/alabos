@@ -30,6 +30,7 @@ import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import FormattedOperatorText from './FormattedOperatorText';
 
 /** Preferred affirmative options, in priority order for bulk-complete. */
 const AFFIRMATIVE_OPTIONS = [
@@ -176,10 +177,8 @@ function UserInputRow({
         <HoverText defaultText={task_name} hoverText={task_id} variant="body1" active={hoverForId} />
       </TableCell>
 
-      <TableCell component="th" scope="row">
-        <Typography variant="body2" component="p">
-          {prompt}
-        </Typography>
+      <TableCell component="th" scope="row" sx={{ maxWidth: 720, verticalAlign: "top" }}>
+        <FormattedOperatorText text={prompt} />
       </TableCell>
 
       <TableCell align="center" key="$request_id-cell4">

@@ -8,7 +8,11 @@ from alab_management.dashboard.experiment_progress import (
     build_task_description,
     compute_progress_steps,
     humanize_task_type,
+    short_operator_message,
+    summarize_task,
 )
+from alab_management.task_view.wait_messages import WORKER_QUEUE_MESSAGE, default_wait_message
+from alab_management.utils.error_context import TRACEBACK_HEADER
 
 
 def _task(
@@ -41,6 +45,50 @@ def _task(
 def test_humanize_task_type() -> None:
     assert humanize_task_type("RecoverPowder") == "Recover powder"
     assert humanize_task_type("Heating") == "Heating"
+
+
+def test_summarize_task_explains_initiated_when_message_empty() -> None:
+    task = _task(type_="Heating", status="INITIATED", samples=["A"])
+    summary = summarize_task(task)
+    assert summary["message"] == WORKER_QUEUE_MESSAGE
+    assert WORKER_QUEUE_MESSAGE in summary["description"]
+
+
+def test_summarize_task_keeps_existing_message() -> None:
+    task = _task(
+        type_="Heating",
+        status="INITIATED",
+        samples=["A"],
+        message="custom note",
+    )
+    summary = summarize_task(task)
+    assert summary["message"] == "custom note"
+    assert "custom note" in summary["description"]
+
+
+def test_default_wait_message_covers_idle_statuses() -> None:
+    assert "previous task" in default_wait_message("WAITING")
+    assert "worker queue" in default_wait_message("READY")
+    assert default_wait_message("RUNNING") == ""
+    assert default_wait_message("RUNNING", "ramping") == "ramping"
+
+
+def test_short_operator_message_strips_traceback() -> None:
+    message = (
+        "ERROR: Task failed in Moving\n"
+        "- What: RuntimeError\n"
+        "    Error in thread for sample 'S1'\n"
+        "- Cause: RuntimeError\n"
+        "    delivery request was cancelled\n"
+        f"\n{TRACEBACK_HEADER}\n"
+        "File moving.py, line 627\n"
+    )
+    assert short_operator_message(message) == "delivery request was cancelled"
+    description = build_task_description(
+        _task(type_="Moving", status="ERROR", samples=["S1"], message=message)
+    )
+    assert description == "Moving — S1 — delivery request was cancelled"
+    assert TRACEBACK_HEADER not in description
 
 
 def test_build_task_description_includes_samples_and_message() -> None:

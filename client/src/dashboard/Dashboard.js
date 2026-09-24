@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Devices from './components/Devices';
 import DeviceControl from './components/DeviceControl';
 import DashControl from './components/DashControl';
@@ -11,7 +12,7 @@ import SamplePositions from './components/SamplePositions';
 import LabSettings from './components/LabSettings';
 import styled from 'styled-components';
 import { useLocation, Link } from "react-router-dom";
-import { Alert, Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, FormControl, FormControlLabel, Snackbar, Switch, Typography } from '@mui/material';
+import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, FormControl, FormControlLabel, Switch, Typography } from '@mui/material';
 import PrecisionManufacturingIcon from '@mui/icons-material/PrecisionManufacturing';
 import FactoryIcon from '@mui/icons-material/Factory';
 import FireplaceIcon from '@mui/icons-material/Fireplace';
@@ -31,7 +32,8 @@ import { useLabReadiness } from '../LabReadiness';
 
 const USER_INPUT_POLL_MS = 5000;
 const USER_INPUT_BANNER_MS = 6000;
-const USER_INPUT_PROMPT_PREVIEW_LEN = 120;
+const USER_INPUT_PROMPT_PREVIEW_LEN = 90;
+const USER_INPUT_BANNER_SLOT_ID = "user-input-banner-slot";
 
 function collectPendingUserInputs(pending, experimentIdToName) {
   const items = [];
@@ -334,6 +336,19 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange, onOpenUser
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    if (!userInputBanner) {
+      return undefined;
+    }
+    const timeout = setTimeout(() => setUserInputBanner(null), USER_INPUT_BANNER_MS);
+    return () => clearTimeout(timeout);
+  }, [userInputBanner]);
+
+  const bannerSlot =
+    typeof document !== "undefined"
+      ? document.getElementById(USER_INPUT_BANNER_SLOT_ID)
+      : null;
+
   return (
     <Box sx={{ display: "flex" }}>
       <StyledBox
@@ -384,60 +399,68 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange, onOpenUser
         }}>
         {drawerContents}
       </Drawer>
-      <Snackbar
-        open={Boolean(userInputBanner)}
-        autoHideDuration={USER_INPUT_BANNER_MS}
-        onClose={(_event, reason) => {
-          if (reason === "clickaway") {
-            return;
-          }
-          setUserInputBanner(null);
-        }}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        sx={{ top: { xs: 16, sm: 84 } }}
-      >
-        {userInputBanner ? (
-          <Alert
-            severity="error"
-            variant="outlined"
-            icon={<NotificationsIcon fontSize="inherit" />}
-            onClick={() => {
-              if (typeof onOpenUserInputRequest === "function") {
-                onOpenUserInputRequest(userInputBanner.focusId);
-              }
-              setUserInputBanner(null);
-            }}
-            sx={{
-              cursor: "pointer",
-              width: "100%",
-              maxWidth: 560,
-              alignItems: "flex-start",
-              color: "#1a1a1a",
-              backgroundColor: "#fdecec",
-              border: "1px solid #c62828",
-              borderRadius: "10px",
-              boxShadow: "0 8px 24px rgba(33, 58, 75, 0.12)",
-              "& .MuiAlert-icon": {
-                color: "#c62828",
-              },
-              "& .MuiAlert-message": {
+      {userInputBanner && bannerSlot
+        ? createPortal(
+            <Box
+              role="status"
+              aria-live="polite"
+              title="Click to open and scroll to this request"
+              onClick={() => {
+                if (typeof onOpenUserInputRequest === "function") {
+                  onOpenUserInputRequest(userInputBanner.focusId);
+                }
+                setUserInputBanner(null);
+              }}
+              sx={{
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+                maxWidth: "100%",
+                minWidth: 0,
+                px: 1.5,
+                py: 0.75,
+                borderRadius: "10px",
                 color: "#1a1a1a",
-                paddingTop: "2px",
-              },
-            }}
-          >
-            <Typography variant="subtitle2" component="div" sx={{ color: "#1a1a1a", fontWeight: 600 }}>
-              {userInputBanner.title}
-            </Typography>
-            <Typography variant="body2" component="div" sx={{ color: "#2b2b2b", mt: 0.25 }}>
-              {userInputBanner.detail}
-            </Typography>
-            <Typography variant="caption" component="div" sx={{ mt: 0.5, color: "#555555" }}>
-              Click to open and scroll to this request
-            </Typography>
-          </Alert>
-        ) : null}
-      </Snackbar>
+                backgroundColor: "#fdecec",
+                border: "1px solid #c62828",
+                boxShadow: "0 4px 14px rgba(14, 29, 40, 0.2)",
+              }}
+            >
+              <NotificationsIcon sx={{ color: "#c62828", fontSize: 20, flexShrink: 0 }} />
+              <Box sx={{ minWidth: 0, overflow: "hidden" }}>
+                <Typography
+                  variant="subtitle2"
+                  component="div"
+                  sx={{
+                    color: "#1a1a1a",
+                    fontWeight: 600,
+                    lineHeight: 1.2,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {userInputBanner.title}
+                </Typography>
+                <Typography
+                  variant="caption"
+                  component="div"
+                  sx={{
+                    color: "#2b2b2b",
+                    lineHeight: 1.25,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {userInputBanner.detail}
+                </Typography>
+              </Box>
+            </Box>,
+            bannerSlot,
+          )
+        : null}
     </Box >
   )
 }
