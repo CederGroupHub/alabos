@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>alab_management.task_view.task_enums &#8212; Alab Management 1.1.0</title>
+    <title>alab_management.task_view.wait_messages &#8212; Alab Management 1.1.0</title>
   
   
   
@@ -47,7 +47,7 @@
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/alab_management/task_view/task_enums';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/alab_management/task_view/wait_messages';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -386,69 +386,35 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <h1>Source code for alab_management.task_view.task_enums</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">IntEnum</span><span class="p">,</span> <span class="n">auto</span>
+  <h1>Source code for alab_management.task_view.wait_messages</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Operator-facing reasons for tasks that are not yet running."""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.task_view.task_enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskStatus</span>
+
+<span class="n">WORKER_QUEUE_MESSAGE</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">"Queued for a worker process. This starts automatically when a worker is free; "</span>
+    <span class="s2">"nothing is dropped. If it stays queued for a long time, the workers may be busy "</span>
+    <span class="s2">"or not running."</span>
+<span class="p">)</span>
+
+<span class="n">DEFAULT_WAIT_MESSAGES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">TaskStatus</span><span class="o">.</span><span class="n">WAITING</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="s2">"Waiting for a previous task in this experiment to finish."</span><span class="p">,</span>
+    <span class="n">TaskStatus</span><span class="o">.</span><span class="n">READY</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="s2">"Ready to run. Waiting to be sent to a worker queue."</span><span class="p">,</span>
+    <span class="n">TaskStatus</span><span class="o">.</span><span class="n">INITIATED</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">WORKER_QUEUE_MESSAGE</span><span class="p">,</span>
+    <span class="n">TaskStatus</span><span class="o">.</span><span class="n">REQUESTING_RESOURCES</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="p">(</span>
+        <span class="s2">"A worker has this task. Waiting for a lab device or sample position to become free."</span>
+    <span class="p">),</span>
+<span class="p">}</span>
 
 
-<div class="viewcode-block" id="TaskPriority">
-<a class="viewcode-back" href="../../../alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.TaskPriority">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">TaskPriority</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    The priority of a task. larger integer = higher priority.</span>
-
-<span class="sd">    Values &gt;= 100 are reserved for urgent/error correcting resource requests.</span>
-<span class="sd">    """</span>
-
-    <span class="n">SYSTEM</span> <span class="o">=</span> <span class="mi">900</span>
-    <span class="n">URGENT</span> <span class="o">=</span> <span class="mi">100</span>
-    <span class="n">HIGH</span> <span class="o">=</span> <span class="mi">30</span>
-    <span class="n">NORMAL</span> <span class="o">=</span> <span class="mi">20</span>
-    <span class="n">LOW</span> <span class="o">=</span> <span class="mi">10</span></div>
-
-
-
-<div class="viewcode-block" id="TaskStatus">
-<a class="viewcode-back" href="../../../alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.TaskStatus">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">TaskStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    The status of one task.</span>
-
-<span class="sd">    - ``WAITING``: the task cannot start yet, waiting for preceding tasks to finish</span>
-<span class="sd">    - ``READY``: the task is ready to submit</span>
-<span class="sd">    - ``INITIATED``: the task has been sent to task actor, but not yet running</span>
-<span class="sd">    - ``REQUESTING_RESOURCES``: the task is requesting resources</span>
-<span class="sd">    - ``RUNNING``: the task is currently running</span>
-<span class="sd">    - ``FINISHING``: the task is finishing up, but not yet completed/errored/cancelled</span>
-<span class="sd">    - ``ERROR``: the task encountered some errors during execution</span>
-<span class="sd">    - ``COMPLETED``: the task is completed</span>
-<span class="sd">    - ``CANCELLED``: the task has been cancelled and stopped.</span>
-<span class="sd">    """</span>
-
-    <span class="n">WAITING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">READY</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">INITIATED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">REQUESTING_RESOURCES</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">RUNNING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">FINISHING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">ERROR</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">COMPLETED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">CANCELLED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
-
-
-
-<div class="viewcode-block" id="CancelingProgress">
-<a class="viewcode-back" href="../../../alab_management.task_view.task_enums.html#alab_management.task_view.task_enums.CancelingProgress">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">CancelingProgress</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    The status for a request that is being canceled. It is kept in the ``canceling`` field of the request.</span>
-
-<span class="sd">    PENDING: The canceling process has been initiated.</span>
-<span class="sd">    WORKER_NOTIFIED: The worker has been notified to cancel the request, which means an</span>
-<span class="sd">      abort error has been raised in the worker.</span>
-<span class="sd">    """</span>
-
-    <span class="n">PENDING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">WORKER_NOTIFIED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
+<div class="viewcode-block" id="default_wait_message">
+<a class="viewcode-back" href="../../../alab_management.task_view.wait_messages.html#alab_management.task_view.wait_messages.default_wait_message">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">default_wait_message</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">TaskStatus</span><span class="p">,</span> <span class="n">existing</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Return the stored message, or a status-based wait reason if it is empty."""</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">existing</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">existing</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">TaskStatus</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">status</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">DEFAULT_WAIT_MESSAGES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span></div>
 
 </pre></div>
 

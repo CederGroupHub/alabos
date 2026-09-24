@@ -257,6 +257,7 @@
 <li class="toctree-l4"><a class="reference internal" href="alab_management.task_view.task.html">alab_management.task_view.task module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="alab_management.task_view.task_enums.html">alab_management.task_view.task_enums module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="alab_management.task_view.task_view.html">alab_management.task_view.task_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="alab_management.task_view.wait_messages.html">alab_management.task_view.wait_messages module</a></li>
 </ul>
 </details></li>
 <li class="toctree-l3"><a class="reference internal" href="alab_management.alarm.html">alab_management.alarm module</a></li>
@@ -452,6 +453,7 @@
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView"><code class="docutils literal notranslate"><span class="pre">SampleView</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.add_sample_positions_to_db"><code class="docutils literal notranslate"><span class="pre">SampleView.add_sample_positions_to_db()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.block_sample_position"><code class="docutils literal notranslate"><span class="pre">SampleView.block_sample_position()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.clean_up_sample_position_collection"><code class="docutils literal notranslate"><span class="pre">SampleView.clean_up_sample_position_collection()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.clear_sample_in_transit"><code class="docutils literal notranslate"><span class="pre">SampleView.clear_sample_in_transit()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.create_sample"><code class="docutils literal notranslate"><span class="pre">SampleView.create_sample()</span></code></a></li>
@@ -471,6 +473,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.get_sample_positions_names_by_device"><code class="docutils literal notranslate"><span class="pre">SampleView.get_sample_positions_names_by_device()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.get_sample_positions_names_by_prefix"><code class="docutils literal notranslate"><span class="pre">SampleView.get_sample_positions_names_by_prefix()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.get_samples_on_device"><code class="docutils literal notranslate"><span class="pre">SampleView.get_samples_on_device()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.is_blocked_position"><code class="docutils literal notranslate"><span class="pre">SampleView.is_blocked_position()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.is_locked_position"><code class="docutils literal notranslate"><span class="pre">SampleView.is_locked_position()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.is_unoccupied_position"><code class="docutils literal notranslate"><span class="pre">SampleView.is_unoccupied_position()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.lock_sample_position"><code class="docutils literal notranslate"><span class="pre">SampleView.lock_sample_position()</span></code></a></li>
@@ -479,6 +482,8 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.remove_sample_position_by_prefix"><code class="docutils literal notranslate"><span class="pre">SampleView.remove_sample_position_by_prefix()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.request_sample_positions"><code class="docutils literal notranslate"><span class="pre">SampleView.request_sample_positions()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.set_sample_in_transit"><code class="docutils literal notranslate"><span class="pre">SampleView.set_sample_in_transit()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.unblock_all_sample_positions"><code class="docutils literal notranslate"><span class="pre">SampleView.unblock_all_sample_positions()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.unblock_sample_position"><code class="docutils literal notranslate"><span class="pre">SampleView.unblock_sample_position()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.update_sample_metadata"><code class="docutils literal notranslate"><span class="pre">SampleView.update_sample_metadata()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.update_sample_task_id"><code class="docutils literal notranslate"><span class="pre">SampleView.update_sample_task_id()</span></code></a></li>
 </ul>
@@ -602,6 +607,18 @@ we will just skip it.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="alab_management.sample_view.sample_view.SampleView.block_sample_position">
+<span class="sig-name descname"><span class="pre">block_sample_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reason</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.block_sample_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.block_sample_position" title="Link to this definition">#</a></dt>
+<dd><p>Mark a sample position blocked so automation will not assign it.</p>
+<p>Rejects when the position has an active task lock. Lab idle is not required.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="alab_management.sample_view.sample_view.SampleView.clean_up_sample_position_collection">
 <span class="sig-name descname"><span class="pre">clean_up_sample_position_collection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.clean_up_sample_position_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.clean_up_sample_position_collection" title="Link to this definition">#</a></dt>
 <dd><p>Drop the sample position collection.</p>
@@ -636,6 +653,8 @@ we will just skip it.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">allow_clear</span></code>: True only when every shortage is an exact-slot request
 (safe to clear those specific slots from User Input)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">clearable_blockers</span></code>: blockers for exact shortages (for Clear action)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">blocked_blockers</span></code>: unique positions with <code class="docutils literal notranslate"><span class="pre">blocked</span></code> across shortages</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">allow_unblock_blocked</span></code>: True when any shortage is caused by blocked slots</p></li>
 </ul>
 </dd></dl>
 
@@ -866,6 +885,17 @@ else, return EMPTY and None</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="alab_management.sample_view.sample_view.SampleView.is_blocked_position">
+<span class="sig-name descname"><span class="pre">is_blocked_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.is_blocked_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.is_blocked_position" title="Link to this definition">#</a></dt>
+<dd><p>True when the position is operator-blocked from automated allocation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="alab_management.sample_view.sample_view.SampleView.is_locked_position">
 <span class="sig-name descname"><span class="pre">is_locked_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.is_locked_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.is_locked_position" title="Link to this definition">#</a></dt>
 <dd><p>Tell if a sample position is locked or not.</p>
@@ -943,6 +973,31 @@ recorded <code class="docutils literal notranslate"><span class="pre">position</
 completes). If the move crashes mid-transfer, this record persists, so the last known
 position plus the intended destination remain visible. <code class="docutils literal notranslate"><span class="pre">move_sample</span></code> clears it once the
 sample arrives.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.sample_view.sample_view.SampleView.unblock_all_sample_positions">
+<span class="sig-name descname"><span class="pre">unblock_all_sample_positions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.unblock_all_sample_positions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.unblock_all_sample_positions" title="Link to this definition">#</a></dt>
+<dd><p>Clear <code class="docutils literal notranslate"><span class="pre">blocked</span></code> on every sample position. Returns how many were updated.</p>
+<p>Does not touch task locks or sample occupancy. Positions that are currently
+task-locked remain locked but become unblocked for after the lock is released.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.sample_view.sample_view.SampleView.unblock_sample_position">
+<span class="sig-name descname"><span class="pre">unblock_sample_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.unblock_sample_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.unblock_sample_position" title="Link to this definition">#</a></dt>
+<dd><p>Clear the operator block on a sample position.</p>
+<p>Rejects when the position has an active task lock.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1025,6 +1080,7 @@ sample arrives.</p>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView"><code class="docutils literal notranslate"><span class="pre">SampleView</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.add_sample_positions_to_db"><code class="docutils literal notranslate"><span class="pre">SampleView.add_sample_positions_to_db()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.block_sample_position"><code class="docutils literal notranslate"><span class="pre">SampleView.block_sample_position()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.clean_up_sample_position_collection"><code class="docutils literal notranslate"><span class="pre">SampleView.clean_up_sample_position_collection()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.clear_sample_in_transit"><code class="docutils literal notranslate"><span class="pre">SampleView.clear_sample_in_transit()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.create_sample"><code class="docutils literal notranslate"><span class="pre">SampleView.create_sample()</span></code></a></li>
@@ -1044,6 +1100,7 @@ sample arrives.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.get_sample_positions_names_by_device"><code class="docutils literal notranslate"><span class="pre">SampleView.get_sample_positions_names_by_device()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.get_sample_positions_names_by_prefix"><code class="docutils literal notranslate"><span class="pre">SampleView.get_sample_positions_names_by_prefix()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.get_samples_on_device"><code class="docutils literal notranslate"><span class="pre">SampleView.get_samples_on_device()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.is_blocked_position"><code class="docutils literal notranslate"><span class="pre">SampleView.is_blocked_position()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.is_locked_position"><code class="docutils literal notranslate"><span class="pre">SampleView.is_locked_position()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.is_unoccupied_position"><code class="docutils literal notranslate"><span class="pre">SampleView.is_unoccupied_position()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.lock_sample_position"><code class="docutils literal notranslate"><span class="pre">SampleView.lock_sample_position()</span></code></a></li>
@@ -1052,6 +1109,8 @@ sample arrives.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.remove_sample_position_by_prefix"><code class="docutils literal notranslate"><span class="pre">SampleView.remove_sample_position_by_prefix()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.request_sample_positions"><code class="docutils literal notranslate"><span class="pre">SampleView.request_sample_positions()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.set_sample_in_transit"><code class="docutils literal notranslate"><span class="pre">SampleView.set_sample_in_transit()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.unblock_all_sample_positions"><code class="docutils literal notranslate"><span class="pre">SampleView.unblock_all_sample_positions()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.unblock_sample_position"><code class="docutils literal notranslate"><span class="pre">SampleView.unblock_sample_position()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.update_sample_metadata"><code class="docutils literal notranslate"><span class="pre">SampleView.update_sample_metadata()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.update_sample_task_id"><code class="docutils literal notranslate"><span class="pre">SampleView.update_sample_task_id()</span></code></a></li>
 </ul>

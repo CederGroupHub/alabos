@@ -11,6 +11,7 @@ Submodules
    alab_management.task_view.task
    alab_management.task_view.task_enums
    alab_management.task_view.task_view
+   alab_management.task_view.wait_messages
 
 Module contents
 ---------------

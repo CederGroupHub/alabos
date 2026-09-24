@@ -254,6 +254,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../alab_management.task_view.task.html">alab_management.task_view.task module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../alab_management.task_view.task_enums.html">alab_management.task_view.task_enums module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../alab_management.task_view.task_view.html">alab_management.task_view.task_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.task_view.wait_messages.html">alab_management.task_view.wait_messages module</a></li>
 </ul>
 </details></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../alab_management.alarm.html">alab_management.alarm module</a></li>
@@ -401,6 +402,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBLogger</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.task_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskCancelledError</span><span class="p">,</span> <span class="n">TaskView</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.task_view.task_enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">CancelingProgress</span><span class="p">,</span> <span class="n">TaskStatus</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.task_view.wait_messages</span><span class="w"> </span><span class="kn">import</span> <span class="n">WORKER_QUEUE_MESSAGE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.module_ops</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_definition</span>
 
 <span class="n">cli_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -562,6 +564,10 @@
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span>
                 <span class="n">task_id</span><span class="o">=</span><span class="n">task_entry</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">],</span> <span class="n">status</span><span class="o">=</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">INITIATED</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">set_message</span><span class="p">(</span>
+                <span class="n">task_id</span><span class="o">=</span><span class="n">task_entry</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">],</span>
+                <span class="n">message</span><span class="o">=</span><span class="n">WORKER_QUEUE_MESSAGE</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">run_task</span><span class="o">.</span><span class="n">send_with_options</span><span class="p">(</span>
                 <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">"task_id_str"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">task_entry</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">])}</span>
