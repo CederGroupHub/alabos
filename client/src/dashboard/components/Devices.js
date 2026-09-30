@@ -42,21 +42,6 @@ const StyledDevicesDiv = styled.div`
     padding: 4px 8px;
   }
 
-  .attribute-name {
-    font-family: Source Code Pro;
-    font-weight: 600;
-    white-space: nowrap;
-    vertical-align: top;
-  }
-
-  .attribute-value {
-    font-family: Source Code Pro;
-    white-space: pre-wrap;
-    margin: 0;
-    max-height: 260px;
-    overflow: auto;
-  }
-
   .in-transit {
     color: #1565c0;
     font-family: Source Code Pro;
@@ -326,8 +311,9 @@ function ConnectionNotice({ attributes }) {
 
 
 const ATTRIBUTE_LABELS = {
-  battery_percentage: 'Battery %',
+  battery_percentage: 'Battery',
   battery_state: 'Battery state',
+  battery_alarm: 'Battery alarm',
   is_charging: 'Charging',
   battery_checked_at: 'Battery checked at',
   battery_policy: 'Battery policy',
@@ -336,15 +322,104 @@ const ATTRIBUTE_LABELS = {
   connected: 'Connected',
   executing_plan_status: 'Plan status',
   helper_status_summary: 'Helper',
-  no_progress_age_s: 'No-progress age (s)',
+  no_progress_age_s: 'No-progress age',
   last_error: 'Last error',
   all_racks_on_quadrant: 'All racks on quadrant',
+  mission_route: 'Mission route',
+  mission_reason: 'Mission reason',
+  mission_progress: 'Mission progress',
+  mission_status: 'Mission status',
+  carried_samples: 'Carried samples',
+  queue_summary: 'Queue',
 };
 
 const FURNACE_LIVE_POLL_MS = 5000;
 
 function isBoxFurnaceDevice(name) {
   return typeof name === 'string' && /^BFT_box_[abcd]$/i.test(name);
+}
+
+function humanizeAttributeName(name) {
+  if (ATTRIBUTE_LABELS[name]) {
+    return ATTRIBUTE_LABELS[name];
+  }
+  return String(name || '')
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (ch) => ch.toUpperCase());
+}
+
+function looksLikeUnixTimestamp(value) {
+  return typeof value === 'number' && Number.isFinite(value) && value > 1e9 && value < 1e12;
+}
+
+function formatAttributeScalar(name, value) {
+  if (value === null || value === undefined || value === '') {
+    return '—';
+  }
+  if (typeof value === 'boolean') {
+    return value ? 'Yes' : 'No';
+  }
+  if (name === 'battery_percentage' && typeof value === 'number') {
+    return `${value} %`;
+  }
+  if (name === 'no_progress_age_s' && typeof value === 'number') {
+    return `${value} s`;
+  }
+  if (name === 'battery_checked_at' || looksLikeUnixTimestamp(value)) {
+    const ms = value > 1e12 ? value : value * 1000;
+    const date = new Date(ms);
+    if (!Number.isNaN(date.getTime())) {
+      return date.toLocaleString();
+    }
+  }
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return String(value);
+  }
+  return String(value);
+}
+
+function formatAttributeObject(name, value) {
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return '—';
+    }
+    if (value.every((entry) => entry === null || ['string', 'number', 'boolean'].includes(typeof entry))) {
+      return value.map((entry) => formatAttributeScalar(name, entry)).join(', ');
+    }
+    return value.map((entry) => (
+      typeof entry === 'object' ? JSON.stringify(entry) : formatAttributeScalar(name, entry)
+    )).join('; ');
+  }
+  if (name === 'battery_policy' && value && typeof value === 'object') {
+    const parts = [];
+    if (value.working_floor != null) parts.push(`work ≥ ${value.working_floor}%`);
+    if (value.resume_at != null) parts.push(`resume ≥ ${value.resume_at}%`);
+    if (value.alarm_at != null) parts.push(`alarm ≤ ${value.alarm_at}%`);
+    if (value.hard_floor != null) parts.push(`hard floor ${value.hard_floor}%`);
+    return parts.length > 0 ? parts.join(' · ') : '—';
+  }
+  const entries = Object.entries(value);
+  if (entries.length === 0) {
+    return '—';
+  }
+  if (entries.every(([, entry]) => entry === null || ['string', 'number', 'boolean'].includes(typeof entry))) {
+    return entries
+      .map(([key, entry]) => `${humanizeAttributeName(key)} ${formatAttributeScalar(key, entry)}`)
+      .join(' · ');
+  }
+  // Nested structure: keep readable without a monospace dump.
+  try {
+    return JSON.stringify(value);
+  } catch (err) {
+    return String(value);
+  }
+}
+
+function formatAttributeDisplay(name, value) {
+  if (value !== null && typeof value === 'object') {
+    return formatAttributeObject(name, value);
+  }
+  return formatAttributeScalar(name, value);
 }
 
 function FurnaceLiveStatus({ deviceName, open }) {
@@ -433,20 +508,6 @@ function FurnaceLiveStatus({ deviceName, open }) {
       )}
     </div>
   );
-}
-
-
-// Attribute values come straight from the device's database document, so they can be anything from a
-// number to a nested mission plan. Primitives read best inline; anything structured is pretty-printed
-// so it stays truthful rather than being flattened into something ambiguous.
-function AttributeValue({ value }) {
-  if (value === null || value === undefined) {
-    return <Typography variant="caption" sx={{ color: "#9e9e9e" }}>—</Typography>;
-  }
-  if (typeof value === "object") {
-    return <pre className="attribute-value">{JSON.stringify(value, null, 2)}</pre>;
-  }
-  return <Typography variant="body2" className="attribute-value">{String(value)}</Typography>;
 }
 
 
@@ -565,18 +626,14 @@ function DeviceAttributes({ attributes }) {
     );
   }
   return (
-    <Table size="small" aria-label="device attributes">
-      <TableBody>
-        {entries.map(([name, value]) => (
-          <TableRow key={name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-            <TableCell className="attribute-name" width="220">
-              {ATTRIBUTE_LABELS[name] || name}
-            </TableCell>
-            <TableCell><AttributeValue value={value} /></TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+    <Stack spacing={0.5}>
+      {entries.map(([name, value]) => (
+        <Typography key={name} variant="body2">
+          <b>{humanizeAttributeName(name)}:</b>{' '}
+          {formatAttributeDisplay(name, value)}
+        </Typography>
+      ))}
+    </Stack>
   );
 }
 

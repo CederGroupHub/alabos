@@ -1,0 +1,14 @@
+---
+description: UTF-8 only for Data page user_reports generators (Windows)
+globs: alab_management/dashboard/user_reports/**/*.py
+alwaysApply: false
+---
+
+# user_reports encoding
+
+When creating or editing `alab_management/dashboard/user_reports/*.py`:
+
+- Write **UTF-8 without BOM** only.
+- Prefer Write / StrReplace tools.
+- Do **not** use PowerShell `Set-Content`, `Out-File`, `Add-Content`, or shell `>` redirection (UTF-16 on Windows).
+- If a shell is required: `Path(...).write_text(..., encoding="utf-8", newline="\n")` via Python.

@@ -8,18 +8,20 @@ The sections **Commit and push**, **`agent_temp/`**, **Git**, **CI hygiene**, an
 
 When the user wants a **Data page report**, **reusable dashboard CSV**, or **custom sample/task/experiment table** for operators (not an explicit one-off chat dump):
 
-1. Implement `alab_management/dashboard/user_reports/<slug>.py` with  
+1. Prefer Cursor **`/alab-data-report`** + MCP **`alab-data-reports`** (create / change / delete) **on the AlabOS host only** (the machine serving 8895).
+2. Implement or edit `alab_management/dashboard/user_reports/<slug>.py` with  
    `run(*, start, end, live_db, completed_db) -> {columns, rows}`  
    (**read-only** against lab data; prefer `report_db.find_union` for Alab + Alab(completed)).
-2. Upsert `Alab.data_reports` with  
+3. Register via MCP / `Alab.data_reports` with  
    `generator: { "type": "module", "module": "<slug>" }`  
    (`saved: true` unless they only want a draft). Do not set `builtin: true`.
-3. Tell the user: open **Data** → select the report → **Refresh** (date range) → **Download CSV**.
+4. Tell the user: open **Data** → select the report → **Refresh** (date range) → **Download CSV**.
 
-**Do not** finish with only a markdown/CSV table in chat or an `agent_temp/` one-off as the operator deliverable.
+**Do not** finish with only a markdown/CSV table in chat or an `agent_temp/` one-off as the operator deliverable.  
+**Do not** run `/alab-data-report` from a remote computer against the lab dashboard — generators must be written on the AlabOS host filesystem.
 
 Full contract: [`docs/data-reports-cursor.md`](data-reports-cursor.md).  
-Workflow checklist: [`.cursor/skills/alab-data-report/SKILL.md`](../.cursor/skills/alab-data-report/SKILL.md) (Cursor); other agents should follow the same steps from this section and `data-reports-cursor.md`.
+Operator / agent entry: Cursor slash command [`.cursor/commands/alab-data-report.md`](../.cursor/commands/alab-data-report.md) + MCP `alab-data-reports`.
 
 ---
 

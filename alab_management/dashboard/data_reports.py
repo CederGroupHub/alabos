@@ -227,11 +227,40 @@ def catalog_projection() -> dict[str, int]:
 
 
 def list_reports(*, enabled_only: bool = True) -> list[dict[str, Any]]:
+    """Return enabled catalog entries, newest ``created_at`` first."""
     query: dict[str, Any] = {}
     if enabled_only:
         query["enabled"] = {"$ne": False}
-    cursor = reports_collection().find(query, catalog_projection()).sort("title", 1)
-    return [make_jsonable(doc) for doc in cursor]
+    docs = [
+        make_jsonable(doc)
+        for doc in reports_collection().find(query, catalog_projection())
+    ]
+    with_ts: list[dict[str, Any]] = []
+    without_ts: list[dict[str, Any]] = []
+    for doc in docs:
+        raw = doc.get("created_at")
+        if raw is None or raw == "":
+            without_ts.append(doc)
+        else:
+            with_ts.append(doc)
+
+    def _ts_value(doc: dict[str, Any]) -> float | str:
+        raw = doc["created_at"]
+        if hasattr(raw, "timestamp"):
+            return float(raw.timestamp())
+        return str(raw)
+
+    with_ts.sort(
+        key=lambda doc: (
+            _ts_value(doc),
+            str(doc.get("title") or doc.get("name") or "").lower(),
+        ),
+        reverse=True,
+    )
+    without_ts.sort(
+        key=lambda doc: str(doc.get("title") or doc.get("name") or "").lower()
+    )
+    return with_ts + without_ts
 
 
 def get_report(name: str) -> dict[str, Any] | None:

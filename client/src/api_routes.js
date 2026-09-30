@@ -458,48 +458,6 @@ export async function create_data_report(body) {
     }
 }
 
-export async function create_data_report_job(prompt) {
-    try {
-        const res = await fetch(DATA_API + "/report_jobs", {
-            method: 'POST',
-            mode: 'cors',
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ prompt }),
-        });
-        const data = await res.json();
-        if (!res.ok && data && !data.errors) {
-            data.errors = res.statusText || `HTTP ${res.status}`;
-        }
-        if (!res.ok && data) {
-            data.http_status = res.status;
-        }
-        return data;
-    } catch (error) {
-        return console.warn(error);
-    }
-}
-
-export async function get_data_report_job(jobId) {
-    try {
-        const res = await fetch(
-            DATA_API + "/report_jobs/" + encodeURIComponent(jobId),
-            { mode: 'cors' },
-        );
-        return await res.json();
-    } catch (error) {
-        return console.warn(error);
-    }
-}
-
-export async function get_current_data_report_job() {
-    try {
-        const res = await fetch(DATA_API + "/report_jobs/current", { mode: 'cors' });
-        return await res.json();
-    } catch (error) {
-        return console.warn(error);
-    }
-}
-
 export function dataReportCsvHref(name) {
     return DATA_API + "/reports/" + encodeURIComponent(name) + ".csv";
 }
@@ -684,3 +642,102 @@ export async function run_dash_segment(segment_id, body) {
     });
     return await res.json();
 }
+
+// Submissions (recipes + single-device free-form)
+const SUBMISSIONS_API = process.env.NODE_ENV === "production" ? "/api/submissions" : URL + "/api/submissions";
+
+async function submissionsJson(res) {
+    const data = await res.json();
+    if (!res.ok) {
+        data.http_status = res.status;
+        if (!data.errors && !data.error) {
+            data.errors = data.message || res.statusText;
+        }
+    }
+    return data;
+}
+
+export async function get_submission_recipes() {
+    const res = await fetch(SUBMISSIONS_API + "/recipes", { mode: "cors" });
+    return submissionsJson(res);
+}
+
+export async function preview_submission_recipe(recipeId, body) {
+    const res = await fetch(
+        SUBMISSIONS_API + "/recipes/" + encodeURIComponent(recipeId) + "/preview",
+        {
+            method: "POST",
+            mode: "cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body || {}),
+        },
+    );
+    return submissionsJson(res);
+}
+
+export async function submit_submission_recipe(recipeId, body) {
+    const res = await fetch(
+        SUBMISSIONS_API + "/recipes/" + encodeURIComponent(recipeId) + "/submit",
+        {
+            method: "POST",
+            mode: "cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body || {}),
+        },
+    );
+    return submissionsJson(res);
+}
+
+export async function get_freeform_devices() {
+    const res = await fetch(SUBMISSIONS_API + "/freeform/devices", { mode: "cors" });
+    return submissionsJson(res);
+}
+
+export async function resolve_submission_samples(query, limit = 25) {
+    const res = await fetch(SUBMISSIONS_API + "/samples/resolve", {
+        method: "POST",
+        mode: "cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query, limit }),
+    });
+    return submissionsJson(res);
+}
+
+export async function create_submission_sample(body) {
+    const res = await fetch(SUBMISSIONS_API + "/samples/create", {
+        method: "POST",
+        mode: "cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body || {}),
+    });
+    return submissionsJson(res);
+}
+
+export async function create_freeform_job(body) {
+    const res = await fetch(SUBMISSIONS_API + "/freeform/jobs", {
+        method: "POST",
+        mode: "cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body || {}),
+    });
+    return submissionsJson(res);
+}
+
+export async function get_freeform_job(jobId) {
+    const res = await fetch(
+        SUBMISSIONS_API + "/freeform/jobs/" + encodeURIComponent(jobId),
+        { mode: "cors" },
+    );
+    return submissionsJson(res);
+}
+
+export async function confirm_freeform_submission(body) {
+    const res = await fetch(SUBMISSIONS_API + "/freeform/confirm", {
+        method: "POST",
+        mode: "cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body || {}),
+    });
+    return submissionsJson(res);
+}
+

@@ -164,11 +164,12 @@ function DeviceControl() {
         [deviceName]: response.data.manual_task_id,
       }));
       setDeviceResult(deviceName, response.data, 'success');
-      await refreshCatalog();
     } catch (claimError) {
       setDeviceResult(deviceName, claimError.message || 'Failed to claim device.', 'error');
     } finally {
+      // Unlock immediately; catalog refresh is only for status chips.
       setDevicePending(deviceName, 'claim', false);
+      void refreshCatalog();
     }
   };
 
@@ -185,11 +186,11 @@ function DeviceControl() {
         return next;
       });
       setDeviceResult(deviceName, response.data, 'success');
-      await refreshCatalog();
     } catch (releaseError) {
       setDeviceResult(deviceName, releaseError.message || 'Failed to release device.', 'error');
     } finally {
       setDevicePending(deviceName, 'release', false);
+      void refreshCatalog();
     }
   };
 
@@ -245,11 +246,12 @@ function DeviceControl() {
         throw new Error(response.errors || 'Command failed.');
       }
       setDeviceResult(deviceName, response.data, 'success');
-      await refreshCatalog();
     } catch (commandError) {
       setDeviceResult(deviceName, commandError.message || 'Command failed.', 'error');
     } finally {
+      // Unlock as soon as the device RPC returns; do not wait on catalog refresh.
       setDevicePending(deviceName, devicePendingKey, false);
+      void refreshCatalog();
     }
   };
 

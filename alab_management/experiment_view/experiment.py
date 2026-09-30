@@ -15,6 +15,7 @@ class _Sample(BaseModel):
     sample_id: str | None = None
     tags: list[str]
     metadata: dict[str, Any]
+    reuse_existing: bool = False
 
     @field_validator("sample_id")
     def if_provided_must_be_valid_objectid(cls, v):

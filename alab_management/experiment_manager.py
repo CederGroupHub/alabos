@@ -11,6 +11,8 @@ import time
 from contextlib import contextmanager
 from typing import Any
 
+from bson import ObjectId  # type: ignore
+
 from .config import AlabOSConfig
 from .experiment_view import CompletedExperimentView, ExperimentStatus, ExperimentView
 from .logger import DBLogger
@@ -122,16 +124,33 @@ class ExperimentManager:
             cli_logger.info(f"Experiment ({experiment['_id']}) has a cycle in the graph.")
             return
 
-        # create samples in the sample database
-        sample_ids = {
-            sample["name"]: self.sample_view.create_sample(
-                sample["name"],
-                sample_id=sample.get("sample_id", None),
-                tags=sample.get("tags", []),
-                metadata=sample.get("metadata", {}),
-            )
-            for sample in samples
-        }
+        # create samples in the sample database (or reuse existing when flagged)
+        sample_ids: dict[str, ObjectId] = {}
+        for sample in samples:
+            existing_id = sample.get("sample_id", None)
+            if sample.get("reuse_existing") and existing_id is not None:
+                oid = (
+                    existing_id
+                    if isinstance(existing_id, ObjectId)
+                    else ObjectId(existing_id)
+                )
+                if not self.sample_view.exists(sample_id=oid):
+                    self.experiment_view.update_experiment_status(
+                        experiment["_id"], ExperimentStatus.ERROR
+                    )
+                    cli_logger.info(
+                        f"Experiment ({experiment['_id']}) reuse_existing sample "
+                        f"{oid} was not found."
+                    )
+                    return
+                sample_ids[sample["name"]] = oid
+            else:
+                sample_ids[sample["name"]] = self.sample_view.create_sample(
+                    sample["name"],
+                    sample_id=existing_id,
+                    tags=sample.get("tags", []),
+                    metadata=sample.get("metadata", {}),
+                )
 
         # create tasks in the task database
         task_ids = []

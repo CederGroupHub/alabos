@@ -93,8 +93,11 @@ class ExperimentView:
                 continue  # ALabOS will assign a sample id, this is always safe
             sample["sample_id"] = ObjectId(sample["sample_id"])
             if self.sample_view.exists(sample_id=sample["sample_id"]):
+                # Free-form / provenance path may attach tasks to an existing sample.
+                if sample.get("reuse_existing"):
+                    continue
                 raise ValueError(
-                    f"Sample id {sample.sample_id} already exists in the database! Please use another id. This "
+                    f"Sample id {sample['sample_id']} already exists in the database! Please use another id. This "
                     f"experiment was not submitted."
                 )
 

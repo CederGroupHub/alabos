@@ -1,39 +1,30 @@
-# Custom Data reports (Cursor generators)
+# Custom Data reports (Cursor `/alab-data-report` + MCP `alab-data-reports`)
 
-Operators ask Cursor for a custom table on the **Data** page. Cursor writes a **read-only** Python generator and registers it in Mongo. The dashboard shows a snapshot, can **Refresh** (re-run for fresh data), and can **Save** the registry entry for reuse.
+Operators create, change, or delete custom tables on the **Data** page from the **Cursor agent window** using slash command **`/alab-data-report`** (see `.cursor/commands/alab-data-report.md`). The agent writes a **read-only** Python generator and registers it via the **alab-data-reports** MCP (same HTTP APIs as the dashboard). The Data page shows a snapshot, can **Refresh**, and can **Download CSV**.
 
-## Data page “Ask for a report” (Cursor SDK)
+There is no in-UI “Ask for a report” Cursor box anymore.
 
-The Data UI includes a freeform box that starts a **local** Cursor agent against this repo. The agent is always given the pipeline instructions below (generator module + registry upsert).
+## Setup
 
-### Server setup
+1. Enable the MCP server (repo [`.cursor/mcp.json`](../.cursor/mcp.json)):
 
-1. Install the optional SDK package in the management env:
-
-```bash
-pip install "alab_management[data_reports]"
-# or: pip install cursor-sdk
+```json
+{
+  "mcpServers": {
+    "alab-data-reports": {
+      "command": "python",
+      "args": ["-m", "alab_management.mcp_data_reports"],
+      "env": { "ALAB_DASHBOARD_BASE": "http://127.0.0.1:8895" }
+    }
+  }
+}
 ```
 
-2. Set a Cursor API key on the **dashboard process** (not in git):
+2. AlabOS dashboard must be reachable at `ALAB_DASHBOARD_BASE` (default `http://127.0.0.1:8895`).
 
-```powershell
-$env:CURSOR_API_KEY = "cursor_..."
-```
+3. In Cursor: `/alab-data-report` then describe create / change / delete.
 
-Create a key at [Cursor Dashboard → Integrations](https://cursor.com/dashboard/integrations). Restart the dashboard after setting the key so the process inherits it.
-
-Optional env vars:
-
-```text
-ALAB_MANAGEMENT_ROOT=C:\path\to\alab_management   # agent cwd; default = package repo root
-ALAB_DASHBOARD_BASE=http://127.0.0.1:8895          # where the agent POSTs /api/data/reports
-CURSOR_DATA_REPORT_MODEL=composer-2.5
-```
-
-3. On the Data page: describe the table → **Submit** → wait for status `succeeded` → catalog reloads → **Refresh** the new report.
-
-If `CURSOR_API_KEY` or `cursor-sdk` is missing, Submit returns HTTP 503 with a clear error.
+Optional: `python -m alab_management.mcp_data_reports` or console script `alab-data-reports-mcp`.
 
 ## Contract
 
@@ -66,6 +57,7 @@ Rules:
 - `live_db` / `completed_db` are read-only wrappers; writes raise.
 - Module name: lowercase snake_case; loaded only from `user_reports`.
 - Return at most **5000** rows.
+- Write files as **UTF-8** (prefer Write/StrReplace; avoid PowerShell `Set-Content` / `Out-File`).
 
 ## Registry document (`Alab.data_reports`)
 
@@ -86,7 +78,18 @@ Rules:
 }
 ```
 
-Insert via Mongo MCP or `POST /api/data/reports`. Then open Data → pick the report → **Refresh**.
+Register via MCP `register_data_report` or `POST /api/data/reports`. Then open Data → pick the report (catalog polls) → Refresh if needed.
+
+## MCP tools
+
+| Tool | Maps to |
+|------|---------|
+| `list_data_reports` | `GET /api/data/reports` |
+| `register_data_report` | `POST /api/data/reports` |
+| `update_data_report` | `PATCH /api/data/reports/<name>` |
+| `delete_data_report` | `DELETE /api/data/reports/<name>` |
+| `refresh_data_report` | `POST /api/data/reports/<name>/refresh` |
+| `get_data_report_rows` | `GET /api/data/reports/<name>/rows` |
 
 ## API (dashboard)
 
@@ -99,11 +102,8 @@ Insert via Mongo MCP or `POST /api/data/reports`. Then open Data → pick the re
 | POST | `/api/data/reports` | Register metadata |
 | PATCH | `/api/data/reports/<name>` | Save flag / title |
 | DELETE | `/api/data/reports/<name>` | Non-builtins only |
-| POST | `/api/data/report_jobs` | Start Cursor agent job (`{prompt}`) |
-| GET | `/api/data/report_jobs/<id>` | Job status + log |
-| GET | `/api/data/report_jobs/current` | Latest/active job |
 
-Builtins (`sample_report`, `sample_summary`, `powder_dosing_actuals`, `task_outcome_log`) are seeded automatically.
+Builtins (`sample_report`, `sample_summary`, `powder_dosing_actuals`, `task_outcome_log`) are seeded automatically and must not be overwritten or deleted via `/alab-data-report`.
 
 ## Helper for both databases
 
@@ -120,14 +120,18 @@ docs = find_union(
 
 ## UI behavior
 
-- **Ask for a report** = local Cursor agent writes `user_reports/<slug>.py` + registers it; then Reload catalog / select / Refresh.
+- **Create / change / delete** = Cursor `/alab-data-report` + MCP `alab-data-reports` (not an in-page text box).
+- Catalog **polls** while Data is open so new/updated/removed reports appear quickly.
 - **Open** = last snapshot (instant).
-- **Refresh** = re-import the generator module from disk (no AlabOS restart) and call `run(...)` with the page date range → update snapshot.
+- **Refresh** = re-import the generator module from disk and call `run(...)` with the page date range.
 - **Save** = mark `saved: true` (does not recompute).
 - **CSV** = current snapshot.
+- **Fullscreen** = expand the table for a large view.
 
-Browser reload alone only shows the **last saved snapshot**. After editing a generator (columns, queries, etc.), click **Refresh** on that panel to pick up the new code.
+Browser reload alone only shows the **last saved snapshot**. After editing a generator, click **Refresh** (or let `/alab-data-report` call `refresh_data_report`) to pick up the new code.
 
-### Manual smoke (after key + SDK install)
+## Multi-user / lab PC visibility
 
-Submit: “samples created in the date range with name and created_at” → new dropdown entry → Refresh → rows.
+**Policy:** Operators may only run `/alab-data-report` and the `alab-data-reports` MCP **on the computer that serves AlabOS** (the host bound to port 8895). Use `ALAB_DASHBOARD_BASE=http://127.0.0.1:8895` on that machine.
+
+Anyone else browsing `http://<lab-ip>:8895` then sees the same catalog and snapshots automatically (shared Mongo + shared `user_reports/` on that host). Do not author reports from a remote laptop pointed at `192.168…:8895` — the generator file would not exist on the AlabOS filesystem and Refresh would fail.

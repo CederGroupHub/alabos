@@ -83,7 +83,18 @@ def test_normalize_report_result_truncates_long_cells() -> None:
     assert len(out["rows"][0]["name"]) == reports.MAX_CELL_CHARS + 1  # includes ellipsis
 
 
-def test_delete_report_blocks_builtins(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_list_reports_orders_newest_created_first(monkeypatch: pytest.MonkeyPatch) -> None:
+    coll = MagicMock()
+    coll.find.return_value = [
+        {"name": "older", "title": "Older", "created_at": "2026-01-01T00:00:00"},
+        {"name": "newer", "title": "Newer", "created_at": "2026-09-01T00:00:00"},
+        {"name": "no_ts", "title": "No Timestamp"},
+    ]
+    monkeypatch.setattr(reports, "reports_collection", lambda: coll)
+    monkeypatch.setattr(reports, "make_jsonable", lambda doc: dict(doc))
+    items = reports.list_reports(enabled_only=False)
+    assert [item["name"] for item in items] == ["newer", "older", "no_ts"]
+
     coll = MagicMock()
     coll.find_one.return_value = {"name": "sample_report", "builtin": True}
     monkeypatch.setattr(reports, "reports_collection", lambda: coll)

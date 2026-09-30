@@ -8,6 +8,7 @@ import MobileRobotControl from './components/MobileRobotControl';
 import Data from './components/Data';
 import Logs from './components/Logs';
 import Experiments from './components/Experiments';
+import Submissions from './components/Submissions';
 import SamplePositions from './components/SamplePositions';
 import LabSettings from './components/LabSettings';
 import styled from 'styled-components';
@@ -24,6 +25,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import BuildIcon from '@mui/icons-material/Build';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import ArticleIcon from '@mui/icons-material/Article';
+import PostAddIcon from '@mui/icons-material/PostAdd';
 import UserInputs from './components/UserInput';
 import LabNotReadyGate from './components/LabNotReadyGate';
 import Badge from '@mui/material/Badge';
@@ -136,6 +138,16 @@ function Sidebar({ hoverForId, setHoverForId, handleHoverForIdChange, onOpenUser
 
   const drawerContents = (
     <List sx={{ [`& .MuiListItem-root`]: { padding: "4px 8px" } }}>
+      <ListItem>
+        <LinkedButton to="/#submissions">
+          <ListItemButton className={hash === "#submissions" ? "active list-button-round" : "list-button-round"}>
+            <ListItemIcon>
+              <PostAddIcon />
+            </ListItemIcon>
+            <ListItemText primary="Submissions" />
+          </ListItemButton>
+        </LinkedButton>
+      </ListItem>
       <ListItem>
         <LinkedButton to="/#experiment">
           <ListItemButton className={hash === "#experiment" || hash === "" ? "active list-button-round" : "list-button-round"}>
@@ -526,6 +538,8 @@ function Dashboard() {
             onFocusHandled={() => setFocusUserInputRequestId(null)}
           />
         );
+      case "#submissions":
+        return <Submissions />;
       case "#experiment":
       case "":
         return <Experiments hoverForId={hoverForId} />

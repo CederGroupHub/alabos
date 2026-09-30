@@ -1,11 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
+  AppBar,
+  Autocomplete,
   Box,
   Button,
   Card,
   CardContent,
-  Chip,
   CircularProgress,
   Dialog,
   DialogActions,
@@ -24,20 +25,20 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Toolbar,
   Tooltip,
   Typography,
 } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import CloseIcon from '@mui/icons-material/Close';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import {
-  create_data_report_job,
   dataReportCsvHref,
-  get_current_data_report_job,
-  get_data_report_job,
   get_data_report_rows,
   get_data_reports,
   get_data_window,
@@ -47,12 +48,46 @@ import {
 
 const ALL_FIELDS = 'all';
 const PREVIEW_LIMIT = 25;
-const DEFAULT_REPORTS = [
-  'sample_report',
-  'sample_summary',
-  'powder_dosing_actuals',
-  'task_outcome_log',
-];
+const CATALOG_POLL_MS = 4000;
+const FALLBACK_REPORT = 'sample_report';
+const DATA_RANGE_STORAGE_KEY = 'alab.data.date_range';
+const COLUMN_WIDTH_STORAGE_PREFIX = 'alab.data.col_widths.';
+const MIN_COLUMN_WIDTH = 48;
+const DEFAULT_COLUMN_WIDTH = 132;
+const EXPAND_COLUMN_WIDTH = 36;
+
+function loadPersistedDateRange() {
+  try {
+    const raw = window.localStorage.getItem(DATA_RANGE_STORAGE_KEY);
+    if (!raw) {
+      return null;
+    }
+    const parsed = JSON.parse(raw);
+    const start = parsed?.start;
+    const end = parsed?.end;
+    const isoDay = /^\d{4}-\d{2}-\d{2}$/;
+    if (typeof start === 'string' && typeof end === 'string' && isoDay.test(start) && isoDay.test(end) && end >= start) {
+      return { start, end };
+    }
+  } catch (err) {
+    // Ignore corrupt / unavailable storage.
+  }
+  return null;
+}
+
+function persistDateRange(range) {
+  if (!range?.start || !range?.end) {
+    return;
+  }
+  try {
+    window.localStorage.setItem(
+      DATA_RANGE_STORAGE_KEY,
+      JSON.stringify({ start: range.start, end: range.end }),
+    );
+  } catch (err) {
+    // Ignore quota / private-mode failures.
+  }
+}
 
 function cellText(value) {
   if (Array.isArray(value)) {
@@ -62,6 +97,78 @@ function cellText(value) {
     return '';
   }
   return String(value);
+}
+
+function reportCreatedDate(report) {
+  const raw = report?.created_at;
+  if (!raw) {
+    return null;
+  }
+  const date = new Date(raw);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+  return date;
+}
+
+function reportCreatedDay(report) {
+  const date = reportCreatedDate(report);
+  if (!date) {
+    return '';
+  }
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+function reportCreatedLabel(report) {
+  const date = reportCreatedDate(report);
+  if (!date) {
+    return '—';
+  }
+  return date.toLocaleString();
+}
+
+function reportOptionLabel(report) {
+  if (!report) {
+    return '';
+  }
+  const title = report.title || report.name || '';
+  const suffix = report.builtin ? ' (builtin)' : (report.saved ? '' : ' · draft');
+  return `${title}${suffix}`;
+}
+
+function filterCatalog(catalog, nameQuery, dateQuery) {
+  const nameNeedle = nameQuery.trim().toLowerCase();
+  const dateNeedle = dateQuery.trim().toLowerCase();
+  return catalog.filter((report) => {
+    if (nameNeedle) {
+      const hay = `${report.title || ''} ${report.name || ''}`.toLowerCase();
+      if (!hay.includes(nameNeedle)) {
+        return false;
+      }
+    }
+    if (dateNeedle) {
+      const day = reportCreatedDay(report).toLowerCase();
+      const label = reportCreatedLabel(report).toLowerCase();
+      const raw = String(report.created_at || '').toLowerCase();
+      if (!day.includes(dateNeedle) && !label.includes(dateNeedle) && !raw.includes(dateNeedle)) {
+        return false;
+      }
+    }
+    return true;
+  });
+}
+
+function pickDefaultReport(reports, preferred) {
+  if (preferred && reports.some((report) => report.name === preferred)) {
+    return preferred;
+  }
+  if (reports.some((report) => report.name === FALLBACK_REPORT)) {
+    return FALLBACK_REPORT;
+  }
+  return reports[0]?.name || '';
 }
 
 function rowMatchesQuery(row, columns, query, fieldKey) {
@@ -81,6 +188,347 @@ function rowMatchesQuery(row, columns, query, fieldKey) {
 
 function filterRows(rows, columns, query, fieldKey) {
   return rows.filter((row) => rowMatchesQuery(row, columns, query, fieldKey));
+}
+
+function defaultColumnWidth(column) {
+  const label = column?.label || column?.key || '';
+  return Math.min(420, Math.max(DEFAULT_COLUMN_WIDTH, label.length * 8 + 32));
+}
+
+function loadPersistedColumnWidths(reportName) {
+  if (!reportName) {
+    return {};
+  }
+  try {
+    const raw = window.localStorage.getItem(`${COLUMN_WIDTH_STORAGE_PREFIX}${reportName}`);
+    if (!raw) {
+      return {};
+    }
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') {
+      return {};
+    }
+    const widths = {};
+    Object.entries(parsed).forEach(([key, value]) => {
+      if (typeof value === 'number' && Number.isFinite(value)) {
+        widths[key] = Math.max(MIN_COLUMN_WIDTH, value);
+      }
+    });
+    return widths;
+  } catch (err) {
+    return {};
+  }
+}
+
+function persistColumnWidths(reportName, widths) {
+  if (!reportName || !widths) {
+    return;
+  }
+  try {
+    window.localStorage.setItem(
+      `${COLUMN_WIDTH_STORAGE_PREFIX}${reportName}`,
+      JSON.stringify(widths),
+    );
+  } catch (err) {
+    // Ignore quota / private-mode failures.
+  }
+}
+
+function useReportColumnWidths(reportName, columns) {
+  const [widths, setWidths] = useState({});
+  const persistTimerRef = useRef(null);
+
+  useEffect(() => {
+    const keys = new Set(columns.map((column) => column.key));
+    const persisted = loadPersistedColumnWidths(reportName);
+    const next = {};
+    columns.forEach((column) => {
+      if (persisted[column.key] != null) {
+        next[column.key] = persisted[column.key];
+      } else if (widths[column.key] != null) {
+        next[column.key] = widths[column.key];
+      } else {
+        next[column.key] = defaultColumnWidth(column);
+      }
+    });
+    Object.keys(widths).forEach((key) => {
+      if (!keys.has(key)) {
+        delete next[key];
+      }
+    });
+    setWidths(next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- reset when report/column set changes
+  }, [reportName, columns.map((column) => column.key).join('\0')]);
+
+  useEffect(() => {
+    if (!reportName) {
+      return undefined;
+    }
+    if (persistTimerRef.current) {
+      clearTimeout(persistTimerRef.current);
+    }
+    persistTimerRef.current = setTimeout(() => {
+      persistColumnWidths(reportName, widths);
+    }, 300);
+    return () => {
+      if (persistTimerRef.current) {
+        clearTimeout(persistTimerRef.current);
+      }
+    };
+  }, [reportName, widths]);
+
+  const getWidth = useCallback(
+    (columnKey) => {
+      if (widths[columnKey] != null) {
+        return widths[columnKey];
+      }
+      const column = columns.find((entry) => entry.key === columnKey);
+      return column ? defaultColumnWidth(column) : DEFAULT_COLUMN_WIDTH;
+    },
+    [columns, widths],
+  );
+
+  const startColumnResize = useCallback((event, columnKey) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const startX = event.clientX;
+    const startWidth = widths[columnKey] ?? DEFAULT_COLUMN_WIDTH;
+
+    const onMove = (moveEvent) => {
+      const delta = moveEvent.clientX - startX;
+      const nextWidth = Math.max(MIN_COLUMN_WIDTH, startWidth + delta);
+      setWidths((prev) => ({ ...prev, [columnKey]: nextWidth }));
+    };
+
+    const onUp = () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  }, [widths]);
+
+  const columnCellSx = useCallback(
+    (columnKey) => ({
+      width: getWidth(columnKey),
+      minWidth: getWidth(columnKey),
+      maxWidth: getWidth(columnKey),
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+      verticalAlign: 'top',
+    }),
+    [getWidth],
+  );
+
+  const tableMinWidth = useMemo(() => {
+    let total = columns.reduce((sum, column) => sum + getWidth(column.key), 0);
+    return total;
+  }, [columns, getWidth]);
+
+  return {
+    getWidth,
+    startColumnResize,
+    columnCellSx,
+    tableMinWidth,
+  };
+}
+
+function ColumnResizeHandle({ onMouseDown }) {
+  return (
+    <Box
+      role="separator"
+      aria-orientation="vertical"
+      aria-label="Resize column"
+      onMouseDown={onMouseDown}
+      onClick={(event) => event.stopPropagation()}
+      sx={{
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        width: 10,
+        height: '100%',
+        cursor: 'col-resize',
+        zIndex: 2,
+        '&::after': {
+          content: '""',
+          position: 'absolute',
+          top: '20%',
+          bottom: '20%',
+          right: 4,
+          width: 2,
+          borderRadius: 1,
+          bgcolor: 'action.disabled',
+          opacity: 0.6,
+          transition: 'opacity 0.15s',
+        },
+        '&:hover::after': {
+          opacity: 1,
+          bgcolor: 'primary.main',
+        },
+      }}
+    />
+  );
+}
+
+function ResizableHeaderCell({ label, width, onResizeStart }) {
+  return (
+    <TableCell
+      sx={{
+        width,
+        minWidth: width,
+        maxWidth: width,
+        position: 'relative',
+        overflow: 'hidden',
+        userSelect: 'none',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
+        pr: 1.5,
+      }}
+    >
+      <Box component="span" sx={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        {label}
+      </Box>
+      <ColumnResizeHandle onMouseDown={onResizeStart} />
+    </TableCell>
+  );
+}
+
+function ReportDataTable({
+  columns,
+  rows,
+  isSampleDetail,
+  openName,
+  setOpenName,
+  columnWidths,
+}) {
+  const { getWidth, startColumnResize, columnCellSx, tableMinWidth } = columnWidths;
+
+  const renderBodyCell = (row, column) => (
+    <TableCell key={column.key} sx={columnCellSx(column.key)}>
+      {column.key === 'target_masses' || column.key === 'actual_masses' ? (
+        <PowderMassCell
+          powders={row.powders}
+          field={column.key === 'target_masses' ? 'target_mass' : 'actual_mass'}
+          fallback={row[column.key]}
+        />
+      ) : (
+        cellText(row[column.key])
+      )}
+    </TableCell>
+  );
+
+  return (
+    <Table stickyHeader size="small" sx={{ tableLayout: 'fixed', minWidth: tableMinWidth + (isSampleDetail ? EXPAND_COLUMN_WIDTH : 0) }}>
+      <TableHead>
+        <TableRow>
+          {isSampleDetail && (
+            <TableCell
+              sx={{
+                width: EXPAND_COLUMN_WIDTH,
+                minWidth: EXPAND_COLUMN_WIDTH,
+                maxWidth: EXPAND_COLUMN_WIDTH,
+              }}
+            />
+          )}
+          {columns.map((column) => (
+            <ResizableHeaderCell
+              key={column.key}
+              label={column.label}
+              width={getWidth(column.key)}
+              onResizeStart={(event) => startColumnResize(event, column.key)}
+            />
+          ))}
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {rows.map((row, index) => {
+          const rowKey = row.name || row.sample_id || row.task_id || index;
+          const open = isSampleDetail && openName === row.name;
+          return (
+            <React.Fragment key={rowKey}>
+              <TableRow
+                hover={isSampleDetail}
+                sx={isSampleDetail ? { cursor: 'pointer' } : undefined}
+                onClick={
+                  isSampleDetail
+                    ? () => setOpenName(open ? null : row.name)
+                    : undefined
+                }
+              >
+                {isSampleDetail && (
+                  <TableCell sx={{ width: EXPAND_COLUMN_WIDTH, minWidth: EXPAND_COLUMN_WIDTH }}>
+                    <IconButton size="small" aria-label={open ? 'Collapse' : 'Expand'}>
+                      {open ? <KeyboardArrowDownIcon /> : <KeyboardArrowRightIcon />}
+                    </IconButton>
+                  </TableCell>
+                )}
+                {columns.map((column) => renderBodyCell(row, column))}
+              </TableRow>
+              {open && (
+                <TableRow>
+                  <TableCell colSpan={columns.length + 1}>
+                    <Stack spacing={1.5} sx={{ py: 1 }}>
+                      <Typography variant="caption" color="text.secondary">
+                        {`IDs: ${cellText(row.sample_ids)}`}
+                      </Typography>
+                      {(row.powders || []).length > 0 && (
+                        <Table size="small">
+                          <TableHead>
+                            <TableRow>
+                              <TableCell>Powder</TableCell>
+                              <TableCell>Target</TableCell>
+                              <TableCell>Actual</TableCell>
+                              <TableCell>Delta</TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {row.powders.map((powder, powderIndex) => (
+                              <TableRow key={`${row.name}-p-${powderIndex}`}>
+                                <TableCell>{cellText(powder.powder_name)}</TableCell>
+                                <TableCell>{cellText(powder.target_mass)}</TableCell>
+                                <TableCell>{cellText(powder.actual_mass)}</TableCell>
+                                <TableCell>{cellText(powder.delta_mass)}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      )}
+                      {(row.related_tasks || []).length > 0 && (
+                        <Table size="small">
+                          <TableHead>
+                            <TableRow>
+                              <TableCell>Task</TableCell>
+                              <TableCell>Status</TableCell>
+                              <TableCell>Task ID</TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {row.related_tasks.map((task) => (
+                              <TableRow key={task.task_id}>
+                                <TableCell>{cellText(task.type)}</TableCell>
+                                <TableCell>{cellText(task.status)}</TableCell>
+                                <TableCell>{cellText(task.task_id)}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      )}
+                    </Stack>
+                  </TableCell>
+                </TableRow>
+              )}
+            </React.Fragment>
+          );
+        })}
+      </TableBody>
+    </Table>
+  );
 }
 
 function powderMassLines(powders, field) {
@@ -176,14 +624,122 @@ function CopyableReportName({ name }) {
   );
 }
 
-function ReportPanel({
-  panelIndex,
+function ReportPicker({
   catalog,
   selectedName,
   onSelectName,
+  nameQuery,
+  onNameQueryChange,
+  dateQuery,
+  onDateQueryChange,
+}) {
+  const filtered = useMemo(() => {
+    const matches = filterCatalog(catalog, nameQuery, dateQuery);
+    if (selectedName && !matches.some((report) => report.name === selectedName)) {
+      const selected = catalog.find((report) => report.name === selectedName);
+      if (selected) {
+        return [selected, ...matches];
+      }
+    }
+    return matches;
+  }, [catalog, nameQuery, dateQuery, selectedName]);
+  const selected = catalog.find((report) => report.name === selectedName) || null;
+
+  return (
+    <Paper variant="outlined" sx={{ p: 2 }}>
+      <Stack spacing={1.5}>
+        <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+          Choose a data view
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Newest views are listed first. Filter by name or creation date when the catalog grows.
+        </Typography>
+        <Stack
+          direction={{ xs: 'column', md: 'row' }}
+          spacing={1.5}
+          alignItems={{ xs: 'stretch', md: 'flex-start' }}
+        >
+          <TextField
+            size="small"
+            fullWidth
+            label="Search by name"
+            placeholder="Title or slug…"
+            value={nameQuery}
+            onChange={(event) => onNameQueryChange(event.target.value)}
+          />
+          <TextField
+            size="small"
+            fullWidth
+            label="Search by creation date"
+            placeholder="e.g. 2026-09-23"
+            value={dateQuery}
+            onChange={(event) => onDateQueryChange(event.target.value)}
+            helperText="Matches YYYY-MM-DD or the local date shown in the list"
+          />
+          <Button
+            variant="text"
+            onClick={() => {
+              onNameQueryChange('');
+              onDateQueryChange('');
+            }}
+            disabled={!nameQuery && !dateQuery}
+            sx={{ flexShrink: 0, alignSelf: { md: 'center' } }}
+          >
+            Clear filters
+          </Button>
+        </Stack>
+        <Autocomplete
+          options={filtered}
+          value={selected}
+          onChange={(_event, next) => onSelectName(next?.name || '')}
+          getOptionLabel={reportOptionLabel}
+          isOptionEqualToValue={(option, value) => option?.name === value?.name}
+          noOptionsText={
+            catalog.length === 0
+              ? 'No data views in catalog'
+              : 'No views match these filters'
+          }
+          ListboxProps={{ style: { maxHeight: 320 } }}
+          renderOption={(props, option) => (
+            <li {...props} key={option.name}>
+              <Box sx={{ py: 0.25, minWidth: 0 }}>
+                <Typography variant="body2" noWrap>
+                  {reportOptionLabel(option)}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" display="block" noWrap>
+                  {option.name}
+                  {' · created '}
+                  {reportCreatedLabel(option)}
+                </Typography>
+              </Box>
+            </li>
+          )}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Data view"
+              placeholder="Select a data view"
+              helperText={
+                filtered.length === catalog.length
+                  ? `${catalog.length} view${catalog.length === 1 ? '' : 's'} in catalog`
+                  : `${filtered.length} of ${catalog.length} views match filters`
+              }
+            />
+          )}
+        />
+      </Stack>
+    </Paper>
+  );
+}
+
+function ReportViewer({
+  catalog,
+  selectedName,
   appliedRange,
   searchQuery,
   searchField,
+  onSearchQueryChange,
+  onSearchFieldChange,
 }) {
   const meta = catalog.find((item) => item.name === selectedName) || null;
   const [columns, setColumns] = useState([]);
@@ -198,6 +754,7 @@ function ReportPanel({
   const [openName, setOpenName] = useState(null);
   const [saveOpen, setSaveOpen] = useState(false);
   const [saveTitle, setSaveTitle] = useState('');
+  const [fullscreen, setFullscreen] = useState(false);
 
   const loadSnapshot = useCallback(async (name) => {
     if (!name) {
@@ -282,14 +839,7 @@ function ReportPanel({
     setSaveOpen(false);
   };
 
-  const filteredRows = useMemo(
-    () => filterRows(rows, columns, searchQuery, searchField),
-    [rows, columns, searchQuery, searchField],
-  );
   const searching = Boolean(searchQuery.trim());
-  const limitActive = !searching && !showAll;
-  const displayRows = limitActive ? filteredRows.slice(0, PREVIEW_LIMIT) : filteredRows;
-  const canExpand = !searching && filteredRows.length > PREVIEW_LIMIT;
   const isSampleDetail = rowDetail === 'sample_report';
 
   const searchFieldOptions = useMemo(() => {
@@ -302,18 +852,17 @@ function ReportPanel({
     return opts;
   }, [columns]);
 
-  // Parent search field may target another panel's columns; fall back to all fields.
   const effectiveSearchField = searchFieldOptions.some((o) => o.key === searchField)
     ? searchField
     : ALL_FIELDS;
 
-  const filteredForCaption = useMemo(
+  const filteredRows = useMemo(
     () => filterRows(rows, columns, searchQuery, effectiveSearchField),
     [rows, columns, searchQuery, effectiveSearchField],
   );
-  const displayForCaption = (!searching && !showAll)
-    ? filteredForCaption.slice(0, PREVIEW_LIMIT)
-    : filteredForCaption;
+  const limitActive = !searching && !showAll;
+  const displayRows = limitActive ? filteredRows.slice(0, PREVIEW_LIMIT) : filteredRows;
+  const canExpand = !searching && filteredRows.length > PREVIEW_LIMIT;
 
   return (
     <Card variant="outlined">
@@ -326,37 +875,16 @@ function ReportPanel({
             alignItems={{ xs: 'stretch', md: 'flex-start' }}
           >
             <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Stack spacing={1.5} sx={{ maxWidth: 480 }}>
-                <Typography
-                  variant="overline"
-                  color="text.secondary"
-                  display="block"
-                  sx={{ lineHeight: 1.5, letterSpacing: '0.08em' }}
-                >
-                  Panel {panelIndex + 1}
-                </Typography>
-                <FormControl size="small" fullWidth>
-                  <InputLabel id={`report-select-${panelIndex}`}>Report</InputLabel>
-                  <Select
-                    labelId={`report-select-${panelIndex}`}
-                    label="Report"
-                    value={selectedName || ''}
-                    onChange={(event) => onSelectName(event.target.value)}
-                  >
-                    {catalog.map((report) => (
-                      <MenuItem key={report.name} value={report.name}>
-                        {report.title || report.name}
-                        {report.builtin ? ' (builtin)' : ''}
-                        {report.saved ? '' : ' · draft'}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                {selectedName && (
+              <Stack spacing={1} sx={{ maxWidth: 560 }}>
+                {selectedName ? (
                   <CopyableReportName name={meta?.title || selectedName} />
+                ) : (
+                  <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                    No data view selected
+                  </Typography>
                 )}
                 <Typography variant="body2" color="text.secondary">
-                  {meta?.description || 'Select a report.'}
+                  {meta?.description || 'Choose a data view above to show its table.'}
                 </Typography>
                 {(windowLabel || updatedAt) && (
                   <Typography variant="caption" color="text.secondary" display="block">
@@ -370,8 +898,8 @@ function ReportPanel({
                     {matchCaption({
                       searching,
                       query: searchQuery,
-                      shown: displayForCaption.length,
-                      matched: filteredForCaption.length,
+                      shown: displayRows.length,
+                      matched: filteredRows.length,
                       total: rows.length,
                     })}
                   </Typography>
@@ -403,6 +931,14 @@ function ReportPanel({
               >
                 Download CSV
               </Button>
+              <Button
+                variant="outlined"
+                startIcon={<FullscreenIcon />}
+                onClick={() => setFullscreen(true)}
+                disabled={!selectedName || columns.length === 0}
+              >
+                Fullscreen
+              </Button>
             </Stack>
           </Stack>
 
@@ -414,7 +950,7 @@ function ReportPanel({
             </Box>
           ) : !selectedName ? (
             <Typography variant="body2" color="text.secondary">
-              Choose a report from the dropdown.
+              Choose a data view from the picker above.
             </Typography>
           ) : columns.length === 0 || rows.length === 0 ? (
             <Typography variant="body2" color="text.secondary">
@@ -422,7 +958,10 @@ function ReportPanel({
             </Typography>
           ) : (
             <>
-              <TableContainer component={Paper} sx={{ maxHeight: isSampleDetail ? 560 : 360 }}>
+              <TableContainer
+                component={Paper}
+                sx={{ maxHeight: fullscreen ? 'calc(100vh - 200px)' : (isSampleDetail ? 560 : 360) }}
+              >
                 <Table stickyHeader size="small">
                   <TableHead>
                     <TableRow>
@@ -433,7 +972,7 @@ function ReportPanel({
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {displayForCaption.map((row, index) => {
+                    {displayRows.map((row, index) => {
                       const rowKey = row.name || row.sample_id || row.task_id || index;
                       const open = isSampleDetail && openName === row.name;
                       return (
@@ -530,7 +1069,7 @@ function ReportPanel({
               {canExpand && (
                 <Box>
                   <Button size="small" onClick={() => setShowAll((value) => !value)}>
-                    {showAll ? 'Show fewer rows' : `Show all ${filteredForCaption.length} rows`}
+                    {showAll ? 'Show fewer rows' : `Show all ${filteredRows.length} rows`}
                   </Button>
                 </Box>
               )}
@@ -558,13 +1097,120 @@ function ReportPanel({
           <Button variant="contained" onClick={handleSave}>Save</Button>
         </DialogActions>
       </Dialog>
+
+      <Dialog
+        fullScreen
+        open={fullscreen}
+        onClose={() => setFullscreen(false)}
+      >
+        <AppBar sx={{ position: 'relative' }} color="default" elevation={1}>
+          <Toolbar>
+            <Typography variant="h6" sx={{ flex: 1 }} noWrap>
+              {meta?.title || selectedName || 'Data view'}
+            </Typography>
+            <Button
+              color="inherit"
+              href={selectedName ? dataReportCsvHref(selectedName) : undefined}
+              disabled={!selectedName || rows.length === 0}
+              sx={{ mr: 1 }}
+            >
+              Download CSV
+            </Button>
+            <IconButton
+              edge="end"
+              color="inherit"
+              onClick={() => setFullscreen(false)}
+              aria-label="Close fullscreen"
+            >
+              <CloseIcon />
+            </IconButton>
+          </Toolbar>
+        </AppBar>
+        <Box sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+          <Typography variant="body2" color="text.secondary">
+            {meta?.description || ''}
+            {(windowLabel || updatedAt) && (
+              <>
+                {' · '}
+                {windowLabel ? `Snapshot: ${windowLabel}` : ''}
+                {windowLabel && updatedAt ? ' · ' : ''}
+                {updatedAt ? `Updated: ${cellText(updatedAt)}` : ''}
+              </>
+            )}
+          </Typography>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
+            <TextField
+              size="small"
+              fullWidth
+              label="Search rows"
+              value={searchQuery}
+              onChange={(event) => onSearchQueryChange(event.target.value)}
+            />
+            <FormControl size="small" sx={{ minWidth: 180 }}>
+              <InputLabel>Field</InputLabel>
+              <Select
+                label="Field"
+                value={effectiveSearchField}
+                onChange={(event) => onSearchFieldChange(event.target.value)}
+              >
+                {searchFieldOptions.map((option) => (
+                  <MenuItem key={option.key} value={option.key}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Stack>
+          {columns.length === 0 || rows.length === 0 ? (
+            <Typography variant="body2" color="text.secondary">
+              No snapshot yet. Click Refresh on the panel, then reopen fullscreen.
+            </Typography>
+          ) : (
+            <TableContainer component={Paper} sx={{ flex: 1, maxHeight: 'calc(100vh - 180px)' }}>
+              <Table stickyHeader size="small">
+                <TableHead>
+                  <TableRow>
+                    {columns.map((column) => (
+                      <TableCell key={column.key}>{column.label}</TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {filteredRows.map((row, index) => {
+                    const rowKey = row.name || row.sample_id || row.task_id || index;
+                    return (
+                      <TableRow key={rowKey} hover>
+                        {columns.map((column) => (
+                          <TableCell key={column.key}>
+                            {column.key === 'target_masses' || column.key === 'actual_masses' ? (
+                              <PowderMassCell
+                                powders={row.powders}
+                                field={column.key === 'target_masses' ? 'target_mass' : 'actual_mass'}
+                                fallback={row[column.key]}
+                              />
+                            ) : (
+                              cellText(row[column.key])
+                            )}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </Box>
+      </Dialog>
     </Card>
   );
 }
 
 function Data() {
   const [catalog, setCatalog] = useState([]);
-  const [panelReports, setPanelReports] = useState([...DEFAULT_REPORTS]);
+  const [selectedReport, setSelectedReport] = useState('');
+  const [catalogNameQuery, setCatalogNameQuery] = useState('');
+  const [catalogDateQuery, setCatalogDateQuery] = useState('');
   const [loadingCatalog, setLoadingCatalog] = useState(true);
   const [windowInfo, setWindowInfo] = useState(null);
   const [appliedRange, setAppliedRange] = useState(null);
@@ -573,11 +1219,7 @@ function Data() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchField, setSearchField] = useState(ALL_FIELDS);
   const [catalogError, setCatalogError] = useState('');
-  const [askPrompt, setAskPrompt] = useState('');
-  const [askJob, setAskJob] = useState(null);
-  const [askError, setAskError] = useState('');
-  const [askSuccess, setAskSuccess] = useState('');
-  const [askSubmitting, setAskSubmitting] = useState(false);
+  const knownReportNamesRef = useRef(null);
 
   const refreshWindow = useCallback(async (target = null) => {
     const windowResult = await get_data_window(target);
@@ -588,106 +1230,62 @@ function Data() {
       setAppliedRange(nextRange);
       setDraftStart(win.start_date);
       setDraftEnd(win.end_date);
+      persistDateRange(nextRange);
     }
   }, []);
 
-  const refreshCatalog = useCallback(async () => {
-    setLoadingCatalog(true);
+  const refreshCatalog = useCallback(async ({ silent = false } = {}) => {
+    if (!silent) {
+      setLoadingCatalog(true);
+    }
     try {
       const response = await get_data_reports();
       if (response?.status !== 'success') {
         throw new Error(response?.errors || 'Failed to load reports.');
       }
       const reports = response.reports || [];
+      const names = reports.map((report) => report.name);
       setCatalog(reports);
-      setPanelReports((previous) => previous.map((name, index) => {
-        if (reports.some((report) => report.name === name)) {
-          return name;
+      setSelectedReport((previous) => {
+        const known = knownReportNamesRef.current;
+        if (known) {
+          const knownSet = new Set(known);
+          const created = reports.find(
+            (report) => !report.builtin && !knownSet.has(report.name),
+          );
+          if (created) {
+            return created.name;
+          }
+          if (previous && !reports.some((report) => report.name === previous)) {
+            return pickDefaultReport(reports, null);
+          }
         }
-        return reports[index]?.name || reports[0]?.name || name;
-      }));
+        return pickDefaultReport(reports, previous);
+      });
+      knownReportNamesRef.current = names;
       setCatalogError('');
     } catch (err) {
-      setCatalogError(err.message || 'Failed to load reports.');
+      if (!silent) {
+        setCatalogError(err.message || 'Failed to load reports.');
+      }
     } finally {
-      setLoadingCatalog(false);
+      if (!silent) {
+        setLoadingCatalog(false);
+      }
     }
   }, []);
 
   useEffect(() => {
-    refreshWindow(null);
+    refreshWindow(loadPersistedDateRange());
     refreshCatalog();
   }, [refreshWindow, refreshCatalog]);
 
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const response = await get_current_data_report_job();
-      if (cancelled || response?.status !== 'success' || !response.job) {
-        return;
-      }
-      setAskJob(response.job);
-    })();
-    return () => { cancelled = true; };
-  }, []);
-
-  const askRunning = askJob && (askJob.status === 'queued' || askJob.status === 'running');
-
-  useEffect(() => {
-    if (!askJob?.id || !askRunning) {
-      return undefined;
-    }
-    const timer = window.setInterval(async () => {
-      const response = await get_data_report_job(askJob.id);
-      if (response?.status !== 'success' || !response.job) {
-        return;
-      }
-      const job = response.job;
-      setAskJob(job);
-      if (job.status === 'succeeded') {
-        setAskError('');
-        setAskSuccess(
-          job.report_name
-            ? `Created “${job.report_name}”. Select Refresh on that panel to fill the table.`
-            : 'Report agent finished. Reload catalog and Refresh the new report.',
-        );
-        await refreshCatalog();
-        if (job.report_name) {
-          setPanelReports((previous) => {
-            const copy = [...previous];
-            copy[0] = job.report_name;
-            return copy;
-          });
-        }
-      } else if (job.status === 'failed') {
-        setAskSuccess('');
-        setAskError(job.error || 'Report agent failed.');
-      }
-    }, 2000);
+    const timer = window.setInterval(() => {
+      refreshCatalog({ silent: true });
+    }, CATALOG_POLL_MS);
     return () => window.clearInterval(timer);
-  }, [askJob?.id, askRunning, refreshCatalog]);
-
-  const submitAsk = async () => {
-    const prompt = askPrompt.trim();
-    if (!prompt || askSubmitting || askRunning) {
-      return;
-    }
-    setAskSubmitting(true);
-    setAskError('');
-    setAskSuccess('');
-    try {
-      const response = await create_data_report_job(prompt);
-      if (response?.status !== 'success') {
-        throw new Error(response?.errors || 'Failed to start report agent.');
-      }
-      setAskJob(response.job);
-      setAskPrompt('');
-    } catch (err) {
-      setAskError(err.message || 'Failed to start report agent.');
-    } finally {
-      setAskSubmitting(false);
-    }
-  };
+  }, [refreshCatalog]);
 
   const goOlder = () => {
     if (!windowInfo?.older_month) {
@@ -714,16 +1312,8 @@ function Data() {
 
   const searchFieldOptions = useMemo(() => {
     const opts = [{ key: ALL_FIELDS, label: 'All fields' }];
-    // Union of column keys from catalog titles only — panels refine locally.
     return opts;
   }, []);
-
-  const askStatusColor = {
-    queued: 'default',
-    running: 'info',
-    succeeded: 'success',
-    failed: 'error',
-  }[askJob?.status] || 'default';
 
   return (
     <Stack spacing={2}>
@@ -731,7 +1321,11 @@ function Data() {
         <Box>
           <Typography variant="h5">Data</Typography>
           <Typography variant="body2" color="text.secondary">
-            Registry-backed reports. Open shows the last snapshot; Refresh re-runs the read-only generator for the selected date range.
+            Registry-backed reports. Create, change, or remove custom tables from Cursor with{' '}
+            <Typography component="span" variant="body2" sx={{ fontFamily: 'monospace' }}>
+              /alab-data-report
+            </Typography>
+            . Open shows the last snapshot; Refresh re-runs the generator for the selected date range.
           </Typography>
         </Box>
         <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
@@ -785,68 +1379,32 @@ function Data() {
         </Stack>
       </Box>
 
-      <Paper variant="outlined" sx={{ p: 2 }}>
-        <Stack spacing={1.5}>
-          <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-            Ask for a report
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Describe a table you need. A Cursor agent will write a read-only generator and register it in the Data catalog.
-          </Typography>
-          <TextField
-            multiline
-            minRows={3}
-            fullWidth
-            label="Describe the table you need"
-            placeholder="e.g. Samples created in the date range with name, created_at, and experiment id"
-            value={askPrompt}
-            onChange={(event) => setAskPrompt(event.target.value)}
-            disabled={askSubmitting || askRunning}
-          />
-          <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
-            <Button
-              variant="contained"
-              onClick={submitAsk}
-              disabled={!askPrompt.trim() || askSubmitting || askRunning}
-            >
-              {askSubmitting || askRunning ? 'Working…' : 'Submit'}
-            </Button>
-            {askJob?.status && (
-              <Chip
-                size="small"
-                label={askJob.status}
-                color={askStatusColor}
-              />
-            )}
-            {askJob?.report_name && askJob.status === 'succeeded' && (
-              <Typography variant="body2" color="text.secondary">
-                {askJob.report_name}
-              </Typography>
-            )}
-          </Stack>
-          {askError && <Alert severity="error">{askError}</Alert>}
-          {askSuccess && <Alert severity="success">{askSuccess}</Alert>}
-          {askJob?.log_tail && (
-            <Box
-              component="pre"
-              sx={{
-                m: 0,
-                p: 1.5,
-                maxHeight: 180,
-                overflow: 'auto',
-                bgcolor: 'action.hover',
-                borderRadius: 1,
-                fontFamily: 'Source Code Pro, monospace',
-                fontSize: 12,
-                whiteSpace: 'pre-wrap',
-                wordBreak: 'break-word',
-              }}
-            >
-              {askJob.log_tail}
-            </Box>
-          )}
-        </Stack>
-      </Paper>
+      <Alert severity="info" variant="outlined">
+        In Cursor, run{' '}
+        <Typography component="span" sx={{ fontFamily: 'monospace', fontWeight: 600 }}>
+          /alab-data-report
+        </Typography>
+        {' '}
+        to create, change, or delete a table. Enable the{' '}
+        <Typography component="span" sx={{ fontFamily: 'monospace' }}>
+          alab-data-reports
+        </Typography>
+        {' '}
+        MCP (dashboard on 8895). This page polls the catalog so new reports appear automatically.
+      </Alert>
+
+      {catalogError && <Alert severity="error">{catalogError}</Alert>}
+      {loadingCatalog && <CircularProgress size={28} />}
+
+      <ReportPicker
+        catalog={catalog}
+        selectedName={selectedReport}
+        onSelectName={setSelectedReport}
+        nameQuery={catalogNameQuery}
+        onNameQueryChange={setCatalogNameQuery}
+        dateQuery={catalogDateQuery}
+        onDateQueryChange={setCatalogDateQuery}
+      />
 
       <Paper variant="outlined" sx={{ p: 2 }}>
         <Stack
@@ -857,7 +1415,7 @@ function Data() {
           <TextField
             size="small"
             fullWidth
-            label="Search"
+            label="Search table rows"
             placeholder="Filter visible snapshot rows…"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
@@ -893,27 +1451,15 @@ function Data() {
         </Typography>
       </Paper>
 
-      {catalogError && <Alert severity="error">{catalogError}</Alert>}
-      {loadingCatalog && <CircularProgress size={28} />}
-
-      {panelReports.map((name, index) => (
-        <ReportPanel
-          key={`panel-${index}`}
-          panelIndex={index}
-          catalog={catalog}
-          selectedName={name}
-          onSelectName={(next) => {
-            setPanelReports((previous) => {
-              const copy = [...previous];
-              copy[index] = next;
-              return copy;
-            });
-          }}
-          appliedRange={appliedRange}
-          searchQuery={searchQuery}
-          searchField={searchField}
-        />
-      ))}
+      <ReportViewer
+        catalog={catalog}
+        selectedName={selectedReport}
+        appliedRange={appliedRange}
+        searchQuery={searchQuery}
+        searchField={searchField}
+        onSearchQueryChange={setSearchQuery}
+        onSearchFieldChange={setSearchField}
+      />
     </Stack>
   );
 }

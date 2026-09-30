@@ -1,0 +1,29 @@
+---
+description: Custom Data page reports must use user_reports generators + data_reports registry—not chat-only tables.
+alwaysApply: true
+---
+
+# Data page reports (mandatory pipeline)
+
+When the user wants a **lab data report**, **Data page table**, **reusable CSV download**, or similar (samples/tasks/experiments from Alab / Alab(completed)):
+
+## Required deliverable
+
+1. Prefer Cursor **`/alab-data-report`** + MCP **`alab-data-reports`** (create / change / delete), **only on the machine that serves AlabOS** (port 8895).
+2. Add or edit `alab_management/dashboard/user_reports/<slug>.py` with `run(*, start, end, live_db, completed_db)`.
+3. Upsert/patch/delete via MCP or `Alab.data_reports` (`generator: { type: "module", module: "<slug>" }`, `saved: true` unless draft).
+4. Tell them to open **Data** → select the report → **Refresh** / **Download CSV** (catalog polls automatically).
+
+## Forbidden as the finish line
+
+- Ending with only a markdown/CSV table in chat
+- One-off scripts under `agent_temp/` as the operator deliverable
+- Writing lab data (samples/tasks/experiments)—generators are **read-only**
+- Using the removed Data-page “Ask for a report” / `report_jobs` API
+- Running `/alab-data-report` / the data-reports MCP from a remote laptop against a lab `192.168…:8895` (file would not land on the AlabOS host)
+
+Exception: user explicitly asks for a **one-off chat dump** and not the Data page.
+
+## Details
+
+Follow `docs/AGENTS.md` (Data page reports section) and `docs/data-reports-cursor.md`. In Cursor, use slash command **`/alab-data-report`** (`.cursor/commands/alab-data-report.md`) + MCP **`alab-data-reports`**.

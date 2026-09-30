@@ -741,41 +741,6 @@ def data_report_csv(name: str):
     return _csv_response(f"{name}.csv", flat_rows)
 
 
-@data_bp.route("/report_jobs", methods=["POST"])
-def create_report_job():
-    """Start a one-shot Cursor agent job to author a Data report generator."""
-    from alab_management.dashboard import report_agent
-
-    data = request.get_json(silent=True) or {}
-    try:
-        job = report_agent.start_report_job(data.get("prompt"))
-    except report_agent.ReportAgentError as exc:
-        return jsonify({"status": "error", "errors": str(exc)}), exc.status_code
-    except Exception as exc:
-        return jsonify({"status": "error", "errors": str(exc)}), 400
-    return jsonify({"status": "success", "job": make_jsonable(job)})
-
-
-@data_bp.route("/report_jobs/current", methods=["GET"])
-def current_report_job():
-    """Return the latest/active report agent job (if any)."""
-    from alab_management.dashboard import report_agent
-
-    job = report_agent.get_current_job()
-    return jsonify({"status": "success", "job": make_jsonable(job)})
-
-
-@data_bp.route("/report_jobs/<job_id>", methods=["GET"])
-def get_report_job(job_id: str):
-    """Return status and log for a report agent job."""
-    from alab_management.dashboard import report_agent
-
-    job = report_agent.get_job(job_id)
-    if job is None:
-        return jsonify({"status": "error", "errors": f"Unknown job '{job_id}'."}), 404
-    return jsonify({"status": "success", "job": make_jsonable(job)})
-
-
 @data_bp.route("/sample_summary", methods=["GET"])
 def sample_summary():
     """Return a curated sample summary for one calendar month."""
