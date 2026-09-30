@@ -10,6 +10,7 @@ Subpackages
    alab_management.builders
    alab_management.device_view
    alab_management.experiment_view
+   alab_management.mcp_data_reports
    alab_management.resource_manager
    alab_management.sample_view
    alab_management.task_manager

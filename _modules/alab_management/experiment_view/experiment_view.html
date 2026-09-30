@@ -232,6 +232,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../alab_management.experiment_view.experiment_view.html">alab_management.experiment_view.experiment_view module</a></li>
 </ul>
 </details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.mcp_data_reports.html">alab_management.mcp_data_reports package</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../alab_management.resource_manager.html">alab_management.resource_manager package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../alab_management.resource_manager.enums.html">alab_management.resource_manager.enums module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../alab_management.resource_manager.resource_manager.html">alab_management.resource_manager.resource_manager module</a></li>
@@ -491,8 +492,11 @@
                 <span class="k">continue</span>  <span class="c1"># ALabOS will assign a sample id, this is always safe</span>
             <span class="n">sample</span><span class="p">[</span><span class="s2">"sample_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">sample</span><span class="p">[</span><span class="s2">"sample_id"</span><span class="p">])</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_view</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">sample_id</span><span class="o">=</span><span class="n">sample</span><span class="p">[</span><span class="s2">"sample_id"</span><span class="p">]):</span>
+                <span class="c1"># Free-form / provenance path may attach tasks to an existing sample.</span>
+                <span class="k">if</span> <span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"reuse_existing"</span><span class="p">):</span>
+                    <span class="k">continue</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">"Sample id </span><span class="si">{</span><span class="n">sample</span><span class="o">.</span><span class="n">sample_id</span><span class="si">}</span><span class="s2"> already exists in the database! Please use another id. This "</span>
+                    <span class="sa">f</span><span class="s2">"Sample id </span><span class="si">{</span><span class="n">sample</span><span class="p">[</span><span class="s1">'sample_id'</span><span class="p">]</span><span class="si">}</span><span class="s2"> already exists in the database! Please use another id. This "</span>
                     <span class="sa">f</span><span class="s2">"experiment was not submitted."</span>
                 <span class="p">)</span>
 

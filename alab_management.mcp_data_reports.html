@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>alab_management.builders package &#8212; Alab Management 1.1.0</title>
+    <title>alab_management.mcp_data_reports package &#8212; Alab Management 1.1.0</title>
   
   
   
@@ -46,12 +46,12 @@
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script src="_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'alab_management.builders';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'alab_management.mcp_data_reports';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="alab_management.builders.experimentbuilder module" href="alab_management.builders.experimentbuilder.html" />
-    <link rel="prev" title="alab_management package" href="alab_management.html" />
+    <link rel="next" title="alab_management.resource_manager package" href="alab_management.resource_manager.html" />
+    <link rel="prev" title="alab_management.experiment_view.experiment_view module" href="alab_management.experiment_view.experiment_view.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -218,7 +218,7 @@
 <li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="modules.html">API Docs</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="alab_management.html">alab_management package</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l3 current active has-children"><a class="current reference internal" href="#">alab_management.builders package</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.builders.html">alab_management.builders package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="alab_management.builders.experimentbuilder.html">alab_management.builders.experimentbuilder module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="alab_management.builders.samplebuilder.html">alab_management.builders.samplebuilder module</a></li>
 </ul>
@@ -235,7 +235,7 @@
 <li class="toctree-l4"><a class="reference internal" href="alab_management.experiment_view.experiment_view.html">alab_management.experiment_view.experiment_view module</a></li>
 </ul>
 </details></li>
-<li class="toctree-l3"><a class="reference internal" href="alab_management.mcp_data_reports.html">alab_management.mcp_data_reports package</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">alab_management.mcp_data_reports package</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="alab_management.resource_manager.html">alab_management.resource_manager package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="alab_management.resource_manager.enums.html">alab_management.resource_manager.enums module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="alab_management.resource_manager.resource_manager.html">alab_management.resource_manager.resource_manager module</a></li>
@@ -349,7 +349,7 @@
       
       
       
-      <li><a href="_sources/alab_management.builders.rst" target="_blank"
+      <li><a href="_sources/alab_management.mcp_data_reports.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -425,7 +425,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>alab_management.builders package</h1>
+    <h1>alab_management.mcp_data_reports package</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -435,8 +435,19 @@
             </div>
             <nav aria-label="Page">
                 <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-alab_management.builders">Module contents</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-alab_management.mcp_data_reports">Module contents</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.mcp_data_reports.call_tool"><code class="docutils literal notranslate"><span class="pre">call_tool()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.mcp_data_reports.dashboard_base"><code class="docutils literal notranslate"><span class="pre">dashboard_base()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.mcp_data_reports.delete_data_report"><code class="docutils literal notranslate"><span class="pre">delete_data_report()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.mcp_data_reports.get_data_report_rows"><code class="docutils literal notranslate"><span class="pre">get_data_report_rows()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.mcp_data_reports.handle_message"><code class="docutils literal notranslate"><span class="pre">handle_message()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.mcp_data_reports.list_data_reports"><code class="docutils literal notranslate"><span class="pre">list_data_reports()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.mcp_data_reports.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.mcp_data_reports.refresh_data_report"><code class="docutils literal notranslate"><span class="pre">refresh_data_report()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.mcp_data_reports.register_data_report"><code class="docutils literal notranslate"><span class="pre">register_data_report()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.mcp_data_reports.update_data_report"><code class="docutils literal notranslate"><span class="pre">update_data_report()</span></code></a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -448,42 +459,121 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="alab-management-builders-package">
-<h1>alab_management.builders package<a class="headerlink" href="#alab-management-builders-package" title="Link to this heading">#</a></h1>
-<section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">#</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="alab_management.builders.experimentbuilder.html">alab_management.builders.experimentbuilder module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.builders.experimentbuilder.html#alab_management.builders.experimentbuilder.ExperimentBuilder"><code class="docutils literal notranslate"><span class="pre">ExperimentBuilder</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="alab_management.builders.experimentbuilder.html#alab_management.builders.experimentbuilder.ExperimentBuilder.add_sample"><code class="docutils literal notranslate"><span class="pre">ExperimentBuilder.add_sample()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="alab_management.builders.experimentbuilder.html#alab_management.builders.experimentbuilder.ExperimentBuilder.add_task"><code class="docutils literal notranslate"><span class="pre">ExperimentBuilder.add_task()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="alab_management.builders.experimentbuilder.html#alab_management.builders.experimentbuilder.ExperimentBuilder.generate_input_file"><code class="docutils literal notranslate"><span class="pre">ExperimentBuilder.generate_input_file()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="alab_management.builders.experimentbuilder.html#alab_management.builders.experimentbuilder.ExperimentBuilder.plot"><code class="docutils literal notranslate"><span class="pre">ExperimentBuilder.plot()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="alab_management.builders.experimentbuilder.html#alab_management.builders.experimentbuilder.ExperimentBuilder.submit"><code class="docutils literal notranslate"><span class="pre">ExperimentBuilder.submit()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="alab_management.builders.experimentbuilder.html#alab_management.builders.experimentbuilder.ExperimentBuilder.to_dict"><code class="docutils literal notranslate"><span class="pre">ExperimentBuilder.to_dict()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.builders.experimentbuilder.html#alab_management.builders.experimentbuilder.get_experiment_result"><code class="docutils literal notranslate"><span class="pre">get_experiment_result()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.builders.experimentbuilder.html#alab_management.builders.experimentbuilder.get_experiment_status"><code class="docutils literal notranslate"><span class="pre">get_experiment_status()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="alab_management.builders.samplebuilder.html">alab_management.builders.samplebuilder module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="alab_management.builders.samplebuilder.html#alab_management.builders.samplebuilder.SampleBuilder"><code class="docutils literal notranslate"><span class="pre">SampleBuilder</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="alab_management.builders.samplebuilder.html#alab_management.builders.samplebuilder.SampleBuilder.add_task"><code class="docutils literal notranslate"><span class="pre">SampleBuilder.add_task()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="alab_management.builders.samplebuilder.html#alab_management.builders.samplebuilder.SampleBuilder.tasks"><code class="docutils literal notranslate"><span class="pre">SampleBuilder.tasks</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="alab_management.builders.samplebuilder.html#alab_management.builders.samplebuilder.SampleBuilder.to_dict"><code class="docutils literal notranslate"><span class="pre">SampleBuilder.to_dict()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="module-alab_management.builders">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-alab_management.builders" title="Link to this heading">#</a></h2>
-<p>Builders are used to create the experiment and sample objects. They are
-used to create the input file for the <cite>experiment</cite> command.</p>
+  <section id="alab-management-mcp-data-reports-package">
+<h1>alab_management.mcp_data_reports package<a class="headerlink" href="#alab-management-mcp-data-reports-package" title="Link to this heading">#</a></h1>
+<section id="module-alab_management.mcp_data_reports">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-alab_management.mcp_data_reports" title="Link to this heading">#</a></h2>
+<p>ALab Data reports MCP — stdio tools wrapping dashboard /api/data/reports.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="alab_management.mcp_data_reports.call_tool">
+<span class="sig-name descname"><span class="pre">call_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arguments</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/mcp_data_reports.html#call_tool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.mcp_data_reports.call_tool" title="Link to this definition">#</a></dt>
+<dd><p>Dispatch an MCP tool name to the matching HTTP helper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alab_management.mcp_data_reports.dashboard_base">
+<span class="sig-name descname"><span class="pre">dashboard_base</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/mcp_data_reports.html#dashboard_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.mcp_data_reports.dashboard_base" title="Link to this definition">#</a></dt>
+<dd><p>Return the AlabOS dashboard base URL (no trailing slash).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alab_management.mcp_data_reports.delete_data_report">
+<span class="sig-name descname"><span class="pre">delete_data_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/mcp_data_reports.html#delete_data_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.mcp_data_reports.delete_data_report" title="Link to this definition">#</a></dt>
+<dd><p>Delete a non-builtin report from the registry. Also delete user_reports/&lt;slug&gt;.py.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alab_management.mcp_data_reports.get_data_report_rows">
+<span class="sig-name descname"><span class="pre">get_data_report_rows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/mcp_data_reports.html#get_data_report_rows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.mcp_data_reports.get_data_report_rows" title="Link to this definition">#</a></dt>
+<dd><p>Return the stored snapshot for a report.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alab_management.mcp_data_reports.handle_message">
+<span class="sig-name descname"><span class="pre">handle_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/mcp_data_reports.html#handle_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.mcp_data_reports.handle_message" title="Link to this definition">#</a></dt>
+<dd><p>Handle one JSON-RPC message; return a response or None for notifications.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>] | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alab_management.mcp_data_reports.list_data_reports">
+<span class="sig-name descname"><span class="pre">list_data_reports</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/mcp_data_reports.html#list_data_reports"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.mcp_data_reports.list_data_reports" title="Link to this definition">#</a></dt>
+<dd><p>List enabled Data report registry entries (no row payloads).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alab_management.mcp_data_reports.main">
+<span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/mcp_data_reports.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.mcp_data_reports.main" title="Link to this definition">#</a></dt>
+<dd><p>Run MCP over stdin/stdout (one JSON-RPC object per line).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alab_management.mcp_data_reports.refresh_data_report">
+<span class="sig-name descname"><span class="pre">refresh_data_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">month</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/mcp_data_reports.html#refresh_data_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.mcp_data_reports.refresh_data_report" title="Link to this definition">#</a></dt>
+<dd><p>Re-run the generator and store a snapshot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alab_management.mcp_data_reports.register_data_report">
+<span class="sig-name descname"><span class="pre">register_data_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">saved</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created_by</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'data_report_mcp'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/mcp_data_reports.html#register_data_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.mcp_data_reports.register_data_report" title="Link to this definition">#</a></dt>
+<dd><p>Register (upsert) a module-backed report. Write user_reports/&lt;slug&gt;.py first.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alab_management.mcp_data_reports.update_data_report">
+<span class="sig-name descname"><span class="pre">update_data_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">fields</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/mcp_data_reports.html#update_data_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.mcp_data_reports.update_data_report" title="Link to this definition">#</a></dt>
+<dd><p>PATCH metadata for an existing report (title, description, enabled, saved, prompt).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -499,20 +589,20 @@ used to create the input file for the <cite>experiment</cite> command.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="alab_management.html"
+       href="alab_management.experiment_view.experiment_view.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">alab_management package</p>
+        <p class="prev-next-title">alab_management.experiment_view.experiment_view module</p>
       </div>
     </a>
     <a class="right-next"
-       href="alab_management.builders.experimentbuilder.html"
+       href="alab_management.resource_manager.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">alab_management.builders.experimentbuilder module</p>
+        <p class="prev-next-title">alab_management.resource_manager package</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -533,8 +623,19 @@ used to create the input file for the <cite>experiment</cite> command.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-alab_management.builders">Module contents</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-alab_management.mcp_data_reports">Module contents</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.mcp_data_reports.call_tool"><code class="docutils literal notranslate"><span class="pre">call_tool()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.mcp_data_reports.dashboard_base"><code class="docutils literal notranslate"><span class="pre">dashboard_base()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.mcp_data_reports.delete_data_report"><code class="docutils literal notranslate"><span class="pre">delete_data_report()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.mcp_data_reports.get_data_report_rows"><code class="docutils literal notranslate"><span class="pre">get_data_report_rows()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.mcp_data_reports.handle_message"><code class="docutils literal notranslate"><span class="pre">handle_message()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.mcp_data_reports.list_data_reports"><code class="docutils literal notranslate"><span class="pre">list_data_reports()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.mcp_data_reports.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.mcp_data_reports.refresh_data_report"><code class="docutils literal notranslate"><span class="pre">refresh_data_report()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.mcp_data_reports.register_data_report"><code class="docutils literal notranslate"><span class="pre">register_data_report()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.mcp_data_reports.update_data_report"><code class="docutils literal notranslate"><span class="pre">update_data_report()</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 
