@@ -10,13 +10,6 @@ import uuid
 from datetime import datetime
 from typing import Any
 
-from alab_one.submissions.freeform import (
-    DEVICE_BY_NAME,
-    build_heating_experiment,
-    parse_heating_params_from_prompt,
-    reject_if_multi_device,
-)
-
 DRAFT_JSON_RE = re.compile(r"DRAFT_JSON=(\{.*\})\s*$", re.DOTALL | re.MULTILINE)
 LOG_TAIL_MAX = 50_000
 DEFAULT_MODEL = "composer-2.5"
@@ -55,6 +48,19 @@ class SubmissionAgentError(Exception):
     def __init__(self, message: str, *, status_code: int = 400):
         super().__init__(message)
         self.status_code = status_code
+
+
+def _freeform():
+    """The lab-specific free-form module, imported on use so AlabOS starts without `alab_one`."""
+    try:
+        from alab_one.submissions import freeform
+    except ImportError as exception:
+        raise SubmissionAgentError(
+            "Free-form submissions need the lab-specific 'alab_one' package, "
+            f"which is not available here ({exception}).",
+            status_code=503,
+        ) from exception
+    return freeform
 
 
 def _now() -> datetime:
@@ -137,7 +143,7 @@ def _build_draft_from_params(
     physical_placement: dict[str, Any] | None,
     params: dict[str, Any],
 ) -> dict[str, Any]:
-    experiment = build_heating_experiment(
+    experiment = _freeform().build_heating_experiment(
         sample_name=sample_name,
         sample_id=sample_id,
         device_name=device_name,
@@ -222,11 +228,11 @@ def _run_job(job_id: str, payload: dict[str, Any]) -> None:
         reuse_existing = bool(payload.get("reuse_existing"))
         physical_placement = payload.get("physical_placement")
 
-        refusal = reject_if_multi_device(prompt)
+        refusal = _freeform().reject_if_multi_device(prompt)
         if refusal:
             _set_job(job_id, status="failed", error=refusal)
             return
-        if device_name not in DEVICE_BY_NAME:
+        if device_name not in _freeform().DEVICE_BY_NAME:
             _set_job(
                 job_id,
                 status="failed",
@@ -234,7 +240,7 @@ def _run_job(job_id: str, payload: dict[str, Any]) -> None:
             )
             return
 
-        params = parse_heating_params_from_prompt(prompt)
+        params = _freeform().parse_heating_params_from_prompt(prompt)
         refined = _try_cursor_refine(
             job_id,
             prompt=prompt,
@@ -275,7 +281,7 @@ def start_freeform_job(payload: dict[str, Any]) -> dict[str, Any]:
     if not sample_id or not sample_name:
         raise SubmissionAgentError("sample_id and sample_name are required")
 
-    refusal = reject_if_multi_device(prompt)
+    refusal = _freeform().reject_if_multi_device(prompt)
     if refusal:
         raise SubmissionAgentError(refusal)
 
