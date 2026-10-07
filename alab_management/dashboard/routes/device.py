@@ -32,7 +32,7 @@ MAX_SIGNAL_WINDOW = timedelta(days=30)
 MAX_SIGNAL_POINTS = 5000
 
 
-@device_bp.route("/<device_name>", methods=["GET"])
+@device_bp.route("/<path:device_name>", methods=["GET"])
 def get_device(device_name: str):
     """Everything known about one device: definition, status, attributes and samples on it.
 
@@ -74,7 +74,7 @@ def get_device(device_name: str):
     return make_jsonable({"status": "success", "data": data})
 
 
-@device_bp.route("/<device_name>/signals", methods=["GET"])
+@device_bp.route("/<path:device_name>/signals", methods=["GET"])
 def get_device_signals(device_name: str):
     """Recorded signal history for a device.
 
@@ -141,7 +141,7 @@ def get_device_signals(device_name: str):
     )
 
 
-@device_bp.route("/<device_name>/verbose-log", methods=["GET"])
+@device_bp.route("/<path:device_name>/verbose-log", methods=["GET"])
 def get_device_verbose_log(device_name: str):
     """The trailing lines of the per-device verbose log the restart launcher tails.
 
