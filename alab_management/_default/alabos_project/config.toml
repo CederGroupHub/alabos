@@ -42,3 +42,17 @@ slack_channel_id = " "
 # storage_type is defined by using LargeResult class located in alab_management/task_view/task.py
 # you can override this default configuration by setting the storage_type in the task definition
 default_storage_type = "gridfs"
+
+# Optional: the analysis Data API (/api/analysis/...). Leave the whole section out to keep the token check off,
+# which is the default; with no input_sources declared, /api/analysis/pending has nothing to offer.
+# [data_api]
+# token = ""   # when set, every /api/analysis request must carry it as the X-AlabOS-Token header
+
+# Where this lab's measurements land, so an analysis service can ask "which samples have XRD data but no result
+# of mine" without hardcoding your field names. One table per source; a source declares a field path, not a
+# query. Add "type" for a BSON type check, omit it for a plain existence check.
+# [data_api.input_sources.xrd_pattern]
+# kind = "xrd"
+# field = "metadata.xrd_measurement.xrdml"
+# type = "string"
+# description = "raw .xrdml text on the sample"
