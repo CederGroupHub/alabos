@@ -119,6 +119,24 @@ class TestDeviceVerboseLogging(TestCase):
         with self.assertRaises(ValueError):
             read_verbose_log_tail("../secret")
 
+    def test_device_names_with_a_slash_log_to_one_flat_file(self) -> None:
+        previous_dir = os.environ.get("ALABOS_VERBOSE_LOG_DIR")
+        with TemporaryDirectory() as tmp_dir:
+            os.environ["ALABOS_VERBOSE_LOG_DIR"] = tmp_dir
+            try:
+                prepare_verbose_log_files(["gpss/auto_balance"], Path(tmp_dir))
+                log_verbose_device("gpss/auto_balance", "tared")
+                self.assertTrue((Path(tmp_dir) / "gpss__auto_balance.log").exists())
+                self.assertFalse((Path(tmp_dir) / "gpss").exists())
+                payload = read_verbose_log_tail("gpss/auto_balance")
+                self.assertTrue(payload["available"])
+                self.assertTrue(payload["lines"][-1].endswith("tared"))
+            finally:
+                if previous_dir is None:
+                    os.environ.pop("ALABOS_VERBOSE_LOG_DIR", None)
+                else:
+                    os.environ["ALABOS_VERBOSE_LOG_DIR"] = previous_dir
+
     def test_get_verbose_devices(self) -> None:
         previous = os.environ.get("ALABOS_VERBOSE_DEVICES")
         os.environ["ALABOS_VERBOSE_DEVICES"] = "A, B ,C"

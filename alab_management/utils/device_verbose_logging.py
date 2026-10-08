@@ -56,13 +56,18 @@ def should_trace_robot_arm_mobile() -> bool:
     return True
 
 
+def verbose_log_filename(device_name: str) -> str:
+    """``<device_name>.log`` with path separators replaced: GPSS names such as ``gpss/auto_balance`` contain one."""
+    return device_name.replace("/", "__").replace("\\", "__") + ".log"
+
+
 def log_verbose_device(device_name: str, message: str, *args: object) -> None:
     log_dir = get_verbose_log_dir()
     log_dir.mkdir(parents=True, exist_ok=True)
     text = message % args if args else message
     timestamp = datetime.now().strftime("%H:%M:%S")
     line = f"[{timestamp}] {text}\n"
-    log_path = log_dir / f"{device_name}.log"
+    log_path = log_dir / verbose_log_filename(device_name)
     with log_path.open("a", encoding="utf-8") as handle:
         handle.write(line)
 
@@ -75,7 +80,7 @@ def emit_device_trace(device_name: str, message: str, *args: object) -> None:
 def prepare_verbose_log_files(device_names: list[str], log_dir: Path) -> None:
     log_dir.mkdir(parents=True, exist_ok=True)
     for device_name in device_names:
-        log_path = log_dir / f"{device_name}.log"
+        log_path = log_dir / verbose_log_filename(device_name)
         log_path.write_text("", encoding="utf-8")
 
 
@@ -86,10 +91,10 @@ _TAIL_READ_CHUNK = 65536
 
 
 def _safe_verbose_log_name(device_name: str) -> str:
-    """Return the log filename stem, or raise if ``device_name`` could escape the log directory."""
-    if not device_name or any(part in device_name for part in ("/", "\\", "..")):
+    """Return the log filename, or raise if ``device_name`` could escape the log directory."""
+    if not device_name or ".." in device_name:
         raise ValueError(f"Invalid device name: {device_name!r}")
-    return device_name
+    return verbose_log_filename(device_name)
 
 
 def read_verbose_log_tail(
@@ -100,13 +105,13 @@ def read_verbose_log_tail(
     Returns a dict with ``available``, ``reason``, and ``lines``. ``reason`` is ``no_file``
     when this device has not written a line yet, and ``None`` when the file exists.
     """
-    _safe_verbose_log_name(device_name)
+    log_name = _safe_verbose_log_name(device_name)
     if max_lines < 1:
         max_lines = 1
     if max_lines > MAX_VERBOSE_LOG_TAIL:
         max_lines = MAX_VERBOSE_LOG_TAIL
 
-    log_path = get_verbose_log_dir() / f"{device_name}.log"
+    log_path = get_verbose_log_dir() / log_name
     if not log_path.is_file():
         return {"available": False, "reason": "no_file", "lines": []}
 
