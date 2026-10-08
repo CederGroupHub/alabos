@@ -391,9 +391,10 @@
 <span></span><span class="sd">"""The module to send alerts to the user via email or slack."""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">smtplib</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">smtplib</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">retry.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">retry_call</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">slack_sdk</span><span class="w"> </span><span class="kn">import</span> <span class="n">WebClient</span>
@@ -451,6 +452,18 @@
 
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_alarm_secret</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">env_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Prefer a non-blank config value; otherwise read from the environment.</span>
+
+<span class="sd">    Secrets belong in ``ALABOS_ALARM_EMAIL_PASSWORD`` /</span>
+<span class="sd">    ``ALABOS_ALARM_SLACK_BOT_TOKEN``, not in committed ``config.toml``.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">value</span>
+    <span class="n">env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">env_name</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">env</span> <span class="ow">or</span> <span class="kc">None</span>
+
+
 <div class="viewcode-block" id="Alarm">
 <a class="viewcode-back" href="../../alab_management.alarm.html#alab_management.alarm.Alarm">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Alarm</span><span class="p">:</span>
@@ -469,7 +482,9 @@
 <span class="sd">            email_receivers: A list of email addresses to send the alert to.</span>
 <span class="sd">            email_sender: The email address to send the alert from.</span>
 <span class="sd">            email_password: The password for the email address to send the alert from.</span>
+<span class="sd">                If blank, uses ``ALABOS_ALARM_EMAIL_PASSWORD``.</span>
 <span class="sd">            slack_bot_token: The slack bot token to send the alert from.</span>
+<span class="sd">                If blank, uses ``ALABOS_ALARM_SLACK_BOT_TOKEN``.</span>
 <span class="sd">            slack_channel_id: The slack channel id to send the alert to.</span>
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sim_mode_flag</span> <span class="o">=</span> <span class="n">AlabOSConfig</span><span class="p">()</span><span class="o">.</span><span class="n">is_sim_mode</span><span class="p">()</span>
@@ -477,13 +492,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">slack_alert</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">email_receivers</span> <span class="o">=</span> <span class="n">email_receivers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">email_sender</span> <span class="o">=</span> <span class="n">email_sender</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">email_password</span> <span class="o">=</span> <span class="n">email_password</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">slack_bot_token</span> <span class="o">=</span> <span class="n">slack_bot_token</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">slack_channel_id</span> <span class="o">=</span> <span class="n">slack_channel_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">email_password</span> <span class="o">=</span> <span class="n">_alarm_secret</span><span class="p">(</span>
+            <span class="n">email_password</span><span class="p">,</span> <span class="s2">"ALABOS_ALARM_EMAIL_PASSWORD"</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slack_bot_token</span> <span class="o">=</span> <span class="n">_alarm_secret</span><span class="p">(</span>
+            <span class="n">slack_bot_token</span><span class="p">,</span> <span class="s2">"ALABOS_ALARM_SLACK_BOT_TOKEN"</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slack_channel_id</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">slack_channel_id</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slack_channel_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">slack_channel_id</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">email_receivers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_sender</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">email_sender</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_password</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">setup_email</span><span class="p">(</span>
