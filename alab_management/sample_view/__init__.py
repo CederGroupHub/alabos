@@ -1,5 +1,6 @@
 """Sample related things."""
 
+from .analysis_view import AnalysisView
 from .completed_sample_view import CompletedSampleView
 from .sample import (
     Sample,

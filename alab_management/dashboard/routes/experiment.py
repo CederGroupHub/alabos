@@ -58,20 +58,56 @@ def submit_new_experiment():
     }
 
 
-def get_experiment_progress(exp_id: str):
-    """Get the progress of an experiment."""
+def _task_status_or_none(task_id) -> TaskStatus | None:
+    """The task's status, or None while its document does not exist yet.
+
+    An experiment is stored as PENDING at submit and its task documents are created about a second later, when
+    the ExperimentManager expands it. Between the two, every task id on the experiment refers to nothing, and
+    looking one up raises. This mirrors what ``_sample_payload_for_experiment`` already does for samples.
+    """
+    try:
+        return task_view.get_status(task_id=task_id)
+    except ValueError:
+        return None
+
+
+def _task_doc_or_placeholder(task: dict) -> dict:
+    """The task's document, or what the experiment row alone knows while the document does not exist yet.
+
+    Same window as ``_task_status_or_none``: the status comes out empty and the dashboard shows the task as not
+    started, instead of the whole page answering 500 every poll until the ExperimentManager catches up.
+    """
+    try:
+        return dict(task_view.get_task(task["task_id"]))
+    except ValueError:
+        return {"_id": task["task_id"], "type": task.get("type")}
+
+
+def get_experiment_progress(exp_id: str) -> tuple[float, bool]:
+    """Fraction of this experiment's tasks that have finished, and whether any errored.
+
+    Always a ``(progress, error)`` pair, because both callers unpack it: returning a dict here instead made an
+    error unpack into its own key names and silently put the string "status" in the response's progress field.
+    An experiment that has no task documents yet is 0.0 and not in error.
+    """
     try:
         experiment = experiment_view.get_experiment(ObjectId(exp_id))
-    except ValueError as exception:
-        return {"status": "error", "errors": exception.args[0]}
+    except (ValueError, InvalidId):
+        return 0.0, False
 
     if experiment is None:
-        return {"status": "error", "errors": "Cannot find experiment with this exp id"}
+        return 0.0, False
+
+    tasks = experiment.get("tasks") or []
+    if not tasks:
+        return 0.0, False
 
     completed_task_count = 0
     error = False
-    for task in experiment["tasks"]:
-        task_status = task_view.get_status(task_id=task["task_id"])
+    for task in tasks:
+        task_status = _task_status_or_none(task["task_id"])
+        if task_status is None:
+            continue
         if task_status in [
             TaskStatus.COMPLETED,
             TaskStatus.ERROR,
@@ -81,7 +117,7 @@ def get_experiment_progress(exp_id: str):
         if task_status == TaskStatus.ERROR:
             error = True
 
-    return completed_task_count / len(experiment["tasks"]), error
+    return completed_task_count / len(tasks), error
 
 
 @experiment_bp.route("/get_all_ids", methods=["GET"])
@@ -134,9 +170,8 @@ def query_experiment(exp_id: str):
 
     task_docs = []
     for task in experiment["tasks"]:
-        task_entry = task_view.get_task(task["task_id"])
         # Prefer experiment graph type when present; keep Mongo fields for status/edges.
-        merged = dict(task_entry)
+        merged = _task_doc_or_placeholder(task)
         merged.setdefault("type", task.get("type"))
         if task.get("type"):
             merged["type"] = task["type"]
@@ -205,6 +240,30 @@ def _completed_sample_doc(sample_id: ObjectId) -> dict | None:
         return None
 
 
+def _live_sample_metadata(sample: dict) -> dict:
+    """The sample's current metadata, falling back to what the experiment recorded at submit.
+
+    The experiment row holds the metadata as submitted. Everything a task writes afterwards through
+    ``LabView.update_sample_metadata`` -- ``diffraction_results``, ``powderdosing_results``, any analysis block --
+    lands on the sample document, so reading the experiment row returns results that are always empty and a client
+    has to go to Mongo directly to see them.
+    """
+    sample_id = sample.get("sample_id")
+    submitted = sample.get("metadata") or {}
+    if sample_id is None:
+        return submitted
+    try:
+        live = sample_view.get_sample(sample_id)
+    except ValueError:
+        live = None
+    if live is not None:
+        return live.metadata or submitted
+    archived = _completed_sample_doc(sample_id)
+    if archived is not None:
+        return archived.get("metadata") or submitted
+    return submitted
+
+
 @experiment_bp.route("/results/<exp_id>", methods=["GET"])
 def query_experiment_results(exp_id: str):
     """Find an experiment by id. This is intended for users to retrieve data from an experiment."""
@@ -234,14 +293,14 @@ def query_experiment_results(exp_id: str):
         return_dict["samples"].append(
             {
                 "name": sample["name"],
-                "metadata": sample.get("metadata", {}),
+                "metadata": _live_sample_metadata(sample),
                 "tags": sample.get("tags", []),
                 "id": str(sample["sample_id"]),
             }
         )
 
     for task in experiment["tasks"]:
-        task_entry = task_view.get_task(task["task_id"])
+        task_entry = _task_doc_or_placeholder(task)
         return_dict["tasks"].append(
             {
                 "type": task["type"],
@@ -249,10 +308,12 @@ def query_experiment_results(exp_id: str):
                 "message": task_entry.get("message", ""),
                 "result": task_entry.get("result", {}),
                 "id": str(task["task_id"]),
-                "status": task_entry["status"],
+                "status": task_entry.get("status"),
                 "started_at": task_entry.get("started_at", None),
                 "completed_at": task_entry.get("completed_at", None),
-                "samples": [sample["name"] for sample in task_entry["samples"]],
+                "samples": [
+                    sample["name"] for sample in task_entry.get("samples") or []
+                ],
                 # "subtasks": task_entry.get("subtasks", []),
             }
         )

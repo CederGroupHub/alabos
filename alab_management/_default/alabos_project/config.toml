@@ -42,3 +42,23 @@ slack_channel_id = " "
 # storage_type is defined by using LargeResult class located in alab_management/task_view/task.py
 # you can override this default configuration by setting the storage_type in the task definition
 default_storage_type = "gridfs"
+
+# Optional Data API (/api/data/...). Leave the section out to keep the token check off.
+# [data_api]
+# token = ""   # when set, requests must carry X-AlabOS-Token
+
+# Where this lab's measurements land for analysis pending queries (field path, not a Mongo filter).
+# [data_api.input_sources.xrd_pattern]
+# kind = "xrd"
+# field = "metadata.diffraction_results.logical_key"
+# description = "XRD measurement ref (logical_key) on the sample"
+
+# Named filesystem shares for artifact GET (cloud backends are a placeholder).
+# [data_api.storage.aeris]
+# backend = "filesystem"
+# root = "D:/AerisData"
+# logical_prefix = "aeris"
+# [data_api.storage.sem]
+# backend = "filesystem"
+# root = "D:/SEMData"
+# logical_prefix = "sem"
