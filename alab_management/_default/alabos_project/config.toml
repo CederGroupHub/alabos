@@ -26,14 +26,16 @@ port = 5672
 [alarm]
 # the email configuration. All the user notification will be sent to all the email_receivers in the list
 # the email_sender is the email address of the sender, e.g. alabos@xxx.com
+# Leave email_password blank in git; set ALABOS_ALARM_EMAIL_PASSWORD on the host.
 email_receivers = []
 email_sender = " "
-email_password = " "
+email_password = ""
 
 # the slack configuration. All the user notification will be sent to the slack_channel_id
-# the slack_bot_token is the token of the slack bot, you can get it from https://api.slack.com/apps
-slack_bot_token = " "
-slack_channel_id = " "
+# Leave slack_bot_token blank in git; set ALABOS_ALARM_SLACK_BOT_TOKEN on the host.
+# Token from https://api.slack.com/apps
+slack_bot_token = ""
+slack_channel_id = ""
 
 [large_result_storage]
 # the default storage configuration for tasks that generate large results 

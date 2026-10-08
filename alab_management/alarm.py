@@ -1,9 +1,10 @@
 """The module to send alerts to the user via email or slack."""
 
 import logging
+import os
+import smtplib
 
 logger = logging.getLogger(__name__)
-import smtplib
 
 from retry.api import retry_call
 from slack_sdk import WebClient
@@ -58,6 +59,18 @@ def format_message_to_codeblock(message: str) -> str:
     return formatted_message
 
 
+def _alarm_secret(value: str | None, env_name: str) -> str | None:
+    """Prefer a non-blank config value; otherwise read from the environment.
+
+    Secrets belong in ``ALABOS_ALARM_EMAIL_PASSWORD`` /
+    ``ALABOS_ALARM_SLACK_BOT_TOKEN``, not in committed ``config.toml``.
+    """
+    if isinstance(value, str) and value.strip():
+        return value
+    env = os.environ.get(env_name, "").strip()
+    return env or None
+
+
 class Alarm:
     """A class to send alerts to the user via email or slack."""
 
@@ -74,7 +87,9 @@ class Alarm:
             email_receivers: A list of email addresses to send the alert to.
             email_sender: The email address to send the alert from.
             email_password: The password for the email address to send the alert from.
+                If blank, uses ``ALABOS_ALARM_EMAIL_PASSWORD``.
             slack_bot_token: The slack bot token to send the alert from.
+                If blank, uses ``ALABOS_ALARM_SLACK_BOT_TOKEN``.
             slack_channel_id: The slack channel id to send the alert to.
         """
         self.sim_mode_flag = AlabOSConfig().is_sim_mode()
@@ -82,13 +97,22 @@ class Alarm:
         self.slack_alert = False
         self.email_receivers = email_receivers
         self.email_sender = email_sender
-        self.email_password = email_password
-        self.slack_bot_token = slack_bot_token
-        self.slack_channel_id = slack_channel_id
+        self.email_password = _alarm_secret(
+            email_password, "ALABOS_ALARM_EMAIL_PASSWORD"
+        )
+        self.slack_bot_token = _alarm_secret(
+            slack_bot_token, "ALABOS_ALARM_SLACK_BOT_TOKEN"
+        )
+        self.slack_channel_id = (
+            slack_channel_id.strip()
+            if isinstance(slack_channel_id, str) and slack_channel_id.strip()
+            else None
+        )
 
         if (
             self.email_receivers is not None
             and self.email_sender is not None
+            and str(self.email_sender).strip()
             and self.email_password is not None
         ):
             self.setup_email(
