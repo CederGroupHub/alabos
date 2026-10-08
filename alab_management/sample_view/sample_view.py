@@ -670,10 +670,14 @@ class SampleView:
         history: list[dict[str, Any]] = []
         if position is not None:
             history.append(_position_history_entry("placed", position))
+        meta = dict(metadata or {})
+        # Sample identity provenance (data-architecture §4.3). Default alabos for normal creates.
+        if "source" not in meta:
+            meta["source"] = "alabos"
         entry = {
             "name": name,
             "tags": tags or [],
-            "metadata": metadata or {},
+            "metadata": meta,
             "position": position,
             "last_position": position,
             "task_id": None,
@@ -743,6 +747,19 @@ class SampleView:
         self._sample_collection.update_one(
             {"_id": sample_id},
             {"$set": update_dict},
+        )
+
+    def append_measurement(self, sample_id: ObjectId, measurement: dict[str, Any]) -> None:
+        """Append one measurement ref onto ``metadata.measurements`` (Data API / Diffraction / SEM)."""
+        result = self._sample_collection.find_one({"_id": sample_id})
+        if result is None:
+            raise ValueError(f"Cannot find sample with id: {sample_id}")
+        self._sample_collection.update_one(
+            {"_id": sample_id},
+            {
+                "$push": {"metadata.measurements": measurement},
+                "$set": {"last_updated": datetime.now()},
+            },
         )
 
     def move_sample(self, sample_id: ObjectId, position: str | None):

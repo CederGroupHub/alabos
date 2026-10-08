@@ -4,7 +4,7 @@ from datetime import datetime
 
 import pytest
 
-from alab_management.dashboard.routes import data as data_routes
+from alab_management.dashboard.routes import data_reports as data_routes
 
 
 def test_format_range_label_full_month() -> None:

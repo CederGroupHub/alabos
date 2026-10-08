@@ -25,7 +25,9 @@ from alab_management.utils.data_objects import (
     make_jsonable,
 )
 
-data_bp = Blueprint("/data", __name__, url_prefix="/api/data")
+data_reports_bp = Blueprint("/data_reports", __name__, url_prefix="/api/data")
+# Backward-compatible alias for imports that still expect ``data_bp``.
+data_bp = data_reports_bp
 
 
 def _get_history_collection(name: str):
@@ -588,7 +590,7 @@ def _shift_month(month_key: str, delta: int) -> str:
     return f"{year:04d}-{month:02d}"
 
 
-@data_bp.route("/window", methods=["GET"])
+@data_reports_bp.route("/window", methods=["GET"])
 def data_window():
     """Return the active date window and whether older/newer periods exist."""
     try:
@@ -615,7 +617,7 @@ def data_window():
     )
 
 
-@data_bp.route("/reports", methods=["GET"])
+@data_reports_bp.route("/reports", methods=["GET"])
 def list_data_reports():
     """List enabled Data report registry entries (no row payloads)."""
     from alab_management.dashboard import data_reports as reports
@@ -628,7 +630,7 @@ def list_data_reports():
     return jsonify({"status": "success", "reports": items})
 
 
-@data_bp.route("/reports", methods=["POST"])
+@data_reports_bp.route("/reports", methods=["POST"])
 def create_data_report():
     """Register a report generator module (metadata only; does not execute code from body)."""
     from alab_management.dashboard import data_reports as reports
@@ -644,7 +646,7 @@ def create_data_report():
     return jsonify({"status": "success", "report": doc})
 
 
-@data_bp.route("/reports/<name>", methods=["PATCH"])
+@data_reports_bp.route("/reports/<name>", methods=["PATCH"])
 def patch_data_report(name: str):
     """Rename / save-flag / enable a non-destructive metadata update."""
     from alab_management.dashboard import data_reports as reports
@@ -657,7 +659,7 @@ def patch_data_report(name: str):
     return jsonify({"status": "success", "report": doc})
 
 
-@data_bp.route("/reports/<name>", methods=["DELETE"])
+@data_reports_bp.route("/reports/<name>", methods=["DELETE"])
 def delete_data_report(name: str):
     """Delete a non-builtin report."""
     from alab_management.dashboard import data_reports as reports
@@ -669,7 +671,7 @@ def delete_data_report(name: str):
     return jsonify({"status": "success", "name": name})
 
 
-@data_bp.route("/reports/<name>/rows", methods=["GET"])
+@data_reports_bp.route("/reports/<name>/rows", methods=["GET"])
 def data_report_rows(name: str):
     """Return the stored snapshot for a report."""
     from alab_management.dashboard import data_reports as reports
@@ -684,7 +686,7 @@ def data_report_rows(name: str):
     return jsonify({"status": "success", "report": snap})
 
 
-@data_bp.route("/reports/<name>/refresh", methods=["POST"])
+@data_reports_bp.route("/reports/<name>/refresh", methods=["POST"])
 def refresh_data_report(name: str):
     """Re-run the allowlisted generator and update the snapshot."""
     from alab_management.dashboard import data_reports as reports
@@ -717,7 +719,7 @@ def refresh_data_report(name: str):
     )
 
 
-@data_bp.route("/reports/<name>.csv", methods=["GET"])
+@data_reports_bp.route("/reports/<name>.csv", methods=["GET"])
 def data_report_csv(name: str):
     """Download the current snapshot as CSV."""
     from alab_management.dashboard import data_reports as reports
@@ -741,7 +743,7 @@ def data_report_csv(name: str):
     return _csv_response(f"{name}.csv", flat_rows)
 
 
-@data_bp.route("/sample_summary", methods=["GET"])
+@data_reports_bp.route("/sample_summary", methods=["GET"])
 def sample_summary():
     """Return a curated sample summary for one calendar month."""
     try:
@@ -751,7 +753,7 @@ def sample_summary():
     return jsonify(_response_payload(_sample_summary_rows(window), window))
 
 
-@data_bp.route("/powder_dosing_actuals", methods=["GET"])
+@data_reports_bp.route("/powder_dosing_actuals", methods=["GET"])
 def powder_dosing_actuals():
     """Return a curated powder dosing export for one calendar month."""
     try:
@@ -761,7 +763,7 @@ def powder_dosing_actuals():
     return jsonify(_response_payload(_powder_dosing_rows(window), window))
 
 
-@data_bp.route("/sample_report", methods=["GET"])
+@data_reports_bp.route("/sample_report", methods=["GET"])
 def sample_report():
     """Return collapsed sample reports for one calendar month."""
     try:
@@ -771,7 +773,7 @@ def sample_report():
     return jsonify(_response_payload(_sample_report_rows(window), window))
 
 
-@data_bp.route("/task_outcome_log", methods=["GET"])
+@data_reports_bp.route("/task_outcome_log", methods=["GET"])
 def task_outcome_log():
     """Return a curated task outcome log for one calendar month."""
     try:
@@ -781,7 +783,7 @@ def task_outcome_log():
     return jsonify(_response_payload(_task_outcome_rows(window), window))
 
 
-@data_bp.route("/sample_report.csv", methods=["GET"])
+@data_reports_bp.route("/sample_report.csv", methods=["GET"])
 def sample_report_csv():
     """Download the collapsed sample report as CSV."""
     try:
@@ -815,7 +817,7 @@ def sample_report_csv():
     return _csv_response("sample_report.csv", rows)
 
 
-@data_bp.route("/sample_summary.csv", methods=["GET"])
+@data_reports_bp.route("/sample_summary.csv", methods=["GET"])
 def sample_summary_csv():
     """Download the sample summary as CSV."""
     try:
@@ -825,7 +827,7 @@ def sample_summary_csv():
     return _csv_response("sample_summary.csv", _sample_summary_rows(window))
 
 
-@data_bp.route("/powder_dosing_actuals.csv", methods=["GET"])
+@data_reports_bp.route("/powder_dosing_actuals.csv", methods=["GET"])
 def powder_dosing_actuals_csv():
     """Download powder dosing actuals as CSV."""
     try:
@@ -835,7 +837,7 @@ def powder_dosing_actuals_csv():
     return _csv_response("powder_dosing_actuals.csv", _powder_dosing_rows(window))
 
 
-@data_bp.route("/task_outcome_log.csv", methods=["GET"])
+@data_reports_bp.route("/task_outcome_log.csv", methods=["GET"])
 def task_outcome_log_csv():
     """Download the task outcome log as CSV."""
     try:
