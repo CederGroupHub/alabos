@@ -243,6 +243,7 @@
 </ul>
 </details></li>
 <li class="toctree-l3 current active has-children"><a class="reference internal" href="alab_management.sample_view.html">alab_management.sample_view package</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="alab_management.sample_view.analysis_view.html">alab_management.sample_view.analysis_view module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="alab_management.sample_view.completed_sample_view.html">alab_management.sample_view.completed_sample_view module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="alab_management.sample_view.sample.html">alab_management.sample_view.sample module</a></li>
 <li class="toctree-l4 current active"><a class="current reference internal" href="#">alab_management.sample_view.sample_view module</a></li>
@@ -453,6 +454,7 @@
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView"><code class="docutils literal notranslate"><span class="pre">SampleView</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.add_sample_positions_to_db"><code class="docutils literal notranslate"><span class="pre">SampleView.add_sample_positions_to_db()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.append_measurement"><code class="docutils literal notranslate"><span class="pre">SampleView.append_measurement()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.block_sample_position"><code class="docutils literal notranslate"><span class="pre">SampleView.block_sample_position()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.clean_up_sample_position_collection"><code class="docutils literal notranslate"><span class="pre">SampleView.clean_up_sample_position_collection()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.clear_sample_in_transit"><code class="docutils literal notranslate"><span class="pre">SampleView.clear_sample_in_transit()</span></code></a></li>
@@ -602,6 +604,17 @@ we will just skip it.</p>
 <li><p><strong>sample_positions</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<a class="reference internal" href="alab_management.sample_view.sample.html#alab_management.sample_view.sample.SamplePosition" title="alab_management.sample_view.sample.SamplePosition"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplePosition</span></code></a>]</span>) – some sample position instances</p></li>
 <li><p><strong>parent_device_name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – name of the parent device to these sample_positions.</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.sample_view.sample_view.SampleView.append_measurement">
+<span class="sig-name descname"><span class="pre">append_measurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/sample_view/sample_view.html#SampleView.append_measurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.sample_view.sample_view.SampleView.append_measurement" title="Link to this definition">#</a></dt>
+<dd><p>Append one measurement ref onto <code class="docutils literal notranslate"><span class="pre">metadata.measurements</span></code> (Data API / Diffraction / SEM).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1080,6 +1093,7 @@ task-locked remain locked but become unblocked for after the lock is released.</
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView"><code class="docutils literal notranslate"><span class="pre">SampleView</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.add_sample_positions_to_db"><code class="docutils literal notranslate"><span class="pre">SampleView.add_sample_positions_to_db()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.append_measurement"><code class="docutils literal notranslate"><span class="pre">SampleView.append_measurement()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.block_sample_position"><code class="docutils literal notranslate"><span class="pre">SampleView.block_sample_position()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.clean_up_sample_position_collection"><code class="docutils literal notranslate"><span class="pre">SampleView.clean_up_sample_position_collection()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.sample_view.sample_view.SampleView.clear_sample_in_transit"><code class="docutils literal notranslate"><span class="pre">SampleView.clear_sample_in_transit()</span></code></a></li>

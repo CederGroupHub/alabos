@@ -240,6 +240,7 @@
 </ul>
 </details></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../alab_management.sample_view.html">alab_management.sample_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.sample_view.analysis_view.html">alab_management.sample_view.analysis_view module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../alab_management.sample_view.completed_sample_view.html">alab_management.sample_view.completed_sample_view module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../alab_management.sample_view.sample.html">alab_management.sample_view.sample module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../alab_management.sample_view.sample_view.html">alab_management.sample_view.sample_view module</a></li>
@@ -1126,10 +1127,14 @@
         <span class="n">history</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">position</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_position_history_entry</span><span class="p">(</span><span class="s2">"placed"</span><span class="p">,</span> <span class="n">position</span><span class="p">))</span>
+        <span class="n">meta</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">metadata</span> <span class="ow">or</span> <span class="p">{})</span>
+        <span class="c1"># Sample identity provenance (data-architecture §4.3). Default alabos for normal creates.</span>
+        <span class="k">if</span> <span class="s2">"source"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">meta</span><span class="p">:</span>
+            <span class="n">meta</span><span class="p">[</span><span class="s2">"source"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"alabos"</span>
         <span class="n">entry</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">"name"</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
             <span class="s2">"tags"</span><span class="p">:</span> <span class="n">tags</span> <span class="ow">or</span> <span class="p">[],</span>
-            <span class="s2">"metadata"</span><span class="p">:</span> <span class="n">metadata</span> <span class="ow">or</span> <span class="p">{},</span>
+            <span class="s2">"metadata"</span><span class="p">:</span> <span class="n">meta</span><span class="p">,</span>
             <span class="s2">"position"</span><span class="p">:</span> <span class="n">position</span><span class="p">,</span>
             <span class="s2">"last_position"</span><span class="p">:</span> <span class="n">position</span><span class="p">,</span>
             <span class="s2">"task_id"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
@@ -1208,6 +1213,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
             <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">},</span>
             <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="n">update_dict</span><span class="p">},</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SampleView.append_measurement">
+<a class="viewcode-back" href="../../../alab_management.sample_view.sample_view.html#alab_management.sample_view.sample_view.SampleView.append_measurement">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">measurement</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Append one measurement ref onto ``metadata.measurements`` (Data API / Diffraction / SEM)."""</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot find sample with id: </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s2">"$push"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"metadata.measurements"</span><span class="p">:</span> <span class="n">measurement</span><span class="p">},</span>
+                <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()},</span>
+            <span class="p">},</span>
         <span class="p">)</span></div>
 
 

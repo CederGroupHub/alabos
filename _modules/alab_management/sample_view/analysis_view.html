@@ -1,0 +1,949 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>alab_management.sample_view.analysis_view &#8212; Alab Management 1.1.0</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=87e54e7c" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
+
+    <script src="../../../_static/documentation_options.js?v=051bfb12"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/alab_management/sample_view/analysis_view';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Alab Management 1.1.0</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../../index.html">
+                    Overview
+                </a>
+            </li>
+        </ul>
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorial.html">Tutorial</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../setup.html">Set up configuration folder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../device_definition.html">Defining devices and sample positions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../task_definition.html">Defining tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../start_lab.html">Launching lab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../submit_experiments.html">Submitting the synthesis experiments</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html">Experimental processes definition best practices</a></li>
+
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../advance_topics.html">Advance Topics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../test.html">Testing for AlabOS Project</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../development.html">Development</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../modules.html">API Docs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../alab_management.html">alab_management package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../alab_management.builders.html">alab_management.builders package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.builders.experimentbuilder.html">alab_management.builders.experimentbuilder module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.builders.samplebuilder.html">alab_management.builders.samplebuilder module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../alab_management.device_view.html">alab_management.device_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.device_view.dbattributes.html">alab_management.device_view.dbattributes module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.device_view.device.html">alab_management.device_view.device module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.device_view.device_view.html">alab_management.device_view.device_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../alab_management.experiment_view.html">alab_management.experiment_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.experiment_view.completed_experiment_view.html">alab_management.experiment_view.completed_experiment_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.experiment_view.experiment.html">alab_management.experiment_view.experiment module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.experiment_view.experiment_view.html">alab_management.experiment_view.experiment_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.mcp_data_reports.html">alab_management.mcp_data_reports package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../alab_management.resource_manager.html">alab_management.resource_manager package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.resource_manager.enums.html">alab_management.resource_manager.enums module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.resource_manager.resource_manager.html">alab_management.resource_manager.resource_manager module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.resource_manager.resource_requester.html">alab_management.resource_manager.resource_requester module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../alab_management.sample_view.html">alab_management.sample_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.sample_view.analysis_view.html">alab_management.sample_view.analysis_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.sample_view.completed_sample_view.html">alab_management.sample_view.completed_sample_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.sample_view.sample.html">alab_management.sample_view.sample module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.sample_view.sample_view.html">alab_management.sample_view.sample_view module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../alab_management.task_manager.html">alab_management.task_manager package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.task_manager.task_manager.html">alab_management.task_manager.task_manager module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../alab_management.task_view.html">alab_management.task_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.task_view.completed_task_view.html">alab_management.task_view.completed_task_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.task_view.task.html">alab_management.task_view.task module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.task_view.task_enums.html">alab_management.task_view.task_enums module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.task_view.task_view.html">alab_management.task_view.task_view module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../alab_management.task_view.wait_messages.html">alab_management.task_view.wait_messages module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.alarm.html">alab_management.alarm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.config.html">alab_management.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.device_manager.html">alab_management.device_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.device_rpc_status.html">alab_management.device_rpc_status module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.experiment_cancel.html">alab_management.experiment_cancel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.experiment_manager.html">alab_management.experiment_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.lab_reset.html">alab_management.lab_reset module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.lab_view.html">alab_management.lab_view module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.logger.html">alab_management.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.task_actor.html">alab_management.task_actor module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.user_input.html">alab_management.user_input module</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/idocx/alab_management" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for alab_management.sample_view.analysis_view</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Analysis results and analysis claims on samples: the one implementation behind the Data API.</span>
+
+<span class="sd">This is the in-process half of decision D7/D9 in alab_one's ``docs/data-architecture.md``: an offline analysis</span>
+<span class="sd">service consumes artifacts and writes its results back *through AlabOS* onto the sample, and the HTTP routes in</span>
+<span class="sd">``alab_management/dashboard/routes/data_api.py`` (``/api/data/analysis/...``) are only an adapter over this</span>
+<span class="sd">class, so an in-process AlabOS caller and a remote client go through the same rules.</span>
+
+<span class="sd">What "one write path" does and does not mean here, spelled out because the distinction is exactly what a reviewer</span>
+<span class="sd">should check:</span>
+
+<span class="sd">- This class never builds a Mongo client of its own. Every write to the live database uses the collection handle</span>
+<span class="sd">  of the ``SampleView`` the caller hands in.</span>
+<span class="sd">- The unconditional result write (no ``owner``) goes through ``SampleView.update_sample_metadata``.</span>
+<span class="sd">- The claim-conditional result write, and every claim operation, issue their own ``update_one`` on that same</span>
+<span class="sd">  collection handle, because ``update_sample_metadata`` is unconditional and cannot express "only if I still hold</span>
+<span class="sd">  the claim". They stamp ``last_updated`` the same way it does.</span>
+<span class="sd">- ``_mirror_to_completed`` writes the *completed* database through ``CompletedSampleView``, which is a second</span>
+<span class="sd">  collection the caller did not hand in, and is the one place this class reaches past the given ``SampleView``.</span>
+
+<span class="sd">Three operations, matching what an analysis worker needs each cycle:</span>
+
+<span class="sd">- ``pending_samples``  which samples have input data for a technique but no result matching my config</span>
+<span class="sd">- ``claim`` / ``release``  so two workers never analyze the same sample (a crashed worker's claim expires on its own)</span>
+<span class="sd">- ``write_result``  store ``metadata.analysis.&lt;kind&gt;`` additively, optionally only while still holding the claim</span>
+
+<span class="sd">Both documents live under ``metadata``, side by side and never nested in each other::</span>
+
+<span class="sd">    metadata.analysis.&lt;kind&gt;         = {...the result...}</span>
+<span class="sd">    metadata.analysis_claims.&lt;kind&gt;  = {claimed_by, claimed_at, expires_at, ttl_s}</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapping</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">bson</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectId</span>  <span class="c1"># type: ignore</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">AlabOSConfig</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.sample_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">SampleView</span>
+
+<span class="n">ANALYSIS_FIELD</span> <span class="o">=</span> <span class="s2">"analysis"</span>
+<span class="n">CLAIM_FIELD</span> <span class="o">=</span> <span class="s2">"analysis_claims"</span>
+<span class="n">REQUEST_FIELD</span> <span class="o">=</span> <span class="s2">"analysis_request"</span>  <span class="c1"># written by whoever submits the sample; passed back to the caller untouched</span>
+
+<span class="n">DEFAULT_CLAIM_TTL_S</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">3600</span>
+<span class="n">MAX_CLAIM_TTL_S</span> <span class="o">=</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">3600</span>
+<span class="n">DEFAULT_PENDING_LIMIT</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">MAX_PENDING_LIMIT</span> <span class="o">=</span> <span class="mi">500</span>
+
+<span class="c1"># A claim document written before ``expires_at`` existed (an analysis worker on the older shape writes only</span>
+<span class="c1"># ``claimed_by`` / ``claimed_at``) is treated as expired this long after ``claimed_at``. Kept equal to</span>
+<span class="c1"># ``DEFAULT_CLAIM_TTL_S`` so that a deployment running both shapes applies the same lease either way.</span>
+<span class="n">LEGACY_CLAIM_TTL_S</span> <span class="o">=</span> <span class="n">DEFAULT_CLAIM_TTL_S</span>
+
+<span class="c1"># Where the input data for a technique lives. This is per-deployment knowledge -- which field a lab writes its</span>
+<span class="c1"># patterns to is a fact about that lab, not about AlabOS -- so it comes from the config file, under</span>
+<span class="c1"># ``[data_api.input_sources.&lt;name&gt;]``:</span>
+<span class="c1">#</span>
+<span class="c1">#     [data_api.input_sources.xrd_pattern]</span>
+<span class="c1">#     kind = "xrd"</span>
+<span class="c1">#     field = "metadata.xrd_measurement.xrdml"</span>
+<span class="c1">#     type = "string"                                  # optional; omit for a plain existence check</span>
+<span class="c1">#     description = "raw .xrdml text on the sample"</span>
+<span class="c1">#</span>
+<span class="c1"># A source declares a *field path*, not a Mongo filter. The caller sends a name, AlabOS builds the query. Neither</span>
+<span class="c1"># the HTTP client nor the config can hand in an arbitrary filter, which would be the same surface as handing out</span>
+<span class="c1"># the Mongo connection string.</span>
+<span class="n">CONFIG_SECTION</span> <span class="o">=</span> <span class="s2">"data_api"</span>
+<span class="n">INPUT_SOURCES_KEY</span> <span class="o">=</span> <span class="s2">"input_sources"</span>
+
+<span class="n">_IDENTIFIER</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"\A[A-Za-z_][A-Za-z0-9_]*\Z"</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="SampleNotFoundError">
+<a class="viewcode-back" href="../../../alab_management.sample_view.analysis_view.html#alab_management.sample_view.analysis_view.SampleNotFoundError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SampleNotFoundError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""No sample with the given id exists in the live database.</span>
+
+<span class="sd">    A subclass of ``ValueError`` on purpose, so in-process code written against</span>
+<span class="sd">    ``SampleView.update_sample_metadata`` -- which raises a plain ``ValueError`` for the same situation -- keeps</span>
+<span class="sd">    working, while the HTTP adapter can still answer 404 instead of lumping it in with a validation error.</span>
+<span class="sd">    """</span></div>
+
+
+
+<div class="viewcode-block" id="check_kind">
+<a class="viewcode-back" href="../../../alab_management.sample_view.analysis_view.html#alab_management.sample_view.analysis_view.check_kind">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_kind</span><span class="p">(</span><span class="n">kind</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""A ``kind`` becomes part of a Mongo field path, so only a plain identifier is accepted."""</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">_IDENTIFIER</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">kind</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"kind must be a plain identifier (letters, digits, underscore; not starting with a digit), got </span><span class="si">{</span><span class="n">kind</span><span class="si">!r}</span><span class="s2">"</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">kind</span></div>
+
+
+
+<div class="viewcode-block" id="check_result_document">
+<a class="viewcode-back" href="../../../alab_management.sample_view.analysis_view.html#alab_management.sample_view.analysis_view.check_result_document">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_result_document</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""The stored result must be a non-empty JSON object whose keys are safe as Mongo field names."""</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"result must be a JSON object, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
+        <span class="c1"># An empty block would still read as "a result exists" to every reader, and carries no ``params_hash``,</span>
+        <span class="c1"># so the sample would silently never be offered for this kind again.</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"result must not be an empty object"</span><span class="p">)</span>
+    <span class="n">_check_keys</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">ANALYSIS_FIELD</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_keys</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">: object keys must be strings, got </span><span class="si">{</span><span class="n">key</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">"."</span> <span class="ow">in</span> <span class="n">key</span> <span class="ow">or</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"$"</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: keys must not contain '.' or start with '$'"</span>
+                <span class="p">)</span>
+            <span class="n">_check_keys</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">child</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="n">_check_keys</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">]"</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="input_data_sources">
+<a class="viewcode-back" href="../../../alab_management.sample_view.analysis_view.html#alab_management.sample_view.analysis_view.input_data_sources">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">input_data_sources</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">"""The configured sources, keyed by name, read fresh so a config edit needs no restart.</span>
+
+<span class="sd">    Returns ``{}`` when the section is absent, which is the default: a deployment that has not declared where its</span>
+<span class="sd">    patterns live gets no ``pending`` query rather than a guess.</span>
+<span class="sd">    """</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">section</span> <span class="o">=</span> <span class="n">AlabOSConfig</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CONFIG_SECTION</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span>
+    <span class="n">sources</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">INPUT_SOURCES_KEY</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="c1"># The config is frozen into MappingProxyType, which is a Mapping but not a dict, so test for the former.</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">sources</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)</span>
+    <span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="data_source_query">
+<a class="viewcode-back" href="../../../alab_management.sample_view.analysis_view.html#alab_management.sample_view.analysis_view.data_source_query">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">data_source_query</span><span class="p">(</span><span class="n">data_source</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""The query that says "this sample carries the input data for that source".</span>
+
+<span class="sd">    Built here from the source's declared ``field`` (and optional BSON ``type``), so a config file cannot inject a</span>
+<span class="sd">    filter: the worst a bad entry can do is name a field that matches nothing.</span>
+<span class="sd">    """</span>
+    <span class="n">sources</span> <span class="o">=</span> <span class="n">input_data_sources</span><span class="p">()</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">sources</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">data_source</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">known</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"unknown data_source </span><span class="si">{</span><span class="n">data_source</span><span class="si">!r}</span><span class="s2">; "</span>
+            <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"configured sources: </span><span class="si">{</span><span class="n">known</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">known</span> <span class="k">else</span>
+               <span class="sa">f</span><span class="s2">"no sources are configured under [</span><span class="si">{</span><span class="n">CONFIG_SECTION</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">INPUT_SOURCES_KEY</span><span class="si">}</span><span class="s2">] in the AlabOS config"</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="n">field</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"field"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">field</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"data_source </span><span class="si">{</span><span class="n">data_source</span><span class="si">!r}</span><span class="s2"> declares no 'field' in the AlabOS config"</span><span class="p">)</span>
+    <span class="n">bson_type</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"type"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">bson_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bson_type</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"data_source </span><span class="si">{</span><span class="n">data_source</span><span class="si">!r}</span><span class="s2">: 'type' must be a string if given"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">field</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$type"</span><span class="p">:</span> <span class="n">bson_type</span><span class="p">}</span> <span class="k">if</span> <span class="n">bson_type</span> <span class="k">else</span> <span class="p">{</span><span class="s2">"$exists"</span><span class="p">:</span> <span class="kc">True</span><span class="p">}}</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_now</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_stamp</span><span class="p">(</span><span class="n">moment</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Claim timestamps as fixed-width ISO-8601 UTC strings, so Mongo's string comparison orders them correctly.</span>
+
+<span class="sd">    Fixed width is what makes ``$lte`` on ``expires_at`` work without a BSON date: the UTC offset is always</span>
+<span class="sd">    ``+00:00`` and the fraction always six digits. Everything that writes a claim must use this, since a BSON</span>
+<span class="sd">    ``Date`` would never compare equal-or-less against these strings.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">moment</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="n">timespec</span><span class="o">=</span><span class="s2">"microseconds"</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="AnalysisView">
+<a class="viewcode-back" href="../../../alab_management.sample_view.analysis_view.html#alab_management.sample_view.analysis_view.AnalysisView">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AnalysisView</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Read and write the analysis blocks of samples through an existing ``SampleView``."""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_view</span><span class="p">:</span> <span class="n">SampleView</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sample_view</span> <span class="o">=</span> <span class="n">sample_view</span> <span class="ow">or</span> <span class="n">SampleView</span><span class="p">()</span>
+        <span class="c1"># Same collection handle the rest of AlabOS writes samples with; no second Mongo client here.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_view</span><span class="o">.</span><span class="n">_sample_collection</span>
+
+    <span class="c1"># ---- field paths ----</span>
+
+<div class="viewcode-block" id="AnalysisView.result_field">
+<a class="viewcode-back" href="../../../alab_management.sample_view.analysis_view.html#alab_management.sample_view.analysis_view.AnalysisView.result_field">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">result_field</span><span class="p">(</span><span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Field path of one kind's stored result."""</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"metadata.</span><span class="si">{</span><span class="n">ANALYSIS_FIELD</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">check_kind</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span></div>
+
+
+<div class="viewcode-block" id="AnalysisView.claim_field">
+<a class="viewcode-back" href="../../../alab_management.sample_view.analysis_view.html#alab_management.sample_view.analysis_view.AnalysisView.claim_field">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">claim_field</span><span class="p">(</span><span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Field path of one kind's claim document."""</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"metadata.</span><span class="si">{</span><span class="n">CLAIM_FIELD</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">check_kind</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span></div>
+
+
+    <span class="c1"># ---- claims ----</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_require_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Raise ``SampleNotFoundError`` if there is no such sample.</span>
+
+<span class="sd">        Only ever called after an update matched nothing, so the happy path costs no extra query and the caller</span>
+<span class="sd">        can still tell "another worker holds this" from "there is no such sample".</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SampleNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot find sample with id: </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_claimable_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">owner</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""A claim is available when nobody holds it, this owner already holds it, or it has expired.</span>
+
+<span class="sd">        Expiry is a stored timestamp rather than a background cleaner, which is what makes a crashed worker's claim</span>
+<span class="sd">        free itself: nothing has to notice the crash.</span>
+<span class="sd">        """</span>
+        <span class="n">claim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">claim_field</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">_now</span><span class="p">()</span>
+        <span class="n">legacy_cutoff</span> <span class="o">=</span> <span class="n">_stamp</span><span class="p">(</span><span class="n">now</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">LEGACY_CLAIM_TTL_S</span><span class="p">))</span>
+        <span class="n">clauses</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span><span class="n">claim</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$exists"</span><span class="p">:</span> <span class="kc">False</span><span class="p">}},</span>
+            <span class="p">{</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">claim</span><span class="si">}</span><span class="s2">.expires_at"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$lte"</span><span class="p">:</span> <span class="n">_stamp</span><span class="p">(</span><span class="n">now</span><span class="p">)}},</span>
+            <span class="c1"># claims written before expires_at existed</span>
+            <span class="p">{</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">claim</span><span class="si">}</span><span class="s2">.expires_at"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$exists"</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">claim</span><span class="si">}</span><span class="s2">.claimed_at"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$lte"</span><span class="p">:</span> <span class="n">legacy_cutoff</span><span class="p">},</span>
+            <span class="p">},</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">clauses</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">{</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">claim</span><span class="si">}</span><span class="s2">.claimed_by"</span><span class="p">:</span> <span class="n">owner</span><span class="p">})</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"$or"</span><span class="p">:</span> <span class="n">clauses</span><span class="p">}</span>
+
+<div class="viewcode-block" id="AnalysisView.claim">
+<a class="viewcode-back" href="../../../alab_management.sample_view.analysis_view.html#alab_management.sample_view.analysis_view.AnalysisView.claim">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">claim</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span>
+        <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">owner</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">ttl_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_CLAIM_TTL_S</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Take (or renew) this kind's claim on one sample; ``None`` when another live worker holds it.</span>
+
+<span class="sd">        Renewing is the same call from the same owner, so a heartbeat is just a repeat: there is no separate renew</span>
+<span class="sd">        operation to get wrong, and a claim nobody renews expires at ``expires_at``. Raises</span>
+<span class="sd">        ``SampleNotFoundError`` when there is no such sample, which is a different thing from losing the race.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">owner</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"owner must be a non-empty string"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">ttl_s</span> <span class="o">&lt;=</span> <span class="n">MAX_CLAIM_TTL_S</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"ttl_s must be between 0 and </span><span class="si">{</span><span class="n">MAX_CLAIM_TTL_S</span><span class="si">}</span><span class="s2"> seconds"</span><span class="p">)</span>
+
+        <span class="n">now</span> <span class="o">=</span> <span class="n">_now</span><span class="p">()</span>
+        <span class="n">claim</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"claimed_by"</span><span class="p">:</span> <span class="n">owner</span><span class="p">,</span>
+            <span class="s2">"claimed_at"</span><span class="p">:</span> <span class="n">_stamp</span><span class="p">(</span><span class="n">now</span><span class="p">),</span>
+            <span class="s2">"expires_at"</span><span class="p">:</span> <span class="n">_stamp</span><span class="p">(</span><span class="n">now</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">ttl_s</span><span class="p">)),</span>
+            <span class="s2">"ttl_s"</span><span class="p">:</span> <span class="n">ttl_s</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="c1"># One conditional update against one document. Mongo re-evaluates the filter while it holds that document,</span>
+        <span class="c1"># so of two workers racing for an unclaimed sample exactly one update matches; the loser's filter no longer</span>
+        <span class="c1"># holds by the time it runs and it matches nothing.</span>
+        <span class="n">taken</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">"$and"</span><span class="p">:</span> <span class="p">[{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">},</span> <span class="bp">self</span><span class="o">.</span><span class="n">_claimable_query</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">owner</span><span class="p">)]},</span>
+            <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">claim_field</span><span class="p">(</span><span class="n">kind</span><span class="p">):</span> <span class="n">claim</span><span class="p">}},</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">taken</span><span class="o">.</span><span class="n">matched_count</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_require_sample</span><span class="p">(</span><span class="n">sample_id</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">claim</span></div>
+
+
+<div class="viewcode-block" id="AnalysisView.release">
+<a class="viewcode-back" href="../../../alab_management.sample_view.analysis_view.html#alab_management.sample_view.analysis_view.AnalysisView.release">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">owner</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Drop this kind's claim if ``owner`` still holds it. False when it was already taken over."""</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">owner</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"owner must be a non-empty string"</span><span class="p">)</span>
+        <span class="n">claim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">claim_field</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">claim</span><span class="si">}</span><span class="s2">.claimed_by"</span><span class="p">:</span> <span class="n">owner</span><span class="p">},</span> <span class="p">{</span><span class="s2">"$unset"</span><span class="p">:</span> <span class="p">{</span><span class="n">claim</span><span class="p">:</span> <span class="s2">""</span><span class="p">}}</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">matched_count</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_require_sample</span><span class="p">(</span><span class="n">sample_id</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="AnalysisView.get_claim">
+<a class="viewcode-back" href="../../../alab_management.sample_view.analysis_view.html#alab_management.sample_view.analysis_view.AnalysisView.get_claim">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_claim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The claim document currently stored for this kind, if any."""</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">},</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">claim_field</span><span class="p">(</span><span class="n">kind</span><span class="p">):</span> <span class="mi">1</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">_at_path</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">claim_field</span><span class="p">(</span><span class="n">kind</span><span class="p">))</span></div>
+
+
+    <span class="c1"># ---- selection ----</span>
+
+<div class="viewcode-block" id="AnalysisView.pending_samples">
+<a class="viewcode-back" href="../../../alab_management.sample_view.analysis_view.html#alab_management.sample_view.analysis_view.AnalysisView.pending_samples">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pending_samples</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">data_source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">params_hash</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_PENDING_LIMIT</span><span class="p">,</span>
+        <span class="n">owner</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">include_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">include_claimed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Samples that carry ``data_source``'s input data but no result whose ``params_hash`` is the caller's.</span>
+
+<span class="sd">        ``params_hash`` is the caller's own identifier for its analysis configuration; AlabOS only compares it for</span>
+<span class="sd">        equality with what is stored, and never interprets it. A stored block without ``params_hash`` (a</span>
+<span class="sd">        hand-written result) counts as fresh and is left alone. Errors are skipped unless ``include_errors``,</span>
+<span class="sd">        because when to retry an error is the caller's policy, not AlabOS's.</span>
+<span class="sd">        """</span>
+        <span class="n">field</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">result_field</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params_hash</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">params_hash</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"params_hash must be a non-empty string"</span><span class="p">)</span>
+        <span class="n">limit</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">limit</span><span class="p">),</span> <span class="n">MAX_PENDING_LIMIT</span><span class="p">))</span>
+
+        <span class="n">stale</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span><span class="n">field</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$exists"</span><span class="p">:</span> <span class="kc">False</span><span class="p">}},</span>
+            <span class="p">{</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">.params_hash"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$exists"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"$ne"</span><span class="p">:</span> <span class="n">params_hash</span><span class="p">}},</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="n">include_errors</span><span class="p">:</span>
+            <span class="n">stale</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">.status"</span><span class="p">:</span> <span class="s2">"error"</span><span class="p">})</span>
+
+        <span class="n">query</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"$and"</span><span class="p">:</span> <span class="p">[</span><span class="n">data_source_query</span><span class="p">(</span><span class="n">data_source</span><span class="p">),</span> <span class="p">{</span><span class="s2">"$or"</span><span class="p">:</span> <span class="n">stale</span><span class="p">}]</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">include_claimed</span><span class="p">:</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">"$and"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_claimable_query</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">owner</span><span class="p">))</span>
+
+        <span class="n">projection</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"name"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">field</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">claim_field</span><span class="p">(</span><span class="n">kind</span><span class="p">):</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"metadata.</span><span class="si">{</span><span class="n">REQUEST_FIELD</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">"sample_id"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]),</span>
+                <span class="s2">"name"</span><span class="p">:</span> <span class="n">doc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"name"</span><span class="p">),</span>
+                <span class="s2">"analysis"</span><span class="p">:</span> <span class="n">_at_path</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">field</span><span class="p">),</span>
+                <span class="s2">"analysis_request"</span><span class="p">:</span> <span class="n">_at_path</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"metadata.</span><span class="si">{</span><span class="n">REQUEST_FIELD</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="s2">"claim"</span><span class="p">:</span> <span class="n">_at_path</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">claim_field</span><span class="p">(</span><span class="n">kind</span><span class="p">)),</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">projection</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s2">"_id"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span>
+        <span class="p">]</span></div>
+
+
+    <span class="c1"># ---- writing a result ----</span>
+
+<div class="viewcode-block" id="AnalysisView.write_result">
+<a class="viewcode-back" href="../../../alab_management.sample_view.analysis_view.html#alab_management.sample_view.analysis_view.AnalysisView.write_result">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_result</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span>
+        <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">result</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">owner</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">release_claim</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">mirror_completed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Store ``metadata.analysis.&lt;kind&gt;`` on one sample.</span>
+
+<span class="sd">        Returns ``{"written": ..., "mirrored": ...}``. ``written`` is False only when ``owner`` was given and that</span>
+<span class="sd">        owner no longer holds the claim; ``mirrored`` says whether the same key was also set on this sample's</span>
+<span class="sd">        document in the completed database. ``SampleNotFoundError`` is raised when there is no such sample, on</span>
+<span class="sd">        both paths.</span>
+
+<span class="sd">        The write is additive: it replaces that one key and touches no other metadata. Without ``owner`` it goes</span>
+<span class="sd">        through ``SampleView.update_sample_metadata``, which turns ``{"analysis.&lt;kind&gt;": ...}`` into a ``$set`` of</span>
+<span class="sd">        the field path ``metadata.analysis.&lt;kind&gt;``.</span>
+
+<span class="sd">        With ``owner`` the update is conditional, and it is worth being precise about what it checks: it matches on</span>
+<span class="sd">        the claim's current *holder*, not on ``expires_at``. So a worker that overran its lease still stores its</span>
+<span class="sd">        result when nobody took the sample over -- deliberate, because a finished analysis should not be discarded</span>
+<span class="sd">        just because a lease lapsed -- while a worker whose claim was taken over, or whose successor has already</span>
+<span class="sd">        released it, matches no claim and gets ``written: False``. The case this cannot defend against is a writer</span>
+<span class="sd">        that passes no ``owner`` at all, since such a write opts out of claim arbitration by definition.</span>
+<span class="sd">        """</span>
+        <span class="n">check_kind</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span>
+        <span class="n">check_result_document</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="n">update</span> <span class="o">=</span> <span class="p">{</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ANALYSIS_FIELD</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">result</span><span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">owner</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sample_view</span><span class="o">.</span><span class="n">update_sample_metadata</span><span class="p">(</span><span class="n">sample_id</span><span class="p">,</span> <span class="n">update</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="c1"># ``update_sample_metadata`` raises a plain ValueError for a sample that does not exist; narrow it</span>
+                <span class="c1"># so both write paths report a missing sample the same way, and let anything else through.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_require_sample</span><span class="p">(</span><span class="n">sample_id</span><span class="p">)</span>
+                <span class="k">raise</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">claim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">claim_field</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span>
+            <span class="c1"># Naive ``datetime.now()`` to match what ``update_sample_metadata`` stamps, not UTC-aware.</span>
+            <span class="n">change</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result_field</span><span class="p">(</span><span class="n">kind</span><span class="p">):</span> <span class="n">result</span><span class="p">,</span>
+                    <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="k">if</span> <span class="n">release_claim</span><span class="p">:</span>
+                <span class="n">change</span><span class="p">[</span><span class="s2">"$unset"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">claim</span><span class="p">:</span> <span class="s2">""</span><span class="p">}</span>
+            <span class="n">written</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+                <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">claim</span><span class="si">}</span><span class="s2">.claimed_by"</span><span class="p">:</span> <span class="n">owner</span><span class="p">},</span> <span class="n">change</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">written</span><span class="o">.</span><span class="n">matched_count</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_require_sample</span><span class="p">(</span><span class="n">sample_id</span><span class="p">)</span>
+                <span class="k">return</span> <span class="p">{</span><span class="s2">"written"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">"mirrored"</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+
+        <span class="n">mirrored</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mirror_to_completed</span><span class="p">(</span><span class="n">sample_id</span><span class="p">,</span> <span class="n">update</span><span class="p">)</span> <span class="k">if</span> <span class="n">mirror_completed</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"written"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"mirrored"</span><span class="p">:</span> <span class="n">mirrored</span><span class="p">}</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_mirror_to_completed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">update</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Copy the same metadata into ``Alab(completed)`` when the sample is already archived there.</span>
+
+<span class="sd">        An experiment that finished before its analysis ran has been copied to the completed database, and readers</span>
+<span class="sd">        such as the Data page prefer that copy, so a result written only to the live database would be invisible to</span>
+<span class="sd">        them (and lost when the live document is pruned). This never creates a document there: archiving stays the</span>
+<span class="sd">        archiver's job. It writes only the result key, so the archived copy's claim block, if the snapshot caught</span>
+<span class="sd">        one, is left as it was.</span>
+
+<span class="sd">        This is the one write in this class that does not use the given ``SampleView``'s collection, and a failure</span>
+<span class="sd">        here is deliberately not swallowed: the live write has already landed, so the caller must see the error</span>
+<span class="sd">        rather than believe both copies are in step.</span>
+<span class="sd">        """</span>
+        <span class="n">completed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_completed_samples</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">completed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">update_dict</span> <span class="o">=</span> <span class="p">{</span><span class="sa">f</span><span class="s2">"metadata.</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">update</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="n">update_dict</span><span class="p">[</span><span class="s2">"last_updated"</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span>
+            <span class="n">completed</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+                <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="n">update_dict</span><span class="p">}</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">matched_count</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_completed_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The completed samples collection, or None when this deployment has no completed database."""</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_completed_collection"</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">.completed_sample_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompletedSampleView</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_completed_collection</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">CompletedSampleView</span><span class="p">()</span><span class="o">.</span><span class="n">_completed_sample_collection</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>  <span class="c1"># mongodb_completed not configured</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_completed_collection</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_completed_collection</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_at_path</span><span class="p">(</span><span class="n">doc</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Follow a dotted field path into a Mongo document; None when any step is missing."""</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">doc</span>
+    <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">value</span>
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Alab Project Team
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026, Ceder group.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
