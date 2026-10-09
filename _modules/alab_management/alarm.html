@@ -457,11 +457,37 @@
 
 <span class="sd">    Secrets belong in ``ALABOS_ALARM_EMAIL_PASSWORD`` /</span>
 <span class="sd">    ``ALABOS_ALARM_SLACK_BOT_TOKEN``, not in committed ``config.toml``.</span>
+
+<span class="sd">    On Windows, if the process env is empty, also check User then Machine</span>
+<span class="sd">    persistent environment (common when vars were set after a long-lived</span>
+<span class="sd">    service or IDE session started).</span>
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
         <span class="k">return</span> <span class="n">value</span>
     <span class="n">env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">env_name</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">env</span> <span class="ow">or</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">env</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">env</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"nt"</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">winreg</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="n">winreg</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: ignore[assignment]</span>
+        <span class="k">if</span> <span class="n">winreg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">hive</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="p">(</span>
+                <span class="p">(</span><span class="n">winreg</span><span class="o">.</span><span class="n">HKEY_CURRENT_USER</span><span class="p">,</span> <span class="sa">r</span><span class="s2">"Environment"</span><span class="p">),</span>
+                <span class="p">(</span>
+                    <span class="n">winreg</span><span class="o">.</span><span class="n">HKEY_LOCAL_MACHINE</span><span class="p">,</span>
+                    <span class="sa">r</span><span class="s2">"SYSTEM\CurrentControlSet\Control\Session Manager\Environment"</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="n">winreg</span><span class="o">.</span><span class="n">OpenKey</span><span class="p">(</span><span class="n">hive</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">key</span><span class="p">:</span>
+                        <span class="n">reg_value</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">winreg</span><span class="o">.</span><span class="n">QueryValueEx</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">env_name</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reg_value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">reg_value</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                    <span class="k">return</span> <span class="n">reg_value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">return</span> <span class="kc">None</span>
 
 
 <div class="viewcode-block" id="Alarm">
@@ -476,6 +502,7 @@
         <span class="n">email_password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">slack_bot_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">slack_channel_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">feedback_slack_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Args:</span>
@@ -486,6 +513,8 @@
 <span class="sd">            slack_bot_token: The slack bot token to send the alert from.</span>
 <span class="sd">                If blank, uses ``ALABOS_ALARM_SLACK_BOT_TOKEN``.</span>
 <span class="sd">            slack_channel_id: The slack channel id to send the alert to.</span>
+<span class="sd">            feedback_slack_user_id: Slack member ID for dashboard "!" feedback DMs.</span>
+<span class="sd">                Not used by ``alert()`` (channel alerts stay on ``slack_channel_id``).</span>
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sim_mode_flag</span> <span class="o">=</span> <span class="n">AlabOSConfig</span><span class="p">()</span><span class="o">.</span><span class="n">is_sim_mode</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">email_alert</span> <span class="o">=</span> <span class="kc">False</span>
@@ -501,6 +530,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">slack_channel_id</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">slack_channel_id</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slack_channel_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">slack_channel_id</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feedback_slack_user_id</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">feedback_slack_user_id</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">feedback_slack_user_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">feedback_slack_user_id</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
             <span class="k">else</span> <span class="kc">None</span>
         <span class="p">)</span>
 
@@ -635,6 +670,38 @@
         <span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="Alarm.send_slack_dm">
+<a class="viewcode-back" href="../../alab_management.alarm.html#alab_management.alarm.Alarm.send_slack_dm">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">send_slack_dm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">category</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Send a Slack direct message (dashboard software feedback lane).</span>
+
+<span class="sd">        Does not use ``slack_channel_id``. Existing ``alert()`` traffic stays on</span>
+<span class="sd">        the A-Lab Manager channel.</span>
+<span class="sd">        """</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">user_id</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">user_id</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">feedback_slack_user_id</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">slack_bot_token</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">"Slack bot token is not configured "</span>
+                <span class="s2">"(set ALABOS_ALARM_SLACK_BOT_TOKEN)."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">"feedback_slack_user_id is not configured in [alarm]."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="s2">"Traceback (most recent call last):"</span> <span class="ow">in</span> <span class="n">message</span><span class="p">:</span>
+            <span class="n">category</span> <span class="o">=</span> <span class="s2">"Error"</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="n">format_message_to_codeblock</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">WebClient</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">slack_bot_token</span><span class="p">)</span>
+        <span class="n">opened</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">conversations_open</span><span class="p">(</span><span class="n">users</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">opened</span><span class="p">[</span><span class="s2">"channel"</span><span class="p">][</span><span class="s2">"id"</span><span class="p">]</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">chat_postMessage</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="Alarm.print_configuration">
 <a class="viewcode-back" href="../../alab_management.alarm.html#alab_management.alarm.Alarm.print_configuration">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">print_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -644,6 +711,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Email Receivers: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_receivers</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Email Sender: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_sender</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Slack Channel ID: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slack_channel_id</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Feedback Slack user ID: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">feedback_slack_user_id</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_mode_flag</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                 <span class="s2">"Sim Mode Flag: </span><span class="si">%s</span><span class="s2">. Will not send alerts in sim mode."</span><span class="p">,</span>
