@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Any
+from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
+from typing import Any, TypeVar
 
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -20,6 +22,15 @@ from alab_management.dashboard.manual_control import (
 )
 from alab_management.device_manager import DevicesClient
 from alab_management.device_rpc_status import require_lab_ready_or_503
+
+_T = TypeVar("_T")
+
+# Device RPCs (door close, live status, …) can block for tens of seconds. The dashboard
+# runs under gevent; a blocking wait on the request greenlet stalls *every* other HTTP
+# handler (claim, release, catalog). Run RPCs on real OS threads and yield to the hub.
+_DEVICE_RPC_POOL = ThreadPoolExecutor(
+    max_workers=8, thread_name_prefix="device-control-rpc"
+)
 
 device_control_bp = Blueprint(
     "/device-control", __name__, url_prefix="/api/device-control"
@@ -436,6 +447,19 @@ def _require_implemented_device(device_name: str):
         raise ValueError(f"Device '{device_name}' is not implemented in Device Control v1.")
 
 
+def _await_in_thread(fn: Callable[..., _T], /, *args: Any, **kwargs: Any) -> _T:
+    """Run ``fn`` in a worker thread without blocking the gevent hub."""
+    future = _DEVICE_RPC_POOL.submit(fn, *args, **kwargs)
+    try:
+        import gevent
+    except ImportError:
+        return future.result()
+
+    while not future.done():
+        gevent.sleep(0.05)
+    return future.result()
+
+
 def _run_device_command(
     device_name: str,
     method: str,
@@ -454,13 +478,16 @@ def _run_device_command(
         task_id = ObjectId()
         require_occupation = False
 
-    client = DevicesClient(task_id=task_id)
-    return client.call(
-        device_name,
-        method,
-        require_occupation=require_occupation,
-        **validated_params,
-    )
+    def _call():
+        client = DevicesClient(task_id=task_id)
+        return client.call(
+            device_name,
+            method,
+            require_occupation=require_occupation,
+            **validated_params,
+        )
+
+    return _await_in_thread(_call)
 
 
 @device_control_bp.route("/catalog", methods=["GET"])

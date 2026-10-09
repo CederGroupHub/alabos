@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   Box,
@@ -76,6 +76,8 @@ function DeviceControl() {
   const [pending, setPending] = useState({});
   const [results, setResults] = useState({});
   const [commandParams, setCommandParams] = useState({});
+  // Guard against stale catalog polls wiping a token right after claim succeeds.
+  const recentlyClaimedRef = useRef({});
 
   const refreshCatalog = async ({ showSpinner = false } = {}) => {
     if (showSpinner) {
@@ -90,10 +92,21 @@ function DeviceControl() {
       setCatalog(devices);
       setClaimTokens((previous) => {
         const next = { ...previous };
+        const now = Date.now();
         devices.forEach((device) => {
           if (device.manual_task_id) {
             next[device.device_name] = device.manual_task_id;
-          } else {
+            return;
+          }
+          // Drop orphaned local tokens only when the server says the device is free,
+          // and not within a few seconds of a successful claim (stale poll race).
+          const claimedAt = recentlyClaimedRef.current[device.device_name] || 0;
+          if (
+            previous[device.device_name]
+            && device.claimable
+            && !device.manual_claimed
+            && now - claimedAt > 8000
+          ) {
             delete next[device.device_name];
           }
         });
@@ -152,13 +165,23 @@ function DeviceControl() {
     }));
   };
 
+  const clearDeviceResult = (deviceName) => {
+    setResults((previous) => {
+      const next = { ...previous };
+      delete next[deviceName];
+      return next;
+    });
+  };
+
   const handleClaim = async (deviceName) => {
     setDevicePending(deviceName, 'claim', true);
+    clearDeviceResult(deviceName);
     try {
       const response = await claim_device_control(deviceName);
       if (response.status !== 'success') {
         throw new Error(response.errors || 'Failed to claim device.');
       }
+      recentlyClaimedRef.current[deviceName] = Date.now();
       setClaimTokens((previous) => ({
         ...previous,
         [deviceName]: response.data.manual_task_id,
@@ -180,6 +203,7 @@ function DeviceControl() {
       if (response.status !== 'success') {
         throw new Error(response.errors || 'Failed to release device.');
       }
+      delete recentlyClaimedRef.current[deviceName];
       setClaimTokens((previous) => {
         const next = { ...previous };
         delete next[deviceName];
@@ -357,8 +381,12 @@ function DeviceControl() {
           const deviceCommands = visibleCommands(device.device_name, device.allowlisted_commands);
           const readCommands = deviceCommands.filter((command) => command.mode === 'read');
           const actuateCommands = deviceCommands.filter((command) => command.mode === 'actuate');
-          const isClaimedHere = claimTokens[device.device_name] && claimTokens[device.device_name] === device.manual_task_id;
-          const canClaim = Boolean(device.claimable);
+          const claimToken = claimTokens[device.device_name];
+          // Trust a local token when catalog has not caught up yet (manual_task_id still null).
+          const isClaimedHere = Boolean(claimToken) && (
+            device.manual_task_id == null || claimToken === device.manual_task_id
+          );
+          const canClaim = Boolean(device.claimable) && !claimToken;
 
           return (
             <Card
@@ -543,10 +571,16 @@ function FurnaceDoorCard({
   const [statusError, setStatusError] = useState('');
   const [statusLoading, setStatusLoading] = useState(false);
 
-  const isClaimedHere = Boolean(claimToken) && claimToken === device.manual_task_id;
-  const canClaim = Boolean(device.claimable);
+  // Trust a local token when catalog has not caught up yet (manual_task_id still null).
+  const isClaimedHere = Boolean(claimToken) && (
+    device.manual_task_id == null || claimToken === device.manual_task_id
+  );
+  const canClaim = Boolean(device.claimable) && !claimToken;
   const openCommand = findCommand(device, 'open_door');
   const closeCommand = findCommand(device, 'close_door');
+  const doorCommandPending = Boolean(
+    pending['command:open_door'] || pending['command:close_door'],
+  );
   const isRunning = liveStatus == null ? null : Boolean(liveStatus.is_running);
   const doorBlocked = isRunning === true;
   const openDisabled = (
@@ -583,10 +617,13 @@ function FurnaceDoorCard({
   };
 
   useEffect(() => {
+    if (doorCommandPending) {
+      return undefined;
+    }
     refreshStatus();
     const intervalId = window.setInterval(refreshStatus, FURNACE_STATUS_POLL_MS);
     return () => window.clearInterval(intervalId);
-  }, [device.device_name]);
+  }, [device.device_name, doorCommandPending]);
 
   const temperature = liveStatus?.temperature;
   const setpoint = liveStatus?.setpoint;
