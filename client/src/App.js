@@ -1,12 +1,38 @@
+import React, { useState } from "react";
 import SubmitExp from "./submit_exp/SubmitExp";
 import Dashboard from './dashboard/Dashboard';
-import { AppBar, Chip, CssBaseline, IconButton, Tooltip, Typography } from "@mui/material";
+import {
+  Alert,
+  AppBar,
+  Button,
+  Chip,
+  CssBaseline,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import styled from "styled-components";
 import { Routes, Route, NavLink, BrowserRouter } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import alabLogo from "./alab_logo.png";
 import { LabReadinessProvider, useLabReadiness } from "./LabReadiness";
+import { submit_feedback } from "./api_routes";
+
+const headerIconButtonSx = {
+  color: "#f5fbff",
+  border: "1px solid rgba(255, 255, 255, 0.22)",
+  backgroundColor: "rgba(255, 255, 255, 0.06)",
+  "&:hover": {
+    backgroundColor: "rgba(255, 255, 255, 0.14)",
+  },
+};
 
 const theme = createTheme({
     palette: {
@@ -125,7 +151,101 @@ function LabReadyChip() {
   );
 }
 
+function FeedbackDialog({ open, onClose }) {
+  const [message, setMessage] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [sent, setSent] = useState(false);
+
+  const handleClose = () => {
+    if (busy) return;
+    setMessage("");
+    setError("");
+    setSent(false);
+    onClose();
+  };
+
+  const handleSend = async () => {
+    const trimmed = message.trim();
+    if (!trimmed) {
+      setError("Please write a short message.");
+      return;
+    }
+    setBusy(true);
+    setError("");
+    try {
+      const response = await submit_feedback(
+        trimmed,
+        window.location.pathname || "/"
+      );
+      if (response?.status !== "success") {
+        throw new Error(response?.reason || "Failed to send feedback.");
+      }
+      setSent(true);
+      setMessage("");
+    } catch (err) {
+      setError(String(err.message || err));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      fullWidth
+      maxWidth="sm"
+      disableEscapeKeyDown={busy}
+    >
+      <DialogTitle>Send software feedback</DialogTitle>
+      <DialogContent>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+          Describe a software or dashboard issue. This messages the software team
+          on Slack (not the lab alert channel).
+        </Typography>
+        {sent ? (
+          <Alert severity="success">Feedback sent. Thank you.</Alert>
+        ) : (
+          <TextField
+            autoFocus
+            fullWidth
+            multiline
+            minRows={4}
+            label="Message"
+            value={message}
+            onChange={(event) => setMessage(event.target.value)}
+            disabled={busy}
+            inputProps={{ maxLength: 4000 }}
+          />
+        )}
+        {error ? (
+          <Alert severity="error" sx={{ mt: 1.5 }}>
+            {error}
+          </Alert>
+        ) : null}
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose} disabled={busy}>
+          {sent ? "Close" : "Cancel"}
+        </Button>
+        {!sent ? (
+          <Button
+            onClick={handleSend}
+            variant="contained"
+            disabled={busy}
+          >
+            {busy ? "Sending…" : "Send"}
+          </Button>
+        ) : null}
+      </DialogActions>
+    </Dialog>
+  );
+}
+
 function AppShell() {
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+
   return (
     <>
       <StyledAppBar position="sticky">
@@ -161,27 +281,34 @@ function AppShell() {
             alignSelf: "stretch",
           }}
         />
-        <div style={{ display: "flex", alignItems: "center", gap: 30 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <LabReadyChip />
           <Tooltip title="Refresh page (Ctrl+R)">
             <IconButton
               aria-label="Refresh page"
               onClick={() => window.location.reload()}
               size="medium"
-              sx={{
-                color: "#f5fbff",
-                border: "1px solid rgba(255, 255, 255, 0.22)",
-                backgroundColor: "rgba(255, 255, 255, 0.06)",
-                "&:hover": {
-                  backgroundColor: "rgba(255, 255, 255, 0.14)",
-                },
-              }}
+              sx={headerIconButtonSx}
             >
               <RefreshIcon />
             </IconButton>
           </Tooltip>
+          <Tooltip title="Send software feedback">
+            <IconButton
+              aria-label="Send software feedback"
+              onClick={() => setFeedbackOpen(true)}
+              size="medium"
+              sx={headerIconButtonSx}
+            >
+              <PriorityHighIcon />
+            </IconButton>
+          </Tooltip>
         </div>
       </StyledAppBar>
+      <FeedbackDialog
+        open={feedbackOpen}
+        onClose={() => setFeedbackOpen(false)}
+      />
       <Routes>
         <Route path="/*" element={<Dashboard />} />
         {/* <Route path="new-experiment" element={<SubmitExp />} /> */}

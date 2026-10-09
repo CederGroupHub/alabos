@@ -688,6 +688,31 @@ export async function submit_submission_recipe(recipeId, body) {
     return submissionsJson(res);
 }
 
+export async function get_labman_submission_schema() {
+    const res = await fetch(SUBMISSIONS_API + "/labman/schema", { mode: "cors" });
+    return submissionsJson(res);
+}
+
+export async function preview_labman_submission(body) {
+    const res = await fetch(SUBMISSIONS_API + "/labman/preview", {
+        method: "POST",
+        mode: "cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body || {}),
+    });
+    return submissionsJson(res);
+}
+
+export async function submit_labman_submission(body) {
+    const res = await fetch(SUBMISSIONS_API + "/labman/submit", {
+        method: "POST",
+        mode: "cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body || {}),
+    });
+    return submissionsJson(res);
+}
+
 export async function get_freeform_devices() {
     const res = await fetch(SUBMISSIONS_API + "/freeform/devices", { mode: "cors" });
     return submissionsJson(res);
@@ -739,5 +764,24 @@ export async function confirm_freeform_submission(body) {
         body: JSON.stringify(body || {}),
     });
     return submissionsJson(res);
+}
+
+// Software / UI feedback (Slack DM; not lab channel alerts)
+const FEEDBACK_API =
+    process.env.NODE_ENV === "production"
+        ? "/api/feedback"
+        : URL + "/api/feedback";
+
+export async function submit_feedback(message, page) {
+    const res = await fetch(FEEDBACK_API, {
+        method: "POST",
+        mode: "cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            message: message || "",
+            page: page || "",
+        }),
+    });
+    return res.json();
 }
 

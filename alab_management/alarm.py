@@ -64,11 +64,37 @@ def _alarm_secret(value: str | None, env_name: str) -> str | None:
 
     Secrets belong in ``ALABOS_ALARM_EMAIL_PASSWORD`` /
     ``ALABOS_ALARM_SLACK_BOT_TOKEN``, not in committed ``config.toml``.
+
+    On Windows, if the process env is empty, also check User then Machine
+    persistent environment (common when vars were set after a long-lived
+    service or IDE session started).
     """
     if isinstance(value, str) and value.strip():
         return value
     env = os.environ.get(env_name, "").strip()
-    return env or None
+    if env:
+        return env
+    if os.name == "nt":
+        try:
+            import winreg
+        except ImportError:
+            winreg = None  # type: ignore[assignment]
+        if winreg is not None:
+            for hive, path in (
+                (winreg.HKEY_CURRENT_USER, r"Environment"),
+                (
+                    winreg.HKEY_LOCAL_MACHINE,
+                    r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment",
+                ),
+            ):
+                try:
+                    with winreg.OpenKey(hive, path) as key:
+                        reg_value, _ = winreg.QueryValueEx(key, env_name)
+                except OSError:
+                    continue
+                if isinstance(reg_value, str) and reg_value.strip():
+                    return reg_value.strip()
+    return None
 
 
 class Alarm:
@@ -81,6 +107,7 @@ class Alarm:
         email_password: str = None,
         slack_bot_token: str = None,
         slack_channel_id: str = None,
+        feedback_slack_user_id: str = None,
     ):
         """
         Args:
@@ -91,6 +118,8 @@ class Alarm:
             slack_bot_token: The slack bot token to send the alert from.
                 If blank, uses ``ALABOS_ALARM_SLACK_BOT_TOKEN``.
             slack_channel_id: The slack channel id to send the alert to.
+            feedback_slack_user_id: Slack member ID for dashboard "!" feedback DMs.
+                Not used by ``alert()`` (channel alerts stay on ``slack_channel_id``).
         """
         self.sim_mode_flag = AlabOSConfig().is_sim_mode()
         self.email_alert = False
@@ -106,6 +135,12 @@ class Alarm:
         self.slack_channel_id = (
             slack_channel_id.strip()
             if isinstance(slack_channel_id, str) and slack_channel_id.strip()
+            else None
+        )
+        self.feedback_slack_user_id = (
+            feedback_slack_user_id.strip()
+            if isinstance(feedback_slack_user_id, str)
+            and feedback_slack_user_id.strip()
             else None
         )
 
@@ -225,6 +260,35 @@ class Alarm:
             channel=self.slack_channel_id, text=category + ": " + message
         )
 
+    def send_slack_dm(self, message: str, category: str, user_id: str | None = None):
+        """
+        Send a Slack direct message (dashboard software feedback lane).
+
+        Does not use ``slack_channel_id``. Existing ``alert()`` traffic stays on
+        the A-Lab Manager channel.
+        """
+        target = (
+            user_id.strip()
+            if isinstance(user_id, str) and user_id.strip()
+            else self.feedback_slack_user_id
+        )
+        if not self.slack_bot_token:
+            raise RuntimeError(
+                "Slack bot token is not configured "
+                "(set ALABOS_ALARM_SLACK_BOT_TOKEN)."
+            )
+        if not target:
+            raise RuntimeError(
+                "feedback_slack_user_id is not configured in [alarm]."
+            )
+        if "Traceback (most recent call last):" in message:
+            category = "Error"
+            message = format_message_to_codeblock(message)
+        client = WebClient(token=self.slack_bot_token)
+        opened = client.conversations_open(users=target)
+        channel = opened["channel"]["id"]
+        client.chat_postMessage(channel=channel, text=f"{category}: {message}")
+
     def print_configuration(self):
         """Log the configuration of the alarm."""
         logger.info("Alarm Configuration:")
@@ -232,6 +296,7 @@ class Alarm:
         logger.info("Email Receivers: %s", self.email_receivers)
         logger.info("Email Sender: %s", self.email_sender)
         logger.info("Slack Channel ID: %s", self.slack_channel_id)
+        logger.info("Feedback Slack user ID: %s", self.feedback_slack_user_id)
         if self.sim_mode_flag:
             logger.info(
                 "Sim Mode Flag: %s. Will not send alerts in sim mode.",
