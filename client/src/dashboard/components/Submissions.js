@@ -1,4 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { Fragment, useEffect, useMemo, useState } from 'react';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import {
   Alert,
   Box,
@@ -6,6 +9,7 @@ import {
   Card,
   CardActionArea,
   CardContent,
+  Checkbox,
   Chip,
   CircularProgress,
   Dialog,
@@ -15,14 +19,23 @@ import {
   Divider,
   FormControl,
   FormControlLabel,
+  IconButton,
   InputLabel,
   MenuItem,
+  Paper,
   Select,
   Stack,
   Switch,
   Tab,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   Tabs,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import {
@@ -31,11 +44,232 @@ import {
   create_submission_sample,
   get_freeform_devices,
   get_freeform_job,
+  get_labman_submission_schema,
   get_submission_recipes,
+  preview_labman_submission,
   preview_submission_recipe,
   resolve_submission_samples,
+  submit_labman_submission,
   submit_submission_recipe,
 } from '../../api_routes';
+
+/** Browser autofill props — unique tokens so Chrome does not reuse unrelated history. */
+function noBrowserAutofill(fieldKey) {
+  const token = `alab-no-fill-${fieldKey}`;
+  return {
+    name: token,
+    autoComplete: token,
+    inputProps: {
+      autoComplete: token,
+      'data-lpignore': 'true',
+      'data-1p-ignore': 'true',
+      'data-form-type': 'other',
+    },
+  };
+}
+
+const LABMAN_TABLE_COLUMNS = [
+  {
+    key: 'project_name',
+    label: 'Project name',
+    width: 140,
+    help:
+      'Prefix of the sample name. Final name is {project}_{index}. Must start with a letter; '
+      + 'letters, digits, and hyphens only — no underscore. Example: DEMO.',
+  },
+  {
+    key: 'sample_index',
+    label: 'Index',
+    width: 88,
+    help:
+      'Second half of the sample name. Letters/digits only; optional hyphen tag '
+      + '(e.g. 1 or 12-a). Example: 1 → DEMO_1.',
+  },
+  {
+    key: 'target_composition',
+    label: 'Target composition',
+    width: 160,
+    help:
+      'Chemical formula for balancing. Use normal element capitalization, e.g. LiCoO2. '
+      + 'Required with precursors + target mass, unless powder dispenses is set.',
+  },
+  {
+    key: 'precursors',
+    label: 'Precursors',
+    width: 200,
+    help:
+      'Comma-separated precursor formulas/powder names, e.g. Li2CO3, Co2O3. '
+      + 'Optional _PG suffix for powder-grade Labman bottles (Li2CO3_PG).',
+  },
+  {
+    key: 'target_mass_g',
+    label: 'Target mass (g)',
+    width: 100,
+    type: 'number',
+    help: 'Total target mass in grams (> 0). Required with composition + precursors.',
+  },
+  {
+    key: 'powder_dispenses_text',
+    label: 'Powder dispenses',
+    width: 200,
+    help:
+      'Optional direct Labman powders as Name:mass_g pairs (comma, semicolon, or newlines), '
+      + 'e.g. Li2CO3:1.2, Co2O3:0.8. When set, skips composition/precursor balancing.',
+  },
+  {
+    key: 'ethanol_volume_ul',
+    label: 'Ethanol (µL)',
+    width: 120,
+    type: 'number',
+    help: 'Labman EthanolDispenseVolume per replicate. Blank = auto from recipe or default 10000.',
+  },
+  {
+    key: 'drying_duration_second',
+    label: 'Drying (s)',
+    width: 110,
+    type: 'number',
+    help: 'Labman slurry drying HeatingDuration (ethanol boil-off, ~80 °C), in seconds.',
+  },
+  {
+    key: 'mixer_speed_rpm',
+    label: 'Mixer rpm',
+    width: 110,
+    type: 'number',
+    help: 'Labman MixerSpeed. Blank defaults to 2000 rpm.',
+  },
+  {
+    key: 'mixer_duration_s',
+    label: 'Mixer (s)',
+    width: 110,
+    type: 'number',
+    help: 'Labman MixerDuration in seconds. Blank defaults to 540.',
+  },
+  {
+    key: 'transfer_volume_ul',
+    label: 'Transfer (µL)',
+    width: 120,
+    type: 'number',
+    help: 'Labman TargetTransferVolume. Blank defaults to the ethanol volume.',
+  },
+  {
+    key: 'min_transfer_mass_g',
+    label: 'Min transfer (g)',
+    width: 130,
+    type: 'number',
+    help: 'Labman MinimumTransferMass in grams (optional).',
+  },
+  {
+    key: 'replicates',
+    label: 'Replicates',
+    width: 110,
+    type: 'number',
+    help: 'Labman CrucibleReplicates. Blank defaults to 1.',
+  },
+  {
+    key: 'allow_replicates',
+    label: 'Allow reps',
+    width: 100,
+    type: 'boolean',
+    help: 'Whether Labman may batch crucible replicates together.',
+  },
+];
+
+function ColumnHeaderLabel({ label, help }) {
+  if (!help) {
+    return label;
+  }
+  return (
+    <Stack direction="row" spacing={0.5} alignItems="center" sx={{ display: 'inline-flex' }}>
+      <span>{label}</span>
+      <Tooltip title={help} arrow placement="top" enterDelay={200}>
+        <HelpOutlineIcon
+          fontSize="inherit"
+          sx={{
+            fontSize: 15,
+            color: 'text.secondary',
+            cursor: 'help',
+            opacity: 0.85,
+            '&:hover': { color: 'primary.main', opacity: 1 },
+          }}
+        />
+      </Tooltip>
+    </Stack>
+  );
+}
+
+function emptyLabmanRow(overrides = {}) {
+  return {
+    project_name: '',
+    sample_index: '',
+    target_composition: '',
+    precursors: '',
+    target_mass_g: '',
+    powder_dispenses_text: '',
+    ethanol_volume_ul: '',
+    drying_duration_second: '',
+    mixer_speed_rpm: '',
+    mixer_duration_s: '',
+    transfer_volume_ul: '',
+    min_transfer_mass_g: '',
+    replicates: '',
+    allow_replicates: false,
+    ...overrides,
+  };
+}
+
+function emptyRecipeSampleRow(columns = [], overrides = {}) {
+  const row = {};
+  columns.forEach((col) => {
+    if (col.type === 'boolean') {
+      row[col.name] = col.default !== undefined ? col.default : false;
+    } else if (col.default !== undefined && col.default !== null) {
+      row[col.name] = String(col.default);
+    } else {
+      row[col.name] = '';
+    }
+  });
+  return { ...row, ...overrides };
+}
+
+function coerceRecipeSampleRows(rows, columns) {
+  const samples = rows
+    .filter((row) => String(row.project_name || '').trim() && String(row.sample_index || '').trim())
+    .map((row) => {
+      const sample = {};
+      columns.forEach((col) => {
+        const raw = row[col.name];
+        if (col.type === 'boolean') {
+          sample[col.name] = Boolean(raw);
+          return;
+        }
+        if (col.type === 'number') {
+          if (raw !== '' && raw != null) {
+            sample[col.name] = Number(raw);
+          }
+          return;
+        }
+        if (col.type === 'string_list') {
+          const list = String(raw ?? '')
+            .split(',')
+            .map((part) => part.trim())
+            .filter(Boolean);
+          if (list.length) {
+            sample[col.name] = list;
+          }
+          return;
+        }
+        const text = String(raw ?? '').trim();
+        if (text) {
+          sample[col.name] = text;
+        }
+      });
+      return sample;
+    });
+  if (!samples.length) {
+    throw new Error('Add at least one row with Project name and Index.');
+  }
+  return samples;
+}
 
 const POLL_MS = 1500;
 
@@ -60,7 +294,7 @@ export default function Submissions() {
   const [recipesError, setRecipesError] = useState('');
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [formValues, setFormValues] = useState({});
-  const [csvText, setCsvText] = useState('');
+  const [recipeSampleRows, setRecipeSampleRows] = useState([]);
   const [preview, setPreview] = useState(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState(null);
@@ -79,6 +313,22 @@ export default function Submissions() {
   const [freeformJob, setFreeformJob] = useState(null);
   const [draft, setDraft] = useState(null);
 
+  const [labmanSchema, setLabmanSchema] = useState(null);
+  const [labmanError, setLabmanError] = useState('');
+  const [labmanBatchName, setLabmanBatchName] = useState('labman_batch');
+  const [labmanRows, setLabmanRows] = useState([
+    emptyLabmanRow({
+      project_name: 'DEMO',
+      sample_index: '1',
+      target_composition: 'LiCoO2',
+      precursors: 'Li2CO3, Co2O3',
+      target_mass_g: '2',
+      ethanol_volume_ul: '10000',
+      drying_duration_second: '7200',
+    }),
+  ]);
+  const [labmanPreview, setLabmanPreview] = useState(null);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -90,6 +340,20 @@ export default function Submissions() {
       } catch (err) {
         if (!cancelled) {
           setRecipesError(String(err?.message || err));
+        }
+      }
+      try {
+        const data = await get_labman_submission_schema();
+        if (!cancelled) {
+          if (data.status === 'error') {
+            setLabmanError(data.errors || data.error || 'Could not load Labman schema');
+          } else {
+            setLabmanSchema(data);
+          }
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setLabmanError(String(err?.message || err));
         }
       }
       try {
@@ -130,19 +394,47 @@ export default function Submissions() {
       }
     });
     setFormValues(defaults);
-    setCsvText('');
+    if (recipe.samples_table) {
+      setRecipeSampleRows([emptyRecipeSampleRow(recipe.sample_columns || [])]);
+    } else {
+      setRecipeSampleRows([]);
+    }
   };
 
   const setField = (name, value) => {
     setFormValues((prev) => ({ ...prev, [name]: value }));
   };
 
+  const recipeSampleColumns = selectedRecipe?.sample_columns || [];
+
+  const setRecipeSampleCell = (rowIndex, key, value) => {
+    setRecipeSampleRows((prev) =>
+      prev.map((row, idx) => (idx === rowIndex ? { ...row, [key]: value } : row)),
+    );
+  };
+
+  const addRecipeSampleRow = () => {
+    setRecipeSampleRows((prev) => [
+      ...prev,
+      emptyRecipeSampleRow(recipeSampleColumns),
+    ]);
+  };
+
+  const removeRecipeSampleRow = (rowIndex) => {
+    setRecipeSampleRows((prev) => {
+      if (prev.length <= 1) {
+        return [emptyRecipeSampleRow(recipeSampleColumns)];
+      }
+      return prev.filter((_, idx) => idx !== rowIndex);
+    });
+  };
+
   const buildPayload = () => {
     const payload = { ...formValues };
-    if (selectedRecipe?.supports_csv && csvText.trim()) {
-      payload.csv_text = csvText;
+    if (selectedRecipe?.samples_table) {
+      payload.samples = coerceRecipeSampleRows(recipeSampleRows, recipeSampleColumns);
     }
-    // Coerce numeric fields
+    // Coerce batch-level numeric / list fields
     (selectedRecipe?.fields || []).forEach((field) => {
       if (field.type === 'number' && payload[field.name] !== '' && payload[field.name] != null) {
         payload[field.name] = Number(payload[field.name]);
@@ -195,6 +487,114 @@ export default function Submissions() {
           text: `Submitted experiment ${expId}. Open Experiments to track it.`,
         });
         setPreview(null);
+      }
+    } catch (err) {
+      setMessage({ severity: 'error', text: String(err?.message || err) });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const buildLabmanPayload = () => {
+    const samples = labmanRows
+      .filter((row) => String(row.project_name || '').trim() && String(row.sample_index || '').trim())
+      .map((row) => {
+        const sample = {
+          project_name: String(row.project_name).trim(),
+          sample_index: String(row.sample_index).trim(),
+        };
+        const textFields = ['target_composition', 'powder_dispenses_text'];
+        textFields.forEach((key) => {
+          const value = String(row[key] ?? '').trim();
+          if (value) {
+            sample[key] = value;
+          }
+        });
+        const precursors = String(row.precursors ?? '')
+          .split(',')
+          .map((part) => part.trim())
+          .filter(Boolean);
+        if (precursors.length) {
+          sample.precursors = precursors;
+        }
+        [
+          'target_mass_g',
+          'ethanol_volume_ul',
+          'drying_duration_second',
+          'mixer_speed_rpm',
+          'mixer_duration_s',
+          'transfer_volume_ul',
+          'min_transfer_mass_g',
+          'replicates',
+        ].forEach((key) => {
+          const raw = row[key];
+          if (raw !== '' && raw != null) {
+            sample[key] = Number(raw);
+          }
+        });
+        sample.allow_replicates = Boolean(row.allow_replicates);
+        return sample;
+      });
+    if (!samples.length) {
+      throw new Error('Add at least one row with Project name and Index.');
+    }
+    return {
+      name: labmanBatchName.trim() || 'labman_batch',
+      samples,
+    };
+  };
+
+  const setLabmanCell = (rowIndex, key, value) => {
+    setLabmanRows((prev) =>
+      prev.map((row, idx) => (idx === rowIndex ? { ...row, [key]: value } : row)),
+    );
+  };
+
+  const addLabmanRow = () => {
+    setLabmanRows((prev) => [...prev, emptyLabmanRow()]);
+  };
+
+  const removeLabmanRow = (rowIndex) => {
+    setLabmanRows((prev) => {
+      if (prev.length <= 1) {
+        return [emptyLabmanRow()];
+      }
+      return prev.filter((_, idx) => idx !== rowIndex);
+    });
+  };
+
+  const runLabmanPreview = async () => {
+    setBusy(true);
+    setMessage(null);
+    try {
+      const data = await preview_labman_submission(buildLabmanPayload());
+      if (data.status === 'error') {
+        setMessage({ severity: 'error', text: data.errors || data.error || 'Preview failed' });
+        setLabmanPreview(null);
+      } else {
+        setLabmanPreview(data);
+      }
+    } catch (err) {
+      setMessage({ severity: 'error', text: String(err?.message || err) });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const runLabmanSubmit = async () => {
+    setBusy(true);
+    setMessage(null);
+    try {
+      const data = await submit_labman_submission(buildLabmanPayload());
+      if (data.status === 'error') {
+        setMessage({ severity: 'error', text: data.errors || data.error || 'Submit failed' });
+      } else {
+        const expId = data.data?.exp_id || data.exp_id;
+        setMessage({
+          severity: 'success',
+          text: `Submitted Labman experiment ${expId}. Open Experiments to track it.`,
+        });
+        setLabmanPreview(null);
       }
     } catch (err) {
       setMessage({ severity: 'error', text: String(err?.message || err) });
@@ -381,6 +781,7 @@ export default function Submissions() {
         label={field.label}
         helperText={field.help}
         type={field.type === 'number' ? 'number' : 'text'}
+        {...noBrowserAutofill(field.name)}
         value={formValues[field.name] ?? ''}
         onChange={(event) => setField(field.name, event.target.value)}
         required={field.required}
@@ -396,8 +797,7 @@ export default function Submissions() {
         Submissions
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Guided recipes for known multi-device workflows, or free-form single-device runs with sample
-        provenance.
+        Guided recipes for multi-device workflows, Labman-only dosing, or free-form single-device runs.
       </Typography>
 
       {message && (
@@ -408,23 +808,68 @@ export default function Submissions() {
 
       <Tabs value={tab} onChange={(_, value) => setTab(value)}>
         <Tab label="Recipes" />
+        <Tab label="Labman" />
         <Tab label="Free-form (one device)" />
       </Tabs>
 
       <TabPanel value={tab} index={0}>
         {recipesError && <Alert severity="error">{recipesError}</Alert>}
-        <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} useFlexGap flexWrap="wrap">
+        <Stack
+          direction={{ xs: 'column', md: 'row' }}
+          spacing={2}
+          useFlexGap
+          flexWrap="wrap"
+          alignItems="stretch"
+        >
           {recipes.map((recipe) => (
-            <Card key={recipe.id} sx={{ width: 280 }}>
-              <CardActionArea onClick={() => openRecipe(recipe)}>
-                <CardContent>
+            <Card
+              key={recipe.id}
+              sx={{
+                width: 280,
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <CardActionArea
+                onClick={() => openRecipe(recipe)}
+                sx={{
+                  flex: 1,
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'stretch',
+                }}
+              >
+                <CardContent sx={{ flex: 1 }}>
                   <Typography variant="subtitle1">{recipe.title}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {recipe.description}
-                  </Typography>
-                  <Stack direction="row" spacing={0.5} sx={{ mt: 1 }} useFlexGap flexWrap="wrap">
-                    {(recipe.task_chain || []).map((task) => (
-                      <Chip key={task} size="small" label={task} />
+                  {recipe.description ? (
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                      {recipe.description}
+                    </Typography>
+                  ) : null}
+                  <Stack
+                    direction="row"
+                    spacing={0.5}
+                    alignItems="center"
+                    sx={{ mt: 1 }}
+                    useFlexGap
+                    flexWrap="wrap"
+                  >
+                    {(recipe.task_chain || []).map((task, index) => (
+                      <Fragment key={task}>
+                        {index > 0 && (
+                          <Typography
+                            component="span"
+                            variant="body2"
+                            color="text.secondary"
+                            aria-hidden
+                            sx={{ px: 0.25, lineHeight: 1 }}
+                          >
+                            →
+                          </Typography>
+                        )}
+                        <Chip size="small" label={task} />
+                      </Fragment>
                     ))}
                   </Stack>
                 </CardContent>
@@ -435,9 +880,192 @@ export default function Submissions() {
       </TabPanel>
 
       <TabPanel value={tab} index={1}>
+        {labmanError && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {labmanError}
+          </Alert>
+        )}
+        <Alert severity="info" sx={{ mb: 2 }}>
+          {labmanSchema?.description ||
+            'Submit PowderDosing → Ending only. One row per sample — add rows as needed.'}
+        </Alert>
+        <Stack spacing={2}>
+          <TextField
+            size="small"
+            label="Batch name"
+            {...noBrowserAutofill('labman-batch')}
+            value={labmanBatchName}
+            onChange={(event) => setLabmanBatchName(event.target.value)}
+            sx={{ maxWidth: 360 }}
+          />
+          <TableContainer
+            component={Paper}
+            variant="outlined"
+            sx={{
+              maxWidth: '100%',
+              borderRadius: 2,
+              borderColor: 'divider',
+              boxShadow: 'none',
+            }}
+          >
+            <Table
+              stickyHeader
+              sx={{
+                minWidth: 1680,
+                '& .MuiTableCell-root': {
+                  borderColor: 'divider',
+                },
+                '& .MuiTableBody-root .MuiTableRow-root:hover': {
+                  backgroundColor: 'action.hover',
+                },
+              }}
+            >
+              <TableHead>
+                <TableRow>
+                  <TableCell
+                    sx={{
+                      width: 56,
+                      bgcolor: 'grey.50',
+                      fontWeight: 600,
+                      fontSize: 14,
+                      color: 'text.secondary',
+                      py: 1.5,
+                    }}
+                  >
+                    #
+                  </TableCell>
+                  {LABMAN_TABLE_COLUMNS.map((col) => (
+                    <TableCell
+                      key={col.key}
+                      sx={{
+                        minWidth: col.width,
+                        bgcolor: 'grey.50',
+                        fontWeight: 600,
+                        fontSize: 14,
+                        color: 'text.secondary',
+                        whiteSpace: 'nowrap',
+                        py: 1.5,
+                      }}
+                    >
+                      <ColumnHeaderLabel label={col.label} help={col.help} />
+                    </TableCell>
+                  ))}
+                  <TableCell sx={{ width: 56, bgcolor: 'grey.50', py: 1.5 }} />
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {labmanRows.map((row, rowIndex) => (
+                  <TableRow key={`labman-row-${rowIndex}`}>
+                    <TableCell sx={{ py: 1.5, color: 'text.secondary', fontSize: 15 }}>
+                      {rowIndex + 1}
+                    </TableCell>
+                    {LABMAN_TABLE_COLUMNS.map((col) => (
+                      <TableCell key={col.key} sx={{ py: 1.25, px: 1.25 }}>
+                        {col.type === 'boolean' ? (
+                          <Checkbox
+                            checked={Boolean(row[col.key])}
+                            onChange={(event) =>
+                              setLabmanCell(rowIndex, col.key, event.target.checked)
+                            }
+                          />
+                        ) : (
+                          <TextField
+                            variant="standard"
+                            fullWidth
+                            type={col.type === 'number' ? 'number' : 'text'}
+                            {...noBrowserAutofill(`labman-${col.key}-${rowIndex}`)}
+                            value={row[col.key] ?? ''}
+                            onChange={(event) =>
+                              setLabmanCell(rowIndex, col.key, event.target.value)
+                            }
+                            InputProps={{
+                              disableUnderline: true,
+                              sx: {
+                                fontSize: 15,
+                                px: 1,
+                                py: 0.5,
+                                borderRadius: 1,
+                                bgcolor: 'transparent',
+                                transition: 'background-color 0.15s ease',
+                                '&:hover': { bgcolor: 'grey.100' },
+                                '&.Mui-focused': { bgcolor: 'grey.100' },
+                              },
+                            }}
+                            inputProps={{
+                              style: { padding: '6px 0', fontSize: 15 },
+                            }}
+                          />
+                        )}
+                      </TableCell>
+                    ))}
+                    <TableCell sx={{ py: 1.25 }}>
+                      <IconButton
+                        aria-label="Remove sample row"
+                        onClick={() => removeLabmanRow(rowIndex)}
+                        sx={{ color: 'text.secondary' }}
+                      >
+                        <DeleteOutlineIcon />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Button startIcon={<AddIcon />} variant="outlined" onClick={addLabmanRow}>
+              Add sample row
+            </Button>
+            <Button variant="outlined" onClick={runLabmanPreview} disabled={busy}>
+              Preview
+            </Button>
+            <Button variant="contained" onClick={runLabmanSubmit} disabled={busy}>
+              {busy ? <CircularProgress size={18} /> : 'Submit to Labman'}
+            </Button>
+          </Stack>
+          <Typography variant="caption" color="text.secondary">
+            Sample names become {'{project}_{index}'}. Use either target composition + precursors +
+            mass, or powder dispenses as Name:mass_g pairs. Optional Labman columns can stay blank
+            for defaults.
+          </Typography>
+          {labmanPreview && (
+            <Card variant="outlined">
+              <CardContent>
+                <Typography variant="subtitle2" gutterBottom>
+                  Preview: {labmanPreview.sample_count ?? 0} sample(s) —{' '}
+                  {taskSummary(labmanPreview.experiment)}
+                </Typography>
+                {(labmanPreview.labman_inputfiles || []).map((entry) => (
+                  <Box key={entry.sample} sx={{ mb: 1 }}>
+                    <Typography variant="caption" color="text.secondary">
+                      {entry.sample} → Labman InputFile
+                    </Typography>
+                    <Typography
+                      component="pre"
+                      sx={{
+                        fontSize: 12,
+                        bgcolor: 'grey.100',
+                        p: 1,
+                        borderRadius: 1,
+                        overflow: 'auto',
+                        maxHeight: 200,
+                      }}
+                    >
+                      {JSON.stringify(entry.inputfile, null, 2)}
+                    </Typography>
+                  </Box>
+                ))}
+              </CardContent>
+            </Card>
+          )}
+        </Stack>
+      </TabPanel>
+
+      <TabPanel value={tab} index={2}>
         <Alert severity="info" sx={{ mb: 2 }}>
           Run one action on one device. For full workflows (dose → heat → XRD), use Recipes — we do
-          not compose novel multi-device flows from free-form text yet.
+          not compose novel multi-device flows from free-form text yet. For Labman-only dosing, use
+          the Labman tab.
         </Alert>
         <Stack spacing={2} sx={{ maxWidth: 720 }}>
           <FormControl fullWidth size="small">
@@ -462,6 +1090,7 @@ export default function Submissions() {
           <TextField
             label="Request"
             placeholder="e.g. heat at 800 °C for 3 hours, crucible already inside"
+            {...noBrowserAutofill('freeform-request')}
             value={prompt}
             onChange={(event) => setPrompt(event.target.value)}
             multiline
@@ -491,6 +1120,7 @@ export default function Submissions() {
                   size="small"
                   fullWidth
                   label="Search by name or id"
+                  {...noBrowserAutofill('sample-search')}
                   value={sampleQuery}
                   onChange={(event) => setSampleQuery(event.target.value)}
                 />
@@ -529,6 +1159,7 @@ export default function Submissions() {
               <TextField
                 size="small"
                 label="New sample name"
+                {...noBrowserAutofill('new-sample-name')}
                 value={newSampleName}
                 onChange={(event) => setNewSampleName(event.target.value)}
                 fullWidth
@@ -536,6 +1167,7 @@ export default function Submissions() {
               <TextField
                 size="small"
                 label="Tags (comma-separated)"
+                {...noBrowserAutofill('new-sample-tags')}
                 value={newSampleTags}
                 onChange={(event) => setNewSampleTags(event.target.value)}
                 fullWidth
@@ -553,6 +1185,7 @@ export default function Submissions() {
               size="small"
               label="Position (optional)"
               placeholder="e.g. BFT_box_d/slot/3"
+              {...noBrowserAutofill('placement-position')}
               value={placementPosition}
               onChange={(event) => setPlacementPosition(event.target.value)}
               fullWidth
@@ -602,26 +1235,154 @@ export default function Submissions() {
         open={Boolean(selectedRecipe)}
         onClose={() => !busy && setSelectedRecipe(null)}
         fullWidth
-        maxWidth="md"
+        maxWidth={selectedRecipe?.samples_table ? 'lg' : 'md'}
       >
         <DialogTitle>{selectedRecipe?.title}</DialogTitle>
         <DialogContent dividers>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             {selectedRecipe?.description}
           </Typography>
-          <Stack spacing={2}>
+          <Stack
+            component="form"
+            autoComplete="off"
+            spacing={2}
+            onSubmit={(event) => event.preventDefault()}
+          >
             {(selectedRecipe?.fields || []).map(renderRecipeField)}
-            {selectedRecipe?.supports_csv && (
-              <TextField
-                label="CSV (optional, same columns as notebook)"
-                value={csvText}
-                onChange={(event) => setCsvText(event.target.value)}
-                multiline
-                minRows={4}
-                fullWidth
-                helperText={selectedRecipe.csv_help}
-              />
-            )}
+            {selectedRecipe?.samples_table ? (
+              <>
+                <Typography variant="body2" color="text.secondary">
+                  One row per sample — add rows for a batch, or leave a single row for one sample.
+                  Names become {'{project}_{index}'}.
+                </Typography>
+                <TableContainer
+                  component={Paper}
+                  variant="outlined"
+                  sx={{
+                    maxWidth: '100%',
+                    borderRadius: 2,
+                    borderColor: 'divider',
+                    boxShadow: 'none',
+                  }}
+                >
+                  <Table
+                    stickyHeader
+                    size="small"
+                    sx={{
+                      minWidth: Math.max(720, recipeSampleColumns.length * 120),
+                      '& .MuiTableCell-root': { borderColor: 'divider' },
+                      '& .MuiTableBody-root .MuiTableRow-root:hover': {
+                        backgroundColor: 'action.hover',
+                      },
+                    }}
+                  >
+                    <TableHead>
+                      <TableRow>
+                        <TableCell
+                          sx={{
+                            width: 48,
+                            bgcolor: 'grey.50',
+                            fontWeight: 600,
+                            fontSize: 13,
+                            color: 'text.secondary',
+                          }}
+                        >
+                          #
+                        </TableCell>
+                        {recipeSampleColumns.map((col) => (
+                          <TableCell
+                            key={col.name}
+                            sx={{
+                              minWidth: col.width || 120,
+                              bgcolor: 'grey.50',
+                              fontWeight: 600,
+                              fontSize: 13,
+                              color: 'text.secondary',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            <ColumnHeaderLabel label={col.label} help={col.help} />
+                          </TableCell>
+                        ))}
+                        <TableCell sx={{ width: 48, bgcolor: 'grey.50' }} />
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {recipeSampleRows.map((row, rowIndex) => (
+                        <TableRow key={`recipe-sample-row-${rowIndex}`}>
+                          <TableCell sx={{ color: 'text.secondary', fontSize: 14 }}>
+                            {rowIndex + 1}
+                          </TableCell>
+                          {recipeSampleColumns.map((col) => {
+                            const autofill = noBrowserAutofill(
+                              `recipe-${selectedRecipe.id}-${col.name}-${rowIndex}`,
+                            );
+                            if (col.type === 'boolean') {
+                              return (
+                                <TableCell key={col.name} sx={{ py: 1, px: 1 }}>
+                                  <Checkbox
+                                    checked={Boolean(row[col.name])}
+                                    onChange={(event) =>
+                                      setRecipeSampleCell(
+                                        rowIndex,
+                                        col.name,
+                                        event.target.checked,
+                                      )
+                                    }
+                                  />
+                                </TableCell>
+                              );
+                            }
+                            return (
+                              <TableCell key={col.name} sx={{ py: 1, px: 1 }}>
+                                <TextField
+                                  variant="standard"
+                                  fullWidth
+                                  type={col.type === 'number' ? 'number' : 'text'}
+                                  name={autofill.name}
+                                  autoComplete={autofill.autoComplete}
+                                  value={row[col.name] ?? ''}
+                                  onChange={(event) =>
+                                    setRecipeSampleCell(rowIndex, col.name, event.target.value)
+                                  }
+                                  InputProps={{
+                                    disableUnderline: true,
+                                    sx: {
+                                      fontSize: 14,
+                                      px: 1,
+                                      py: 0.5,
+                                      borderRadius: 1,
+                                      '&:hover': { bgcolor: 'grey.100' },
+                                      '&.Mui-focused': { bgcolor: 'grey.100' },
+                                    },
+                                  }}
+                                  inputProps={{
+                                    ...autofill.inputProps,
+                                    style: { padding: '4px 0', fontSize: 14 },
+                                  }}
+                                />
+                              </TableCell>
+                            );
+                          })}
+                          <TableCell>
+                            <IconButton
+                              aria-label="Remove sample row"
+                              onClick={() => removeRecipeSampleRow(rowIndex)}
+                              sx={{ color: 'text.secondary' }}
+                            >
+                              <DeleteOutlineIcon />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <Button startIcon={<AddIcon />} variant="outlined" onClick={addRecipeSampleRow}>
+                  Add sample row
+                </Button>
+              </>
+            ) : null}
             {preview && (
               <Alert severity="info">
                 Preview: {preview.sample_count ?? preview.experiment?.samples?.length ?? 0} sample(s).{' '}

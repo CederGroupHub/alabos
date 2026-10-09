@@ -6,6 +6,8 @@ import {
   Card,
   CardActions,
   CardContent,
+  Chip,
+  Collapse,
   Dialog,
   DialogActions,
   DialogContent,
@@ -13,6 +15,7 @@ import {
   DialogTitle,
   Divider,
   FormControlLabel,
+  Link,
   Switch,
   TextField,
   Typography,
@@ -50,29 +53,39 @@ async function waitForDashboardAndReload() {
   window.location.reload();
 }
 
-function IdleBanner({ idle, reasons, controlAvailable }) {
-  if (controlAvailable === false) {
-    return (
-      <Alert severity="info" sx={{ mb: 2 }}>
-        Bootstrap control plane (8894) is not reachable. Backup, refresh
-        definitions, nuclear wipe, and Advanced config need the A-Lab OS app
-        shell. Release locks &amp; tasks and Clear occupancy still work here.
-      </Alert>
-    );
-  }
-  if (idle) {
-    return (
-      <Alert severity="success" sx={{ mb: 2 }}>
-        Lab is idle — backup, refresh, clear occupancy, and nuclear are allowed.
-      </Alert>
-    );
-  }
+function IdleStatus({ idle, reasons, controlAvailable }) {
   return (
-    <Alert severity="warning" sx={{ mb: 2 }}>
-      Lab is not idle
-      {reasons?.length ? `: ${reasons.join("; ")}` : "."} Finish or Release
-      locks &amp; tasks before backup / clear occupancy / refresh / nuclear.
-    </Alert>
+    <Box sx={{ mb: 2.5, maxWidth: 820 }}>
+      <Chip
+        size="small"
+        label={idle ? "Lab idle" : "Lab not idle"}
+        sx={{
+          fontWeight: 600,
+          mb: 0.75,
+          bgcolor: idle ? "rgba(67, 160, 71, 0.12)" : "rgba(32, 61, 81, 0.08)",
+          color: idle ? "#2e7d32" : "#203d51",
+          border: idle
+            ? "1px solid rgba(67, 160, 71, 0.35)"
+            : "1px solid rgba(32, 61, 81, 0.18)",
+        }}
+      />
+      {!idle && reasons?.length ? (
+        <Typography
+          variant="body2"
+          sx={{ color: "#5a7384", lineHeight: 1.5, mb: 0.5 }}
+        >
+          {reasons.join("; ")}. Use Reset lab software (or Release locks only)
+          before backup / refresh / nuclear.
+        </Typography>
+      ) : null}
+      {controlAvailable === false ? (
+        <Typography variant="body2" sx={{ color: "#5a7384", lineHeight: 1.5 }}>
+          Bootstrap control plane (8894) is not reachable. Backup, refresh,
+          nuclear wipe, and Advanced config need the A-Lab OS app shell. Reset
+          lab software still works here.
+        </Typography>
+      ) : null}
+    </Box>
   );
 }
 
@@ -214,8 +227,10 @@ export default function LabSettings() {
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
 
+  const [resetSoftwareOpen, setResetSoftwareOpen] = useState(false);
   const [resetOpen, setResetOpen] = useState(false);
   const [clearOpen, setClearOpen] = useState(false);
+  const [edgeCasesOpen, setEdgeCasesOpen] = useState(false);
   const [refreshOpen, setRefreshOpen] = useState(false);
   const [nuclearOpen, setNuclearOpen] = useState(false);
   const [nuclearBackupBeforeWipe, setNuclearBackupBeforeWipe] = useState(true);
@@ -291,13 +306,12 @@ export default function LabSettings() {
         variant="body1"
         sx={{ color: "#203d51", mb: 2.5, lineHeight: 1.55, maxWidth: 720 }}
       >
-        Day-to-day recovery lives here: unstick software, clear empty-lab
-        occupancy, back up MongoDB, and refresh device definitions. Read each
-        card before you click — several actions are destructive or irreversible
-        for live work.
+        Day-to-day recovery: reset stuck software for a fresh run, back up
+        MongoDB, and refresh device definitions. Nuclear wipe (Advanced) is a
+        last resort that drops the live database.
       </Typography>
 
-      <IdleBanner
+      <IdleStatus
         idle={idle}
         reasons={reasons}
         controlAvailable={controlAvailable}
@@ -313,103 +327,79 @@ export default function LabSettings() {
         </Alert>
       )}
 
-      <Alert severity="warning" sx={{ mb: 2.5, maxWidth: 820 }}>
-        <Typography variant="body1" sx={{ fontWeight: 700, mb: 0.75 }}>
-          Recovery note (important)
-        </Typography>
-        <Typography variant="body1" sx={{ lineHeight: 1.55, mb: 1 }}>
-          <strong>Release locks &amp; tasks alone is not enough right now</strong> if
-          you want to run new experiments. Clearing task IDs frees device locks,
-          but samples can still occupy slots in software (
-          <code>samples.position</code>). That blocks the next task from reserving
-          those devices — the old “ghost sample” / stuck-reserve problem.
-        </Typography>
-        <Typography variant="body1" sx={{ lineHeight: 1.55, mb: 1 }}>
-          To clear and reset the lab for a fresh run <strong>without</strong> wiping
-          sample identities, last-known locations, movement history, or cancelled
-          task/experiment records: press{" "}
-          <strong>Release locks &amp; tasks</strong>, then{" "}
-          <strong>Clear occupancy</strong> (lab must be idle for Clear). Physically
-          empty or re-rack the bench to match.
-        </Typography>
-        <Typography variant="body1" sx={{ lineHeight: 1.55 }}>
-          If that still leaves the lab unusable, use{" "}
-          <strong>Nuclear wipe</strong> (Advanced; backup-on by default). Nuclear
-          drops the live Alab database — last resort only.
-        </Typography>
-      </Alert>
-
       <ActionCard
-        title="Release locks & tasks"
+        title="Reset lab software"
         facts={[
           {
             label: "When",
-            text: "After a crash, or when experiments / devices / locks look stuck.",
+            text: "After a crash, or when you want a clean software state for a new run.",
           },
           {
             label: "Does",
-            text: "Cancels live and queued work; releases devices, locks, and reservations.",
+            text: "Releases locks & tasks, then clears occupancy so every slot is empty in software.",
           },
           {
             label: "Keeps",
-            text: "Sample positions and movement history.",
-          },
-          {
-            label: "Limitation",
-            text: "Not enough by itself to run again — leftover sample positions still block devices. Follow with Clear occupancy (see note above).",
-            tone: "warn",
+            text: "Sample identities, last-known locations, movement history, and Alab(completed).",
           },
           {
             label: "Does not",
-            text: "Emergency-stop hardware that is already moving.",
-            tone: "warn",
+            text: "Emergency-stop hardware that is already moving. Match the physical bench after.",
           },
         ]}
         actions={
-          <Button
-            variant="contained"
-            color="warning"
-            onClick={() => setResetOpen(true)}
-          >
-            Release locks & tasks
-          </Button>
-        }
-      />
-
-      <ActionCard
-        title="Clear occupancy"
-        facts={[
-          {
-            label: "When",
-            text: "The physical lab is empty, or you need software to treat every slot as empty.",
-          },
-          {
-            label: "Does",
-            text: "Sets current position empty, unlocks slot reservations, appends history. Then removes live sample/task/experiment docs that are already archived in Alab(completed).",
-          },
-          {
-            label: "Keeps",
-            text: "Anything not yet in Alab(completed). Never deletes a live doc without an archive copy. Last-known location stays on the completed copy.",
-          },
-          {
-            label: "Requires",
-            text: "Lab idle — run Release locks & tasks first if anything is still running.",
-            tone: "warn",
-          },
-          {
-            label: "With Release locks",
-            text: "This pair is the non-nuclear reset: clear stuck work + empty the occupancy map, then prune archived leftovers from live. Use Nuclear wipe only if that fails.",
-          },
-        ]}
-        actions={
-          <Button
-            variant="contained"
-            color="error"
-            disabled={!idle}
-            onClick={() => setClearOpen(true)}
-          >
-            Clear occupancy
-          </Button>
+          <Box sx={{ width: "100%" }}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => setResetSoftwareOpen(true)}
+            >
+              Reset lab software
+            </Button>
+            <Box sx={{ mt: 1.25 }}>
+              <Link
+                component="button"
+                type="button"
+                variant="body2"
+                underline="hover"
+                onClick={() => setEdgeCasesOpen((open) => !open)}
+                sx={{ color: "#5a7384" }}
+              >
+                {edgeCasesOpen
+                  ? "Hide separate steps"
+                  : "Need only one step? (edge cases)"}
+              </Link>
+            </Box>
+            <Collapse in={edgeCasesOpen}>
+              <Box
+                sx={{
+                  mt: 1.5,
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 1,
+                  alignItems: "center",
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  color="warning"
+                  size="small"
+                  onClick={() => setResetOpen(true)}
+                >
+                  Release locks & tasks only
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="warning"
+                  size="small"
+                  disabled={!idle}
+                  onClick={() => setClearOpen(true)}
+                >
+                  Clear occupancy only
+                </Button>
+              </Box>
+            </Collapse>
+          </Box>
         }
       />
 
@@ -719,20 +709,57 @@ export default function LabSettings() {
       )}
 
       <ConfirmDialog
-        open={resetOpen}
-        title="Release locks & tasks"
+        open={resetSoftwareOpen}
+        title="Reset lab software"
         body={
           <>
             <Typography variant="body1" sx={{ color: "#203d51", mb: 1, lineHeight: 1.55 }}>
-              <strong>Does:</strong> Cancels every running and queued experiment
-              and releases devices so you can submit again.
+              Cancels live work and releases locks, then clears every sample
+              position in software so the lab looks empty for a new run.
             </Typography>
+            <Typography variant="body1" sx={{ color: "#203d51", lineHeight: 1.55 }}>
+              Does not drop the database or erase Alab(completed). Match the
+              physical bench afterward.
+            </Typography>
+          </>
+        }
+        confirmLabel="Reset lab software"
+        confirmColor="primary"
+        onClose={() => setResetSoftwareOpen(false)}
+        onConfirm={async () => {
+          const release = await reset_lab();
+          if (release.status !== "success") {
+            throw new Error(
+              release.reason || "Release locks & tasks failed."
+            );
+          }
+          await refreshIdle();
+          const clear = await clear_lab_occupancy();
+          if (clear.status !== "success") {
+            throw new Error(
+              clear.reason ||
+                "Locks released, but clear occupancy failed. Try Clear occupancy only."
+            );
+          }
+          const n = clear.data?.samples_cleared ?? 0;
+          setOk(
+            `Lab software reset. Cleared occupancy for ${n} sample(s).`
+          );
+          await refreshIdle();
+        }}
+      />
+
+      <ConfirmDialog
+        open={resetOpen}
+        title="Release locks & tasks only"
+        body={
+          <>
             <Typography variant="body1" sx={{ color: "#203d51", mb: 1, lineHeight: 1.55 }}>
-              <strong>Keeps:</strong> Sample positions and movement history.
+              Cancels running and queued work and releases devices. Leaves sample
+              positions as they are.
             </Typography>
-            <Typography variant="body1" sx={{ color: "#8a4b08", lineHeight: 1.55 }}>
-              <strong>Does not:</strong> Emergency-stop hardware that is already
-              moving.
+            <Typography variant="body1" sx={{ color: "#203d51", lineHeight: 1.55 }}>
+              Does not emergency-stop hardware that is already moving.
             </Typography>
           </>
         }
@@ -753,20 +780,15 @@ export default function LabSettings() {
 
       <ConfirmDialog
         open={clearOpen}
-        title="Clear occupancy"
+        title="Clear occupancy only"
         body={
           <>
             <Typography variant="body1" sx={{ color: "#203d51", mb: 1, lineHeight: 1.55 }}>
-              <strong>Does:</strong> Sets every sample&apos;s current position to
-              empty and unlocks slot reservations. Then removes live docs that
-              already exist in Alab(completed).
-            </Typography>
-            <Typography variant="body1" sx={{ color: "#203d51", mb: 1, lineHeight: 1.55 }}>
-              <strong>Keeps:</strong> Anything not yet archived. Never deletes a
-              live sample/task/experiment without a matching completed copy.
+              Sets every sample&apos;s current position empty and unlocks slots.
+              Lab must already be idle.
             </Typography>
             <Typography variant="body1" sx={{ color: "#8a4b08", lineHeight: 1.55 }}>
-              <strong>Confirm:</strong> Type CLEAR to continue.
+              Type CLEAR to continue.
             </Typography>
           </>
         }
