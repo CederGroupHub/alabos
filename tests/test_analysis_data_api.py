@@ -511,6 +511,65 @@ def test_result_is_mirrored_into_the_completed_database(
     )
 
 
+def test_a_sample_pruned_from_the_live_db_is_still_analyzed(client, samples, completed_view):
+    """After archiving, the live copy of an unplaced sample is deleted; its analysis must still go through."""
+    sample_id = samples("api_pruned", ALAB_ONE_DATA)
+    completed_view.save_sample(sample_id)
+    sample_view._sample_collection.delete_one({"_id": sample_id})
+
+    assert str(sample_id) in _pending_ids(client)
+    claim = client.post(f"/api/data/analysis/claim/{sample_id}", json={"kind": "xrd", "owner": "w1"})
+    assert claim.status_code == 200
+    assert str(sample_id) not in _pending_ids(client)
+    renewed = client.post(f"/api/data/analysis/claim/{sample_id}", json={"kind": "xrd", "owner": "w1"})
+    assert renewed.status_code == 200
+
+    response = client.post(
+        f"/api/data/analysis/results/{sample_id}", json={"kind": "xrd", "result": RESULT, "owner": "w1"}
+    )
+    assert response.status_code == 200
+    assert response.get_json()["data"] == {"written": True, "mirrored": True}
+    archived = completed_view._completed_sample_collection.find_one({"_id": sample_id})
+    assert archived["metadata"]["analysis"]["xrd"]["params_hash"] == "h1"
+    assert archived["metadata"]["analysis_claims"].get("xrd") is None
+    assert _doc(sample_id) is None  # nothing resurrected in the live database
+
+
+def test_release_and_an_ownerless_write_reach_a_pruned_sample(client, samples, completed_view):
+    sample_id = samples("api_pruned_release", ALAB_ONE_DATA)
+    completed_view.save_sample(sample_id)
+    sample_view._sample_collection.delete_one({"_id": sample_id})
+    client.post(f"/api/data/analysis/claim/{sample_id}", json={"kind": "xrd", "owner": "w1"})
+
+    released = client.post(f"/api/data/analysis/claim/{sample_id}/release", json={"kind": "xrd", "owner": "w1"})
+    assert released.get_json()["data"]["released"] is True
+    response = client.post(f"/api/data/analysis/results/{sample_id}", json={"kind": "xrd", "result": RESULT})
+    assert response.get_json()["data"] == {"written": True, "mirrored": True}
+    archived = completed_view._completed_sample_collection.find_one({"_id": sample_id})
+    assert archived["metadata"]["analysis"]["xrd"]["params_hash"] == "h1"
+
+
+def test_a_measurement_ref_reaches_a_pruned_sample(client, samples, completed_view):
+    """SEM is measured after the sample left the lab, so its ref often arrives after the live copy is gone."""
+    sample_id = samples("api_pruned_measurement", {})
+    completed_view.save_sample(sample_id)
+    sample_view._sample_collection.delete_one({"_id": sample_id})
+    ref = {"kind": "sem_eds", "logical_key": "sem:AppZr_163", "content_hash": "h"}
+
+    response = client.post(f"/api/data/samples/{sample_id}/measurements", json=ref)
+    assert response.status_code == 201
+    archived = completed_view._completed_sample_collection.find_one({"_id": sample_id})
+    assert [m["logical_key"] for m in archived["metadata"]["measurements"]] == ["sem:AppZr_163"]
+    assert _doc(sample_id) is None
+    assert client.post(f"/api/data/samples/{ObjectId()}/measurements", json=ref).status_code == 404
+
+
+def test_an_archived_sample_still_live_is_listed_once(client, samples, completed_view):
+    sample_id = samples("api_archived_live", ALAB_ONE_DATA)
+    completed_view.save_sample(sample_id)
+    assert _pending_ids(client).count(str(sample_id)) == 1
+
+
 def test_mirror_can_be_turned_off_per_request(client, samples, completed_view):
     sample_id = samples("api_mirror_off", ALAB_ONE_DATA)
     completed_view.save_sample(sample_id)
