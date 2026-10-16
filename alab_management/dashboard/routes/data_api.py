@@ -26,6 +26,7 @@ from alab_management.sample_view.analysis_view import (
     SampleNotFoundError,
     input_data_sources,
 )
+from alab_management.sample_view.completed_sample_view import CompletedSampleView
 from alab_management.utils.data_objects import get_completed_collection, make_jsonable
 
 data_api_bp = Blueprint("/data_api", __name__, url_prefix="/api/data")
@@ -282,10 +283,7 @@ def attach_measurement(sample_id: str):
         if db_label == "working":
             sample_view.append_measurement(object_id, measurement)
         else:
-            get_completed_collection("samples").update_one(
-                {"_id": object_id},
-                {"$push": {"metadata.measurements": measurement}, "$set": {"last_updated": datetime.now()}},
-            )
+            CompletedSampleView().append_measurement(object_id, measurement)
     except SampleNotFoundError as exception:
         return _missing(exception)
     except ValueError as exception:

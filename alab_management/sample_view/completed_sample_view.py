@@ -3,7 +3,11 @@ This module contains the CompletedSampleView class, which is responsible for
 saving samples to the completed database.
 """
 
+from __future__ import annotations
+
 import time
+from datetime import datetime
+from typing import Any
 
 from bson import ObjectId  # type: ignore
 
@@ -63,4 +67,23 @@ class CompletedSampleView:
                 {"_id": ObjectId(sample_id)}
             )
             > 0
+        )
+
+    def append_measurement(
+        self, sample_id: ObjectId, measurement: dict[str, Any]
+    ) -> None:
+        """Append one measurement ref onto ``metadata.measurements`` for an archived sample.
+
+        Same shape as ``SampleView.append_measurement``, but writes ``Alab(completed)``.
+        Used when the live copy was pruned after Ending (e.g. late SEM Path A ingest).
+        """
+        oid = ObjectId(sample_id)
+        if self._completed_sample_collection.find_one({"_id": oid}) is None:
+            raise ValueError(f"Cannot find sample with id: {oid}")
+        self._completed_sample_collection.update_one(
+            {"_id": oid},
+            {
+                "$push": {"metadata.measurements": measurement},
+                "$set": {"last_updated": datetime.now()},
+            },
         )
