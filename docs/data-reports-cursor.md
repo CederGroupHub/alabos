@@ -36,7 +36,7 @@ from datetime import datetime
 from typing import Any
 
 def run(*, start: datetime, end: datetime, live_db: Any, completed_db: Any) -> dict:
-    """Read-only. Return columns + rows (max 5000 rows)."""
+    """Read-only. Return columns + rows (UI keeps the latest 5000 if larger)."""
     samples = list(live_db["samples"].find({"created_at": {"$gte": start, "$lt": end}}))
     # Prefer alab_management.dashboard.report_db.find_union for Alab + Alab(completed).
     return {
@@ -56,7 +56,8 @@ Rules:
 - **Read lab data only** (`samples`, `tasks`, `experiment`, …). No inserts/updates/deletes.
 - `live_db` / `completed_db` are read-only wrappers; writes raise.
 - Module name: lowercase snake_case; loaded only from `user_reports`.
-- Return at most **5000** rows.
+- Prefer returning at most **5000** rows; if more are returned, the runner keeps the
+  **latest 5000** and the Data page shows a truncation warning.
 - Write files as **UTF-8** (prefer Write/StrReplace; avoid PowerShell `Set-Content` / `Out-File`).
 
 ## Registry document (`Alab.data_reports`)

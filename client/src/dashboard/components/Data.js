@@ -750,16 +750,32 @@ function ReportViewer({
   const [error, setError] = useState('');
   const [updatedAt, setUpdatedAt] = useState(null);
   const [windowLabel, setWindowLabel] = useState(null);
+  const [rowLimit, setRowLimit] = useState(null);
   const [showAll, setShowAll] = useState(false);
   const [openName, setOpenName] = useState(null);
   const [saveOpen, setSaveOpen] = useState(false);
   const [saveTitle, setSaveTitle] = useState('');
   const [fullscreen, setFullscreen] = useState(false);
 
+  const applyReport = useCallback((report) => {
+    setColumns(report.columns || []);
+    setRows(report.rows || []);
+    setRowDetail(report.row_detail || null);
+    setUpdatedAt(report.updated_at || null);
+    setRowLimit(report.row_limit || null);
+    const win = report.window;
+    setWindowLabel(
+      win?.start_date && win?.end_date
+        ? `${win.start_date} → ${win.end_date}`
+        : null,
+    );
+  }, []);
+
   const loadSnapshot = useCallback(async (name) => {
     if (!name) {
       setColumns([]);
       setRows([]);
+      setRowLimit(null);
       return;
     }
     setLoading(true);
@@ -769,25 +785,16 @@ function ReportViewer({
       if (response?.status !== 'success') {
         throw new Error(response?.errors || 'Failed to load report snapshot.');
       }
-      const report = response.report || {};
-      setColumns(report.columns || []);
-      setRows(report.rows || []);
-      setRowDetail(report.row_detail || null);
-      setUpdatedAt(report.updated_at || null);
-      const win = report.window;
-      setWindowLabel(
-        win?.start_date && win?.end_date
-          ? `${win.start_date} → ${win.end_date}`
-          : null,
-      );
+      applyReport(response.report || {});
     } catch (err) {
       setError(err.message || 'Failed to load report.');
       setColumns([]);
       setRows([]);
+      setRowLimit(null);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [applyReport]);
 
   useEffect(() => {
     loadSnapshot(selectedName);
@@ -807,16 +814,10 @@ function ReportViewer({
         throw new Error(response?.errors || 'Refresh failed.');
       }
       const report = response.report || {};
-      setColumns(report.columns || []);
-      setRows(report.rows || []);
-      setRowDetail(report.row_detail || null);
-      setUpdatedAt(report.updated_at || null);
-      const win = report.window || response.window;
-      setWindowLabel(
-        win?.start_date && win?.end_date
-          ? `${win.start_date} → ${win.end_date}`
-          : (response.window?.label || null),
-      );
+      applyReport(report);
+      if (!report.window && response.window?.label) {
+        setWindowLabel(response.window.label);
+      }
     } catch (err) {
       setError(err.message || 'Refresh failed.');
     } finally {
@@ -943,6 +944,14 @@ function ReportViewer({
           </Stack>
 
           {error && <Alert severity="error">{error}</Alert>}
+          {!error && rowLimit?.truncated && (
+            <Alert severity="warning">
+              Showing the latest {rowLimit.shown_rows?.toLocaleString?.() || rowLimit.shown_rows}{' '}
+              of {rowLimit.total_rows?.toLocaleString?.() || rowLimit.total_rows} rows
+              (display cap {rowLimit.max_rows?.toLocaleString?.() || rowLimit.max_rows}). Narrow the
+              date range to see older rows.
+            </Alert>
+          )}
 
           {loading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
@@ -1161,6 +1170,14 @@ function ReportViewer({
               </Select>
             </FormControl>
           </Stack>
+          {rowLimit?.truncated && (
+            <Alert severity="warning">
+              Showing the latest {rowLimit.shown_rows?.toLocaleString?.() || rowLimit.shown_rows}{' '}
+              of {rowLimit.total_rows?.toLocaleString?.() || rowLimit.total_rows} rows
+              (display cap {rowLimit.max_rows?.toLocaleString?.() || rowLimit.max_rows}). Narrow the
+              date range to see older rows.
+            </Alert>
+          )}
           {columns.length === 0 || rows.length === 0 ? (
             <Typography variant="body2" color="text.secondary">
               No snapshot yet. Click Refresh on the panel, then reopen fullscreen.

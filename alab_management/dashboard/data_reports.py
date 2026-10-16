@@ -132,16 +132,21 @@ def _normalize_columns(columns: Any) -> list[dict[str, str]]:
     return normalized
 
 
-def _normalize_rows(rows: Any, columns: list[dict[str, str]]) -> list[dict[str, Any]]:
+def _normalize_rows(
+    rows: Any, columns: list[dict[str, str]]
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     if rows is None:
         rows = []
     if not isinstance(rows, list):
         raise ValueError("Report rows must be a list.")
-    if len(rows) > MAX_REPORT_ROWS:
-        raise ValueError(f"Report exceeds max rows ({MAX_REPORT_ROWS}).")
+    total_rows = len(rows)
+    truncated = total_rows > MAX_REPORT_ROWS
+    # Keep the newest/latest rows when generators return chronological order
+    # (oldest first), which is the common pattern for Data reports.
+    source_rows = rows[-MAX_REPORT_ROWS:] if truncated else rows
     keys = [col["key"] for col in columns]
     normalized: list[dict[str, Any]] = []
-    for row in rows:
+    for row in source_rows:
         if not isinstance(row, dict):
             raise ValueError("Each row must be an object.")
         out: dict[str, Any] = {}
@@ -155,15 +160,25 @@ def _normalize_rows(rows: Any, columns: list[dict[str, str]]) -> list[dict[str, 
             if extra in row and extra not in out:
                 out[extra] = row[extra]
         normalized.append(out)
-    return normalized
+    row_limit = {
+        "truncated": truncated,
+        "total_rows": total_rows,
+        "shown_rows": len(normalized),
+        "max_rows": MAX_REPORT_ROWS,
+    }
+    return normalized, row_limit
 
 
 def normalize_report_result(result: Any) -> dict[str, Any]:
     if not isinstance(result, dict):
         raise ValueError("run() must return a dict with columns and rows.")
     columns = _normalize_columns(result.get("columns"))
-    rows = _normalize_rows(result.get("rows"), columns)
-    return {"columns": columns, "rows": make_jsonable(rows)}
+    rows, row_limit = _normalize_rows(result.get("rows"), columns)
+    return {
+        "columns": columns,
+        "rows": make_jsonable(rows),
+        "row_limit": row_limit,
+    }
 
 
 def run_generator_module(
@@ -277,6 +292,7 @@ def get_report_snapshot(name: str) -> dict[str, Any] | None:
             "description": 1,
             "columns": 1,
             "rows": 1,
+            "row_limit": 1,
             "window": 1,
             "row_detail": 1,
             "updated_at": 1,
@@ -431,6 +447,13 @@ def refresh_report(
             "$set": {
                 "columns": result["columns"],
                 "rows": result["rows"],
+                "row_limit": result.get("row_limit")
+                or {
+                    "truncated": False,
+                    "total_rows": len(result.get("rows") or []),
+                    "shown_rows": len(result.get("rows") or []),
+                    "max_rows": MAX_REPORT_ROWS,
+                },
                 "window": window,
                 "updated_at": _now(),
             }

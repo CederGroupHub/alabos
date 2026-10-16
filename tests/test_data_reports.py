@@ -67,11 +67,20 @@ def test_readonly_database_returns_readonly_collections() -> None:
         proxy.drop_collection("samples")
 
 
-def test_normalize_report_result_enforces_row_cap() -> None:
+def test_normalize_report_result_keeps_latest_rows_when_over_cap() -> None:
     columns = [{"key": "name", "label": "Name"}]
-    rows = [{"name": str(i)} for i in range(reports.MAX_REPORT_ROWS + 1)]
-    with pytest.raises(ValueError, match="max rows"):
-        reports.normalize_report_result({"columns": columns, "rows": rows})
+    total = reports.MAX_REPORT_ROWS + 25
+    rows = [{"name": str(i)} for i in range(total)]
+    out = reports.normalize_report_result({"columns": columns, "rows": rows})
+    assert len(out["rows"]) == reports.MAX_REPORT_ROWS
+    assert out["rows"][0]["name"] == str(total - reports.MAX_REPORT_ROWS)
+    assert out["rows"][-1]["name"] == str(total - 1)
+    assert out["row_limit"] == {
+        "truncated": True,
+        "total_rows": total,
+        "shown_rows": reports.MAX_REPORT_ROWS,
+        "max_rows": reports.MAX_REPORT_ROWS,
+    }
 
 
 def test_normalize_report_result_truncates_long_cells() -> None:

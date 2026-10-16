@@ -688,13 +688,8 @@ export async function submit_submission_recipe(recipeId, body) {
     return submissionsJson(res);
 }
 
-export async function get_labman_submission_schema() {
-    const res = await fetch(SUBMISSIONS_API + "/labman/schema", { mode: "cors" });
-    return submissionsJson(res);
-}
-
-export async function preview_labman_submission(body) {
-    const res = await fetch(SUBMISSIONS_API + "/labman/preview", {
+export async function preview_submission_workflow(body) {
+    const res = await fetch(SUBMISSIONS_API + "/workflow/preview", {
         method: "POST",
         mode: "cors",
         headers: { "Content-Type": "application/json" },
@@ -703,8 +698,8 @@ export async function preview_labman_submission(body) {
     return submissionsJson(res);
 }
 
-export async function submit_labman_submission(body) {
-    const res = await fetch(SUBMISSIONS_API + "/labman/submit", {
+export async function submit_submission_workflow(body) {
+    const res = await fetch(SUBMISSIONS_API + "/workflow/submit", {
         method: "POST",
         mode: "cors",
         headers: { "Content-Type": "application/json" },
