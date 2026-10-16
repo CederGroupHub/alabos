@@ -479,7 +479,9 @@ of the <code class="docutils literal notranslate"><span class="pre">SampleView</
 collection handle, because <code class="docutils literal notranslate"><span class="pre">update_sample_metadata</span></code> is unconditional and cannot express “only if I still hold
 the claim”. They stamp <code class="docutils literal notranslate"><span class="pre">last_updated</span></code> the same way it does.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">_mirror_to_completed</span></code> writes the <em>completed</em> database through <code class="docutils literal notranslate"><span class="pre">CompletedSampleView</span></code>, which is a second
-collection the caller did not hand in, and is the one place this class reaches past the given <code class="docutils literal notranslate"><span class="pre">SampleView</span></code>.</p></li>
+collection the caller did not hand in. <code class="docutils literal notranslate"><span class="pre">_update</span></code> is the only other place this class reaches past the given
+<code class="docutils literal notranslate"><span class="pre">SampleView</span></code>: once a sample’s live copy has been pruned after archiving, its archived copy is the only one
+left, so claims and results are applied there instead.</p></li>
 </ul>
 <p>Three operations, matching what an analysis worker needs each cycle:</p>
 <ul class="simple">

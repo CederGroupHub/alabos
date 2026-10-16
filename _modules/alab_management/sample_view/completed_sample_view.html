@@ -393,7 +393,11 @@
 <span class="sd">saving samples to the completed database.</span>
 <span class="sd">"""</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">bson</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectId</span>  <span class="c1"># type: ignore</span>
 
@@ -460,6 +464,28 @@
                 <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">sample_id</span><span class="p">)}</span>
             <span class="p">)</span>
             <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CompletedSampleView.append_measurement">
+<a class="viewcode-back" href="../../../alab_management.sample_view.completed_sample_view.html#alab_management.sample_view.completed_sample_view.CompletedSampleView.append_measurement">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_measurement</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">sample_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span> <span class="n">measurement</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Append one measurement ref onto ``metadata.measurements`` for an archived sample.</span>
+
+<span class="sd">        Same shape as ``SampleView.append_measurement``, but writes ``Alab(completed)``.</span>
+<span class="sd">        Used when the live copy was pruned after Ending (e.g. late SEM Path A ingest).</span>
+<span class="sd">        """</span>
+        <span class="n">oid</span> <span class="o">=</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">sample_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_completed_sample_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">oid</span><span class="p">})</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot find sample with id: </span><span class="si">{</span><span class="n">oid</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_completed_sample_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">oid</span><span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s2">"$push"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"metadata.measurements"</span><span class="p">:</span> <span class="n">measurement</span><span class="p">},</span>
+                <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()},</span>
+            <span class="p">},</span>
         <span class="p">)</span></div>
 </div>
 
