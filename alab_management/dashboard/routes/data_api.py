@@ -245,7 +245,11 @@ def list_measurements(sample_id: str):
 
 @data_api_bp.route("/samples/<sample_id>/measurements", methods=["POST"])
 def attach_measurement(sample_id: str):
-    """Append a measurement ref on a live sample (Path A SEM / XRD registration)."""
+    """Append a measurement ref on a sample (Path A SEM / XRD registration).
+
+    A sample whose experiment is archived and whose live copy was pruned gets the ref on its archived copy:
+    SEM in particular is measured after the sample has left the lab.
+    """
     try:
         body = _body()
         object_id = _sample_object_id(sample_id)
@@ -271,10 +275,17 @@ def attach_measurement(sample_id: str):
         if isinstance(extra, dict):
             measurement["extra"] = extra
 
-        if _sample_doc(object_id) is None:
+        doc, db_label = _find_sample_across_dbs(object_id)
+        if doc is None:
             raise SampleNotFoundError(f"Cannot find sample with id: {object_id}")
 
-        sample_view.append_measurement(object_id, measurement)
+        if db_label == "working":
+            sample_view.append_measurement(object_id, measurement)
+        else:
+            get_completed_collection("samples").update_one(
+                {"_id": object_id},
+                {"$push": {"metadata.measurements": measurement}, "$set": {"last_updated": datetime.now()}},
+            )
     except SampleNotFoundError as exception:
         return _missing(exception)
     except ValueError as exception:

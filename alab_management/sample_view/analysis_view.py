@@ -15,7 +15,9 @@ should check:
   collection handle, because ``update_sample_metadata`` is unconditional and cannot express "only if I still hold
   the claim". They stamp ``last_updated`` the same way it does.
 - ``_mirror_to_completed`` writes the *completed* database through ``CompletedSampleView``, which is a second
-  collection the caller did not hand in, and is the one place this class reaches past the given ``SampleView``.
+  collection the caller did not hand in. ``_update`` is the only other place this class reaches past the given
+  ``SampleView``: once a sample's live copy has been pruned after archiving, its archived copy is the only one
+  left, so claims and results are applied there instead.
 
 Three operations, matching what an analysis worker needs each cycle:
 
@@ -199,14 +201,28 @@ class AnalysisView:
 
     # ---- claims ----
 
-    def _require_sample(self, sample_id: ObjectId) -> None:
-        """Raise ``SampleNotFoundError`` if there is no such sample.
+    def _find(self, sample_id: ObjectId, projection: dict[str, Any]) -> dict[str, Any] | None:
+        """The live copy of a sample, else its archived copy once the live one was pruned."""
+        doc = self._samples.find_one({"_id": sample_id}, projection)
+        completed = self._completed_samples() if doc is None else None
+        return completed.find_one({"_id": sample_id}, projection) if completed is not None else doc
 
-        Only ever called after an update matched nothing, so the happy path costs no extra query and the caller
-        can still tell "another worker holds this" from "there is no such sample".
+    def _update(self, sample_id: ObjectId, condition: dict[str, Any], change: dict[str, Any]) -> str | None:
+        """Apply a conditional update to the live sample, else to its archived copy.
+
+        ``prune_archived_unplaced_from_live`` deletes the live sample once it is archived and has left the lab,
+        possibly before its analysis is done. Returns where the update landed (``"live"`` or ``"completed"``), or
+        None when the condition did not hold. Raises ``SampleNotFoundError`` when neither database has the sample.
         """
-        if self._samples.find_one({"_id": sample_id}, {"_id": 1}) is None:
+        query = {"$and": [{"_id": sample_id}, condition]}
+        if self._samples.update_one(query, change).matched_count:
+            return "live"
+        if self._samples.find_one({"_id": sample_id}, {"_id": 1}) is not None:
+            return None
+        completed = self._completed_samples()
+        if completed is None or completed.find_one({"_id": sample_id}, {"_id": 1}) is None:
             raise SampleNotFoundError(f"Cannot find sample with id: {sample_id}")
+        return "completed" if completed.update_one(query, change).matched_count else None
 
     def _claimable_query(self, kind: str, owner: str | None) -> dict[str, Any]:
         """A claim is available when nobody holds it, this owner already holds it, or it has expired.
@@ -258,31 +274,22 @@ class AnalysisView:
         # One conditional update against one document. Mongo re-evaluates the filter while it holds that document,
         # so of two workers racing for an unclaimed sample exactly one update matches; the loser's filter no longer
         # holds by the time it runs and it matches nothing.
-        taken = self._samples.update_one(
-            {"$and": [{"_id": sample_id}, self._claimable_query(kind, owner)]},
-            {"$set": {self.claim_field(kind): claim}},
+        taken = self._update(
+            sample_id, self._claimable_query(kind, owner), {"$set": {self.claim_field(kind): claim}}
         )
-        if not taken.matched_count:
-            self._require_sample(sample_id)
-            return None
-        return claim
+        return claim if taken else None
 
     def release(self, sample_id: ObjectId, kind: str, owner: str) -> bool:
         """Drop this kind's claim if ``owner`` still holds it. False when it was already taken over."""
         if not isinstance(owner, str) or not owner.strip():
             raise ValueError("owner must be a non-empty string")
         claim = self.claim_field(kind)
-        result = self._samples.update_one(
-            {"_id": sample_id, f"{claim}.claimed_by": owner}, {"$unset": {claim: ""}}
-        )
-        if not result.matched_count:
-            self._require_sample(sample_id)
-            return False
-        return True
+        released = self._update(sample_id, {f"{claim}.claimed_by": owner}, {"$unset": {claim: ""}})
+        return released is not None
 
     def get_claim(self, sample_id: ObjectId, kind: str) -> dict[str, Any] | None:
         """The claim document currently stored for this kind, if any."""
-        doc = self._samples.find_one({"_id": sample_id}, {self.claim_field(kind): 1})
+        doc = self._find(sample_id, {self.claim_field(kind): 1})
         return _at_path(doc, self.claim_field(kind))
 
     # ---- selection ----
@@ -328,6 +335,15 @@ class AnalysisView:
             self.claim_field(kind): 1,
             f"metadata.{REQUEST_FIELD}.{kind}": 1,
         }
+        docs = list(self._samples.find(query, projection).sort("_id", 1).limit(limit))
+        completed = self._completed_samples()
+        if completed is not None:
+            # samples whose live copy was pruned after archiving
+            archived = list(completed.find(query, projection).sort("_id", 1).limit(limit))
+            archived_ids = [doc["_id"] for doc in archived]
+            still_live = {doc["_id"] for doc in self._samples.find({"_id": {"$in": archived_ids}}, {"_id": 1})}
+            pruned = [doc for doc in archived if doc["_id"] not in still_live]
+            docs = sorted(docs + pruned, key=lambda doc: doc["_id"])[:limit]
         return [
             {
                 "sample_id": str(doc["_id"]),
@@ -336,7 +352,7 @@ class AnalysisView:
                 "analysis_request": _at_path(doc, f"metadata.{REQUEST_FIELD}.{kind}"),
                 "claim": _at_path(doc, self.claim_field(kind)),
             }
-            for doc in self._samples.find(query, projection).sort("_id", 1).limit(limit)
+            for doc in docs
         ]
 
     # ---- writing a result ----
@@ -372,32 +388,27 @@ class AnalysisView:
         check_result_document(result)
         update = {f"{ANALYSIS_FIELD}.{kind}": result}
 
+        claim = self.claim_field(kind)
+        # Naive ``datetime.now()`` to match what ``update_sample_metadata`` stamps, not UTC-aware.
+        change: dict[str, Any] = {"$set": {self.result_field(kind): result, "last_updated": datetime.now()}}
         if owner is None:
             try:
                 self.sample_view.update_sample_metadata(sample_id, update)
+                written_to = "live"
             except ValueError:
-                # ``update_sample_metadata`` raises a plain ValueError for a sample that does not exist; narrow it
-                # so both write paths report a missing sample the same way, and let anything else through.
-                self._require_sample(sample_id)
-                raise
+                # ``update_sample_metadata`` raises a plain ValueError for a sample that is not live; the archived
+                # copy takes the write if there is one, and a sample in neither database is SampleNotFoundError
+                written_to = self._update(sample_id, {}, change)
         else:
-            claim = self.claim_field(kind)
-            # Naive ``datetime.now()`` to match what ``update_sample_metadata`` stamps, not UTC-aware.
-            change: dict[str, Any] = {
-                "$set": {
-                    self.result_field(kind): result,
-                    "last_updated": datetime.now(),
-                }
-            }
             if release_claim:
                 change["$unset"] = {claim: ""}
-            written = self._samples.update_one(
-                {"_id": sample_id, f"{claim}.claimed_by": owner}, change
-            )
-            if not written.matched_count:
-                self._require_sample(sample_id)
+            written_to = self._update(sample_id, {f"{claim}.claimed_by": owner}, change)
+            if written_to is None:
                 return {"written": False, "mirrored": False}
 
+        if written_to == "completed":
+            # the archived copy is the only one left, so it holds the result whatever ``mirror_completed`` says
+            return {"written": True, "mirrored": True}
         mirrored = (
             self._mirror_to_completed(sample_id, update) if mirror_completed else False
         )
