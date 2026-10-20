@@ -662,6 +662,13 @@ export async function get_submission_recipes() {
     return submissionsJson(res);
 }
 
+export async function get_labman_loaded_powders() {
+    const res = await fetch(SUBMISSIONS_API + "/labman/loaded-powders", {
+        mode: "cors",
+    });
+    return submissionsJson(res);
+}
+
 export async function preview_submission_recipe(recipeId, body) {
     const res = await fetch(
         SUBMISSIONS_API + "/recipes/" + encodeURIComponent(recipeId) + "/preview",

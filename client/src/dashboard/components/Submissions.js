@@ -41,6 +41,7 @@ import {
   create_submission_sample,
   get_freeform_devices,
   get_freeform_job,
+  get_labman_loaded_powders,
   get_sample_position_racks,
   get_submission_recipes,
   preview_submission_workflow,
@@ -293,6 +294,17 @@ function emptyRecipeSampleRow(columns = [], overrides = {}) {
   columns.forEach((col) => {
     if (col.type === 'boolean') {
       row[col.name] = col.default !== undefined ? col.default : false;
+    } else if (col.type === 'powder_multi_select' || col.type === 'string_list') {
+      if (Array.isArray(col.default)) {
+        row[col.name] = [...col.default];
+      } else if (col.default != null && String(col.default).trim()) {
+        row[col.name] = String(col.default)
+          .split(',')
+          .map((part) => part.trim())
+          .filter(Boolean);
+      } else {
+        row[col.name] = [];
+      }
     } else if (col.default !== undefined && col.default !== null) {
       row[col.name] = String(col.default);
     } else {
@@ -333,11 +345,13 @@ function coerceRecipeSampleRows(rows, columns) {
         sample[col.name] = value;
         return;
       }
-      if (col.type === 'string_list') {
-        const list = String(raw ?? '')
-          .split(',')
-          .map((part) => part.trim())
-          .filter(Boolean);
+      if (col.type === 'string_list' || col.type === 'powder_multi_select') {
+        const list = Array.isArray(raw)
+          ? raw.map((part) => String(part).trim()).filter(Boolean)
+          : String(raw ?? '')
+              .split(',')
+              .map((part) => part.trim())
+              .filter(Boolean);
         if (list.length) {
           sample[col.name] = list;
         }
@@ -471,6 +485,30 @@ export default function Submissions() {
   const [stageColumns, setStageColumns] = useState([]);
   const [validationErrors, setValidationErrors] = useState([]);
   const [rowsToAdd, setRowsToAdd] = useState(10);
+  const [loadedPowders, setLoadedPowders] = useState([]);
+  const [loadedPowdersError, setLoadedPowdersError] = useState('');
+  const [loadedPowdersLoading, setLoadedPowdersLoading] = useState(false);
+
+  const refreshLoadedPowders = async () => {
+    setLoadedPowdersLoading(true);
+    try {
+      const data = await get_labman_loaded_powders();
+      if (data?.status === 'success') {
+        setLoadedPowders(data.powders || []);
+        setLoadedPowdersError('');
+      } else {
+        setLoadedPowders([]);
+        setLoadedPowdersError(
+          String(data?.errors || data?.error || 'Could not load Labman powders'),
+        );
+      }
+    } catch (err) {
+      setLoadedPowders([]);
+      setLoadedPowdersError(String(err?.message || err));
+    } finally {
+      setLoadedPowdersLoading(false);
+    }
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -531,6 +569,13 @@ export default function Submissions() {
     () => recipes.find((r) => r.id === presetId) || null,
     [recipes, presetId],
   );
+
+  useEffect(() => {
+    if (stages.powder_dosing) {
+      refreshLoadedPowders();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stages.powder_dosing]);
 
   const batchFields = useMemo(() => {
     const byName = {};
@@ -1147,6 +1192,25 @@ export default function Submissions() {
                   One row per sample — add rows for a batch, or leave a single row for one sample.
                   Names become {'{project}_{index}'}.
                 </Typography>
+                {stages.powder_dosing && (
+                  <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
+                    <Typography variant="body2" color="text.secondary">
+                      Precursors: select from powders loaded on Labman
+                      {loadedPowdersLoading
+                        ? ' (loading…)'
+                        : ` (${loadedPowders.length} available)`}
+                      .
+                    </Typography>
+                    <Button size="small" onClick={refreshLoadedPowders} disabled={loadedPowdersLoading}>
+                      Refresh powders
+                    </Button>
+                    {loadedPowdersError && (
+                      <Alert severity="warning" sx={{ py: 0, flex: '1 1 100%' }}>
+                        {loadedPowdersError}
+                      </Alert>
+                    )}
+                  </Stack>
+                )}
                 <TableContainer
                   component={Paper}
                   variant="outlined"
@@ -1234,6 +1298,63 @@ export default function Submissions() {
                                         event.target.checked,
                                       )
                                     }
+                                  />
+                                </TableCell>
+                              );
+                            }
+                            if (col.type === 'powder_multi_select') {
+                              const selected = Array.isArray(row[col.name])
+                                ? row[col.name]
+                                : String(row[col.name] || '')
+                                    .split(',')
+                                    .map((part) => part.trim())
+                                    .filter(Boolean);
+                              return (
+                                <TableCell key={col.name} sx={{ py: 1, px: 1, minWidth: 220 }}>
+                                  <Autocomplete
+                                    multiple
+                                    size="small"
+                                    options={loadedPowders}
+                                    value={selected}
+                                    disableCloseOnSelect
+                                    loading={loadedPowdersLoading}
+                                    noOptionsText={
+                                      loadedPowdersError
+                                        ? 'Labman powders unavailable'
+                                        : 'No loaded powders'
+                                    }
+                                    onChange={(_event, value) =>
+                                      setRecipeSampleCell(rowIndex, col.name, value)
+                                    }
+                                    renderTags={(value, getTagProps) =>
+                                      value.map((option, index) => (
+                                        <Chip
+                                          size="small"
+                                          label={option}
+                                          {...getTagProps({ index })}
+                                          key={`${option}-${index}`}
+                                        />
+                                      ))
+                                    }
+                                    renderInput={(params) => (
+                                      <TextField
+                                        {...params}
+                                        variant="standard"
+                                        placeholder={selected.length ? '' : 'Select powders'}
+                                        InputProps={{
+                                          ...params.InputProps,
+                                          disableUnderline: true,
+                                          sx: {
+                                            fontSize: 14,
+                                            px: 1,
+                                            py: 0.5,
+                                            borderRadius: 1,
+                                            '&:hover': { bgcolor: 'grey.100' },
+                                            '&.Mui-focused': { bgcolor: 'grey.100' },
+                                          },
+                                        }}
+                                      />
+                                    )}
                                   />
                                 </TableCell>
                               );
