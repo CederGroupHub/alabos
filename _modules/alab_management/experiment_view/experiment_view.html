@@ -575,6 +575,46 @@
         <span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="ExperimentView.claim_pending_experiment">
+<a class="viewcode-back" href="../../../alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.claim_pending_experiment">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">claim_pending_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exp_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Atomically move an experiment from PENDING to RUNNING.</span>
+
+<span class="sd">        Returns True if this caller claimed it. Returns False if it was no longer</span>
+<span class="sd">        PENDING (e.g. cancelled in the submit/cancel race window).</span>
+<span class="sd">        """</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_collection</span><span class="o">.</span><span class="n">find_one_and_update</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">exp_id</span><span class="p">,</span> <span class="s2">"status"</span><span class="p">:</span> <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">name</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="o">.</span><span class="n">name</span><span class="p">}},</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="ExperimentView.try_update_experiment_status">
+<a class="viewcode-back" href="../../../alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.try_update_experiment_status">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">try_update_experiment_status</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">exp_id</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">,</span>
+        <span class="n">status</span><span class="p">:</span> <span class="n">ExperimentStatus</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">from_statuses</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ExperimentStatus</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Update status only if the experiment is currently in ``from_statuses``.</span>
+
+<span class="sd">        Returns True when a document was modified. Used so a cancel that lands</span>
+<span class="sd">        while the manager is creating tasks is not overwritten by RUNNING/ERROR.</span>
+<span class="sd">        """</span>
+        <span class="n">allowed</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">from_statuses</span><span class="p">]</span>
+        <span class="n">update_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="ow">in</span> <span class="p">{</span><span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">COMPLETED</span><span class="p">,</span> <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">CANCELLED</span><span class="p">}:</span>
+            <span class="n">update_dict</span><span class="p">[</span><span class="s2">"completed_at"</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_experiment_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">exp_id</span><span class="p">,</span> <span class="s2">"status"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$in"</span><span class="p">:</span> <span class="n">allowed</span><span class="p">}},</span>
+            <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="n">update_dict</span><span class="p">},</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">modified_count</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
+
+
 <div class="viewcode-block" id="ExperimentView.update_sample_task_id">
 <a class="viewcode-back" href="../../../alab_management.experiment_view.experiment_view.html#alab_management.experiment_view.experiment_view.ExperimentView.update_sample_task_id">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_sample_task_id</span><span class="p">(</span>

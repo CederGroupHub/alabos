@@ -485,7 +485,9 @@
             <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">PENDING</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="n">pending_experiments</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_handle_pending_experiment</span><span class="p">(</span><span class="n">experiment</span><span class="o">=</span><span class="n">experiment</span><span class="p">)</span>
+            <span class="n">started</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_pending_experiment</span><span class="p">(</span><span class="n">experiment</span><span class="o">=</span><span class="n">experiment</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">started</span><span class="p">:</span>
+                <span class="k">continue</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">system_log</span><span class="p">(</span>
                 <span class="n">level</span><span class="o">=</span><span class="s2">"DEBUG"</span><span class="p">,</span>
                 <span class="n">log_data</span><span class="o">=</span><span class="p">{</span>
@@ -496,9 +498,16 @@
             <span class="p">)</span></div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_handle_pending_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_handle_pending_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Expand a PENDING experiment into samples/tasks.</span>
+
+<span class="sd">        Returns True if the experiment was claimed and left RUNNING. Returns False</span>
+<span class="sd">        if it was skipped (cycle / claim lost to cancel) or aborted because a</span>
+<span class="sd">        cancel landed while tasks were being created.</span>
+<span class="sd">        """</span>
         <span class="n">samples</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">experiment</span><span class="p">[</span><span class="s2">"samples"</span><span class="p">]</span>
         <span class="n">tasks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">experiment</span><span class="p">[</span><span class="s2">"tasks"</span><span class="p">]</span>
+        <span class="n">exp_id</span> <span class="o">=</span> <span class="n">experiment</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]</span>
 
         <span class="c1"># check if there is any cycle in the graph</span>
         <span class="n">reversed_edges</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="n">task</span><span class="p">[</span><span class="s2">"prev_tasks"</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">task</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tasks</span><span class="p">)}</span>
@@ -516,11 +525,22 @@
             <span class="p">},</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">task_graph</span><span class="o">.</span><span class="n">has_cycle</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span><span class="n">update_experiment_status</span><span class="p">(</span>
-                <span class="n">experiment</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">],</span> <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">ERROR</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span><span class="n">try_update_experiment_status</span><span class="p">(</span>
+                <span class="n">exp_id</span><span class="p">,</span>
+                <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span>
+                <span class="n">from_statuses</span><span class="o">=</span><span class="p">[</span><span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="p">],</span>
             <span class="p">)</span>
-            <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Experiment (</span><span class="si">{</span><span class="n">experiment</span><span class="p">[</span><span class="s1">'_id'</span><span class="p">]</span><span class="si">}</span><span class="s2">) has a cycle in the graph."</span><span class="p">)</span>
-            <span class="k">return</span>
+            <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Experiment (</span><span class="si">{</span><span class="n">exp_id</span><span class="si">}</span><span class="s2">) has a cycle in the graph."</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Claim before creating tasks so a cancel that already set CANCELLED is</span>
+        <span class="c1"># not overwritten by an unconditional RUNNING write at the end.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span><span class="n">claim_pending_experiment</span><span class="p">(</span><span class="n">exp_id</span><span class="p">):</span>
+            <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Experiment (</span><span class="si">{</span><span class="n">exp_id</span><span class="si">}</span><span class="s2">) is no longer PENDING; skipping start "</span>
+                <span class="s2">"(likely cancelled)."</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
 
         <span class="c1"># create samples in the sample database (or reuse existing when flagged)</span>
         <span class="n">sample_ids</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ObjectId</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -533,14 +553,16 @@
                     <span class="k">else</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">existing_id</span><span class="p">)</span>
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_view</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">sample_id</span><span class="o">=</span><span class="n">oid</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span><span class="n">update_experiment_status</span><span class="p">(</span>
-                        <span class="n">experiment</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">],</span> <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">ERROR</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span><span class="n">try_update_experiment_status</span><span class="p">(</span>
+                        <span class="n">exp_id</span><span class="p">,</span>
+                        <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span>
+                        <span class="n">from_statuses</span><span class="o">=</span><span class="p">[</span><span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">],</span>
                     <span class="p">)</span>
                     <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"Experiment (</span><span class="si">{</span><span class="n">experiment</span><span class="p">[</span><span class="s1">'_id'</span><span class="p">]</span><span class="si">}</span><span class="s2">) reuse_existing sample "</span>
+                        <span class="sa">f</span><span class="s2">"Experiment (</span><span class="si">{</span><span class="n">exp_id</span><span class="si">}</span><span class="s2">) reuse_existing sample "</span>
                         <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">oid</span><span class="si">}</span><span class="s2"> was not found."</span>
                     <span class="p">)</span>
-                    <span class="k">return</span>
+                    <span class="k">return</span> <span class="kc">False</span>
                 <span class="n">sample_ids</span><span class="p">[</span><span class="n">sample</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]]</span> <span class="o">=</span> <span class="n">oid</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">sample_ids</span><span class="p">[</span><span class="n">sample</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_view</span><span class="o">.</span><span class="n">create_sample</span><span class="p">(</span>
@@ -553,7 +575,7 @@
         <span class="c1"># create tasks in the task database</span>
         <span class="n">task_ids</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
-            <span class="n">samples</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">task_samples</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="n">samplename</span><span class="p">,</span> <span class="s2">"sample_id"</span><span class="p">:</span> <span class="n">sample_ids</span><span class="p">[</span><span class="n">samplename</span><span class="p">]}</span>
                 <span class="k">for</span> <span class="n">samplename</span> <span class="ow">in</span> <span class="n">task</span><span class="p">[</span><span class="s2">"samples"</span><span class="p">]</span>
             <span class="p">]</span>
@@ -561,7 +583,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
                     <span class="n">task_type</span><span class="o">=</span><span class="n">task</span><span class="p">[</span><span class="s2">"type"</span><span class="p">],</span>
                     <span class="n">parameters</span><span class="o">=</span><span class="n">task</span><span class="p">[</span><span class="s2">"parameters"</span><span class="p">],</span>
-                    <span class="n">samples</span><span class="o">=</span><span class="n">samples</span><span class="p">,</span>
+                    <span class="n">samples</span><span class="o">=</span><span class="n">task_samples</span><span class="p">,</span>
                     <span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"task_id"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
                 <span class="p">)</span>
             <span class="p">)</span>
@@ -578,17 +600,35 @@
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="o">.</span><span class="n">try_to_mark_task_ready</span><span class="p">(</span><span class="n">task_id</span><span class="p">)</span>
 
-        <span class="c1"># write back the assign task &amp; sample ids</span>
+        <span class="c1"># write back the assign task &amp; sample ids so Cancel can find them</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span><span class="n">update_sample_task_id</span><span class="p">(</span>
-            <span class="n">exp_id</span><span class="o">=</span><span class="n">experiment</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">],</span>
+            <span class="n">exp_id</span><span class="o">=</span><span class="n">exp_id</span><span class="p">,</span>
             <span class="n">sample_ids</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">sample_ids</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
             <span class="n">task_ids</span><span class="o">=</span><span class="n">task_ids</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="c1"># update the status of experiment to RUNNING (have handled by experiment manager)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span><span class="n">update_experiment_status</span><span class="p">(</span>
-            <span class="n">exp_id</span><span class="o">=</span><span class="n">experiment</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">],</span> <span class="n">status</span><span class="o">=</span><span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">RUNNING</span>
-        <span class="p">)</span>
+        <span class="c1"># If Cancel landed after the claim (and possibly before task ids were</span>
+        <span class="c1"># written), stop the tasks we just created and leave CANCELLED alone.</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment_view</span><span class="o">.</span><span class="n">get_experiment</span><span class="p">(</span><span class="n">exp_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">current</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">current</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"status"</span><span class="p">)</span> <span class="o">==</span> <span class="n">ExperimentStatus</span><span class="o">.</span><span class="n">CANCELLED</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cancel_tasks_created_for_aborted_start</span><span class="p">(</span><span class="n">task_ids</span><span class="p">)</span>
+            <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Experiment (</span><span class="si">{</span><span class="n">exp_id</span><span class="si">}</span><span class="s2">) was cancelled while starting; "</span>
+                <span class="sa">f</span><span class="s2">"aborted </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">task_ids</span><span class="p">)</span><span class="si">}</span><span class="s2"> newly created task(s)."</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cancel_tasks_created_for_aborted_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ObjectId</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Force-cancel tasks created for an experiment that lost the cancel race."""</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">task_ids</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+
+        <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.experiment_cancel</span><span class="w"> </span><span class="kn">import</span> <span class="n">_force_cancel_experiment_tasks</span>
+
+        <span class="n">_force_cancel_experiment_tasks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="p">,</span> <span class="n">task_ids</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
 
 <div class="viewcode-block" id="ExperimentManager.mark_completed_experiments">
 <a class="viewcode-back" href="../../alab_management.experiment_manager.html#alab_management.experiment_manager.ExperimentManager.mark_completed_experiments">[docs]</a>

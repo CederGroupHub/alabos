@@ -445,11 +445,13 @@
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentView"><code class="docutils literal notranslate"><span class="pre">ExperimentView</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentView.claim_pending_experiment"><code class="docutils literal notranslate"><span class="pre">ExperimentView.claim_pending_experiment()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentView.create_experiment"><code class="docutils literal notranslate"><span class="pre">ExperimentView.create_experiment()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentView.get_experiment"><code class="docutils literal notranslate"><span class="pre">ExperimentView.get_experiment()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentView.get_experiment_by_sample_id"><code class="docutils literal notranslate"><span class="pre">ExperimentView.get_experiment_by_sample_id()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentView.get_experiment_by_task_id"><code class="docutils literal notranslate"><span class="pre">ExperimentView.get_experiment_by_task_id()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentView.get_experiments_with_status"><code class="docutils literal notranslate"><span class="pre">ExperimentView.get_experiments_with_status()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentView.try_update_experiment_status"><code class="docutils literal notranslate"><span class="pre">ExperimentView.try_update_experiment_status()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentView.update_experiment_status"><code class="docutils literal notranslate"><span class="pre">ExperimentView.update_experiment_status()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentView.update_sample_task_id"><code class="docutils literal notranslate"><span class="pre">ExperimentView.update_sample_task_id()</span></code></a></li>
 </ul>
@@ -514,6 +516,19 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Experiment view manages the experiment status, which is a collection of tasks and samples.</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="alab_management.experiment_view.experiment_view.ExperimentView.claim_pending_experiment">
+<span class="sig-name descname"><span class="pre">claim_pending_experiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exp_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/experiment_view/experiment_view.html#ExperimentView.claim_pending_experiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.experiment_view.experiment_view.ExperimentView.claim_pending_experiment" title="Link to this definition">#</a></dt>
+<dd><p>Atomically move an experiment from PENDING to RUNNING.</p>
+<p>Returns True if this caller claimed it. Returns False if it was no longer
+PENDING (e.g. cancelled in the submit/cancel race window).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="alab_management.experiment_view.experiment_view.ExperimentView.create_experiment">
 <span class="sig-name descname"><span class="pre">create_experiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/experiment_view/experiment_view.html#ExperimentView.create_experiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.experiment_view.experiment_view.ExperimentView.create_experiment" title="Link to this definition">#</a></dt>
 <dd><p>Create an experiment in the database
@@ -570,6 +585,19 @@ lab manager will add sample id and task id for the samples and tasks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.experiment_view.experiment_view.ExperimentView.try_update_experiment_status">
+<span class="sig-name descname"><span class="pre">try_update_experiment_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exp_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_statuses</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/experiment_view/experiment_view.html#ExperimentView.try_update_experiment_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.experiment_view.experiment_view.ExperimentView.try_update_experiment_status" title="Link to this definition">#</a></dt>
+<dd><p>Update status only if the experiment is currently in <code class="docutils literal notranslate"><span class="pre">from_statuses</span></code>.</p>
+<p>Returns True when a document was modified. Used so a cancel that lands
+while the manager is creating tasks is not overwritten by RUNNING/ERROR.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -661,11 +689,13 @@ the whole row. If nothing is still running and any task was cancelled, the row i
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentView"><code class="docutils literal notranslate"><span class="pre">ExperimentView</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentView.claim_pending_experiment"><code class="docutils literal notranslate"><span class="pre">ExperimentView.claim_pending_experiment()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentView.create_experiment"><code class="docutils literal notranslate"><span class="pre">ExperimentView.create_experiment()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentView.get_experiment"><code class="docutils literal notranslate"><span class="pre">ExperimentView.get_experiment()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentView.get_experiment_by_sample_id"><code class="docutils literal notranslate"><span class="pre">ExperimentView.get_experiment_by_sample_id()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentView.get_experiment_by_task_id"><code class="docutils literal notranslate"><span class="pre">ExperimentView.get_experiment_by_task_id()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentView.get_experiments_with_status"><code class="docutils literal notranslate"><span class="pre">ExperimentView.get_experiments_with_status()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentView.try_update_experiment_status"><code class="docutils literal notranslate"><span class="pre">ExperimentView.try_update_experiment_status()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentView.update_experiment_status"><code class="docutils literal notranslate"><span class="pre">ExperimentView.update_experiment_status()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.experiment_view.experiment_view.ExperimentView.update_sample_task_id"><code class="docutils literal notranslate"><span class="pre">ExperimentView.update_sample_task_id()</span></code></a></li>
 </ul>
