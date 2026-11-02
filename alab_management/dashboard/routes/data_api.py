@@ -11,6 +11,7 @@ import hmac
 import mimetypes
 import os
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from typing import Any
 
 from bson import ObjectId
@@ -224,6 +225,8 @@ def create_sample():
 
 @data_api_bp.route("/samples/<sample_id>", methods=["GET"])
 def get_sample(sample_id: str):
+    """One sample. ``?full=1`` returns its whole ``metadata`` (heating, recovery and every other task result)
+    instead of the summary fields."""
     try:
         object_id = _sample_object_id(sample_id)
     except ValueError as exception:
@@ -231,9 +234,10 @@ def get_sample(sample_id: str):
     doc, label = _find_sample_across_dbs(object_id)
     if doc is None:
         return jsonify({"status": "error", "errors": f"sample {sample_id} not found"}), 404
-    return jsonify(
-        make_jsonable({"status": "success", "data": {"sample": _sample_summary(doc, label)}})
-    )
+    sample = _sample_summary(doc, label)
+    if request.args.get("full", "").lower() in ("1", "true", "yes"):
+        sample["metadata"] = doc.get("metadata") or {}
+    return jsonify(make_jsonable({"status": "success", "data": {"sample": sample}}))
 
 
 # ---- measurements ----
@@ -331,6 +335,43 @@ def _pick_measurement(
     return candidates[-1]
 
 
+def _folder_listing(folder: Path) -> list[dict[str, Any]]:
+    return [
+        {"path": f.relative_to(folder).as_posix(), "size": f.stat().st_size}
+        for f in sorted(folder.rglob("*"))
+        if f.is_file()
+    ]
+
+
+def _artifact_response(path: Path):
+    """Stream a file artifact. A folder artifact (e.g. one SEM sample) lists its files without ``?path=``
+    and streams the named file with it."""
+    member = request.args.get("path")
+    if path.is_dir():
+        if not member:
+            return jsonify({"status": "success", "data": {"files": _folder_listing(path)}})
+        target = (path / member).resolve()
+        if not target.is_relative_to(path):
+            return _invalid(ValueError(f"path is not inside the artifact folder: {member!r}"))
+        path = target
+    elif member:
+        return _invalid(ValueError("path only applies to folder artifacts"))
+
+    if not path.is_file():
+        return (
+            jsonify({"status": "error", "errors": f"artifact file missing on storage: {path}"}),
+            404,
+        )
+
+    mime, _ = mimetypes.guess_type(str(path))
+    return send_file(
+        path,
+        mimetype=mime or "application/octet-stream",
+        as_attachment=False,
+        download_name=path.name,
+    )
+
+
 @data_api_bp.route("/samples/<sample_id>/artifacts/<kind>", methods=["GET"])
 def get_artifact_by_kind(sample_id: str, kind: str):
     """Stream the raw artifact for a sample+kind by resolving ``logical_key``."""
@@ -380,24 +421,7 @@ def get_artifact_by_kind(sample_id: str, kind: str):
     except ValueError as exception:
         return _invalid(exception)
 
-    if not path.is_file():
-        return (
-            jsonify(
-                {
-                    "status": "error",
-                    "errors": f"artifact file missing on storage: {path}",
-                }
-            ),
-            404,
-        )
-
-    mime, _ = mimetypes.guess_type(str(path))
-    return send_file(
-        path,
-        mimetype=mime or "application/octet-stream",
-        as_attachment=False,
-        download_name=path.name,
-    )
+    return _artifact_response(path)
 
 
 @data_api_bp.route("/artifacts/by-hash/<content_hash>", methods=["GET"])
@@ -456,17 +480,8 @@ def get_artifact_by_hash(content_hash: str):
         path = resolve_logical_key(logical_key)
     except ValueError as exception:
         return _invalid(exception)
-    if not path.is_file():
-        return jsonify({"status": "error", "errors": f"artifact file missing: {path}"}), 404
-
-    mime, _ = mimetypes.guess_type(str(path))
-    response = send_file(
-        path,
-        mimetype=mime or "application/octet-stream",
-        as_attachment=False,
-        download_name=path.name,
-    )
-    if isinstance(response, Response):
+    response = _artifact_response(path)
+    if isinstance(response, Response) and response.status_code == 200:
         response.headers["X-AlabOS-Sample-Id"] = str(doc["_id"])
         response.headers["X-AlabOS-Database"] = db_label
     return response

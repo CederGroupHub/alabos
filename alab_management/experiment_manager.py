@@ -88,7 +88,9 @@ class ExperimentManager:
             ExperimentStatus.PENDING
         )
         for experiment in pending_experiments:
-            self._handle_pending_experiment(experiment=experiment)
+            started = self._handle_pending_experiment(experiment=experiment)
+            if not started:
+                continue
             self.logger.system_log(
                 level="DEBUG",
                 log_data={
@@ -98,9 +100,16 @@ class ExperimentManager:
                 },
             )
 
-    def _handle_pending_experiment(self, experiment: dict[str, Any]):
+    def _handle_pending_experiment(self, experiment: dict[str, Any]) -> bool:
+        """Expand a PENDING experiment into samples/tasks.
+
+        Returns True if the experiment was claimed and left RUNNING. Returns False
+        if it was skipped (cycle / claim lost to cancel) or aborted because a
+        cancel landed while tasks were being created.
+        """
         samples: list[dict[str, Any]] = experiment["samples"]
         tasks: list[dict[str, Any]] = experiment["tasks"]
+        exp_id = experiment["_id"]
 
         # check if there is any cycle in the graph
         reversed_edges = {i: task["prev_tasks"] for i, task in enumerate(tasks)}
@@ -118,11 +127,22 @@ class ExperimentManager:
             },
         )
         if task_graph.has_cycle():
-            self.experiment_view.update_experiment_status(
-                experiment["_id"], ExperimentStatus.ERROR
+            self.experiment_view.try_update_experiment_status(
+                exp_id,
+                ExperimentStatus.ERROR,
+                from_statuses=[ExperimentStatus.PENDING],
             )
-            cli_logger.info(f"Experiment ({experiment['_id']}) has a cycle in the graph.")
-            return
+            cli_logger.info(f"Experiment ({exp_id}) has a cycle in the graph.")
+            return False
+
+        # Claim before creating tasks so a cancel that already set CANCELLED is
+        # not overwritten by an unconditional RUNNING write at the end.
+        if not self.experiment_view.claim_pending_experiment(exp_id):
+            cli_logger.info(
+                f"Experiment ({exp_id}) is no longer PENDING; skipping start "
+                "(likely cancelled)."
+            )
+            return False
 
         # create samples in the sample database (or reuse existing when flagged)
         sample_ids: dict[str, ObjectId] = {}
@@ -135,14 +155,16 @@ class ExperimentManager:
                     else ObjectId(existing_id)
                 )
                 if not self.sample_view.exists(sample_id=oid):
-                    self.experiment_view.update_experiment_status(
-                        experiment["_id"], ExperimentStatus.ERROR
+                    self.experiment_view.try_update_experiment_status(
+                        exp_id,
+                        ExperimentStatus.ERROR,
+                        from_statuses=[ExperimentStatus.RUNNING],
                     )
                     cli_logger.info(
-                        f"Experiment ({experiment['_id']}) reuse_existing sample "
+                        f"Experiment ({exp_id}) reuse_existing sample "
                         f"{oid} was not found."
                     )
-                    return
+                    return False
                 sample_ids[sample["name"]] = oid
             else:
                 sample_ids[sample["name"]] = self.sample_view.create_sample(
@@ -155,7 +177,7 @@ class ExperimentManager:
         # create tasks in the task database
         task_ids = []
         for task in tasks:
-            samples = [
+            task_samples = [
                 {"name": samplename, "sample_id": sample_ids[samplename]}
                 for samplename in task["samples"]
             ]
@@ -163,7 +185,7 @@ class ExperimentManager:
                 self.task_view.create_task(
                     task_type=task["type"],
                     parameters=task["parameters"],
-                    samples=samples,
+                    samples=task_samples,
                     task_id=task.get("task_id", None),
                 )
             )
@@ -180,17 +202,35 @@ class ExperimentManager:
             )
             self.task_view.try_to_mark_task_ready(task_id)
 
-        # write back the assign task & sample ids
+        # write back the assign task & sample ids so Cancel can find them
         self.experiment_view.update_sample_task_id(
-            exp_id=experiment["_id"],
+            exp_id=exp_id,
             sample_ids=list(sample_ids.values()),
             task_ids=task_ids,
         )
 
-        # update the status of experiment to RUNNING (have handled by experiment manager)
-        self.experiment_view.update_experiment_status(
-            exp_id=experiment["_id"], status=ExperimentStatus.RUNNING
-        )
+        # If Cancel landed after the claim (and possibly before task ids were
+        # written), stop the tasks we just created and leave CANCELLED alone.
+        current = self.experiment_view.get_experiment(exp_id)
+        if current is None or current.get("status") == ExperimentStatus.CANCELLED.name:
+            self._cancel_tasks_created_for_aborted_start(task_ids)
+            cli_logger.info(
+                f"Experiment ({exp_id}) was cancelled while starting; "
+                f"aborted {len(task_ids)} newly created task(s)."
+            )
+            return False
+
+        return True
+
+    def _cancel_tasks_created_for_aborted_start(self, task_ids: list[ObjectId]) -> None:
+        """Force-cancel tasks created for an experiment that lost the cancel race."""
+        if not task_ids:
+            return
+        from datetime import datetime
+
+        from alab_management.experiment_cancel import _force_cancel_experiment_tasks
+
+        _force_cancel_experiment_tasks(self.task_view, task_ids, datetime.now())
 
     def mark_completed_experiments(self):
         """This method will scan the database to mark completed experiments in time."""
