@@ -34,6 +34,7 @@ Both documents live under ``metadata``, side by side and never nested in each ot
 from __future__ import annotations
 
 import re
+import struct
 from collections.abc import Mapping
 from datetime import datetime, timedelta, timezone
 from typing import Any
@@ -303,13 +304,16 @@ class AnalysisView:
         owner: str | None = None,
         include_errors: bool = False,
         include_claimed: bool = False,
+        created_since: datetime | None = None,
     ) -> list[dict[str, Any]]:
         """Samples that carry ``data_source``'s input data but no result whose ``params_hash`` is the caller's.
 
         ``params_hash`` is the caller's own identifier for its analysis configuration; AlabOS only compares it for
         equality with what is stored, and never interprets it. A stored block without ``params_hash`` (a
         hand-written result) counts as fresh and is left alone. Errors are skipped unless ``include_errors``,
-        because when to retry an error is the caller's policy, not AlabOS's.
+        because when to retry an error is the caller's policy, not AlabOS's. With ``created_since``, only samples
+        created at or after it are listed (by the creation time in the sample id; a naive time is UTC), so a service
+        that starts on a running lab can leave the samples made before it alone.
         """
         field = self.result_field(kind)
         if not isinstance(params_hash, str) or not params_hash.strip():
@@ -328,6 +332,16 @@ class AnalysisView:
         }
         if not include_claimed:
             query["$and"].append(self._claimable_query(kind, owner))
+        if created_since is not None:
+            if created_since.tzinfo is None:
+                created_since = created_since.replace(tzinfo=timezone.utc)
+            try:
+                first_id = ObjectId.from_datetime(created_since)
+            except struct.error as exception:
+                raise ValueError(
+                    f"created_since {created_since.isoformat()} is outside what a sample id can hold"
+                ) from exception
+            query["$and"].append({"_id": {"$gte": first_id}})
 
         projection = {
             "name": 1,

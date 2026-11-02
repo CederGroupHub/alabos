@@ -696,3 +696,24 @@ def test_one_sample_comes_with_its_whole_metadata_on_request(client, samples):
     full = client.get(f"/api/data/samples/{sample_id}", query_string={"full": "1"}).get_json()["data"]["sample"]
     assert full["metadata"]["heating_results"] == heating
     assert full["name"] == summary["name"] and full["sample_id"] == summary["sample_id"]
+
+
+def test_pending_can_leave_out_samples_created_before_a_time(client, samples):
+    sample_id = samples("api_created_since", ALAB_ONE_DATA)
+    made = sample_id.generation_time
+    before, after = (made - timedelta(hours=1)).isoformat(), (made + timedelta(hours=1)).isoformat()
+
+    assert str(sample_id) in _pending_ids(client, limit=500, created_since=before)
+    assert str(sample_id) not in _pending_ids(client, limit=500, created_since=after)
+    naive_after = (made + timedelta(hours=1)).replace(tzinfo=None).isoformat()  # a naive time is UTC
+    assert str(sample_id) not in _pending_ids(client, limit=500, created_since=naive_after)
+    zulu_after = (made + timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    assert str(sample_id) not in _pending_ids(client, limit=500, created_since=zulu_after)
+
+    for bad in ("yesterday", "1900-01-01"):
+        response = client.get(
+            "/api/data/analysis/pending",
+            query_string={"kind": "xrd", "data_source": "alab_one_diffraction", "params_hash": "h1",
+                          "created_since": bad},
+        )
+        assert response.status_code == 400, bad

@@ -92,6 +92,16 @@ def _missing(exception: SampleNotFoundError | ValueError):
     return jsonify({"status": "error", "errors": str(exception)}), 404
 
 
+def _created_since(value: str | None) -> datetime | None:
+    """``created_since`` as an ISO date or date/time (a trailing ``Z`` is UTC); None when not given."""
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(value[:-1] + "+00:00" if value.endswith("Z") else value)
+    except ValueError as exception:
+        raise ValueError(f"created_since must be an ISO date or date/time, got {value!r}") from exception
+
+
 def _invalid(exception: ValueError):
     return jsonify({"status": "error", "errors": str(exception)}), 400
 
@@ -491,6 +501,7 @@ def list_pending():
             owner=request.args.get("owner") or None,
             include_errors=_flag(request.args.get("include_errors")),
             include_claimed=_flag(request.args.get("include_claimed")),
+            created_since=_created_since(request.args.get("created_since")),
         )
     except ValueError as exception:
         return _invalid(exception)
