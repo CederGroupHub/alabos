@@ -424,6 +424,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">struct</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapping</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
@@ -727,13 +728,16 @@
         <span class="n">owner</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">include_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">include_claimed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">created_since</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">"""Samples that carry ``data_source``'s input data but no result whose ``params_hash`` is the caller's.</span>
 
 <span class="sd">        ``params_hash`` is the caller's own identifier for its analysis configuration; AlabOS only compares it for</span>
 <span class="sd">        equality with what is stored, and never interprets it. A stored block without ``params_hash`` (a</span>
 <span class="sd">        hand-written result) counts as fresh and is left alone. Errors are skipped unless ``include_errors``,</span>
-<span class="sd">        because when to retry an error is the caller's policy, not AlabOS's.</span>
+<span class="sd">        because when to retry an error is the caller's policy, not AlabOS's. With ``created_since``, only samples</span>
+<span class="sd">        created at or after it are listed (by the creation time in the sample id; a naive time is UTC), so a service</span>
+<span class="sd">        that starts on a running lab can leave the samples made before it alone.</span>
 <span class="sd">        """</span>
         <span class="n">field</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">result_field</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params_hash</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">params_hash</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
@@ -752,6 +756,16 @@
         <span class="p">}</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">include_claimed</span><span class="p">:</span>
             <span class="n">query</span><span class="p">[</span><span class="s2">"$and"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_claimable_query</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">owner</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">created_since</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">created_since</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">created_since</span> <span class="o">=</span> <span class="n">created_since</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">first_id</span> <span class="o">=</span> <span class="n">ObjectId</span><span class="o">.</span><span class="n">from_datetime</span><span class="p">(</span><span class="n">created_since</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">struct</span><span class="o">.</span><span class="n">error</span> <span class="k">as</span> <span class="n">exception</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"created_since </span><span class="si">{</span><span class="n">created_since</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2"> is outside what a sample id can hold"</span>
+                <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exception</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">"$and"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$gte"</span><span class="p">:</span> <span class="n">first_id</span><span class="p">}})</span>
 
         <span class="n">projection</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">"name"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
