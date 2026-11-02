@@ -2,7 +2,7 @@
 
 from typing import ClassVar
 
-from alab_control.capper import Capper
+from alab_control.legacy_servo_capper import LegacyServoCapper
 
 from alab_management import BaseDevice, SamplePosition, mock
 
@@ -23,12 +23,12 @@ class CappingGripper(BaseDevice):
         self.ip_address = ip_address
         self.port = port
 
-        self.driver: Capper | None = None
+        self.driver: LegacyServoCapper | None = None
 
-    @mock(object_type=Capper)
+    @mock(object_type=LegacyServoCapper)
     def get_driver(self):
         """Return the driver for the CappingGripper."""
-        self.driver = Capper(ip_address=self.ip_address, port=self.port)
+        self.driver = LegacyServoCapper(ip_address=self.ip_address, port=self.port)
         return self.driver
 
     def connect(self):
