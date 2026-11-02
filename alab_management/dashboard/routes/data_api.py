@@ -215,6 +215,8 @@ def create_sample():
 
 @data_api_bp.route("/samples/<sample_id>", methods=["GET"])
 def get_sample(sample_id: str):
+    """One sample. ``?full=1`` returns its whole ``metadata`` (heating, recovery and every other task result)
+    instead of the summary fields."""
     try:
         object_id = _sample_object_id(sample_id)
     except ValueError as exception:
@@ -222,9 +224,10 @@ def get_sample(sample_id: str):
     doc, label = _find_sample_across_dbs(object_id)
     if doc is None:
         return jsonify({"status": "error", "errors": f"sample {sample_id} not found"}), 404
-    return jsonify(
-        make_jsonable({"status": "success", "data": {"sample": _sample_summary(doc, label)}})
-    )
+    sample = _sample_summary(doc, label)
+    if request.args.get("full", "").lower() in ("1", "true", "yes"):
+        sample["metadata"] = doc.get("metadata") or {}
+    return jsonify(make_jsonable({"status": "success", "data": {"sample": sample}}))
 
 
 # ---- measurements ----

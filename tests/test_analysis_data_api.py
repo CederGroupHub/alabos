@@ -686,3 +686,13 @@ def test_data_sources_lists_the_configured_registry(client):
     assert response.status_code == 200
     names = [source["name"] for source in response.get_json()["data"]["data_sources"]]
     assert names == ["alab_one_diffraction", "gpss_xrdml"]
+
+
+def test_one_sample_comes_with_its_whole_metadata_on_request(client, samples):
+    heating = {"heating_temperature": 750.0, "heating_time": 720, "ramping_rate": 5}
+    sample_id = samples("full_metadata", {**ALAB_ONE_DATA, "heating_results": heating})
+    summary = client.get(f"/api/data/samples/{sample_id}").get_json()["data"]["sample"]
+    assert "heating_results" not in summary["metadata"]
+    full = client.get(f"/api/data/samples/{sample_id}", query_string={"full": "1"}).get_json()["data"]["sample"]
+    assert full["metadata"]["heating_results"] == heating
+    assert full["name"] == summary["name"] and full["sample_id"] == summary["sample_id"]
