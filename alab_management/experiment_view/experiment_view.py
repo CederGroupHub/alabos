@@ -165,6 +165,40 @@ class ExperimentView:
             {"$set": update_dict},
         )
 
+    def claim_pending_experiment(self, exp_id: ObjectId) -> bool:
+        """Atomically move an experiment from PENDING to RUNNING.
+
+        Returns True if this caller claimed it. Returns False if it was no longer
+        PENDING (e.g. cancelled in the submit/cancel race window).
+        """
+        result = self._experiment_collection.find_one_and_update(
+            {"_id": exp_id, "status": ExperimentStatus.PENDING.name},
+            {"$set": {"status": ExperimentStatus.RUNNING.name}},
+        )
+        return result is not None
+
+    def try_update_experiment_status(
+        self,
+        exp_id: ObjectId,
+        status: ExperimentStatus,
+        *,
+        from_statuses: list[ExperimentStatus],
+    ) -> bool:
+        """Update status only if the experiment is currently in ``from_statuses``.
+
+        Returns True when a document was modified. Used so a cancel that lands
+        while the manager is creating tasks is not overwritten by RUNNING/ERROR.
+        """
+        allowed = [s.name for s in from_statuses]
+        update_dict: dict[str, Any] = {"status": status.name}
+        if status in {ExperimentStatus.COMPLETED, ExperimentStatus.CANCELLED}:
+            update_dict["completed_at"] = datetime.now()
+        result = self._experiment_collection.update_one(
+            {"_id": exp_id, "status": {"$in": allowed}},
+            {"$set": update_dict},
+        )
+        return result.modified_count > 0
+
     def update_sample_task_id(
         self, exp_id, sample_ids: list[ObjectId], task_ids: list[ObjectId]
     ):
