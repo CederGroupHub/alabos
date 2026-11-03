@@ -396,12 +396,12 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">bson</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectId</span>  <span class="c1"># type: ignore</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.data_objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_collection</span><span class="p">,</span> <span class="n">get_completed_collection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">utc_now</span>
 
 
 <div class="viewcode-block" id="CompletedSampleView">
@@ -484,7 +484,7 @@
             <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">oid</span><span class="p">},</span>
             <span class="p">{</span>
                 <span class="s2">"$push"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"metadata.measurements"</span><span class="p">:</span> <span class="n">measurement</span><span class="p">},</span>
-                <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()},</span>
+                <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">utc_now</span><span class="p">()},</span>
             <span class="p">},</span>
         <span class="p">)</span></div>
 </div>

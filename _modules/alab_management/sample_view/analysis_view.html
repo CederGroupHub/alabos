@@ -432,6 +432,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">bson</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectId</span>  <span class="c1"># type: ignore</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">AlabOSConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">utc_now</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.sample_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">SampleView</span>
 
@@ -830,8 +831,8 @@
         <span class="n">update</span> <span class="o">=</span> <span class="p">{</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ANALYSIS_FIELD</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">result</span><span class="p">}</span>
 
         <span class="n">claim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">claim_field</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span>
-        <span class="c1"># Naive ``datetime.now()`` to match what ``update_sample_metadata`` stamps, not UTC-aware.</span>
-        <span class="n">change</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">result_field</span><span class="p">(</span><span class="n">kind</span><span class="p">):</span> <span class="n">result</span><span class="p">,</span> <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()}}</span>
+        <span class="c1"># Naive UTC via ``utc_now()`` to match other sample write stamps.</span>
+        <span class="n">change</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">result_field</span><span class="p">(</span><span class="n">kind</span><span class="p">):</span> <span class="n">result</span><span class="p">,</span> <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">utc_now</span><span class="p">()}}</span>
         <span class="k">if</span> <span class="n">owner</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">sample_view</span><span class="o">.</span><span class="n">update_sample_metadata</span><span class="p">(</span><span class="n">sample_id</span><span class="p">,</span> <span class="n">update</span><span class="p">)</span>
@@ -873,7 +874,7 @@
         <span class="k">if</span> <span class="n">completed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="n">update_dict</span> <span class="o">=</span> <span class="p">{</span><span class="sa">f</span><span class="s2">"metadata.</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">update</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-        <span class="n">update_dict</span><span class="p">[</span><span class="s2">"last_updated"</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">update_dict</span><span class="p">[</span><span class="s2">"last_updated"</span><span class="p">]</span> <span class="o">=</span> <span class="n">utc_now</span><span class="p">()</span>
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span>
             <span class="n">completed</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
                 <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="n">update_dict</span><span class="p">}</span>

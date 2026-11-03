@@ -597,6 +597,17 @@
     <span class="c1">#: leaves samples at their last known location.</span>
     <span class="n">cleanup_on_cancel</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 
+<div class="viewcode-block" id="BaseTask.samples_for_cleanup">
+<a class="viewcode-back" href="../../../alab_management.task_view.task.html#alab_management.task_view.task.BaseTask.samples_for_cleanup">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">samples_for_cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Sample entries to clear on unrecoverable cleanup.</span>
+
+<span class="sd">        Return ``None`` (default) to include every sample on the task. Subclasses may</span>
+<span class="sd">        return a subset when only some samples are physically implicated.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">samples</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">ObjectId</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>

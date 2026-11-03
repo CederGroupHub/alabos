@@ -502,9 +502,9 @@
             <span class="s2">"They were RUNNING or REQUESTING_RESOURCES when the workers stopped."</span>
         <span class="p">)</span>
         <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="s2">"We will cancel them and ask you to remove their samples from the lab. "</span>
-            <span class="s2">"A user request will appear on the dashboard for each task. "</span>
-            <span class="s2">"Acknowledge each one, then the workers will start new work."</span>
+            <span class="s2">"We will cancel them and prompt on the dashboard for each task. "</span>
+            <span class="s2">"Mid-Labman (processing-slot) tasks only release locks; other tasks may ask "</span>
+            <span class="s2">"you to remove physical samples. Acknowledge each prompt, then workers resume."</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">task_entry</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tasks_to_cancel</span><span class="p">):</span>
             <span class="n">task_id</span> <span class="o">=</span> <span class="n">task_entry</span><span class="p">[</span><span class="s2">"task_id"</span><span class="p">]</span>
@@ -516,11 +516,19 @@
                 <span class="s2">"using the ALabOS dashboard..."</span>
             <span class="p">)</span>
 
-            <span class="c1"># puts a user request on the dashboard to remove all samples in this task from the physical lab,</span>
-            <span class="c1"># blocks until request is acknowledged. There may be a duplicate request on the dashboard if the task was</span>
-            <span class="c1"># already cancelled before the taskmanager was restarted. Acknowledging both should be fine.</span>
+            <span class="c1"># puts a user request on the dashboard; blocks until acknowledged. Mid-Labman</span>
+            <span class="c1"># processing occupancy uses soft cleanup (no position clear). There may be a</span>
+            <span class="c1"># duplicate request if the task was already cancelling before restart.</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">LabView</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span><span class="o">.</span><span class="n">request_cleanup</span><span class="p">()</span>
+                <span class="n">lab_view</span> <span class="o">=</span> <span class="n">LabView</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">lab_view</span><span class="o">.</span><span class="n">occupies_only_labman_processing</span><span class="p">():</span>
+                    <span class="n">cli_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"Task </span><span class="si">{</span><span class="n">task_name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">) is mid-Labman (processing slots); "</span>
+                        <span class="s2">"releasing locks without clearing sample positions."</span>
+                    <span class="p">)</span>
+                    <span class="n">lab_view</span><span class="o">.</span><span class="n">request_cleanup</span><span class="p">(</span><span class="n">clear_positions</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">lab_view</span><span class="o">.</span><span class="n">request_cleanup</span><span class="p">()</span>
             <span class="k">except</span> <span class="n">TaskCancelledError</span><span class="p">:</span>
                 <span class="n">cli_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">"Cleanup prompt for </span><span class="si">{</span><span class="n">task_name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">) was cancelled; "</span>

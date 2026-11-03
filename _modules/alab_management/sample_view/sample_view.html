@@ -392,7 +392,6 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span>
 
@@ -401,6 +400,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">conint</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.data_objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_collection</span><span class="p">,</span> <span class="n">get_lock</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">utc_now</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.sample</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sample</span><span class="p">,</span> <span class="n">SamplePosition</span><span class="p">,</span> <span class="n">remove_standalone_sample_position</span>
 
@@ -470,7 +470,7 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">"""Build one append-only position_history record."""</span>
     <span class="n">entry</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">"at"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+        <span class="s2">"at"</span><span class="p">:</span> <span class="n">utc_now</span><span class="p">(),</span>
         <span class="s2">"position"</span><span class="p">:</span> <span class="n">position</span><span class="p">,</span>
         <span class="s2">"event"</span><span class="p">:</span> <span class="n">event</span><span class="p">,</span>
     <span class="p">}</span>
@@ -566,7 +566,7 @@
                         <span class="s2">"name"</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
                         <span class="s2">"description"</span><span class="p">:</span> <span class="n">sample_pos</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
                         <span class="s2">"task_id"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-                        <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+                        <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">utc_now</span><span class="p">(),</span>
                     <span class="p">}</span>
                     <span class="k">if</span> <span class="n">parent_device_name</span><span class="p">:</span>
                         <span class="n">new_entry</span><span class="p">[</span><span class="s2">"parent_device"</span><span class="p">]</span> <span class="o">=</span> <span class="n">parent_device_name</span>
@@ -790,7 +790,7 @@
                 <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
                     <span class="s2">"blocked"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
                     <span class="s2">"blocked_reason"</span><span class="p">:</span> <span class="n">reason_text</span><span class="p">,</span>
-                    <span class="s2">"blocked_at"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+                    <span class="s2">"blocked_at"</span><span class="p">:</span> <span class="n">utc_now</span><span class="p">(),</span>
                 <span class="p">}</span>
             <span class="p">},</span>
         <span class="p">)</span></div>
@@ -1123,7 +1123,7 @@
                 <span class="sa">f</span><span class="s2">"Unsupported sample name: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">. "</span>
                 <span class="sa">f</span><span class="s2">"Sample name should not contain '.' or '$'"</span>
             <span class="p">)</span>
-        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">utc_now</span><span class="p">()</span>
         <span class="n">history</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">position</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_position_history_entry</span><span class="p">(</span><span class="s2">"placed"</span><span class="p">,</span> <span class="n">position</span><span class="p">))</span>
@@ -1194,7 +1194,7 @@
             <span class="p">{</span>
                 <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
                     <span class="s2">"task_id"</span><span class="p">:</span> <span class="n">task_id</span><span class="p">,</span>
-                    <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+                    <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">utc_now</span><span class="p">(),</span>
                 <span class="p">}</span>
             <span class="p">},</span>
         <span class="p">)</span></div>
@@ -1209,7 +1209,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot find sample with id: </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="n">update_dict</span> <span class="o">=</span> <span class="p">{</span><span class="sa">f</span><span class="s2">"metadata.</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-        <span class="n">update_dict</span><span class="p">[</span><span class="s2">"last_updated"</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">update_dict</span><span class="p">[</span><span class="s2">"last_updated"</span><span class="p">]</span> <span class="o">=</span> <span class="n">utc_now</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
             <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">},</span>
             <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="n">update_dict</span><span class="p">},</span>
@@ -1227,7 +1227,7 @@
             <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">},</span>
             <span class="p">{</span>
                 <span class="s2">"$push"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"metadata.measurements"</span><span class="p">:</span> <span class="n">measurement</span><span class="p">},</span>
-                <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()},</span>
+                <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">utc_now</span><span class="p">()},</span>
             <span class="p">},</span>
         <span class="p">)</span></div>
 
@@ -1249,7 +1249,7 @@
             <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"in_transit"</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
                     <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">},</span>
-                    <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"in_transit"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()}},</span>
+                    <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"in_transit"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">utc_now</span><span class="p">()}},</span>
                 <span class="p">)</span>
             <span class="k">return</span>
 
@@ -1266,7 +1266,7 @@
         <span class="n">update_fields</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">"position"</span><span class="p">:</span> <span class="n">position</span><span class="p">,</span>
             <span class="s2">"in_transit"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+            <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">utc_now</span><span class="p">(),</span>
         <span class="p">}</span>
         <span class="c1"># Keep last_position as the most recent *known* location: only update it when moving to a</span>
         <span class="c1"># real position. When position becomes None (sample left the lab/position), retain the</span>
@@ -1310,9 +1310,9 @@
             <span class="s2">"in_transit"</span><span class="p">:</span> <span class="p">{</span>
                 <span class="s2">"source"</span><span class="p">:</span> <span class="n">source</span><span class="p">,</span>
                 <span class="s2">"destination"</span><span class="p">:</span> <span class="n">destination</span><span class="p">,</span>
-                <span class="s2">"started_at"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+                <span class="s2">"started_at"</span><span class="p">:</span> <span class="n">utc_now</span><span class="p">(),</span>
             <span class="p">},</span>
-            <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+            <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">utc_now</span><span class="p">(),</span>
         <span class="p">}</span>
         <span class="c1"># The sample is physically still at/near the source until the move completes, so record the</span>
         <span class="c1"># source as the last known location.</span>
@@ -1343,7 +1343,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot find sample with id: </span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sample_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
             <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">},</span>
-            <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"in_transit"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()}},</span>
+            <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"in_transit"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">utc_now</span><span class="p">()}},</span>
         <span class="p">)</span></div>
 
 

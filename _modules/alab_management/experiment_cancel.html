@@ -428,6 +428,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.task_view.task_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskView</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.user_input</span><span class="w"> </span><span class="kn">import</span> <span class="n">CANCEL_RESPONSE</span><span class="p">,</span> <span class="n">UserInputView</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.data_objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_collection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">utc_now</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -446,7 +447,7 @@
     <span class="n">device_view</span> <span class="o">=</span> <span class="n">DeviceView</span><span class="p">()</span>
     <span class="n">sample_view</span> <span class="o">=</span> <span class="n">SampleView</span><span class="p">()</span>
     <span class="n">user_input_view</span> <span class="o">=</span> <span class="n">UserInputView</span><span class="p">()</span>
-    <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="n">now</span> <span class="o">=</span> <span class="n">utc_now</span><span class="p">()</span>
 
     <span class="n">experiment</span> <span class="o">=</span> <span class="n">experiment_view</span><span class="o">.</span><span class="n">get_experiment</span><span class="p">(</span><span class="n">exp_id</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">experiment</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

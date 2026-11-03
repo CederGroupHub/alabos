@@ -396,7 +396,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">concurrent</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">Future</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">threading</span><span class="w"> </span><span class="kn">import</span> <span class="n">Thread</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">traceback</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_exc</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span>
@@ -413,6 +412,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.sample_view.sample_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">SamplePositionRequest</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.task_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskCancelledError</span><span class="p">,</span> <span class="n">TaskPriority</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.data_objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">DocumentNotUpdatedError</span><span class="p">,</span> <span class="n">get_collection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">utc_now</span>
 
 <span class="n">_SampleRequestDict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
 <span class="n">_ResourceRequestDict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">[</span>
@@ -708,7 +708,7 @@
                 <span class="s2">"status"</span><span class="p">:</span> <span class="n">RequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="s2">"task_id"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span>
                 <span class="s2">"priority"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">priority</span><span class="p">),</span>
-                <span class="s2">"submitted_at"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+                <span class="s2">"submitted_at"</span><span class="p">:</span> <span class="n">utc_now</span><span class="p">(),</span>
                 <span class="s2">"exact_positions"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">exact_positions</span><span class="p">)</span> <span class="k">if</span> <span class="n">exact_positions</span> <span class="k">else</span> <span class="p">[],</span>
             <span class="p">}</span>
         <span class="p">)</span>  <span class="c1"># DB_ACCESS_OUTSIDE_VIEW</span>

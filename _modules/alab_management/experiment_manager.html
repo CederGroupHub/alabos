@@ -403,6 +403,8 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">bson</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectId</span>  <span class="c1"># type: ignore</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.utils.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">utc_now</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">AlabOSConfig</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.experiment_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompletedExperimentView</span><span class="p">,</span> <span class="n">ExperimentStatus</span><span class="p">,</span> <span class="n">ExperimentView</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBLogger</span>
@@ -624,11 +626,10 @@
 <span class="w">        </span><span class="sd">"""Force-cancel tasks created for an experiment that lost the cancel race."""</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">task_ids</span><span class="p">:</span>
             <span class="k">return</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 
         <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.experiment_cancel</span><span class="w"> </span><span class="kn">import</span> <span class="n">_force_cancel_experiment_tasks</span>
 
-        <span class="n">_force_cancel_experiment_tasks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="p">,</span> <span class="n">task_ids</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+        <span class="n">_force_cancel_experiment_tasks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task_view</span><span class="p">,</span> <span class="n">task_ids</span><span class="p">,</span> <span class="n">utc_now</span><span class="p">())</span>
 
 <div class="viewcode-block" id="ExperimentManager.mark_completed_experiments">
 <a class="viewcode-back" href="../../alab_management.experiment_manager.html#alab_management.experiment_manager.ExperimentManager.mark_completed_experiments">[docs]</a>

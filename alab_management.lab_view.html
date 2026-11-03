@@ -446,6 +446,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.lock_exact_sample_positions"><code class="docutils literal notranslate"><span class="pre">LabView.lock_exact_sample_positions()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.lock_sample_position"><code class="docutils literal notranslate"><span class="pre">LabView.lock_sample_position()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.move_sample"><code class="docutils literal notranslate"><span class="pre">LabView.move_sample()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.occupies_only_labman_processing"><code class="docutils literal notranslate"><span class="pre">LabView.occupies_only_labman_processing()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.priority"><code class="docutils literal notranslate"><span class="pre">LabView.priority</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.release_all_resources"><code class="docutils literal notranslate"><span class="pre">LabView.release_all_resources()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.release_sample_position"><code class="docutils literal notranslate"><span class="pre">LabView.release_sample_position()</span></code></a></li>
@@ -634,6 +635,18 @@ or as a string corresponding to the sample’s name within the experiment.</p>
 </div>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.lab_view.LabView.occupies_only_labman_processing">
+<span class="sig-name descname"><span class="pre">occupies_only_labman_processing</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_view.html#LabView.occupies_only_labman_processing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_view.LabView.occupies_only_labman_processing" title="Link to this definition">#</a></dt>
+<dd><p>True when every occupied sample sits in a Labman <code class="docutils literal notranslate"><span class="pre">*/processing/*</span></code> slot.</p>
+<p>Those positions are virtual markers for samples still inside Labman mid-workflow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="alab_management.lab_view.LabView.priority">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">priority</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#alab_management.lab_view.LabView.priority" title="Link to this definition">#</a></dt>
@@ -674,14 +687,20 @@ is what a task with <code class="docutils literal notranslate"><span class="pre"
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.lab_view.LabView.request_cleanup">
-<span class="sig-name descname"><span class="pre">request_cleanup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">error_message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_view.html#LabView.request_cleanup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_view.LabView.request_cleanup" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">request_cleanup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">error_message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear_positions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/lab_view.html#LabView.request_cleanup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.lab_view.LabView.request_cleanup" title="Link to this definition">#</a></dt>
 <dd><p>Request cleanup of the task. This function will block until the task is cleaned up.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>error_message</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – A pre-formatted, debuggable error report to show the operator (and send to
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>error_message</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – A pre-formatted, debuggable error report to show the operator (and send to
 Slack/email). If not provided, a report is built from the exception currently being
 handled so the prompt always identifies what failed, where (file/line/function), and
-the full traceback.</p>
+the full traceback.</p></li>
+<li><p><strong>samples</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]]</span>) – Optional subset of task sample entries (<code class="docutils literal notranslate"><span class="pre">name</span></code> / <code class="docutils literal notranslate"><span class="pre">sample_id</span></code>) to mention and
+optionally clear. Defaults to every sample on the task.</p></li>
+<li><p><strong>clear_positions</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – When True (default), after OK clear software occupancy for the scoped
+samples. When False, only release locks/resources (used for mid-Labman restart).</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -916,6 +935,7 @@ or as a string corresponding to the sample’s name within the experiment.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.lock_exact_sample_positions"><code class="docutils literal notranslate"><span class="pre">LabView.lock_exact_sample_positions()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.lock_sample_position"><code class="docutils literal notranslate"><span class="pre">LabView.lock_sample_position()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.move_sample"><code class="docutils literal notranslate"><span class="pre">LabView.move_sample()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.occupies_only_labman_processing"><code class="docutils literal notranslate"><span class="pre">LabView.occupies_only_labman_processing()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.priority"><code class="docutils literal notranslate"><span class="pre">LabView.priority</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.release_all_resources"><code class="docutils literal notranslate"><span class="pre">LabView.release_all_resources()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.lab_view.LabView.release_sample_position"><code class="docutils literal notranslate"><span class="pre">LabView.release_sample_position()</span></code></a></li>

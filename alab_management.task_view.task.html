@@ -449,6 +449,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.run"><code class="docutils literal notranslate"><span class="pre">BaseTask.run()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.run_subtask"><code class="docutils literal notranslate"><span class="pre">BaseTask.run_subtask()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.samples"><code class="docutils literal notranslate"><span class="pre">BaseTask.samples</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.samples_for_cleanup"><code class="docutils literal notranslate"><span class="pre">BaseTask.samples_for_cleanup()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.set_message"><code class="docutils literal notranslate"><span class="pre">BaseTask.set_message()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.validate"><code class="docutils literal notranslate"><span class="pre">BaseTask.validate()</span></code></a></li>
 </ul>
@@ -656,6 +657,19 @@ and sample positions will be released automatically.</p>
 <dt class="sig sig-object py" id="alab_management.task_view.task.BaseTask.samples">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">samples</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#alab_management.task_view.task.BaseTask.samples" title="Link to this definition">#</a></dt>
 <dd><p>Returns the list of samples associated with this task.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alab_management.task_view.task.BaseTask.samples_for_cleanup">
+<span class="sig-name descname"><span class="pre">samples_for_cleanup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_view/task.html#BaseTask.samples_for_cleanup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_view.task.BaseTask.samples_for_cleanup" title="Link to this definition">#</a></dt>
+<dd><p>Sample entries to clear on unrecoverable cleanup.</p>
+<p>Return <code class="docutils literal notranslate"><span class="pre">None</span></code> (default) to include every sample on the task. Subclasses may
+return a subset when only some samples are physically implicated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -901,6 +915,7 @@ it. Raise this instead, and the task actor treats it exactly like an abort, incl
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.run"><code class="docutils literal notranslate"><span class="pre">BaseTask.run()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.run_subtask"><code class="docutils literal notranslate"><span class="pre">BaseTask.run_subtask()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.samples"><code class="docutils literal notranslate"><span class="pre">BaseTask.samples</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.samples_for_cleanup"><code class="docutils literal notranslate"><span class="pre">BaseTask.samples_for_cleanup()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.set_message"><code class="docutils literal notranslate"><span class="pre">BaseTask.set_message()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alab_management.task_view.task.BaseTask.validate"><code class="docutils literal notranslate"><span class="pre">BaseTask.validate()</span></code></a></li>
 </ul>

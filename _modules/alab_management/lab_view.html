@@ -996,9 +996,34 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_task_view</span><span class="o">.</span><span class="n">update_result</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="LabView.occupies_only_labman_processing">
+<a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.LabView.occupies_only_labman_processing">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">occupies_only_labman_processing</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""True when every occupied sample sits in a Labman ``*/processing/*`` slot.</span>
+
+<span class="sd">        Those positions are virtual markers for samples still inside Labman mid-workflow.</span>
+<span class="sd">        """</span>
+        <span class="n">occupied</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">sample_entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__task_entry</span><span class="p">[</span><span class="s2">"samples"</span><span class="p">]:</span>
+            <span class="n">sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span><span class="o">.</span><span class="n">get_sample</span><span class="p">(</span><span class="n">sample_entry</span><span class="p">[</span><span class="s2">"sample_id"</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">sample</span><span class="o">.</span><span class="n">position</span><span class="p">:</span>
+                <span class="n">occupied</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">occupied</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span>
+            <span class="s2">"/processing/"</span> <span class="ow">in</span> <span class="n">pos</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"</span><span class="se">\\</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"/"</span><span class="p">)</span> <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">occupied</span>
+        <span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="LabView.request_cleanup">
 <a class="viewcode-back" href="../../alab_management.lab_view.html#alab_management.lab_view.LabView.request_cleanup">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">request_cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">request_cleanup</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">samples</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">clear_positions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Request cleanup of the task. This function will block until the task is cleaned up.</span>
 
 <span class="sd">        Args:</span>
@@ -1006,15 +1031,19 @@
 <span class="sd">                Slack/email). If not provided, a report is built from the exception currently being</span>
 <span class="sd">                handled so the prompt always identifies what failed, where (file/line/function), and</span>
 <span class="sd">                the full traceback.</span>
+<span class="sd">            samples: Optional subset of task sample entries (``name`` / ``sample_id``) to mention and</span>
+<span class="sd">                optionally clear. Defaults to every sample on the task.</span>
+<span class="sd">            clear_positions: When True (default), after OK clear software occupancy for the scoped</span>
+<span class="sd">                samples. When False, only release locks/resources (used for mid-Labman restart).</span>
 <span class="sd">        """</span>
         <span class="n">all_reserved_sample_positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span><span class="o">.</span><span class="n">get_sample_positions_by_task</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span>
         <span class="p">)</span>
 
-        <span class="n">all_samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__task_entry</span><span class="p">[</span><span class="s2">"samples"</span><span class="p">]</span>
+        <span class="n">scoped_samples</span> <span class="o">=</span> <span class="n">samples</span> <span class="k">if</span> <span class="n">samples</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">__task_entry</span><span class="p">[</span><span class="s2">"samples"</span><span class="p">]</span>
         <span class="n">all_positions_with_samples</span> <span class="o">=</span> <span class="p">[</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_sample_view</span><span class="o">.</span><span class="n">get_sample</span><span class="p">(</span><span class="n">sample_entry</span><span class="p">[</span><span class="s2">"sample_id"</span><span class="p">])</span><span class="o">.</span><span class="n">position</span>
-            <span class="k">for</span> <span class="n">sample_entry</span> <span class="ow">in</span> <span class="n">all_samples</span>
+            <span class="k">for</span> <span class="n">sample_entry</span> <span class="ow">in</span> <span class="n">scoped_samples</span>
         <span class="p">]</span>
 
         <span class="n">all_positions_with_samples</span> <span class="o">=</span> <span class="p">[</span>
@@ -1028,7 +1057,7 @@
 
             <span class="n">error_message</span> <span class="o">=</span> <span class="n">format_error_report</span><span class="p">(</span>
                 <span class="n">task_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span>
-                <span class="n">samples</span><span class="o">=</span><span class="p">[</span><span class="n">sample_entry</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span> <span class="k">for</span> <span class="n">sample_entry</span> <span class="ow">in</span> <span class="n">all_samples</span><span class="p">],</span>
+                <span class="n">samples</span><span class="o">=</span><span class="p">[</span><span class="n">sample_entry</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span> <span class="k">for</span> <span class="n">sample_entry</span> <span class="ow">in</span> <span class="n">scoped_samples</span><span class="p">],</span>
                 <span class="n">header</span><span class="o">=</span><span class="s2">"Unrecoverable error"</span><span class="p">,</span>
             <span class="p">)</span>
 
@@ -1038,13 +1067,23 @@
         <span class="n">reserved_text</span> <span class="o">=</span> <span class="p">(</span>
             <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">all_reserved_sample_positions</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">"(none reserved)"</span>
         <span class="p">)</span>
-        <span class="n">prompt</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s2">"An unrecoverable error has occurred.</span><span class="se">\n</span><span class="s2">"</span>
-            <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
-            <span class="s2">"What to do:</span><span class="se">\n</span><span class="s2">"</span>
-            <span class="sa">f</span><span class="s2">"(1) remove samples on </span><span class="si">{</span><span class="n">sample_pos_text</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
-            <span class="sa">f</span><span class="s2">"(2) remove all other consumables on </span><span class="si">{</span><span class="n">reserved_text</span><span class="si">}</span><span class="s2">"</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">clear_positions</span><span class="p">:</span>
+            <span class="n">prompt</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">"An unrecoverable error has occurred.</span><span class="se">\n</span><span class="s2">"</span>
+                <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+                <span class="s2">"What to do:</span><span class="se">\n</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"(1) remove samples on </span><span class="si">{</span><span class="n">sample_pos_text</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"(2) remove all other consumables on </span><span class="si">{</span><span class="n">reserved_text</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">prompt</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">"AlabOS restarted while this task was mid-Labman workflow.</span><span class="se">\n</span><span class="s2">"</span>
+                <span class="s2">"Samples are marked in processing slots and are likely still physically in the Labman.</span><span class="se">\n</span><span class="s2">"</span>
+                <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+                <span class="s2">"Press OK to release software locks without clearing sample positions.</span><span class="se">\n</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"Tracked processing positions: </span><span class="si">{</span><span class="n">sample_pos_text</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"Reserved positions: </span><span class="si">{</span><span class="n">reserved_text</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="n">error_message</span><span class="p">:</span>
             <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"</span><span class="se">\n\n</span><span class="si">{</span><span class="n">error_message</span><span class="si">}</span><span class="s2">"</span>
 
@@ -1052,9 +1091,10 @@
             <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">[</span><span class="s2">"OK"</span><span class="p">],</span> <span class="n">abort_if_task_cancelled</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
 
-        <span class="c1"># Operator confirmed physical removal — clear occupancy (not just task ownership).</span>
-        <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">all_samples</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">move_sample</span><span class="p">(</span><span class="n">sample</span><span class="o">=</span><span class="n">sample</span><span class="p">[</span><span class="s2">"sample_id"</span><span class="p">],</span> <span class="n">position</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">clear_positions</span><span class="p">:</span>
+            <span class="c1"># Operator confirmed physical removal — clear occupancy (not just task ownership).</span>
+            <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">scoped_samples</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">move_sample</span><span class="p">(</span><span class="n">sample</span><span class="o">=</span><span class="n">sample</span><span class="p">[</span><span class="s2">"sample_id"</span><span class="p">],</span> <span class="n">position</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
         <span class="c1"># release all the resource that has not been fulfilled</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_resource_requester</span><span class="o">.</span><span class="n">release_all_resources</span><span class="p">()</span></div>
