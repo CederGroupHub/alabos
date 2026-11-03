@@ -6,7 +6,6 @@ which actually executes the tasks.
 import concurrent
 import time
 from concurrent.futures import Future
-from datetime import datetime
 from threading import Thread
 from traceback import print_exc
 from typing import Any, cast
@@ -23,6 +22,7 @@ from alab_management.sample_view.sample import SamplePosition
 from alab_management.sample_view.sample_view import SamplePositionRequest
 from alab_management.task_view import TaskCancelledError, TaskPriority
 from alab_management.utils.data_objects import DocumentNotUpdatedError, get_collection
+from alab_management.utils.time import utc_now
 
 _SampleRequestDict = dict[str, int]
 _ResourceRequestDict = dict[
@@ -281,7 +281,7 @@ class ResourceRequester(RequestMixin):
                 "status": RequestStatus.PENDING.name,
                 "task_id": self.task_id,
                 "priority": int(priority),
-                "submitted_at": datetime.now(),
+                "submitted_at": utc_now(),
                 "exact_positions": list(exact_positions) if exact_positions else [],
             }
         )  # DB_ACCESS_OUTSIDE_VIEW

@@ -6,7 +6,6 @@ which actually executes the tasks.
 import logging
 import time
 from contextlib import contextmanager
-from datetime import datetime
 from traceback import format_exc
 from typing import Any, cast
 
@@ -33,6 +32,7 @@ from alab_management.task_view import TaskView
 from alab_management.task_view.task_enums import CancelingProgress, TaskStatus
 from alab_management.utils.data_objects import get_collection
 from alab_management.utils.module_ops import load_definition
+from alab_management.utils.time import utc_now
 
 cli_logger = logging.getLogger(__name__)
 
@@ -245,7 +245,7 @@ class ResourceManager(RequestMixin):
                         "assigned_devices": devices,
                         "assigned_sample_positions": sample_positions,
                         "status": RequestStatus.FULFILLED.name,
-                        "fulfilled_at": datetime.now(),
+                        "fulfilled_at": utc_now(),
                     }
                 },
             )

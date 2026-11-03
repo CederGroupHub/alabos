@@ -6,12 +6,12 @@ saving samples to the completed database.
 from __future__ import annotations
 
 import time
-from datetime import datetime
 from typing import Any
 
 from bson import ObjectId  # type: ignore
 
 from alab_management.utils.data_objects import get_collection, get_completed_collection
+from alab_management.utils.time import utc_now
 
 
 class CompletedSampleView:
@@ -84,6 +84,6 @@ class CompletedSampleView:
             {"_id": oid},
             {
                 "$push": {"metadata.measurements": measurement},
-                "$set": {"last_updated": datetime.now()},
+                "$set": {"last_updated": utc_now()},
             },
         )

@@ -559,7 +559,29 @@ class LabView:
         """
         self._task_view.update_result(task_id=self.task_id, name=name, value=value)
 
-    def request_cleanup(self, error_message: str | None = None):
+    def occupies_only_labman_processing(self) -> bool:
+        """True when every occupied sample sits in a Labman ``*/processing/*`` slot.
+
+        Those positions are virtual markers for samples still inside Labman mid-workflow.
+        """
+        occupied: list[str] = []
+        for sample_entry in self.__task_entry["samples"]:
+            sample = self._sample_view.get_sample(sample_entry["sample_id"])
+            if sample.position:
+                occupied.append(sample.position)
+        if not occupied:
+            return False
+        return all(
+            "/processing/" in pos.replace("\\", "/") for pos in occupied
+        )
+
+    def request_cleanup(
+        self,
+        error_message: str | None = None,
+        *,
+        samples: list[dict[str, Any]] | None = None,
+        clear_positions: bool = True,
+    ):
         """Request cleanup of the task. This function will block until the task is cleaned up.
 
         Args:
@@ -567,15 +589,19 @@ class LabView:
                 Slack/email). If not provided, a report is built from the exception currently being
                 handled so the prompt always identifies what failed, where (file/line/function), and
                 the full traceback.
+            samples: Optional subset of task sample entries (``name`` / ``sample_id``) to mention and
+                optionally clear. Defaults to every sample on the task.
+            clear_positions: When True (default), after OK clear software occupancy for the scoped
+                samples. When False, only release locks/resources (used for mid-Labman restart).
         """
         all_reserved_sample_positions = self._sample_view.get_sample_positions_by_task(
             self.task_id
         )
 
-        all_samples = self.__task_entry["samples"]
+        scoped_samples = samples if samples is not None else self.__task_entry["samples"]
         all_positions_with_samples = [
             self._sample_view.get_sample(sample_entry["sample_id"]).position
-            for sample_entry in all_samples
+            for sample_entry in scoped_samples
         ]
 
         all_positions_with_samples = [
@@ -589,7 +615,7 @@ class LabView:
 
             error_message = format_error_report(
                 task_id=self.task_id,
-                samples=[sample_entry["name"] for sample_entry in all_samples],
+                samples=[sample_entry["name"] for sample_entry in scoped_samples],
                 header="Unrecoverable error",
             )
 
@@ -599,13 +625,23 @@ class LabView:
         reserved_text = (
             ", ".join(all_reserved_sample_positions) or "(none reserved)"
         )
-        prompt = (
-            "An unrecoverable error has occurred.\n"
-            "\n"
-            "What to do:\n"
-            f"(1) remove samples on {sample_pos_text}\n"
-            f"(2) remove all other consumables on {reserved_text}"
-        )
+        if clear_positions:
+            prompt = (
+                "An unrecoverable error has occurred.\n"
+                "\n"
+                "What to do:\n"
+                f"(1) remove samples on {sample_pos_text}\n"
+                f"(2) remove all other consumables on {reserved_text}"
+            )
+        else:
+            prompt = (
+                "AlabOS restarted while this task was mid-Labman workflow.\n"
+                "Samples are marked in processing slots and are likely still physically in the Labman.\n"
+                "\n"
+                "Press OK to release software locks without clearing sample positions.\n"
+                f"Tracked processing positions: {sample_pos_text}\n"
+                f"Reserved positions: {reserved_text}"
+            )
         if error_message:
             prompt += f"\n\n{error_message}"
 
@@ -613,9 +649,10 @@ class LabView:
             prompt=prompt, options=["OK"], abort_if_task_cancelled=False
         )
 
-        # Operator confirmed physical removal — clear occupancy (not just task ownership).
-        for sample in all_samples:
-            self.move_sample(sample=sample["sample_id"], position=None)
+        if clear_positions:
+            # Operator confirmed physical removal — clear occupancy (not just task ownership).
+            for sample in scoped_samples:
+                self.move_sample(sample=sample["sample_id"], position=None)
 
         # release all the resource that has not been fulfilled
         self._resource_requester.release_all_resources()

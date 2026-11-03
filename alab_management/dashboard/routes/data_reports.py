@@ -24,6 +24,7 @@ from alab_management.utils.data_objects import (
     get_completed_collection,
     make_jsonable,
 )
+from alab_management.utils.time import utc_now
 
 data_reports_bp = Blueprint("/data_reports", __name__, url_prefix="/api/data")
 # Backward-compatible alias for imports that still expect ``data_bp``.
@@ -57,7 +58,7 @@ def _month_window(month_key: str) -> tuple[datetime, datetime]:
 
 
 def _default_month_key() -> str:
-    now = datetime.now()
+    now = utc_now()
     return f"{now.year:04d}-{now.month:02d}"
 
 

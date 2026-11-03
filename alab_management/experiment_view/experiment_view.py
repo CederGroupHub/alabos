@@ -1,6 +1,5 @@
 """A wrapper over the ``experiment`` class."""
 
-from datetime import datetime
 from enum import Enum, auto
 from typing import Any, cast
 
@@ -9,6 +8,7 @@ from bson import ObjectId  # type: ignore
 from alab_management.sample_view import SampleView
 from alab_management.task_view import TaskView
 from alab_management.utils.data_objects import get_collection
+from alab_management.utils.time import utc_now
 
 from .completed_experiment_view import CompletedExperimentView
 from .experiment import InputExperiment
@@ -115,7 +115,7 @@ class ExperimentView:
         result = self._experiment_collection.insert_one(
             {
                 **experiment,
-                "submitted_at": datetime.now(),
+                "submitted_at": utc_now(),
                 "status": ExperimentStatus.PENDING.name,
             }
         )
@@ -159,7 +159,7 @@ class ExperimentView:
 
         update_dict = {"status": status.name}
         if status in {ExperimentStatus.COMPLETED, ExperimentStatus.CANCELLED}:
-            update_dict["completed_at"] = datetime.now()
+            update_dict["completed_at"] = utc_now()
         self._experiment_collection.update_one(
             {"_id": exp_id},
             {"$set": update_dict},
@@ -192,7 +192,7 @@ class ExperimentView:
         allowed = [s.name for s in from_statuses]
         update_dict: dict[str, Any] = {"status": status.name}
         if status in {ExperimentStatus.COMPLETED, ExperimentStatus.CANCELLED}:
-            update_dict["completed_at"] = datetime.now()
+            update_dict["completed_at"] = utc_now()
         result = self._experiment_collection.update_one(
             {"_id": exp_id, "status": {"$in": allowed}},
             {"$set": update_dict},

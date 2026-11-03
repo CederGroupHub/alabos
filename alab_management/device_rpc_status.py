@@ -6,6 +6,8 @@ import threading
 import time
 from typing import Any
 
+from alab_management.utils.time import utc_now
+
 CACHE_TTL_S = 2.5
 
 _lock = threading.Lock()
@@ -28,6 +30,7 @@ def _probe_uncached() -> dict[str, Any]:
     queue = device_rpc_queue_name()
     try:
         import pika
+
         from alab_management.config import AlabOSConfig
 
         rabbit = AlabOSConfig()["rabbitmq"]
@@ -164,8 +167,6 @@ def ensure_lab_starting_user_input() -> None:
 
 def dismiss_lab_starting_user_input() -> None:
     """Fulfill the lab-starting notice once the lab is ready."""
-    from datetime import datetime
-
     from alab_management.user_input import UserInputView, UserRequestStatus
 
     view = UserInputView()
@@ -181,7 +182,7 @@ def dismiss_lab_starting_user_input() -> None:
                 "status": UserRequestStatus.FULLFILLED.value,
                 "response": "OK",
                 "note": "Lab is ready.",
-                "last_updated": datetime.now(),
+                "last_updated": utc_now(),
             }
         },
     )

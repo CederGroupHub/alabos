@@ -3,7 +3,6 @@ Tasks view is a convienent wrapper over the ``tasks`` collection in the database
 provides some convenience methods to query and manipulate the tasks collection.
 """
 
-from datetime import datetime
 from typing import Any, cast
 
 from bson import ObjectId
@@ -12,6 +11,7 @@ from alab_management.task_view import CompletedTaskView
 from alab_management.task_view.task import BaseTask, get_all_tasks
 from alab_management.task_view.task_enums import CancelingProgress, TaskStatus
 from alab_management.utils.data_objects import get_collection, make_bsonable
+from alab_management.utils.time import utc_now
 
 
 class TaskView:
@@ -67,8 +67,8 @@ class TaskView:
             "parameters": parameters,
             "prev_tasks": prev_tasks,
             "next_tasks": next_tasks,
-            "created_at": datetime.now(),
-            "last_updated": datetime.now(),
+            "created_at": utc_now(),
+            "last_updated": utc_now(),
             "message": "",
         }
         if isinstance(task_id, ObjectId):
@@ -92,8 +92,8 @@ class TaskView:
                 "samples": samples,
                 "status": TaskStatus.INITIATED.name,
                 "parameters": parameters,
-                "created_at": datetime.now(),
-                "last_updated": datetime.now(),
+                "created_at": utc_now(),
+                "last_updated": utc_now(),
             }
         )
         self._task_collection.update_one(
@@ -101,7 +101,7 @@ class TaskView:
             {
                 "$set": {
                     "subtasks": subtasks,
-                    "last_updated": datetime.now(),
+                    "last_updated": utc_now(),
                 }
             },
         )
@@ -176,12 +176,12 @@ class TaskView:
 
         update_dict = {
             "status": status.name,
-            "last_updated": datetime.now(),
+            "last_updated": utc_now(),
         }
         if status == TaskStatus.RUNNING and "started_at" not in task:
-            update_dict["started_at"] = datetime.now()
+            update_dict["started_at"] = utc_now()
         elif status == TaskStatus.COMPLETED:
-            update_dict["completed_at"] = datetime.now()
+            update_dict["completed_at"] = utc_now()
 
         self._task_collection.update_one(
             {"_id": task_id},
@@ -230,7 +230,7 @@ class TaskView:
                                 },
                                 "$set": {
                                     "samples": samples_to_remain_in_downstream_task,
-                                    "last_updated": datetime.now(),
+                                    "last_updated": utc_now(),
                                 },
                             },
                         )
@@ -249,11 +249,11 @@ class TaskView:
             if subtask["subtask_id"] == subtask_id:
                 found = True
                 subtask["status"] = status.name
-                subtask["last_updated"] = datetime.now()
+                subtask["last_updated"] = utc_now()
                 if status == TaskStatus.RUNNING and "started_at" not in subtask:
-                    subtask["started_at"] = datetime.now()
+                    subtask["started_at"] = utc_now()
                 elif status == TaskStatus.COMPLETED:
-                    subtask["completed_at"] = datetime.now()
+                    subtask["completed_at"] = utc_now()
                 break
         if not found:
             raise ValueError(
@@ -261,7 +261,7 @@ class TaskView:
             )
         self._task_collection.update_one(
             {"_id": task_id},
-            {"$set": {"subtasks": subtasks, "last_updated": datetime.now()}},
+            {"$set": {"subtasks": subtasks, "last_updated": utc_now()}},
         )
 
     def update_result(
@@ -288,7 +288,7 @@ class TaskView:
             {
                 "$set": {
                     update_path: make_bsonable(value),
-                    "last_updated": datetime.now(),
+                    "last_updated": utc_now(),
                 }
             },
         )
@@ -312,7 +312,7 @@ class TaskView:
             if subtask["subtask_id"] == subtask_id:
                 found = True
                 subtask["result"] = result
-                subtask["last_updated"] = datetime.now()
+                subtask["last_updated"] = utc_now()
                 break
         if not found:
             raise ValueError(
@@ -323,7 +323,7 @@ class TaskView:
             {
                 "$set": {
                     "subtasks": subtasks,
-                    "last_updated": datetime.now(),
+                    "last_updated": utc_now(),
                 }
             },
         )
@@ -420,7 +420,7 @@ class TaskView:
                     "prev_tasks": {"$each": prev_tasks},
                 },
                 "$set": {
-                    "last_updated": datetime.now(),
+                    "last_updated": utc_now(),
                 },
             },
         )
@@ -432,7 +432,7 @@ class TaskView:
             {
                 "$set": {
                     "message": message,
-                    "last_updated": datetime.now(),
+                    "last_updated": utc_now(),
                 }
             },
         )
@@ -450,7 +450,7 @@ class TaskView:
             {
                 "$set": {
                     "task_actor_id": message_id,
-                    "last_updated": datetime.now(),
+                    "last_updated": utc_now(),
                 }
             },
         )
@@ -491,7 +491,7 @@ class TaskView:
             {
                 "$set": {
                     "canceling_progress": CancelingProgress.PENDING.name,
-                    "last_updated": datetime.now(),
+                    "last_updated": utc_now(),
                 }
             },
         )
@@ -508,7 +508,7 @@ class TaskView:
             {
                 "$set": {
                     "status": TaskStatus.CANCELLED.name,
-                    "last_updated": datetime.now(),
+                    "last_updated": utc_now(),
                 }
             },
         )
@@ -547,7 +547,7 @@ class TaskView:
             {
                 "$set": {
                     "canceling_progress": canceling_progress.name,
-                    "last_updated": datetime.now(),
+                    "last_updated": utc_now(),
                 }
             },
         )

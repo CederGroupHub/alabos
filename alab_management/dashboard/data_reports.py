@@ -18,6 +18,7 @@ from alab_management.utils.data_objects import (
     get_db,
     make_jsonable,
 )
+from alab_management.utils.time import utc_now
 
 REPORTS_COLLECTION = "data_reports"
 USER_REPORTS_PACKAGE = "alab_management.dashboard.user_reports"
@@ -68,7 +69,7 @@ def reports_collection():
 
 
 def _now() -> datetime:
-    return datetime.now()
+    return utc_now()
 
 
 def validate_module_name(module_name: str) -> str:

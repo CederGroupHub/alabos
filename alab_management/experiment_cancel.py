@@ -38,6 +38,7 @@ from alab_management.task_view.task_enums import CancelingProgress, TaskStatus
 from alab_management.task_view.task_view import TaskView
 from alab_management.user_input import CANCEL_RESPONSE, UserInputView
 from alab_management.utils.data_objects import get_collection
+from alab_management.utils.time import utc_now
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +55,7 @@ def cancel_experiment_software_state(exp_id: ObjectId) -> dict[str, Any]:
     device_view = DeviceView()
     sample_view = SampleView()
     user_input_view = UserInputView()
-    now = datetime.now()
+    now = utc_now()
 
     experiment = experiment_view.get_experiment(exp_id)
     if experiment is None:

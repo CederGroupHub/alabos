@@ -1,22 +1,22 @@
 """Wrapper over the ``devices`` collection."""
 
 import logging
-
-logger = logging.getLogger(__name__)
 import time
 from collections.abc import Collection
-from datetime import datetime
 from enum import Enum, auto, unique
+from threading import Event, Lock, Thread
 from typing import Any, TypeVar, cast
 
 import pymongo  # type: ignore
 from bson import ObjectId  # type: ignore
-from threading import Event, Lock, Thread
 
 from alab_management.sample_view import SamplePosition, SampleView
 from alab_management.utils.data_objects import get_collection, get_lock
+from alab_management.utils.time import utc_now
 
 from .device import BaseDevice, get_all_devices, remove_device
+
+logger = logging.getLogger(__name__)
 
 _DeviceType = TypeVar("_DeviceType", bound=BaseDevice)  # pylint: disable=invalid-name
 
@@ -268,7 +268,7 @@ class DeviceView:
         update: dict[str, Any] = {
             f"attributes.{key}": value for key, value in values.items()
         }
-        update["last_updated"] = datetime.now()
+        update["last_updated"] = utc_now()
         self._device_collection.update_one({"name": device_name}, {"$set": update})
 
     def _mark_device_connecting(self, device_name: str, waited_seconds: float):
@@ -394,7 +394,7 @@ class DeviceView:
             )
             self.set_message(device_name, message)
         except Exception as exc:  # best-effort bookkeeping; never block launch
-            logger.error(f'Failed to flag {device_name} as disabled: {exc!r}')
+            logger.error(f"Failed to flag {device_name} as disabled: {exc!r}")
 
     def _clear_connection_failed_flag(self, device_name: str):
         """Clear a previous connection-failure disable once a device connects again.
@@ -463,9 +463,9 @@ class DeviceView:
                     "status": DeviceTaskStatus.IDLE.name,
                     "pause_status": DevicePauseStatus.RELEASED.name,
                     "task_id": None,
-                    "created_at": datetime.now(),
+                    "created_at": utc_now(),
                     "message": "",
-                    "last_updated": datetime.now(),
+                    "last_updated": utc_now(),
                     "attributes": {},
                     "dashboard_attributes": list(device.dashboard_attributes),
                 }
@@ -689,7 +689,7 @@ class DeviceView:
 
         update_dict = {
             "task_id": None,
-            "last_updated": datetime.now(),
+            "last_updated": utc_now(),
             "status": DeviceTaskStatus.IDLE.name,
         }
 
@@ -758,7 +758,7 @@ class DeviceView:
                 "$set": {
                     "status": target_status.name,
                     "task_id": task_id,
-                    "last_updated": datetime.now(),
+                    "last_updated": utc_now(),
                 }
             },
         )
@@ -831,7 +831,7 @@ class DeviceView:
         self.get_device(device_name=device_name)
         self._device_collection.update_one(
             {"name": device_name},
-            {"$set": {"message": message, "last_updated": datetime.now()}},
+            {"$set": {"message": message, "last_updated": utc_now()}},
         )
 
     def get_message(self, device_name: str) -> str:
@@ -886,7 +886,7 @@ class DeviceView:
             {
                 "$set": {
                     "attributes": attributes,
-                    "last_updated": datetime.now(),
+                    "last_updated": utc_now(),
                 }
             },
         )
@@ -909,7 +909,7 @@ class DeviceView:
             {
                 "$set": {
                     f"attributes.{attribute}": value,
-                    "last_updated": datetime.now(),
+                    "last_updated": utc_now(),
                 }
             },
         )
@@ -929,7 +929,7 @@ class DeviceView:
             {
                 "$set": {
                     "pause_status": new_pause_status,
-                    "last_updated": datetime.now(),
+                    "last_updated": utc_now(),
                 }
             },
         )
@@ -940,7 +940,7 @@ class DeviceView:
         device = self.get_device(device_name=device_name)
         update_dict = {
             "pause_status": DevicePauseStatus.RELEASED.name,
-            "last_updated": datetime.now(),
+            "last_updated": utc_now(),
         }
 
         # Unless the device is currently paused, we will leave its task status unchanged.
@@ -993,14 +993,14 @@ class DeviceView:
     def remove_device(self, device_name: str):
         """Remove a device from the device view and the registry."""
         # disconnect the device
-        logger.info(f'Disconnecting from {device_name}...')
+        logger.info(f"Disconnecting from {device_name}...")
         with self._lock():  # pylint: disable=not-callable
             device = self._device_list[device_name]
             device._disconnect_wrapper()
             self._device_list.pop(device_name, None)
             remove_device(device_name)
             self._device_collection.delete_one({"name": device_name})
-            logger.info(f'Device {device_name} has been removed from the device view and the registry.')
+            logger.info(f"Device {device_name} has been removed from the device view and the registry.")
 
     def get_all_devices_from_db(self) -> dict[str, dict[str, Any]]:
         """

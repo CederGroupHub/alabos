@@ -265,7 +265,11 @@ def run_task(task_id_str: str):
                 f"Task {task_type} ({task_id}) failed: {origin['exc_type']}: {origin['exc_message']} "
                 f"at {origin['raised_at_str']} (stage: {stage})"
             )
-            lab_view.request_cleanup(error_message=error_report)
+            cleanup_samples = task.samples_for_cleanup()
+            lab_view.request_cleanup(
+                error_message=error_report,
+                samples=cleanup_samples,
+            )
     else:
         task_status = TaskStatus.COMPLETED
         task_view.update_status(task_id=task_id, status=TaskStatus.FINISHING)

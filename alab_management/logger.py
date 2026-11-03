@@ -1,11 +1,13 @@
 """Logger module takes charge of recording information, warnings and errors during executing tasks."""
 
 from collections.abc import Iterable
-from datetime import datetime, timedelta
+from datetime import timedelta
 from enum import Enum, auto, unique
 from typing import Any, cast
 
 from bson import ObjectId
+
+from alab_management.utils.time import utc_now
 
 from .utils.data_objects import get_collection
 
@@ -65,7 +67,7 @@ class DBLogger:
                 "type": logging_type.name,
                 "level": level,
                 "log_data": log_data,
-                "created_at": datetime.now(),
+                "created_at": utc_now(),
             }
         )
 
@@ -115,7 +117,7 @@ class DBLogger:
             level = cast(int, level.value)
 
         return self._logging_collection.find(
-            {"level": {"$gte": level}, "created_at": {"$gte": datetime.now() - within}}
+            {"level": {"$gte": level}, "created_at": {"$gte": utc_now() - within}}
         )
 
     def get_latest_device_signal(
@@ -155,7 +157,7 @@ class DBLogger:
             timestamp = result["created_at"]
         else:
             value = None  # TODO do we want to raise here instead?
-            timestamp = datetime.now()
+            timestamp = utc_now()
         return {
             "device_name": device_name,
             "signal_name": signal_name,
@@ -188,7 +190,7 @@ class DBLogger:
                 "type": LoggingType.DEVICE_SIGNAL.name,
                 "log_data.device_name": device_name,
                 "log_data.signal_name": signal_name,
-                "created_at": {"$gte": datetime.now() - within},
+                "created_at": {"$gte": utc_now() - within},
             }
         )
         data = {

@@ -181,6 +181,14 @@ class BaseTask(ABC, metaclass=MetaClassWithImportLock):
     #: leaves samples at their last known location.
     cleanup_on_cancel: bool = True
 
+    def samples_for_cleanup(self) -> list | None:
+        """Sample entries to clear on unrecoverable cleanup.
+
+        Return ``None`` (default) to include every sample on the task. Subclasses may
+        return a subset when only some samples are physically implicated.
+        """
+        return None
+
     def __init__(
         self,
         samples: list[str | ObjectId] | None = None,

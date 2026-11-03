@@ -99,9 +99,9 @@ class TaskManager:
             "They were RUNNING or REQUESTING_RESOURCES when the workers stopped."
         )
         cli_logger.info(
-            "We will cancel them and ask you to remove their samples from the lab. "
-            "A user request will appear on the dashboard for each task. "
-            "Acknowledge each one, then the workers will start new work."
+            "We will cancel them and prompt on the dashboard for each task. "
+            "Mid-Labman (processing-slot) tasks only release locks; other tasks may ask "
+            "you to remove physical samples. Acknowledge each prompt, then workers resume."
         )
         for i, task_entry in enumerate(tasks_to_cancel):
             task_id = task_entry["task_id"]
@@ -113,11 +113,19 @@ class TaskManager:
                 "using the ALabOS dashboard..."
             )
 
-            # puts a user request on the dashboard to remove all samples in this task from the physical lab,
-            # blocks until request is acknowledged. There may be a duplicate request on the dashboard if the task was
-            # already cancelled before the taskmanager was restarted. Acknowledging both should be fine.
+            # puts a user request on the dashboard; blocks until acknowledged. Mid-Labman
+            # processing occupancy uses soft cleanup (no position clear). There may be a
+            # duplicate request if the task was already cancelling before restart.
             try:
-                LabView(task_id=task_id).request_cleanup()
+                lab_view = LabView(task_id=task_id)
+                if lab_view.occupies_only_labman_processing():
+                    cli_logger.info(
+                        f"Task {task_name} ({task_id}) is mid-Labman (processing slots); "
+                        "releasing locks without clearing sample positions."
+                    )
+                    lab_view.request_cleanup(clear_positions=False)
+                else:
+                    lab_view.request_cleanup()
             except TaskCancelledError:
                 cli_logger.warning(
                     f"Cleanup prompt for {task_name} ({task_id}) was cancelled; "

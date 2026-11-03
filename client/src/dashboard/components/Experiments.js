@@ -22,10 +22,8 @@ import Paper from '@mui/material/Paper';
 import Alert from '@mui/material/Alert';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { HoverText } from '../../utils';
+import { HoverText, timestampInLocale } from '../../utils';
 import FormattedOperatorText from './FormattedOperatorText';
-
-const timezoneOffset = (new Date()).getTimezoneOffset();
 
 const CANCELABLE_TASK_STATUSES = new Set([
   "WAITING",
@@ -516,12 +514,6 @@ function Row({ experiment_id, hoverForId, onExperimentCancelled, refreshEpoch })
       default:
         return "inherit";
     }
-  }
-
-  function timestampInLocale(timestamp_string) {
-    const localTime = new Date(timestamp_string);
-    localTime.setMinutes(localTime.getMinutes() + timezoneOffset);
-    return `${localTime.toLocaleString()}`
   }
 
   const headline = progressHeadline(status);

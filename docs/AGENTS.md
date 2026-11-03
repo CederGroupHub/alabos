@@ -23,6 +23,10 @@ When the user wants a **Data page report**, **reusable dashboard CSV**, or **cus
 Full contract: [`docs/data-reports-cursor.md`](data-reports-cursor.md).  
 Operator / agent entry: Cursor slash command [`.cursor/commands/alab-data-report.md`](../.cursor/commands/alab-data-report.md) + MCP `alab-data-reports`.
 
+## Timestamps
+
+Persisted datetimes are **naive UTC** after the cutover; the dashboard still shows **California** time. See [`docs/timestamps.md`](timestamps.md). Use `alab_management.utils.time.utc_now()` for Mongo writes — not bare `datetime.now()`.
+
 ---
 
 ## Commit and push regularly

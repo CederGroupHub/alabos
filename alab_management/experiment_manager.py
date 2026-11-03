@@ -13,6 +13,8 @@ from typing import Any
 
 from bson import ObjectId  # type: ignore
 
+from alab_management.utils.time import utc_now
+
 from .config import AlabOSConfig
 from .experiment_view import CompletedExperimentView, ExperimentStatus, ExperimentView
 from .logger import DBLogger
@@ -226,11 +228,10 @@ class ExperimentManager:
         """Force-cancel tasks created for an experiment that lost the cancel race."""
         if not task_ids:
             return
-        from datetime import datetime
 
         from alab_management.experiment_cancel import _force_cancel_experiment_tasks
 
-        _force_cancel_experiment_tasks(self.task_view, task_ids, datetime.now())
+        _force_cancel_experiment_tasks(self.task_view, task_ids, utc_now())
 
     def mark_completed_experiments(self):
         """This method will scan the database to mark completed experiments in time."""

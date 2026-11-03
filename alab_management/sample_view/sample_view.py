@@ -2,7 +2,6 @@
 
 import re
 import time
-from datetime import datetime
 from enum import Enum, auto
 from typing import Any, cast
 
@@ -11,6 +10,7 @@ from bson import ObjectId  # type: ignore
 from pydantic import BaseModel, ConfigDict, conint
 
 from alab_management.utils.data_objects import get_collection, get_lock
+from alab_management.utils.time import utc_now
 
 from .sample import Sample, SamplePosition, remove_standalone_sample_position
 
@@ -68,7 +68,7 @@ def _position_history_entry(
 ) -> dict[str, Any]:
     """Build one append-only position_history record."""
     entry: dict[str, Any] = {
-        "at": datetime.now(),
+        "at": utc_now(),
         "position": position,
         "event": event,
     }
@@ -160,7 +160,7 @@ class SampleView:
                         "name": name,
                         "description": sample_pos.description,
                         "task_id": None,
-                        "last_updated": datetime.now(),
+                        "last_updated": utc_now(),
                     }
                     if parent_device_name:
                         new_entry["parent_device"] = parent_device_name
@@ -357,7 +357,7 @@ class SampleView:
                 "$set": {
                     "blocked": True,
                     "blocked_reason": reason_text,
-                    "blocked_at": datetime.now(),
+                    "blocked_at": utc_now(),
                 }
             },
         )
@@ -666,7 +666,7 @@ class SampleView:
                 f"Unsupported sample name: {name}. "
                 f"Sample name should not contain '.' or '$'"
             )
-        now = datetime.now()
+        now = utc_now()
         history: list[dict[str, Any]] = []
         if position is not None:
             history.append(_position_history_entry("placed", position))
@@ -731,7 +731,7 @@ class SampleView:
             {
                 "$set": {
                     "task_id": task_id,
-                    "last_updated": datetime.now(),
+                    "last_updated": utc_now(),
                 }
             },
         )
@@ -743,7 +743,7 @@ class SampleView:
             raise ValueError(f"Cannot find sample with id: {sample_id}")
 
         update_dict = {f"metadata.{k}": v for k, v in metadata.items()}
-        update_dict["last_updated"] = datetime.now()
+        update_dict["last_updated"] = utc_now()
         self._sample_collection.update_one(
             {"_id": sample_id},
             {"$set": update_dict},
@@ -758,7 +758,7 @@ class SampleView:
             {"_id": sample_id},
             {
                 "$push": {"metadata.measurements": measurement},
-                "$set": {"last_updated": datetime.now()},
+                "$set": {"last_updated": utc_now()},
             },
         )
 
@@ -777,7 +777,7 @@ class SampleView:
             if result.get("in_transit") is not None:
                 self._sample_collection.update_one(
                     {"_id": sample_id},
-                    {"$set": {"in_transit": None, "last_updated": datetime.now()}},
+                    {"$set": {"in_transit": None, "last_updated": utc_now()}},
                 )
             return
 
@@ -794,7 +794,7 @@ class SampleView:
         update_fields = {
             "position": position,
             "in_transit": None,
-            "last_updated": datetime.now(),
+            "last_updated": utc_now(),
         }
         # Keep last_position as the most recent *known* location: only update it when moving to a
         # real position. When position becomes None (sample left the lab/position), retain the
@@ -835,9 +835,9 @@ class SampleView:
             "in_transit": {
                 "source": source,
                 "destination": destination,
-                "started_at": datetime.now(),
+                "started_at": utc_now(),
             },
-            "last_updated": datetime.now(),
+            "last_updated": utc_now(),
         }
         # The sample is physically still at/near the source until the move completes, so record the
         # source as the last known location.
@@ -865,7 +865,7 @@ class SampleView:
             raise ValueError(f"Cannot find sample with id: {sample_id}")
         self._sample_collection.update_one(
             {"_id": sample_id},
-            {"$set": {"in_transit": None, "last_updated": datetime.now()}},
+            {"$set": {"in_transit": None, "last_updated": utc_now()}},
         )
 
     def get_in_transit_samples(self) -> list[dict[str, Any]]:

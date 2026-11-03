@@ -27,6 +27,7 @@ from alab_management.task_view.task_enums import CancelingProgress, TaskStatus
 from alab_management.task_view.task_view import TaskView
 from alab_management.user_input import UserInputView, UserRequestStatus
 from alab_management.utils.data_objects import get_collection, get_completed_collection
+from alab_management.utils.time import utc_now
 
 logger = logging.getLogger(__name__)
 
@@ -348,7 +349,7 @@ def reset_lab_software_state(*, settle_s: float = DEFAULT_SETTLE_S) -> dict[str,
     device_view = DeviceView()
     sample_view = SampleView()
     user_input_view = UserInputView()
-    now = datetime.now()
+    now = utc_now()
 
     # Capture open experiment ids before closing so we can archive them.
     to_archive: list[Any] = []

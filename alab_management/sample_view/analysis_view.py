@@ -42,6 +42,7 @@ from typing import Any
 from bson import ObjectId  # type: ignore
 
 from alab_management.config import AlabOSConfig
+from alab_management.utils.time import utc_now
 
 from .sample_view import SampleView
 
@@ -403,8 +404,8 @@ class AnalysisView:
         update = {f"{ANALYSIS_FIELD}.{kind}": result}
 
         claim = self.claim_field(kind)
-        # Naive ``datetime.now()`` to match what ``update_sample_metadata`` stamps, not UTC-aware.
-        change: dict[str, Any] = {"$set": {self.result_field(kind): result, "last_updated": datetime.now()}}
+        # Naive UTC via ``utc_now()`` to match other sample write stamps.
+        change: dict[str, Any] = {"$set": {self.result_field(kind): result, "last_updated": utc_now()}}
         if owner is None:
             try:
                 self.sample_view.update_sample_metadata(sample_id, update)
@@ -445,7 +446,7 @@ class AnalysisView:
         if completed is None:
             return False
         update_dict = {f"metadata.{key}": value for key, value in update.items()}
-        update_dict["last_updated"] = datetime.now()
+        update_dict["last_updated"] = utc_now()
         return bool(
             completed.update_one(
                 {"_id": sample_id}, {"$set": update_dict}

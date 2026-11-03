@@ -45,6 +45,7 @@ import {
   patch_data_report,
   refresh_data_report,
 } from '../../api_routes';
+import { timestampInLocale } from '../../utils';
 
 const ALL_FIELDS = 'all';
 const PREVIEW_LIMIT = 25;
@@ -123,11 +124,11 @@ function reportCreatedDay(report) {
 }
 
 function reportCreatedLabel(report) {
-  const date = reportCreatedDate(report);
-  if (!date) {
+  const raw = report?.created_at;
+  if (!raw) {
     return '—';
   }
-  return date.toLocaleString();
+  return timestampInLocale(raw) || '—';
 }
 
 function reportOptionLabel(report) {

@@ -9,6 +9,7 @@ from alab_management.alarm import Alarm
 from alab_management.experiment_view.experiment_view import ExperimentView
 from alab_management.task_view import TaskCancelledError, TaskView
 from alab_management.utils.data_objects import get_collection
+from alab_management.utils.time import utc_now
 
 from .config import AlabOSConfig
 
@@ -84,7 +85,7 @@ class UserInputView:
                 "options": [str(opt) for opt in options],
                 "status": UserRequestStatus.PENDING.value,
                 "request_context": context,
-                "last_updated": datetime.now(),
+                "last_updated": utc_now(),
             }
         )
         if maintenance is True:
@@ -105,7 +106,7 @@ class UserInputView:
         if not device:
             return 0
 
-        now = datetime.now()
+        now = utc_now()
         result = self._input_collection.update_many(
             {
                 "status": UserRequestStatus.PENDING.value,
@@ -147,7 +148,7 @@ class UserInputView:
                     "response": response,
                     "note": note,
                     "status": UserRequestStatus.FULLFILLED.value,
-                    "last_updated": datetime.now(),
+                    "last_updated": utc_now(),
                 }
             },
         )
@@ -221,7 +222,7 @@ class UserInputView:
                     "status": UserRequestStatus.FULLFILLED.value,
                     "response": response,
                     "note": note,
-                    "last_updated": datetime.now(),
+                    "last_updated": utc_now(),
                 }
             },
         )
@@ -275,7 +276,7 @@ class UserInputView:
 
         if not superseded_ids:
             return 0
-        now = datetime.now()
+        now = utc_now()
         result = self._input_collection.update_many(
             {
                 "_id": {"$in": superseded_ids},
