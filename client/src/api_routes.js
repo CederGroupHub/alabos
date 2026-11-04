@@ -505,46 +505,97 @@ export function dataDownloadHref(endpoint, range = null) {
 
 // Device control
 const DEVICE_CONTROL_API = process.env.NODE_ENV === "production" ? "/api/device-control" : URL + "/api/device-control";
+const DEVICE_CONTROL_FETCH_TIMEOUT_MS = 90000;
+
+async function fetchDeviceControlJson(path, options = {}, timeoutMs = DEVICE_CONTROL_FETCH_TIMEOUT_MS) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+        const res = await fetch(DEVICE_CONTROL_API + path, {
+            mode: 'cors',
+            ...options,
+            signal: controller.signal,
+        });
+        return await res.json();
+    } catch (err) {
+        if (err && err.name === 'AbortError') {
+            throw new Error(`Device control request timed out after ${Math.round(timeoutMs / 1000)}s.`);
+        }
+        throw err;
+    } finally {
+        clearTimeout(timer);
+    }
+}
 
 export async function get_device_control_catalog() {
-    const res = await fetch(DEVICE_CONTROL_API + "/catalog", { mode: 'cors' });
-    return await res.json();
+    return await fetchDeviceControlJson("/catalog", {}, 15000);
 }
 
 export async function claim_device_control(device_name) {
-    const res = await fetch(DEVICE_CONTROL_API + "/claim", {
+    return await fetchDeviceControlJson("/claim", {
         method: 'POST',
-        mode: 'cors',
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({ device_name }),
     });
-    return await res.json();
 }
 
 export async function release_device_control(device_name, manual_task_id) {
-    const res = await fetch(DEVICE_CONTROL_API + "/release", {
+    // Release is a quick Mongo update — don't leave the button on "Releasing…" for 90s.
+    return await fetchDeviceControlJson("/release", {
         method: 'POST',
-        mode: 'cors',
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({ device_name, manual_task_id }),
-    });
-    return await res.json();
+    }, 20000);
+}
+
+const DEVICE_CONTROL_READ_COMMANDS = new Set([
+    "get_live_status",
+    "get_temperature",
+    "get_setpoint",
+    "get_program_mode",
+    "is_running",
+    "is_door_open",
+    "probe_plc",
+    "get_state",
+    "get_mass_in_mg",
+]);
+
+function deviceControlCommandTimeoutMs(command_name, params = {}) {
+    // Slightly above the server RPC timeout so the browser is not first to abort.
+    const withSlack = (budgetSec) => Math.ceil((budgetSec + 15) * 1000);
+    if (DEVICE_CONTROL_READ_COMMANDS.has(command_name)) {
+        return withSlack(12);
+    }
+    // Motions that block until they finish need a budget based on duration.
+    if (command_name === "cw_motor" || command_name === "ccw_motor") {
+        const rpm = Math.max(Number(params.rpm) || 1, 0.1);
+        const revolutions = Math.max(Number(params.revolutions) || 0, 0);
+        const motionSec = (revolutions / rpm) * 60;
+        return withSlack(Math.max(120, motionSec * 1.5 + 60));
+    }
+    if (params.duration_seconds != null && params.duration_seconds !== "") {
+        const duration = Math.max(Number(params.duration_seconds) || 0, 0);
+        return withSlack(Math.max(60, duration * 1.5 + 30));
+    }
+    return DEVICE_CONTROL_FETCH_TIMEOUT_MS;
 }
 
 export async function execute_device_control_command(device_name, command_name, manual_task_id = null, params = {}) {
-    const res = await fetch(DEVICE_CONTROL_API + "/command", {
-        method: 'POST',
-        mode: 'cors',
-        headers: {
-            "Content-Type": "application/json",
+    return await fetchDeviceControlJson(
+        "/command",
+        {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ device_name, command_name, manual_task_id, params }),
         },
-        body: JSON.stringify({ device_name, command_name, manual_task_id, params }),
-    });
-    return await res.json();
+        deviceControlCommandTimeoutMs(command_name, params),
+    );
 }
 
 // Mobile robot segment control

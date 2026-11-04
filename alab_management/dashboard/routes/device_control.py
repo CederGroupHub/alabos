@@ -28,8 +28,14 @@ _T = TypeVar("_T")
 # Device RPCs (door close, live status, …) can block for tens of seconds. The dashboard
 # runs under gevent; a blocking wait on the request greenlet stalls *every* other HTTP
 # handler (claim, release, catalog). Run RPCs on real OS threads and yield to the hub.
-_DEVICE_RPC_POOL = ThreadPoolExecutor(
-    max_workers=8, thread_name_prefix="device-control-rpc"
+# Status reads and button actuations must not share one queue. A slow or dead
+# device polled from Device Control or the Devices page would otherwise fill
+# the pool and make every other device's buttons wait.
+_DEVICE_READ_POOL = ThreadPoolExecutor(
+    max_workers=4, thread_name_prefix="device-control-read"
+)
+_DEVICE_ACTUATE_POOL = ThreadPoolExecutor(
+    max_workers=4, thread_name_prefix="device-control-actuate"
 )
 
 device_control_bp = Blueprint(
@@ -206,7 +212,7 @@ COMMAND_REGISTRY = {
             "target_method": "close_bottom_gripper",
         },
         "cw_motor": {
-            "label": "CW Motor",
+            "label": "CW Motor (capping)",
             "mode": "actuate",
             "params": {
                 "rpm": {"type": "int", "required": True, "min": 1},
@@ -215,7 +221,7 @@ COMMAND_REGISTRY = {
             "target_method": "cw_motor",
         },
         "ccw_motor": {
-            "label": "CCW Motor",
+            "label": "CCW Motor (decapping)",
             "mode": "actuate",
             "params": {
                 "rpm": {"type": "int", "required": True, "min": 1},
@@ -447,9 +453,15 @@ def _require_implemented_device(device_name: str):
         raise ValueError(f"Device '{device_name}' is not implemented in Device Control v1.")
 
 
-def _await_in_thread(fn: Callable[..., _T], /, *args: Any, **kwargs: Any) -> _T:
+def _await_in_thread(
+    fn: Callable[..., _T],
+    /,
+    *args: Any,
+    _pool: ThreadPoolExecutor | None = None,
+    **kwargs: Any,
+) -> _T:
     """Run ``fn`` in a worker thread without blocking the gevent hub."""
-    future = _DEVICE_RPC_POOL.submit(fn, *args, **kwargs)
+    future = (_pool or _DEVICE_READ_POOL).submit(fn, *args, **kwargs)
     try:
         import gevent
     except ImportError:
@@ -458,6 +470,33 @@ def _await_in_thread(fn: Callable[..., _T], /, *args: Any, **kwargs: Any) -> _T:
     while not future.done():
         gevent.sleep(0.05)
     return future.result()
+
+
+_READ_RPC_TIMEOUT_SECONDS = 12
+
+
+def _device_rpc_timeout_seconds(
+    method: str,
+    mode: str,
+    validated_params: dict[str, Any],
+) -> int:
+    """Seconds the dashboard will wait for a device RPC before failing.
+
+    Reads stay short so a dead device cannot pin a worker. Actuations that
+    block until motion finishes (capper spin, shaker duration) get a budget
+    based on that duration. This applies to every device on Device Control.
+    """
+    if mode == "read":
+        return _READ_RPC_TIMEOUT_SECONDS
+    if method in {"cw_motor", "ccw_motor"}:
+        rpm = max(float(validated_params.get("rpm") or 1.0), 0.1)
+        revolutions = max(float(validated_params.get("revolutions") or 0.0), 0.0)
+        motion_s = (revolutions / rpm) * 60.0
+        return int(max(120.0, motion_s * 1.5 + 60.0))
+    duration = validated_params.get("duration_seconds")
+    if duration is not None:
+        return int(max(60.0, float(duration) * 1.5 + 30.0))
+    return 60
 
 
 def _run_device_command(
@@ -478,8 +517,12 @@ def _run_device_command(
         task_id = ObjectId()
         require_occupation = False
 
+    rpc_timeout = _device_rpc_timeout_seconds(method, mode, validated_params)
+
     def _call():
-        client = DevicesClient(task_id=task_id)
+        # Bound waits so a wedged device cannot hang Device Control forever.
+        # Motor moves use a duration-based timeout (see above).
+        client = DevicesClient(task_id=task_id, timeout=rpc_timeout)
         return client.call(
             device_name,
             method,
@@ -487,7 +530,8 @@ def _run_device_command(
             **validated_params,
         )
 
-    return _await_in_thread(_call)
+    pool = _DEVICE_ACTUATE_POOL if mode == "actuate" else _DEVICE_READ_POOL
+    return _await_in_thread(_call, _pool=pool)
 
 
 @device_control_bp.route("/catalog", methods=["GET"])
@@ -528,7 +572,14 @@ def claim_device():
                 f"Device '{device_name}' is not claimable because it is {runtime['claim_state']}."
             )
         manual_task_id = ObjectId()
-        device_view.occupy_device(device_name, task_id=manual_task_id)
+        # occupy_device polls Mongo with time.sleep — keep it off the gevent hub,
+        # and off the read pool so a stuck status poll cannot delay Claim.
+        _await_in_thread(
+            device_view.occupy_device,
+            device_name,
+            task_id=manual_task_id,
+            _pool=_DEVICE_ACTUATE_POOL,
+        )
         set_manual_claim_id(device_name, str(manual_task_id))
     except Exception as exception:
         return {"status": "error", "errors": str(exception)}, 400
@@ -556,7 +607,14 @@ def release_device():
         _require_implemented_device(device_name)
         if not manual_task_id:
             raise ValueError("manual_task_id is required.")
-        release_manual_claim_with_token(device_name, str(manual_task_id))
+        # release_device also polls Mongo with time.sleep — same gevent caution.
+        # Actuate pool so Release is not queued behind status polls.
+        _await_in_thread(
+            release_manual_claim_with_token,
+            device_name,
+            str(manual_task_id),
+            _pool=_DEVICE_ACTUATE_POOL,
+        )
     except Exception as exception:
         return {"status": "error", "errors": str(exception)}, 400
 

@@ -433,6 +433,10 @@ function FurnaceLiveStatus({ deviceName, open }) {
     }
     let cancelled = false;
     const load = async () => {
+      if (load.inFlight) {
+        return;
+      }
+      load.inFlight = true;
       setLoading(true);
       try {
         const response = await execute_device_control_command(
@@ -454,6 +458,7 @@ function FurnaceLiveStatus({ deviceName, open }) {
           setError(err.message || 'Failed to read furnace status.');
         }
       } finally {
+        load.inFlight = false;
         if (!cancelled) {
           setLoading(false);
         }

@@ -112,6 +112,31 @@ function DeviceControl() {
         });
         return next;
       });
+      // If a Release/Claim fetch hung but the server already shows the device free
+      // (or claimed), clear the stuck button pending flags on catalog poll.
+      setPending((previous) => {
+        let changed = false;
+        const next = { ...previous };
+        devices.forEach((device) => {
+          const devicePending = next[device.device_name];
+          if (!devicePending) {
+            return;
+          }
+          const patch = { ...devicePending };
+          if (!device.manual_claimed && patch.release) {
+            patch.release = false;
+            changed = true;
+          }
+          if (device.manual_claimed && patch.claim) {
+            patch.claim = false;
+            changed = true;
+          }
+          if (changed) {
+            next[device.device_name] = patch;
+          }
+        });
+        return changed ? next : previous;
+      });
       setError('');
     } catch (fetchError) {
       setError(fetchError.message || 'Failed to load device catalog.');
@@ -596,6 +621,10 @@ function FurnaceDoorCard({
   );
 
   const refreshStatus = async () => {
+    if (refreshStatus.inFlight) {
+      return;
+    }
+    refreshStatus.inFlight = true;
     setStatusLoading(true);
     try {
       const response = await execute_device_control_command(
@@ -612,6 +641,7 @@ function FurnaceDoorCard({
     } catch (statusErr) {
       setStatusError(statusErr.message || 'Failed to read furnace status.');
     } finally {
+      refreshStatus.inFlight = false;
       setStatusLoading(false);
     }
   };
