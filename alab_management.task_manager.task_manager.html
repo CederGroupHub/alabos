@@ -483,11 +483,13 @@ which actually executes the tasks.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="alab_management.task_manager.task_manager.TaskManager.clean_up_tasks_from_previous_runs">
 <span class="sig-name descname"><span class="pre">clean_up_tasks_from_previous_runs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alab_management/task_manager/task_manager.html#TaskManager.clean_up_tasks_from_previous_runs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#alab_management.task_manager.task_manager.TaskManager.clean_up_tasks_from_previous_runs" title="Link to this definition">#</a></dt>
-<dd><p>Cleans up incomplete tasks that exist from the last time the taskmanager was running. Note that this will
-block the task queue until all samples in these tasks have been removed from the physical lab (confirmed via
-user requests on the dashboard).</p>
-<p>This typically occurs if the taskmanager was exited using SIGTERM (ctrl-c), in which case some tasks may
-still be in the RUNNING or CANCELLING state. These will be set to CANCELLED now.</p>
+<dd><p>Arm cleanup for leftover RUNNING / REQUESTING_RESOURCES tasks without blocking.</p>
+<p>INITIATED tasks are requeued to READY immediately. For each dangling task a
+dashboard restart-cleanup prompt is posted; device/sample locks stay held until
+the operator OKs that prompt (handled by the dashboard completer). Dramatiq can
+start consuming other work right away.</p>
+<p>This typically occurs if workers were exited (SIGTERM / crash) while tasks were
+still RUNNING or REQUESTING_RESOURCES.</p>
 </dd></dl>
 
 <dl class="py method">

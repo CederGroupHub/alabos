@@ -475,6 +475,7 @@
         <span class="p">)</span>
 
         <span class="n">request_id</span> <span class="o">=</span> <span class="n">ObjectId</span><span class="p">()</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">utc_now</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span>
             <span class="p">{</span>
                 <span class="s2">"_id"</span><span class="p">:</span> <span class="n">request_id</span><span class="p">,</span>
@@ -482,7 +483,8 @@
                 <span class="s2">"options"</span><span class="p">:</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span> <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">options</span><span class="p">],</span>
                 <span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
                 <span class="s2">"request_context"</span><span class="p">:</span> <span class="n">context</span><span class="p">,</span>
-                <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">utc_now</span><span class="p">(),</span>
+                <span class="s2">"created_at"</span><span class="p">:</span> <span class="n">now</span><span class="p">,</span>
+                <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">now</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">maintenance</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
@@ -496,33 +498,67 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Fulfill pending requests that a new insert would duplicate.</span>
 
-<span class="sd">        Matches on identical ``prompt`` plus ``request_context.device`` when a device</span>
-<span class="sd">        is present (robot-arm / instrument maintenance prompts). Returns how many</span>
-<span class="sd">        stale requests were superseded.</span>
-<span class="sd">        """</span>
-        <span class="n">device</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"device"</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">device</span><span class="p">:</span>
-            <span class="k">return</span> <span class="mi">0</span>
+<span class="sd">        - Device-keyed: identical ``prompt`` + ``request_context.device`` (robot-arm /</span>
+<span class="sd">          instrument maintenance prompts).</span>
+<span class="sd">        - Cleanup-keyed: same ``task_id`` for restart/in-task cleanup prompts (and any</span>
+<span class="sd">          pending row with the exact same prompt for that task), so stacked leftovers</span>
+<span class="sd">          collapse to one actionable OK.</span>
 
+<span class="sd">        Returns how many stale requests were superseded.</span>
+<span class="sd">        """</span>
         <span class="n">now</span> <span class="o">=</span> <span class="n">utc_now</span><span class="p">()</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">update_many</span><span class="p">(</span>
-            <span class="p">{</span>
-                <span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                <span class="s2">"prompt"</span><span class="p">:</span> <span class="n">prompt</span><span class="p">,</span>
-                <span class="s2">"request_context.device"</span><span class="p">:</span> <span class="n">device</span><span class="p">,</span>
-            <span class="p">},</span>
-            <span class="p">{</span>
-                <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">FULLFILLED</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                    <span class="s2">"response"</span><span class="p">:</span> <span class="n">SUPERSEDED_RESPONSE</span><span class="p">,</span>
-                    <span class="s2">"note"</span><span class="p">:</span> <span class="p">(</span>
-                        <span class="s2">"Replaced by a newer request for the same device and prompt."</span>
-                    <span class="p">),</span>
-                    <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">now</span><span class="p">,</span>
-                <span class="p">}</span>
-            <span class="p">},</span>
+        <span class="n">superseded</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">device</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"device"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">device</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">update_many</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                    <span class="s2">"prompt"</span><span class="p">:</span> <span class="n">prompt</span><span class="p">,</span>
+                    <span class="s2">"request_context.device"</span><span class="p">:</span> <span class="n">device</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">FULLFILLED</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                        <span class="s2">"response"</span><span class="p">:</span> <span class="n">SUPERSEDED_RESPONSE</span><span class="p">,</span>
+                        <span class="s2">"note"</span><span class="p">:</span> <span class="p">(</span>
+                            <span class="s2">"Replaced by a newer request for the same device and prompt."</span>
+                        <span class="p">),</span>
+                        <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">now</span><span class="p">,</span>
+                    <span class="p">}</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+            <span class="n">superseded</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">modified_count</span><span class="p">)</span>
+
+        <span class="n">task_id</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"task_id"</span><span class="p">)</span>
+        <span class="n">is_cleanup</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"restart_cleanup"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">context</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cleanup"</span><span class="p">)</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">modified_count</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_cleanup</span> <span class="ow">and</span> <span class="n">task_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_collection</span><span class="o">.</span><span class="n">update_many</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">PENDING</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                    <span class="s2">"request_context.task_id"</span><span class="p">:</span> <span class="n">task_id</span><span class="p">,</span>
+                    <span class="s2">"$or"</span><span class="p">:</span> <span class="p">[</span>
+                        <span class="p">{</span><span class="s2">"request_context.restart_cleanup"</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+                        <span class="p">{</span><span class="s2">"request_context.cleanup"</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+                        <span class="p">{</span><span class="s2">"prompt"</span><span class="p">:</span> <span class="n">prompt</span><span class="p">},</span>
+                    <span class="p">],</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">"status"</span><span class="p">:</span> <span class="n">UserRequestStatus</span><span class="o">.</span><span class="n">FULLFILLED</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                        <span class="s2">"response"</span><span class="p">:</span> <span class="n">SUPERSEDED_RESPONSE</span><span class="p">,</span>
+                        <span class="s2">"note"</span><span class="p">:</span> <span class="p">(</span>
+                            <span class="s2">"Replaced by a newer cleanup request for the same task."</span>
+                        <span class="p">),</span>
+                        <span class="s2">"last_updated"</span><span class="p">:</span> <span class="n">now</span><span class="p">,</span>
+                    <span class="p">}</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+            <span class="n">superseded</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">modified_count</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">superseded</span>
 
 <div class="viewcode-block" id="UserInputView.get_request">
 <a class="viewcode-back" href="../../alab_management.user_input.html#alab_management.user_input.UserInputView.get_request">[docs]</a>
