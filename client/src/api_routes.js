@@ -641,6 +641,30 @@ export async function get_dash_control_catalog() {
     return await res.json();
 }
 
+export async function preview_dash_stages(body) {
+    const res = await fetch(DASH_CONTROL_API + "/preview", {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+    });
+    return await res.json();
+}
+
+export async function run_dash_stages(body) {
+    const res = await fetch(DASH_CONTROL_API + "/run", {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+    });
+    return await res.json();
+}
+
 export async function preview_dash_segment(segment_id, body) {
     const res = await fetch(DASH_CONTROL_API + "/preview/" + segment_id, {
         method: 'POST',

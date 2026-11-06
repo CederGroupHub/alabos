@@ -1,4 +1,4 @@
-"""DASH workflow segment control routes for the AlabOS dashboard."""
+"""DASH workflow stage control routes for the AlabOS dashboard."""
 
 from __future__ import annotations
 
@@ -28,9 +28,23 @@ def _handle_request(handler, *, segment_id: str | None = None, parse_json: bool 
         return {"status": "error", "errors": str(error)}, 400
 
 
+def _handle_body_request(handler):
+    blocked = require_lab_ready_or_503()
+    if blocked is not None:
+        return blocked
+    try:
+        body = request.get_json(silent=True) or {}
+        data = handler(body)
+        return {"status": "success", "data": data}
+    except ValueError as error:
+        return {"status": "error", "errors": str(error)}, 400
+    except Exception as error:
+        return {"status": "error", "errors": str(error)}, 400
+
+
 @dash_control_bp.route("/catalog", methods=["GET"])
 def get_dash_control_catalog():
-    """List curated DASH workflow segments."""
+    """List DASH stages (and legacy segments) for the dashboard."""
     from alab_one.dash_control.service import get_catalog
 
     try:
@@ -39,9 +53,25 @@ def get_dash_control_catalog():
         return {"status": "error", "errors": str(error)}, 400
 
 
+@dash_control_bp.route("/preview", methods=["POST"])
+def preview_dash_stages():
+    """Build a stage-composed batch without submitting it."""
+    from alab_one.dash_control.service import preview_stages
+
+    return _handle_body_request(preview_stages)
+
+
+@dash_control_bp.route("/run", methods=["POST"])
+def run_dash_stages():
+    """Build and submit a stage-composed DASH batch to AlabOS."""
+    from alab_one.dash_control.service import run_stages
+
+    return _handle_body_request(run_stages)
+
+
 @dash_control_bp.route("/preview/<segment_id>", methods=["POST"])
 def preview_dash_segment(segment_id: str):
-    """Build a batch for the segment without submitting it."""
+    """Build a batch for a legacy segment without submitting it."""
     from alab_one.dash_control.service import preview_batch
 
     return _handle_request(preview_batch, segment_id=segment_id, parse_json=True)
@@ -49,7 +79,7 @@ def preview_dash_segment(segment_id: str):
 
 @dash_control_bp.route("/run/<segment_id>", methods=["POST"])
 def run_dash_segment(segment_id: str):
-    """Build and submit a DASH segment batch to AlabOS."""
+    """Build and submit a legacy DASH segment batch to AlabOS."""
     from alab_one.dash_control.service import run_batch
 
     return _handle_request(run_batch, segment_id=segment_id, parse_json=True)
