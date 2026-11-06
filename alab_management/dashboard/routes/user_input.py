@@ -1,6 +1,8 @@
 from bson import ObjectId  # type: ignore
 from flask import Blueprint, request
 
+from datetime import datetime, timezone
+
 from alab_management.dashboard.lab_views import (
     experiment_view,
     task_view,
@@ -12,7 +14,37 @@ from alab_management.dashboard.manual_control import (
 from alab_management.dashboard.position_conflict import (
     handle_position_conflict_user_input_response,
 )
+from alab_management.dashboard.restart_cleanup import (
+    handle_restart_cleanup_user_input_response,
+)
 from alab_management.utils.data_objects import get_completed_collection
+from alab_management.utils.time import format_pacific, interpret_stored_datetime
+
+
+def _request_appeared_at(request_: dict) -> datetime | None:
+    """When the operator-facing prompt first appeared (insert time)."""
+    dt = request_.get("created_at") or request_.get("last_updated")
+    if dt is not None:
+        return interpret_stored_datetime(dt)
+    generation = getattr(request_.get("_id"), "generation_time", None)
+    if generation is None:
+        return None
+    if generation.tzinfo is None:
+        return generation.replace(tzinfo=timezone.utc)
+    return generation.astimezone(timezone.utc)
+
+
+def _request_appeared_payload(request_: dict) -> dict[str, str]:
+    instant = _request_appeared_at(request_)
+    if instant is None:
+        return {"appeared_at": "", "appeared_at_display": ""}
+    return {
+        "appeared_at": instant.astimezone(timezone.utc).strftime(
+            "%Y-%m-%dT%H:%M:%S.%f"
+        )[:-3]
+        + "Z",
+        "appeared_at_display": format_pacific(instant),
+    }
 
 userinput_bp = Blueprint("/userinput", __name__, url_prefix="/api/userinput")
 
@@ -122,6 +154,7 @@ def get_userinput_status():
                     "type": task_type,
                 },
                 "options": request_["options"],
+                **_request_appeared_payload(request_),
             }
         )
     return {
@@ -147,6 +180,9 @@ def submit_user_input():
             request_doc, data["response"]
         )
         handle_position_conflict_user_input_response(
+            request_doc, data["response"]
+        )
+        handle_restart_cleanup_user_input_response(
             request_doc, data["response"]
         )
     except Exception as exception:

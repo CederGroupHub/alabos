@@ -24,7 +24,11 @@ from alab_management.sample_view.sample_view import SampleView
 from alab_management.task_view.task import BaseTask
 from alab_management.task_view.task_enums import TaskPriority, TaskStatus
 from alab_management.task_view.task_view import TaskView
-from alab_management.user_input import request_user_input, request_user_input_with_note
+from alab_management.user_input import (
+    UserInputView,
+    request_user_input,
+    request_user_input_with_note,
+)
 
 
 class DeviceRunningException(Exception):
@@ -496,6 +500,7 @@ class LabView:
         options: list[str],
         *,
         abort_if_task_cancelled: bool = True,
+        request_context_extra: dict[str, Any] | None = None,
     ) -> str:
         """
         Request user input from the user. This function will block until the user inputs something.
@@ -506,6 +511,7 @@ class LabView:
             abort_if_task_cancelled: If true, raise when the owning task is cancelled
                 while waiting. Cleanup prompts pass false so a restart can still ask
                 the operator to clear samples.
+            request_context_extra: Extra fields stored on ``request_context`` (e.g. cleanup tags).
 
         Returns
         -------
@@ -516,6 +522,7 @@ class LabView:
             prompt=prompt,
             options=options,
             abort_if_task_cancelled=abort_if_task_cancelled,
+            request_context_extra=request_context_extra,
         )
 
     def request_user_input_with_note(
@@ -575,25 +582,14 @@ class LabView:
             "/processing/" in pos.replace("\\", "/") for pos in occupied
         )
 
-    def request_cleanup(
+    def _cleanup_prompt_and_samples(
         self,
         error_message: str | None = None,
         *,
         samples: list[dict[str, Any]] | None = None,
         clear_positions: bool = True,
-    ):
-        """Request cleanup of the task. This function will block until the task is cleaned up.
-
-        Args:
-            error_message: A pre-formatted, debuggable error report to show the operator (and send to
-                Slack/email). If not provided, a report is built from the exception currently being
-                handled so the prompt always identifies what failed, where (file/line/function), and
-                the full traceback.
-            samples: Optional subset of task sample entries (``name`` / ``sample_id``) to mention and
-                optionally clear. Defaults to every sample on the task.
-            clear_positions: When True (default), after OK clear software occupancy for the scoped
-                samples. When False, only release locks/resources (used for mid-Labman restart).
-        """
+    ) -> tuple[str, list[dict[str, Any]]]:
+        """Build the operator cleanup prompt and the sample list it applies to."""
         all_reserved_sample_positions = self._sample_view.get_sample_positions_by_task(
             self.task_id
         )
@@ -644,18 +640,80 @@ class LabView:
             )
         if error_message:
             prompt += f"\n\n{error_message}"
+        return prompt, scoped_samples
 
-        self.request_user_input(
-            prompt=prompt, options=["OK"], abort_if_task_cancelled=False
-        )
-
+    def finish_cleanup_after_ack(
+        self,
+        *,
+        clear_positions: bool = True,
+        samples: list[dict[str, Any]] | None = None,
+    ) -> None:
+        """Apply post-OK cleanup: optional position clear, then release resource locks."""
+        scoped_samples = samples if samples is not None else self.__task_entry["samples"]
         if clear_positions:
-            # Operator confirmed physical removal — clear occupancy (not just task ownership).
             for sample in scoped_samples:
                 self.move_sample(sample=sample["sample_id"], position=None)
-
-        # release all the resource that has not been fulfilled
         self._resource_requester.release_all_resources()
+
+    def arm_restart_cleanup(self, *, clear_positions: bool = True) -> ObjectId:
+        """Post a restart-cleanup User Input without blocking.
+
+        Device/sample locks stay held until the operator OKs the prompt; the dashboard
+        completer then calls ``finish_cleanup_after_ack`` and marks the task cancelled.
+        """
+        prompt, scoped_samples = self._cleanup_prompt_and_samples(
+            clear_positions=clear_positions
+        )
+        sample_ids = [str(sample["sample_id"]) for sample in scoped_samples]
+        return UserInputView().insert_request(
+            task_id=self.task_id,
+            prompt=prompt,
+            options=["OK"],
+            category="RestartCleanup",
+            request_context_extra={
+                "restart_cleanup": True,
+                "cleanup": True,
+                "clear_positions": clear_positions,
+                "sample_ids": sample_ids,
+            },
+        )
+
+    def request_cleanup(
+        self,
+        error_message: str | None = None,
+        *,
+        samples: list[dict[str, Any]] | None = None,
+        clear_positions: bool = True,
+    ):
+        """Request cleanup of the task. This function will block until the task is cleaned up.
+
+        Args:
+            error_message: A pre-formatted, debuggable error report to show the operator (and send to
+                Slack/email). If not provided, a report is built from the exception currently being
+                handled so the prompt always identifies what failed, where (file/line/function), and
+                the full traceback.
+            samples: Optional subset of task sample entries (``name`` / ``sample_id``) to mention and
+                optionally clear. Defaults to every sample on the task.
+            clear_positions: When True (default), after OK clear software occupancy for the scoped
+                samples. When False, only release locks/resources (used for mid-Labman restart).
+        """
+        prompt, scoped_samples = self._cleanup_prompt_and_samples(
+            error_message,
+            samples=samples,
+            clear_positions=clear_positions,
+        )
+
+        self.request_user_input(
+            prompt=prompt,
+            options=["OK"],
+            abort_if_task_cancelled=False,
+            request_context_extra={"cleanup": True},
+        )
+
+        self.finish_cleanup_after_ack(
+            clear_positions=clear_positions,
+            samples=scoped_samples,
+        )
 
     def release_all_resources(self):
         """Give back every resource this task holds or has requested.

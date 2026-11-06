@@ -21,7 +21,8 @@ def launch_worker(args):
     from alab_management.task_manager.task_manager import TaskManager
 
     task_manager = TaskManager()
-    # Clean up any leftover tasks from previous runs. This blocks new workers until cleanup is done!
+    # Arm leftover-task cleanup prompts without blocking; Dramatiq starts immediately.
+    # Device/sample locks for those tasks stay held until each cleanup OK on the dashboard.
     task_manager.clean_up_tasks_from_previous_runs()
 
     args = make_argument_parser().parse_args(

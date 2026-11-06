@@ -78,6 +78,7 @@ class UserInputView:
         )
 
         request_id = ObjectId()
+        now = utc_now()
         self._input_collection.insert_one(
             {
                 "_id": request_id,
@@ -85,7 +86,8 @@ class UserInputView:
                 "options": [str(opt) for opt in options],
                 "status": UserRequestStatus.PENDING.value,
                 "request_context": context,
-                "last_updated": utc_now(),
+                "created_at": now,
+                "last_updated": now,
             }
         )
         if maintenance is True:
@@ -98,33 +100,67 @@ class UserInputView:
     ) -> int:
         """Fulfill pending requests that a new insert would duplicate.
 
-        Matches on identical ``prompt`` plus ``request_context.device`` when a device
-        is present (robot-arm / instrument maintenance prompts). Returns how many
-        stale requests were superseded.
-        """
-        device = context.get("device")
-        if not device:
-            return 0
+        - Device-keyed: identical ``prompt`` + ``request_context.device`` (robot-arm /
+          instrument maintenance prompts).
+        - Cleanup-keyed: same ``task_id`` for restart/in-task cleanup prompts (and any
+          pending row with the exact same prompt for that task), so stacked leftovers
+          collapse to one actionable OK.
 
+        Returns how many stale requests were superseded.
+        """
         now = utc_now()
-        result = self._input_collection.update_many(
-            {
-                "status": UserRequestStatus.PENDING.value,
-                "prompt": prompt,
-                "request_context.device": device,
-            },
-            {
-                "$set": {
-                    "status": UserRequestStatus.FULLFILLED.value,
-                    "response": SUPERSEDED_RESPONSE,
-                    "note": (
-                        "Replaced by a newer request for the same device and prompt."
-                    ),
-                    "last_updated": now,
-                }
-            },
+        superseded = 0
+
+        device = context.get("device")
+        if device:
+            result = self._input_collection.update_many(
+                {
+                    "status": UserRequestStatus.PENDING.value,
+                    "prompt": prompt,
+                    "request_context.device": device,
+                },
+                {
+                    "$set": {
+                        "status": UserRequestStatus.FULLFILLED.value,
+                        "response": SUPERSEDED_RESPONSE,
+                        "note": (
+                            "Replaced by a newer request for the same device and prompt."
+                        ),
+                        "last_updated": now,
+                    }
+                },
+            )
+            superseded += int(result.modified_count)
+
+        task_id = context.get("task_id")
+        is_cleanup = bool(
+            context.get("restart_cleanup") or context.get("cleanup")
         )
-        return int(result.modified_count)
+        if is_cleanup and task_id is not None:
+            result = self._input_collection.update_many(
+                {
+                    "status": UserRequestStatus.PENDING.value,
+                    "request_context.task_id": task_id,
+                    "$or": [
+                        {"request_context.restart_cleanup": True},
+                        {"request_context.cleanup": True},
+                        {"prompt": prompt},
+                    ],
+                },
+                {
+                    "$set": {
+                        "status": UserRequestStatus.FULLFILLED.value,
+                        "response": SUPERSEDED_RESPONSE,
+                        "note": (
+                            "Replaced by a newer cleanup request for the same task."
+                        ),
+                        "last_updated": now,
+                    }
+                },
+            )
+            superseded += int(result.modified_count)
+
+        return superseded
 
     def get_request(self, request_id: ObjectId) -> dict[str, Any]:
         """

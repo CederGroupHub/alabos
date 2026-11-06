@@ -11,7 +11,7 @@ from dramatiq_abort import abort, abort_requested
 
 from alab_management.lab_view import LabView
 from alab_management.logger import DBLogger
-from alab_management.task_view import TaskCancelledError, TaskView
+from alab_management.task_view import TaskView
 from alab_management.task_view.task_enums import CancelingProgress, TaskStatus
 from alab_management.task_view.wait_messages import WORKER_QUEUE_MESSAGE
 from alab_management.utils.module_ops import load_definition
@@ -64,12 +64,15 @@ class TaskManager:
             self.submit_ready_tasks()
 
     def clean_up_tasks_from_previous_runs(self):
-        """Cleans up incomplete tasks that exist from the last time the taskmanager was running. Note that this will
-        block the task queue until all samples in these tasks have been removed from the physical lab (confirmed via
-        user requests on the dashboard).
+        """Arm cleanup for leftover RUNNING / REQUESTING_RESOURCES tasks without blocking.
 
-        This typically occurs if the taskmanager was exited using SIGTERM (ctrl-c), in which case some tasks may
-        still be in the RUNNING or CANCELLING state. These will be set to CANCELLED now.
+        INITIATED tasks are requeued to READY immediately. For each dangling task a
+        dashboard restart-cleanup prompt is posted; device/sample locks stay held until
+        the operator OKs that prompt (handled by the dashboard completer). Dramatiq can
+        start consuming other work right away.
+
+        This typically occurs if workers were exited (SIGTERM / crash) while tasks were
+        still RUNNING or REQUESTING_RESOURCES.
         """
         statuses_to_cancel = [
             TaskStatus.RUNNING,
@@ -99,45 +102,36 @@ class TaskManager:
             "They were RUNNING or REQUESTING_RESOURCES when the workers stopped."
         )
         cli_logger.info(
-            "We will cancel them and prompt on the dashboard for each task. "
-            "Mid-Labman (processing-slot) tasks only release locks; other tasks may ask "
-            "you to remove physical samples. Acknowledge each prompt, then workers resume."
+            "Posting dashboard cleanup prompts (non-blocking). Locks stay held until "
+            "each prompt is acknowledged; workers start immediately so other experiments "
+            "can run on free resources. Mid-Labman (processing-slot) tasks only release "
+            "locks on OK; other tasks may ask you to remove physical samples first."
         )
         for i, task_entry in enumerate(tasks_to_cancel):
             task_id = task_entry["task_id"]
             task_class = task_entry["type"]
             task_name = task_class.__name__
 
+            lab_view = LabView(task_id=task_id)
+            if lab_view.occupies_only_labman_processing():
+                cli_logger.info(
+                    f"({i + 1}/{n}) arming soft restart cleanup for mid-Labman task "
+                    f"{task_name} ({task_id}); locks release on OK without clearing positions."
+                )
+                request_id = lab_view.arm_restart_cleanup(clear_positions=False)
+            else:
+                cli_logger.info(
+                    f"({i + 1}/{n}) arming restart cleanup for task {task_name} "
+                    f"({task_id}); acknowledge on the dashboard to release locks."
+                )
+                request_id = lab_view.arm_restart_cleanup(clear_positions=True)
             cli_logger.info(
-                f"({i + 1}/{n}) please clean up task {task_name} ({task_id}) "
-                "using the ALabOS dashboard..."
+                f"Restart cleanup request {request_id} posted for {task_name} ({task_id})."
             )
 
-            # puts a user request on the dashboard; blocks until acknowledged. Mid-Labman
-            # processing occupancy uses soft cleanup (no position clear). There may be a
-            # duplicate request if the task was already cancelling before restart.
-            try:
-                lab_view = LabView(task_id=task_id)
-                if lab_view.occupies_only_labman_processing():
-                    cli_logger.info(
-                        f"Task {task_name} ({task_id}) is mid-Labman (processing slots); "
-                        "releasing locks without clearing sample positions."
-                    )
-                    lab_view.request_cleanup(clear_positions=False)
-                else:
-                    lab_view.request_cleanup()
-            except TaskCancelledError:
-                cli_logger.warning(
-                    f"Cleanup prompt for {task_name} ({task_id}) was cancelled; "
-                    "releasing resources and marking the leftover task cancelled."
-                )
-                LabView(task_id=task_id).release_all_resources()
-
-            # mark task as successfully cancelled
-            self.task_view.update_status(task_id=task_id, status=TaskStatus.CANCELLED)
-            cli_logger.info(f"Task {task_name} ({task_id}) cancelled successfully.")
-
-        cli_logger.info("Cleanup is done. Back to work.")
+        cli_logger.info(
+            "Restart cleanup prompts armed. Starting workers without waiting on OK."
+        )
 
     def submit_ready_tasks(self):
         """

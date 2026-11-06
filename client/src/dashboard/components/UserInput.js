@@ -142,12 +142,37 @@ function SplitButton({ options, optionIndex, setOptionIndex, handleClick }) {
 }
 
 
+function formatAppearedAt(request) {
+  if (request?.appeared_at_display) {
+    return request.appeared_at_display;
+  }
+  if (!request?.appeared_at) {
+    return "";
+  }
+  const parsed = new Date(request.appeared_at);
+  if (Number.isNaN(parsed.getTime())) {
+    return String(request.appeared_at);
+  }
+  return parsed.toLocaleString("en-US", {
+    timeZone: "America/Los_Angeles",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+    timeZoneName: "short",
+  });
+}
+
 function UserInputRow({
   request_id,
   task_name,
   task_id,
   prompt,
   options,
+  appearedAt = "",
   hoverForId = false,
   highlighted = false,
 }) {
@@ -173,6 +198,12 @@ function UserInputRow({
           : {}),
       }}
     >
+      <TableCell align="center" sx={{ whiteSpace: "nowrap", verticalAlign: "top" }}>
+        <Typography variant="body2" color="text.secondary">
+          {appearedAt || "—"}
+        </Typography>
+      </TableCell>
+
       <TableCell align="center">
         <HoverText defaultText={task_name} hoverText={task_id} variant="body1" active={hoverForId} />
       </TableCell>
@@ -317,6 +348,7 @@ function UserInputAccordion({
             <Table stickyHeader aria-label="user input table">
               <TableHead>
                 <TableRow>
+                  <TableCell align="center"><b>Appeared</b></TableCell>
                   <TableCell align="center"><b>Task</b></TableCell>
                   <TableCell align="center"><b>Prompt</b></TableCell>
                   <TableCell align="center"><b>Send Response</b></TableCell>
@@ -330,6 +362,7 @@ function UserInputAccordion({
                     task_id={request.task.id}
                     prompt={request.prompt}
                     options={request.options}
+                    appearedAt={formatAppearedAt(request)}
                     key={request.id}
                     hoverForId={hoverForId}
                     highlighted={String(request.id) === String(highlightedRequestId)}
