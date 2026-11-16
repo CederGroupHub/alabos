@@ -194,6 +194,13 @@ class TaskView:
                 self.try_to_mark_task_ready(task_id=next_task_id)
 
         if status in [TaskStatus.CANCELLED, TaskStatus.ERROR]:
+            # Snapshot downstream edges before cascade so experiment resume can restore them.
+            try:
+                from alab_management.experiment_reopen import record_cascade_snapshot
+
+                record_cascade_snapshot(self, task_id)
+            except Exception:
+                pass
             # any downstream tasks should be:
             # 1. cancelled if they depend _only on this task_
             # 2. made independent of this task. This includes removing affected samples from the downstream task

@@ -328,7 +328,7 @@ Use **Sample Positions → Clear** on that slot (idle-gated), then place via the
 
 Useful for Q&A so expectations stay accurate:
 
-- **“Continue after crash with samples left in place”** as a first-class product path — high desire; today Release alone is not enough to always resume cleanly; Clear is still often required for new runs.
+- **“Continue after crash with samples left in place”** — **Experiments → Resume** (branch `feature/modular-subtasks-resume`) reopens the same experiment from a terminal sub-task after confirming sample positions and arm-home. Still does not auto-jog the arm; Release alone is not a substitute for Resume.
 - **Sample identity reuse** on resubmit (same name → new `_id` today).
 - **Full archive-then-purge** workflow as a dedicated Archive button (partial prune exists inside Clear; broader design deferred).
 - **Place** restored on Sample Positions (Clear-only for now; Starting owns placement).

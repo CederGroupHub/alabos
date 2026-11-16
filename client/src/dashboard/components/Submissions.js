@@ -43,6 +43,7 @@ import {
   get_freeform_job,
   get_labman_loaded_powders,
   get_sample_position_racks,
+  get_composer_catalog,
   get_submission_recipes,
   preview_submission_workflow,
   resolve_submission_samples,
@@ -487,6 +488,11 @@ export default function Submissions() {
   const [rowsToAdd, setRowsToAdd] = useState(10);
   const [loadedPowders, setLoadedPowders] = useState([]);
   const [loadedPowdersError, setLoadedPowdersError] = useState('');
+  const [useStepComposer, setUseStepComposer] = useState(false);
+  const [composerTasks, setComposerTasks] = useState([]);
+  const [composerPresets, setComposerPresets] = useState({});
+  const [composerSteps, setComposerSteps] = useState([]);
+  const [composerAddType, setComposerAddType] = useState('RecoverCapShake');
   const [loadedPowdersLoading, setLoadedPowdersLoading] = useState(false);
 
   const refreshLoadedPowders = async () => {
@@ -714,11 +720,21 @@ export default function Submissions() {
     });
   };
 
+  useEffect(() => {
+    get_composer_catalog()
+      .then((data) => {
+        if (data?.status === 'success') {
+          setComposerTasks(data.tasks || []);
+          setComposerPresets(data.presets || {});
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const buildPayload = () => {
-    return {
+    const base = {
       name: formValues.name || presetId || 'workflow_batch',
       preset_id: presetId || undefined,
-      stages: { ...stages },
       samples: coerceRecipeSampleRows(recipeSampleRows, recipeSampleColumns),
       ending: { label_vial: Boolean(formValues.label_vial) },
       diffraction: {
@@ -733,6 +749,18 @@ export default function Submissions() {
       skip_sample_scan: Boolean(formValues.skip_sample_scan),
       heating_mode: formValues.heating_mode === 'multi' ? 'multi' : 'single',
     };
+    if (useStepComposer) {
+      let steps = composerSteps.map((s) => ({ type: s.type, params: s.params || {} }));
+      // New submissions need Starting (or PowderDosing); resume uses Experiments → Resume.
+      if (
+        steps.length > 0 &&
+        !steps.some((s) => s.type === "Starting" || s.type === "PowderDosing")
+      ) {
+        steps = [{ type: "Starting", params: {} }, ...steps];
+      }
+      return { ...base, steps };
+    }
+    return { ...base, stages: { ...stages } };
   };
 
   const runPreview = async () => {
@@ -1001,10 +1029,12 @@ export default function Submissions() {
     return true;
   });
 
-  const chain = taskChainFromStages(stages);
-  const needsSampleTable = Boolean(
-    stages.powder_dosing || stages.starting || stages.heating,
-  );
+  const chain = useStepComposer
+    ? composerSteps.map((s) => s.type)
+    : taskChainFromStages(stages);
+  const needsSampleTable = useStepComposer
+    ? true
+    : Boolean(stages.powder_dosing || stages.starting || stages.heating);
 
   return (
     <Box sx={{ p: 3, maxWidth: 1100 }}>
@@ -1072,6 +1102,101 @@ export default function Submissions() {
             <Typography variant="body2" color="text.secondary">
               {selectedPreset.description}
             </Typography>
+          ) : null}
+
+          <FormControlLabel
+            control={
+              <Switch
+                checked={useStepComposer}
+                onChange={(e) => setUseStepComposer(e.target.checked)}
+              />
+            }
+            label="Advanced: compose sub-tasks (recover leaves, grind/refire, repeats)"
+          />
+
+          {useStepComposer ? (
+            <Box>
+              <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                Sub-task chain
+              </Typography>
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} sx={{ mb: 1 }}>
+                <FormControl size="small" sx={{ minWidth: 220 }}>
+                  <InputLabel>Add step</InputLabel>
+                  <Select
+                    label="Add step"
+                    value={composerAddType}
+                    onChange={(e) => setComposerAddType(e.target.value)}
+                  >
+                    {(composerTasks.filter((t) => !t.composite) || []).map((t) => (
+                      <MenuItem key={t.type} value={t.type}>
+                        {t.label} ({t.group})
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <Button
+                  variant="outlined"
+                  onClick={() =>
+                    setComposerSteps((prev) => [
+                      ...prev,
+                      { type: composerAddType, params: {}, key: `${composerAddType}-${Date.now()}` },
+                    ])
+                  }
+                >
+                  Add
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={() => {
+                    const grind = composerPresets.grind_refire;
+                    if (grind) {
+                      setComposerSteps(
+                        grind.map((s, i) => ({
+                          type: s.type,
+                          params: { ...(s.params || {}) },
+                          key: `${s.type}-${i}-${Date.now()}`,
+                        })),
+                      );
+                    }
+                  }}
+                >
+                  Load grind/refire preset
+                </Button>
+                <Button variant="text" onClick={() => setComposerSteps([])}>
+                  Clear steps
+                </Button>
+              </Stack>
+              {composerSteps.length === 0 ? (
+                <Typography variant="body2" color="text.secondary">
+                  No steps yet. Add leaves (e.g. RecoverCapShake) or load grind/refire.
+                </Typography>
+              ) : (
+                <Stack spacing={0.5}>
+                  {composerSteps.map((step, idx) => (
+                    <Stack
+                      key={step.key || `${step.type}-${idx}`}
+                      direction="row"
+                      spacing={1}
+                      alignItems="center"
+                    >
+                      <Typography variant="body2" sx={{ minWidth: 28 }}>
+                        {idx + 1}.
+                      </Typography>
+                      <Chip label={step.type} size="small" />
+                      <IconButton
+                        size="small"
+                        aria-label="remove step"
+                        onClick={() =>
+                          setComposerSteps((prev) => prev.filter((_, i) => i !== idx))
+                        }
+                      >
+                        <DeleteOutlineIcon fontSize="small" />
+                      </IconButton>
+                    </Stack>
+                  ))}
+                </Stack>
+              )}
+            </Box>
           ) : null}
 
           <Box>

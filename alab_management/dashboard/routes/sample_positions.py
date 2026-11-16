@@ -8,8 +8,16 @@ from bson import ObjectId
 from flask import Blueprint, request
 
 from alab_management.dashboard.lab_views import experiment_view, sample_view
-from alab_management.lab_reset import LabNotIdleError, get_lab_idle_status
+from alab_management.experiment_view.experiment_view import ExperimentStatus
 from alab_management.utils.data_objects import get_completed_collection
+
+# Experiments still in the live DB that are not finished/cancelled block Clear.
+_TERMINAL_EXPERIMENT_STATUSES = frozenset(
+    {
+        ExperimentStatus.COMPLETED.name,
+        ExperimentStatus.CANCELLED.name,
+    }
+)
 
 sample_positions_bp = Blueprint(
     "/sample_positions", __name__, url_prefix="/api/sample-positions"
@@ -28,6 +36,8 @@ DISPLAY_NAMES: dict[str, str] = {
     "DASH_aeris_xrd": "DASH Aeris XRD",
     "DASH_arm_JEEVES": "DASH Arm JEEVES",
     "DASH_capper": "DASH Capper",
+    "DASH_ball_dispenser": "DASH Ball Dispenser",
+    "DASH_scale": "DASH Scale",
     "MOBILE_arm_ALFRED": "Mobile Robot (ALFRED)",
     "BFT_input_rack": "BFT Input Rack",
 }
@@ -48,11 +58,12 @@ _NON_POWDER_SLOT_TYPES = frozenset(
 )
 
 # Whole devices that never hold a powder sample (vial/crucible/XRD holder).
+# Ball dispenser is included on Sample Positions: RecoverPowder parks a crucible
+# there while dispensing, so leftover occupancy must be clearable in the UI.
 _NON_POWDER_DEVICE_SUBSTRINGS = (
     "acrylic_disk",
     "petri_dish",
     "trash_bucket",
-    "ball_dispenser",
     "cap_dispenser",
     "vial_labeler",
 )
@@ -175,6 +186,8 @@ def _sample_to_dict(sample) -> dict[str, Any] | None:
         "position_history": _serialize_history(sample.position_history),
         "experiment_id": None,
         "experiment_name": None,
+        "experiment_status": None,
+        "experiment_live": False,
     }
     payload.update(
         ownership_fields(tags=sample.tags, metadata=sample.metadata)
@@ -193,6 +206,8 @@ def _sample_doc_to_dict(sample: dict[str, Any]) -> dict[str, Any]:
         "position_history": _serialize_history(sample.get("position_history")),
         "experiment_id": None,
         "experiment_name": None,
+        "experiment_status": None,
+        "experiment_live": False,
     }
     payload.update(
         ownership_fields(
@@ -203,10 +218,42 @@ def _sample_doc_to_dict(sample: dict[str, Any]) -> dict[str, Any]:
     return payload
 
 
+def _experiment_is_live(status: str | None, *, from_live_db: bool) -> bool:
+    """True when the sample's experiment is still active in the live lab DB."""
+    if not from_live_db:
+        return False
+    if status is None:
+        return True
+    return status not in _TERMINAL_EXPERIMENT_STATUSES
+
+
+def clear_blocked_reason_for_experiment(
+    *,
+    experiment_live: bool,
+    experiment_name: str | None = None,
+    experiment_status: str | None = None,
+) -> str | None:
+    """Hover / API reason when Clear must stay disabled; None if Clear is allowed."""
+    if not experiment_live:
+        return None
+    name = (experiment_name or "").strip()
+    status = (experiment_status or "").strip()
+    details = []
+    if name:
+        details.append(name)
+    if status:
+        details.append(status)
+    suffix = f" ({', '.join(details)})" if details else ""
+    return (
+        "Cannot clear: this position holds a sample associated with a live "
+        f"experiment{suffix}."
+    )
+
+
 def _batch_experiment_info_by_sample_id(
     sample_ids: list[str],
 ) -> dict[str, dict[str, Any]]:
-    """Map sample_id → experiment name/tags/campaign (live DB, then completed)."""
+    """Map sample_id → experiment name/tags/campaign/live flag (live DB, then completed)."""
     object_ids: list[ObjectId] = []
     for sample_id in sample_ids:
         try:
@@ -218,11 +265,15 @@ def _batch_experiment_info_by_sample_id(
 
     info: dict[str, dict[str, Any]] = {}
 
-    def _ingest(experiments) -> None:
+    def _ingest(experiments, *, from_live_db: bool) -> None:
         for experiment in experiments:
             campaign = campaign_from_tags(experiment.get("tags"))
             experiment_id = str(experiment["_id"])
             experiment_name = experiment.get("name")
+            experiment_status = experiment.get("status")
+            experiment_live = _experiment_is_live(
+                experiment_status, from_live_db=from_live_db
+            )
             for entry in experiment.get("samples") or []:
                 sid = entry.get("sample_id")
                 if sid is None:
@@ -233,14 +284,17 @@ def _batch_experiment_info_by_sample_id(
                 info[key] = {
                     "experiment_id": experiment_id,
                     "experiment_name": experiment_name,
+                    "experiment_status": experiment_status,
+                    "experiment_live": experiment_live,
                     "campaign": campaign,
                 }
 
     _ingest(
         experiment_view._experiment_collection.find(
             {"samples.sample_id": {"$in": object_ids}},
-            {"name": 1, "tags": 1, "samples.sample_id": 1},
-        )
+            {"name": 1, "tags": 1, "status": 1, "samples.sample_id": 1},
+        ),
+        from_live_db=True,
     )
 
     missing = [oid for oid in object_ids if str(oid) not in info]
@@ -250,8 +304,9 @@ def _batch_experiment_info_by_sample_id(
             _ingest(
                 completed.find(
                     {"samples.sample_id": {"$in": missing}},
-                    {"name": 1, "tags": 1, "samples.sample_id": 1},
-                )
+                    {"name": 1, "tags": 1, "status": 1, "samples.sample_id": 1},
+                ),
+                from_live_db=False,
             )
         except ValueError:
             pass
@@ -268,11 +323,34 @@ def _enrich_samples_with_experiment_info(samples: list[dict[str, Any]]) -> None:
     for sample in samples:
         info = by_id.get(sample["sample_id"])
         if not info:
+            sample.setdefault("experiment_live", False)
+            sample.setdefault("experiment_status", None)
             continue
         sample["experiment_id"] = info.get("experiment_id")
         sample["experiment_name"] = info.get("experiment_name")
+        sample["experiment_status"] = info.get("experiment_status")
+        sample["experiment_live"] = bool(info.get("experiment_live"))
         if not sample.get("campaign") and info.get("campaign"):
             sample["campaign"] = info["campaign"]
+
+
+def _apply_clear_permissions(racks: list[dict[str, Any]]) -> None:
+    """Set per-slot Clear availability from the occupying sample's experiment."""
+    for rack in racks:
+        for slots in rack.get("slot_groups", {}).values():
+            for slot in slots:
+                sample = slot.get("sample")
+                if not sample:
+                    slot["clear_allowed"] = False
+                    slot["clear_blocked_reason"] = None
+                    continue
+                reason = clear_blocked_reason_for_experiment(
+                    experiment_live=bool(sample.get("experiment_live")),
+                    experiment_name=sample.get("experiment_name"),
+                    experiment_status=sample.get("experiment_status"),
+                )
+                slot["clear_allowed"] = reason is None
+                slot["clear_blocked_reason"] = reason
 
 
 def _collect_samples_from_racks(racks: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -468,6 +546,7 @@ def get_racks():
     unplaced = _unplaced_samples()
     placed = _collect_samples_from_racks(racks)
     _enrich_samples_with_experiment_info(placed + unplaced)
+    _apply_clear_permissions(racks)
     return {
         "status": "success",
         "racks": racks,
@@ -509,20 +588,11 @@ def place_sample():
 
 @sample_positions_bp.route("/clear", methods=["POST"])
 def clear_position():
-    """Remove a sample from the given rack slot (physical leave — clears position)."""
-    idle = get_lab_idle_status()
-    if not idle["idle"]:
-        exc = LabNotIdleError(idle["reasons"])
-        return (
-            {
-                "status": "error",
-                "errors": str(exc),
-                "reason": str(exc),
-                "data": idle,
-            },
-            409,
-        )
+    """Remove a sample from the given rack slot (physical leave — clears position).
 
+    Clear is blocked only when that slot's sample belongs to a live experiment.
+    Other lab work does not freeze Clear on finished/cancelled leftovers.
+    """
     data = request.get_json(force=True)  # type: ignore[arg-type]
     position = data.get("position")
     if not position:
@@ -531,6 +601,30 @@ def clear_position():
     sample = sample_view.get_sample_by_position(position)
     if sample is None:
         return {"status": "error", "errors": f"No sample found at {position}."}, 400
+
+    info = _batch_experiment_info_by_sample_id([str(sample.sample_id)]).get(
+        str(sample.sample_id)
+    ) or {}
+    blocked_reason = clear_blocked_reason_for_experiment(
+        experiment_live=bool(info.get("experiment_live")),
+        experiment_name=info.get("experiment_name"),
+        experiment_status=info.get("experiment_status"),
+    )
+    if blocked_reason:
+        return (
+            {
+                "status": "error",
+                "errors": blocked_reason,
+                "reason": blocked_reason,
+                "data": {
+                    "experiment_id": info.get("experiment_id"),
+                    "experiment_name": info.get("experiment_name"),
+                    "experiment_status": info.get("experiment_status"),
+                    "experiment_live": True,
+                },
+            },
+            409,
+        )
 
     try:
         sample_view.move_sample(sample.sample_id, None)

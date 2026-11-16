@@ -122,6 +122,21 @@ def get_experiment_progress(exp_id: str) -> tuple[float, bool]:
     return completed_task_count / len(tasks), error
 
 
+def _experiment_still_resumable(exp: dict) -> bool:
+    """Keep terminal experiments visible while any sample still occupies a lab position."""
+    for sample in exp.get("samples") or []:
+        sample_id = sample.get("sample_id") if isinstance(sample, dict) else sample
+        if sample_id is None:
+            continue
+        try:
+            live = sample_view.get_sample(sample_id)
+        except ValueError:
+            continue
+        if live is not None and (live.position or getattr(live, "in_transit", None)):
+            return True
+    return False
+
+
 @experiment_bp.route("/get_all_ids", methods=["GET"])
 def get_overview():
     """Get id for all experiments that are running or completed."""
@@ -133,14 +148,10 @@ def get_overview():
         ExperimentStatus.ERROR,
     ]:
         experiments = experiment_view.get_experiments_with_status(status)
-        experiment_ids.extend(
-            [
-                str(exp["_id"])
-                for exp in experiments
-                if utc_now() - exp.get("completed_at", utc_now())
-                <= timedelta(days=1)
-            ]
-        )
+        for exp in experiments:
+            age_ok = utc_now() - exp.get("completed_at", utc_now()) <= timedelta(days=1)
+            if age_ok or _experiment_still_resumable(exp):
+                experiment_ids.append(str(exp["_id"]))
 
     return {"status": "success", "experiment_ids": experiment_ids}
 
@@ -200,6 +211,7 @@ def _sample_payload_for_experiment(sample: dict) -> dict:
     name = sample.get("name")
     position = None
     last_position = None
+    in_transit = None
 
     if sample_id is not None:
         try:
@@ -209,12 +221,14 @@ def _sample_payload_for_experiment(sample: dict) -> dict:
         if live is not None:
             position = live.position
             last_position = live.last_position
+            in_transit = getattr(live, "in_transit", None)
             name = live.name or name
         else:
             archived = _completed_sample_doc(sample_id)
             if archived is not None:
                 position = archived.get("position")
                 last_position = archived.get("last_position")
+                in_transit = archived.get("in_transit")
                 name = archived.get("name") or name
 
     display_position = position if position is not None else last_position
@@ -223,6 +237,7 @@ def _sample_payload_for_experiment(sample: dict) -> dict:
         "id": str(sample_id) if sample_id is not None else None,
         "position": display_position,
         "last_position": last_position,
+        "in_transit": in_transit,
     }
 
 
@@ -336,6 +351,32 @@ def cancel_experiment(exp_id: str):
         return {"status": "error", "reason": str(exception)}, 400
     except Exception as exception:
         logger.exception("Cancel experiment failed")
+        return {"status": "error", "reason": str(exception)}, 500
+    return {"status": "success", "data": summary}
+
+
+@experiment_bp.route("/<exp_id>/resume", methods=["POST"])
+def resume_experiment(exp_id: str):
+    """Reopen a terminal task on this experiment after operator confirms position + arm home."""
+    from alab_management.experiment_reopen import reopen_experiment_from_checkpoint
+
+    data = request.get_json(force=True) or {}
+    try:
+        task_id = ObjectId(data.get("task_id"))
+        summary = reopen_experiment_from_checkpoint(
+            ObjectId(exp_id),
+            task_id=task_id,
+            resume_from=data.get("resume_from"),
+            sample_positions=data.get("sample_positions") or {},
+            arm_home_confirmed=bool(data.get("arm_home_confirmed")),
+            continue_downstream=bool(data.get("continue_downstream", True)),
+        )
+    except InvalidId as exception:
+        return {"status": "error", "reason": exception.args[0]}, 400
+    except ValueError as exception:
+        return {"status": "error", "reason": str(exception)}, 400
+    except Exception as exception:
+        logger.exception("Resume experiment failed")
         return {"status": "error", "reason": str(exception)}, 500
     return {"status": "success", "data": summary}
 

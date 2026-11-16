@@ -180,6 +180,25 @@ export async function cancel_task(task_id) {
     return res.json();
 }
 
+const RESUME_EXPERIMENT_API = process.env.NODE_ENV === "production" ? "/api/experiment/" : URL + "/api/experiment/";
+
+export async function resume_experiment(experiment_id, body) {
+    const res = await fetch(RESUME_EXPERIMENT_API + experiment_id + "/resume", {
+        method: "POST",
+        mode: "cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body || {}),
+    });
+    return res.json();
+}
+
+const COMPOSER_CATALOG_API = process.env.NODE_ENV === "production" ? "/api/submissions/composer/catalog" : URL + "/api/submissions/composer/catalog";
+
+export async function get_composer_catalog() {
+    const res = await fetch(COMPOSER_CATALOG_API, { method: "GET", mode: "cors" });
+    return res.json();
+}
+
 // Devices
 
 const PAUSE_DEVICE_API = process.env.NODE_ENV === "production" ? "/api/pause/" : URL + "/api/pause/";
