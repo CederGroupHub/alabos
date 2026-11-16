@@ -1,5 +1,9 @@
 import { useEffect } from 'react';
-import { get_experiment_status, get_experiment_ids, cancel_experiment, cancel_task } from '../../api_routes';
+import { get_experiment_status, get_experiment_ids, cancel_experiment, cancel_task, resume_experiment } from '../../api_routes';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
 import LinearProgress from '@mui/material/LinearProgress';//
 import * as React from 'react';
 import Box from '@mui/material/Box';
@@ -33,6 +37,12 @@ const CANCELABLE_TASK_STATUSES = new Set([
   "RUNNING",
   "FINISHING",
 ]);
+
+const RESUMABLE_TASK_STATUSES = new Set(["ERROR", "CANCELLED"]);
+
+function resumableTasks(status) {
+  return (status?.tasks || []).filter((task) => RESUMABLE_TASK_STATUSES.has(task.status));
+}
 
 function taskMentionsLabman(task) {
   const text = `${task?.type || ""} ${task?.description || ""}`.toLowerCase();
@@ -442,11 +452,150 @@ function CancelConfirmDialog({ open, setOpen, type, id, experimentId, experiment
   );
 }
 
+function ResumeDialog({ open, onClose, status, onResumed }) {
+  const failed = resumableTasks(status);
+  const [taskId, setTaskId] = React.useState(failed[0]?.id || "");
+  const [positions, setPositions] = React.useState(() => {
+    const init = {};
+    (status?.samples || []).forEach((s) => {
+      init[s.name] = s.position || s.last_position || "";
+    });
+    return init;
+  });
+  const [armHome, setArmHome] = React.useState(false);
+  const [busy, setBusy] = React.useState(false);
+  const [error, setError] = React.useState("");
+  const [summary, setSummary] = React.useState("");
+
+  React.useEffect(() => {
+    if (!open) return;
+    setTaskId(failed[0]?.id || "");
+    const init = {};
+    (status?.samples || []).forEach((s) => {
+      init[s.name] = s.position || s.last_position || "";
+    });
+    setPositions(init);
+    setArmHome(false);
+    setError("");
+    setSummary("");
+  }, [open, status]);
+
+  const selected = failed.find((t) => t.id === taskId);
+
+  const submit = async () => {
+    setBusy(true);
+    setError("");
+    try {
+      const res = await resume_experiment(status.id, {
+        task_id: taskId,
+        resume_from: selected?.type || null,
+        sample_positions: positions,
+        arm_home_confirmed: armHome,
+        continue_downstream: true,
+      });
+      if (res.status !== "success") {
+        setError(res.reason || res.errors || "Resume failed");
+        return;
+      }
+      setSummary(`Reopened ${selected?.type || taskId} → READY`);
+      if (onResumed) onResumed(res.data);
+    } catch (e) {
+      setError(String(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onClose={busy ? undefined : onClose} maxWidth="sm" fullWidth>
+      <DialogTitle>Resume experiment from sub-task</DialogTitle>
+      <DialogContent>
+        {summary ? (
+          <Typography sx={{ mb: 1 }}>{summary}</Typography>
+        ) : (
+          <>
+            <Typography variant="body2" sx={{ mb: 1.5 }}>
+              Confirm where each sample is, pick the failed/cancelled sub-task to re-run,
+              and confirm the arm is at home. Same experiment is reopened (not a new submit).
+            </Typography>
+            {failed.length === 0 ? (
+              <Alert severity="info">No ERROR/CANCELLED tasks to resume.</Alert>
+            ) : (
+              <>
+                <TextField
+                  select
+                  fullWidth
+                  label="Resume task"
+                  value={taskId}
+                  onChange={(e) => setTaskId(e.target.value)}
+                  sx={{ mb: 2 }}
+                >
+                  {failed.map((t) => (
+                    <MenuItem key={t.id} value={t.id}>
+                      {t.description || t.type} ({t.status})
+                    </MenuItem>
+                  ))}
+                </TextField>
+                {(status?.samples || []).map((s) => (
+                  <TextField
+                    key={s.name}
+                    fullWidth
+                    label={`${s.name} position`}
+                    value={positions[s.name] || ""}
+                    onChange={(e) =>
+                      setPositions((prev) => ({ ...prev, [s.name]: e.target.value }))
+                    }
+                    helperText={
+                      s.in_transit
+                        ? `In transit: ${JSON.stringify(s.in_transit)}`
+                        : s.last_position
+                          ? `Last: ${s.last_position}`
+                          : " "
+                    }
+                    sx={{ mb: 1.5 }}
+                  />
+                ))}
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={armHome}
+                      onChange={(e) => setArmHome(e.target.checked)}
+                    />
+                  }
+                  label="Arm is at home / path is clear"
+                />
+              </>
+            )}
+            {error ? <Alert severity="error" sx={{ mt: 1 }}>{error}</Alert> : null}
+          </>
+        )}
+      </DialogContent>
+      <DialogActions>
+        {summary ? (
+          <Button onClick={onClose} autoFocus>Close</Button>
+        ) : (
+          <>
+            <Button onClick={onClose} disabled={busy}>Cancel</Button>
+            <Button
+              variant="contained"
+              onClick={submit}
+              disabled={busy || !taskId || !armHome || failed.length === 0}
+            >
+              {busy ? "Resuming…" : "Resume"}
+            </Button>
+          </>
+        )}
+      </DialogActions>
+    </Dialog>
+  );
+}
+
 function Row({ experiment_id, hoverForId, onExperimentCancelled, refreshEpoch }) {
   const [open, setOpen] = React.useState(false);
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [dialogId, setDialogId] = React.useState("");
   const [dialogType, setDialogType] = React.useState("Task");
+  const [resumeOpen, setResumeOpen] = React.useState(false);
   const [status, setStatus] = React.useState(
     { "_id": "", "status": "", "samples": [], "tasks": [], "progress": 0, "progress_steps": { previous: [], current: [], next: [] } }
   );
@@ -614,9 +763,26 @@ function Row({ experiment_id, hoverForId, onExperimentCancelled, refreshEpoch })
             color="error"
             disabled={!experimentHasLiveTasks(status)}
             onClick={() => handleCancel(status.id, "experiment")}
+            sx={{ mr: 1 }}
           >
             Cancel Experiment
           </Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            disabled={resumableTasks(status).length === 0}
+            onClick={() => setResumeOpen(true)}
+          >
+            Resume
+          </Button>
+          <ResumeDialog
+            open={resumeOpen}
+            status={status}
+            onClose={() => setResumeOpen(false)}
+            onResumed={() => {
+              refreshStatus();
+            }}
+          />
         </TableCell>
       </TableRow>
       <TableRow>
