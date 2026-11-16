@@ -132,11 +132,12 @@ def test_is_occupancy_host_filters_non_powder_devices():
     assert is_occupancy_host("DASH_aeris_xrd")
     assert is_occupancy_host("DASH_arm_JEEVES")
     assert is_occupancy_host("DASH_capper")
+    assert is_occupancy_host("DASH_ball_dispenser")
     assert is_occupancy_host("MOBILE_arm_ALFRED")
     assert not is_occupancy_host("DASH_acrylic_disk_dispenser")
-    assert not is_occupancy_host("DASH_ball_dispenser")
     assert not is_occupancy_host("DASH_trash_bucket")
     assert not is_occupancy_host("DASH_petri_dish_dispenser")
+    assert not is_occupancy_host("DASH_cap_dispenser")
 
 
 def test_powder_slot_types_hide_caps():

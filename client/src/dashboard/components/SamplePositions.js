@@ -28,13 +28,17 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import styled from 'styled-components';
-import { clear_sample_position, get_lab_idle, get_sample_position_racks, block_sample_position, unblock_sample_position, unblock_all_sample_positions } from '../../api_routes';
+import { clear_sample_position, get_sample_position_racks, block_sample_position, unblock_sample_position, unblock_all_sample_positions } from '../../api_routes';
+
+const LIVE_EXPERIMENT_CLEAR_REASON =
+  'Cannot clear: this position holds a sample associated with a live experiment.';
 
 const RackContainer = styled.div`
   display: flex;
@@ -395,13 +399,16 @@ function SlotCard({
   onUnblock,
   onShowSample,
   slotRef,
-  clearDisabled,
-  clearDisabledReason,
 }) {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const occupied = slot.status === "OCCUPIED";
   const inTransit = Boolean(slot.sample?.in_transit);
-  const clearBlocked = !occupied || clearDisabled;
+  const clearBlockedByLiveExperiment =
+    occupied &&
+    (slot.clear_allowed === false || Boolean(slot.sample?.experiment_live));
+  const clearBlocked = !occupied || clearBlockedByLiveExperiment;
+  const clearBlockedReason =
+    slot.clear_blocked_reason || LIVE_EXPERIMENT_CLEAR_REASON;
   const canToggleBlock = slot.can_toggle_block !== false && !slot.locked_by_task_id;
   const sample = slot.sample;
   const ownership = ownershipCaption(sample);
@@ -598,27 +605,30 @@ function SlotCard({
                 Block
               </Button>
             )}
-            <Button
-              size="small"
-              variant="outlined"
-              onClick={() => onClear(slot.name)}
-              disabled={clearBlocked}
-              title={
-                occupied && clearDisabled
-                  ? clearDisabledReason || "Lab is not idle"
-                  : undefined
-              }
-              sx={{
-                flex: 1,
-                minWidth: 0,
-                px: 0.4,
-                py: 0.25,
-                fontSize: "0.7rem",
-                lineHeight: 1.25,
-              }}
+            <Tooltip
+              title={clearBlockedByLiveExperiment ? clearBlockedReason : ""}
+              disableHoverListener={!clearBlockedByLiveExperiment}
             >
-              Clear
-            </Button>
+              <span style={{ flex: 1, minWidth: 0, display: "flex" }}>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  onClick={() => onClear(slot.name)}
+                  disabled={clearBlocked}
+                  sx={{
+                    flex: 1,
+                    minWidth: 0,
+                    width: "100%",
+                    px: 0.4,
+                    py: 0.25,
+                    fontSize: "0.7rem",
+                    lineHeight: 1.25,
+                  }}
+                >
+                  Clear
+                </Button>
+              </span>
+            </Tooltip>
           </Stack>
         </CardContent>
       </Card>
@@ -636,8 +646,6 @@ function DeviceOccupancyRow({
   onBlock,
   onUnblock,
   onShowSample,
-  clearDisabled,
-  clearDisabledReason,
 }) {
   const summary = rack.summary || {};
   const occupiedCount = summary.occupied || 0;
@@ -720,8 +728,6 @@ function DeviceOccupancyRow({
                           onBlock={onBlock}
                           onUnblock={onUnblock}
                           onShowSample={onShowSample}
-                          clearDisabled={clearDisabled}
-                          clearDisabledReason={clearDisabledReason}
                         />
                       ))}
                     </SlotGrid>
@@ -746,24 +752,9 @@ function SamplePositions() {
   const [highlightedPosition, setHighlightedPosition] = useState(null);
   const [detailSample, setDetailSample] = useState(null);
   const [message, setMessage] = useState(null);
-  const [labIdle, setLabIdle] = useState(true);
-  const [idleReasons, setIdleReasons] = useState([]);
   const slotRefs = useRef({});
   const scrollTimer = useRef(null);
   const highlightTimer = useRef(null);
-
-  const refreshIdle = () => {
-    get_lab_idle()
-      .then((res) => {
-        if (res && res.status === "success" && res.data) {
-          setLabIdle(Boolean(res.data.idle));
-          setIdleReasons(res.data.reasons || []);
-        }
-      })
-      .catch(() => {
-        // Keep last known idle state if the idle endpoint fails.
-      });
-  };
 
   const refresh = () => {
     get_sample_position_racks().then((result) => {
@@ -774,7 +765,6 @@ function SamplePositions() {
         setInTransitSamples(result.in_transit_samples || []);
       }
     });
-    refreshIdle();
   };
 
   useEffect(() => {
@@ -887,25 +877,32 @@ function SamplePositions() {
     setDetailSample(sample);
   };
 
-  const clearDisabledReason = idleReasons.length
-    ? `Lab is not idle: ${idleReasons.join("; ")}. Use Release locks & tasks first.`
-    : "Lab is not idle. Use Release locks & tasks first.";
-
   const handleClear = async (position) => {
-    if (!labIdle) {
+    try {
+      const res = await clear_sample_position(position);
+      let result = null;
+      try {
+        result = await res.json();
+      } catch (_parseError) {
+        result = null;
+      }
+      if (res.ok && result?.status === "success") {
+        setMessage({ severity: "success", text: `Cleared ${position}.` });
+        refresh();
+        return;
+      }
       setMessage({
-        severity: "warning",
-        text: clearDisabledReason,
+        severity: "error",
+        text:
+          result?.errors ||
+          result?.reason ||
+          `Failed to clear ${position} (HTTP ${res.status}).`,
       });
-      return;
-    }
-    const res = await clear_sample_position(position);
-    const result = await res.json();
-    if (result.status === "success") {
-      setMessage({ severity: "success", text: `Cleared ${position}.` });
-      refresh();
-    } else {
-      setMessage({ severity: "error", text: result.errors || result.reason || "Failed to clear position." });
+    } catch (error) {
+      setMessage({
+        severity: "error",
+        text: error?.message || `Failed to clear ${position}.`,
+      });
     }
   };
 
@@ -971,10 +968,12 @@ function SamplePositions() {
           <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 640 }}>
             Occupancy for devices that can hold powder samples (vials, crucibles, XRD
             holders). Cap-only slots are hidden. Use <b>Clear</b> to free a slot in
-            software when the lab is idle. Use <b>Block</b> to keep automation from
-            assigning a slot (even when empty). Initial placement comes from experiment{" "}
-            <b>Starting</b> tasks (notebooks / submission) — Place was removed so GUI
-            and scripts do not fight over the same slots.
+            software when its sample is not part of a live experiment (cancelled /
+            finished leftovers are OK even if other experiments are running). Use{" "}
+            <b>Block</b> to keep automation from assigning a slot (even when empty).
+            Initial placement comes from experiment <b>Starting</b> tasks (notebooks /
+            submission) — Place was removed so GUI and scripts do not fight over the
+            same slots.
           </Typography>
         </Box>
         <Stack direction="row" spacing={1} flexShrink={0}>
@@ -984,14 +983,6 @@ function SamplePositions() {
           <Button variant="outlined" onClick={refresh}>Refresh</Button>
         </Stack>
       </Box>
-
-      {!labIdle && (
-        <Alert severity="warning" sx={{ mb: 2 }}>
-          Clear is disabled while the lab is busy
-          {idleReasons.length ? `: ${idleReasons.join("; ")}` : "."} Finish work or use
-          Lab settings → Release locks &amp; tasks first.
-        </Alert>
-      )}
 
       <Paper variant="outlined" sx={{ p: 2 }}>
         <Typography variant="subtitle2" gutterBottom>
@@ -1150,8 +1141,6 @@ function SamplePositions() {
                   onBlock={handleBlock}
                   onUnblock={handleUnblock}
                   onShowSample={openSampleHistory}
-                  clearDisabled={!labIdle}
-                  clearDisabledReason={clearDisabledReason}
                 />
               ))}
             </TableBody>
