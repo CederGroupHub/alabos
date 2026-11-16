@@ -28,6 +28,7 @@ Submodules
    alab_management.device_rpc_status
    alab_management.experiment_cancel
    alab_management.experiment_manager
+   alab_management.experiment_reopen
    alab_management.lab_reset
    alab_management.lab_view
    alab_management.logger

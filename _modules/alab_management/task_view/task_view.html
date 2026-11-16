@@ -264,6 +264,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../alab_management.device_rpc_status.html">alab_management.device_rpc_status module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../alab_management.experiment_cancel.html">alab_management.experiment_cancel module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../alab_management.experiment_manager.html">alab_management.experiment_manager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../alab_management.experiment_reopen.html">alab_management.experiment_reopen module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../alab_management.lab_reset.html">alab_management.lab_reset module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../alab_management.lab_view.html">alab_management.lab_view module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../alab_management.logger.html">alab_management.logger module</a></li>
@@ -603,6 +604,13 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">try_to_mark_task_ready</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">next_task_id</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">status</span> <span class="ow">in</span> <span class="p">[</span><span class="n">TaskStatus</span><span class="o">.</span><span class="n">CANCELLED</span><span class="p">,</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="p">]:</span>
+            <span class="c1"># Snapshot downstream edges before cascade so experiment resume can restore them.</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">alab_management.experiment_reopen</span><span class="w"> </span><span class="kn">import</span> <span class="n">record_cascade_snapshot</span>
+
+                <span class="n">record_cascade_snapshot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">pass</span>
             <span class="c1"># any downstream tasks should be:</span>
             <span class="c1"># 1. cancelled if they depend _only on this task_</span>
             <span class="c1"># 2. made independent of this task. This includes removing affected samples from the downstream task</span>
